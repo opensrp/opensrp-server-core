@@ -14,8 +14,8 @@ before_script:
   - echo "USE mysql;\nUPDATE user SET password=PASSWORD('VA1913wm') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root 
   - psql -c "CREATE ROLE opensrp_admin WITH LOGIN SUPERUSER PASSWORD 'admin';" -U postgres
   - psql -c "CREATE DATABASE opensrp_test WITH OWNER = opensrp_admin;" -U postgres
-  - chmod +x assets/migrations/run_mybatis_migrations.sh
-  - sudo ./assets/migrations/run_mybatis_migrations.sh
+  - chmod +x configs/assets/migrations/run_mybatis_migrations.sh
+  - sudo ./configs/assets/migrations/run_mybatis_migrations.sh
   - sudo mkdir -p /opt/multimedia
   - sudo chown -R travis:travis /opt/multimedia
 script:
