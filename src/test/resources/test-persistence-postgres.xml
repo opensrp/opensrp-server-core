@@ -10,8 +10,8 @@
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="org.postgresql.Driver" />
 		<property name="url" value="jdbc:postgresql://localhost:5432/opensrp_test" />
-		<property name="username" value="opensrp_admin" />
-		<property name="password" value="admin" />
+		<property name="username" value="root" />
+		<property name="password" value="VA1913wm" />
 	</bean>
 
 	<tx:annotation-driven transaction-manager="openSRPTransactionManager" />
