@@ -408,8 +408,8 @@
 						</goals>
 						<configuration>
 							<files>
-								<file>${main.basedir}/configs/build/maven.properties</file>
-								<file>${main.basedir}/configs/assets/config/opensrp.properties</file>
+								<file>${basedir}/configs/build/maven.properties</file>
+								<file>${basedir}/configs/assets/config/opensrp.properties</file>
 							</files>
 						</configuration>
 					</execution>
