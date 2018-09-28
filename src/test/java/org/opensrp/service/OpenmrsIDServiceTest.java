@@ -216,7 +216,7 @@ public class OpenmrsIDServiceTest extends SpringApplicationContextProvider {
 	}
 	
 	private void assertUniqueId(UniqueId expected, UniqueId actual) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-mm-hh hh:MM:ss Z");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-mm-hh hh:MM");
 		assertEquals(dateFormat.format(expected.getCreatedAt()), dateFormat.format(actual.getCreatedAt()));
 		assertEquals(expected.getLocation(), actual.getLocation());
 		assertEquals(expected.getId(), actual.getId());
