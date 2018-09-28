@@ -14,6 +14,10 @@
 
 	<properties>
 		<main.basedir>${project.basedir}</main.basedir>
+		<motech.version>0.11</motech.version>
+		<spring.version>3.1.0.RELEASE</spring.version>
+		<mysql.connector.version>5.1.36</mysql.connector.version>
+		<opensrp.updatePolicy>always</opensrp.updatePolicy>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
 	</properties>
@@ -60,6 +64,43 @@
 			<timezone>Africa/Nairobi</timezone>
 		</developer>
 	</developers>
+
+	<repositories>
+		<repository>
+			<id>snapshots-repo</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>motech.opensrp</id>
+			<name>Motech Snapshots Repository</name>
+			<url>http://nexus.motechproject.org/content/repositories/opensrp-server</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>${opensrp.updatePolicy}</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>motech.nexus</id>
+			<name>Motech Snapshots Repository</name>
+			<url>http://nexus.motechproject.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>${opensrp.updatePolicy}</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>motech.nexus.release</id>
+			<name>Motech Snapshots Repository</name>
+			<url>http://nexus.motechproject.org/content/repositories/releases</url>
+		</repository>
+	</repositories>
+
 
 	<dependencies>
 		<dependency>
@@ -133,24 +174,24 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opensrp</groupId>
-			<artifactId>opensrp-api</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<groupId>org.smartregister</groupId>
+			<artifactId>opensrp-server-api</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opensrp</groupId>
-			<artifactId>opensrp-common</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<groupId>org.smartregister</groupId>
+			<artifactId>opensrp-server-common</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opensrp</groupId>
-			<artifactId>opensrp-form</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<groupId>org.smartregister</groupId>
+			<artifactId>opensrp-server-form</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.opensrp</groupId>
-			<artifactId>opensrp-interface</artifactId>
-			<version>0.1-SNAPSHOT</version>
+			<groupId>org.smartregister</groupId>
+			<artifactId>opensrp-server-interface</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.motechproject</groupId>
@@ -216,8 +257,6 @@
 			<artifactId>commons-dbcp2</artifactId>
 			<version>2.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
-		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
 		<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-jpa -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -400,6 +439,31 @@
 	</build>
 
 	<profiles>
+		<profile>
+			<id>couchdb</id>
+			<activation>
+				<property>
+					<name>opensrp.database.type</name>
+					<value>couchdb</value>
+				</property>
+			</activation>
+			<properties>
+				<opensrp.database.profile>couchDb</opensrp.database.profile>
+			</properties>
+		</profile>
+		<profile>
+			<id>postgres</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>opensrp.database.type</name>
+					<value>postgres</value>
+				</property>
+			</activation>
+			<properties>
+				<opensrp.database.profile>postgres</opensrp.database.profile>
+			</properties>
+		</profile>
 		<profile>
 			<id>release</id>
 			<build>
