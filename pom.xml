@@ -336,7 +336,7 @@
 				</includes>
 			</resource>
 			<resource>
-				<directory>src/main/resources/ziggy</directory>
+				<directory>configs/modules/core/ziggy</directory>
 				<targetPath>ziggy</targetPath>
 			</resource>
 			<resource>
