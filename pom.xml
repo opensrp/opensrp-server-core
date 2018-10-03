@@ -346,7 +346,7 @@
 				<targetPath>ziggy</targetPath>
 			</resource>
 			<resource>
-				<directory>src/main/resources/queries</directory>
+				<directory>configs/modules/core/queries</directory>
 				<targetPath>queries</targetPath>
 			</resource>
 			<resource>
