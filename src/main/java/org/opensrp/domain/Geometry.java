@@ -1,21 +1,22 @@
 package org.opensrp.domain;
 
+import com.google.gson.JsonArray;
 import com.google.gson.annotations.SerializedName;
 
 public class Geometry {
 
 	enum GeometryType {
 		@SerializedName("Point")
-		POINT,
+		POINT, 
 		@SerializedName("Polygon")
-		POLYGON,
+		POLYGON, 
 		@SerializedName("MultiPolygon")
-		MULITI_POLYGON
+		MULTI_POLYGON
 	};
 
 	private GeometryType type;
 
-	private double[][][] coordinates;
+	private JsonArray coordinates;
 
 	public GeometryType getType() {
 		return type;
@@ -25,11 +26,11 @@ public class Geometry {
 		this.type = type;
 	}
 
-	public double[][][] getCoordinates() {
+	public JsonArray getCoordinates() {
 		return coordinates;
 	}
 
-	public void setCoordinates(double[][][] coordinates) {
+	public void setCoordinates(JsonArray coordinates) {
 		this.coordinates = coordinates;
 	}
 

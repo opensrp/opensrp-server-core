@@ -1,6 +1,5 @@
 package org.opensrp.domain;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
 
 import com.google.gson.annotations.SerializedName;
@@ -17,7 +16,6 @@ public class LocationProperty {
 
 	};
 
-	@JsonProperty
 	private String uid;
 
 	private String code;
