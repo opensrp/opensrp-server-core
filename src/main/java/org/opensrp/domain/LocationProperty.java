@@ -34,7 +34,7 @@ public class LocationProperty {
 
 	private DateTime effectiveStartDate;
 
-	private DateTime effectiveStartEnd;
+	private DateTime effectiveEndDate;
 
 	private int version;
 
@@ -102,12 +102,12 @@ public class LocationProperty {
 		this.effectiveStartDate = effectiveStartDate;
 	}
 
-	public DateTime getEffectiveStartEnd() {
-		return effectiveStartEnd;
+	public DateTime getEffectiveEndDate() {
+		return effectiveEndDate;
 	}
 
-	public void setEffectiveStartEnd(DateTime effectiveStartEnd) {
-		this.effectiveStartEnd = effectiveStartEnd;
+	public void setEffectiveEndDate(DateTime effectiveEndDate) {
+		this.effectiveEndDate = effectiveEndDate;
 	}
 
 	public int getVersion() {
