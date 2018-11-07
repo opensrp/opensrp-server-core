@@ -15,7 +15,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 
 public class PhysicalLocationTest {
-	static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+	private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
 
 	private String structureJson = "{\"type\":\"Feature\",\"id\":90397,\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[32.5978597,-14.1699446],[32.5978956,-14.1699609],[32.5978794,-14.1699947],[32.5978434,-14.1699784],[32.5978597,-14.1699446]]]},\"properties\":{\"uid\":\"41587456-b7c8-4c4e-b433-23a786f742fc\",\"code\":\"21384443\",\"type\":\"Residential Structure\",\"status\":\"Active\",\"parentId\":\"3734\",\"geographicLevel\":5,\"effectiveStartDate\":\"2017-01-10T00:00:00.000\",\"version\":0}}";
@@ -72,6 +72,6 @@ public class PhysicalLocationTest {
 	}
 
 	private String stripTimezone(String locationJson) {
-		return locationJson.replaceAll("[\\+-]\\d{2}:00", "").replaceAll("Z$", "");
+		return locationJson.replaceAll("[\\+-]\\d{2}:00", "").replace("00:00.000Z", "");
 	}
 }
