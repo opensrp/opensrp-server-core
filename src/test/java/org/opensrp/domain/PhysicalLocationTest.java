@@ -52,7 +52,7 @@ public class PhysicalLocationTest {
 		JsonArray coordinate1 = coordinates.get(0).getAsJsonArray();
 		assertEquals(32.59989007736522, coordinate1.get(0).getAsDouble(), 0);
 		assertEquals(-14.167432040756012, coordinate1.get(1).getAsDouble(), 0);
-		
+
 		JsonArray coordinate67 = coordinates.get(66).getAsJsonArray();
 		assertEquals(32.5988341383848, coordinate67.get(0).getAsDouble(), 0);
 		assertEquals(-14.171814074659776, coordinate67.get(1).getAsDouble(), 0);
@@ -72,6 +72,6 @@ public class PhysicalLocationTest {
 	}
 
 	private String stripTimezone(String locationJson) {
-		return locationJson.replaceAll("[\\+-]\\d{2}:00", "");
+		return locationJson.replaceAll("[\\+-]\\d{2}:00", "").replaceAll("Z$", "");
 	}
 }
