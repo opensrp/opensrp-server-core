@@ -27,10 +27,8 @@ public class TaskTest {
 
 	protected static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HHmm");
 
-	
 	private String taskJson = "{\"identifier\":\"tsk11231jh22\",\"groupIdentifier\":\"2018_IRS-3734{\",\"status\":\"Ready\",\"businessStatus\":\"Not Visited\",\"priority\":3,\"code\":\"IRS\",\"description\":\"Spray House\",\"focus\":\"IRS Visit\",\"for\":\"location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc\",\"executionStartDate\":\"2018-11-10T2200\",\"executionEndDate\":null,\"authoredOn\":\"2018-10-31T0700\",\"lastModified\":\"2018-10-31T0700\",\"owner\":\"demouser\",\"note\":[{\"authorString\":\"demouser\",\"time\":\"2018-01-01T0800\",\"text\":\"This should be assigned to patrick.\"}]}";
 
-	
 	@Test
 	public void testDeserialize() {
 		Task task = gson.fromJson(taskJson, Task.class);
@@ -67,7 +65,11 @@ class TaskDateTimeTypeConverter extends DateTimeTypeConverter {
 	@Override
 	public DateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
 			throws JsonParseException {
-		return TaskTest.formatter.parseDateTime(json.getAsString());
+		try {
+			return TaskTest.formatter.parseDateTime(json.getAsString());
+		} catch (IllegalArgumentException e) {
+			return new DateTime(json.getAsString());
+		}
 	}
 
 	@Override
