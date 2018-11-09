@@ -11,7 +11,7 @@ import org.apache.ibatis.type.TypeHandler;
 import org.opensrp.domain.Campaign;
 import org.postgresql.util.PGobject;
 
-public class CampaignHandler extends BaseTypeHandler implements TypeHandler<Campaign> {
+public class CampaignTypeHandler extends BaseTypeHandler implements TypeHandler<Campaign> {
 	
 	@Override
 	public void setParameter(PreparedStatement ps, int i, Campaign parameter, JdbcType jdbcType) throws SQLException {

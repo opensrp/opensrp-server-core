@@ -11,7 +11,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.postgresql.util.PGobject;
 
-public class TaskHandler extends BaseTypeHandler implements TypeHandler<Task> {
+public class TaskTypeHandler extends BaseTypeHandler implements TypeHandler<Task> {
 
 	@Override
 	public void setParameter(PreparedStatement ps, int i, Task parameter, JdbcType jdbcType) throws SQLException {
