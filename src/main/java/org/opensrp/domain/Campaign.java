@@ -20,6 +20,8 @@ public class Campaign {
 	private DateTime lastModified;
 
 	private String owner;
+	
+	private long serverVersion;
 
 	public String getIdentifier() {
 		return identifier;
@@ -83,6 +85,14 @@ public class Campaign {
 
 	public void setOwner(String owner) {
 		this.owner = owner;
+	}
+
+	public long getServerVersion() {
+		return serverVersion;
+	}
+
+	public void setServerVersion(long serverVersion) {
+		this.serverVersion = serverVersion;
 	}
 
 }

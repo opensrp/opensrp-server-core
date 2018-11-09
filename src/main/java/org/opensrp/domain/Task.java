@@ -49,6 +49,8 @@ public class Task {
 
 	private String owner;
 
+	private long serverVersion;
+
 	@SerializedName("note")
 	private List<Note> notes;
 
@@ -179,4 +181,13 @@ public class Task {
 	public void setNotes(List<Note> notes) {
 		this.notes = notes;
 	}
+
+	public long getServerVersion() {
+		return serverVersion;
+	}
+
+	public void setServerVersion(long serverVersion) {
+		this.serverVersion = serverVersion;
+	}
+
 }

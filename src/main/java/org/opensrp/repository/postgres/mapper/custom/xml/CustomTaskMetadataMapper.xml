@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="org.opensrp.repository.postgres.mapper.custom.CustomTaskMetadataMapper">
+
+	<sql id="Base_Column_List">
+		t.id, t.json
+	</sql>
+
+	<select id="selectByIdentifier" parameterType="java.lang.String"
+		resultMap="org.opensrp.repository.postgres.mapper.TaskMapper.BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from core.task_metadata tm
+		join core.task t on tm.task_id = c.id
+		where tm.identifier = #{identifier,jdbcType=VARCHAR}
+	</select>
+
+
+	<sql id="Example_Where_Clause">
+		<where>
+			<foreach collection="example.oredCriteria" item="criteria" separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" prefixOverrides="and" suffix=")">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and tm.${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and tm.${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and tm.${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and tm.${criterion.condition}
+									<foreach close=")" collection="criterion.value" item="listItem"
+										open="(" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+
+	<select id="selectMany"
+		resultMap="org.opensrp.repository.postgres.mapper.ActionMapper.BaseResultMap">
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		from core.task_metadata tm
+		join core.task t on tm.task_id = t.id
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="example.orderByClause != null">
+			order by tm.${example.orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+</mapper>
