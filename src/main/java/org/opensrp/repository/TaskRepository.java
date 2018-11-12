@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.opensrp.domain.Task;
 
-public interface TaskRepository extends BaseRepository<Task>{
+public interface TaskRepository extends BaseRepository<Task> {
 
-	List<Task> getTasksByCampaignAndServerVersion(String campaign, long serverVersion);
+	List<Task> getTasksByCampaignAndGroup(String campaign, String group, long serverVersion);
+
+	List<Task> findByEmptyServerVersion();
 
 }

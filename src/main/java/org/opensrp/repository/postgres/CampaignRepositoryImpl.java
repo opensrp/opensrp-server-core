@@ -49,17 +49,17 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 		if (pgCampaign == null) {
 			return;
 		}
-		
+
 		int rowsAffected = campaignMapper.insertSelectiveAndSetId(pgCampaign);
 		if (rowsAffected < 1 || pgCampaign.getId() == null) {
 			return;
 		}
-		
+
 		CampaignMetadata campaignMetadata = createMetadata(entity, pgCampaign.getId());
 		if (campaignMetadata == null) {
 			return;
 		}
-		
+
 		campaignMetadataMapper.insertSelective(campaignMetadata);
 
 	}
@@ -106,7 +106,7 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 	@Override
 	public List<Campaign> getCampaignsByServerVersion(long serverVersion) {
 		CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
-		campaignMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
+		campaignMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
 		List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
 				.selectMany(campaignMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(campaigns);

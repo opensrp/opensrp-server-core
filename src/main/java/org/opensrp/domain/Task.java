@@ -52,7 +52,7 @@ public class Task {
 	@SerializedName("note")
 	private List<Note> notes;
 
-	private long serverVersion;
+	private Long serverVersion;
 
 	public String getIdentifier() {
 		return identifier;
@@ -182,11 +182,11 @@ public class Task {
 		this.notes = notes;
 	}
 
-	public long getServerVersion() {
+	public Long getServerVersion() {
 		return serverVersion;
 	}
 
-	public void setServerVersion(long serverVersion) {
+	public void setServerVersion(Long serverVersion) {
 		this.serverVersion = serverVersion;
 	}
 

@@ -104,10 +104,20 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public List<Task> getTasksByCampaignAndServerVersion(String campaign, long serverVersion) {
+	public List<Task> getTasksByCampaignAndGroup(String campaign, String group, long serverVersion) {
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andCampaignIdentifierEqualTo(campaign)
-				.andServerVersionGreaterThan(serverVersion);
+		taskMetadataExample.createCriteria().andCampaignIdentifierEqualTo(campaign).andGroupIdentifierEqualTo(group)
+				.andServerVersionGreaterThanOrEqualTo(serverVersion);
+		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
+				DEFAULT_FETCH_SIZE);
+		return convert(tasks);
+	}
+
+	@Override
+	public List<Task> findByEmptyServerVersion() {
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		taskMetadataExample.createCriteria().andServerVersionIsNull();
+		taskMetadataExample.or(taskMetadataExample.createCriteria().andServerVersionEqualTo(0l));
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
 				DEFAULT_FETCH_SIZE);
 		return convert(tasks);
