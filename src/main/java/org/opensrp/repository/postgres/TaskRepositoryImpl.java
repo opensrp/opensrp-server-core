@@ -50,15 +50,16 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 			return;
 		}
 
+		int rowsAffected = taskMapper.insertSelectiveAndSetId(pgTask);
+		if (rowsAffected < 1 || pgTask.getId() == null) {
+			return;
+		}
+
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
 		if (taskMetadata == null) {
 			return;
 		}
 
-		int rowsAffected = taskMapper.insertSelectiveAndSetId(pgTask);
-		if (rowsAffected < 1 || pgTask.getId() == null) {
-			return;
-		}
 		taskMetadataMapper.insertSelective(taskMetadata);
 
 	}
@@ -197,6 +198,9 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		TaskMetadata taskMetadata = new TaskMetadata();
 		taskMetadata.setTaskId(id);
 		taskMetadata.setIdentifier(entity.getIdentifier());
+		taskMetadata.setCampaignIdentifier(entity.getCampaignIdentifier());
+		taskMetadata.setGroupIdentifier(entity.getGroupIdentifier());
+		taskMetadata.setForEntity(entity.getForEntity());
 		taskMetadata.setServerVersion(entity.getServerVersion());
 		return taskMetadata;
 	}

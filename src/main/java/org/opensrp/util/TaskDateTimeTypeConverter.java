@@ -14,13 +14,21 @@ import com.google.gson.JsonSerializationContext;
 
 public class TaskDateTimeTypeConverter extends DateTimeTypeConverter {
 
-	private static DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HHmm");
+	private DateTimeFormatter dateTimeFormatter;
+
+	public TaskDateTimeTypeConverter() {
+		this("yyyy-MM-dd'T'HHmm");
+	}
+
+	public TaskDateTimeTypeConverter(String dateFormat) {
+		dateTimeFormatter = DateTimeFormat.forPattern(dateFormat);
+	}
 
 	@Override
 	public DateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
 			throws JsonParseException {
 		try {
-			return formatter.parseDateTime(json.getAsString());
+			return dateTimeFormatter.parseDateTime(json.getAsString());
 		} catch (IllegalArgumentException e) {
 			return new DateTime(json.getAsString());
 		}
@@ -28,6 +36,6 @@ public class TaskDateTimeTypeConverter extends DateTimeTypeConverter {
 
 	@Override
 	public JsonElement serialize(DateTime src, Type typeOfSrc, JsonSerializationContext context) {
-		return new JsonPrimitive(src.toString(formatter));
+		return new JsonPrimitive(src.toString(dateTimeFormatter));
 	}
 }

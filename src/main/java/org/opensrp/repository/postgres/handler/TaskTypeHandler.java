@@ -5,10 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.activemq.thread.Task;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
+import org.opensrp.domain.Task;
 import org.postgresql.util.PGobject;
 
 public class TaskTypeHandler extends BaseTypeHandler implements TypeHandler<Task> {

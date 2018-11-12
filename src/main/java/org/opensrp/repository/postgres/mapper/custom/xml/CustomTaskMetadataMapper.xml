@@ -12,7 +12,7 @@
 		select
 		<include refid="Base_Column_List" />
 		from core.task_metadata tm
-		join core.task t on tm.task_id = c.id
+		join core.task t on tm.task_id = t.id
 		where tm.identifier = #{identifier,jdbcType=VARCHAR}
 	</select>
 
@@ -49,7 +49,7 @@
 	</sql>
 
 	<select id="selectMany"
-		resultMap="org.opensrp.repository.postgres.mapper.ActionMapper.BaseResultMap">
+		resultMap="org.opensrp.repository.postgres.mapper.TaskMapper.BaseResultMap">
 		select
 		<if test="example.distinct">
 			distinct

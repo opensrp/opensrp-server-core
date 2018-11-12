@@ -49,10 +49,10 @@ public class Task {
 
 	private String owner;
 
-	private long serverVersion;
-
 	@SerializedName("note")
 	private List<Note> notes;
+
+	private long serverVersion;
 
 	public String getIdentifier() {
 		return identifier;

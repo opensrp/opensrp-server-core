@@ -1,6 +1,7 @@
 package org.opensrp.domain;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.opensrp.domain.Task.TaskStatus;
 
 public class Campaign {
@@ -20,7 +21,7 @@ public class Campaign {
 	private DateTime lastModified;
 
 	private String owner;
-	
+
 	private long serverVersion;
 
 	public String getIdentifier() {
@@ -98,23 +99,23 @@ public class Campaign {
 }
 
 class ExecutionPeriod {
-	private DateTime start;
+	private LocalDate start;
 
-	private DateTime end;
+	private LocalDate end;
 
-	public DateTime getStart() {
+	public LocalDate getStart() {
 		return start;
 	}
 
-	public void setStart(DateTime start) {
+	public void setStart(LocalDate start) {
 		this.start = start;
 	}
 
-	public DateTime getEnd() {
+	public LocalDate getEnd() {
 		return end;
 	}
 
-	public void setEnd(DateTime end) {
+	public void setEnd(LocalDate end) {
 		this.end = end;
 	}
 

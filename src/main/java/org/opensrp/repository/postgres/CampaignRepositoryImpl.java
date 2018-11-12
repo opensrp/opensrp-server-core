@@ -49,16 +49,17 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 		if (pgCampaign == null) {
 			return;
 		}
-
-		CampaignMetadata campaignMetadata = createMetadata(entity, pgCampaign.getId());
-		if (campaignMetadata == null) {
-			return;
-		}
-
+		
 		int rowsAffected = campaignMapper.insertSelectiveAndSetId(pgCampaign);
 		if (rowsAffected < 1 || pgCampaign.getId() == null) {
 			return;
 		}
+		
+		CampaignMetadata campaignMetadata = createMetadata(entity, pgCampaign.getId());
+		if (campaignMetadata == null) {
+			return;
+		}
+		
 		campaignMetadataMapper.insertSelective(campaignMetadata);
 
 	}

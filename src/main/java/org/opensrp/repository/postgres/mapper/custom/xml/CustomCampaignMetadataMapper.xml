@@ -49,7 +49,7 @@
 	</sql>
 
 	<select id="selectMany"
-		resultMap="org.opensrp.repository.postgres.mapper.ActionMapper.BaseResultMap">
+		resultMap="org.opensrp.repository.postgres.mapper.CampaignMapper.BaseResultMap">
 		select
 		<if test="example.distinct">
 			distinct
