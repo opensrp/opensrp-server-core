@@ -8,9 +8,10 @@
 	<context:property-placeholder
 		location="classpath:maven.properties,classpath:activemq.properties,classpath:opensrp.properties" />
 	<util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
+	<util:properties id="opensrp" location="classpath:/opensrp.properties" />
 
 	<import resource="classpath:applicationPlatformCommonAPI.xml" />
-	<import resource="classpath:applicationContext-opensrp-form.xml" />
+	<!-- <import resource="classpath:applicationContext-opensrp-form.xml" /> -->
 
 	<import resource="classpath:applicationScheduler.xml" />
 	<import resource="classpath:applicationPlatformServerAPI.xml" />
@@ -27,6 +28,7 @@
 	<context:component-scan base-package="org.opensrp.domain" />
 	<context:component-scan base-package="org.opensrp.repository" />
 	<context:component-scan base-package="org.opensrp.scheduler" />
+	<context:component-scan base-package="org.opensrp.form" />
 	<context:component-scan base-package="org.opensrp.service">
 		<!--These classes are excluded to enable the context load. This is because 
 			EventsListener has EventsRouter as a dependency, problem is that IHandlerMapper 
@@ -64,6 +66,11 @@
 		<constructor-arg value="${couchdb.db.error}" />
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
+	
+	 <bean id="opensrpFormDatabaseConnector" class="org.ektorp.impl.StdCouchDbConnector">
+        <constructor-arg value="${couchdb.db.form}"/>
+        <constructor-arg ref="couchDbInstance"/>
+    </bean>
 
 	<bean id="ds"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
