@@ -1,7 +1,6 @@
 package org.opensrp.domain;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.opensrp.domain.Task.TaskStatus;
 
 public class Campaign {
@@ -94,29 +93,6 @@ public class Campaign {
 
 	public void setServerVersion(long serverVersion) {
 		this.serverVersion = serverVersion;
-	}
-
-}
-
-class ExecutionPeriod {
-	private LocalDate start;
-
-	private LocalDate end;
-
-	public LocalDate getStart() {
-		return start;
-	}
-
-	public void setStart(LocalDate start) {
-		this.start = start;
-	}
-
-	public LocalDate getEnd() {
-		return end;
-	}
-
-	public void setEnd(LocalDate end) {
-		this.end = end;
 	}
 
 }

@@ -23,7 +23,6 @@ public class CampaignService {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
 		campaign.setServerVersion(System.currentTimeMillis());
-		campaign.setLastModified(new DateTime());
 		if (campaignRepository.get(campaign.getIdentifier()) != null) {
 			campaignRepository.update(campaign);
 		} else {
@@ -36,8 +35,6 @@ public class CampaignService {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
 		campaign.setServerVersion(System.currentTimeMillis());
-		campaign.setAuthoredOn(new DateTime());
-		campaign.setLastModified(new DateTime());
 		campaignRepository.add(campaign);
 		return campaign;
 	}
@@ -46,7 +43,6 @@ public class CampaignService {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
 		campaign.setServerVersion(System.currentTimeMillis());
-		campaign.setLastModified(new DateTime());
 		campaignRepository.update(campaign);
 		return campaign;
 	}

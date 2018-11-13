@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Task {
 
-	enum TaskStatus {
+	public enum TaskStatus {
 		@SerializedName("Draft")
 		DRAFT, @SerializedName("Ready")
 		READY, @SerializedName("Cancelled")
