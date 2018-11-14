@@ -16,8 +16,12 @@ public class TaskService {
 
 	private static Logger logger = LoggerFactory.getLogger(TaskService.class.toString());
 
-	@Autowired
 	private TaskRepository taskRepository;
+
+	@Autowired
+	public void setTaskRepository(TaskRepository taskRepository) {
+		this.taskRepository = taskRepository;
+	}
 
 	public List<Task> getAllTasks() {
 		return taskRepository.getAll();
@@ -62,7 +66,7 @@ public class TaskService {
 		return taskRepository.get(identifier);
 	}
 
-	public List<Task> getTasks(String campaign, String group, long serverVersion) {
+	public List<Task> getTasksByCampaignAndGroup(String campaign, String group, long serverVersion) {
 		return taskRepository.getTasksByCampaignAndGroup(campaign, group, serverVersion);
 	}
 

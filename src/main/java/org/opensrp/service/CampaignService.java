@@ -12,8 +12,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class CampaignService {
 
-	@Autowired
 	private CampaignRepository campaignRepository;
+
+	@Autowired
+	public void setCampaignRepository(CampaignRepository campaignRepository) {
+		this.campaignRepository = campaignRepository;
+	}
 
 	public List<Campaign> getAllCampaigns() {
 		return campaignRepository.getAll();
@@ -53,7 +57,7 @@ public class CampaignService {
 		return campaignRepository.get(identifier);
 	}
 
-	public List<Campaign> getCampaigns(long serverVersion) {
+	public List<Campaign> getCampaignsByServerVersion(long serverVersion) {
 		return campaignRepository.getCampaignsByServerVersion(serverVersion);
 	}
 
