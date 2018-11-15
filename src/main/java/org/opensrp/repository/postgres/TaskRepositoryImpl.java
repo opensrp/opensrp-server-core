@@ -56,10 +56,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		}
 
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
-		if (taskMetadata == null) {
-			return;
-		}
-
+		
 		taskMetadataMapper.insertSelective(taskMetadata);
 
 	}
@@ -80,9 +77,6 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 			return;
 		}
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
-		if (taskMetadata == null) {
-			return;
-		}
 
 		int rowsAffected = taskMapper.updateByPrimaryKey(pgTask);
 		if (rowsAffected < 1) {

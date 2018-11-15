@@ -31,42 +31,26 @@ public class CampaignTypeHandler extends BaseTypeHandler implements TypeHandler<
 	
 	@Override
 	public Campaign getResult(ResultSet rs, String columnName) throws SQLException {
-		try {
-			String jsonString = rs.getString(columnName);
-			if (StringUtils.isBlank(jsonString)) {
-				return null;
-			}
-			return mapper.readValue(jsonString, Campaign.class);
-		}
-		catch (Exception e) {
-			throw new SQLException(e);
-		}
+		return getResult(rs.getString(columnName));
 	}
-	
+
 	@Override
 	public Campaign getResult(ResultSet rs, int columnIndex) throws SQLException {
-		try {
-			String jsonString = rs.getString(columnIndex);
-			if (StringUtils.isBlank(jsonString)) {
-				return null;
-			}
-			return mapper.readValue(jsonString, Campaign.class);
-		}
-		catch (Exception e) {
-			throw new SQLException(e);
-		}
+		return getResult(rs.getString(columnIndex));
 	}
-	
+
 	@Override
 	public Campaign getResult(CallableStatement cs, int columnIndex) throws SQLException {
+		return getResult(cs.getString(columnIndex));
+	}
+	
+	private Campaign getResult(String jsonString) throws SQLException {
 		try {
-			String jsonString = cs.getString(columnIndex);
 			if (StringUtils.isBlank(jsonString)) {
 				return null;
 			}
 			return mapper.readValue(jsonString, Campaign.class);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new SQLException(e);
 		}
 	}

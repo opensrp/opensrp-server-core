@@ -1,7 +1,10 @@
 package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -107,6 +110,14 @@ public class CampaignServiceTest {
 		assertEquals("ITN for 2018 Season 1", campaign.getDescription());
 		assertEquals(TaskStatus.READY, campaign.getStatus());
 		assertEquals(1542115657234l, campaign.getServerVersion());
+
+	}
+
+	@Test
+	public void testGetCampaignWithNoIdentifier() {
+		Campaign campaign = campaignService.getCampaign("");
+		verify(campaignRepository, never()).get(anyString());
+		assertNull(campaign);
 
 	}
 

@@ -56,10 +56,7 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 		}
 
 		CampaignMetadata campaignMetadata = createMetadata(entity, pgCampaign.getId());
-		if (campaignMetadata == null) {
-			return;
-		}
-
+	
 		campaignMetadataMapper.insertSelective(campaignMetadata);
 
 	}
@@ -80,9 +77,6 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 			return;
 		}
 		CampaignMetadata campaignMetadata = createMetadata(entity, pgCampaign.getId());
-		if (campaignMetadata == null) {
-			return;
-		}
 
 		int rowsAffected = campaignMapper.updateByPrimaryKey(pgCampaign);
 		if (rowsAffected < 1) {

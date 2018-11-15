@@ -48,12 +48,34 @@ public class CampaignRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void testGetWithNoIdentifier() {
+
+		Campaign campaign = campaignRepository.get("");
+		assertNull(campaign);
+
+	}
+
+	@Test
 	public void testSafeRemove() {
 		assertEquals(2, campaignRepository.getAll().size());
 		Campaign campaign = campaignRepository.get("IRS_2018_S1");
 		campaignRepository.safeRemove(campaign);
 		assertEquals(1, campaignRepository.getAll().size());
 		assertNull(campaignRepository.get("IRS_2018_S1"));
+
+	}
+
+	@Test
+	public void testSafeRemoveNonExistentCampaign() {
+		campaignRepository.safeRemove(null);
+		campaignRepository.safeRemove(new Campaign());
+		assertEquals(2, campaignRepository.getAll().size());
+
+		campaignRepository.safeRemove(campaignRepository.get("IRS_2018_S1"));
+		assertEquals(1, campaignRepository.getAll().size());
+
+		campaignRepository.safeRemove(campaignRepository.get("IRS_2018_S1"));
+		assertEquals(1, campaignRepository.getAll().size());
 
 	}
 
@@ -76,6 +98,27 @@ public class CampaignRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void testAddInvalidObject() {
+		assertEquals(2, campaignRepository.getAll().size());
+		Campaign campaign = new Campaign();
+		campaignRepository.add(campaign);
+		assertEquals(2, campaignRepository.getAll().size());
+
+		campaignRepository.add(null);
+		assertEquals(2, campaignRepository.getAll().size());
+
+	}
+
+	@Test
+	public void testAddExistingObject() {
+		assertEquals(2, campaignRepository.getAll().size());
+		Campaign campaign = campaignRepository.get("IRS_2018_S2");
+		campaignRepository.add(campaign);
+		assertEquals(2, campaignRepository.getAll().size());
+
+	}
+
+	@Test
 	public void testEdit() {
 		Campaign campaign = campaignRepository.get("IRS_2018_S2");
 		campaign.setDescription("Sprap season 2 2018");
@@ -89,6 +132,29 @@ public class CampaignRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Sprap season 2 2018", updatedCampaign.getDescription());
 		assertEquals("2018-04-01", updatedCampaign.getExecutionPeriod().getStart().toString("yyyy-MM-dd"));
 		assertEquals("2018-06-30", updatedCampaign.getExecutionPeriod().getEnd().toString("yyyy-MM-dd"));
+
+	}
+
+	@Test
+	public void testEditInvalidObject() {
+		assertEquals(2, campaignRepository.getAll().size());
+		Campaign campaign = campaignRepository.get("IRS_2018_S2");
+		campaignRepository.safeRemove(campaign);
+
+		campaignRepository.update(campaign);
+		assertNull(campaignRepository.get("IRS_2018_S2"));
+
+	}
+
+	@Test
+	public void testEditNonExistentCampaign() {
+		assertEquals(2, campaignRepository.getAll().size());
+		Campaign campaign = new Campaign();
+		campaignRepository.update(campaign);
+		assertEquals(2, campaignRepository.getAll().size());
+
+		campaignRepository.update(null);
+		assertEquals(2, campaignRepository.getAll().size());
 
 	}
 

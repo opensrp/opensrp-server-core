@@ -54,6 +54,14 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void testGetWithNoIdentifier() {
+
+		Task task = taskRepository.get("");
+		assertNull(task);
+
+	}
+
+	@Test
 	public void testSafeRemove() {
 		assertEquals(2, taskRepository.getAll().size());
 		Task task = taskRepository.get("iyr-998njoo");
@@ -61,6 +69,20 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 
 		assertEquals(1, taskRepository.getAll().size());
 		assertNull(taskRepository.get("iyr-998njoo"));
+	}
+
+	@Test
+	public void testSafeRemoveNonExistentCampaign() {
+		taskRepository.safeRemove(null);
+		taskRepository.safeRemove(new Task());
+		assertEquals(2, taskRepository.getAll().size());
+
+		taskRepository.safeRemove(taskRepository.get("iyr-998njoo"));
+		assertEquals(1, taskRepository.getAll().size());
+
+		taskRepository.safeRemove(taskRepository.get("iyr-998njoo"));
+		assertEquals(1, taskRepository.getAll().size());
+
 	}
 
 	@Test
@@ -87,6 +109,27 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void testAddInvalidObject() {
+		assertEquals(2, taskRepository.getAll().size());
+		Task task = new Task();
+		taskRepository.add(task);
+		assertEquals(2, taskRepository.getAll().size());
+
+		taskRepository.add(null);
+		assertEquals(2, taskRepository.getAll().size());
+
+	}
+
+	@Test
+	public void testAddExistingObject() {
+		assertEquals(2, taskRepository.getAll().size());
+		Task task = taskRepository.get("iyr-998njoo");
+		taskRepository.add(task);
+		assertEquals(2, taskRepository.getAll().size());
+
+	}
+
+	@Test
 	public void testEdit() {
 		Task task = taskRepository.get("iyr-998njoo");
 		task.setStatus(TaskStatus.FAILED);
@@ -100,6 +143,29 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Non Residential", updatedTask.getBusinessStatus());
 		assertEquals(TaskStatus.FAILED, updatedTask.getStatus());
 		assertEquals(now, updatedTask.getLastModified());
+	}
+
+	@Test
+	public void testEditInvalidObject() {
+		assertEquals(2, taskRepository.getAll().size());
+		Task task = new Task();
+		taskRepository.update(task);
+		assertEquals(2, taskRepository.getAll().size());
+
+		taskRepository.update(null);
+		assertEquals(2, taskRepository.getAll().size());
+
+	}
+
+	@Test
+	public void testEditNonExistingObject() {
+		Task task = taskRepository.get("iyr-998njoo");
+
+		taskRepository.safeRemove(task);
+
+		taskRepository.update(task);
+		assertNull(taskRepository.get("iyr-998njoo"));
+
 	}
 
 	public void testGetTasksByCampaignAndGroup() {
