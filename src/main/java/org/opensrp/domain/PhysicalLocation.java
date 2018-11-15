@@ -10,6 +10,8 @@ public class PhysicalLocation {
 
 	private LocationProperty properties;
 
+	private Long serverVersion;
+
 	public String getType() {
 		return type;
 	}
@@ -40,6 +42,14 @@ public class PhysicalLocation {
 
 	public void setProperties(LocationProperty properties) {
 		this.properties = properties;
+	}
+
+	public Long getServerVersion() {
+		return serverVersion;
+	}
+
+	public void setServerVersion(Long serverVersion) {
+		this.serverVersion = serverVersion;
 	}
 
 }
