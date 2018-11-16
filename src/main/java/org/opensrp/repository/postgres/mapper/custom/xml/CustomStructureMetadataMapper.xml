@@ -7,13 +7,13 @@
 		s.id, s.json
 	</sql>
 
-	<select id="selectByIdentifier" parameterType="java.lang.String"
+	<select id="findById" parameterType="java.lang.String"
 		resultMap="org.opensrp.repository.postgres.mapper.StructureMapper.BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from core.structure_metadata sm
 		join core.structure s on sm.structure_id = s.id
-		where sm.identifier = #{identifier,jdbcType=VARCHAR}
+		where sm.geojson_id = #{id,jdbcType=VARCHAR}
 	</select>
 
 

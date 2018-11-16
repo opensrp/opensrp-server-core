@@ -7,13 +7,13 @@
 		l.id, l.json
 	</sql>
 
-	<select id="selectByIdentifier" parameterType="java.lang.String"
+	<select id="findById" parameterType="java.lang.String"
 		resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
 		from core.location_metadata lm
-		join core.location t on lm.location_id = l.id
-		where lm.identifier = #{identifier,jdbcType=VARCHAR}
+		join core.location l on lm.location_id = l.id
+		where lm.geojson_id = #{id,jdbcType=VARCHAR}
 	</select>
 
 
@@ -56,7 +56,7 @@
 		</if>
 		<include refid="Base_Column_List" />
 		from core.location_metadata lm
-		join core.location t on lm.location_id = l.id
+		join core.location l on lm.location_id = l.id
 		<if test="_parameter != null">
 			<include refid="Example_Where_Clause" />
 		</if>

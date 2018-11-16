@@ -70,6 +70,12 @@ public class TaskService {
 		return taskRepository.getTasksByCampaignAndGroup(campaign, group, serverVersion);
 	}
 
+	public void saveTasks(List<Task> tasks) {
+		for (Task task : tasks) {
+			addOrUpdateTask(task);
+		}
+	}
+
 	public void addServerVersion() {
 		try {
 			List<Task> tasks = taskRepository.findByEmptyServerVersion();

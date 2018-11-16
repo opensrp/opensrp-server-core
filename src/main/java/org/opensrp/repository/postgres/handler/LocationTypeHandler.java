@@ -8,17 +8,25 @@ import java.sql.SQLException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
+import org.joda.time.DateTime;
 import org.opensrp.domain.PhysicalLocation;
+import org.opensrp.util.DateTimeTypeConverter;
 import org.postgresql.util.PGobject;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 public class LocationTypeHandler extends BaseTypeHandler implements TypeHandler<PhysicalLocation> {
+
+	private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
 
 	@Override
 	public void setParameter(PreparedStatement ps, int i, PhysicalLocation parameter, JdbcType jdbcType)
 			throws SQLException {
 		try {
 			if (parameter != null) {
-				String jsonString = mapper.writeValueAsString(parameter);
+				String jsonString = gson.toJson(parameter);
 				PGobject jsonObject = new PGobject();
 				jsonObject.setType("jsonb");
 				jsonObject.setValue(jsonString);
@@ -49,7 +57,7 @@ public class LocationTypeHandler extends BaseTypeHandler implements TypeHandler<
 			if (StringUtils.isBlank(jsonString)) {
 				return null;
 			}
-			return mapper.readValue(jsonString, PhysicalLocation.class);
+			return gson.fromJson(jsonString, PhysicalLocation.class);
 		} catch (Exception e) {
 			throw new SQLException(e);
 		}
