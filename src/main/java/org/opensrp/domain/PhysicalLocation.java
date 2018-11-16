@@ -4,13 +4,15 @@ public class PhysicalLocation {
 
 	private String type;
 
-	private long id;
+	private String id;
 
 	private Geometry geometry;
 
 	private LocationProperty properties;
 
 	private Long serverVersion;
+
+	private transient boolean isJurisdiction;
 
 	public String getType() {
 		return type;
@@ -20,11 +22,11 @@ public class PhysicalLocation {
 		this.type = type;
 	}
 
-	public long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -50,6 +52,14 @@ public class PhysicalLocation {
 
 	public void setServerVersion(Long serverVersion) {
 		this.serverVersion = serverVersion;
+	}
+
+	public boolean isJurisdiction() {
+		return isJurisdiction;
+	}
+
+	public void setJurisdiction(boolean isJurisdiction) {
+		this.isJurisdiction = isJurisdiction;
 	}
 
 }
