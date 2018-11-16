@@ -155,6 +155,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 				.selectMany(new LocationMetadataExample(), 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
+	
+	@Override
+	public List<PhysicalLocation> getAllStructures() {
+		List<org.opensrp.domain.postgres.Structure> structures = structureMetadataMapper
+				.selectMany(new StructureMetadataExample(), 0, DEFAULT_FETCH_SIZE);
+		return convertStructures(structures);
+	}
 
 	@Override
 	public void safeRemove(PhysicalLocation entity) {
@@ -264,7 +271,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		if (entity == null || entity.getJson() == null || !(entity.getJson() instanceof PhysicalLocation)) {
 			return null;
 		}
-		return (PhysicalLocation) entity.getJson();
+
+		PhysicalLocation location = (PhysicalLocation) entity.getJson();
+		location.setJurisdiction(true);
+		return location;
 	}
 
 	private PhysicalLocation convert(Structure entity) {

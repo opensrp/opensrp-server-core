@@ -15,4 +15,6 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	List<PhysicalLocation> findByEmptyServerVersion();
 
 	List<PhysicalLocation> findStructuresByEmptyServerVersion();
+
+	List<PhysicalLocation> getAllStructures();
 }
