@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Task {
 
-	enum TaskStatus {
+	public enum TaskStatus {
 		@SerializedName("Draft")
 		DRAFT, @SerializedName("Ready")
 		READY, @SerializedName("Cancelled")
@@ -51,6 +51,8 @@ public class Task {
 
 	@SerializedName("note")
 	private List<Note> notes;
+
+	private Long serverVersion;
 
 	public String getIdentifier() {
 		return identifier;
@@ -179,4 +181,13 @@ public class Task {
 	public void setNotes(List<Note> notes) {
 		this.notes = notes;
 	}
+
+	public Long getServerVersion() {
+		return serverVersion;
+	}
+
+	public void setServerVersion(Long serverVersion) {
+		this.serverVersion = serverVersion;
+	}
+
 }

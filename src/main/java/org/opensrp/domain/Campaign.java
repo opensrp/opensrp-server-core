@@ -21,6 +21,8 @@ public class Campaign {
 
 	private String owner;
 
+	private long serverVersion;
+
 	public String getIdentifier() {
 		return identifier;
 	}
@@ -85,27 +87,12 @@ public class Campaign {
 		this.owner = owner;
 	}
 
-}
-
-class ExecutionPeriod {
-	private DateTime start;
-
-	private DateTime end;
-
-	public DateTime getStart() {
-		return start;
+	public long getServerVersion() {
+		return serverVersion;
 	}
 
-	public void setStart(DateTime start) {
-		this.start = start;
-	}
-
-	public DateTime getEnd() {
-		return end;
-	}
-
-	public void setEnd(DateTime end) {
-		this.end = end;
+	public void setServerVersion(long serverVersion) {
+		this.serverVersion = serverVersion;
 	}
 
 }
