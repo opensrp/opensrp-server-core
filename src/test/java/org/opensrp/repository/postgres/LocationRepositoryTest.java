@@ -5,13 +5,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
+import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.joda.time.DateTime;
 import org.junit.Test;
+import org.opensrp.domain.Geometry;
 import org.opensrp.domain.Geometry.GeometryType;
+import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.repository.LocationRepository;
@@ -39,7 +45,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("21", location.getProperties().getParentId());
 		assertEquals("Intervention Unit", location.getProperties().getType());
 		assertEquals(PropertyStatus.ACTIVE, location.getProperties().getStatus());
-		assertNull(location.getServerVersion());
+		assertEquals(1542378347104l,location.getServerVersion().longValue());
 
 		JsonArray coordinates = location.getGeometry().getCoordinates().get(0).getAsJsonArray().get(0).getAsJsonArray();
 		assertEquals(267, coordinates.size());
@@ -102,10 +108,8 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testAddLocation() {
-		PhysicalLocation physicalLocation = new PhysicalLocation();
-		physicalLocation.setId("223232");
-		physicalLocation.setType("Feature");
-		physicalLocation.setJurisdiction(true);
+		String uuid = UUID.randomUUID().toString();
+		PhysicalLocation physicalLocation = createLocation(uuid);
 		locationRepository.add(physicalLocation);
 		PhysicalLocation savedLocation = locationRepository.get("223232");
 
@@ -133,6 +137,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		PhysicalLocation physicalLocation = locationRepository.get("3734");
 		physicalLocation.getProperties().setName("MY Operational Area");
 		physicalLocation.setJurisdiction(true);
+
 		locationRepository.add(physicalLocation);
 
 		physicalLocation = locationRepository.get("3734");
@@ -145,16 +150,19 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testAddStructure() {
-		PhysicalLocation physicalLocation = new PhysicalLocation();
-		physicalLocation.setId("121212");
-		physicalLocation.setType("Feature");
+		String uuid = UUID.randomUUID().toString();
+		PhysicalLocation physicalLocation = createStructure(uuid);
+
 		locationRepository.add(physicalLocation);
-		PhysicalLocation savedLocation = locationRepository.get("121212");
+		PhysicalLocation savedLocation = locationRepository.getStructure("121212");
 
 		assertNotNull(savedLocation);
 		assertEquals("Feature", savedLocation.getType());
+		assertEquals(GeometryType.POLYGON, savedLocation.getGeometry().getType());
+		assertEquals(PropertyStatus.ACTIVE, savedLocation.getProperties().getStatus());
+		assertEquals(uuid, savedLocation.getProperties().getUid());
 
-		assertNull(locationRepository.getStructure("121212"));
+		assertNull(locationRepository.get("121212"));
 
 	}
 
@@ -231,15 +239,15 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		PhysicalLocation structure = locationRepository.getStructure("90397");
 		structure.getProperties().setCode("12121");
 		structure.getProperties().setParentId("11");
-
 		locationRepository.update(structure);
-		PhysicalLocation updatedStructure = locationRepository.get("121212");
+
+		PhysicalLocation updatedStructure = locationRepository.getStructure("90397");
 
 		assertNotNull(updatedStructure);
 		assertEquals("12121", updatedStructure.getProperties().getCode());
 		assertEquals("11", updatedStructure.getProperties().getParentId());
 
-		assertNull(locationRepository.getStructure("90397"));
+		assertNull(locationRepository.get("90397"));
 
 	}
 
@@ -268,32 +276,152 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testGetAll() {
+		List<PhysicalLocation> locations = locationRepository.getAll();
+		assertEquals(1, locations.size());
+
+		locationRepository.safeRemove(locationRepository.get("3734"));
+
+		assertTrue(locationRepository.getAll().isEmpty());
+
+		String uuid = UUID.randomUUID().toString();
+		locationRepository.add(createLocation(uuid));
+
+		locations = locationRepository.getAll();
+
+		assertEquals(1, locations.size());
+		assertEquals("223232", locations.get(0).getId());
+		assertEquals(uuid, locations.get(0).getProperties().getUid());
 
 	}
 
 	@Test
-	public void testSafeRemove() {
+	public void testSafeRemoveLocation() {
+
+		assertNotNull(locationRepository.get("3734"));
+
+		locationRepository.safeRemove(locationRepository.get("3734"));
+
+		assertNull(locationRepository.get("3734"));
+	}
+
+	@Test
+	public void testSafeRemoveStructure() {
+
+		assertNotNull(locationRepository.getStructure("90397"));
+
+		locationRepository.safeRemove(locationRepository.getStructure("90397"));
+
+		assertNull(locationRepository.getStructure("90397"));
+	}
+
+	@Test
+	public void testSafeRemoveNonExistentLocation() {
+		locationRepository.safeRemove(null);
+		locationRepository.safeRemove(new PhysicalLocation());
+		assertEquals(1, locationRepository.getAll().size());
+
+		locationRepository.safeRemove(locationRepository.get("671198"));
+		assertEquals(1, locationRepository.getAll().size());
 
 	}
 
 	@Test
 	public void testFindLocationsByServerVersion() {
 
+		List<PhysicalLocation> locations = locationRepository.findLocationsByServerVersion(1542378347106l);
+		assertTrue(locations.isEmpty());
+
+		locations = locationRepository.findLocationsByServerVersion(1l);
+		System.out.println(ReflectionToStringBuilder.toString(locations.get(0)));
+		assertEquals(1, locations.size());
+		assertEquals("3734", locations.get(0).getId());
+		assertTrue(locations.get(0).getServerVersion() >= 1l);
+
+		locations.get(0).setServerVersion(null);
+		locationRepository.update(locations.get(0));
+
+		locations = locationRepository.findLocationsByServerVersion(1l);
+		assertTrue(locations.isEmpty());
+
 	}
 
 	@Test
 	public void testFindStructuresByParentAndServerVersion() {
 
+		List<PhysicalLocation> locations = locationRepository.findStructuresByParentAndServerVersion("3734",
+				1542376382859l);
+		assertTrue(locations.isEmpty());
+
+		locations = locationRepository.findStructuresByParentAndServerVersion("3734", 1542376382851l);
+		assertEquals(1, locations.size());
+		assertEquals("90397", locations.get(0).getId());
+		assertEquals("3734", locations.get(0).getProperties().getParentId());
+		assertEquals(1542376382851l, locations.get(0).getServerVersion().longValue());
+		assertTrue(locations.get(0).getServerVersion() >= 1l);
+
+		locations.get(0).setServerVersion(null);
+		locationRepository.update(locations.get(0));
+
+		locations = locationRepository.findStructuresByParentAndServerVersion("3734", 0l);
+		assertTrue(locations.isEmpty());
 	}
 
 	@Test
 	public void testFindByEmptyServerVersion() {
+
+		List<PhysicalLocation> locations = locationRepository.findByEmptyServerVersion();
+		assertTrue(locations.isEmpty());
+
+		PhysicalLocation location = locationRepository.get("3734");
+		location.setServerVersion(null);
+		locationRepository.update(location);
+
+		locations = locationRepository.findByEmptyServerVersion();
 
 	}
 
 	@Test
 	public void testFindStructuresByEmptyServerVersion() {
 
+		List<PhysicalLocation> locations = locationRepository.findStructuresByEmptyServerVersion();
+		assertTrue(locations.isEmpty());
+
+		PhysicalLocation location = locationRepository.getStructure("90397");
+		location.setServerVersion(null);
+		locationRepository.update(location);
+
+		locations = locationRepository.findByEmptyServerVersion();
+
+	}
+
+	private PhysicalLocation createLocation(String uuid) {
+		PhysicalLocation physicalLocation = new PhysicalLocation();
+		physicalLocation.setId("223232");
+		physicalLocation.setType("Feature");
+		physicalLocation.setJurisdiction(true);
+		Geometry geometry = new Geometry();
+		geometry.setType(GeometryType.MULTI_POLYGON);
+		physicalLocation.setGeometry(geometry);
+		LocationProperty properties = new LocationProperty();
+		properties.setStatus(PropertyStatus.INACTIVE);
+		properties.setUid(uuid);
+		physicalLocation.setProperties(properties);
+		return physicalLocation;
+
+	}
+
+	private PhysicalLocation createStructure(String uuid) {
+		PhysicalLocation physicalLocation = new PhysicalLocation();
+		physicalLocation.setId("121212");
+		physicalLocation.setType("Feature");
+		Geometry geometry = new Geometry();
+		geometry.setType(GeometryType.POLYGON);
+		physicalLocation.setGeometry(geometry);
+		LocationProperty properties = new LocationProperty();
+		properties.setStatus(PropertyStatus.ACTIVE);
+		properties.setUid(uuid);
+		physicalLocation.setProperties(properties);
+		return physicalLocation;
 	}
 
 }
