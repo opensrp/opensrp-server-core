@@ -62,7 +62,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 	private void addLocation(PhysicalLocation entity) {
 
-		org.opensrp.domain.postgres.Location pgLocation = convert(entity, null);
+		Location pgLocation = convert(entity, null);
 		if (pgLocation == null) {
 			return;
 		}
@@ -80,7 +80,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 	private void addStructure(PhysicalLocation entity) {
 
-		org.opensrp.domain.postgres.Structure pgStructure = convertStructure(entity, null);
+		Structure pgStructure = convertStructure(entity, null);
 		if (pgStructure == null) {
 			return;
 		}
@@ -114,7 +114,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	private void updateLocation(PhysicalLocation entity, Long id) {
-		org.opensrp.domain.postgres.Location pgLocation = convert(entity, id);
+		Location pgLocation = convert(entity, id);
 		if (pgLocation == null) {
 			return;
 		}
@@ -132,7 +132,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	private void updateStructure(PhysicalLocation entity, Long id) {
-		org.opensrp.domain.postgres.Structure pgStructure = convertStructure(entity, id);
+		Structure pgStructure = convertStructure(entity, id);
 		if (pgStructure == null) {
 			return;
 		}
@@ -151,14 +151,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 	@Override
 	public List<PhysicalLocation> getAll() {
-		List<org.opensrp.domain.postgres.Location> locations = locationMetadataMapper
+		List<Location> locations = locationMetadataMapper
 				.selectMany(new LocationMetadataExample(), 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
-	
+
 	@Override
 	public List<PhysicalLocation> getAllStructures() {
-		List<org.opensrp.domain.postgres.Structure> structures = structureMetadataMapper
+		List<Structure> structures = structureMetadataMapper
 				.selectMany(new StructureMetadataExample(), 0, DEFAULT_FETCH_SIZE);
 		return convertStructures(structures);
 	}
@@ -200,7 +200,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		List<org.opensrp.domain.postgres.Location> locations = locationMetadataMapper
+		List<Location> locations = locationMetadataMapper
 				.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
@@ -210,7 +210,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andParentIdEqualTo(parentId)
 				.andServerVersionGreaterThanOrEqualTo(serverVersion);
-		List<org.opensrp.domain.postgres.Structure> locations = structureMetadataMapper
+		List<Structure> locations = structureMetadataMapper
 				.selectMany(structureMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convertStructures(locations);
 	}
@@ -220,7 +220,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionEqualTo(0l);
 		locationMetadataExample.or(locationMetadataExample.createCriteria().andServerVersionIsNull());
-		List<org.opensrp.domain.postgres.Location> locations = locationMetadataMapper
+		List<Location> locations = locationMetadataMapper
 				.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
@@ -230,7 +230,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andServerVersionEqualTo(0l);
 		structureMetadataExample.or(structureMetadataExample.createCriteria().andServerVersionIsNull());
-		List<org.opensrp.domain.postgres.Structure> locations = structureMetadataMapper
+		List<Structure> locations = structureMetadataMapper
 				.selectMany(structureMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convertStructures(locations);
 	}
@@ -245,13 +245,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		String identifier = uniqueId.toString();
 
 		if (entity.isJurisdiction()) {
-			org.opensrp.domain.postgres.Location pgEntity = locationMetadataMapper.findById(identifier);
+			Location pgEntity = locationMetadataMapper.findById(identifier);
 			if (pgEntity == null) {
 				return null;
 			}
 			return pgEntity.getId();
 		} else {
-			org.opensrp.domain.postgres.Structure pgEntity = structureMetadataMapper.findById(identifier);
+			Structure pgEntity = structureMetadataMapper.findById(identifier);
 			if (pgEntity == null) {
 				return null;
 			}
@@ -290,7 +290,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		}
 
 		List<PhysicalLocation> convertedLocations = new ArrayList<>();
-		for (org.opensrp.domain.postgres.Location location : locations) {
+		for (Location location : locations) {
 			PhysicalLocation convertedLocation = convert(location);
 			if (convertedLocation != null) {
 				convertedLocations.add(convertedLocation);
@@ -306,7 +306,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		}
 
 		List<PhysicalLocation> convertedStructures = new ArrayList<>();
-		for (org.opensrp.domain.postgres.Structure structure : structures) {
+		for (Structure structure : structures) {
 			PhysicalLocation convertedStructure = convert(structure);
 			if (convertedStructure != null) {
 				convertedStructures.add(convertedStructure);
@@ -316,24 +316,24 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return convertedStructures;
 	}
 
-	private org.opensrp.domain.postgres.Location convert(PhysicalLocation physicalLocation, Long primaryKey) {
+	private Location convert(PhysicalLocation physicalLocation, Long primaryKey) {
 		if (physicalLocation == null) {
 			return null;
 		}
 
-		org.opensrp.domain.postgres.Location pgLocation = new org.opensrp.domain.postgres.Location();
+		Location pgLocation = new Location();
 		pgLocation.setId(primaryKey);
 		pgLocation.setJson(physicalLocation);
 
 		return pgLocation;
 	}
 
-	private org.opensrp.domain.postgres.Structure convertStructure(PhysicalLocation physicalLocation, Long primaryKey) {
+	private Structure convertStructure(PhysicalLocation physicalLocation, Long primaryKey) {
 		if (physicalLocation == null) {
 			return null;
 		}
 
-		org.opensrp.domain.postgres.Structure pgStructure = new org.opensrp.domain.postgres.Structure();
+		Structure pgStructure = new Structure();
 		pgStructure.setId(primaryKey);
 		pgStructure.setJson(physicalLocation);
 
