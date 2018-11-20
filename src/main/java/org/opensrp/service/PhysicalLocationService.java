@@ -64,6 +64,8 @@ public class PhysicalLocationService {
 	}
 
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {
+		if (StringUtils.isBlank(parentId))
+			throw new IllegalArgumentException("parentId not specified");
 		return locationRepository.findStructuresByParentAndServerVersion(parentId, serverVersion);
 	}
 

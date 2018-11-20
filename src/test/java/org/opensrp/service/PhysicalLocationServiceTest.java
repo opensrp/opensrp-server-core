@@ -308,6 +308,13 @@ public class PhysicalLocationServiceTest {
 
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void testFindStructuresByParentAndServerVersionWithoutParentID() {
+
+		locationService.findStructuresByParentAndServerVersion("", 15622112121L);
+
+	}
+
 	@Test
 	public void testAddServerVersion() {
 
