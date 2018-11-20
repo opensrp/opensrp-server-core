@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class LocationProperty {
 
-	enum PropertyStatus {
+	public enum PropertyStatus {
 		@SerializedName("Active")
 		ACTIVE,
 		@SerializedName("Inactive")

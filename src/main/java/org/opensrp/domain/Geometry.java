@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Geometry {
 
-	enum GeometryType {
+	public enum GeometryType {
 		@SerializedName("Point")
 		POINT, 
 		@SerializedName("Polygon")

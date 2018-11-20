@@ -9,22 +9,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.opensrp.domain.Campaign;
-import org.opensrp.util.DateTypeConverter;
-import org.opensrp.util.TaskDateTimeTypeConverter;
+import org.opensrp.domain.PhysicalLocation;
+import org.opensrp.util.DateTimeTypeConverter;
 import org.postgresql.util.PGobject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class CampaignTypeHandler extends BaseTypeHandler implements TypeHandler<Campaign> {
+public class LocationTypeHandler extends BaseTypeHandler implements TypeHandler<PhysicalLocation> {
 
-	private static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
-			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
+	private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
 
 	@Override
-	public void setParameter(PreparedStatement ps, int i, Campaign parameter, JdbcType jdbcType) throws SQLException {
+	public void setParameter(PreparedStatement ps, int i, PhysicalLocation parameter, JdbcType jdbcType)
+			throws SQLException {
 		try {
 			if (parameter != null) {
 				String jsonString = gson.toJson(parameter);
@@ -39,26 +38,26 @@ public class CampaignTypeHandler extends BaseTypeHandler implements TypeHandler<
 	}
 
 	@Override
-	public Campaign getResult(ResultSet rs, String columnName) throws SQLException {
+	public PhysicalLocation getResult(ResultSet rs, String columnName) throws SQLException {
 		return getResult(rs.getString(columnName));
 	}
 
 	@Override
-	public Campaign getResult(ResultSet rs, int columnIndex) throws SQLException {
+	public PhysicalLocation getResult(ResultSet rs, int columnIndex) throws SQLException {
 		return getResult(rs.getString(columnIndex));
 	}
 
 	@Override
-	public Campaign getResult(CallableStatement cs, int columnIndex) throws SQLException {
+	public PhysicalLocation getResult(CallableStatement cs, int columnIndex) throws SQLException {
 		return getResult(cs.getString(columnIndex));
 	}
 
-	private Campaign getResult(String jsonString) throws SQLException {
+	private PhysicalLocation getResult(String jsonString) throws SQLException {
 		try {
 			if (StringUtils.isBlank(jsonString)) {
 				return null;
 			}
-			return gson.fromJson(jsonString, Campaign.class);
+			return gson.fromJson(jsonString, PhysicalLocation.class);
 		} catch (Exception e) {
 			throw new SQLException(e);
 		}
