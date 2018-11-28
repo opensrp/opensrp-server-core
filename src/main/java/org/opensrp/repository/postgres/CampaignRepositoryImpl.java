@@ -12,6 +12,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomCampaignMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomCampaignMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> implements CampaignRepository {
@@ -36,6 +37,7 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 	}
 
 	@Override
+	@Transactional
 	public void add(Campaign entity) {
 		if (getUniqueField(entity) == null) {
 			return;
@@ -56,12 +58,13 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 		}
 
 		CampaignMetadata campaignMetadata = createMetadata(entity, pgCampaign.getId());
-	
+
 		campaignMetadataMapper.insertSelective(campaignMetadata);
 
 	}
 
 	@Override
+	@Transactional
 	public void update(Campaign entity) {
 		if (getUniqueField(entity) == null) {
 			return;
@@ -107,6 +110,7 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 	}
 
 	@Override
+	@Transactional
 	public void safeRemove(Campaign entity) {
 		if (entity == null) {
 			return;

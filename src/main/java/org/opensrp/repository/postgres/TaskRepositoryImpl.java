@@ -12,6 +12,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomTaskMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomTaskMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements TaskRepository {
@@ -36,6 +37,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
+	@Transactional
 	public void add(Task entity) {
 		if (getUniqueField(entity) == null) {
 			return;
@@ -56,12 +58,13 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		}
 
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
-		
+
 		taskMetadataMapper.insertSelective(taskMetadata);
 
 	}
 
 	@Override
+	@Transactional
 	public void update(Task entity) {
 		if (getUniqueField(entity) == null) {
 			return;
@@ -118,6 +121,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
+	@Transactional
 	public void safeRemove(Task entity) {
 		if (entity == null) {
 			return;
