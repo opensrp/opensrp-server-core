@@ -1,6 +1,8 @@
 package org.opensrp.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -70,10 +72,17 @@ public class TaskService {
 		return taskRepository.getTasksByCampaignAndGroup(campaign, group, serverVersion);
 	}
 
-	public void saveTasks(List<Task> tasks) {
+	public Set<String> saveTasks(List<Task> tasks) {
+		Set<String> tasksWithErrors = new HashSet<>();
 		for (Task task : tasks) {
-			addOrUpdateTask(task);
+			try {
+				addOrUpdateTask(task);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				tasksWithErrors.add(task.getIdentifier());
+			}
 		}
+		return tasksWithErrors;
 	}
 
 	public void addServerVersion() {

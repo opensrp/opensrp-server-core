@@ -1,6 +1,8 @@
 package org.opensrp.service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.opensrp.domain.PhysicalLocation;
@@ -97,11 +99,18 @@ public class PhysicalLocationService {
 		}
 	}
 
-	public void saveLocations(List<PhysicalLocation> locations, boolean isJurisdiction) {
+	public Set<String> saveLocations(List<PhysicalLocation> locations, boolean isJurisdiction) {
+		Set<String> locationsWithErrors = new HashSet<>();
 		for (PhysicalLocation location : locations) {
-			location.setJurisdiction(isJurisdiction);
-			addOrUpdate(location);
+			try {
+				location.setJurisdiction(isJurisdiction);
+				addOrUpdate(location);
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+				locationsWithErrors.add(location.getId());
+			}
 		}
+		return locationsWithErrors;
 
 	}
 
