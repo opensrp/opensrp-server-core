@@ -17,6 +17,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation> implements LocationRepository {
@@ -44,6 +45,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
+	@Transactional
 	public void add(PhysicalLocation entity) {
 		if (getUniqueField(entity) == null) {
 			return;
@@ -97,6 +99,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
+	@Transactional
 	public void update(PhysicalLocation entity) {
 		if (getUniqueField(entity) == null) {
 			return;
@@ -151,19 +154,20 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 	@Override
 	public List<PhysicalLocation> getAll() {
-		List<Location> locations = locationMetadataMapper
-				.selectMany(new LocationMetadataExample(), 0, DEFAULT_FETCH_SIZE);
+		List<Location> locations = locationMetadataMapper.selectMany(new LocationMetadataExample(), 0,
+				DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
 
 	@Override
 	public List<PhysicalLocation> getAllStructures() {
-		List<Structure> structures = structureMetadataMapper
-				.selectMany(new StructureMetadataExample(), 0, DEFAULT_FETCH_SIZE);
+		List<Structure> structures = structureMetadataMapper.selectMany(new StructureMetadataExample(), 0,
+				DEFAULT_FETCH_SIZE);
 		return convertStructures(structures);
 	}
 
 	@Override
+	@Transactional
 	public void safeRemove(PhysicalLocation entity) {
 		if (entity == null) {
 			return;
@@ -200,8 +204,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		List<Location> locations = locationMetadataMapper
-				.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
+		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
 
@@ -210,8 +213,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andParentIdEqualTo(parentId)
 				.andServerVersionGreaterThanOrEqualTo(serverVersion);
-		List<Structure> locations = structureMetadataMapper
-				.selectMany(structureMetadataExample, 0, DEFAULT_FETCH_SIZE);
+		List<Structure> locations = structureMetadataMapper.selectMany(structureMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convertStructures(locations);
 	}
 
@@ -220,8 +222,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionEqualTo(0l);
 		locationMetadataExample.or(locationMetadataExample.createCriteria().andServerVersionIsNull());
-		List<Location> locations = locationMetadataMapper
-				.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
+		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
 
@@ -230,8 +231,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andServerVersionEqualTo(0l);
 		structureMetadataExample.or(structureMetadataExample.createCriteria().andServerVersionIsNull());
-		List<Structure> locations = structureMetadataMapper
-				.selectMany(structureMetadataExample, 0, DEFAULT_FETCH_SIZE);
+		List<Structure> locations = structureMetadataMapper.selectMany(structureMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convertStructures(locations);
 	}
 
@@ -344,10 +344,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		LocationMetadata locationMetadata = new LocationMetadata();
 		locationMetadata.setLocationId(id);
 		locationMetadata.setGeojsonId(entity.getId());
-		locationMetadata.setParentId(entity.getProperties().getParentId());
-		locationMetadata.setUuid(entity.getProperties().getUid());
-		locationMetadata.setType(entity.getProperties().getType());
-		locationMetadata.setStatus(entity.getProperties().getStatus().name());
+		if (entity.getProperties() != null) {
+			locationMetadata.setParentId(entity.getProperties().getParentId());
+			locationMetadata.setUuid(entity.getProperties().getUid());
+			locationMetadata.setType(entity.getProperties().getType());
+			if (entity.getProperties().getStatus() != null) {
+				locationMetadata.setStatus(entity.getProperties().getStatus().name());
+			}
+		}
 		locationMetadata.setServerVersion(entity.getServerVersion());
 		return locationMetadata;
 	}
@@ -356,10 +360,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		StructureMetadata structureMetadata = new StructureMetadata();
 		structureMetadata.setStructureId(id);
 		structureMetadata.setGeojsonId(entity.getId());
-		structureMetadata.setParentId(entity.getProperties().getParentId());
-		structureMetadata.setUuid(entity.getProperties().getUid());
-		structureMetadata.setType(entity.getProperties().getType());
-		structureMetadata.setStatus(entity.getProperties().getStatus().name());
+		if (entity.getProperties() != null) {
+			structureMetadata.setParentId(entity.getProperties().getParentId());
+			structureMetadata.setUuid(entity.getProperties().getUid());
+			structureMetadata.setType(entity.getProperties().getType());
+			if (entity.getProperties().getStatus() != null) {
+				structureMetadata.setStatus(entity.getProperties().getStatus().name());
+			}
+		}
 		structureMetadata.setServerVersion(entity.getServerVersion());
 		return structureMetadata;
 	}
