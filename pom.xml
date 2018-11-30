@@ -6,7 +6,7 @@
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
 
-	<version>1.0.4-SNAPSHOT</version>
+	<version>1.0.5-SNAPSHOT</version>
 
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
