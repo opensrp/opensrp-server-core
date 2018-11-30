@@ -113,7 +113,7 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 	@Override
 	public List<Campaign> getCampaignsByIdentifiers(String identifiers) {
 		CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
-		campaignMetadataExample.createCriteria().andIdentifierIn(Arrays.asList(identifiers.split("\\s*,\\s*")));
+		campaignMetadataExample.createCriteria().andIdentifierIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(identifiers)));
 		List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
 				.selectMany(campaignMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(campaigns);

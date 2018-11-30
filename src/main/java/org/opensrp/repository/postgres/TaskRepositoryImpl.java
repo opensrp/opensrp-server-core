@@ -104,7 +104,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	@Override
 	public List<Task> getTasksByCampaignAndGroup(String campaign, String group, long serverVersion) {
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andCampaignIdentifierIn (Arrays.asList(campaign.split("\\s*,\\s*"))).andGroupIdentifierEqualTo(group)
+		taskMetadataExample.createCriteria().andCampaignIdentifierIn (Arrays.asList(org.apache.commons.lang.StringUtils.split(campaign))).andGroupIdentifierEqualTo(group)
 				.andServerVersionGreaterThanOrEqualTo(serverVersion);
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
 				DEFAULT_FETCH_SIZE);
