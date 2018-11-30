@@ -1,12 +1,15 @@
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Campaign;
+import org.opensrp.domain.Task;
 import org.opensrp.domain.postgres.CampaignMetadata;
 import org.opensrp.domain.postgres.CampaignMetadataExample;
+import org.opensrp.domain.postgres.TaskMetadataExample;
 import org.opensrp.repository.CampaignRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomCampaignMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomCampaignMetadataMapper;
@@ -101,6 +104,15 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 	public List<Campaign> getCampaignsByServerVersion(long serverVersion) {
 		CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
 		campaignMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
+				.selectMany(campaignMetadataExample, 0, DEFAULT_FETCH_SIZE);
+		return convert(campaigns);
+	}
+
+	@Override
+	public List<Campaign> getCampaignsByIdentifiers(String identifiers) {
+		CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
+		campaignMetadataExample.createCriteria().andIdentifierIn(Arrays.asList(identifiers.split("\\s*,\\s*")));
 		List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
 				.selectMany(campaignMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(campaigns);

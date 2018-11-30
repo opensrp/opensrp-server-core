@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -100,7 +101,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	@Override
 	public List<Task> getTasksByCampaignAndGroup(String campaign, String group, long serverVersion) {
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andCampaignIdentifierEqualTo(campaign).andGroupIdentifierEqualTo(group)
+		taskMetadataExample.createCriteria().andCampaignIdentifierIn (Arrays.asList(campaign.split("\\s*,\\s*"))).andGroupIdentifierEqualTo(group)
 				.andServerVersionGreaterThanOrEqualTo(serverVersion);
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
 				DEFAULT_FETCH_SIZE);
