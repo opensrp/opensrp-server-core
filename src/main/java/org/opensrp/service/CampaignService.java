@@ -56,10 +56,10 @@ public class CampaignService {
 			return null;
 		return campaignRepository.get(identifier);
 	}
-	public List<Campaign> getCampaignsByIdentifiers(String identifier) {
-		if (StringUtils.isBlank(identifier))
+	public List<Campaign> getCampaignsByIdentifiers(String identifiers) {
+		if (StringUtils.isBlank(identifiers))
 			return null;
-		return campaignRepository.getCampaignsByIdentifiers(identifier);
+		return campaignRepository.getCampaignsByIdentifiers(identifiers);
 	}
 
 	public List<Campaign> getCampaignsByServerVersion(long serverVersion) {
