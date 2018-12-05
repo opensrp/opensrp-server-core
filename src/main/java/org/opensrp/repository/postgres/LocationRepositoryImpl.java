@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.opensrp.domain.PhysicalLocation;
@@ -204,6 +205,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
+		return convert(locations);
+	}
+
+	@Override
+	public List<PhysicalLocation> findLocationsByNames(String locationNames) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria().andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames,",")));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
