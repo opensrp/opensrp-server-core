@@ -18,11 +18,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.opensrp.domain.Event;
 import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.PhysicalLocationTest;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.search.EventSearchBean;
+import org.opensrp.search.LocationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.gson.JsonArray;
@@ -284,6 +287,35 @@ public class PhysicalLocationServiceTest {
 		assertEquals("01_5", parentLocation.getProperties().getName());
 		assertEquals("41587456-b7c8-4c4e-b433-23a786f742fc", parentLocation.getProperties().getUid());
 		assertEquals("3734", parentLocation.getProperties().getCode());
+
+	}
+
+	@Test
+	public void testFindLocationsByNames() {
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("01_5");
+		List<PhysicalLocation> expected = new ArrayList<>();
+		expected.add(createLocation());
+		when(locationService.findLocationsByNames(locationSearchBean)).thenReturn(expected);
+		List<PhysicalLocation> locations = locationService.findLocationsByNames(locationSearchBean);
+		assertEquals(1, locations.size());
+		PhysicalLocation location = locations.get(0);
+		assertEquals("01_5", location.getProperties().getName());
+		assertEquals("Feature", location.getType());
+		assertEquals("3734", location.getId());
+		assertEquals(GeometryType.MULTI_POLYGON, location.getGeometry().getType());
+
+//		search with more than one name
+		locationSearchBean.setName("01_5,other_location_name");
+		when(locationService.findLocationsByNames(locationSearchBean)).thenReturn(expected);
+		locations = locationService.findLocationsByNames(locationSearchBean);
+		assertEquals(1, locations.size());
+		location = locations.get(0);
+		assertEquals("01_5", location.getProperties().getName());
+		assertEquals("Feature", location.getType());
+		assertEquals("3734", location.getId());
+		assertEquals(GeometryType.MULTI_POLYGON, location.getGeometry().getType());
+
 
 	}
 

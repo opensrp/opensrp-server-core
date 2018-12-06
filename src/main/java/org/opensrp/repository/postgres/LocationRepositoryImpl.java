@@ -4,18 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.PhysicalLocation;
-import org.opensrp.domain.postgres.Location;
-import org.opensrp.domain.postgres.LocationMetadata;
-import org.opensrp.domain.postgres.LocationMetadataExample;
-import org.opensrp.domain.postgres.Structure;
-import org.opensrp.domain.postgres.StructureMetadata;
-import org.opensrp.domain.postgres.StructureMetadataExample;
+import org.opensrp.domain.postgres.*;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
+import org.opensrp.search.EventSearchBean;
+import org.opensrp.search.LocationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -210,13 +208,16 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public List<PhysicalLocation> findLocationsByNames(String locationNames) {
+	public List<PhysicalLocation> findLocationsByNames(LocationSearchBean locationSearchBean) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames,",")));
+		LocationMetadataExample.Criteria criteria = locationMetadataExample.createCriteria();
+		if (locationSearchBean.getName().contains(",")) {
+			String[] teamsArray = org.apache.commons.lang.StringUtils.split(locationSearchBean.getName(), ",");
+			criteria.andNameIn(Arrays.asList(teamsArray));
+		}
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
-
 	@Override
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
