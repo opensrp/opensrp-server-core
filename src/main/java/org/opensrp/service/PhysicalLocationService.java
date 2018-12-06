@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.repository.LocationRepository;
-import org.opensrp.search.EventSearchBean;
 import org.opensrp.search.LocationSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

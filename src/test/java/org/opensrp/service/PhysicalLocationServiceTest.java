@@ -18,13 +18,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.opensrp.domain.Event;
 import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.PhysicalLocationTest;
 import org.opensrp.repository.LocationRepository;
-import org.opensrp.search.EventSearchBean;
 import org.opensrp.search.LocationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 
