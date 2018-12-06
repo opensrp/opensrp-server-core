@@ -6,11 +6,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.joda.time.DateTime;
@@ -20,7 +18,10 @@ import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.PhysicalLocation;
+import org.opensrp.domain.PhysicalLocationTest;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.search.LocationSearchBean;
+import org.opensrp.service.PhysicalLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonArray;
@@ -405,6 +406,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		LocationProperty properties = new LocationProperty();
 		properties.setStatus(PropertyStatus.INACTIVE);
 		properties.setUid(uuid);
+		properties.setName("01_5");
 		physicalLocation.setProperties(properties);
 		return physicalLocation;
 
@@ -422,6 +424,24 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		properties.setUid(uuid);
 		physicalLocation.setProperties(properties);
 		return physicalLocation;
+	}
+
+
+	@Test
+	public void testFindLocationsByNames() {
+		locationRepository = mock(LocationRepository.class);
+		PhysicalLocation physicalLocation = createLocation(UUID.randomUUID().toString());
+		locationRepository.update(physicalLocation);
+		List<PhysicalLocation> physicalLocations = locationRepository.getAll();
+		assertEquals(1, physicalLocations.size());
+		for (PhysicalLocation location : physicalLocations) {
+			assertEquals("01_5", location.getProperties().getName());
+			assertTrue(location.isJurisdiction());
+		}
+
+
+
+
 	}
 
 }

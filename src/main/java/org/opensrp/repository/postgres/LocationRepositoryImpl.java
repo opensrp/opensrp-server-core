@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.postgres.*;
 import org.opensrp.repository.LocationRepository;
@@ -12,7 +11,6 @@ import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
-import org.opensrp.search.EventSearchBean;
 import org.opensrp.search.LocationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -358,6 +356,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			locationMetadata.setParentId(entity.getProperties().getParentId());
 			locationMetadata.setUuid(entity.getProperties().getUid());
 			locationMetadata.setType(entity.getProperties().getType());
+			locationMetadata.setName(entity.getProperties().getName());
 			if (entity.getProperties().getStatus() != null) {
 				locationMetadata.setStatus(entity.getProperties().getStatus().name());
 			}
@@ -374,6 +373,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			structureMetadata.setParentId(entity.getProperties().getParentId());
 			structureMetadata.setUuid(entity.getProperties().getUid());
 			structureMetadata.setType(entity.getProperties().getType());
+			structureMetadata.setName(entity.getProperties().getName());
 			if (entity.getProperties().getStatus() != null) {
 				structureMetadata.setStatus(entity.getProperties().getStatus().name());
 			}

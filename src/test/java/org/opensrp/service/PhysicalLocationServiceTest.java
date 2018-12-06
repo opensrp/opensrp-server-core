@@ -314,7 +314,6 @@ public class PhysicalLocationServiceTest {
 		assertEquals("3734", location.getId());
 		assertEquals(GeometryType.MULTI_POLYGON, location.getGeometry().getType());
 
-
 	}
 
 	@Test
@@ -398,6 +397,7 @@ public class PhysicalLocationServiceTest {
 		parentLocation.setJurisdiction(true);
 		return parentLocation;
 	}
+
 
 	private PhysicalLocation createStructure() {
 		return PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.structureJson, PhysicalLocation.class);
