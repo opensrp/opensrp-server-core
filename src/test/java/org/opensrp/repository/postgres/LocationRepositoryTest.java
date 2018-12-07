@@ -389,6 +389,8 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.update(location);
 
 		locations = locationRepository.findByEmptyServerVersion();
+		assertEquals(1,locations.size());
+		assertEquals("90397",locations.get(0).getId());
 
 	}
 
@@ -425,14 +427,24 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testFindLocationsByNames() {
-		locationRepository = mock(LocationRepository.class);
-		PhysicalLocation physicalLocation = createLocation(UUID.randomUUID().toString());
-		locationRepository.update(physicalLocation);
-		List<PhysicalLocation> physicalLocations = locationRepository.findLocationsByNames("01_5,other_location_name");
-		assertEquals(1, physicalLocations.size());
-		for (PhysicalLocation location : physicalLocations) {
-			assertEquals("01_5", location.getProperties().getName());
-			assertTrue(location.isJurisdiction());
-		}
+
+		List<PhysicalLocation> locations = locationRepository.findLocationsByNames("01_5");
+		assertTrue(locations.isEmpty());
+
+		PhysicalLocation location = locationRepository.getStructure("90397");
+		location.setServerVersion(null);
+		LocationProperty properties = location.getProperties();
+		properties.setName("01_5");
+		location.setProperties(properties);
+		locationRepository.update(location);
+
+		locations = locationRepository.findLocationsByNames("01_5");
+		assertEquals(1,locations.size());
+		assertEquals("01_5",locations.get(0).getProperties().getName());
+
+		locations = locationRepository.findLocationsByNames("01_5,other_location_name");
+		assertEquals(1,locations.size());
+		assertEquals("01_5",locations.get(0).getProperties().getName());
+
 	}
 }
