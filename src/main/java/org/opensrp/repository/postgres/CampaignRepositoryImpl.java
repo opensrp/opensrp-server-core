@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -104,6 +105,15 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 	public List<Campaign> getCampaignsByServerVersion(long serverVersion) {
 		CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
 		campaignMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
+				.selectMany(campaignMetadataExample, 0, DEFAULT_FETCH_SIZE);
+		return convert(campaigns);
+	}
+
+	@Override
+	public List<Campaign> getCampaignsByIdentifiers(String identifiers) {
+		CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
+		campaignMetadataExample.createCriteria().andIdentifierIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(identifiers,",")));
 		List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
 				.selectMany(campaignMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(campaigns);
