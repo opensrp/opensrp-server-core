@@ -447,6 +447,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		PhysicalLocation parentLocation = gson.fromJson(parentJson, PhysicalLocation.class);
 		LocationProperty locationProperty = parentLocation.getProperties();
 		locationProperty.setName("01_5");
+		parentLocation.setProperties(locationProperty);
 		parentLocation.setServerVersion(null);
 		locationRepository.add(parentLocation);
 
