@@ -385,6 +385,10 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 		locations = locationRepository.findByEmptyServerVersion();
 
+		assertEquals(1,locations.size());
+		assertEquals("3734",locations.get(0).getId());
+
+
 	}
 
 	@Test
@@ -397,7 +401,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		location.setServerVersion(null);
 		locationRepository.update(location);
 
-		locations = locationRepository.findByEmptyServerVersion();
+		locations = locationRepository.findStructuresByEmptyServerVersion();
 		assertEquals(1,locations.size());
 		assertEquals("90397",locations.get(0).getId());
 
@@ -442,7 +446,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 		PhysicalLocation parentLocation = gson.fromJson(parentJson, PhysicalLocation.class);
 		parentLocation.setServerVersion(null);
-		locationRepository.add(parentLocation);
+		locationRepository.update(parentLocation);
 
 		locations = locationRepository.findLocationsByNames("01_5");
 		assertEquals(1,locations.size());
