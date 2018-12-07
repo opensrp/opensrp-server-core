@@ -65,8 +65,8 @@ public class PhysicalLocationService {
 		return locationRepository.findLocationsByServerVersion(serverVersion);
 	}
 
-	public List<PhysicalLocation> findLocationsByNames(String locationNames) {
-		return locationRepository.findLocationsByNames(locationNames);
+	public List<PhysicalLocation> findLocationsByNames(String locationNames, long serverVersion) {
+		return locationRepository.findLocationsByNames(locationNames, serverVersion);
 	}
 
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {

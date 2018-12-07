@@ -441,18 +441,18 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindLocationsByNames() {
 
-		List<PhysicalLocation> locations = locationRepository.findLocationsByNames("01_5");
+		List<PhysicalLocation> locations = locationRepository.findLocationsByNames("01_5",0l);
 		assertTrue(locations.isEmpty());
 
 		PhysicalLocation parentLocation = gson.fromJson(parentJson, PhysicalLocation.class);
 		parentLocation.setServerVersion(null);
 		locationRepository.update(parentLocation);
 
-		locations = locationRepository.findLocationsByNames("01_5");
+		locations = locationRepository.findLocationsByNames("01_5",0l);
 		assertEquals(1,locations.size());
 		assertEquals("01_5",locations.get(0).getProperties().getName());
 
-		locations = locationRepository.findLocationsByNames("01_5,other_location_name");
+		locations = locationRepository.findLocationsByNames("01_5,other_location_name",0l);
 		assertEquals(1,locations.size());
 		assertEquals("01_5",locations.get(0).getProperties().getName());
 
