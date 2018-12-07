@@ -11,7 +11,6 @@ import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
-import org.opensrp.search.LocationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -206,16 +205,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public List<PhysicalLocation> findLocationsByNames(LocationSearchBean locationSearchBean) {
+	public List<PhysicalLocation> findLocationsByNames(String locationNames) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		LocationMetadataExample.Criteria criteria = locationMetadataExample.createCriteria();
-		if (locationSearchBean.getName().contains(",")) {
-			String[] teamsArray = org.apache.commons.lang.StringUtils.split(locationSearchBean.getName(), ",");
-			criteria.andNameIn(Arrays.asList(teamsArray));
-		}
+		locationMetadataExample.createCriteria().andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames,",")));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
+
 	@Override
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();

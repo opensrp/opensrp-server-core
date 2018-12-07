@@ -3,8 +3,6 @@ package org.opensrp.repository;
 import java.util.List;
 
 import org.opensrp.domain.PhysicalLocation;
-import org.opensrp.search.EventSearchBean;
-import org.opensrp.search.LocationSearchBean;
 
 public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 
@@ -12,7 +10,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 
 	List<PhysicalLocation> findLocationsByServerVersion(long serverVersion);
 
-	List<PhysicalLocation> findLocationsByNames(LocationSearchBean locationSearchBean);
+	List<PhysicalLocation> findLocationsByNames(String locationNames);
 
 	List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion);
 

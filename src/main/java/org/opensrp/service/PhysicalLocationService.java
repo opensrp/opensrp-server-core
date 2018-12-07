@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.repository.LocationRepository;
-import org.opensrp.search.LocationSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,8 +65,8 @@ public class PhysicalLocationService {
 		return locationRepository.findLocationsByServerVersion(serverVersion);
 	}
 
-	public List<PhysicalLocation> findLocationsByNames(LocationSearchBean locationSearchBean) {
-		return locationRepository.findLocationsByNames(locationSearchBean);
+	public List<PhysicalLocation> findLocationsByNames(String locationNames) {
+		return locationRepository.findLocationsByNames(locationNames);
 	}
 
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {

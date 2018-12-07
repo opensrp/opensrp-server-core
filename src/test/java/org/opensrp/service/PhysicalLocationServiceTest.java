@@ -23,7 +23,6 @@ import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.PhysicalLocationTest;
 import org.opensrp.repository.LocationRepository;
-import org.opensrp.search.LocationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.gson.JsonArray;
@@ -290,12 +289,11 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testFindLocationsByNames() {
-		LocationSearchBean locationSearchBean = new LocationSearchBean();
-		locationSearchBean.setName("01_5");
+		String locationNames="01_5";
 		List<PhysicalLocation> expected = new ArrayList<>();
 		expected.add(createLocation());
-		when(locationService.findLocationsByNames(locationSearchBean)).thenReturn(expected);
-		List<PhysicalLocation> locations = locationService.findLocationsByNames(locationSearchBean);
+		when(locationService.findLocationsByNames(locationNames)).thenReturn(expected);
+		List<PhysicalLocation> locations = locationService.findLocationsByNames(locationNames);
 		assertEquals(1, locations.size());
 		PhysicalLocation location = locations.get(0);
 		assertEquals("01_5", location.getProperties().getName());
@@ -304,9 +302,9 @@ public class PhysicalLocationServiceTest {
 		assertEquals(GeometryType.MULTI_POLYGON, location.getGeometry().getType());
 
 //		search with more than one name
-		locationSearchBean.setName("01_5,other_location_name");
-		when(locationService.findLocationsByNames(locationSearchBean)).thenReturn(expected);
-		locations = locationService.findLocationsByNames(locationSearchBean);
+		locationNames ="01_5,other_location_name";
+		when(locationService.findLocationsByNames(locationNames)).thenReturn(expected);
+		locations = locationService.findLocationsByNames(locationNames);
 		assertEquals(1, locations.size());
 		location = locations.get(0);
 		assertEquals("01_5", location.getProperties().getName());

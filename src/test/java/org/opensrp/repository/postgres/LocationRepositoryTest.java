@@ -18,10 +18,7 @@ import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.PhysicalLocation;
-import org.opensrp.domain.PhysicalLocationTest;
 import org.opensrp.repository.LocationRepository;
-import org.opensrp.search.LocationSearchBean;
-import org.opensrp.service.PhysicalLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonArray;
@@ -426,22 +423,16 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		return physicalLocation;
 	}
 
-
 	@Test
 	public void testFindLocationsByNames() {
 		locationRepository = mock(LocationRepository.class);
 		PhysicalLocation physicalLocation = createLocation(UUID.randomUUID().toString());
 		locationRepository.update(physicalLocation);
-		List<PhysicalLocation> physicalLocations = locationRepository.getAll();
+		List<PhysicalLocation> physicalLocations = locationRepository.findLocationsByNames("01_5,other_location_name");
 		assertEquals(1, physicalLocations.size());
 		for (PhysicalLocation location : physicalLocations) {
 			assertEquals("01_5", location.getProperties().getName());
 			assertTrue(location.isJurisdiction());
 		}
-
-
-
-
 	}
-
 }
