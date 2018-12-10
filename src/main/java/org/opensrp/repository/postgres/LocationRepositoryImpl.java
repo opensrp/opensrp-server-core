@@ -1,15 +1,11 @@
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.opensrp.domain.PhysicalLocation;
-import org.opensrp.domain.postgres.Location;
-import org.opensrp.domain.postgres.LocationMetadata;
-import org.opensrp.domain.postgres.LocationMetadataExample;
-import org.opensrp.domain.postgres.Structure;
-import org.opensrp.domain.postgres.StructureMetadata;
-import org.opensrp.domain.postgres.StructureMetadataExample;
+import org.opensrp.domain.postgres.*;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
@@ -209,6 +205,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
+	public List<PhysicalLocation> findLocationsByNames(String locationNames, long serverVersion) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria().andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames,","))).andServerVersionGreaterThanOrEqualTo(serverVersion);
+		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
+		return convert(locations);
+	}
+
+	@Override
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andParentIdEqualTo(parentId)
@@ -348,6 +352,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			locationMetadata.setParentId(entity.getProperties().getParentId());
 			locationMetadata.setUuid(entity.getProperties().getUid());
 			locationMetadata.setType(entity.getProperties().getType());
+			locationMetadata.setName(entity.getProperties().getName());
 			if (entity.getProperties().getStatus() != null) {
 				locationMetadata.setStatus(entity.getProperties().getStatus().name());
 			}
@@ -364,6 +369,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			structureMetadata.setParentId(entity.getProperties().getParentId());
 			structureMetadata.setUuid(entity.getProperties().getUid());
 			structureMetadata.setType(entity.getProperties().getType());
+			structureMetadata.setName(entity.getProperties().getName());
 			if (entity.getProperties().getStatus() != null) {
 				structureMetadata.setStatus(entity.getProperties().getStatus().name());
 			}

@@ -288,6 +288,38 @@ public class PhysicalLocationServiceTest {
 	}
 
 	@Test
+	public void testFindLocationsByNames() {
+		String locationNames="01_5";
+		List<PhysicalLocation> expected = new ArrayList<>();
+		List<PhysicalLocation> locations;
+
+		locations = locationService.findLocationsByNames(locationNames,0l);
+		assertEquals(0, locations.size());
+
+		expected.add(createLocation());
+		when(locationService.findLocationsByNames(locationNames, 0l)).thenReturn(expected);
+		locations = locationService.findLocationsByNames(locationNames,0l);
+		assertEquals(1, locations.size());
+		PhysicalLocation location = locations.get(0);
+		assertEquals("01_5", location.getProperties().getName());
+		assertEquals("Feature", location.getType());
+		assertEquals("3734", location.getId());
+		assertEquals(GeometryType.MULTI_POLYGON, location.getGeometry().getType());
+
+//		search with more than one name
+		locationNames ="01_5,other_location_name";
+		when(locationService.findLocationsByNames(locationNames,0l)).thenReturn(expected);
+		locations = locationService.findLocationsByNames(locationNames,0l);
+		assertEquals(1, locations.size());
+		location = locations.get(0);
+		assertEquals("01_5", location.getProperties().getName());
+		assertEquals("Feature", location.getType());
+		assertEquals("3734", location.getId());
+		assertEquals(GeometryType.MULTI_POLYGON, location.getGeometry().getType());
+
+	}
+
+	@Test
 	public void testFindStructuresByParentAndServerVersion() {
 
 		List<PhysicalLocation> expected = new ArrayList<>();
@@ -368,6 +400,7 @@ public class PhysicalLocationServiceTest {
 		parentLocation.setJurisdiction(true);
 		return parentLocation;
 	}
+
 
 	private PhysicalLocation createStructure() {
 		return PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.structureJson, PhysicalLocation.class);
