@@ -18,7 +18,6 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.opensrp.domain.Geometry;
 import org.opensrp.domain.Geometry.GeometryType;
-import org.opensrp.domain.Location;
 import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.PhysicalLocation;
