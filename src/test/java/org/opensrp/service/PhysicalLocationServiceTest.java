@@ -291,9 +291,14 @@ public class PhysicalLocationServiceTest {
 	public void testFindLocationsByNames() {
 		String locationNames="01_5";
 		List<PhysicalLocation> expected = new ArrayList<>();
+		List<PhysicalLocation> locations;
+
+		locations = locationService.findLocationsByNames(locationNames,0l);
+		assertEquals(0, locations.size());
+
 		expected.add(createLocation());
 		when(locationService.findLocationsByNames(locationNames, 0l)).thenReturn(expected);
-		List<PhysicalLocation> locations = locationService.findLocationsByNames(locationNames,0l);
+		locations = locationService.findLocationsByNames(locationNames,0l);
 		assertEquals(1, locations.size());
 		PhysicalLocation location = locations.get(0);
 		assertEquals("01_5", location.getProperties().getName());
