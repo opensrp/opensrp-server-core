@@ -213,9 +213,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {
+	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentIds, long serverVersion) {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
-		structureMetadataExample.createCriteria().andParentIdEqualTo(parentId)
+		structureMetadataExample.createCriteria().andParentIdIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(parentIds,",")))
 				.andServerVersionGreaterThanOrEqualTo(serverVersion);
 		List<Structure> locations = structureMetadataMapper.selectMany(structureMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convertStructures(locations);
