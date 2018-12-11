@@ -372,6 +372,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 		locations = locationRepository.findStructuresByParentAndServerVersion("3734", 0l);
 		assertTrue(locations.isEmpty());
+
+		locations = locationRepository.findStructuresByParentAndServerVersion("3734,001", 1542376382851l);
+		assertEquals(1, locations.size());
+		assertEquals("90397", locations.get(0).getId());
+		assertEquals("3734", locations.get(0).getProperties().getParentId());
 	}
 
 	@Test

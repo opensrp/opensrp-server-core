@@ -338,6 +338,16 @@ public class PhysicalLocationServiceTest {
 		assertEquals("21384443", structure.getProperties().getCode());
 		assertEquals("Residential Structure", structure.getProperties().getType());
 
+		when(locationRepository.findStructuresByParentAndServerVersion("3734,001", 15622112121L)).thenReturn(expected);
+		locations = locationService.findStructuresByParentAndServerVersion("3734,001", 15622112121L);
+		verify(locationRepository).findStructuresByParentAndServerVersion("3734,001", 15622112121L);
+		verifyNoMoreInteractions(locationRepository);
+		assertEquals(1, locations.size());
+		structure = locations.get(0);
+		assertEquals("41587456-b7c8-4c4e-b433-23a786f742fc", structure.getProperties().getUid());
+		assertEquals("21384443", structure.getProperties().getCode());
+		assertEquals("Residential Structure", structure.getProperties().getType());
+
 	}
 
 	@Test(expected = IllegalArgumentException.class)
