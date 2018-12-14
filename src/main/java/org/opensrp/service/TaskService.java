@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.json.JSONArray;
 import org.opensrp.domain.Task;
 import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
@@ -115,8 +116,8 @@ public class TaskService {
 		return null;
 	}
 
-	public Set<String> updateTaskStatus(List<TaskUpdate> taskUpdates) {
-		Set<String> updateTaskErrors = new HashSet<>();
+	public JSONArray updateTaskStatus(List<TaskUpdate> taskUpdates) {
+		JSONArray updateTaskErrors = new JSONArray();
 		for (TaskUpdate taskUpdate : taskUpdates) {
 			Task task = taskRepository.get(taskUpdate.getIdentifier());
 			try {
@@ -125,11 +126,10 @@ public class TaskService {
 					task.setStatus(fromString(taskUpdate.getStatus()));
 					task.setLastModified(new DateTime());
 					taskRepository.update(task);
-				}else
-				updateTaskErrors.add(task.getIdentifier());
+					updateTaskErrors.put(task.getIdentifier());
+				}
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
-				updateTaskErrors.add(task.getIdentifier());
 			}
 		}
 		return updateTaskErrors;
