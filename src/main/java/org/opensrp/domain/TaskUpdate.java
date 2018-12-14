@@ -1,12 +1,15 @@
 package org.opensrp.domain;
 
+import com.google.gson.annotations.SerializedName;
 
 public class TaskUpdate {
-
+	@SerializedName("identifier")
 	private String identifier;
 
+	@SerializedName("status")
 	private String status;
 
+	@SerializedName("businessStatus")
 	private String businessStatus;
 
 	public String getIdentifier() {
