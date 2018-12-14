@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -20,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.opensrp.domain.Task;
 import org.opensrp.domain.Task.TaskStatus;
+import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
 import org.opensrp.util.TaskDateTimeTypeConverter;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -174,6 +176,29 @@ public class TaskServiceTest {
 		return gson.fromJson(
 				"{\"identifier\":\"tsk11231jh22\",\"campaignIdentifier\":\"IRS_2018_S1\",\"groupIdentifier\":\"2018_IRS-3734{\",\"status\":\"Ready\",\"businessStatus\":\"Not Visited\",\"priority\":3,\"code\":\"IRS\",\"description\":\"Spray House\",\"focus\":\"IRS Visit\",\"for\":\"location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc\",\"executionStartDate\":\"2018-11-10T2200\",\"executionEndDate\":null,\"authoredOn\":\"2018-10-31T0700\",\"lastModified\":\"2018-10-31T0700\",\"owner\":\"demouser\",\"note\":[{\"authorString\":\"demouser\",\"time\":\"2018-01-01T0800\",\"text\":\"This should be assigned to patrick.\"}],\"serverVersion\":0}",
 				Task.class);
+
+	}
+
+
+	@Test
+	public void updateTaskStatus() {
+		Task task = initializeTask();
+		List<TaskUpdate> updates = new ArrayList<>();
+		TaskUpdate taskUpdate = new TaskUpdate();
+		taskUpdate.setIdentifier("tsk11231jh22");
+		taskUpdate.setBusinessStatus("Not Sprayable");
+		taskUpdate.setStatus(TaskStatus.COMPLETED.name());
+		updates.add(taskUpdate);
+
+		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
+		Set<String> errors = taskService.updateTaskStatus(updates);
+		assertEquals(0,errors.size());
+
+		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
+
+		assertEquals("Not Sprayable",task.getBusinessStatus());
+		assertEquals(TaskStatus.COMPLETED.name(),task.getStatus().name());
+
 
 	}
 

@@ -116,21 +116,22 @@ public class TaskService {
 	}
 
 	public Set<String> updateTaskStatus(List<TaskUpdate> taskUpdates) {
-		Set<String> updateTask = new HashSet<>();
+		Set<String> updateTaskErrors = new HashSet<>();
 		for (TaskUpdate taskUpdate : taskUpdates) {
+			Task task = taskRepository.get(taskUpdate.getIdentifier());
 			try {
-				Task task = taskRepository.get(taskUpdate.getIdentifier());
 				if (task != null && fromString(taskUpdate.getStatus())!=null) {
 					task.setBusinessStatus(taskUpdate.getBusinessStatus());
 					task.setStatus(fromString(taskUpdate.getStatus()));
 					task.setLastModified(new DateTime());
 					taskRepository.update(task);
-					updateTask.add(task.getIdentifier());
-				}
+				}else
+				updateTaskErrors.add(task.getIdentifier());
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
+				updateTaskErrors.add(task.getIdentifier());
 			}
 		}
-		return updateTask;
+		return updateTaskErrors;
 	}
 }
