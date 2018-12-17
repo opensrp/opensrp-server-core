@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.joda.time.DateTime;
+import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -191,8 +192,8 @@ public class TaskServiceTest {
 		updates.add(taskUpdate);
 
 		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
-		Set<String> errors = taskService.updateTaskStatus(updates);
-		assertEquals(0,errors.size());
+		JSONArray updatedTaskStatus = taskService.updateTaskStatus(updates);
+		assertEquals(1,updatedTaskStatus.length());
 
 		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
 
