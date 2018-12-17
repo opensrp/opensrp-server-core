@@ -174,29 +174,23 @@ public class TaskServiceTest {
 
 	@Test
 	public void updateTaskStatus() {
+
+		long now = System.currentTimeMillis();
 		Task task = initializeTask();
 		List<TaskUpdate> updates = new ArrayList<>();
 		TaskUpdate taskUpdate = new TaskUpdate();
 		taskUpdate.setIdentifier("tsk11231jh22");
 		taskUpdate.setBusinessStatus("Not Sprayable");
-		taskUpdate.setServerVersion(0l);
+		taskUpdate.setServerVersion(now);
 		taskUpdate.setStatus(TaskStatus.COMPLETED.name());
 		updates.add(taskUpdate);
-
 		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
-		List<String> updateTaskIds = taskService.updateTaskStatus(updates);
-		assertEquals(0,updateTaskIds.size());
-		taskUpdate.setServerVersion(1l);
-		updates.add(taskUpdate);
-		updateTaskIds = taskService.updateTaskStatus(updates);
+		taskService.updateTaskStatus(updates);
 
-		assertEquals(1,updateTaskIds.size());
-
-		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
-
-		assertEquals("Not Sprayable",task.getBusinessStatus());
-		assertEquals(TaskStatus.COMPLETED.name(),task.getStatus().name());
-
+		ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
+		verify(taskRepository).update(argumentCaptor.capture());
+		assertTrue(argumentCaptor.getValue().getServerVersion() == now);
+		assertTrue(argumentCaptor.getValue().getBusinessStatus().equalsIgnoreCase("Not Sprayable"));
 
 	}
 
