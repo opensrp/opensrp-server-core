@@ -3,6 +3,7 @@ package org.opensrp.domain;
 import com.google.gson.annotations.SerializedName;
 
 public class TaskUpdate {
+
 	@SerializedName("identifier")
 	private String identifier;
 
@@ -11,6 +12,9 @@ public class TaskUpdate {
 
 	@SerializedName("businessStatus")
 	private String businessStatus;
+
+	@SerializedName("serverVersion")
+	private Long serverVersion;
 
 	public String getIdentifier() {
 		return identifier;
@@ -34,6 +38,14 @@ public class TaskUpdate {
 
 	public void setBusinessStatus(String businessStatus) {
 		this.businessStatus = businessStatus;
+	}
+
+	public Long getServerVersion() {
+		return serverVersion;
+	}
+
+	public void setServerVersion(Long serverVersion) {
+		this.serverVersion = serverVersion;
 	}
 
 }

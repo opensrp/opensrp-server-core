@@ -179,11 +179,17 @@ public class TaskServiceTest {
 		TaskUpdate taskUpdate = new TaskUpdate();
 		taskUpdate.setIdentifier("tsk11231jh22");
 		taskUpdate.setBusinessStatus("Not Sprayable");
+		taskUpdate.setServerVersion(0l);
 		taskUpdate.setStatus(TaskStatus.COMPLETED.name());
 		updates.add(taskUpdate);
 
 		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
 		List<String> updateTaskIds = taskService.updateTaskStatus(updates);
+		assertEquals(0,updateTaskIds.size());
+		taskUpdate.setServerVersion(1l);
+		updates.add(taskUpdate);
+		updateTaskIds = taskService.updateTaskStatus(updates);
+
 		assertEquals(1,updateTaskIds.size());
 
 		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
