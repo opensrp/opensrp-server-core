@@ -1,12 +1,12 @@
 package org.opensrp.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.json.JSONArray;
 import org.opensrp.domain.Task;
 import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
@@ -116,8 +116,8 @@ public class TaskService {
 		return null;
 	}
 
-	public JSONArray updateTaskStatus(List<TaskUpdate> taskUpdates) {
-		JSONArray updateTaskErrors = new JSONArray();
+	public List<String> updateTaskStatus(List<TaskUpdate> taskUpdates) {
+		List<String> updatedTaskIds = new ArrayList<>();
 		for (TaskUpdate taskUpdate : taskUpdates) {
 			Task task = taskRepository.get(taskUpdate.getIdentifier());
 			try {
@@ -126,12 +126,12 @@ public class TaskService {
 					task.setStatus(fromString(taskUpdate.getStatus()));
 					task.setLastModified(new DateTime());
 					taskRepository.update(task);
-					updateTaskErrors.put(task.getIdentifier());
+					updatedTaskIds.add(task.getIdentifier());
 				}
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
 			}
 		}
-		return updateTaskErrors;
+		return updatedTaskIds;
 	}
 }

@@ -1,21 +1,8 @@
 package org.opensrp.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.joda.time.DateTime;
-import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,8 +14,12 @@ import org.opensrp.repository.TaskRepository;
 import org.opensrp.util.TaskDateTimeTypeConverter;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 public class TaskServiceTest {
@@ -192,8 +183,8 @@ public class TaskServiceTest {
 		updates.add(taskUpdate);
 
 		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
-		JSONArray updatedTaskStatus = taskService.updateTaskStatus(updates);
-		assertEquals(1,updatedTaskStatus.length());
+		List<String> updateTaskIds = taskService.updateTaskStatus(updates);
+		assertEquals(1,updateTaskIds.size());
 
 		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
 
