@@ -191,6 +191,23 @@ public class TaskServiceTest {
 		verify(taskRepository).update(argumentCaptor.capture());
 		assertEquals(now,argumentCaptor.getValue().getServerVersion().longValue());
 		assertEquals("Not Sprayable",argumentCaptor.getValue().getBusinessStatus());
+
+		assertEquals("tsk11231jh22", task.getIdentifier());
+		assertEquals("2018_IRS-3734{", task.getGroupIdentifier());
+		assertEquals(3, task.getPriority());
+		assertEquals("IRS", task.getCode());
+		assertEquals("Spray House", task.getDescription());
+		assertEquals("IRS Visit", task.getFocus());
+		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", task.getForEntity());
+		assertEquals("2018-11-10T2200", task.getExecutionStartDate().toString(dateFormat));
+		assertNull(task.getExecutionEndDate());
+		assertEquals("2018-10-31T0700", task.getAuthoredOn().toString(dateFormat));
+		assertEquals("2018-10-31T0700", task.getLastModified().toString(dateFormat));
+		assertEquals("demouser", task.getOwner());
+		assertEquals(1, task.getNotes().size());
+		assertEquals("demouser", task.getNotes().get(0).getAuthorString());
+		assertEquals("2018-01-01T0800", task.getNotes().get(0).getTime().toString(dateFormat));
+		assertEquals("This should be assigned to patrick.", task.getNotes().get(0).getText());
 	}
 
 }
