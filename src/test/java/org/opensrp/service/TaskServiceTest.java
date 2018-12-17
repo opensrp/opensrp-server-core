@@ -202,7 +202,6 @@ public class TaskServiceTest {
 		assertEquals("2018-11-10T2200", task.getExecutionStartDate().toString(dateFormat));
 		assertNull(task.getExecutionEndDate());
 		assertEquals("2018-10-31T0700", task.getAuthoredOn().toString(dateFormat));
-		assertEquals("2018-10-31T0700", task.getLastModified().toString(dateFormat));
 		assertEquals("demouser", task.getOwner());
 		assertEquals(1, task.getNotes().size());
 		assertEquals("demouser", task.getNotes().get(0).getAuthorString());
