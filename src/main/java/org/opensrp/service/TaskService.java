@@ -1,5 +1,6 @@
 package org.opensrp.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Task;
+import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,4 +107,32 @@ public class TaskService {
 		}
 	}
 
+	public static Task.TaskStatus fromString(String statusParam) {
+		for (Task.TaskStatus status : Task.TaskStatus.values()) {
+			if (status.name().equalsIgnoreCase(statusParam)) {
+				return status;
+			}
+		}
+		return null;
+	}
+
+	public List<String> updateTaskStatus(List<TaskUpdate> taskUpdates) {
+		List<String> updatedTaskIds = new ArrayList<>();
+		for (TaskUpdate taskUpdate : taskUpdates) {
+			Task task = taskRepository.get(taskUpdate.getIdentifier());
+			try {
+				if (task != null && fromString(taskUpdate.getStatus())!=null && taskUpdate.getServerVersion() > task.getServerVersion()) {
+					task.setBusinessStatus(taskUpdate.getBusinessStatus());
+					task.setStatus(fromString(taskUpdate.getStatus()));
+					task.setLastModified(new DateTime());
+					task.setServerVersion(taskUpdate.getServerVersion());
+					taskRepository.update(task);
+					updatedTaskIds.add(task.getIdentifier());
+				}
+			} catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
+		}
+		return updatedTaskIds;
+	}
 }
