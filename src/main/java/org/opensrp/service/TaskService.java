@@ -125,7 +125,6 @@ public class TaskService {
 					task.setBusinessStatus(taskUpdate.getBusinessStatus());
 					task.setStatus(fromString(taskUpdate.getStatus()));
 					task.setLastModified(new DateTime());
-					task.setServerVersion(taskUpdate.getServerVersion());
 					taskRepository.update(task);
 					updatedTaskIds.add(task.getIdentifier());
 				}
