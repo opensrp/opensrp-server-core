@@ -121,11 +121,10 @@ public class TaskService {
 		for (TaskUpdate taskUpdate : taskUpdates) {
 			Task task = taskRepository.get(taskUpdate.getIdentifier());
 			try {
-				if (task != null && fromString(taskUpdate.getStatus())!=null && taskUpdate.getServerVersion() > task.getServerVersion()) {
+				if (task != null && fromString(taskUpdate.getStatus())!=null && taskUpdate.getServerVersion() >= task.getServerVersion()) {
 					task.setBusinessStatus(taskUpdate.getBusinessStatus());
 					task.setStatus(fromString(taskUpdate.getStatus()));
 					task.setLastModified(new DateTime());
-					task.setServerVersion(taskUpdate.getServerVersion());
 					taskRepository.update(task);
 					updatedTaskIds.add(task.getIdentifier());
 				}
