@@ -121,12 +121,20 @@ public class TaskService {
 		for (TaskUpdate taskUpdate : taskUpdates) {
 			Task task = taskRepository.get(taskUpdate.getIdentifier());
 			try {
-				if (task != null && fromString(taskUpdate.getStatus())!=null && taskUpdate.getServerVersion() >= task.getServerVersion()) {
-					task.setBusinessStatus(taskUpdate.getBusinessStatus());
-					task.setStatus(fromString(taskUpdate.getStatus()));
-					task.setLastModified(new DateTime());
-					taskRepository.update(task);
-					updatedTaskIds.add(task.getIdentifier());
+				Task.TaskStatus status = fromString(taskUpdate.getStatus());
+				if (task != null && status != null) {
+					if (taskUpdate.getServerVersion() >= task.getServerVersion()) {
+						task.setBusinessStatus(taskUpdate.getBusinessStatus());
+						task.setStatus(status);
+						task.setLastModified(new DateTime());
+						taskRepository.update(task);
+						updatedTaskIds.add(task.getIdentifier());
+					} else {
+						logger.info("Ignoring update of task status for " + task.getIdentifier()
+								+ " task on server is more recent");
+						// mark task as updated so that client does not try to sync it again
+						updatedTaskIds.add(task.getIdentifier());
+					}
 				}
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
