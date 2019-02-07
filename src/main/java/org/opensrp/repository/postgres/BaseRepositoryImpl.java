@@ -13,6 +13,8 @@ public abstract class BaseRepositoryImpl<T> {
 	
 	public static String SERVER_VERSION = "server_version";
 	
+	public static String ASCENDING = "asc";
+	
 	protected static Logger logger = LoggerFactory.getLogger(BaseRepositoryImpl.class.toString());
 	
 	protected abstract Long retrievePrimaryKey(T t);
