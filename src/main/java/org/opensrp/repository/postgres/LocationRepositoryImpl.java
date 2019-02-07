@@ -222,6 +222,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		structureMetadataExample.createCriteria()
 				.andParentIdIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(parentIds, ",")))
 				.andServerVersionGreaterThanOrEqualTo(serverVersion);
+		structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<Structure> locations = structureMetadataMapper.selectMany(structureMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convertStructures(locations);
 	}
