@@ -40,8 +40,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return pgSetting;
 		}
 		
-		if (entity.getId() == null)
+		if (entity.getId() == null) {
 			entity.setId(UUID.randomUUID().toString());
+		}
+		
 		setRevision(entity);
 		
 		pgSetting = convert(entity, null);
@@ -149,7 +151,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		metadataExample.or(metadataExample.createCriteria().andTeamIdIsNull()
 		        .andServerVersionGreaterThanOrEqualTo(lastSyncedServerVersion));
 		metadataExample.setOrderByClause("server_version DESC");
-		// metadataExample.gr("server_version DESC");
 		return convert(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
 	}
 	
