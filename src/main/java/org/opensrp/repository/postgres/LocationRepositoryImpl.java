@@ -200,6 +200,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
@@ -207,7 +208,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<PhysicalLocation> findLocationsByNames(String locationNames, long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames,","))).andServerVersionGreaterThanOrEqualTo(serverVersion);
+		locationMetadataExample.createCriteria()
+				.andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames, ",")))
+				.andServerVersionGreaterThanOrEqualTo(serverVersion);
+		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
@@ -215,7 +219,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentIds, long serverVersion) {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
-		structureMetadataExample.createCriteria().andParentIdIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(parentIds,",")))
+		structureMetadataExample.createCriteria()
+				.andParentIdIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(parentIds, ",")))
 				.andServerVersionGreaterThanOrEqualTo(serverVersion);
 		List<Structure> locations = structureMetadataMapper.selectMany(structureMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convertStructures(locations);
