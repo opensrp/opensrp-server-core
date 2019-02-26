@@ -18,6 +18,9 @@ public class SettingConfiguration extends BaseDataObject {
 	private String teamId;
 	
 	@JsonProperty
+	private String team;
+	
+	@JsonProperty
 	private String providerId;
 	
 	@JsonProperty
@@ -29,6 +32,9 @@ public class SettingConfiguration extends BaseDataObject {
 	@JsonProperty
 	private String version;
 	
+	@JsonProperty
+	private String documentId;
+
 	@JsonProperty
 	private List<Setting> settings;
 	
@@ -48,6 +54,16 @@ public class SettingConfiguration extends BaseDataObject {
 		this.teamId = teamId;
 	}
 	
+	
+	public String getTeam() {
+		return team;
+	}
+
+	
+	public void setTeam(String team) {
+		this.team = team;
+	}
+
 	public String getProviderId() {
 		return providerId;
 	}
@@ -94,5 +110,15 @@ public class SettingConfiguration extends BaseDataObject {
 	
 	public void setSettings(List<Setting> settings) {
 		this.settings = settings;
+	}
+	
+	
+	public String getDocumentId() {
+		return documentId;
+	}
+
+	
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
 	}
 }

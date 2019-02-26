@@ -40,8 +40,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return pgSetting;
 		}
 		
-		if (entity.getId() == null) {
-			entity.setId(UUID.randomUUID().toString());
+		if (entity.getDocumentId() == null) {
+			entity.setDocumentId(UUID.randomUUID().toString());
 		}
 		
 		setRevision(entity);
@@ -189,7 +189,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (setting == null || setting.getJson() == null || !(setting.getJson() instanceof SettingConfiguration)) {
 			return null;
 		}
-		return (SettingConfiguration) setting.getJson();
+		SettingConfiguration settingConfiguration = (SettingConfiguration) setting.getJson();
+		settingConfiguration.setId(setting.getId().toString());
+		return settingConfiguration;
 	}
 	
 	private org.opensrp.domain.postgres.Settings convert(SettingConfiguration entity, Long id) {
@@ -220,26 +222,35 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	private SettingsMetadata createMetadata(SettingConfiguration entity, Long id) {
-		SettingsMetadata metadata = new SettingsMetadata();
-		metadata.setSettingsId(id);
-		metadata.setDocumentId(entity.getId());
-		metadata.setIdentifier(entity.getIdentifier());
-		metadata.setServerVersion(entity.getServerVersion());
-		return metadata;
+		
+		try {
+			
+			SettingsMetadata metadata = new SettingsMetadata();
+			metadata.setSettingsId(id);
+			metadata.setDocumentId(entity.getDocumentId() != null ? entity.getDocumentId() : UUID.randomUUID().toString());
+			metadata.setIdentifier(entity.getIdentifier());
+			metadata.setProviderId(entity.getProviderId());
+			metadata.setLocationId(entity.getLocationId());
+			metadata.setTeam(entity.getTeam());
+			metadata.setTeamId(entity.getTeamId());
+			
+			return metadata;
+		}
+		catch (Exception e) {
+			logger.error(e.getMessage(), e);
+			return null;
+		}
 	}
 	
 	@Override
 	public SettingsMetadata saveSetting(SettingConfiguration entity, SettingsMetadata metadata) {
-		if (entity == null || entity.getIdentifier() == null) {
+		if (entity == null || entity.getSettings() == null || entity.getIdentifier() == null) {
 			return null;
 		}
 		
-		if (entity.getId() == null) {
-			entity.setId(UUID.randomUUID().toString());
-		}
 		setRevision(entity);
 		
-		Settings settings = convert(entity, Long.valueOf(entity.getId()));
+		Settings settings = convert(entity, entity.getId() != null ? Long.valueOf(entity.getId()) : null);
 		if (settings == null) {
 			return null;
 		}
@@ -251,15 +262,16 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		
 		SettingsMetadata settingsMetadata = metadata != null ? metadata : createMetadata(entity, settings.getId());
-		settingsMetadata.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		
 		if (settingsMetadata != null) {
+			settingsMetadata.setServerVersion(Calendar.getInstance().getTimeInMillis());
 			
-			if (settingsMetadata.getId() != null) {
-				
-				settingMetadataMapper.updateByPrimaryKeySelective(settingsMetadata);
-			} else {
+			if (settingsMetadata.getId() == null) {
 				
 				settingMetadataMapper.insertSelective(settingsMetadata);
+			} else {
+				settingsMetadata.setServerVersion(null);
+				settingMetadataMapper.updateByPrimaryKey(settingsMetadata);
 			}
 		}
 		
@@ -273,12 +285,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return;
 		}
 		
-		if (retrievePrimaryKey(entity) != null) { // Event already added
+		if (retrievePrimaryKey(entity) != null) { // Setting already added
 			return;
 		}
 		
-		if (entity.getId() == null)
-			entity.setId(UUID.randomUUID().toString());
 		setRevision(entity);
 		
 		Settings settings = convert(entity, null);
@@ -302,6 +312,17 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	public SettingsMetadata getSettingMetadataByIdentifierAndTeamId(String identifier, String teamId) {
 		SettingsMetadataExample example = new SettingsMetadataExample();
 		example.createCriteria().andIdentifierEqualTo(identifier).andTeamIdEqualTo(teamId);
+		
+		List<SettingsMetadata> settingsMetadata = settingMetadataMapper.selectByExample(example);
+		
+		return !settingsMetadata.isEmpty() ? settingsMetadata.get(0) : null;
+		
+	}
+	
+	@Override
+	public SettingsMetadata getSettingMetadataByIdentifier(String identifier) {
+		SettingsMetadataExample example = new SettingsMetadataExample();
+		example.createCriteria().andIdentifierEqualTo(identifier);
 		
 		List<SettingsMetadata> settingsMetadata = settingMetadataMapper.selectByExample(example);
 		
