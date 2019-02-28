@@ -65,13 +65,7 @@ public class SettingRepositoryImpl extends CouchDbRepositorySupport<SettingConfi
 	public List<SettingConfiguration> findAllLatestSettingsByVersion(Long lastSyncedServerVersion, String t) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-	
-	@Override
-	public SettingsMetadata getSettingMetadataByIdentifierAndTeamId(String identifier, String teamId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	} 
 	
 	@Override
 	public Settings getSettingById(Long id) {
@@ -80,9 +74,9 @@ public class SettingRepositoryImpl extends CouchDbRepositorySupport<SettingConfi
 	}
 
 	@Override
-	public SettingsMetadata getSettingMetadataByIdentifier(String identifier) {
+	public SettingsMetadata getSettingMetadataByDocumentId(String documentId) {
 		// TODO Auto-generated method stub
 		return null;
-	}
+	} 
 	
 }

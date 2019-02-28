@@ -25,8 +25,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	private CustomSettingMetadataMapper settingMetadataMapper;
 	
 	@Override
-	public SettingConfiguration get(String id) {
-		return convert(settingMetadataMapper.selectByDocumentId(id));
+	public SettingConfiguration get(String documentId) {
+		return convert(settingMetadataMapper.selectByDocumentId(documentId));
 	}
 	
 	public Settings addSetting(SettingConfiguration entity) {
@@ -167,7 +167,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (getUniqueField(settingConfiguration) == null) {
 			return null;
 		}
-		String documentId = settingConfiguration.getId();
+		String documentId = settingConfiguration.getDocumentId();
 		
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		metadataExample.createCriteria().andDocumentIdEqualTo(documentId);
@@ -190,7 +190,15 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return null;
 		}
 		SettingConfiguration settingConfiguration = (SettingConfiguration) setting.getJson();
-		settingConfiguration.setId(setting.getId().toString());
+		
+		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
+		metadataExample.createCriteria().andSettingsIdEqualTo(setting.getId());
+		
+		SettingsMetadata settingMetadata = settingMetadataMapper.selectByExample(metadataExample).get(0);
+		settingConfiguration.setId(settingMetadata.getSettingsId().toString());
+		settingConfiguration.setDocumentId(settingMetadata.getDocumentId());
+		settingConfiguration.setServerVersion(settingMetadata.getServerVersion());
+		
 		return settingConfiguration;
 	}
 	
@@ -270,7 +278,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				
 				settingMetadataMapper.insertSelective(settingsMetadata);
 			} else {
-				settingsMetadata.setServerVersion(null);
 				settingMetadataMapper.updateByPrimaryKey(settingsMetadata);
 			}
 		}
@@ -285,44 +292,14 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return;
 		}
 		
-		if (retrievePrimaryKey(entity) != null) { // Setting already added
-			return;
-		}
-		
-		setRevision(entity);
-		
-		Settings settings = convert(entity, null);
-		if (settings == null) {
-			return;
-		}
-		
-		int rowsAffected = settingMapper.insertSelectiveAndSetId(settings);
-		if (rowsAffected < 1 || settings.getId() == null) {
-			return;
-		}
-		
-		SettingsMetadata settingsMetadata = createMetadata(entity, settings.getId());
-		if (settingsMetadata != null) {
-			settingMetadataMapper.insertSelective(settingsMetadata);
-		}
+		saveSetting(entity, null);
 		
 	}
 	
 	@Override
-	public SettingsMetadata getSettingMetadataByIdentifierAndTeamId(String identifier, String teamId) {
+	public SettingsMetadata getSettingMetadataByDocumentId(String documentId) {
 		SettingsMetadataExample example = new SettingsMetadataExample();
-		example.createCriteria().andIdentifierEqualTo(identifier).andTeamIdEqualTo(teamId);
-		
-		List<SettingsMetadata> settingsMetadata = settingMetadataMapper.selectByExample(example);
-		
-		return !settingsMetadata.isEmpty() ? settingsMetadata.get(0) : null;
-		
-	}
-	
-	@Override
-	public SettingsMetadata getSettingMetadataByIdentifier(String identifier) {
-		SettingsMetadataExample example = new SettingsMetadataExample();
-		example.createCriteria().andIdentifierEqualTo(identifier);
+		example.createCriteria().andDocumentIdEqualTo(documentId);
 		
 		List<SettingsMetadata> settingsMetadata = settingMetadataMapper.selectByExample(example);
 		
