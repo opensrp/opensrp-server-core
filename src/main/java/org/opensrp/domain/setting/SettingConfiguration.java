@@ -121,4 +121,6 @@ public class SettingConfiguration extends BaseDataObject {
 	public void setDocumentId(String documentId) {
 		this.documentId = documentId;
 	} 
+	
+	
 }

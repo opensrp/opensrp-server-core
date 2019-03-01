@@ -3,7 +3,6 @@ package org.opensrp.service;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.search.SettingSearchBean;
@@ -35,7 +34,7 @@ public class SettingService {
 	
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
 		return settingRepository.findSettings(settingQueryBean);
-	} 
+	}
 	
 	public void addServerVersion() {
 		try {
@@ -59,18 +58,14 @@ public class SettingService {
 		}
 	}
 	
-	public synchronized SettingsMetadata saveSetting(String jsonSettingConfiguration) {
+	public synchronized String saveSetting(String jsonSettingConfiguration) {
 		
 		SettingConfiguration settingConfigurations = gson.fromJson(jsonSettingConfiguration,
 		    new TypeToken<SettingConfiguration>() {}.getType());
 		
-		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis()); 
 		
-		SettingsMetadata metadata = settingConfigurations.getId() != null
-		        ? settingRepository.getSettingMetadataByDocumentId(settingConfigurations.getId())
-		        : null;
-		
-		if (metadata != null) {
+		if (settingConfigurations.getId() != null) {
 			
 			settingRepository.update(settingConfigurations);
 		} else {
@@ -78,7 +73,7 @@ public class SettingService {
 			settingRepository.add(settingConfigurations);
 		}
 		
-		return metadata;
+		return settingConfigurations.getIdentifier();
 		
 	}
 	
