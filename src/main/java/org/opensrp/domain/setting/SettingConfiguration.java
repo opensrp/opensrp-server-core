@@ -28,8 +28,7 @@ public class SettingConfiguration extends BaseDataObject {
 	
 	@JsonProperty
 	private String childLocationId;
-	
-	@JsonProperty
+	 
 	private String documentId;
 	
 	@JsonProperty

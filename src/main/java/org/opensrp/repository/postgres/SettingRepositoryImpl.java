@@ -240,7 +240,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		
 		Long id = retrievePrimaryKey(entity);
 		
-		if (id == null) { // Setting not exists
+		if (id != null) { // Setting already exists
 			return;
 		}
 		
