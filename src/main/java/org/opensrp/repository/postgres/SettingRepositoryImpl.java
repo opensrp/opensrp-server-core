@@ -1,10 +1,11 @@
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
+import org.opensrp.domain.Event;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.postgres.SettingsMetadataExample;
@@ -12,6 +13,7 @@ import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper;
+import org.opensrp.search.SettingSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -25,43 +27,14 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	private CustomSettingMetadataMapper settingMetadataMapper;
 	
 	@Override
-	public SettingConfiguration get(String documentId) {
-		return convert(settingMetadataMapper.selectByDocumentId(documentId));
-	}
-	
-	public Settings addSetting(SettingConfiguration entity) {
-		org.opensrp.domain.postgres.Settings pgSetting = null;
+	public SettingConfiguration get(String id) {
 		
-		if (entity == null || entity.getIdentifier() == null) {
-			return pgSetting;
+		if (StringUtils.isBlank(id)) {
+			return null;
 		}
+		org.opensrp.domain.postgres.Settings setting = settingMetadataMapper.selectByDocumentId(id);
 		
-		if (retrievePrimaryKey(entity) != null) { // Setting already added
-			return pgSetting;
-		}
-		
-		if (entity.getDocumentId() == null) {
-			entity.setDocumentId(UUID.randomUUID().toString());
-		}
-		
-		setRevision(entity);
-		
-		pgSetting = convert(entity, null);
-		if (pgSetting == null) {
-			return pgSetting;
-		}
-		
-		int rowsAffected = settingMapper.insertSelectiveAndSetId(pgSetting);
-		if (rowsAffected < 1 || pgSetting.getId() == null) {
-			return pgSetting;
-		}
-		
-		SettingsMetadata metadata = createMetadata(entity, pgSetting.getId());
-		if (metadata != null) {
-			settingMetadataMapper.insertSelective(metadata);
-		}
-		
-		return pgSetting;
+		return convert(setting);
 	}
 	
 	@Override
@@ -134,24 +107,36 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
-	public List<SettingConfiguration> findAllSettingsByVersion(Long lastSyncedServerVersion, String teamId) {
+	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) { 
+		
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
-		metadataExample.createCriteria().andTeamIdEqualTo(teamId)
-		        .andServerVersionGreaterThanOrEqualTo(lastSyncedServerVersion);
-		metadataExample.or(metadataExample.createCriteria().andTeamIdIsNull()
-		        .andServerVersionGreaterThanOrEqualTo(lastSyncedServerVersion));
+		org.opensrp.domain.postgres.SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
+		
+		if (StringUtils.isNotEmpty(settingQueryBean.getProviderId())) {
+			criteria.andProviderIdEqualTo(settingQueryBean.getProviderId());
+		}
+		if (StringUtils.isNotEmpty(settingQueryBean.getLocationId())) {
+			criteria.andLocationIdEqualTo(settingQueryBean.getLocationId());
+		}
+		if (StringUtils.isNotEmpty(settingQueryBean.getTeam())) {
+			criteria.andTeamEqualTo(settingQueryBean.getTeam());
+		}
+		if (StringUtils.isNotEmpty(settingQueryBean.getTeamId())) {
+			criteria.andTeamIdEqualTo(settingQueryBean.getTeamId());
+		}
+		if (settingQueryBean.getServerVersion() != null) {
+			criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
+		}
+		
+		metadataExample.or(metadataExample.createCriteria().andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull()
+		        .andLocationIdIsNull().andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion()));
+		
+		if (!criteria.isValid()) {
+			throw new IllegalArgumentException("Atleast one search filter must be specified");
+		}
+		
 		return convert(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
-	}
-	
-	@Override
-	public List<SettingConfiguration> findAllLatestSettingsByVersion(Long lastSyncedServerVersion, String teamId) {
-		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
-		metadataExample.createCriteria().andTeamIdEqualTo(teamId)
-		        .andServerVersionGreaterThanOrEqualTo(lastSyncedServerVersion);
-		metadataExample.or(metadataExample.createCriteria().andTeamIdIsNull()
-		        .andServerVersionGreaterThanOrEqualTo(lastSyncedServerVersion));
-		metadataExample.setOrderByClause("server_version DESC");
-		return convert(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
+		
 	}
 	
 	@Override
@@ -164,15 +149,18 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	protected Long retrievePrimaryKey(SettingConfiguration settingConfiguration) {
-		if (getUniqueField(settingConfiguration) == null) {
+		Object uniqueId = getUniqueField(settingConfiguration);
+		if (uniqueId == null) {
 			return null;
 		}
-		String documentId = settingConfiguration.getDocumentId();
+		
+		String documentId = uniqueId.toString();
 		
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		metadataExample.createCriteria().andDocumentIdEqualTo(documentId);
 		
 		org.opensrp.domain.postgres.Settings pgSetting = settingMetadataMapper.selectByDocumentId(documentId);
+		
 		if (pgSetting == null) {
 			return null;
 		}
@@ -181,25 +169,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	protected Object getUniqueField(SettingConfiguration settingConfiguration) {
-		return settingConfiguration == null ? null : settingConfiguration.getId();
-	}
-	
-	// private Methods
-	private SettingConfiguration convert(org.opensrp.domain.postgres.Settings setting) {
-		if (setting == null || setting.getJson() == null || !(setting.getJson() instanceof SettingConfiguration)) {
+		if (settingConfiguration == null) {
 			return null;
 		}
-		SettingConfiguration settingConfiguration = (SettingConfiguration) setting.getJson();
-		
-		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
-		metadataExample.createCriteria().andSettingsIdEqualTo(setting.getId());
-		
-		SettingsMetadata settingMetadata = settingMetadataMapper.selectByExample(metadataExample).get(0);
-		settingConfiguration.setId(settingMetadata.getSettingsId().toString());
-		settingConfiguration.setDocumentId(settingMetadata.getDocumentId());
-		settingConfiguration.setServerVersion(settingMetadata.getServerVersion());
-		
-		return settingConfiguration;
+		return settingConfiguration.getId();
 	}
 	
 	private org.opensrp.domain.postgres.Settings convert(SettingConfiguration entity, Long id) {
@@ -229,18 +202,26 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settingValues;
 	}
 	
+	private SettingConfiguration convert(org.opensrp.domain.postgres.Settings setting) {
+		if (setting == null || setting.getJson() == null) {
+			return null;
+		}
+		return (SettingConfiguration) setting.getJson();
+	}
+	
 	private SettingsMetadata createMetadata(SettingConfiguration entity, Long id) {
 		
 		try {
 			
 			SettingsMetadata metadata = new SettingsMetadata();
 			metadata.setSettingsId(id);
-			metadata.setDocumentId(entity.getDocumentId() != null ? entity.getDocumentId() : UUID.randomUUID().toString());
+			metadata.setDocumentId(entity.getId() != null ? entity.getId() : UUID.randomUUID().toString());
 			metadata.setIdentifier(entity.getIdentifier());
 			metadata.setProviderId(entity.getProviderId());
 			metadata.setLocationId(entity.getLocationId());
 			metadata.setTeam(entity.getTeam());
 			metadata.setTeamId(entity.getTeamId());
+			metadata.setServerVersion(entity.getServerVersion());
 			
 			return metadata;
 		}
@@ -251,48 +232,38 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
-	public SettingsMetadata saveSetting(SettingConfiguration entity, SettingsMetadata metadata) {
+	public void add(SettingConfiguration entity) {
+		
 		if (entity == null || entity.getSettings() == null || entity.getIdentifier() == null) {
-			return null;
+			return;
+		}
+		
+		Long id = retrievePrimaryKey(entity);
+		
+		if (id == null) { // Setting not exists
+			return;
+		}
+		
+		if (entity.getId() == null) {
+			entity.setId(UUID.randomUUID().toString());
 		}
 		
 		setRevision(entity);
 		
-		Settings settings = convert(entity, entity.getId() != null ? Long.valueOf(entity.getId()) : null);
+		Settings settings = convert(entity, id);
 		if (settings == null) {
-			return null;
-		}
-		
-		int rowsAffected = entity.getId() != null ? settingMapper.updateByPrimaryKeySelective(settings)
-		        : settingMapper.insertSelectiveAndSetId(settings);
-		if (rowsAffected < 1 || settings.getId() == null) {
-			return null;
-		}
-		
-		SettingsMetadata settingsMetadata = metadata != null ? metadata : createMetadata(entity, settings.getId());
-		
-		if (settingsMetadata != null) {
-			settingsMetadata.setServerVersion(Calendar.getInstance().getTimeInMillis());
-			
-			if (settingsMetadata.getId() == null) {
-				
-				settingMetadataMapper.insertSelective(settingsMetadata);
-			} else {
-				settingMetadataMapper.updateByPrimaryKey(settingsMetadata);
-			}
-		}
-		
-		return settingsMetadata;
-		
-	}
-	
-	@Override
-	public void add(SettingConfiguration entity) {
-		if (entity == null || entity.getIdentifier() == null) {
 			return;
 		}
 		
-		saveSetting(entity, null);
+		int rowsAffected = settingMapper.insertSelectiveAndSetId(settings);
+		if (rowsAffected < 1 || settings.getId() == null) {
+			return;
+		}
+		
+		SettingsMetadata settingsMetadata = createMetadata(entity, settings.getId());
+		if (settingsMetadata != null) {
+			settingMetadataMapper.insertSelective(settingsMetadata);
+		}
 		
 	}
 	

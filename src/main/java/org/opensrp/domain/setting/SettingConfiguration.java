@@ -30,10 +30,10 @@ public class SettingConfiguration extends BaseDataObject {
 	private String childLocationId;
 	
 	@JsonProperty
-	private String version;
+	private String documentId;
 	
 	@JsonProperty
-	private String documentId;
+	private String version; 
 
 	@JsonProperty
 	private List<Setting> settings;
@@ -111,7 +111,7 @@ public class SettingConfiguration extends BaseDataObject {
 	public void setSettings(List<Setting> settings) {
 		this.settings = settings;
 	}
-	
+
 	
 	public String getDocumentId() {
 		return documentId;
@@ -120,5 +120,5 @@ public class SettingConfiguration extends BaseDataObject {
 	
 	public void setDocumentId(String documentId) {
 		this.documentId = documentId;
-	}
+	} 
 }
