@@ -1,3 +1,4 @@
+
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
@@ -5,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.Event;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.postgres.SettingsMetadataExample;
@@ -32,7 +32,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (StringUtils.isBlank(id)) {
 			return null;
 		}
-		org.opensrp.domain.postgres.Settings setting = settingMetadataMapper.selectByDocumentId(id);
+		Settings setting = settingMetadataMapper.selectByDocumentId(id);
 		
 		return convert(setting);
 	}
@@ -51,7 +51,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		
 		setRevision(entity);
 		
-		org.opensrp.domain.postgres.Settings pgSetting = convert(entity, id);
+		Settings pgSetting = convert(entity, id);
 		
 		if (pgSetting == null) {
 			return;
@@ -107,10 +107,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
-	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) { 
+	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
 		
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
-		org.opensrp.domain.postgres.SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
+		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
 		
 		if (StringUtils.isNotEmpty(settingQueryBean.getProviderId())) {
 			criteria.andProviderIdEqualTo(settingQueryBean.getProviderId());
@@ -159,7 +159,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		metadataExample.createCriteria().andDocumentIdEqualTo(documentId);
 		
-		org.opensrp.domain.postgres.Settings pgSetting = settingMetadataMapper.selectByDocumentId(documentId);
+		Settings pgSetting = settingMetadataMapper.selectByDocumentId(documentId);
 		
 		if (pgSetting == null) {
 			return null;
@@ -175,25 +175,25 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settingConfiguration.getId();
 	}
 	
-	private org.opensrp.domain.postgres.Settings convert(SettingConfiguration entity, Long id) {
+	private Settings convert(SettingConfiguration entity, Long id) {
 		if (entity == null) {
 			return null;
 		}
 		
-		org.opensrp.domain.postgres.Settings pgSetting = new org.opensrp.domain.postgres.Settings();
+		Settings pgSetting = new Settings();
 		pgSetting.setId(id);
 		pgSetting.setJson(entity);
 		
 		return pgSetting;
 	}
 	
-	private List<SettingConfiguration> convert(List<org.opensrp.domain.postgres.Settings> settings) {
+	private List<SettingConfiguration> convert(List<Settings> settings) {
 		if (settings == null || settings.isEmpty()) {
 			return new ArrayList<>();
 		}
 		
 		List<SettingConfiguration> settingValues = new ArrayList<>();
-		for (org.opensrp.domain.postgres.Settings setting : settings) {
+		for (Settings setting : settings) {
 			SettingConfiguration convertedSetting = convert(setting);
 			if (convertedSetting != null) {
 				settingValues.add(convertedSetting);
@@ -202,7 +202,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settingValues;
 	}
 	
-	private SettingConfiguration convert(org.opensrp.domain.postgres.Settings setting) {
+	private SettingConfiguration convert(Settings setting) {
 		if (setting == null || setting.getJson() == null) {
 			return null;
 		}
