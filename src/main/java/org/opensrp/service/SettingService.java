@@ -63,11 +63,12 @@ public class SettingService {
 		SettingConfiguration settingConfigurations = gson.fromJson(jsonSettingConfiguration,
 		    new TypeToken<SettingConfiguration>() {}.getType());
 		
-		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis()); 
+		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		
-		if (settingConfigurations.getId() != null) {
+		if (settingConfigurations.getId() != null && settingRepository.get(settingConfigurations.getId()) != null) {
 			
 			settingRepository.update(settingConfigurations);
+			
 		} else {
 			
 			settingRepository.add(settingConfigurations);
