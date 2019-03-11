@@ -3,10 +3,9 @@ package org.opensrp.service;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.opensrp.domain.postgres.Settings;
-import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
+import org.opensrp.search.SettingSearchBean;
 import org.opensrp.util.DateTimeTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.ibm.icu.util.Calendar;
 
 @Service
 public class SettingService {
@@ -32,12 +32,8 @@ public class SettingService {
 		this.settingRepository = settingRepository;
 	}
 	
-	public List<SettingConfiguration> findSettingsByVersionAndTeamId(Long lastSyncedServerVersion, String teamId) {
-		return settingRepository.findAllSettingsByVersion(lastSyncedServerVersion, teamId);
-	}
-	
-	public List<SettingConfiguration> findLatestSettingsByVersionAndTeamId(Long lastSyncedServerVersion, String teamId) {
-		return settingRepository.findAllLatestSettingsByVersion(lastSyncedServerVersion, teamId);
+	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
+		return settingRepository.findSettings(settingQueryBean);
 	}
 	
 	public void addServerVersion() {
@@ -62,21 +58,24 @@ public class SettingService {
 		}
 	}
 	
-	public synchronized SettingsMetadata saveSetting(String jsonSettingConfiguration) {
+	public synchronized String saveSetting(String jsonSettingConfiguration) {
 		
 		SettingConfiguration settingConfigurations = gson.fromJson(jsonSettingConfiguration,
 		    new TypeToken<SettingConfiguration>() {}.getType());
 		
-		SettingsMetadata metadata = settingRepository.getSettingMetadataByIdentifierAndTeamId(settingConfigurations.getIdentifier(), settingConfigurations.getTeamId());
-		Settings settings;
+		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		
-		if (metadata != null) {
+		if (settingConfigurations.getId() != null && settingRepository.get(settingConfigurations.getId()) != null) {
 			
-			settings = settingRepository.getSettingById(metadata.getSettingsId());
-			settingConfigurations.setId(String.valueOf(settings.getId()));
+			settingRepository.update(settingConfigurations);
 			
+		} else {
+			
+			settingRepository.add(settingConfigurations);
 		}
-		return settingRepository.saveSetting(settingConfigurations, metadata);
+		
+		return settingConfigurations.getIdentifier();
+		
 	}
 	
 }

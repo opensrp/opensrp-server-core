@@ -11,6 +11,7 @@ import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
+import org.opensrp.search.SettingSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
@@ -53,28 +54,22 @@ public class SettingRepositoryImpl extends CouchDbRepositorySupport<SettingConfi
 	@Override
 	public void safeRemove(SettingConfiguration entity) {
 		remove(entity);
-	}
-	
-	@Override
-	public SettingsMetadata saveSetting(SettingConfiguration settingConfiguration, SettingsMetadata settingMetadata) {
-		//To Be Implemented		
-		return null;
-	}
-	
-	@Override
-	public List<SettingConfiguration> findAllLatestSettingsByVersion(Long lastSyncedServerVersion, String t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public SettingsMetadata getSettingMetadataByIdentifierAndTeamId(String identifier, String teamId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	} 
 	
 	@Override
 	public Settings getSettingById(Long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public SettingsMetadata getSettingMetadataByDocumentId(String documentId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
 		// TODO Auto-generated method stub
 		return null;
 	}
