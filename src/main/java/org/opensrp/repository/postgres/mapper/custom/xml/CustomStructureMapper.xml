@@ -24,5 +24,16 @@
 	      </if>
 	    </trim>
 	</insert>
+	
+	
+	<select id="selectWithinRadius" parameterType="map"
+		resultMap="org.opensrp.repository.postgres.mapper.StructureMetadataMapper.BaseResultMap">
+	
+		select s.json->>'id',s.json->'properties'->>'parentId',s.json->'properties'->>'type'
+		from core.structure s
+		where ST_DistanceSpheroid(ST_GeomFromGeoJSON(json->'geometry'), ST_MakePoint(#{longitude,jdbcType=DOUBLE}, #{latitude,jdbcType=DOUBLE}),
+		      'SPHEROID["WGS 84",6378137,298.257223563]') <= #{radius,jdbcType=DOUBLE}
+
+	</select>
 		
 </mapper>
