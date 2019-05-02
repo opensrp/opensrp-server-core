@@ -17,7 +17,7 @@ public abstract class BaseRepositoryImpl<T> {
 	
 	protected static Logger logger = LoggerFactory.getLogger(BaseRepositoryImpl.class.toString());
 	
-	protected abstract Long retrievePrimaryKey(T t);
+	protected abstract Object retrievePrimaryKey(T t);
 	
 	protected abstract Object getUniqueField(T t);
 	

@@ -3,6 +3,7 @@ package org.opensrp.domain;
 import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.LocalDate;
+import org.opensrp.domain.postgres.Jurisdiction;
 
 import java.util.List;
 
@@ -144,20 +145,6 @@ public class PlanDefinition {
             this.valueCodableConcept = valueCodableConcept;
         }
     }
-
-    class Jurisdiction {
-
-        private String code;
-
-        public String getCode() {
-            return code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
-    }
-
 }
 
 
