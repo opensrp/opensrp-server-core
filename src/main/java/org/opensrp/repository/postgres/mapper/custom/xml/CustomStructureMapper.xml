@@ -26,15 +26,26 @@
 	</insert>
 	
 	
-	<select id="selectStructureAndFamilyWithinRadius" parameterType="map"
-		resultMap="org.opensrp.repository.postgres.mapper.StructureMetadataMapper.BaseResultMap">
+	<resultMap id="StructureFamilyDetailsMap" type="org.opensrp.domain.postgres.StructureFamilyDetails">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
+    <result column="base_entity_id" jdbcType="VARCHAR" property="baseEntityId" />
+    <result column="relational_id" jdbcType="VARCHAR" property="relationalId" />
+    <result column="last_name" jdbcType="BIGINT" property="lastName" />
+  </resultMap>
+  
 	
-		select s.json->>'id' as id,s.json->'properties'->>'parentId' as parentId ,s.json->'properties'->>'type' as type
-		,c.base_entity_id as baseEntityId,c.relational_id as relationalId ,c.last_name as lastName
+	<select id="selectStructureAndFamilyWithinRadius" parameterType="map"
+		resultMap="StructureFamilyDetailsMap">
+	
+		select s.json->>'id' as id,s.json->'properties'->>'parentId' as parent_id ,s.json->'properties'->>'type' as type
+		,c.base_entity_id ,c.relational_id ,c.last_name 
 		from core.structure s
 		left join core.client_metadata c on c.residence=json->>'id'
 		where ST_DistanceSpheroid(ST_GeomFromGeoJSON(json->'geometry'), ST_MakePoint(#{longitude,jdbcType=DOUBLE}, #{latitude,jdbcType=DOUBLE}),
-		      'SPHEROID["WGS 84",6378137,298.257223563]') <= #{radius,jdbcType=DOUBLE}
+		      'SPHEROID["WGS 84",6378137,298.257223563]') &lt;= #{radius,jdbcType=DOUBLE}
 
 	</select>
 		

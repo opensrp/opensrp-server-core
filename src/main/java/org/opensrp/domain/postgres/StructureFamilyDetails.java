@@ -8,8 +8,6 @@ public class StructureFamilyDetails {
 
 	private String type;
 
-	private String structureId;
-
 	private String baseEntityId;
 
 	private String relationalId;
@@ -38,14 +36,6 @@ public class StructureFamilyDetails {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-	public String getStructureId() {
-		return structureId;
-	}
-
-	public void setStructureId(String structureId) {
-		this.structureId = structureId;
 	}
 
 	public String getBaseEntityId() {
