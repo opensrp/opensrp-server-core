@@ -26,11 +26,13 @@
 	</insert>
 	
 	
-	<select id="selectWithinRadius" parameterType="map"
+	<select id="selectStructureAndFamilyWithinRadius" parameterType="map"
 		resultMap="org.opensrp.repository.postgres.mapper.StructureMetadataMapper.BaseResultMap">
 	
-		select s.json->>'id',s.json->'properties'->>'parentId',s.json->'properties'->>'type'
+		select s.json->>'id' as id,s.json->'properties'->>'parentId' as parentId ,s.json->'properties'->>'type' as type
+		,c.base_entity_id as baseEntityId,c.relational_id as relationalId ,c.last_name as lastName
 		from core.structure s
+		left join core.client_metadata c on c.residence=json->>'id'
 		where ST_DistanceSpheroid(ST_GeomFromGeoJSON(json->'geometry'), ST_MakePoint(#{longitude,jdbcType=DOUBLE}, #{latitude,jdbcType=DOUBLE}),
 		      'SPHEROID["WGS 84",6378137,298.257223563]') <= #{radius,jdbcType=DOUBLE}
 

@@ -246,6 +246,11 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
+	public List<StructureFamilyDetails> findStructureAndFamilyDetails(double latitude, double longitude, double radius) {
+		return structureMapper.selectStructureAndFamilyWithinRadius(latitude, longitude, radius);
+	}
+
+	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);
 		if (uniqueId == null) {
