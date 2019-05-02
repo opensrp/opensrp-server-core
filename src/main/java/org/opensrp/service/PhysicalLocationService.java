@@ -1,11 +1,16 @@
 package org.opensrp.service;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.opensrp.domain.PhysicalLocation;
+import org.opensrp.domain.StructureDetails;
+import org.opensrp.domain.postgres.StructureFamilyDetails;
 import org.opensrp.repository.LocationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +121,30 @@ public class PhysicalLocationService {
 		}
 		return locationsWithErrors;
 
+	}
+
+	public Collection<StructureDetails> findStructuresWithinRadius(double latitude, double longitude, double radius) {
+
+		Map<String, StructureDetails> structureDetails = new HashMap<>();
+		List<StructureFamilyDetails> details = locationRepository.findStructureAndFamilyDetails(latitude, longitude,
+				radius);
+		for (StructureFamilyDetails detail : details) {
+			StructureDetails structure;
+			if (!structureDetails.containsKey(detail.getId())) {
+				structure = new StructureDetails(detail.getId(), detail.getParentId(), detail.getType());
+
+				structureDetails.put(detail.getId(), structure);
+			} else {
+				structure = structureDetails.get(detail.getId());
+			}
+			if (StringUtils.isNotBlank(detail.getBaseEntityId())) {
+				if ("Family".equalsIgnoreCase(detail.getLastName()))
+					structure.setFamilyId(detail.getBaseEntityId());
+				else
+					structure.getFamilyMembers().add(detail.getBaseEntityId());
+			}
+		}
+		return structureDetails.values();
 	}
 
 }
