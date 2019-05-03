@@ -82,6 +82,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         if (pgPlan == null) {
             return;
         }
+        pgPlan.setIsDeleted(false); // TODO: refine what happens if trying to delete deleted entry
 
         int rowsAffected = planMapper.updateByPrimaryKey(pgPlan);
         if (rowsAffected < 1) {
@@ -92,10 +93,10 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
 
     @Override
-    public List getAll() {
+    public List<PlanDefinition> getAll() {
         PlanExample planExample = new PlanExample();
         planExample.createCriteria().andIsDeletedNotEqualTo(true);
-        List<org.opensrp.domain.postgres.Plan> plans = planMapper.selectMany(planExample, null,0, DEFAULT_FETCH_SIZE);
+        List<Plan> plans = planMapper.selectMany(planExample, null,0, DEFAULT_FETCH_SIZE);
         return convert(plans);
     }
 

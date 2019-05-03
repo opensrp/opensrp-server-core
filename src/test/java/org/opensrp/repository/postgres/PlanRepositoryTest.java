@@ -1,5 +1,6 @@
 package org.opensrp.repository.postgres;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.Jurisdiction;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
@@ -20,6 +22,12 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private PlanRepositoryImpl planRepository;
+
+    @BeforeClass
+    public static void bootStrap() {
+        tableNames.add("core.plan");
+        tableNames.add("core.plan_metadata");
+    }
 
     @Override
     protected Set<String> getDatabaseScripts() {
@@ -55,6 +63,123 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         ids.add("identifier_1");
         ids.add("identifier_2");
         assertTrue(testIfAllIdsExists(plans, ids));
+    }
+
+    @Test
+    public void testGetShouldGetByPlanId() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_3");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_4");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+
+        PlanDefinition result = planRepository.get("identifier_4");
+        assertNotNull(result);
+        assertEquals(result.getIdentifier(), "identifier_4");
+        assertEquals(result.getJurisdiction().get(0).getCode(), "operation_area_2");
+    }
+
+    @Test
+    public void testUpdateShouldUpdateExistingPlan() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_5");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+
+        PlanDefinition result = planRepository.get("identifier_5");
+        assertEquals(result.getIdentifier(), "identifier_5");
+        assertEquals(result.getJurisdiction().get(0).getCode(), "operation_area_1");
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_5");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.update(plan);
+
+        result = planRepository.get("identifier_5");
+        assertEquals(result.getIdentifier(), "identifier_5");
+        assertEquals(result.getJurisdiction().get(0).getCode(), "operation_area_2");
+    }
+
+    @Test
+    public void testGetAllShouldGetAllPlans() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_6");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+
+        List<PlanDefinition> plans = planRepository.getAll();
+        assertEquals(plans.size(), 2);
+
+        Set<String> ids = new HashSet<>();
+        ids.add("identifier_6");
+        ids.add("identifier_7");
+        assertTrue(testIfAllIdsExists(plans, ids));
+    }
+
+    @Test
+    public void testSafeRemoveShouldMarkPlansAsDelete() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_8");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+
+        List<PlanDefinition> plans = planRepository.getAll();
+        assertEquals(plans.size(), 2);
+
+        planRepository.safeRemove(plan);
+        plans = planRepository.getAll();
+        assertEquals(plans.size(), 1);
+        assertEquals(planRepository.getAll().get(0).getIdentifier(), "identifier_7");
     }
 
     private boolean testIfAllIdsExists(List<PlanDefinition> plans, Set<String> ids) {
