@@ -1,13 +1,16 @@
+dist: xenial
 language: java
 sudo: required
 services:
   - couchdb
   - mysql
 addons:
-  postgresql: "9.6"
+  postgresql: "10"
   apt:
     packages:
-    - postgresql-9.6-postgis-2.3
+      - postgresql-10
+      - postgresql-client-10
+      - postgresql-10-postgis-2.4
 install:
   - echo "skip" # or anything that returns 0 status.
   - sudo updatedb #Giving couchdb time to start.
