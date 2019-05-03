@@ -40,6 +40,8 @@ public class PlanDefinition {
     @JsonProperty
     private List<Jurisdiction> jurisdiction;
 
+    private Long serverVersion;
+
     @JsonProperty
     @SerializedName("goal")
     private List<Goal> goals;
@@ -134,6 +136,14 @@ public class PlanDefinition {
 
     public void setActions(List<Action> actions) {
         this.actions = actions;
+    }
+
+    public Long getServerVersion() {
+        return serverVersion;
+    }
+
+    public void setServerVersion(Long serverVersion) {
+        this.serverVersion = serverVersion;
     }
 
     class UseContext {

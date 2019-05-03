@@ -182,6 +182,90 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         assertEquals(planRepository.getAll().get(0).getIdentifier(), "identifier_7");
     }
 
+    @Test
+    public void testGetPlansByServerVersionAndOperationalAreaShouldReturnAllPlansAtOrBeforeAServerVersion() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1l);
+        planRepository.add(plan);
+
+        Set<String> ids = new HashSet<>();
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_8");
+        ids.add("identifier_8");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(2l);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_9");
+        ids.add("identifier_9");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(3l);
+        planRepository.add(plan);
+
+        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalArea(2l, null);
+        assertEquals(plans.size(), 2);
+        testIfAllIdsExists(plans, ids);
+    }
+
+    @Test
+    public void testGetPlansByServerVersionAndOperationalAreaShouldReturnAllPlansAtOrBeforeAServerVersionAndCorrectOperationalArea() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1l);
+        planRepository.add(plan);
+
+        Set<String> ids = new HashSet<>();
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_8");
+        ids.add("identifier_8");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(2l);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_9");
+        ids.add("identifier_9");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(3l);
+        planRepository.add(plan);
+
+        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalArea(2l, "operation_area_2");
+        assertEquals(plans.size(), 2);
+        testIfAllIdsExists(plans, ids);
+    }
+
     private boolean testIfAllIdsExists(List<PlanDefinition> plans, Set<String> ids) {
         for (PlanDefinition plan : plans) {
             ids.remove(plan.getIdentifier());

@@ -156,6 +156,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         Plan pgPlan = new Plan();
         pgPlan.setId(plan.getIdentifier());
         pgPlan.setJson(plan);
+        pgPlan.setServerVersion(plan.getServerVersion());
 
         return pgPlan;
     }
