@@ -36,7 +36,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         }
 
         PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andIdEqualTo(id).andDeletedNotEqualTo(true);
+        planExample.createCriteria().andIdEqualTo(id).andIsDeletedNotEqualTo(true);
 
         List<Plan> pgPlan = planMapper.selectByExample(planExample);
         List<PlanDefinition> plan = convert(pgPlan);
@@ -58,7 +58,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         if (pgPlan == null) {
             return;
         }
-        pgPlan.setDeleted(false);
+        pgPlan.setIsDeleted(false);
 
         int rowsAffected = planMapper.insert(pgPlan);
         if (rowsAffected < 1) {
@@ -94,7 +94,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     @Override
     public List getAll() {
         PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andDeletedNotEqualTo(true);
+        planExample.createCriteria().andIsDeletedNotEqualTo(true);
         List<org.opensrp.domain.postgres.Plan> plans = planMapper.selectMany(planExample, null,0, DEFAULT_FETCH_SIZE);
         return convert(plans);
     }
@@ -111,7 +111,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         }
 
         Plan pgPlan = convert(plan);
-        pgPlan.setDeleted(true);
+        pgPlan.setIsDeleted(true);
         planMapper.updateByPrimaryKey(pgPlan);
     }
 
@@ -183,7 +183,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         PlanMetadata planMetadata = new PlanMetadata();
         planMetadata.setOperationalAreaId(jurisdiction.getCode());
         planMetadata.setPlanId(plan.getIdentifier());
-        planMetadata.setDeleted(false);
+        planMetadata.setIsDeleted(false);
         planMetadataMapper.insert(planMetadata);
     }
 
@@ -203,7 +203,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         Set<PlanMetadata> planMetadata = new HashSet<>(pgPlans);
         for (PlanMetadata metadata : planMetadata) {
             if (!operationalAreas.contains(metadata.getOperationalAreaId())) {
-                metadata.setDeleted(true);
+                metadata.setIsDeleted(true);
                 planMetadataMapper.updateByPrimaryKey(metadata);
             }
         }
