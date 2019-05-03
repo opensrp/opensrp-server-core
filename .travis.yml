@@ -13,7 +13,7 @@ addons:
     - postgresql-10-postgis-2.4-scripts
 env:
   global:
-  - PGPORT=5432
+  - PGPORT=5433
 install:
   - echo "skip" # or anything that returns 0 status.
   - sudo updatedb #Giving couchdb time to start.
@@ -21,10 +21,10 @@ install:
 before_script:
   - curl -X PUT http://localhost:5984/_config/admins/rootuser -d '"adminpass"'
   - echo "USE mysql;\nUPDATE user SET password=PASSWORD('VA1913wm') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root 
-  - psql -c "CREATE ROLE opensrp_admin WITH LOGIN SUPERUSER PASSWORD 'admin';" -U postgres
-  - psql -c "CREATE DATABASE opensrp_test WITH OWNER = opensrp_admin;" -U postgres
-  - psql -c "create extension postgis" -U postgres 
-  - psql -c "SELECT PostGIS_full_version() " -U postgres 
+  - psql -p 5433 -c "CREATE ROLE opensrp_admin WITH LOGIN SUPERUSER PASSWORD 'admin';" -U postgres
+  - psql -p 5433 -c "CREATE DATABASE opensrp_test WITH OWNER = opensrp_admin;" -U postgres
+  - psql -p 5433 -c "create extension postgis" -U postgres 
+  - psql -p 5433 -c "SELECT PostGIS_full_version() " -U postgres 
   - chmod +x configs/assets/migrations/run_mybatis_migrations.sh
   - sudo ./configs/assets/migrations/run_mybatis_migrations.sh
   - sudo mkdir -p /opt/multimedia
