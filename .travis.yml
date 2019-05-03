@@ -5,6 +5,9 @@ services:
   - mysql
 addons:
   postgresql: "9.6"
+  apt:
+    packages:
+    - postgresql-9.6-postgis-2.3
 install:
   - echo "skip" # or anything that returns 0 status.
   - sudo updatedb #Giving couchdb time to start.
@@ -18,6 +21,7 @@ before_script:
   - sudo ./configs/assets/migrations/run_mybatis_migrations.sh
   - sudo mkdir -p /opt/multimedia
   - sudo chown -R travis:travis /opt/multimedia
+  - psql -U postgres -c "create extension postgis"
 script:
   - javac -version
   - java -version
