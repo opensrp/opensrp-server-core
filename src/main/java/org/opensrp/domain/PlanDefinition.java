@@ -2,6 +2,7 @@ package org.opensrp.domain;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.LocalDate;
 import org.opensrp.domain.postgres.Jurisdiction;
 
@@ -12,27 +13,38 @@ import java.util.List;
  */
 public class PlanDefinition {
 
+    @JsonProperty
     private String identifier;
 
+    @JsonProperty
     private String version;
 
+    @JsonProperty
     private String name;
 
+    @JsonProperty
     private String title;
 
+    @JsonProperty
     private String status;
 
+    @JsonProperty
     private LocalDate date;
 
+    @JsonProperty
     private ExecutionPeriod effectivePeriod;
 
+    @JsonProperty
     private List<UseContext> useContext;
 
+    @JsonProperty
     private List<Jurisdiction> jurisdiction;
 
+    @JsonProperty
     @SerializedName("goal")
     private List<Goal> goals;
 
+    @JsonProperty
     @SerializedName("action")
     private List<Action> actions;
 

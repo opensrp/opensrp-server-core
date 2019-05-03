@@ -7,6 +7,7 @@ import org.opensrp.repository.BaseRepository;
 import org.opensrp.repository.postgres.mapper.PlanMetadataMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,6 +19,8 @@ import static org.opensrp.util.Utils.isEmptyList;
 /**
  * Created by Vincent Karuri on 02/05/2019
  */
+
+@Repository
 public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> implements BaseRepository<PlanDefinition> {
 
     @Autowired
@@ -33,7 +36,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         }
 
         PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andIdEqualTo(id).andDateDeletedEqualTo(null);
+        planExample.createCriteria().andIdEqualTo(id).andDeletedNotEqualTo(true);
 
         List<Plan> pgPlan = planMapper.selectByExample(planExample);
         List<PlanDefinition> plan = convert(pgPlan);
@@ -55,6 +58,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         if (pgPlan == null) {
             return;
         }
+        pgPlan.setDeleted(false);
 
         int rowsAffected = planMapper.insert(pgPlan);
         if (rowsAffected < 1) {
@@ -90,7 +94,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     @Override
     public List getAll() {
         PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andDateDeletedEqualTo(null);
+        planExample.createCriteria().andDeletedNotEqualTo(true);
         List<org.opensrp.domain.postgres.Plan> plans = planMapper.selectMany(planExample, null,0, DEFAULT_FETCH_SIZE);
         return convert(plans);
     }
@@ -107,7 +111,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         }
 
         Plan pgPlan = convert(plan);
-        pgPlan.setDateDeleted(getCurrentTime());
+        pgPlan.setDeleted(true);
         planMapper.updateByPrimaryKey(pgPlan);
     }
 
@@ -138,7 +142,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
 
     private PlanDefinition convert(Plan pgPlan) {
-        if (pgPlan == null || pgPlan.getJson() == null || !(pgPlan.getJson() instanceof Plan)) {
+        if (pgPlan == null || pgPlan.getJson() == null || !(pgPlan.getJson() instanceof PlanDefinition)) {
             return null;
         }
         return (PlanDefinition) pgPlan.getJson();
@@ -167,6 +171,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
 
     private void insertPlanMetadata(PlanDefinition plan) {
+        if (isEmptyList(plan.getJurisdiction())) {
+            return;
+        }
         for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
            insert(jurisdiction, plan);
         }
@@ -176,6 +183,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         PlanMetadata planMetadata = new PlanMetadata();
         planMetadata.setOperationalAreaId(jurisdiction.getCode());
         planMetadata.setPlanId(plan.getIdentifier());
+        planMetadata.setDeleted(false);
         planMetadataMapper.insert(planMetadata);
     }
 
@@ -195,13 +203,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         Set<PlanMetadata> planMetadata = new HashSet<>(pgPlans);
         for (PlanMetadata metadata : planMetadata) {
             if (!operationalAreas.contains(metadata.getOperationalAreaId())) {
-                metadata.setDateDeleted(getCurrentTime());
+                metadata.setDeleted(true);
                 planMetadataMapper.updateByPrimaryKey(metadata);
             }
         }
-    }
-
-    public Long getCurrentTime() {
-        return System.currentTimeMillis();
     }
 }
