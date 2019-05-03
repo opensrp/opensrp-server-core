@@ -7,10 +7,13 @@ addons:
   postgresql: "10"
   apt:
     packages:
-      - postgresql-10
-      - postgresql-client-10
-      - postgresql-10-postgis-2.4
-      - postgresql-10-postgis-2.4-scripts
+    - postgresql-10
+    - postgresql-client-10
+    - postgresql-10-postgis-2.4
+    - postgresql-10-postgis-2.4-scripts
+env:
+  global:
+  - PGPORT=5432
 install:
   - echo "skip" # or anything that returns 0 status.
   - sudo updatedb #Giving couchdb time to start.
