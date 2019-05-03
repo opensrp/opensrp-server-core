@@ -39,7 +39,6 @@
 	
 	<select id="selectStructureAndFamilyWithinRadius" parameterType="map"
 		resultMap="StructureFamilyDetailsMap">
-	
 		select s.json->>'id' as id,s.json->'properties'->>'parentId' as parent_id ,s.json->'properties'->>'type' as type
 		,c.base_entity_id ,c.relational_id ,c.last_name 
 		from core.structure s
