@@ -18,7 +18,7 @@ before_script:
   - sudo netstat -tuplen # listing all the port for debug purpose.
   - psql -p 5433 -c "CREATE ROLE opensrp_admin WITH LOGIN SUPERUSER PASSWORD 'admin';" -U postgres
   - psql -p 5433 -c "CREATE DATABASE opensrp_test WITH OWNER = opensrp_admin;" -U postgres
-  - psql -p 5433 -c "create extension postgis" -U postgres 
+  - psql -p 5433 -c "create extension postgis" -U postgres -d opensrp_test
   - psql -p 5433 -c "SELECT PostGIS_full_version() " -U postgres 
   - psql -p 5433 -c "select ST_GeomFromGeoJSON('{\"coordinates\":[101.17830707925873,15.065312886661031],\"type\":\"Point\"}')" -U postgres
   - chmod +x configs/assets/migrations/run_mybatis_migrations.sh
