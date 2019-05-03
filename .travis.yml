@@ -11,6 +11,9 @@ addons:
     - postgresql-client-10
     - postgresql-10-postgis-2.4
     - postgresql-10-postgis-2.4-scripts
+before_install:
+  - sudo cp /etc/postgresql/{9.6,10}/main/pg_hba.conf
+  - sudo /etc/init.d/postgresql restart
 env:
   global:
   - PGPORT=5433
