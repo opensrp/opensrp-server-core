@@ -11,17 +11,21 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.PhysicalLocationTest;
+import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -289,16 +293,16 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testFindLocationsByNames() {
-		String locationNames="01_5";
+		String locationNames = "01_5";
 		List<PhysicalLocation> expected = new ArrayList<>();
 		List<PhysicalLocation> locations;
 
-		locations = locationService.findLocationsByNames(locationNames,0l);
+		locations = locationService.findLocationsByNames(locationNames, 0l);
 		assertEquals(0, locations.size());
 
 		expected.add(createLocation());
 		when(locationService.findLocationsByNames(locationNames, 0l)).thenReturn(expected);
-		locations = locationService.findLocationsByNames(locationNames,0l);
+		locations = locationService.findLocationsByNames(locationNames, 0l);
 		assertEquals(1, locations.size());
 		PhysicalLocation location = locations.get(0);
 		assertEquals("01_5", location.getProperties().getName());
@@ -307,9 +311,9 @@ public class PhysicalLocationServiceTest {
 		assertEquals(GeometryType.MULTI_POLYGON, location.getGeometry().getType());
 
 //		search with more than one name
-		locationNames ="01_5,other_location_name";
-		when(locationService.findLocationsByNames(locationNames,0l)).thenReturn(expected);
-		locations = locationService.findLocationsByNames(locationNames,0l);
+		locationNames = "01_5,other_location_name";
+		when(locationService.findLocationsByNames(locationNames, 0l)).thenReturn(expected);
+		locations = locationService.findLocationsByNames(locationNames, 0l);
 		assertEquals(1, locations.size());
 		location = locations.get(0);
 		assertEquals("01_5", location.getProperties().getName());
@@ -404,13 +408,33 @@ public class PhysicalLocationServiceTest {
 
 	}
 
+	@Test
+	public void testFindStructuresWithinRadius() {
+
+		double latitude = -14.1619809;
+		double longitude = 32.5978597;
+
+		Collection<StructureDetails> expectedDetails = new ArrayList<>();
+
+		StructureDetails structure = new StructureDetails(UUID.randomUUID().toString(), "3221", "Mosquito Point");
+		expectedDetails.add(structure);
+
+		when(locationRepository.findStructureAndFamilyDetails(Mockito.anyDouble(), Mockito.anyDouble(),
+				Mockito.anyDouble())).thenReturn(expectedDetails);
+		Collection<StructureDetails> detailsFromService = locationService.findStructuresWithinRadius(latitude,
+				longitude, 1000);
+
+		assertEquals(expectedDetails, detailsFromService);
+		verify(locationRepository).findStructureAndFamilyDetails(latitude, longitude, 1000);
+
+	}
+
 	private PhysicalLocation createLocation() {
 		PhysicalLocation parentLocation = PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.parentJson,
 				PhysicalLocation.class);
 		parentLocation.setJurisdiction(true);
 		return parentLocation;
 	}
-
 
 	private PhysicalLocation createStructure() {
 		return PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.structureJson, PhysicalLocation.class);
