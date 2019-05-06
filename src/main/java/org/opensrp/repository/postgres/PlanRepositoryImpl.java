@@ -3,7 +3,7 @@ package org.opensrp.repository.postgres;
 import org.apache.commons.lang.StringUtils;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.*;
-import org.opensrp.repository.BaseRepository;
+import org.opensrp.repository.PlanRepository;
 import org.opensrp.repository.postgres.mapper.PlanMetadataMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import static org.opensrp.util.Utils.isEmptyList;
  */
 
 @Repository
-public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> implements BaseRepository<PlanDefinition> {
+public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> implements PlanRepository {
 
     @Autowired
     private CustomPlanMapper planMapper;

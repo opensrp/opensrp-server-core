@@ -4,6 +4,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.Jurisdiction;
+import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -11,9 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * Created by Vincent Karuri on 03/05/2019
@@ -21,7 +20,7 @@ import static junit.framework.Assert.assertTrue;
 public class PlanRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
-    private PlanRepositoryImpl planRepository;
+    private PlanRepository planRepository;
 
     @BeforeClass
     public static void bootStrap() {
