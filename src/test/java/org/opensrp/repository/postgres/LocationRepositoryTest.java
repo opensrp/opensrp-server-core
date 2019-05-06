@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,16 +18,19 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Test;
+import org.opensrp.domain.Client;
 import org.opensrp.domain.Geometry;
 import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.PhysicalLocation;
-import org.opensrp.domain.postgres.StructureFamilyDetails;
+import org.opensrp.domain.StructureDetails;
+import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.util.DateTypeConverter;
 import org.opensrp.util.TaskDateTimeTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -41,6 +45,10 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	private Set<String> scripts = new HashSet<String>();
 	@Autowired
 	private LocationRepository locationRepository;
+
+	@Autowired
+	@Qualifier("clientsRepositoryPostgres")
+	private ClientsRepository clientsRepository;
 
 	protected Set<String> getDatabaseScripts() {
 		scripts.add("location.sql");
@@ -477,26 +485,27 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		scripts.add("client.sql");
 		populateDatabase();
 
+		Client family = new Client(UUID.randomUUID().toString()).withFirstName("Otala").withLastName("Family");
+		family.withAttribute(ClientsRepositoryImpl.RESIDENCE, "90397");
+		clientsRepository.add(family);
+
 		double latitude = -14.1619809;
 		double longitude = 32.5978597;
 
-		List<StructureFamilyDetails> details = locationRepository.findStructureAndFamilyDetails(latitude, longitude,
+		Collection<StructureDetails> details = locationRepository.findStructureAndFamilyDetails(latitude, longitude,
 				100);
 		assertEquals(0, details.size());
 
 		details = locationRepository.findStructureAndFamilyDetails(latitude, longitude, 1000);
 		assertEquals(1, details.size());
 
-		assertEquals("90397", details.get(0).getId());
-		assertEquals("3734", details.get(0).getParentId());
-		assertEquals("Residential Structure", details.get(0).getType());
-		/*
-		 * assertEquals("05934ae338431f28bf6793b241839005",
-		 * details.get(0).getBaseEntityId());
-		 * assertEquals("17a1f5ed-a4cd-4427-ad9f-6471f4fc963d",
-		 * details.get(0).getRelationalId());
-		 */
-		assertEquals("Immunisedtwo", details.get(0).getLastName());
+		StructureDetails structureDetails = details.iterator().next();
+		assertEquals("90397", structureDetails.getStructureId());
+		assertEquals("3734", structureDetails.getStructureParentId());
+		assertEquals("Residential Structure", structureDetails.getStructureType());
+		assertEquals(family.getBaseEntityId(), structureDetails.getFamilyId());
+		assertEquals(1, structureDetails.getFamilyMembers().size());
+		assertEquals("d4eda055-60c6-44a4-ba48-61dfe6485bea", structureDetails.getFamilyMembers().iterator().next());
 	}
 
 	@Test
@@ -504,7 +513,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		double latitude = -14.1619809;
 		double longitude = 34.5978597;
 
-		List<StructureFamilyDetails> details = locationRepository.findStructureAndFamilyDetails(latitude, longitude,
+		Collection<StructureDetails> details = locationRepository.findStructureAndFamilyDetails(latitude, longitude,
 				1000);
 		assertEquals(0, details.size());
 
@@ -522,12 +531,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		details = locationRepository.findStructureAndFamilyDetails(latitude, longitude, 1000);
 		assertEquals(1, details.size());
 
-		assertEquals("121212", details.get(0).getId());
-		assertEquals("2465476", details.get(0).getParentId());
-		assertEquals("Larvacide Point", details.get(0).getType());
-		assertNull(details.get(0).getBaseEntityId());
-		assertNull(details.get(0).getRelationalId());
-		assertNull(details.get(0).getLastName());
+		StructureDetails structureDetails = details.iterator().next();
+		assertEquals("121212", structureDetails.getStructureId());
+		assertEquals("2465476", structureDetails.getStructureParentId());
+		assertEquals("Larvacide Point", structureDetails.getStructureType());
+		assertTrue(structureDetails.getFamilyMembers().isEmpty());
 
 		assertTrue(locationRepository.findStructureAndFamilyDetails(latitude + 1, longitude, 1000).isEmpty());
 

@@ -2,10 +2,21 @@ package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.opensrp.domain.PhysicalLocation;
-import org.opensrp.domain.postgres.*;
+import org.opensrp.domain.StructureDetails;
+import org.opensrp.domain.postgres.Location;
+import org.opensrp.domain.postgres.LocationMetadata;
+import org.opensrp.domain.postgres.LocationMetadataExample;
+import org.opensrp.domain.postgres.Structure;
+import org.opensrp.domain.postgres.StructureFamilyDetails;
+import org.opensrp.domain.postgres.StructureMetadata;
+import org.opensrp.domain.postgres.StructureMetadataExample;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
@@ -246,8 +257,26 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public List<StructureFamilyDetails> findStructureAndFamilyDetails(double latitude, double longitude, double radius) {
-		return structureMapper.selectStructureAndFamilyWithinRadius(latitude, longitude, radius);
+	public Collection<StructureDetails> findStructureAndFamilyDetails(double latitude, double longitude, double radius) {
+		List<StructureFamilyDetails> pgList=structureMapper.selectStructureAndFamilyWithinRadius(latitude, longitude, radius);
+		Map<String, StructureDetails> structureDetails = new HashMap<>();
+		for (StructureFamilyDetails detail : pgList) {
+			StructureDetails structure;
+			if (!structureDetails.containsKey(detail.getId())) {
+				structure = new StructureDetails(detail.getId(), detail.getParentId(), detail.getType());
+
+				structureDetails.put(detail.getId(), structure);
+			} else {
+				structure = structureDetails.get(detail.getId());
+			}
+			if (StringUtils.isNotBlank(detail.getBaseEntityId())) {
+				if ("Family".equalsIgnoreCase(detail.getLastName()))
+					structure.setFamilyId(detail.getBaseEntityId());
+				else
+					structure.getFamilyMembers().add(detail.getBaseEntityId());
+			}
+		}
+		return structureDetails.values();
 	}
 
 	@Override

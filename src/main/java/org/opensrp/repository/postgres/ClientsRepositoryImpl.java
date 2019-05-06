@@ -30,7 +30,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 
 	private static Logger logger = LoggerFactory.getLogger(ClientsRepository.class.toString());
 
-	private static String RESIDENCE = "residence";
+	public static String RESIDENCE = "residence";
 
 	@Autowired
 	private CustomClientMetadataMapper clientMetadataMapper;
