@@ -22,8 +22,12 @@ public class PlanService {
         this.planRepository = planRepository;
     }
 
+    public PlanRepository getPlanRepository() {
+        return planRepository;
+    }
+
     public List<PlanDefinition> getAllPlans() {
-        return planRepository.getAll();
+        return getPlanRepository().getAll();
     }
 
     public void addOrUpdatePlan(PlanDefinition plan) {
@@ -31,10 +35,10 @@ public class PlanService {
             throw new IllegalArgumentException("Identifier not specified");
         }
         plan.setServerVersion(System.currentTimeMillis());
-        if (planRepository.get(plan.getIdentifier()) != null) {
-            planRepository.update(plan);
+        if (getPlanRepository().get(plan.getIdentifier()) != null) {
+            getPlanRepository().update(plan);
         } else {
-            planRepository.add(plan);
+            getPlanRepository().add(plan);
         }
     }
 
@@ -43,7 +47,7 @@ public class PlanService {
             throw new IllegalArgumentException("Identifier not specified");
         }
         plan.setServerVersion(System.currentTimeMillis());
-        planRepository.add(plan);
+        getPlanRepository().add(plan);
 
         return plan;
     }
@@ -53,17 +57,17 @@ public class PlanService {
             throw new IllegalArgumentException("Identifier not specified");
         }
         plan.setServerVersion(System.currentTimeMillis());
-        planRepository.update(plan);
+        getPlanRepository().update(plan);
 
         return plan;
     }
 
     public PlanDefinition getPlan(String identifier) {
-        return StringUtils.isBlank(identifier) ? null : planRepository.get(identifier);
+        return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
     }
 
     public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion, String operationalAreaId) {
-        return planRepository.getPlansByServerVersionAndOperationalArea(serverVersion, operationalAreaId);
+        return getPlanRepository().getPlansByServerVersionAndOperationalArea(serverVersion, operationalAreaId);
     }
 }
 
