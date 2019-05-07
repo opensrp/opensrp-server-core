@@ -105,8 +105,10 @@ public class Action {
         this.taskTemplate = taskTemplate;
     }
 
-    class SubjectConcept {
+    static class SubjectConcept {
         private String text;
+
+        public SubjectConcept() {}
 
         public String getText() {
             return text;

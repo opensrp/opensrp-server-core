@@ -2,8 +2,6 @@ package org.opensrp.domain;
 
 import org.joda.time.LocalDate;
 
-import java.util.AbstractMap.SimpleEntry;
-
 /**
  * Created by samuelgithengi on 4/29/19.
  */
@@ -39,13 +37,14 @@ public class Target {
         this.detail = detail;
     }
 
-    class Detail {
-
+    static class Detail {
         private Measure detailQuantity;
 
         private MeasureRange detailRange;
 
-        private SimpleEntry<String, String> detailCodableConcept;
+        private DetailCodableConcept detailCodableConcept;
+
+        public Detail() {}
 
         public Measure getDetailQuantity() {
             return detailQuantity;
@@ -63,21 +62,23 @@ public class Target {
             this.detailRange = detailRange;
         }
 
-        public SimpleEntry<String, String> getDetailCodableConcept() {
+        public DetailCodableConcept getDetailCodableConcept() {
             return detailCodableConcept;
         }
 
-        public void setDetailCodableConcept(SimpleEntry<String, String> detailCodableConcept) {
+        public void setDetailCodableConcept(DetailCodableConcept detailCodableConcept) {
             this.detailCodableConcept = detailCodableConcept;
         }
     }
 
-    class Measure {
+    static class Measure {
         private float value;
 
         private String comparator;
 
         private String unit;
+
+        public Measure() {}
 
         public float getValue() {
             return value;
@@ -104,10 +105,12 @@ public class Target {
         }
     }
 
-    class MeasureRange {
+    static class MeasureRange {
         private Measure high;
 
         private Measure low;
+
+        public MeasureRange() {}
 
         public Measure getHigh() {
             return high;
@@ -126,6 +129,19 @@ public class Target {
         }
     }
 
+    static class DetailCodableConcept {
+        private String text;
+
+        public DetailCodableConcept() {}
+
+        public String getText() {
+            return text;
+        }
+
+        public void setText(String text) {
+            this.text = text;
+        }
+    }
 }
 
 
