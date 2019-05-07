@@ -151,8 +151,6 @@ public class PlanDefinition {
 
         private String valueCodableConcept;
 
-        public UseContext() {}
-
         public String getCode() {
             return code;
         }

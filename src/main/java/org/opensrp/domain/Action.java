@@ -108,8 +108,6 @@ public class Action {
     static class SubjectConcept {
         private String text;
 
-        public SubjectConcept() {}
-
         public String getText() {
             return text;
         }

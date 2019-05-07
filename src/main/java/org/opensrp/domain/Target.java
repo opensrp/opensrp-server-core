@@ -44,8 +44,6 @@ public class Target {
 
         private DetailCodableConcept detailCodableConcept;
 
-        public Detail() {}
-
         public Measure getDetailQuantity() {
             return detailQuantity;
         }
@@ -78,8 +76,6 @@ public class Target {
 
         private String unit;
 
-        public Measure() {}
-
         public float getValue() {
             return value;
         }
@@ -110,8 +106,6 @@ public class Target {
 
         private Measure low;
 
-        public MeasureRange() {}
-
         public Measure getHigh() {
             return high;
         }
@@ -131,8 +125,6 @@ public class Target {
 
     static class DetailCodableConcept {
         private String text;
-
-        public DetailCodableConcept() {}
 
         public String getText() {
             return text;
