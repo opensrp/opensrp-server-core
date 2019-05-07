@@ -1,11 +1,13 @@
 package org.opensrp.service;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.opensrp.domain.PhysicalLocation;
+import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +118,10 @@ public class PhysicalLocationService {
 		}
 		return locationsWithErrors;
 
+	}
+
+	public Collection<StructureDetails> findStructuresWithinRadius(double latitude, double longitude, double radius) {
+		return locationRepository.findStructureAndFamilyDetails(latitude, longitude, radius);
 	}
 
 }
