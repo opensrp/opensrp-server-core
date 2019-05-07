@@ -92,6 +92,38 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    public void testGetShouldNotGetDeletedPlans() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_3");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+        planRepository.safeRemove(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_4");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+
+        List<PlanDefinition> plans = planRepository.getAll();
+        assertEquals(plans.size(), 1);
+
+        Set<String> ids = new HashSet<>();
+        ids.add("identifier_4");
+        assertTrue(testIfAllIdsExists(plans, ids));
+
+        assertNull(planRepository.get("identifier_3"));
+    }
+
+    @Test
     public void testUpdateShouldUpdateExistingPlan() {
         PlanDefinition plan = new PlanDefinition();
         plan.setIdentifier("identifier_5");
@@ -182,7 +214,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void testGetPlansByServerVersionAndOperationalAreaShouldReturnAllPlansAtOrBeforeAServerVersion() {
+    public void testSyncPlansByServerVersionAndOperationalAreaShouldReturnAllPlansAtOrBeforeAServerVersion() {
         PlanDefinition plan = new PlanDefinition();
         plan.setIdentifier("identifier_7");
 
@@ -262,6 +294,48 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
         List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalArea(2l, "operation_area_2");
         assertEquals(plans.size(), 2);
+        testIfAllIdsExists(plans, ids);
+    }
+
+
+    @Test
+    public void testSyncShouldNotGetDeletedOperationalAreas() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1l);
+        planRepository.add(plan);
+
+        Set<String> ids = new HashSet<>();
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_8");
+        ids.add("identifier_8");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(2l);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1l);
+        planRepository.update(plan);
+
+        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalArea(0l, null);
+        assertEquals(plans.size(), 1);
         testIfAllIdsExists(plans, ids);
     }
 

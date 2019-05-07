@@ -44,7 +44,7 @@
         select distinct
         <include refid="Base_Column_List" />
         from core.plan p
-        join core.plan_metadata pm on pm.plan_id = p.id
+        join core.plan_metadata pm on pm.plan_id = p.id and pm.is_deleted = false
         <if test="operationalAreaId != null and operationalAreaId != ''">
             and pm.operational_area_id = #{operationalAreaId}
         </if>
