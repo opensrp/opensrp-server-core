@@ -102,11 +102,11 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public List<Task> getTasksByCampaignAndGroup(String campaign, String group, long serverVersion) {
-		List<String> campaigns = Arrays.asList(org.apache.commons.lang.StringUtils.split(campaign, ","));
+	public List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion) {
+		List<String> campaigns = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
 		List<String> groups = Arrays.asList(org.apache.commons.lang.StringUtils.split(group, ","));
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andCampaignIdentifierIn(campaigns).andGroupIdentifierIn(groups)
+		taskMetadataExample.createCriteria().andPlanIdentifierIn(campaigns).andGroupIdentifierIn(groups)
 				.andServerVersionGreaterThanOrEqualTo(serverVersion);
 		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
@@ -210,7 +210,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		TaskMetadata taskMetadata = new TaskMetadata();
 		taskMetadata.setTaskId(id);
 		taskMetadata.setIdentifier(entity.getIdentifier());
-		taskMetadata.setCampaignIdentifier(entity.getCampaignIdentifier());
+		taskMetadata.setPlanIdentifier(entity.getPlanIdentifier());
 		taskMetadata.setGroupIdentifier(entity.getGroupIdentifier());
 		taskMetadata.setForEntity(entity.getForEntity());
 		taskMetadata.setServerVersion(entity.getServerVersion());

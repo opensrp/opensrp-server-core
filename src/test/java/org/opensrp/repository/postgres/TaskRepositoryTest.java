@@ -89,7 +89,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 	public void testAdd() {
 		Task task = new Task();
 		task.setIdentifier("tsk-2332-j");
-		task.setCampaignIdentifier("2018-IRS-S4");
+		task.setPlanIdentifier("2018-IRS-S4");
 		task.setGroupIdentifier("7633hk-dsadsa");
 		task.setDescription("Visit Mwangala household");
 		task.setBusinessStatus("Not Visited");
@@ -100,7 +100,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals(3, taskRepository.getAll().size());
 		Task addedTask = taskRepository.get("tsk-2332-j");
 		assertNotNull(addedTask);
-		assertEquals("2018-IRS-S4", addedTask.getCampaignIdentifier());
+		assertEquals("2018-IRS-S4", addedTask.getPlanIdentifier());
 		assertEquals("7633hk-dsadsa", addedTask.getGroupIdentifier());
 		assertEquals("Not Visited", addedTask.getBusinessStatus());
 		assertEquals(TaskStatus.READY, addedTask.getStatus());
@@ -169,26 +169,26 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 	}
 
 	public void testGetTasksByCampaignAndGroup() {
-		List<Task> tasks = taskRepository.getTasksByCampaignAndGroup("IRS_2018_S1", "2018_IRS-3734", 0);
+		List<Task> tasks = taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 0);
 		assertEquals(1, tasks.size());
 		assertEquals("tsk11231jh22", tasks.get(0).getIdentifier());
 
 		Task task = new Task();
 		task.setIdentifier("tsk-2332-j");
-		task.setCampaignIdentifier("IRS_2018_S");
+		task.setPlanIdentifier("IRS_2018_S");
 		task.setGroupIdentifier("2018_IRS-3734");
 		task.setBusinessStatus("Not Visited");
 		task.setStatus(TaskStatus.DRAFT);
 		task.setServerVersion(System.currentTimeMillis());
 		taskRepository.add(task);
 
-		assertEquals(2, taskRepository.getTasksByCampaignAndGroup("IRS_2018_S1", "2018_IRS", 0));
+		assertEquals(2, taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS", 0));
 
-		assertTrue(taskRepository.getTasksByCampaignAndGroup("IRS_2018_S1", "2018_IRS", 0).isEmpty());
+		assertTrue(taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS", 0).isEmpty());
 
-		assertTrue(taskRepository.getTasksByCampaignAndGroup("IRS_201", "2018_IRS-373", 0).isEmpty());
+		assertTrue(taskRepository.getTasksByPlanAndGroup("IRS_201", "2018_IRS-373", 0).isEmpty());
 
-		assertTrue(taskRepository.getTasksByCampaignAndGroup("IRS_2018_S1", "2018_IRS-373", System.currentTimeMillis())
+		assertTrue(taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-373", System.currentTimeMillis())
 				.isEmpty());
 
 	}
