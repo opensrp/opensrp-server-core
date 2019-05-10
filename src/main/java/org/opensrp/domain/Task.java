@@ -20,9 +20,9 @@ public class Task {
 
 	private String identifier;
 	
-	private String groupIdentifier;
-
 	private String planIdentifier;
+	
+	private String groupIdentifier;
 
 	private TaskStatus status;
 
