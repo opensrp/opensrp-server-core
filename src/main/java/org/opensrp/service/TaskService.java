@@ -70,8 +70,8 @@ public class TaskService {
 		return taskRepository.get(identifier);
 	}
 
-	public List<Task> getTasksByCampaignAndGroup(String campaign, String group, long serverVersion) {
-		return taskRepository.getTasksByCampaignAndGroup(campaign, group, serverVersion);
+	public List<Task> getTasksByTaskAndGroup(String task, String group, long serverVersion) {
+		return taskRepository.getTasksByPlanAndGroup(task, group, serverVersion);
 	}
 
 	public Set<String> saveTasks(List<Task> tasks) {

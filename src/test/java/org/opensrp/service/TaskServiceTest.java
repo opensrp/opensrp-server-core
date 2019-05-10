@@ -136,10 +136,10 @@ public class TaskServiceTest {
 		Task task = initializeTask();
 		List<Task> expected = new ArrayList<>();
 		expected.add(task);
-		when(taskRepository.getTasksByCampaignAndGroup("IRS_2018_S1", "2018_IRS-3734", 15421904649873l))
+		when(taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 15421904649873l))
 				.thenReturn(expected);
-		List<Task> tasks = taskService.getTasksByCampaignAndGroup("IRS_2018_S1", "2018_IRS-3734", 15421904649873l);
-		verify(taskRepository).getTasksByCampaignAndGroup("IRS_2018_S1", "2018_IRS-3734", 15421904649873l);
+		List<Task> tasks = taskService.getTasksByTaskAndGroup("IRS_2018_S1", "2018_IRS-3734", 15421904649873l);
+		verify(taskRepository).getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 15421904649873l);
 		assertEquals(task, tasks.get(0));
 	}
 
