@@ -4,7 +4,7 @@
         namespace="org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper">
 
     <sql id="Base_Column_List">
-        p.id, p.json, p.is_deleted, p.server_version
+        p.id, p.json, p.date_deleted, p.server_version
     </sql>
 
 
@@ -44,7 +44,7 @@
         select distinct
         <include refid="Base_Column_List" />
         from core.plan p
-        join core.plan_metadata pm on pm.plan_id = p.id and pm.is_deleted = false
+        join core.plan_metadata pm on pm.plan_id = p.id
         <if test="operationalAreaId != null and operationalAreaId != ''">
             and pm.operational_area_id = #{operationalAreaId}
         </if>
