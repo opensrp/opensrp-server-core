@@ -305,7 +305,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
         List<Jurisdiction> jurisdictions = new ArrayList<>();
         Jurisdiction jurisdiction = new Jurisdiction();
-        jurisdiction.setCode("operation_area_1");
+        jurisdiction.setCode("operation_area_2");
         jurisdictions.add(jurisdiction);
         plan.setJurisdiction(jurisdictions);
         plan.setServerVersion(1l);
@@ -328,13 +328,13 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setIdentifier("identifier_7");
         jurisdictions = new ArrayList<>();
         jurisdiction = new Jurisdiction();
-        jurisdiction.setCode("operation_area_2");
+        jurisdiction.setCode("operation_area_1");
         jurisdictions.add(jurisdiction);
         plan.setJurisdiction(jurisdictions);
         plan.setServerVersion(1l);
         planRepository.update(plan);
 
-        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalArea(0l, null);
+        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalArea(0l, "operation_area_2");
         assertEquals(plans.size(), 1);
         testIfAllIdsExists(plans, ids);
     }
