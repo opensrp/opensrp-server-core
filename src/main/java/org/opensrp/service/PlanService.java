@@ -66,8 +66,8 @@ public class PlanService {
         return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
     }
 
-    public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion, String operationalAreaId) {
-        return getPlanRepository().getPlansByServerVersionAndOperationalArea(serverVersion, operationalAreaId);
+    public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion, List<String> operationalAreaIds) {
+        return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds);
     }
 }
 

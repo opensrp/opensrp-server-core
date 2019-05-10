@@ -112,10 +112,10 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         planMapper.updateByPrimaryKey(pgPlan);
     }
 
-    public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(Long serverVersion, String operationalAreaId) {
+    public List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds) {
         PlanExample planExample = new PlanExample();
         planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull();
-        List<Plan> plans = planMapper.selectMany(planExample, operationalAreaId, 0, DEFAULT_FETCH_SIZE);
+        List<Plan> plans = planMapper.selectMany(planExample, operationalAreaIds, 0, DEFAULT_FETCH_SIZE);
 
         return convert(plans);
     }

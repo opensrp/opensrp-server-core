@@ -250,7 +250,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(3l);
         planRepository.add(plan);
 
-        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalArea(2l, null);
+        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(2l, null);
         assertEquals(plans.size(), 2);
         testIfAllIdsExists(plans, ids);
     }
@@ -292,7 +292,9 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(3l);
         planRepository.add(plan);
 
-        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalArea(2l, "operation_area_2");
+        List<String> operationalAreaIds = new ArrayList<>();
+        operationalAreaIds.add("operation_area_2");
+        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(2l, operationalAreaIds);
         assertEquals(plans.size(), 2);
         testIfAllIdsExists(plans, ids);
     }
@@ -334,7 +336,9 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1l);
         planRepository.update(plan);
 
-        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalArea(0l, "operation_area_2");
+        List<String> operationalAreaIds = new ArrayList<>();
+        operationalAreaIds.add("operation_area_1");
+        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(0l, operationalAreaIds);
         assertEquals(plans.size(), 1);
         testIfAllIdsExists(plans, ids);
     }

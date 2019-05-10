@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface PlanRepository extends BaseRepository<PlanDefinition> {
 
-    List<PlanDefinition> getPlansByServerVersionAndOperationalArea(Long serverVersion, String operationalAreaId);
+    List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds);
 }

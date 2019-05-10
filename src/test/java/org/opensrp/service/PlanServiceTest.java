@@ -12,6 +12,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.verify;
@@ -86,8 +87,10 @@ public class PlanServiceTest {
     }
 
     public void testGetPlansByServerVersionAndOperationalAreaShouldCallRepositoryGetPlansByServerVersionAndOperationalAreaMethod() {
-        when(planRepository.getPlansByServerVersionAndOperationalArea(anyLong(), anyString())).thenReturn(new ArrayList<PlanDefinition>());
-        planService.getPlansByServerVersionAndOperationalArea(0l, "operational_area_id");
-        verify(planRepository).getPlansByServerVersionAndOperationalArea(eq(0l), eq("operational_area_id"));
+        when(planRepository.getPlansByServerVersionAndOperationalAreas(anyLong(), any(List.class))).thenReturn(new ArrayList<PlanDefinition>());
+        List<String> operationalAreaIds = new ArrayList<>();
+        operationalAreaIds.add("operation_area_1");
+        planService.getPlansByServerVersionAndOperationalArea(0l, operationalAreaIds);
+        verify(planRepository).getPlansByServerVersionAndOperationalAreas(eq(0l), eq(operationalAreaIds));
     }
 }
