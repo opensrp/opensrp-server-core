@@ -187,7 +187,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     private void updatePlanMetadata(PlanDefinition plan) {
         Set<String> operationalAreas = new HashSet<>();
         for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
-            if (retrievePrimaryKey(plan) == null) {
+            if (retrievePrimaryKey(plan) != null) {
                 insert(jurisdiction, plan);
             }
             operationalAreas.add(jurisdiction.getCode());
