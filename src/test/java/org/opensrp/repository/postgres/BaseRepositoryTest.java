@@ -2,6 +2,9 @@ package org.opensrp.repository.postgres;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import javax.sql.DataSource;
@@ -23,16 +26,17 @@ public abstract class BaseRepositoryTest {
 	
 	@Autowired
 	private DataSource openSRPDataSource;
-	
+	protected static List<String> tableNames = new ArrayList<>();
+
 	/**
 	 * Populates the configured {@link DataSource} with data from passed scripts
 	 * 
 	 * @param the scripts to load
 	 * @throws SQLException
 	 */
-	
 	@Before
 	public void populateDatabase() throws SQLException {
+		truncateTables();
 		if (getDatabaseScripts() == null || getDatabaseScripts().isEmpty())
 			return;
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
@@ -50,6 +54,19 @@ public abstract class BaseRepositoryTest {
 			if (connection != null) {
 				DataSourceUtils.releaseConnection(connection, openSRPDataSource);
 			}
+		}
+	}
+
+	private void truncateTables() {
+		try {
+			for (String tableName : tableNames) {
+				Connection connection = DataSourceUtils.getConnection(openSRPDataSource);
+				Statement statement = connection.createStatement();
+				statement.executeUpdate("TRUNCATE " + tableName);
+				connection.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	

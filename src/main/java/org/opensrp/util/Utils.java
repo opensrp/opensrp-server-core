@@ -205,7 +205,11 @@ public class Utils {
 		CouchDbInstance dbInstance = new StdCouchDbInstance(authenticatedHttpClient);
 		return dbInstance;
 	}
-	
+
+	public static boolean isEmptyList(List list) {
+		return list == null || list.size() == 0;
+	}
+
 	public static class DatabaseConnectionParams {
 		
 		public String url;
