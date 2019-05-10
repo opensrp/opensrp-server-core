@@ -1,7 +1,6 @@
 package org.opensrp.domain;
 
 import com.google.gson.annotations.SerializedName;
-
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.LocalDate;
 import org.opensrp.domain.postgres.Jurisdiction;
