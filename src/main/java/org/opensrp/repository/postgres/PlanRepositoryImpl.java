@@ -190,7 +190,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
                 PlanMetadataExample planMetadataExample = new PlanMetadataExample();
                 planMetadataExample.createCriteria().andOperationalAreaIdEqualTo(jurisdiction.getCode()).andPlanIdEqualTo(plan.getIdentifier());
-                if (planMetadataMapper.selectByExample(planMetadataExample) == null) {
+                if (planMetadataMapper.selectByExample(planMetadataExample).size() == 0) {
                     insert(jurisdiction, plan);
                 }
                 operationalAreas.add(jurisdiction.getCode());

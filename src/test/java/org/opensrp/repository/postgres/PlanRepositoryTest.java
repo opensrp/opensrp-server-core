@@ -333,12 +333,13 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         jurisdiction.setCode("operation_area_1");
         jurisdictions.add(jurisdiction);
         plan.setJurisdiction(jurisdictions);
-        plan.setServerVersion(1l);
+        plan.setServerVersion(0l);
         planRepository.update(plan);
 
         List<String> operationalAreaIds = new ArrayList<>();
         operationalAreaIds.add("operation_area_1");
         List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(0l, operationalAreaIds);
+
         assertEquals(plans.size(), 1);
         testIfAllIdsExists(plans, ids);
     }
