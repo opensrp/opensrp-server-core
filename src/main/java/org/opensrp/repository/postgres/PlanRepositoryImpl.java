@@ -186,11 +186,15 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
     private void updatePlanMetadata(PlanDefinition plan) {
         Set<String> operationalAreas = new HashSet<>();
-        for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
-            if (retrievePrimaryKey(plan) != null) {
-                insert(jurisdiction, plan);
+        if (retrievePrimaryKey(plan) != null) {
+            for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
+                PlanMetadataExample planMetadataExample = new PlanMetadataExample();
+                planMetadataExample.createCriteria().andOperationalAreaIdEqualTo(jurisdiction.getCode()).andPlanIdEqualTo(plan.getIdentifier());
+                if (planMetadataMapper.selectByExample(planMetadataExample) == null) {
+                    insert(jurisdiction, plan);
+                }
+                operationalAreas.add(jurisdiction.getCode());
             }
-            operationalAreas.add(jurisdiction.getCode());
         }
 
         // soft delete operational areas that no longer exist in the plan
