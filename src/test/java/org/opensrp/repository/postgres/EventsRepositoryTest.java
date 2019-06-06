@@ -457,6 +457,13 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		events = eventsRepository.findEvents(eventSearchBean, null, null, 20);
 		assertEquals(7, events.size());
 		
+		eventSearchBean.setEventType("Birth Registration");
+		events = eventsRepository.findEvents(eventSearchBean, null, null, 20);
+		assertEquals(1, events.size());
+		assertEquals("Birth Registration", events.get(0).getEventType());
+		assertEquals("05934ae338431f28bf6793b241bdb88c", events.get(0).getId());
+		
+		eventSearchBean= new EventSearchBean();
 		eventSearchBean.setTeam("ATeam,BTeam");
 		eventSearchBean.setTeamId("3453hgb454-4j345n-llk345,3453hgb454-4j345n-llk348");
 		eventSearchBean.setProviderId("biddemo");
