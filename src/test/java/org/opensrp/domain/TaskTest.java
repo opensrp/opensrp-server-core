@@ -59,4 +59,15 @@ public class TaskTest {
 		assertEquals(taskJson, gson.toJson(task));
 	}
 
+	@Test
+	public void testGettingReasonReference() {
+		String reasonReference = "reasonreferenceuuid";
+		Task task = new Task();
+		assertNull(task.getReasonReference());
+
+		task.setReasonReference(reasonReference);
+		assertEquals(reasonReference, task.getReasonReference());
+
+	}
+
 }
