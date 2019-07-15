@@ -9,8 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.joda.time.DateTime;
+import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.util.DateTimeTypeConverter;
+import org.opensrp.util.PropertiesConverter;
 import org.postgresql.util.PGobject;
 
 import com.google.gson.Gson;
@@ -19,7 +21,8 @@ import com.google.gson.GsonBuilder;
 public class LocationTypeHandler extends BaseTypeHandler implements TypeHandler<PhysicalLocation> {
 
 	private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
+			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter())
+			.registerTypeAdapter(LocationProperty.class, new PropertiesConverter()).create();
 
 	@Override
 	public void setParameter(PreparedStatement ps, int i, PhysicalLocation parameter, JdbcType jdbcType)

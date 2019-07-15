@@ -1,8 +1,10 @@
 package org.opensrp.domain;
 
+import com.google.gson.annotations.SerializedName;
 import org.joda.time.DateTime;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LocationProperty {
 
@@ -35,6 +37,8 @@ public class LocationProperty {
 	private DateTime effectiveEndDate;
 
 	private int version;
+
+	private transient Map<String, String> customProperties = new HashMap<>();
 
 	public String getUid() {
 		return uid;
@@ -116,4 +120,9 @@ public class LocationProperty {
 		this.version = version;
 	}
 
+	public Map<String, String> getCustomProperties() { return customProperties;	}
+
+	public void setCustomProperties(Map<String, String> customProperties) {
+		this.customProperties = customProperties;
+	}
 }
