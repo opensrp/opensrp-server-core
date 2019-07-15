@@ -27,7 +27,7 @@ script:
   - javac -version
   - java -version
   - mvn --version
-  - mvn clean test
+  - mvn clean test -B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 notifications:
   slack:
     secure: Ueku2w/RdSfh1zEDErTbHi+hRx154fH10ykGcfrXPXhTVtWopG73BGDRKfVgU1MCokEo+2jtkRAuJB29R1PV8E3845wWJFs9ZPGcl0rjfx3qP2G/bCuARRHmBJ33YStROvaVF3ppNjJau7VinIF3giem+4WgtQ8KPmqqviDg8Tw=
