@@ -1,19 +1,17 @@
 package org.opensrp.domain;
 
-import com.google.gson.annotations.SerializedName;
-import org.joda.time.DateTime;
-
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.google.gson.annotations.SerializedName;
 
 public class LocationProperty {
 
 	public enum PropertyStatus {
 		@SerializedName("Active")
-		ACTIVE,
-		@SerializedName("Inactive")
-		INACTIVE,
-		@SerializedName("Pending Review")
+		ACTIVE, @SerializedName("Inactive")
+		INACTIVE, @SerializedName("Pending Review")
 		PENDING_REVIEW;
 
 	};
@@ -32,9 +30,9 @@ public class LocationProperty {
 
 	private int geographicLevel;
 
-	private DateTime effectiveStartDate;
+	private Date effectiveStartDate;
 
-	private DateTime effectiveEndDate;
+	private Date effectiveEndDate;
 
 	private int version;
 
@@ -51,7 +49,6 @@ public class LocationProperty {
 	public String getCode() {
 		return code;
 	}
-
 	public void setCode(String code) {
 		this.code = code;
 	}
@@ -96,19 +93,19 @@ public class LocationProperty {
 		this.geographicLevel = geographicLevel;
 	}
 
-	public DateTime getEffectiveStartDate() {
+	public Date getEffectiveStartDate() {
 		return effectiveStartDate;
 	}
 
-	public void setEffectiveStartDate(DateTime effectiveStartDate) {
+	public void setEffectiveStartDate(Date effectiveStartDate) {
 		this.effectiveStartDate = effectiveStartDate;
 	}
 
-	public DateTime getEffectiveEndDate() {
+	public Date getEffectiveEndDate() {
 		return effectiveEndDate;
 	}
 
-	public void setEffectiveEndDate(DateTime effectiveEndDate) {
+	public void setEffectiveEndDate(Date effectiveEndDate) {
 		this.effectiveEndDate = effectiveEndDate;
 	}
 
@@ -120,7 +117,9 @@ public class LocationProperty {
 		this.version = version;
 	}
 
-	public Map<String, String> getCustomProperties() { return customProperties;	}
+	public Map<String, String> getCustomProperties() {
+		return customProperties;
+	}
 
 	public void setCustomProperties(Map<String, String> customProperties) {
 		this.customProperties = customProperties;

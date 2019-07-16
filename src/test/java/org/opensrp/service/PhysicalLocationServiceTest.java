@@ -10,12 +10,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +30,7 @@ import org.opensrp.repository.LocationRepository;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.gson.JsonArray;
+import com.ibm.icu.text.SimpleDateFormat;
 
 @RunWith(PowerMockRunner.class)
 public class PhysicalLocationServiceTest {
@@ -79,7 +80,7 @@ public class PhysicalLocationServiceTest {
 	}
 
 	@Test
-	public void testGetStructure() {
+	public void testGetStructure() throws ParseException {
 
 		when(locationRepository.getStructure("90397")).thenReturn(createStructure());
 		PhysicalLocation structure = locationService.getStructure("90397");
@@ -99,7 +100,8 @@ public class PhysicalLocationServiceTest {
 		assertEquals("3734", structure.getProperties().getParentId());
 		assertNull(structure.getProperties().getName());
 		assertEquals(5, structure.getProperties().getGeographicLevel());
-		assertEquals(new DateTime("2017-01-10"), structure.getProperties().getEffectiveStartDate());
+		assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2017-01-10"),
+				structure.getProperties().getEffectiveStartDate());
 		assertNull(structure.getProperties().getEffectiveEndDate());
 		assertEquals(0, structure.getProperties().getVersion());
 	}
@@ -171,7 +173,7 @@ public class PhysicalLocationServiceTest {
 	}
 
 	@Test
-	public void testAddOrUpdateShouldAddStructure() {
+	public void testAddOrUpdateShouldAddStructure() throws ParseException {
 		when(locationRepository.getStructure("90397")).thenReturn(null);
 		locationService.addOrUpdate(createStructure());
 		verify(locationRepository).add(argumentCaptor.capture());
@@ -188,13 +190,14 @@ public class PhysicalLocationServiceTest {
 		assertEquals("3734", structure.getProperties().getParentId());
 		assertNull(structure.getProperties().getName());
 		assertEquals(5, structure.getProperties().getGeographicLevel());
-		assertEquals(new DateTime("2017-01-10"), structure.getProperties().getEffectiveStartDate());
+		assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2017-01-10"),
+				structure.getProperties().getEffectiveStartDate());
 		assertNull(structure.getProperties().getEffectiveEndDate());
 		assertEquals(0, structure.getProperties().getVersion());
 	}
 
 	@Test
-	public void testAddOrUpdateShouldUpdateStructure() {
+	public void testAddOrUpdateShouldUpdateStructure() throws ParseException {
 		PhysicalLocation physicalLocation = createStructure();
 		when(locationRepository.getStructure("90397")).thenReturn(physicalLocation);
 		locationService.addOrUpdate(physicalLocation);
@@ -212,7 +215,8 @@ public class PhysicalLocationServiceTest {
 		assertEquals("3734", structure.getProperties().getParentId());
 		assertNull(structure.getProperties().getName());
 		assertEquals(5, structure.getProperties().getGeographicLevel());
-		assertEquals(new DateTime("2017-01-10"), structure.getProperties().getEffectiveStartDate());
+		assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2017-01-10"),
+				structure.getProperties().getEffectiveStartDate());
 		assertNull(structure.getProperties().getEffectiveEndDate());
 		assertEquals(0, structure.getProperties().getVersion());
 
