@@ -10,8 +10,10 @@ public class LocationProperty {
 
 	public enum PropertyStatus {
 		@SerializedName("Active")
-		ACTIVE, @SerializedName("Inactive")
-		INACTIVE, @SerializedName("Pending Review")
+		ACTIVE,
+		@SerializedName("Inactive")
+		INACTIVE,
+		@SerializedName("Pending Review")
 		PENDING_REVIEW;
 
 	};
