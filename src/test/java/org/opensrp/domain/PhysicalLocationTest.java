@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import org.junit.Test;
 import org.opensrp.domain.Geometry.GeometryType;
@@ -14,7 +15,6 @@ import org.opensrp.util.PropertiesConverter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
-import com.ibm.icu.text.SimpleDateFormat;
 
 public class PhysicalLocationTest {
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(LocationProperty.class, new PropertiesConverter())

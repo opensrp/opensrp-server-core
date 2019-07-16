@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,7 +31,6 @@ import org.opensrp.repository.LocationRepository;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.gson.JsonArray;
-import com.ibm.icu.text.SimpleDateFormat;
 
 @RunWith(PowerMockRunner.class)
 public class PhysicalLocationServiceTest {
