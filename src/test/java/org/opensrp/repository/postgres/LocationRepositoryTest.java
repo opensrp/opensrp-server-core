@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -45,6 +44,8 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).serializeNulls().create();
 
 	private Set<String> scripts = new HashSet<String>();
+
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	@Autowired
 	private LocationRepository locationRepository;
 
@@ -109,8 +110,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("3734", structure.getProperties().getParentId());
 		assertNull(structure.getProperties().getName());
 		assertEquals(5, structure.getProperties().getGeographicLevel());
-		assertEquals(new SimpleDateFormat("yyyy-MM-dd").parse("2017-01-10"),
-				structure.getProperties().getEffectiveStartDate());
+		assertEquals(dateFormat.parse("2017-01-10"), structure.getProperties().getEffectiveStartDate());
 		assertNull(structure.getProperties().getEffectiveEndDate());
 		assertEquals(0, structure.getProperties().getVersion());
 	}
@@ -214,16 +214,14 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testUpdateLocation() {
+	public void testUpdateLocation() throws ParseException {
 		PhysicalLocation physicalLocation = locationRepository.get("3734");
 		physicalLocation.getGeometry().setType(GeometryType.POLYGON);
 		physicalLocation.getProperties().setStatus(PropertyStatus.PENDING_REVIEW);
 		physicalLocation.getProperties().setGeographicLevel(3);
 
-		Calendar cal = Calendar.getInstance();
-		Date effectiveStartDate = cal.getTime();
-		cal.set(Calendar.YEAR, 1);
-		Date effectiveEndDate = cal.getTime();
+		Date effectiveStartDate = dateFormat.parse("2019-07-15");
+		Date effectiveEndDate = dateFormat.parse("2020-07-15");
 		physicalLocation.getProperties().setEffectiveStartDate(effectiveStartDate);
 		physicalLocation.getProperties().setEffectiveEndDate(effectiveEndDate);
 		physicalLocation.getProperties().setVersion(2);
