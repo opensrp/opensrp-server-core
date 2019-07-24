@@ -65,5 +65,29 @@
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
+	
+	
+	<select id="selectManyByProperties"
+		resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap" parameterType="map">
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		from core.location_metadata lm
+		join core.location l on lm.location_id = l.id
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="!properties.isEmpty()">
+			<foreach collection="properties" item="property">
+				and json -> 'properties' ->> #{property.paramName,jdbcType=VARCHAR} = #{property.paramValue,jdbcType=VARCHAR}
+			</foreach>
+		</if>	
+		<if test="example.orderByClause != null">
+			order by lm.${example.orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
 
 </mapper>
