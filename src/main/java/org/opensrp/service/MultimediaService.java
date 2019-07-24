@@ -23,6 +23,8 @@ public class MultimediaService {
 	public static final String IMAGES_DIR = "patient_images";
 	
 	private static final String VIDEOS_DIR = "videos";
+
+	private final String MULTI_VERSION = "multi_version";
 	
 	private final MultimediaRepository multimediaRepository;
 	
@@ -100,16 +102,16 @@ public class MultimediaService {
 				}
 
 				String fileName;
-				if ("profilepic".equals(multimediaDTO.getContentType())) {
-					// overwrite previously saved image
-					new File(multimediaDirPath).mkdirs();
-					fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
-				} else {
+				if (MULTI_VERSION.equals(multimediaDTO.getContentType())) {
 					// allow saving multiple multimedia associated with one client
 					String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
 					new File(dirPath).mkdirs();
 					fileName = dirPath + File.separator + UUID.randomUUID() + fileExt;
-				}
+				} else {
+                    // overwrite previously saved image
+                    new File(multimediaDirPath).mkdirs();
+                    fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
+                }
 				multimediaDTO.withFilePath(fileName);
 				File multimediaFilePath = new File(fileName);
 				multimediaFile.transferTo(multimediaFilePath);
