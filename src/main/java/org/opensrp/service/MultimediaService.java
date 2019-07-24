@@ -1,8 +1,5 @@
 package org.opensrp.service;
 
-import java.io.File;
-import java.util.List;
-
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
@@ -13,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MultimediaService {
@@ -74,11 +75,10 @@ public class MultimediaService {
 		
 		if (!multimediaFile.isEmpty()) {
 			try {
-				
 				multimediaDirPath = baseMultimediaDirPath + File.separator;
 				String fileExt = ".jpg";
 				switch (multimediaDTO.getContentType()) {
-					
+
 					case "application/octet-stream":
 						multimediaDirPath += VIDEOS_DIR;
 						fileExt = ".mp4";
@@ -98,23 +98,23 @@ public class MultimediaService {
 					default:
 						throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
 				}
-				new File(multimediaDirPath).mkdirs();
-				String fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
+
+				String fileName;
+				if ("profilepic".equals(multimediaDTO.getContentType())) {
+					// overwrite previously saved image
+					new File(multimediaDirPath).mkdirs();
+					fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
+				} else {
+					// allow saving multiple multimedia associated with one client
+					String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
+					new File(dirPath).mkdirs();
+					fileName = dirPath + File.separator + UUID.randomUUID() + fileExt;
+				}
 				multimediaDTO.withFilePath(fileName);
-				File multimediaDir = new File(fileName);
-				
-				multimediaFile.transferTo(multimediaDir);
-				
-				/*
-				 byte[] bytes = multimediaFile.getBytes();
-				 	
-				 BufferedOutputStream stream = new BufferedOutputStream(
-							new FileOutputStream(multimediaDirPath));
-					stream.write(bytes);
-					stream.close();*/
+				File multimediaFilePath = new File(fileName);
+				multimediaFile.transferTo(multimediaFilePath);
 				
 				return true;
-				
 			}
 			catch (Exception e) {
 				logger.error("", e);
