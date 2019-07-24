@@ -102,7 +102,7 @@ public class MultimediaService {
 				}
 
 				String fileName;
-				if (MULTI_VERSION.equals(multimediaDTO.getContentType())) {
+				if (MULTI_VERSION.equals(multimediaDTO.getFileCategory())) {
 					// allow saving multiple multimedia associated with one client
 					String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
 					new File(dirPath).mkdirs();
