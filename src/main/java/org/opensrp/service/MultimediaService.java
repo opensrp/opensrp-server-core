@@ -108,10 +108,10 @@ public class MultimediaService {
 					new File(dirPath).mkdirs();
 					fileName = dirPath + File.separator + UUID.randomUUID() + fileExt;
 				} else {
-                    // overwrite previously saved image
-                    new File(multimediaDirPath).mkdirs();
-                    fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
-                }
+					// overwrite previously saved image
+					new File(multimediaDirPath).mkdirs();
+					fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
+				}
 				multimediaDTO.withFilePath(fileName);
 				File multimediaFilePath = new File(fileName);
 				multimediaFile.transferTo(multimediaFilePath);
