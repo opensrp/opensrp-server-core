@@ -95,9 +95,9 @@
 		</if>
 		<if test="properties != null" >
 			<trim prefix="and "  >		
-				<foreach collection="properties" index="key"
-					item="property" separator=" and ">
-					json -> 'properties' ->> #{key,jdbcType=VARCHAR} = #{value,jdbcType=VARCHAR}
+				<foreach collection="properties" index="propertyName"
+					item="propertyValue" separator=" and ">
+					json -> 'properties' ->> #{propertyName,jdbcType=VARCHAR} = #{propertyValue,jdbcType=VARCHAR}
 				</foreach>
 			</trim>
 		</if>
