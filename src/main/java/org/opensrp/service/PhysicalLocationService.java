@@ -125,11 +125,29 @@ public class PhysicalLocationService {
 		return locationRepository.findStructureAndFamilyDetails(latitude, longitude, radius);
 	}
 
+	/**
+	 * This methods searches for jurisdictions using the parentId and location properties
+	 * It returns the Geometry optionally if @param returnGeometry is set to true. 
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param parentId string the parent id of the jurisdiction being searched
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @return jurisdictions matching the params 
+	 * @see org.opensrp.repository.LocationRepository#findLocationsByProperties(boolean, String, Map)
+	 */
 	public List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId,
 			Map<String, String> properties) {
 		return locationRepository.findLocationsByProperties(returnGeometry, parentId, properties);
 	}
 
+	/**
+	 * This methods searches for structures using the parentId and location properties
+	 * It returns the Geometry optionally if @param returnGeometry is set to true. 
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param parentId string the parent id of the structure being searched
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @return structures matching the params 
+	 * @see org.opensrp.repository.LocationRepository#findStructuresByProperties(boolean, String, Map)
+	 */
 	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
 			Map<String, String> properties) {
 		return locationRepository.findStructuresByProperties(returnGeometry, parentId, properties);

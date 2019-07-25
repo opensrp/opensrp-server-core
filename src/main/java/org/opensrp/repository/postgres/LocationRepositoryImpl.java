@@ -281,6 +281,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return structureDetails.values();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId,
 			Map<String, String> properties) {
@@ -293,6 +296,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return convert(locations);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
 			Map<String, String> properties) {
