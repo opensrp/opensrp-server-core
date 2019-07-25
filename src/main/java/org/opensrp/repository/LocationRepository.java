@@ -25,5 +25,9 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 
 	Collection<StructureDetails> findStructureAndFamilyDetails(double latitude, double longitude, double radius);
 
-	List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId, Map<String, String> properties);
+	List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId,
+			Map<String, String> properties);
+
+	List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
+			Map<String, String> properties);
 }

@@ -125,9 +125,14 @@ public class PhysicalLocationService {
 		return locationRepository.findStructureAndFamilyDetails(latitude, longitude, radius);
 	}
 
-	public List<PhysicalLocation> findLocationByProperties(boolean returnGeometry, String parentId,
+	public List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId,
 			Map<String, String> properties) {
 		return locationRepository.findLocationsByProperties(returnGeometry, parentId, properties);
+	}
+
+	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
+			Map<String, String> properties) {
+		return locationRepository.findStructuresByProperties(returnGeometry, parentId, properties);
 	}
 
 }

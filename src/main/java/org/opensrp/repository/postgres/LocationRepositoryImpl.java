@@ -294,6 +294,18 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
+	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
+			Map<String, String> properties) {
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		if (StringUtils.isNotBlank(parentId)) {
+			structureMetadataExample.createCriteria().andParentIdEqualTo(parentId);
+		}
+		List<Location> locations = structureMetadataMapper.selectManyByProperties(structureMetadataExample, properties,
+				returnGeometry, 0, DEFAULT_FETCH_SIZE);
+		return convert(locations);
+	}
+
+	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);
 		if (uniqueId == null) {
