@@ -257,8 +257,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public Collection<StructureDetails> findStructureAndFamilyDetails(double latitude, double longitude, double radius) {
-		List<StructureFamilyDetails> pgList=structureMapper.selectStructureAndFamilyWithinRadius(latitude, longitude, radius);
+	public Collection<StructureDetails> findStructureAndFamilyDetails(double latitude, double longitude,
+			double radius) {
+		List<StructureFamilyDetails> pgList = structureMapper.selectStructureAndFamilyWithinRadius(latitude, longitude,
+				radius);
 		Map<String, StructureDetails> structureDetails = new HashMap<>();
 		for (StructureFamilyDetails detail : pgList) {
 			StructureDetails structure;
@@ -277,6 +279,18 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			}
 		}
 		return structureDetails.values();
+	}
+
+	@Override
+	public List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId,
+			Map<String, String> properties) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		if (StringUtils.isNotBlank(parentId)) {
+			locationMetadataExample.createCriteria().andParentIdEqualTo(parentId);
+		}
+		List<Location> locations = locationMetadataMapper.selectManyByProperties(locationMetadataExample, properties,
+				returnGeometry, 0, DEFAULT_FETCH_SIZE);
+		return convert(locations);
 	}
 
 	@Override

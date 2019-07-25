@@ -2,6 +2,7 @@ package org.opensrp.repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -23,4 +24,6 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	List<PhysicalLocation> getAllStructures();
 
 	Collection<StructureDetails> findStructureAndFamilyDetails(double latitude, double longitude, double radius);
+
+	List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId, Map<String, String> properties);
 }
