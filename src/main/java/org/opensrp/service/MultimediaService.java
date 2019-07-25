@@ -143,7 +143,7 @@ public class MultimediaService {
 		return multimediaRepository.findByCaseId(entityId);
 	}
 
-	public List<Multimedia> get(String entityId, String contentType, String fileCategory) {
+	public List<Multimedia> getMultimediaFiles(String entityId, String contentType, String fileCategory) {
 		return multimediaRepository.get(entityId, contentType, fileCategory);
 	}
 }
