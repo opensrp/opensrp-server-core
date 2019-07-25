@@ -3,6 +3,7 @@ package org.opensrp.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -122,6 +123,11 @@ public class PhysicalLocationService {
 
 	public Collection<StructureDetails> findStructuresWithinRadius(double latitude, double longitude, double radius) {
 		return locationRepository.findStructureAndFamilyDetails(latitude, longitude, radius);
+	}
+
+	public List<PhysicalLocation> findLocationByProperties(boolean returnGeometry, String parentId,
+			Map<String, String> properties) {
+		return locationRepository.findLocationsByProperties(returnGeometry, parentId, properties);
 	}
 
 }
