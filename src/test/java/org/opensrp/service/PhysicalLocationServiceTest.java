@@ -14,7 +14,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Before;
@@ -431,6 +434,32 @@ public class PhysicalLocationServiceTest {
 		assertEquals(expectedDetails, detailsFromService);
 		verify(locationRepository).findStructureAndFamilyDetails(latitude, longitude, 1000);
 
+	}
+
+	@Test
+	public void testFindLocationsByProperties() {
+		List<PhysicalLocation> expectedLocations = Collections.singletonList(createLocation());
+
+		String parentId = UUID.randomUUID().toString();
+		Map<String, String> properties = new HashMap<>();
+		when(locationRepository.findLocationsByProperties(true, parentId, properties)).thenReturn(expectedLocations);
+		List<PhysicalLocation> locations = locationService.findLocationsByProperties(true, parentId, properties);
+		verify(locationRepository).findLocationsByProperties(true, parentId, properties);
+		assertEquals(1, locations.size());
+		assertEquals(expectedLocations, locations);
+
+	}
+
+	@Test
+	public void testFindStructuresByProperties() {
+		List<PhysicalLocation> expectedLocations = Collections.singletonList(createStructure());
+		String parentId = UUID.randomUUID().toString();
+		Map<String, String> properties = new HashMap<>();
+		when(locationRepository.findStructuresByProperties(false, parentId, properties)).thenReturn(expectedLocations);
+		List<PhysicalLocation> locations = locationService.findStructuresByProperties(false, parentId, properties);
+		verify(locationRepository).findStructuresByProperties(false, parentId, properties);
+		assertEquals(1, locations.size());
+		assertEquals(expectedLocations, locations);
 	}
 
 	private PhysicalLocation createLocation() {
