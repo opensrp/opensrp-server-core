@@ -25,6 +25,14 @@ public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> imp
 		List<MultiMedia> files = multiMediaMapper.selectByExample(example);
 		return files.isEmpty() ? null : convert(files.get(0));
 	}
+
+	@Override
+	public List<Multimedia> get(String entityId, String contentType, String fileCategory) {
+		MultiMediaExample example = new MultiMediaExample();
+		example.createCriteria().andCaseIdEqualTo(entityId).andContentTypeEqualTo(contentType).andFileCategoryEqualTo(fileCategory);
+		List<MultiMedia> files = multiMediaMapper.selectByExample(example);
+		return convert(files);
+	}
 	
 	@Override
 	public void add(Multimedia entity) {
