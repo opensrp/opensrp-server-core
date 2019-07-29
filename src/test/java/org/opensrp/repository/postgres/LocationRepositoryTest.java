@@ -12,8 +12,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -554,6 +556,110 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		double metersPerDegree = 110637;
 		assertEquals(1,
 				locationRepository.findStructureAndFamilyDetails(latitude + 1, longitude, metersPerDegree).size());
+	}
+
+	@Test
+	public void testFindLocationsByPropertiesWithoutProperties() {
+		List<PhysicalLocation> locations = locationRepository.findLocationsByProperties(false, "21", null);
+		assertEquals(1, locations.size());
+		assertEquals("3734", locations.get(0).getId());
+		assertNull(locations.get(0).getGeometry());
+
+		locations = locationRepository.findLocationsByProperties(true, "21", null);
+		assertEquals(1, locations.size());
+		assertEquals("3734", locations.get(0).getId());
+		assertNotNull(locations.get(0).getGeometry());
+
+		locations = locationRepository.findLocationsByProperties(true, null, null);
+		assertEquals(1, locations.size());
+		assertEquals("3734", locations.get(0).getId());
+		assertEquals(GeometryType.MULTI_POLYGON, locations.get(0).getGeometry().getType());
+		assertEquals(267,
+				locations.get(0).getGeometry().getCoordinates().get(0).getAsJsonArray().get(0).getAsJsonArray().size());
+
+		// test non-existent parent
+		locations = locationRepository.findLocationsByProperties(true, "1233", null);
+		assertTrue(locations.isEmpty());
+
+	}
+
+	@Test
+	public void testFindLocationsByProperties() {
+
+		Map<String, String> filters = new HashMap<>();
+		filters.put("code", "3734");
+		filters.put("name", "01_5");
+		filters.put("uid", "41587456-b7c8-4c4e-b433-23a786f742fc");
+		List<PhysicalLocation> locations = locationRepository.findLocationsByProperties(true, null, filters);
+		assertEquals(1, locations.size());
+		assertEquals("3734", locations.get(0).getId());
+		assertEquals("01_5", locations.get(0).getProperties().getName());
+		assertEquals(GeometryType.MULTI_POLYGON, locations.get(0).getGeometry().getType());
+		JsonArray coordinates = locations.get(0).getGeometry().getCoordinates().get(0).getAsJsonArray().get(0)
+				.getAsJsonArray();
+		assertEquals(267, coordinates.size());
+
+		JsonArray coordinate1 = coordinates.get(0).getAsJsonArray();
+		assertEquals(32.59989007736522, coordinate1.get(0).getAsDouble(), 0);
+		assertEquals(-14.167432040756012, coordinate1.get(1).getAsDouble(), 0);
+
+		JsonArray coordinate67 = coordinates.get(66).getAsJsonArray();
+		assertEquals(32.5988341383848, coordinate67.get(0).getAsDouble(), 0);
+		assertEquals(-14.171814074659776, coordinate67.get(1).getAsDouble(), 0);
+
+		// test non-existent property value
+		filters.put("name", "name1");
+		locations = locationRepository.findLocationsByProperties(true, null, filters);
+		assertTrue(locations.isEmpty());
+
+	}
+
+	@Test
+	public void testFindStructuresByPropertiesWithoutProperties() {
+		List<PhysicalLocation> structures = locationRepository.findStructuresByProperties(false, "3734", null);
+		assertEquals(1, structures.size());
+		assertEquals("90397", structures.get(0).getId());
+		assertNull(structures.get(0).getGeometry());
+
+		structures = locationRepository.findStructuresByProperties(true, "3734", null);
+		assertEquals(1, structures.size());
+		assertEquals("90397", structures.get(0).getId());
+		assertNotNull(structures.get(0).getGeometry());
+
+		structures = locationRepository.findStructuresByProperties(true, null, null);
+		assertEquals(1, structures.size());
+		assertEquals("90397", structures.get(0).getId());
+		assertEquals(GeometryType.POLYGON, structures.get(0).getGeometry().getType());
+		assertEquals(2, structures.get(0).getGeometry().getCoordinates().get(0).getAsJsonArray().get(0).getAsJsonArray()
+				.size());
+
+		// test non-existent parent
+		structures = locationRepository.findLocationsByProperties(true, "1233", null);
+		assertTrue(structures.isEmpty());
+	}
+
+	@Test
+	public void testFindStructuresByProperties() {
+
+		Map<String, String> filters = new HashMap<>();
+		filters.put("code", "21384443");
+		filters.put("geographicLevel", "5");
+		filters.put("type", "Residential Structure");
+		List<PhysicalLocation> locations = locationRepository.findStructuresByProperties(true, null, filters);
+		assertEquals(1, locations.size());
+		assertEquals("90397", locations.get(0).getId());
+		assertEquals("21384443", locations.get(0).getProperties().getCode());
+		assertNull(locations.get(0).getProperties().getName());
+		assertEquals("Residential Structure", locations.get(0).getProperties().getType());
+		assertEquals(GeometryType.POLYGON, locations.get(0).getGeometry().getType());
+		assertEquals(2,
+				locations.get(0).getGeometry().getCoordinates().get(0).getAsJsonArray().get(0).getAsJsonArray().size());
+
+		// test non-existent property
+		filters.put("name", "House23");
+		locations = locationRepository.findStructuresByProperties(true, null, filters);
+		assertTrue(locations.isEmpty());
+
 	}
 
 }

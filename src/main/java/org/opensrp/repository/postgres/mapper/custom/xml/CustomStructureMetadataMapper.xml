@@ -6,6 +6,11 @@
 	<sql id="Base_Column_List">
 		s.id, s.json
 	</sql>
+	
+	
+	<sql id="No_Geometry_Column_List">
+		s.id, s.json - 'geometry' as json
+	</sql>
 
 	<select id="findById" parameterType="java.lang.String"
 		resultMap="org.opensrp.repository.postgres.mapper.StructureMapper.BaseResultMap">
@@ -59,6 +64,40 @@
 		join core.structure s on sm.structure_id = s.id
 		<if test="_parameter != null">
 			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="example.orderByClause != null">
+			order by sm.${example.orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	<select id="selectManyByProperties"
+		resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+		
+		<if test="geometry">
+				<include refid="Base_Column_List" />		
+		</if>
+		
+		<if test="!geometry">
+				<include refid="No_Geometry_Column_List" />		
+		</if>
+	
+		from core.structure_metadata sm
+		join core.structure s on sm.structure_id = s.id
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="properties != null" >
+			<trim prefix="and "  >		
+				<foreach collection="properties" index="propertyName"
+					item="propertyValue" separator=" and ">
+					json -> 'properties' ->> #{propertyName,jdbcType=VARCHAR} = #{propertyValue,jdbcType=VARCHAR}
+				</foreach>
+			</trim>
 		</if>
 		<if test="example.orderByClause != null">
 			order by sm.${example.orderByClause}
