@@ -28,6 +28,9 @@ public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> imp
 		return files.isEmpty() ? null : convert(files.get(0));
 	}
 
+    /**
+     *{@inheritDoc}
+     */
 	@Override
 	public List<Multimedia> get(String entityId, String contentType, String fileCategory) {
 		MultiMediaExample example = new MultiMediaExample();
@@ -96,7 +99,15 @@ public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> imp
 		multiMediaMapper.deleteByPrimaryKey(id);
 		
 	}
-	
+
+    /**
+     * Returns the first Multimedia object that matches the entityId passed
+     * and excluding all MULTI_VERSION category files
+     *
+     * @param entityId The baseEntityId of the client who owns the multimedia file(s)
+     *
+     * @return A {@link Multimedia} object
+     */
 	@Override
 	public Multimedia findByCaseId(String entityId) {
 		MultiMediaExample example = new MultiMediaExample();

@@ -70,7 +70,15 @@ public class MultimediaService {
 		
 		return "fail";
 	}
-	
+
+	/**
+	 * Saves a multi-part file uploaded to the server
+	 *
+	 * @param multimediaDTO {@link MultimediaDTO} object populated with information about the file to be saved
+	 * @param multimediaFile {@link MultipartFile} file to save to disk
+	 *
+	 * @return true if the file was saved else false
+	 */
 	public boolean uploadFile(MultimediaDTO multimediaDTO, MultipartFile multimediaFile) {
 		
 		// String baseMultimediaDirPath = System.getProperty("user.home");
@@ -143,6 +151,15 @@ public class MultimediaService {
 		return multimediaRepository.findByCaseId(entityId);
 	}
 
+	/**
+	 * Returns a {@link List} of {@link Multimedia} objects that match the given parameters
+	 *
+	 * @param entityId The baseEntityId of the client who owns the multimedia file(s)
+	 * @param contentType The contentType of the multimedia file(s) to be fetched
+	 * @param fileCategory The file category of the multimedia file(s)
+	 *
+	 * @return A {@link List} of {@link Multimedia} objects
+	 */
 	public List<Multimedia> getMultimediaFiles(String entityId, String contentType, String fileCategory) {
 		return multimediaRepository.get(entityId, contentType, fileCategory);
 	}
