@@ -118,5 +118,17 @@ public class MultimediaRepositoryTest extends BaseRepositoryTest {
 		assertEquals("317f8db1bb6cc4b15ecc9993a2922f47", multimedia.get(0).getId());
 		assertEquals("24eec0d8-e0ee-4f22-9d6b-3cca84bdefcf", multimedia.get(0).getCaseId());
 	}
-	
+
+	@Test
+	public void testGetExtended() {
+		Multimedia multimedia = new Multimedia("caseId1", "providerId1", "contentType1", "filePath1", "fileCategory1");
+		multimediaRepository.add(multimedia);
+		multimedia = new Multimedia("caseId1", "providerId1", "contentType1", "filePath2", "fileCategory1");
+		multimediaRepository.add(multimedia);
+
+		List<Multimedia> multimediaFiles = multimediaRepository.get("caseId1", "contentType1", "fileCategory1");
+		assertEquals(multimediaFiles.size(), 2);
+		assertEquals(multimediaFiles.get(0).getFilePath(), "filePath1");
+		assertEquals(multimediaFiles.get(1).getFilePath(), "filePath2");
+	}
 }
