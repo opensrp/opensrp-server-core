@@ -3,6 +3,7 @@ package org.opensrp.service;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -122,6 +123,34 @@ public class PhysicalLocationService {
 
 	public Collection<StructureDetails> findStructuresWithinRadius(double latitude, double longitude, double radius) {
 		return locationRepository.findStructureAndFamilyDetails(latitude, longitude, radius);
+	}
+
+	/**
+	 * This methods searches for jurisdictions using the parentId and location properties
+	 * It returns the Geometry optionally if @param returnGeometry is set to true. 
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param parentId string the parent id of the jurisdiction being searched
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @return jurisdictions matching the params 
+	 * @see org.opensrp.repository.LocationRepository#findLocationsByProperties(boolean, String, Map)
+	 */
+	public List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId,
+			Map<String, String> properties) {
+		return locationRepository.findLocationsByProperties(returnGeometry, parentId, properties);
+	}
+
+	/**
+	 * This methods searches for structures using the parentId and location properties
+	 * It returns the Geometry optionally if @param returnGeometry is set to true. 
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param parentId string the parent id of the structure being searched
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @return structures matching the params 
+	 * @see org.opensrp.repository.LocationRepository#findStructuresByProperties(boolean, String, Map)
+	 */
+	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
+			Map<String, String> properties) {
+		return locationRepository.findStructuresByProperties(returnGeometry, parentId, properties);
 	}
 
 }
