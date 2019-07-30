@@ -12,6 +12,8 @@ import org.opensrp.repository.postgres.mapper.custom.CustomMultiMediaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import static org.opensrp.service.MultimediaService.MULTI_VERSION;
+
 @Repository("multimediaRepositoryPostgres")
 public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> implements MultimediaRepository {
 	
@@ -98,7 +100,7 @@ public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> imp
 	@Override
 	public Multimedia findByCaseId(String entityId) {
 		MultiMediaExample example = new MultiMediaExample();
-		example.createCriteria().andCaseIdEqualTo(entityId);
+		example.createCriteria().andCaseIdEqualTo(entityId).andFileCategoryNotEqualTo(MULTI_VERSION);
 		List<MultiMedia> multiMediaFiles = multiMediaMapper.selectByExample(example);
 		return multiMediaFiles.isEmpty() ? null : convert(multiMediaFiles.get(0));
 	}

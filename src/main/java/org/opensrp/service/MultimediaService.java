@@ -21,10 +21,10 @@ public class MultimediaService {
 	private static Logger logger = LoggerFactory.getLogger(MultimediaService.class.toString());
 	
 	public static final String IMAGES_DIR = "patient_images";
+
+	public static final String MULTI_VERSION = "multi_version";
 	
 	private static final String VIDEOS_DIR = "videos";
-
-	private final String MULTI_VERSION = "multi_version";
 	
 	private final MultimediaRepository multimediaRepository;
 	
