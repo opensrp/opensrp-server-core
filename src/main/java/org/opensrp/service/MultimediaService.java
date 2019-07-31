@@ -1,8 +1,5 @@
 package org.opensrp.service;
 
-import java.io.File;
-import java.util.List;
-
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
@@ -14,12 +11,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class MultimediaService {
 	
 	private static Logger logger = LoggerFactory.getLogger(MultimediaService.class.toString());
 	
 	public static final String IMAGES_DIR = "patient_images";
+
+	public static final String MULTI_VERSION = "multi_version";
 	
 	private static final String VIDEOS_DIR = "videos";
 	
@@ -67,18 +70,25 @@ public class MultimediaService {
 		
 		return "fail";
 	}
-	
+
+	/**
+	 * Saves a multi-part file uploaded to the server
+	 *
+	 * @param multimediaDTO {@link MultimediaDTO} object populated with information about the file to be saved
+	 * @param multimediaFile {@link MultipartFile} file to save to disk
+	 *
+	 * @return true if the file was saved else false
+	 */
 	public boolean uploadFile(MultimediaDTO multimediaDTO, MultipartFile multimediaFile) {
 		
 		// String baseMultimediaDirPath = System.getProperty("user.home");
 		
 		if (!multimediaFile.isEmpty()) {
 			try {
-				
 				multimediaDirPath = baseMultimediaDirPath + File.separator;
 				String fileExt = ".jpg";
 				switch (multimediaDTO.getContentType()) {
-					
+
 					case "application/octet-stream":
 						multimediaDirPath += VIDEOS_DIR;
 						fileExt = ".mp4";
@@ -98,23 +108,23 @@ public class MultimediaService {
 					default:
 						throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
 				}
-				new File(multimediaDirPath).mkdirs();
-				String fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
+
+				String fileName;
+				if (MULTI_VERSION.equals(multimediaDTO.getFileCategory())) {
+					// allow saving multiple multimedia associated with one client
+					String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
+					new File(dirPath).mkdirs();
+					fileName = dirPath + File.separator + UUID.randomUUID() + fileExt;
+				} else {
+					// overwrite previously saved image
+					new File(multimediaDirPath).mkdirs();
+					fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
+				}
 				multimediaDTO.withFilePath(fileName);
-				File multimediaDir = new File(fileName);
-				
-				multimediaFile.transferTo(multimediaDir);
-				
-				/*
-				 byte[] bytes = multimediaFile.getBytes();
-				 	
-				 BufferedOutputStream stream = new BufferedOutputStream(
-							new FileOutputStream(multimediaDirPath));
-					stream.write(bytes);
-					stream.close();*/
+				File multimediaFilePath = new File(fileName);
+				multimediaFile.transferTo(multimediaFilePath);
 				
 				return true;
-				
 			}
 			catch (Exception e) {
 				logger.error("", e);
@@ -139,5 +149,18 @@ public class MultimediaService {
 	
 	public Multimedia findByCaseId(String entityId) {
 		return multimediaRepository.findByCaseId(entityId);
+	}
+
+	/**
+	 * Returns a {@link List} of {@link Multimedia} objects that match the given parameters
+	 *
+	 * @param entityId The baseEntityId of the client who owns the multimedia file(s)
+	 * @param contentType The contentType of the multimedia file(s) to be fetched
+	 * @param fileCategory The file category of the multimedia file(s)
+	 *
+	 * @return A {@link List} of {@link Multimedia} objects
+	 */
+	public List<Multimedia> getMultimediaFiles(String entityId, String contentType, String fileCategory) {
+		return multimediaRepository.get(entityId, contentType, fileCategory);
 	}
 }

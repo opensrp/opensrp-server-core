@@ -12,6 +12,8 @@ import org.opensrp.repository.postgres.mapper.custom.CustomMultiMediaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import static org.opensrp.service.MultimediaService.MULTI_VERSION;
+
 @Repository("multimediaRepositoryPostgres")
 public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> implements MultimediaRepository {
 	
@@ -24,6 +26,17 @@ public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> imp
 		example.createCriteria().andDocumentIdEqualTo(id);
 		List<MultiMedia> files = multiMediaMapper.selectByExample(example);
 		return files.isEmpty() ? null : convert(files.get(0));
+	}
+
+    /**
+     *{@inheritDoc}
+     */
+	@Override
+	public List<Multimedia> get(String entityId, String contentType, String fileCategory) {
+		MultiMediaExample example = new MultiMediaExample();
+		example.createCriteria().andCaseIdEqualTo(entityId).andContentTypeEqualTo(contentType).andFileCategoryEqualTo(fileCategory);
+		List<MultiMedia> files = multiMediaMapper.selectByExample(example);
+		return convert(files);
 	}
 	
 	@Override
@@ -86,11 +99,19 @@ public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> imp
 		multiMediaMapper.deleteByPrimaryKey(id);
 		
 	}
-	
+
+    /**
+     * Returns the first Multimedia object that matches the entityId passed
+     * and excluding all MULTI_VERSION category files
+     *
+     * @param entityId The baseEntityId of the client who owns the multimedia file(s)
+     *
+     * @return A {@link Multimedia} object
+     */
 	@Override
 	public Multimedia findByCaseId(String entityId) {
 		MultiMediaExample example = new MultiMediaExample();
-		example.createCriteria().andCaseIdEqualTo(entityId);
+		example.createCriteria().andCaseIdEqualTo(entityId).andFileCategoryNotEqualTo(MULTI_VERSION);
 		List<MultiMedia> multiMediaFiles = multiMediaMapper.selectByExample(example);
 		return multiMediaFiles.isEmpty() ? null : convert(multiMediaFiles.get(0));
 	}
