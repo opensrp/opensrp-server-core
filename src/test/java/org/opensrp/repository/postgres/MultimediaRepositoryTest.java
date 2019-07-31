@@ -129,7 +129,7 @@ public class MultimediaRepositoryTest extends BaseRepositoryTest {
 
 		String filePath1 = multimediaFiles.get(0).getFilePath();
 		String filePath2 = multimediaFiles.get(1).getFilePath();
-		assertTrue(filePath1.equals("filePath1") || filePath1.equals("filePath2"));
-		assertTrue(filePath2.equals("filePath1") || filePath2.equals("filePath2"));
+		assertTrue("filePath1".equals(filePath1) || "filePath2".equals(filePath1));
+		assertTrue("filePath1".equals(filePath2) || "filePath2".equals(filePath2));
 	}
 }
