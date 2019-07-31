@@ -1,19 +1,17 @@
 package org.opensrp.repository.postgres;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.Test;
+import org.opensrp.domain.Multimedia;
+import org.opensrp.repository.MultimediaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
-import org.opensrp.domain.Multimedia;
-import org.opensrp.repository.MultimediaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import static org.junit.Assert.*;
 
 public class MultimediaRepositoryTest extends BaseRepositoryTest {
 	
@@ -128,7 +126,10 @@ public class MultimediaRepositoryTest extends BaseRepositoryTest {
 
 		List<Multimedia> multimediaFiles = multimediaRepository.get("caseId1", "contentType1", "fileCategory1");
 		assertEquals(multimediaFiles.size(), 2);
-		assertEquals(multimediaFiles.get(0).getFilePath(), "filePath1");
-		assertEquals(multimediaFiles.get(1).getFilePath(), "filePath2");
+
+		String filePath1 = multimediaFiles.get(0).getFilePath();
+		String filePath2 = multimediaFiles.get(1).getFilePath();
+		assertTrue(filePath1.equals("filePath1") || filePath1.equals("filePath2"));
+		assertTrue(filePath2.equals("filePath1") || filePath2.equals("filePath2"));
 	}
 }
