@@ -11,5 +11,5 @@ import java.util.List;
  * Created by Vincent Karuri on 02/05/2019
  */
 public interface CustomPlanMapper extends PlanMapper {
-    List<Plan> selectMany(@Param("example") PlanExample planExample, @Param("operationalAreaIds") List<String> operationalAreaIds, @Param("offset") int offset, @Param("limit") int limit);
+    List<Plan> selectMany(@Param("example") PlanExample planExample, @Param("offset") int offset, @Param("limit") int limit);
 }
