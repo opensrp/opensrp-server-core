@@ -1,17 +1,26 @@
 package org.opensrp.repository.postgres;
 
+import static org.opensrp.util.Utils.isEmptyList;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.opensrp.domain.PlanDefinition;
-import org.opensrp.domain.postgres.*;
+import org.opensrp.domain.postgres.Jurisdiction;
+import org.opensrp.domain.postgres.Plan;
+import org.opensrp.domain.postgres.PlanExample;
+import org.opensrp.domain.postgres.PlanMetadata;
+import org.opensrp.domain.postgres.PlanMetadataExample;
+import org.opensrp.domain.postgres.PlanMetadataKey;
 import org.opensrp.repository.PlanRepository;
-import org.opensrp.repository.postgres.mapper.PlanMetadataMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper;
+import org.opensrp.repository.postgres.mapper.custom.CustomPlanMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.*;
-
-import static org.opensrp.util.Utils.isEmptyList;
 
 /**
  * Created by Vincent Karuri on 02/05/2019
@@ -24,7 +33,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     private CustomPlanMapper planMapper;
 
     @Autowired
-    private PlanMetadataMapper planMetadataMapper;
+    private CustomPlanMetadataMapper planMetadataMapper;
     
     @Override
     public PlanDefinition get(String id) {
@@ -92,7 +101,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     public List<PlanDefinition> getAll() {
         PlanExample planExample = new PlanExample();
         planExample.createCriteria().andDateDeletedIsNull();
-        List<Plan> plans = planMapper.selectMany(planExample, null,0, DEFAULT_FETCH_SIZE);
+        List<Plan> plans = planMapper.selectMany(planExample,0, DEFAULT_FETCH_SIZE);
         return convert(plans);
     }
 
@@ -115,7 +124,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     public List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds) {
         PlanExample planExample = new PlanExample();
         planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull();
-        List<Plan> plans = planMapper.selectMany(planExample, operationalAreaIds, 0, DEFAULT_FETCH_SIZE);
+        List<Plan> plans = planMetadataMapper.selectMany(planExample, operationalAreaIds, 0, DEFAULT_FETCH_SIZE);
 
         return convert(plans);
     }
