@@ -19,9 +19,9 @@ public class Task {
 	}
 
 	private String identifier;
-	
+
 	private String planIdentifier;
-	
+
 	private String groupIdentifier;
 
 	private TaskStatus status;
@@ -55,6 +55,10 @@ public class Task {
 	private Long serverVersion;
 
 	private String reasonReference;
+
+	private String location;
+
+	private String requester;
 
 	public String getIdentifier() {
 		return identifier;
@@ -192,7 +196,28 @@ public class Task {
 		this.serverVersion = serverVersion;
 	}
 
-	public String getReasonReference() { return reasonReference; }
+	public String getReasonReference() {
+		return reasonReference;
+	}
 
-	public void setReasonReference(String reasonReference) { this.reasonReference = reasonReference; }
+	public void setReasonReference(String reasonReference) {
+		this.reasonReference = reasonReference;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getRequester() {
+		return requester;
+	}
+
+	public void setRequester(String requester) {
+		this.requester = requester;
+	}
+
 }
