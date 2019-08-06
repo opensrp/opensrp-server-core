@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="org.opensrp.repository.postgres.mapper.custom.CustomClientFormMapper">
+
+	<resultMap id="BaseClientFormResultMap" type="org.opensrp.domain.postgres.ClientForm">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="json" jdbcType="OTHER" property="json"
+			typeHandler="org.opensrp.repository.postgres.handler.ClientFormTypeHandler" />
+		<result
+			column="created_at" jdbcType="BIGINT" property="createdAt"/>
+	</resultMap>
+
+	<select id="selectClientFormByAppVersion" parameterType="java.lang.Integer"
+		resultMap="BaseClientFormResultMap">
+		select *
+		from client_forms
+		WHERE id = #{id,jdbcType=BIGINT}
+	</select>
+
+	<insert id="insertClientForm" parameterType="org.opensrp.domain.postgres.ClientForm"
+		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		insert into client_forms(json) values (#{json, jdbcType=OTHER})
+	</insert>
+</mapper>
