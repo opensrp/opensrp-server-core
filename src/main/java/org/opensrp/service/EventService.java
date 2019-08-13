@@ -157,8 +157,7 @@ public class EventService {
 			        
 			        isCardId ? clientService
 			                .findAllByAttribute(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
-			                : clientService.findAllByIdentifier(Client.ZEIR_ID.toUpperCase(),
-			                    identifier.substring(CARD_ID_PREFIX.length()));
+			                : clientService.findAllByIdentifier(Client.ZEIR_ID.toUpperCase(), identifier);
 			
 			if (clients == null || clients.isEmpty()) {
 				return event;

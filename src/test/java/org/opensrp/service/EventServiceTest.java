@@ -147,6 +147,9 @@ public class EventServiceTest extends BaseRepositoryTest {
 		Event event = new Event().withEventType("Vaccination").withProviderId("tester111")
 		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "218229-3");
 		Event outOfAreaEvent = eventService.processOutOfArea(event);
+		
+		assertNotNull(outOfAreaEvent);
+		assertNotNull(outOfAreaEvent.getDetails());
 		assertEquals(1, outOfAreaEvent.getDetails().size());
 		assertEquals("biddemo", outOfAreaEvent.getDetails().get("out_of_catchment_provider_id"));
 		assertEquals("42abc582-6658-488b-922e-7be500c070f3", outOfAreaEvent.getLocationId());
@@ -156,6 +159,15 @@ public class EventServiceTest extends BaseRepositoryTest {
 		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "218229-3");
 		
 		outOfAreaEvent = eventService.processOutOfArea(event);
+		assertEquals(event, outOfAreaEvent);
+		assertEquals(15, eventService.getAll().size());
+		
+		//Test with card identifier type
+		event = new Event().withEventType("Out of Area Service").withProviderId("tester112")
+		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "c_2182291985");
+		
+		outOfAreaEvent = eventService.processOutOfArea(event);
+		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
 		assertEquals(15, eventService.getAll().size());
 		
