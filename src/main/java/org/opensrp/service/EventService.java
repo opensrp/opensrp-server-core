@@ -138,62 +138,75 @@ public class EventService {
 			final String GROWTH_MONITORING_EVENT = "Growth Monitoring";
 			final String VACCINATION_EVENT = "Vaccination";
 			final String OUT_OF_AREA_SERVICE = "Out of Area Service";
+			final String NFC_CARD_IDENTIFIER = "NFC_Card_Identifier";
+			final String CARD_ID_PREFIX = "c_";
 			
 			if (StringUtils.isNotBlank(event.getBaseEntityId())) {
 				return event;
 			}
 			
-			//get events identifiers;
+			//get events identifiers; 
 			String identifier = event.getIdentifier(Client.ZEIR_ID);
 			if (StringUtils.isBlank(identifier)) {
 				return event;
 			}
 			
-			List<org.opensrp.domain.Client> clients = clientService.findAllByIdentifier(Client.ZEIR_ID.toUpperCase(),
-			    identifier);
+			boolean isCardId = identifier.startsWith(CARD_ID_PREFIX);
+			
+			List<org.opensrp.domain.Client> clients =
+			        
+			        isCardId ? clientService
+			                .findAllByAttribute(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
+			                : clientService.findAllByIdentifier(Client.ZEIR_ID.toUpperCase(),
+			                    identifier.substring(CARD_ID_PREFIX.length()));
 			
 			if (clients == null || clients.isEmpty()) {
 				return event;
 			}
 			
-			org.opensrp.domain.Client client = clients.get(0);
-			
-			//set providerid to the last providerid who served this client in their catchment (assumption)
-			List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);
-			
-			if (existingEvents == null || existingEvents.isEmpty()) {
-				return event;
-			}
-			
-			Event birthRegEvent = existingEvents.get(0);
-			event.getIdentifiers().remove(Client.ZEIR_ID.toUpperCase());
-			event.setBaseEntityId(client.getBaseEntityId());
-			//Map<String, String> identifiers = event.getIdentifiers();
-			//event identifiers are unique so removing zeir_id since baseentityid has been found
-			//also out of area service events stick with the providerid so that they can sync back to them for reports generation
-			if (!event.getEventType().startsWith(OUT_OF_AREA_SERVICE)) {
-				event.setProviderId(birthRegEvent.getProviderId());
-				event.setLocationId(birthRegEvent.getLocationId());
-				Map<String, String> details = new HashMap<String, String>();
-				details.put("out_of_catchment_provider_id", event.getProviderId());
-				event.setDetails(details);
-			} else if (event.getEventType().contains(GROWTH_MONITORING_EVENT)
-			        || event.getEventType().contains(VACCINATION_EVENT)) {
+			for (org.opensrp.domain.Client client : clients) {
 				
-				String eventType = event.getEventType().contains(GROWTH_MONITORING_EVENT) ? GROWTH_MONITORING_EVENT
-				        : event.getEventType().contains(VACCINATION_EVENT) ? VACCINATION_EVENT : null;
-				if (eventType != null) {
-					Event newEvent = new Event();
-					newEvent.withBaseEntityId(event.getBaseEntityId()).withEventType(eventType)
-					        .withEventDate(event.getEventDate()).withEntityType(event.getEntityType())
-					        .withProviderId(birthRegEvent.getProviderId()).withLocationId(birthRegEvent.getLocationId())
-					        .withFormSubmissionId(UUID.randomUUID().toString()).withDateCreated(event.getDateCreated());
-					
-					newEvent.setObs(event.getObs());
-					addEvent(newEvent);
+				//set providerid to the last providerid who served this client in their catchment (assumption)
+				List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);
+				
+				if (existingEvents == null || existingEvents.isEmpty()) {
+					return event;
 				}
+				
+				Event birthRegEvent = existingEvents.get(0);
+				event.getIdentifiers().remove(Client.ZEIR_ID.toUpperCase());
+				event.setBaseEntityId(client.getBaseEntityId());
+				//Map<String, String> identifiers = event.getIdentifiers();
+				//event identifiers are unique so removing zeir_id since baseentityid has been found
+				//also out of area service events stick with the providerid so that they can sync back to them for reports generation
+				if (!event.getEventType().startsWith(OUT_OF_AREA_SERVICE)) {
+					event.setProviderId(birthRegEvent.getProviderId());
+					event.setLocationId(birthRegEvent.getLocationId());
+					Map<String, String> details = new HashMap<String, String>();
+					details.put("out_of_catchment_provider_id", event.getProviderId());
+					event.setDetails(details);
+				} else if (event.getEventType().contains(GROWTH_MONITORING_EVENT)
+				        || event.getEventType().contains(VACCINATION_EVENT)) {
+					
+					String eventType = event.getEventType().contains(GROWTH_MONITORING_EVENT) ? GROWTH_MONITORING_EVENT
+					        : event.getEventType().contains(VACCINATION_EVENT) ? VACCINATION_EVENT : null;
+					if (eventType != null) {
+						Event newEvent = new Event();
+						newEvent.withBaseEntityId(event.getBaseEntityId()).withEventType(eventType)
+						        .withEventDate(event.getEventDate()).withEntityType(event.getEntityType())
+						        .withProviderId(birthRegEvent.getProviderId()).withLocationId(birthRegEvent.getLocationId())
+						        .withFormSubmissionId(UUID.randomUUID().toString()).withDateCreated(event.getDateCreated());
+						
+						newEvent.setObs(event.getObs());
+						addEvent(newEvent);
+					}
+				}
+				//Legacy code only picked the first item so we break
+				if (!isCardId) {
+					break;
+				}
+				
 			}
-			
 		}
 		catch (Exception e) {
 			logger.error("", e);
