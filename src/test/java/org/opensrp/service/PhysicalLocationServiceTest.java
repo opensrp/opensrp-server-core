@@ -53,9 +53,9 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testGetLocation() {
-		when(locationRepository.get("3734")).thenReturn(createLocation());
+		when(locationRepository.get("3734", true)).thenReturn(createLocation());
 		PhysicalLocation parentLocation = locationService.getLocation("3734", true);
-		verify(locationRepository).get("3734");
+		verify(locationRepository).get("3734", true);
 		verifyNoMoreInteractions(locationRepository);
 
 		assertEquals("3734", parentLocation.getId());
@@ -151,7 +151,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testAddOrUpdateShouldUpdateLocation() {
 		PhysicalLocation physicalLocation = createLocation();
-		when(locationRepository.get("3734")).thenReturn(physicalLocation);
+		when(locationRepository.get("3734", true)).thenReturn(physicalLocation);
 		locationService.addOrUpdate(createLocation());
 		verify(locationRepository).update(argumentCaptor.capture());
 
@@ -403,7 +403,7 @@ public class PhysicalLocationServiceTest {
 		expectedLocations.add(createStructure());
 		expectedLocations.add(createStructure());
 
-		when(locationRepository.get("12323")).thenReturn(physicalLocation);
+		when(locationRepository.get("12323", true)).thenReturn(physicalLocation);
 		locationService.saveLocations(expectedLocations, true);
 
 		verify(locationRepository, times(2)).add(argumentCaptor.capture());

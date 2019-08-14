@@ -22,7 +22,7 @@ public class PhysicalLocationService {
 
 	private LocationRepository locationRepository;
 
-	private static boolean DEFAULT_RETURN_BOOLEAN = true;
+	private final boolean DEFAULT_RETURN_BOOLEAN = true;
 
 	@Autowired
 	public void setLocationRepository(LocationRepository locationRepository) {
