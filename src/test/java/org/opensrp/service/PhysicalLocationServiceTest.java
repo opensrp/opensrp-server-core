@@ -85,9 +85,9 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testGetStructure() throws ParseException {
 
-		when(locationRepository.getStructure("90397")).thenReturn(createStructure());
-		PhysicalLocation structure = locationService.getStructure("90397");
-		verify(locationRepository).getStructure("90397");
+		when(locationRepository.getStructure("90397", true)).thenReturn(createStructure());
+		PhysicalLocation structure = locationService.getStructure("90397", true);
+		verify(locationRepository).getStructure("90397", true);
 		verifyNoMoreInteractions(locationRepository);
 
 		assertEquals("Feature", structure.getType());
@@ -177,7 +177,7 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testAddOrUpdateShouldAddStructure() throws ParseException {
-		when(locationRepository.getStructure("90397")).thenReturn(null);
+		when(locationRepository.getStructure("90397", true)).thenReturn(null);
 		locationService.addOrUpdate(createStructure());
 		verify(locationRepository).add(argumentCaptor.capture());
 
@@ -202,7 +202,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testAddOrUpdateShouldUpdateStructure() throws ParseException {
 		PhysicalLocation physicalLocation = createStructure();
-		when(locationRepository.getStructure("90397")).thenReturn(physicalLocation);
+		when(locationRepository.getStructure("90397", true)).thenReturn(physicalLocation);
 		locationService.addOrUpdate(physicalLocation);
 		verify(locationRepository).update(argumentCaptor.capture());
 

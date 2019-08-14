@@ -31,8 +31,8 @@ public class PhysicalLocationService {
 		return locationRepository.get(id);
 	}
 
-	public PhysicalLocation getStructure(String id) {
-		return locationRepository.getStructure(id);
+	public PhysicalLocation getStructure(String id, boolean returnGeometry) {
+		return locationRepository.getStructure(id, returnGeometry);
 	}
 
 	public List<PhysicalLocation> getAllLocations() {
@@ -43,7 +43,7 @@ public class PhysicalLocationService {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
 		if ((physicalLocation.isJurisdiction() && getLocation(physicalLocation.getId()) == null)
-				|| (!physicalLocation.isJurisdiction() && getStructure(physicalLocation.getId()) == null)) {
+				|| (!physicalLocation.isJurisdiction() && getStructure(physicalLocation.getId(), true) == null)) {
 			add(physicalLocation);
 		} else {
 			update(physicalLocation);

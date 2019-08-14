@@ -15,7 +15,13 @@
 	<select id="findById" parameterType="java.lang.String"
 		resultMap="org.opensrp.repository.postgres.mapper.StructureMapper.BaseResultMap">
 		select
-		<include refid="Base_Column_List" />
+		<if test="geometry">
+			<include refid="Base_Column_List" />
+		</if>
+
+		<if test="!geometry">
+			<include refid="No_Geometry_Column_List" />
+		</if>
 		from core.structure_metadata sm
 		join core.structure s on sm.structure_id = s.id
 		where sm.geojson_id = #{id,jdbcType=VARCHAR}
