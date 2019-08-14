@@ -54,7 +54,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testGetLocation() {
 		when(locationRepository.get("3734")).thenReturn(createLocation());
-		PhysicalLocation parentLocation = locationService.getLocation("3734");
+		PhysicalLocation parentLocation = locationService.getLocation("3734", true);
 		verify(locationRepository).get("3734");
 		verifyNoMoreInteractions(locationRepository);
 
