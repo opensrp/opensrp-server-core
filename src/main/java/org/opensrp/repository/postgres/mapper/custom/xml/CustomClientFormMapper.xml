@@ -6,12 +6,12 @@
 	<resultMap id="BaseClientFormResultMap" type="org.opensrp.domain.postgres.ClientForm">
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="json" jdbcType="OTHER" property="json"
-			typeHandler="org.opensrp.repository.postgres.handler.ClientFormTypeHandler" />
+			typeHandler="org.opensrp.repository.postgres.handler.JSONBTypeHandler" />
 		<result
 			column="created_at" jdbcType="BIGINT" property="createdAt"/>
 	</resultMap>
 
-	<select id="selectClientFormByAppVersion" parameterType="java.lang.Integer"
+	<select id="selectClientFormById" parameterType="java.lang.Integer"
 		resultMap="BaseClientFormResultMap">
 		select *
 		from client_forms
@@ -20,6 +20,6 @@
 
 	<insert id="insertClientForm" parameterType="org.opensrp.domain.postgres.ClientForm"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		insert into client_forms(json) values (#{json, jdbcType=OTHER})
+		insert into client_forms(json, created_at) values (#{json, jdbcType=OTHER}, ${createdAt, jdbcType=BIGINT})
 	</insert>
 </mapper>
