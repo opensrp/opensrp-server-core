@@ -311,6 +311,23 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return convert(locations);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<PhysicalLocation> findLocationsById(boolean returnGeometry, List<String> ids) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		if(ids == null || ids.isEmpty()) {
+			return null;
+		}
+
+		locationMetadataExample.createCriteria().andGeojsonIdIn(ids);
+
+		List<Location> locations = locationMetadataMapper.selectManyById(locationMetadataExample,
+				returnGeometry, 0, DEFAULT_FETCH_SIZE);
+		return convert(locations);
+	}
+
 	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);

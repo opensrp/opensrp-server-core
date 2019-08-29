@@ -153,4 +153,15 @@ public class PhysicalLocationService {
 		return locationRepository.findStructuresByProperties(returnGeometry, parentId, properties);
 	}
 
+	/**
+	 * This methods provides an API endpoint that searches for locations using a list of provided location ids.
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param ids list of location ids
+	 * @return jurisdictions whose ids match the provided params
+	 */
+	public List<PhysicalLocation> findLocationsById(boolean returnGeometry,	List<String> ids) {
+		return locationRepository.findLocationsById(returnGeometry, ids);
+	}
+
 }
