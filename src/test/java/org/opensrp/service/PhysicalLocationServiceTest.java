@@ -462,6 +462,20 @@ public class PhysicalLocationServiceTest {
 		assertEquals(expectedLocations, locations);
 	}
 
+	@Test
+	public void testFindLocationsById() {
+		List<PhysicalLocation> expectedLocations = Collections.singletonList(createLocation());
+
+		String parentId = UUID.randomUUID().toString();
+		List<String> locationIds = new ArrayList<>();
+		when(locationRepository.findLocationsById(true, locationIds)).thenReturn(expectedLocations);
+		List<PhysicalLocation> locations = locationService.findLocationsById(true, locationIds);
+		verify(locationRepository).findLocationsById(true, locationIds);
+		assertEquals(1, locations.size());
+		assertEquals(expectedLocations, locations);
+
+	}
+
 	private PhysicalLocation createLocation() {
 		PhysicalLocation parentLocation = PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.parentJson,
 				PhysicalLocation.class);
