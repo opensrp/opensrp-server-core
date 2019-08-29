@@ -18,5 +18,9 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	List<Location> selectManyByProperties(@Param("example") LocationMetadataExample locationMetadataExample,
 	        @Param("properties") Map<String, String> properties, @Param("geometry") boolean returnGeometry,
 	        @Param("offset") int offset, @Param("limit") int limit);
+
+	List<Location> selectManyById(@Param("example") LocationMetadataExample locationMetadataExample,
+			@Param("geometry") boolean returnGeometry,
+			@Param("offset") int offset, @Param("limit") int limit);
 	
 }
