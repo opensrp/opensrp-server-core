@@ -9,7 +9,9 @@ import org.opensrp.domain.StructureDetails;
 
 public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 
-	PhysicalLocation getStructure(String id);
+	PhysicalLocation getStructure(String id, boolean returnGeometry);
+
+	PhysicalLocation get(String id, boolean returnGeometry);
 
 	List<PhysicalLocation> findLocationsByServerVersion(long serverVersion);
 

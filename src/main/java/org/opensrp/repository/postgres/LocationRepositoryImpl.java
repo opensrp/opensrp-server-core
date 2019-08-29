@@ -43,12 +43,17 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 	@Override
 	public PhysicalLocation get(String id) {
-		return convert(locationMetadataMapper.findById(id));
+		return convert(locationMetadataMapper.findById(id, true));
 	}
 
 	@Override
-	public PhysicalLocation getStructure(String id) {
-		return convert(structureMetadataMapper.findById(id));
+	public PhysicalLocation get(String id, boolean returnGeography) {
+		return convert(locationMetadataMapper.findById(id, returnGeography));
+	}
+
+	@Override
+	public PhysicalLocation getStructure(String id, boolean returnGeography) {
+		return convert(structureMetadataMapper.findById(id, returnGeography));
 	}
 
 	@Override
@@ -338,13 +343,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		String identifier = uniqueId.toString();
 
 		if (entity.isJurisdiction()) {
-			Location pgEntity = locationMetadataMapper.findById(identifier);
+			Location pgEntity = locationMetadataMapper.findById(identifier, true);
 			if (pgEntity == null) {
 				return null;
 			}
 			return pgEntity.getId();
 		} else {
-			Structure pgEntity = structureMetadataMapper.findById(identifier);
+			Structure pgEntity = structureMetadataMapper.findById(identifier, true);
 			if (pgEntity == null) {
 				return null;
 			}

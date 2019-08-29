@@ -98,7 +98,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testGetStructure() throws ParseException {
-		PhysicalLocation structure = locationRepository.getStructure("90397");
+		PhysicalLocation structure = locationRepository.getStructure("90397", true);
 		assertNotNull(structure);
 		assertEquals("90397", structure.getId());
 
@@ -119,15 +119,15 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testGetStructureWithNullOrEmptyParams() {
-		assertNull(locationRepository.getStructure(""));
+		assertNull(locationRepository.getStructure("", true));
 
-		assertNull(locationRepository.getStructure(null));
+		assertNull(locationRepository.getStructure(null, true));
 
 	}
 
 	@Test
 	public void testGetStructureNotExistingLocation() {
-		assertNull(locationRepository.getStructure("1212121"));
+		assertNull(locationRepository.getStructure("1212121", true));
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(savedLocation);
 		assertEquals("Feature", savedLocation.getType());
 
-		assertNull(locationRepository.getStructure("223232"));
+		assertNull(locationRepository.getStructure("223232", true));
 
 	}
 
@@ -178,7 +178,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		PhysicalLocation physicalLocation = createStructure(uuid);
 
 		locationRepository.add(physicalLocation);
-		PhysicalLocation savedLocation = locationRepository.getStructure("121212");
+		PhysicalLocation savedLocation = locationRepository.getStructure("121212", true);
 
 		assertNotNull(savedLocation);
 		assertEquals("Feature", savedLocation.getType());
@@ -203,11 +203,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testAddStructureExistingShouldNotChangeObject() {
 
-		PhysicalLocation physicalLocation = locationRepository.getStructure("90397");
+		PhysicalLocation physicalLocation = locationRepository.getStructure("90397", true);
 		physicalLocation.getProperties().setName("Mwangala Household");
 		locationRepository.add(physicalLocation);
 
-		physicalLocation = locationRepository.getStructure("90397");
+		physicalLocation = locationRepository.getStructure("90397", true);
 		assertNotEquals("Mwangala Household", physicalLocation.getProperties().getName());
 
 		assertEquals(1, locationRepository.getAll().size());
@@ -239,7 +239,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
 		assertEquals(2, updatedLocation.getProperties().getVersion());
 
-		assertNull(locationRepository.getStructure("3734"));
+		assertNull(locationRepository.getStructure("3734", true));
 
 	}
 
@@ -263,18 +263,18 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.update(physicalLocation);
 
 		assertNull(locationRepository.get("223232"));
-		assertNull(locationRepository.getStructure("223232"));
+		assertNull(locationRepository.getStructure("223232", true));
 
 	}
 
 	@Test
 	public void testUpdateStructure() {
-		PhysicalLocation structure = locationRepository.getStructure("90397");
+		PhysicalLocation structure = locationRepository.getStructure("90397", true);
 		structure.getProperties().setCode("12121");
 		structure.getProperties().setParentId("11");
 		locationRepository.update(structure);
 
-		PhysicalLocation updatedStructure = locationRepository.getStructure("90397");
+		PhysicalLocation updatedStructure = locationRepository.getStructure("90397", true);
 
 		assertNotNull(updatedStructure);
 		assertEquals("12121", updatedStructure.getProperties().getCode());
@@ -303,7 +303,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.update(physicalLocation);
 
 		assertNull(locationRepository.get("223232"));
-		assertNull(locationRepository.getStructure("223232"));
+		assertNull(locationRepository.getStructure("223232", true));
 
 	}
 
@@ -340,11 +340,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testSafeRemoveStructure() {
 
-		assertNotNull(locationRepository.getStructure("90397"));
+		assertNotNull(locationRepository.getStructure("90397", true));
 
-		locationRepository.safeRemove(locationRepository.getStructure("90397"));
+		locationRepository.safeRemove(locationRepository.getStructure("90397", true));
 
-		assertNull(locationRepository.getStructure("90397"));
+		assertNull(locationRepository.getStructure("90397", true));
 	}
 
 	@Test
@@ -427,7 +427,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		List<PhysicalLocation> locations = locationRepository.findStructuresByEmptyServerVersion();
 		assertTrue(locations.isEmpty());
 
-		PhysicalLocation location = locationRepository.getStructure("90397");
+		PhysicalLocation location = locationRepository.getStructure("90397", true);
 		location.setServerVersion(null);
 		locationRepository.update(location);
 
