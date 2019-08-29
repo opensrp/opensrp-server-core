@@ -466,7 +466,6 @@ public class PhysicalLocationServiceTest {
 	public void testFindLocationsById() {
 		List<PhysicalLocation> expectedLocations = Collections.singletonList(createLocation());
 
-		String parentId = UUID.randomUUID().toString();
 		List<String> locationIds = new ArrayList<>();
 		when(locationRepository.findLocationsByIds(true, locationIds)).thenReturn(expectedLocations);
 		List<PhysicalLocation> locations = locationService.findLocationsByIds(true, locationIds);
