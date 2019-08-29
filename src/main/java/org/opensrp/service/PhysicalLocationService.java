@@ -22,17 +22,19 @@ public class PhysicalLocationService {
 
 	private LocationRepository locationRepository;
 
+	private final boolean DEFAULT_RETURN_BOOLEAN = true;
+
 	@Autowired
 	public void setLocationRepository(LocationRepository locationRepository) {
 		this.locationRepository = locationRepository;
 	}
 
-	public PhysicalLocation getLocation(String id) {
-		return locationRepository.get(id);
+	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
+		return locationRepository.get(id, returnGeometry);
 	}
 
-	public PhysicalLocation getStructure(String id) {
-		return locationRepository.getStructure(id);
+	public PhysicalLocation getStructure(String id, boolean returnGeometry) {
+		return locationRepository.getStructure(id, returnGeometry);
 	}
 
 	public List<PhysicalLocation> getAllLocations() {
@@ -42,8 +44,8 @@ public class PhysicalLocationService {
 	public void addOrUpdate(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
-		if ((physicalLocation.isJurisdiction() && getLocation(physicalLocation.getId()) == null)
-				|| (!physicalLocation.isJurisdiction() && getStructure(physicalLocation.getId()) == null)) {
+		if ((physicalLocation.isJurisdiction() && getLocation(physicalLocation.getId(), DEFAULT_RETURN_BOOLEAN) == null)
+				|| (!physicalLocation.isJurisdiction() && getStructure(physicalLocation.getId(), DEFAULT_RETURN_BOOLEAN) == null)) {
 			add(physicalLocation);
 		} else {
 			update(physicalLocation);

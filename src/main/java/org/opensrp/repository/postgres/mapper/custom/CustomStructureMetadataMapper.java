@@ -11,7 +11,7 @@ import org.opensrp.repository.postgres.mapper.StructureMetadataMapper;
 
 public interface CustomStructureMetadataMapper extends StructureMetadataMapper {
 
-	Structure findById(String id);
+	Structure findById(@Param("id") String id, @Param("geometry") boolean returnGeometry);
 
 	List<Structure> selectMany(@Param("example") StructureMetadataExample locationMetadataExample,
 			@Param("offset") int offset, @Param("limit") int limit);
