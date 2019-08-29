@@ -468,9 +468,9 @@ public class PhysicalLocationServiceTest {
 
 		String parentId = UUID.randomUUID().toString();
 		List<String> locationIds = new ArrayList<>();
-		when(locationRepository.findLocationsById(true, locationIds)).thenReturn(expectedLocations);
-		List<PhysicalLocation> locations = locationService.findLocationsById(true, locationIds);
-		verify(locationRepository).findLocationsById(true, locationIds);
+		when(locationRepository.findLocationsByIds(true, locationIds)).thenReturn(expectedLocations);
+		List<PhysicalLocation> locations = locationService.findLocationsByIds(true, locationIds);
+		verify(locationRepository).findLocationsByIds(true, locationIds);
 		assertEquals(1, locations.size());
 		assertEquals(expectedLocations, locations);
 

@@ -56,5 +56,5 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @param ids list of location ids
 	 * @return jurisdictions whose ids match the provided params
 	 */
-	List<PhysicalLocation> findLocationsById(boolean returnGeometry,	List<String> ids);
+	List<PhysicalLocation> findLocationsByIds(boolean returnGeometry,	List<String> ids);
 }

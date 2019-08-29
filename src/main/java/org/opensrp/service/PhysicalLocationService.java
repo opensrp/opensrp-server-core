@@ -162,8 +162,8 @@ public class PhysicalLocationService {
 	 * @param ids list of location ids
 	 * @return jurisdictions whose ids match the provided params
 	 */
-	public List<PhysicalLocation> findLocationsById(boolean returnGeometry,	List<String> ids) {
-		return locationRepository.findLocationsById(returnGeometry, ids);
+	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry,	List<String> ids) {
+		return locationRepository.findLocationsByIds(returnGeometry, ids);
 	}
 
 }

@@ -320,7 +320,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<PhysicalLocation> findLocationsById(boolean returnGeometry, List<String> ids) {
+	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		if(ids == null || ids.isEmpty()) {
 			return null;
