@@ -69,5 +69,9 @@ public class PlanService {
     public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion, List<String> operationalAreaIds) {
         return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds);
     }
+
+    public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields) {
+        return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields);
+    }
 }
 
