@@ -36,6 +36,10 @@ public class ClientSearchBean {
 	
 	private String lastName;
 	
+	private String clientType;
+	
+	private String providerId;
+	
 	public String getNameLike() {
 		return nameLike;
 	}
@@ -154,6 +158,22 @@ public class ClientSearchBean {
 	
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+	
+	public String getClientType() {
+		return clientType;
+	}
+	
+	public void setClientType(String clientType) {
+		this.clientType = clientType;
+	}
+	
+	public String getProviderId() {
+		return providerId;
+	}
+	
+	public void setProviderId(String providerId) {
+		this.providerId = providerId;
 	}
 	
 }
