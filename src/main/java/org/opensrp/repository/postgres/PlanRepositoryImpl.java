@@ -138,8 +138,8 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         if (ids != null && !ids.isEmpty()) {
             planExample.createCriteria().andIdIn(ids);
         }
-        fields = fields != null && fields.size() > 0 ? fields : null;
-        List<Plan> plans = planMetadataMapper.selectManyByIds(planExample, fields, 0, DEFAULT_FETCH_SIZE);
+        List<String>  optionalFields = fields != null && fields.size() > 0 ? fields : null;
+        List<Plan> plans = planMetadataMapper.selectManyByIds(planExample, optionalFields, 0, DEFAULT_FETCH_SIZE);
 
         return convert(plans);
     }
