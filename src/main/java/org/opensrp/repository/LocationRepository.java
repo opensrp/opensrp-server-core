@@ -50,11 +50,20 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 			Map<String, String> properties);
 
 	/**
-	 * This methods provides an API endpoint that searches for locations using a list of provided location ids.
+	 * This methods searches for locations using a list of provided location ids.
 	 * It returns the Geometry optionally if @param returnGeometry is set to true.
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param ids list of location ids
 	 * @return jurisdictions whose ids match the provided params
 	 */
 	List<PhysicalLocation> findLocationsByIds(boolean returnGeometry,	List<String> ids);
+
+	/**
+	 * This methods searches for a location and it's children using the provided location id
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param id location id
+	 * @return location together with it's children whose id matches the provided param
+	 */
+	List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry,	String id);
 }

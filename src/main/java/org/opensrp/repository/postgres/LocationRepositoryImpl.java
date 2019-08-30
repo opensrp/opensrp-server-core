@@ -333,6 +333,20 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return convert(locations);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		if(id == null) {
+			return null;
+		}
+		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample,
+				returnGeometry, id, 0, DEFAULT_FETCH_SIZE);
+		return convert(locations);
+	}
+
 	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);
