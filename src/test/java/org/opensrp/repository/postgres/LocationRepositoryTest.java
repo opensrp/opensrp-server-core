@@ -150,7 +150,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		physicalLocation.setJurisdiction(true);
 		locationRepository.add(physicalLocation);
 
-		assertEquals(1, locationRepository.getAll().size());
+		assertEquals(2, locationRepository.getAll().size());
 		assertEquals(1, locationRepository.getAllStructures().size());
 
 	}
@@ -167,7 +167,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		physicalLocation = locationRepository.get("3734");
 		assertNotEquals("MY Operational Area", physicalLocation.getProperties().getName());
 
-		assertEquals(1, locationRepository.getAll().size());
+		assertEquals(2, locationRepository.getAll().size());
 		assertEquals(1, locationRepository.getAllStructures().size());
 
 	}
@@ -195,7 +195,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		PhysicalLocation physicalLocation = new PhysicalLocation();
 		locationRepository.add(physicalLocation);
 
-		assertEquals(1, locationRepository.getAll().size());
+		assertEquals(2, locationRepository.getAll().size());
 		assertEquals(1, locationRepository.getAllStructures().size());
 
 	}
@@ -210,7 +210,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		physicalLocation = locationRepository.getStructure("90397", true);
 		assertNotEquals("Mwangala Household", physicalLocation.getProperties().getName());
 
-		assertEquals(1, locationRepository.getAll().size());
+		assertEquals(2, locationRepository.getAll().size());
 		assertEquals(1, locationRepository.getAllStructures().size());
 
 	}
@@ -248,7 +248,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		PhysicalLocation physicalLocation = new PhysicalLocation();
 		locationRepository.add(physicalLocation);
 
-		assertEquals(1, locationRepository.getAll().size());
+		assertEquals(2, locationRepository.getAll().size());
 		assertEquals(1, locationRepository.getAllStructures().size());
 
 	}
@@ -289,7 +289,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		PhysicalLocation structure = new PhysicalLocation();
 		locationRepository.add(structure);
 
-		assertEquals(1, locationRepository.getAll().size());
+		assertEquals(2, locationRepository.getAll().size());
 		assertEquals(1, locationRepository.getAllStructures().size());
 
 	}
@@ -310,9 +310,10 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testGetAll() {
 		List<PhysicalLocation> locations = locationRepository.getAll();
-		assertEquals(1, locations.size());
+		assertEquals(2, locations.size());
 
 		locationRepository.safeRemove(locationRepository.get("3734"));
+		locationRepository.safeRemove(locationRepository.get("3735"));
 
 		assertTrue(locationRepository.getAll().isEmpty());
 
@@ -351,10 +352,10 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	public void testSafeRemoveNonExistentLocation() {
 		locationRepository.safeRemove(null);
 		locationRepository.safeRemove(new PhysicalLocation());
-		assertEquals(1, locationRepository.getAll().size());
+		assertEquals(2, locationRepository.getAll().size());
 
 		locationRepository.safeRemove(locationRepository.get("671198"));
-		assertEquals(1, locationRepository.getAll().size());
+		assertEquals(2, locationRepository.getAll().size());
 
 	}
 
@@ -571,7 +572,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(locations.get(0).getGeometry());
 
 		locations = locationRepository.findLocationsByProperties(true, null, null);
-		assertEquals(1, locations.size());
+		assertEquals(2, locations.size());
 		assertEquals("3734", locations.get(0).getId());
 		assertEquals(GeometryType.MULTI_POLYGON, locations.get(0).getGeometry().getType());
 		assertEquals(267,
