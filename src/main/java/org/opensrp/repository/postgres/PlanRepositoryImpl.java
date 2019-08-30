@@ -55,11 +55,12 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             return;
         }
 
-        if (retrievePrimaryKey(plan) != null) { 
+        Long id=retrievePrimaryKey(plan);
+        if (id != null) { 
             return; // plan already added
         }
 
-        Plan pgPlan = convert(plan);
+        Plan pgPlan = convert(plan,id);
         if (pgPlan == null) {
             return;
         }
@@ -78,12 +79,12 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             return;
         }
 
-        String id = retrievePrimaryKey(plan);
+        Long id = retrievePrimaryKey(plan);
         if (id == null) {
             return; // plan does not exist
         }
 
-        Plan pgPlan = convert(plan);
+        Plan pgPlan = convert(plan,id);
         if (pgPlan == null) {
             return;
         }
@@ -110,12 +111,12 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             return;
         }
 
-        String id = retrievePrimaryKey(plan);
+        Long id = retrievePrimaryKey(plan);
         if (id == null) {
             return;
         }
 
-        Plan pgPlan = convert(plan);
+        Plan pgPlan = convert(plan,id);
         pgPlan.setDateDeleted(new Date());
         planMapper.updateByPrimaryKey(pgPlan);
     }
@@ -129,16 +130,19 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
 
     @Override
-    protected String retrievePrimaryKey(PlanDefinition plan) {
+    protected Long retrievePrimaryKey(PlanDefinition plan) {
         Object uniqueId = getUniqueField(plan);
         if (uniqueId == null) {
             return null;
         }
 
         String identifier = uniqueId.toString();
-        PlanDefinition pgPlan = get(identifier);
+        
+        PlanExample example=new PlanExample();
+        example.createCriteria().andIdentifierEqualTo(identifier);
+    	List<Plan> pgEntity = planMapper.selectByExample(example);
 
-        return pgPlan == null ? null : pgPlan.getIdentifier();
+        return pgEntity.isEmpty() ? null : pgEntity.get(0).getId();
     }
 
     @Override
@@ -153,7 +157,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         return (PlanDefinition) pgPlan.getJson();
     }
 
-    private Plan convert(PlanDefinition plan) {
+    private Plan convert(PlanDefinition plan, Long id) {
         if (plan == null) {
             return null;
         }
@@ -161,7 +165,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         pgPlan.setIdentifier(plan.getIdentifier());
         pgPlan.setJson(plan);
         pgPlan.setServerVersion(plan.getServerVersion());
-
+        pgPlan.setId(id);
         return pgPlan;
     }
 
