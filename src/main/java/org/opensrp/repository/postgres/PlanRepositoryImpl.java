@@ -15,7 +15,6 @@ import org.opensrp.domain.postgres.Plan;
 import org.opensrp.domain.postgres.PlanExample;
 import org.opensrp.domain.postgres.PlanMetadata;
 import org.opensrp.domain.postgres.PlanMetadataExample;
-import org.opensrp.domain.postgres.PlanMetadataKey;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMetadataMapper;
@@ -42,7 +41,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         }
 
         PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andIdEqualTo(id).andDateDeletedIsNull();
+        planExample.createCriteria().andIdentifierEqualTo(id).andDateDeletedIsNull();
 
         List<Plan> pgPlan = planMapper.selectByExample(planExample);
         List<PlanDefinition> plan = convert(pgPlan);
@@ -65,11 +64,11 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             return;
         }
 
-        int rowsAffected = planMapper.insert(pgPlan);
+        int rowsAffected = planMapper.insertSelectiveAndSetId(pgPlan);
         if (rowsAffected < 1) {
             return;
         }
-        insertPlanMetadata(plan);
+        insertPlanMetadata(plan,pgPlan.getId());
     }
 
     @Override
@@ -94,7 +93,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             return;
         }
 
-        updatePlanMetadata(plan);
+        updatePlanMetadata(plan,pgPlan.getId());
     }
 
     @Override
@@ -159,7 +158,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             return null;
         }
         Plan pgPlan = new Plan();
-        pgPlan.setId(plan.getIdentifier());
+        pgPlan.setIdentifier(plan.getIdentifier());
         pgPlan.setJson(plan);
         pgPlan.setServerVersion(plan.getServerVersion());
 
@@ -177,30 +176,31 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         return plans;
     }
 
-    private void insertPlanMetadata(PlanDefinition plan) {
+    private void insertPlanMetadata(PlanDefinition plan, Long id) {
         if (isEmptyList(plan.getJurisdiction())) {
             return;
         }
         for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
-           insert(jurisdiction, plan);
+           insert(jurisdiction, plan,id);
         }
     }
 
-    private void insert(Jurisdiction jurisdiction, PlanDefinition plan) {
+    private void insert(Jurisdiction jurisdiction, PlanDefinition plan, Long id) {
         PlanMetadata planMetadata = new PlanMetadata();
         planMetadata.setOperationalAreaId(jurisdiction.getCode());
-        planMetadata.setPlanId(plan.getIdentifier());
+        planMetadata.setIdentifier(plan.getIdentifier());
+        planMetadata.setPlanId(id);
         planMetadataMapper.insert(planMetadata);
     }
 
-    private void updatePlanMetadata(PlanDefinition plan) {
+    private void updatePlanMetadata(PlanDefinition plan, Long id) {
         Set<String> operationalAreas = new HashSet<>();
         if (retrievePrimaryKey(plan) != null) {
             for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
                 PlanMetadataExample planMetadataExample = new PlanMetadataExample();
-                planMetadataExample.createCriteria().andOperationalAreaIdEqualTo(jurisdiction.getCode()).andPlanIdEqualTo(plan.getIdentifier());
+                planMetadataExample.createCriteria().andOperationalAreaIdEqualTo(jurisdiction.getCode()).andPlanIdEqualTo(id);
                 if (planMetadataMapper.selectByExample(planMetadataExample).size() == 0) {
-                    insert(jurisdiction, plan);
+                    insert(jurisdiction, plan,id);
                 }
                 operationalAreas.add(jurisdiction.getCode());
             }
@@ -208,10 +208,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         // soft delete operational areas that no longer exist in the plan
         PlanMetadataExample planMetadataExample = new PlanMetadataExample();
-        planMetadataExample.createCriteria().andPlanIdEqualTo(plan.getIdentifier());
-        List <PlanMetadataKey> pgPlans = planMetadataMapper.selectByExample(planMetadataExample);
-        Set<PlanMetadataKey> planMetadata = new HashSet<>(pgPlans);
-        for (PlanMetadataKey metadata : planMetadata) {
+        planMetadataExample.createCriteria().andPlanIdEqualTo(id);
+        List<PlanMetadata> pgPlans = planMetadataMapper.selectByExample(planMetadataExample);
+        for (PlanMetadata metadata : pgPlans) {
             if (!operationalAreas.contains(metadata.getOperationalAreaId())) {
                 PlanMetadataExample metadataExample = new PlanMetadataExample();
                 metadataExample.createCriteria().andPlanIdEqualTo(metadata.getPlanId()).andOperationalAreaIdEqualTo(metadata.getOperationalAreaId());
