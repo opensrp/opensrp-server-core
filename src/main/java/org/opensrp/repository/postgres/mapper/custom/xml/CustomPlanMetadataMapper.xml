@@ -60,10 +60,10 @@
     <select id="selectManyByIds"
             resultMap="org.opensrp.repository.postgres.mapper.PlanMapper.BaseResultMap">
         select
-        <if test="fields == null">
-           p.id
+        <if test="!fields">
+            <include refid="Base_Column_List" />
         </if>
-        <if test="fields != null">
+        <if test="fields">
             p.id,
             jsonb_build_object(
             'identifier', json->'identifier',
