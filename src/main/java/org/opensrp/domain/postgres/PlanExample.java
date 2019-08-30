@@ -1,7 +1,5 @@
 package org.opensrp.domain.postgres;
 
-import org.opensrp.exception.NullQueryValueException;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -141,7 +139,7 @@ public class PlanExample {
 
 		protected void addJsonCriterion(String condition, Object value, String property) {
 			if (value == null) {
-				throw new RuntimeException("Value for " + property + " cannot be null");
+				throw new IllegalArgumentException("Value for " + property + " cannot be null");
 			}
 			jsonCriteria
 					.add(new Criterion(condition, value, "org.opensrp.repository.postgres.handler.PlanTypeHandler"));
@@ -150,7 +148,7 @@ public class PlanExample {
 
 		protected void addJsonCriterion(String condition, Object value1, Object value2, String property) {
 			if (value1 == null || value2 == null) {
-				throw new RuntimeException("Between values for " + property + " cannot be null");
+				throw new IllegalArgumentException("Between values for " + property + " cannot be null");
 			}
 			jsonCriteria.add(new Criterion(condition, value1, value2,
 					"org.opensrp.repository.postgres.handler.PlanTypeHandler"));
@@ -176,7 +174,7 @@ public class PlanExample {
 
 		protected void addCriterion(String condition) {
 			if (condition == null) {
-				throw new RuntimeException("Value for condition cannot be null");
+				throw new IllegalArgumentException("Value for condition cannot be null");
 			}
 			criteria.add(new Criterion(condition));
 			allCriteria = null;
@@ -184,7 +182,7 @@ public class PlanExample {
 
 		protected void addCriterion(String condition, Object value, String property) {
 			if (value == null) {
-				throw new RuntimeException("Value for " + property + " cannot be null");
+				throw new IllegalArgumentException("Value for " + property + " cannot be null");
 			}
 			criteria.add(new Criterion(condition, value));
 			allCriteria = null;
@@ -192,7 +190,7 @@ public class PlanExample {
 
 		protected void addCriterion(String condition, Object value1, Object value2, String property) {
 			if (value1 == null || value2 == null) {
-				throw new RuntimeException("Between values for " + property + " cannot be null");
+				throw new IllegalArgumentException("Between values for " + property + " cannot be null");
 			}
 			criteria.add(new Criterion(condition, value1, value2));
 			allCriteria = null;
