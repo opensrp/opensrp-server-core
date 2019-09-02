@@ -16,6 +16,18 @@
 		join core.event_metadata em on cm.base_entity_id = em.base_entity_id
 	</sql>
 	
+	<resultMap id="householdClientMap" type="org.opensrp.domain.postgres.HouseholdClient">
+		<id column="member_count" jdbcType="BIGINT" property="memebrCount" />
+		<result column="provider_id" jdbcType="VARCHAR" property="providerId"/>
+		<result column="household_head" jdbcType="VARCHAR" property="householdHead"/>	
+		<result column="relational_id" jdbcType="VARCHAR" property="relationalId"/>
+		
+	</resultMap>
+	<resultMap id="totalCountMap" type="org.opensrp.domain.postgres.HouseholdClient">		
+		<result column="total_count" jdbcType="BIGINT" property="totalCount"/>
+	</resultMap>	
+		
+	
 	<sql id="Example_Where_Clause">
 		<where>
 			<foreach collection="example.oredCriteria" item="criteria" separator="or">
@@ -198,7 +210,139 @@
 			</trim>
 		</where>
 		LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	
+	<select id="selectCountBySearchBean"
+		resultMap="totalCountMap">
+		select count(*) as total_count		
+		<include refid="Base_Table_List" />
+		<if test="clientBean.clientType != null or clientBean.providerId != null ">
+			<include refid="Join_With_Event_Meta_Data_Table" />
+		</if>
+		<if test="addressBean!=null and addressBean.hasFilter">
+			join jsonb_array_elements(json->'addresses') as address on true	
+		</if>
+		<where>
+			<trim prefixOverrides="and">
+			 	cm.date_deleted is null
+				<if test="clientBean.nameLike != null">
+					<bind name="name" value="'%' + clientBean.nameLike + '%'" />
+					and (	cm.first_name ilike #{name} or
+							cm.middle_name ilike #{name} or
+							cm.last_name ilike #{name} 
+						)
+				</if>
+				<if test="clientBean.clientType != null">					
+					and em.entity_type = #{clientBean.clientType,jdbcType=VARCHAR}
+				</if>
+				
+				<if test="clientBean.providerId != null">					
+					and em.provider_id = #{clientBean.providerId,jdbcType=VARCHAR}
+				</if>
+				<if test="clientBean.gender != null">
+					and c.json->>'gender' = #{clientBean.gender,jdbcType=VARCHAR}
+				</if>
+				<if test="clientBean.birthdateFrom != null and clientBean.birthdateTo != null">
+					and cm.birth_date  
+					between #{clientBean.birthdateFrom,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler} 
+					and	 	#{clientBean.birthdateTo,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler}
+				</if>
+				<if test="clientBean.deathdateFrom != null and clientBean.deathdateTo != null">
+					and (json->>'deathdate')::date
+					between #{clientBean.deathdateFrom,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler} 
+					and	 	#{clientBean.deathdateTo,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler}
+				</if>
+				<if test="clientBean.attributeType != null and clientBean.attributeValue != null">
+					and json -> 'attributes' ->> #{clientBean.attributeType,jdbcType=VARCHAR} = #{clientBean.attributeValue,jdbcType=VARCHAR}
+				</if>
+				<if test="clientBean.lastEditFrom != null and clientBean.lastEditTo != null">
+					and (json->>'dateEdited')::timestamp
+					between #{clientBean.lastEditFrom,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler} 
+					and	 	#{clientBean.lastEditTo,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler}
+				</if>
+				<if test="addressBean.addressType != null">
+					and address ->> 'addressType' = #{addressBean.addressType,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.country != null">
+					and address ->> 'country' = #{addressBean.country,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.stateProvince != null">
+					and address ->> 'stateProvince' = #{addressBean.stateProvince,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.cityVillage != null">
+					and address ->> 'cityVillage' = #{addressBean.cityVillage,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.countyDistrict != null">
+					and address ->> 'countyDistrict' = #{addressBean.countyDistrict,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.town != null">
+					and address ->> 'town' = #{addressBean.town,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.countyDistrict != null">
+					and address ->> 'subTown' = #{addressBean.subTown,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.countyDistrict != null">
+					and address ->> 'subTown' = #{addressBean.subTown,jdbcType=VARCHAR}
+				</if>
+				<!-- Params for SearchRepository -->
+				<if test="clientBean.firstName != null">	
+					<bind name="firstName" value="'%' + clientBean.firstName + '%'" />
+					and c.json->>'firstName' ilike #{firstName}
+				</if>
+				<if test="clientBean.middleName != null">
+					<bind name="middleName" value="'%' + clientBean.middleName + '%'" />
+					and c.json->>'middleName' ilike #{middleName}
+				</if>
+				<if test="clientBean.lastName != null">
+					<bind name="lastName" value="'%' + clientBean.lastName + '%'" />
+					and c.json->>'lastName' ilike #{lastName}
+				</if>
+				<if test="clientBean.identifiers != null" >
+					<trim prefix="and ("  suffix=")" >
+					 <foreach collection="clientBean.identifiers" index="key" item="value" separator=" or " >
+		        			json -> 'identifiers' ->> #{key,jdbcType=VARCHAR} = #{value,jdbcType=VARCHAR}
+		    			</foreach>
+		    			</trim>
+				</if>
+				<if test="clientBean.attributes != null" >
+					<trim prefix="and (" suffix=")" >			 
+					 <foreach collection="clientBean.attributes"  index="key" item="value" separator=" or " >
+		        			json -> 'attributes' ->> #{key,jdbcType=VARCHAR} = #{value,jdbcType=VARCHAR}
+		    			</foreach>
+		    			</trim>
+				</if>
+			</trim>
+		</where>
+		
 	</select>	
 	
 	
+	<select id="selectMemberCountHouseholdHeadProviderByClients" 
+		resultMap="householdClientMap">
+		with t1 as(
+		SELECT  relational_id, count(*) as member_count 
+		FROM core.client_metadata cm 
+		 
+		   <include refid="Example_Where_Clause" />
+		    group by relational_id),
+			t2 as(			
+			select base_entity_id,provider_id from core.event_metadata where 
+				base_entity_id = any(select relational_id from t1) and entity_type=#{clientType}),
+			t3 as(
+			select t1.*,provider_id from t1,t2 where t1.relational_id=t2.base_entity_id
+			),
+			t5 as(
+			SELECT  relational_id, base_entity_id, 
+				(first_name || coalesce(cm.middle_name,' ') || cm.last_name) member_name
+					FROM core.client_metadata cm 
+					 <include refid="Example_Where_Clause" />
+			),t6 as(
+			select relational_id,base_entity_id,(first_name || coalesce(cm.middle_name,'') || cm.last_name)  family_name from core.client_metadata cm where relational_id=any(select base_entity_id from t5)
+			),t4 as(
+			select t5.relational_id base_entity_id,member_name household_head from t5,t6 where t5.relational_id= t6.base_entity_id and t5.base_entity_id=t6.relational_id
+			)
+			select t3.*,household_head from t3,t4 where t3.relational_id=t4.base_entity_id
+		
+	</select>
 </mapper>
