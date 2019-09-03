@@ -40,6 +40,18 @@ public class ClientSearchBean {
 	
 	private String providerId;
 	
+	private int pageNumber;
+	
+	private int pageSize;
+	
+	public int getPageSize() {
+		return pageSize;
+	}
+	
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+	
 	public int getPageNumber() {
 		return pageNumber;
 	}
@@ -47,8 +59,6 @@ public class ClientSearchBean {
 	public void setPageNumber(int pageNumber) {
 		this.pageNumber = pageNumber;
 	}
-	
-	private int pageNumber;
 	
 	public String getNameLike() {
 		return nameLike;
