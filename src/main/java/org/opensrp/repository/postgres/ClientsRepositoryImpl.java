@@ -209,7 +209,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Client> findByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
-		return convert(clientMetadataMapper.selectBySearchBean(searchBean, addressSearchBean, 0, DEFAULT_FETCH_SIZE));
+		int offset = searchBean.getPageNumber();
+		return convert(clientMetadataMapper.selectBySearchBean(searchBean, addressSearchBean, offset, DEFAULT_FETCH_SIZE));
 	}
 	
 	@Override
