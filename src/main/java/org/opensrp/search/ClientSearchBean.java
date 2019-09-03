@@ -40,6 +40,16 @@ public class ClientSearchBean {
 	
 	private String providerId;
 	
+	public int getPageNumber() {
+		return pageNumber;
+	}
+	
+	public void setPageNumber(int pageNumber) {
+		this.pageNumber = pageNumber;
+	}
+	
+	private int pageNumber;
+	
 	public String getNameLike() {
 		return nameLike;
 	}
