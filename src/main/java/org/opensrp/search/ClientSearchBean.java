@@ -40,9 +40,9 @@ public class ClientSearchBean {
 	
 	private String providerId;
 	
-	private int pageNumber;
+	private int pageNumber = 0;
 	
-	private int pageSize;
+	private int pageSize = 0;
 	
 	public int getPageSize() {
 		return pageSize;
