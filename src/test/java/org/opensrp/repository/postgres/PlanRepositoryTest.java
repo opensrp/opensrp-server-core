@@ -8,6 +8,7 @@ import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -342,6 +343,40 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
         assertEquals(plans.size(), 1);
         testIfAllIdsExists(plans, ids);
+    }
+
+    @Test
+    public void testGetPlansByIdsReturnOptionalFields() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+        plan.setVersion("v1");
+        plan.setName("Focus Investigation");
+        plan.setTitle("Plan title");
+        plan.setStatus("incomplete");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+
+        planRepository.add(plan);
+
+        List<PlanDefinition> plans = planRepository.getAll();
+        assertEquals(plans.size(), 1);
+
+        List<String> fields = new ArrayList<>();
+        fields.add("identifier");
+        fields.add("name");
+
+        plans = planRepository.getPlansByIdsReturnOptionalFields(Collections.singletonList("identifier_7"), fields);
+        assertEquals(plans.size(), 1);
+        assertEquals("identifier_7", plans.get(0).getIdentifier());
+        assertEquals("Focus Investigation", planRepository.getAll().get(0).getName());
+        assertEquals(null, plans.get(0).getVersion());
+        assertEquals(null, plans.get(0).getTitle());
+        assertEquals(null, plans.get(0).getStatus());
+
     }
 
     private boolean testIfAllIdsExists(List<PlanDefinition> plans, Set<String> ids) {
