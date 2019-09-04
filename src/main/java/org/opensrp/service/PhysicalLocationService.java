@@ -171,10 +171,11 @@ public class PhysicalLocationService {
 	 * It returns the Geometry optionally if @param returnGeometry is set to true.
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param id location id
+	 * @param pageSize number of records to be returned
 	 * @return location together with it's children whose id matches the provided param
 	 */
-	public List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id) {
-		return locationRepository.findLocationByIdWithChildren(returnGeometry, id);
+	public List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id, int pageSize) {
+		return locationRepository.findLocationByIdWithChildren(returnGeometry, id, pageSize);
 	}
 
 }

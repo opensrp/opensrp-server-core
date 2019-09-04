@@ -666,7 +666,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindLocationByIdWithChildren() {
 
-		List<PhysicalLocation> locations = locationRepository.findLocationByIdWithChildren(true, "3734");
+		List<PhysicalLocation> locations = locationRepository.findLocationByIdWithChildren(true, "3734", 10);
 		assertEquals(2, locations.size());
 		assertEquals("3734", locations.get(0).getId());
 		assertEquals("3735", locations.get(1).getId());
