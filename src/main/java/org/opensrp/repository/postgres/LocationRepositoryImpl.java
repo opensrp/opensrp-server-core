@@ -343,7 +343,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			return null;
 		}
 
-		int limit = pageSize < FETCH_SIZE_LIMIT ? Math.abs(pageSize) : FETCH_SIZE_LIMIT;
+		int limit = Math.abs(pageSize);
+		limit = limit < FETCH_SIZE_LIMIT ? limit : FETCH_SIZE_LIMIT;
 		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample,
 				returnGeometry, id, 0, limit);
 		return convert(locations);
