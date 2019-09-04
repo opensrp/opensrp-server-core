@@ -57,4 +57,33 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
+    <select id="selectManyByIds"
+            resultMap="org.opensrp.repository.postgres.mapper.PlanMapper.BaseResultMap">
+        select
+        <if test="!fields">
+            <include refid="Base_Column_List" />
+        </if>
+        <if test="fields">
+            p.id,
+            jsonb_build_object(
+            'identifier', json->'identifier',
+            <trim >
+            <foreach item="field"  collection="fields" separator="," >
+                #{field}, json->#{field}
+            </foreach>
+            </trim>
+            ) as json
+        </if>
+        from core.plan p
+        join core.plan_metadata pm on pm.plan_id = p.id
+
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause" />
+        </if>
+        <if test="example.orderByClause != null">
+            order by pm.${example.orderByClause}
+        </if>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
 </mapper>
