@@ -6,7 +6,7 @@
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
 
-	<version>1.2.2-SNAPSHOT</version>
+	<version>1.2.3-SNAPSHOT</version>
 
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
@@ -21,7 +21,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
 
-		<opensrp.common.version>1.0.1-SNAPSHOT</opensrp.common.version>
+		<opensrp.common.version>1.0.3-SNAPSHOT</opensrp.common.version>
 		<opensrp.api.version>1.0.1</opensrp.api.version>
 		<opensrp.form.version>1.0.1</opensrp.form.version>
 		<opensrp.interface.version>1.0.1</opensrp.interface.version>

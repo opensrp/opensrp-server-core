@@ -139,7 +139,8 @@
 					cm.middle_name ilike #{name} or
 					cm.last_name ilike #{name} or
 					cm.unique_id ilike #{name} or
-					c.json -> 'attributes' ->> 'phoneNumber' ilike #{name}					
+					c.json -> 'attributes' ->> 'phoneNumber' ilike #{name}	or
+					em.provider_id ilike #{name}				
 				)
 		</if>		
 		
@@ -205,10 +206,8 @@
 		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
-		<include refid="Base_Table_List" />
-		<if test="clientBean.clientType != null or clientBean.providerId != null ">
-			<include refid="Join_With_Event_Meta_Data_Table" />
-		</if>
+		<include refid="Base_Table_List" />		
+		<include refid="Join_With_Event_Meta_Data_Table" />		
 		<if test="addressBean!=null and addressBean.hasFilter">
 			join jsonb_array_elements(json->'addresses') as address on true	
 		</if>
@@ -222,7 +221,7 @@
 				
 			</trim>
 		</where>
-		LIMIT #{limit} OFFSET #{offset}
+		 order by ${clientBean.orderByField}  ${clientBean.orderByType}  LIMIT #{limit} OFFSET #{offset}
 	</select>
 	
 	
