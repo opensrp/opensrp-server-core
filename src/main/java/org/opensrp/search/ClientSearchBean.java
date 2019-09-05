@@ -44,6 +44,26 @@ public class ClientSearchBean {
 	
 	private int pageSize = 0;
 	
+	private String orderByField; // The field name which used to order result 
+	
+	private String orderByType; // type of order ASC or DESC
+	
+	public String getOrderByField() {
+		return orderByField;
+	}
+	
+	public void setOrderByField(String orderByField) {
+		this.orderByField = orderByField;
+	}
+	
+	public String getOrderByType() {
+		return orderByType;
+	}
+	
+	public void setOrderByType(String orderByType) {
+		this.orderByType = orderByType;
+	}
+	
 	public int getPageSize() {
 		return pageSize;
 	}
