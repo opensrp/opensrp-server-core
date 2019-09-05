@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.opensrp.repository.postgres.mapper.custom.CustomPractitionerRoleMapper">
+
+    <select id="selectMany"
+            resultMap="org.opensrp.repository.postgres.mapper.PractitionerRoleMapper.BaseResultMap">
+        select
+        <include
+                refid="org.opensrp.repository.postgres.mapper.PractitionerRoleMapper.Base_Column_List" />
+        from team.practitioner_role pr
+        <if test="_parameter != null">
+            <include refid="org.opensrp.repository.postgres.mapper.PractitionerRoleMapper.Example_Where_Clause" />
+        </if>
+        <if test="example.orderByClause != null">
+            order by pr.${example.orderByClause}
+        </if>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+</mapper>
