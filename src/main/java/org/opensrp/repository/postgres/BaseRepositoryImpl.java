@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 public abstract class BaseRepositoryImpl<T> {
 	
 	public static int DEFAULT_FETCH_SIZE = 1000;
+
+	public static int FETCH_SIZE_LIMIT = 5000;
 	
 	public static String REVISION_PREFIX = "v";
 	

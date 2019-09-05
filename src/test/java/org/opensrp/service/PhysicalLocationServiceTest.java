@@ -53,9 +53,9 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testGetLocation() {
-		when(locationRepository.get("3734")).thenReturn(createLocation());
-		PhysicalLocation parentLocation = locationService.getLocation("3734");
-		verify(locationRepository).get("3734");
+		when(locationRepository.get("3734", true)).thenReturn(createLocation());
+		PhysicalLocation parentLocation = locationService.getLocation("3734", true);
+		verify(locationRepository).get("3734", true);
 		verifyNoMoreInteractions(locationRepository);
 
 		assertEquals("3734", parentLocation.getId());
@@ -85,9 +85,9 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testGetStructure() throws ParseException {
 
-		when(locationRepository.getStructure("90397")).thenReturn(createStructure());
-		PhysicalLocation structure = locationService.getStructure("90397");
-		verify(locationRepository).getStructure("90397");
+		when(locationRepository.getStructure("90397", true)).thenReturn(createStructure());
+		PhysicalLocation structure = locationService.getStructure("90397", true);
+		verify(locationRepository).getStructure("90397", true);
 		verifyNoMoreInteractions(locationRepository);
 
 		assertEquals("Feature", structure.getType());
@@ -151,7 +151,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testAddOrUpdateShouldUpdateLocation() {
 		PhysicalLocation physicalLocation = createLocation();
-		when(locationRepository.get("3734")).thenReturn(physicalLocation);
+		when(locationRepository.get("3734", true)).thenReturn(physicalLocation);
 		locationService.addOrUpdate(createLocation());
 		verify(locationRepository).update(argumentCaptor.capture());
 
@@ -177,7 +177,7 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testAddOrUpdateShouldAddStructure() throws ParseException {
-		when(locationRepository.getStructure("90397")).thenReturn(null);
+		when(locationRepository.getStructure("90397", true)).thenReturn(null);
 		locationService.addOrUpdate(createStructure());
 		verify(locationRepository).add(argumentCaptor.capture());
 
@@ -202,7 +202,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testAddOrUpdateShouldUpdateStructure() throws ParseException {
 		PhysicalLocation physicalLocation = createStructure();
-		when(locationRepository.getStructure("90397")).thenReturn(physicalLocation);
+		when(locationRepository.getStructure("90397", true)).thenReturn(physicalLocation);
 		locationService.addOrUpdate(physicalLocation);
 		verify(locationRepository).update(argumentCaptor.capture());
 
@@ -403,7 +403,7 @@ public class PhysicalLocationServiceTest {
 		expectedLocations.add(createStructure());
 		expectedLocations.add(createStructure());
 
-		when(locationRepository.get("12323")).thenReturn(physicalLocation);
+		when(locationRepository.get("12323", true)).thenReturn(physicalLocation);
 		locationService.saveLocations(expectedLocations, true);
 
 		verify(locationRepository, times(2)).add(argumentCaptor.capture());
@@ -460,6 +460,19 @@ public class PhysicalLocationServiceTest {
 		verify(locationRepository).findStructuresByProperties(false, parentId, properties);
 		assertEquals(1, locations.size());
 		assertEquals(expectedLocations, locations);
+	}
+
+	@Test
+	public void testFindLocationsById() {
+		List<PhysicalLocation> expectedLocations = Collections.singletonList(createLocation());
+
+		List<String> locationIds = new ArrayList<>();
+		when(locationRepository.findLocationsByIds(true, locationIds)).thenReturn(expectedLocations);
+		List<PhysicalLocation> locations = locationService.findLocationsByIds(true, locationIds);
+		verify(locationRepository).findLocationsByIds(true, locationIds);
+		assertEquals(1, locations.size());
+		assertEquals(expectedLocations, locations);
+
 	}
 
 	private PhysicalLocation createLocation() {

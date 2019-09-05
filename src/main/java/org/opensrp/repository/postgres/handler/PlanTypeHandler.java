@@ -3,8 +3,15 @@ package org.opensrp.repository.postgres.handler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.opensrp.domain.PlanDefinition;
+import org.opensrp.util.DateTypeConverter;
+import org.opensrp.util.TaskDateTimeTypeConverter;
 import org.postgresql.util.PGobject;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -16,11 +23,14 @@ import java.sql.SQLException;
  */
 public class PlanTypeHandler extends BaseTypeHandler implements TypeHandler<PlanDefinition> {
 
+	public  Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
+			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
+	
     @Override
     public void setParameter(PreparedStatement ps, int i, PlanDefinition parameter, JdbcType jdbcType) throws SQLException {
         try {
             if (parameter != null) {
-                String jsonString = mapper.writeValueAsString(parameter);
+                String jsonString = gson.toJson(parameter);
                 PGobject jsonObject = new PGobject();
                 jsonObject.setType("jsonb");
                 jsonObject.setValue(jsonString);
@@ -39,7 +49,7 @@ public class PlanTypeHandler extends BaseTypeHandler implements TypeHandler<Plan
             if (StringUtils.isBlank(jsonString)) {
                 return null;
             }
-            PlanDefinition result = mapper.readValue(jsonString, PlanDefinition.class);
+            PlanDefinition result =  gson.fromJson(jsonString, PlanDefinition.class);
             return result;
         }
         catch (Exception e) {
@@ -54,7 +64,7 @@ public class PlanTypeHandler extends BaseTypeHandler implements TypeHandler<Plan
             if (StringUtils.isBlank(jsonString)) {
                 return null;
             }
-            PlanDefinition result = mapper.readValue(jsonString, PlanDefinition.class);
+            PlanDefinition result = gson.fromJson(jsonString, PlanDefinition.class);
             return result;
         }
         catch (Exception e) {
@@ -69,7 +79,7 @@ public class PlanTypeHandler extends BaseTypeHandler implements TypeHandler<Plan
             if (StringUtils.isBlank(jsonString)) {
                 return null;
             }
-            PlanDefinition result = mapper.readValue(jsonString, PlanDefinition.class);
+            PlanDefinition result = gson.fromJson(jsonString, PlanDefinition.class);
             return result;
         }
         catch (Exception e) {

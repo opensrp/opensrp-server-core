@@ -22,17 +22,19 @@ public class PhysicalLocationService {
 
 	private LocationRepository locationRepository;
 
+	private final boolean DEFAULT_RETURN_BOOLEAN = true;
+
 	@Autowired
 	public void setLocationRepository(LocationRepository locationRepository) {
 		this.locationRepository = locationRepository;
 	}
 
-	public PhysicalLocation getLocation(String id) {
-		return locationRepository.get(id);
+	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
+		return locationRepository.get(id, returnGeometry);
 	}
 
-	public PhysicalLocation getStructure(String id) {
-		return locationRepository.getStructure(id);
+	public PhysicalLocation getStructure(String id, boolean returnGeometry) {
+		return locationRepository.getStructure(id, returnGeometry);
 	}
 
 	public List<PhysicalLocation> getAllLocations() {
@@ -42,8 +44,8 @@ public class PhysicalLocationService {
 	public void addOrUpdate(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
-		if ((physicalLocation.isJurisdiction() && getLocation(physicalLocation.getId()) == null)
-				|| (!physicalLocation.isJurisdiction() && getStructure(physicalLocation.getId()) == null)) {
+		if ((physicalLocation.isJurisdiction() && getLocation(physicalLocation.getId(), DEFAULT_RETURN_BOOLEAN) == null)
+				|| (!physicalLocation.isJurisdiction() && getStructure(physicalLocation.getId(), DEFAULT_RETURN_BOOLEAN) == null)) {
 			add(physicalLocation);
 		} else {
 			update(physicalLocation);
@@ -151,6 +153,29 @@ public class PhysicalLocationService {
 	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
 			Map<String, String> properties) {
 		return locationRepository.findStructuresByProperties(returnGeometry, parentId, properties);
+	}
+
+	/**
+	 * This methods provides an API endpoint that searches for locations using a list of provided location ids.
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param ids list of location ids
+	 * @return jurisdictions whose ids match the provided params
+	 */
+	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry,	List<String> ids) {
+		return locationRepository.findLocationsByIds(returnGeometry, ids);
+	}
+
+	/**
+	 * This methods searches for a location and it's children using the provided location id
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param id location id
+	 * @param pageSize number of records to be returned
+	 * @return location together with it's children whose id matches the provided param
+	 */
+	public List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id, int pageSize) {
+		return locationRepository.findLocationByIdWithChildren(returnGeometry, id, pageSize);
 	}
 
 }

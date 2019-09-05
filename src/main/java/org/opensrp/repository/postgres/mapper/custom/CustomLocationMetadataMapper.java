@@ -10,13 +10,21 @@ import org.opensrp.repository.postgres.mapper.LocationMetadataMapper;
 
 public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	
-	Location findById(String id);
-	
+	Location findById(@Param("id") String id, @Param("geometry") boolean returnGeometry);
+
 	List<Location> selectMany(@Param("example") LocationMetadataExample locationMetadataExample, @Param("offset") int offset,
 	        @Param("limit") int limit);
 	
 	List<Location> selectManyByProperties(@Param("example") LocationMetadataExample locationMetadataExample,
 	        @Param("properties") Map<String, String> properties, @Param("geometry") boolean returnGeometry,
 	        @Param("offset") int offset, @Param("limit") int limit);
-	
+
+	List<Location> selectManyById(@Param("example") LocationMetadataExample locationMetadataExample,
+			@Param("geometry") boolean returnGeometry,
+			@Param("offset") int offset, @Param("limit") int limit);
+
+	List<Location> selectWithChildren(@Param("example") LocationMetadataExample locationMetadataExample,
+			@Param("geometry") boolean returnGeometry,
+			@Param("locationId") String locationId,
+			@Param("offset") int offset, @Param("limit") int limit);
 }

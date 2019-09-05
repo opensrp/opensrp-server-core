@@ -43,12 +43,17 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 	@Override
 	public PhysicalLocation get(String id) {
-		return convert(locationMetadataMapper.findById(id));
+		return convert(locationMetadataMapper.findById(id, true));
 	}
 
 	@Override
-	public PhysicalLocation getStructure(String id) {
-		return convert(structureMetadataMapper.findById(id));
+	public PhysicalLocation get(String id, boolean returnGeography) {
+		return convert(locationMetadataMapper.findById(id, returnGeography));
+	}
+
+	@Override
+	public PhysicalLocation getStructure(String id, boolean returnGeography) {
+		return convert(structureMetadataMapper.findById(id, returnGeography));
 	}
 
 	@Override
@@ -311,6 +316,40 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return convert(locations);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		if(ids == null || ids.isEmpty()) {
+			return null;
+		}
+
+		locationMetadataExample.createCriteria().andGeojsonIdIn(ids);
+
+		List<Location> locations = locationMetadataMapper.selectManyById(locationMetadataExample,
+				returnGeometry, 0, DEFAULT_FETCH_SIZE);
+		return convert(locations);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id, int pageSize) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		if(id == null) {
+			return null;
+		}
+
+		int limit = Math.abs(pageSize);
+		limit = limit < FETCH_SIZE_LIMIT ? limit : FETCH_SIZE_LIMIT;
+		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample,
+				returnGeometry, id, 0, limit);
+		return convert(locations);
+	}
+
 	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);
@@ -321,13 +360,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		String identifier = uniqueId.toString();
 
 		if (entity.isJurisdiction()) {
-			Location pgEntity = locationMetadataMapper.findById(identifier);
+			Location pgEntity = locationMetadataMapper.findById(identifier, true);
 			if (pgEntity == null) {
 				return null;
 			}
 			return pgEntity.getId();
 		} else {
-			Structure pgEntity = structureMetadataMapper.findById(identifier);
+			Structure pgEntity = structureMetadataMapper.findById(identifier, true);
 			if (pgEntity == null) {
 				return null;
 			}

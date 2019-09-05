@@ -16,7 +16,13 @@
 	<select id="findById" parameterType="java.lang.String"
 		resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
 		select
-		<include refid="Base_Column_List" />
+		<if test="geometry">
+			<include refid="Base_Column_List" />
+		</if>
+
+		<if test="!geometry">
+			<include refid="No_Geometry_Column_List" />
+		</if>
 		from core.location_metadata lm
 		join core.location l on lm.location_id = l.id
 		where lm.geojson_id = #{id,jdbcType=VARCHAR}
@@ -79,15 +85,15 @@
 		<if test="example.distinct">
 			distinct
 		</if>
-		
+
 		<if test="geometry">
-				<include refid="Base_Column_List" />		
+				<include refid="Base_Column_List" />
 		</if>
-		
+
 		<if test="!geometry">
-				<include refid="No_Geometry_Column_List" />		
+				<include refid="No_Geometry_Column_List" />
 		</if>
-	
+
 		from core.location_metadata lm
 		join core.location l on lm.location_id = l.id
 		<if test="_parameter != null">
@@ -105,6 +111,70 @@
 			order by lm.${example.orderByClause}
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectManyById"
+			resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+
+		<if test="geometry">
+			<include refid="Base_Column_List" />
+		</if>
+
+		<if test="!geometry">
+			<include refid="No_Geometry_Column_List" />
+		</if>
+
+		from core.location_metadata lm
+		join core.location l on lm.location_id = l.id
+
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="example.orderByClause != null">
+			order by lm.${example.orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectWithChildren"
+			resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+
+		<if test="geometry">
+			<include refid="Base_Column_List" />
+		</if>
+
+		<if test="!geometry">
+			<include refid="No_Geometry_Column_List" />
+		</if>
+		from core.location l
+		Where l.id in
+		(
+		WITH RECURSIVE locations
+		AS
+		( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+		FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}
+		UNION
+		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+		FROM locations lm1
+		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id )
+		SELECT location_id FROM locations
+		)
+
+		<if test="example.orderByClause != null">
+			order by lm.${example.orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+
 	</select>
 
 </mapper>
