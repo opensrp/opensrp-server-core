@@ -59,10 +59,12 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
             return;
         }
 
-        if (retrievePrimaryKey(practitioner) == null) {
-            return; // practitioner already added
+        Long id = retrievePrimaryKey(practitioner);
+        if ( id == null) {
+            return; // practitioner does not exist
         }
 
+        practitioner.setId(id);
         practitionerMapper.updateByPrimaryKey(practitioner);
     }
 
@@ -81,17 +83,18 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
             return;
         }
 
-        String id = retrievePrimaryKey(practioner);
+        Long id = retrievePrimaryKey(practioner);
         if (id == null) {
             return;
         }
 
+        practioner.setId(id);
         practioner.setDateDeleted(new Date());
         practitionerMapper.updateByPrimaryKey(practioner);
     }
 
     @Override
-    protected String retrievePrimaryKey(Practitioner practitioner) {
+    protected Long retrievePrimaryKey(Practitioner practitioner) {
         Object uniqueId = getUniqueField(practitioner);
         if (uniqueId == null) {
             return null;
@@ -100,12 +103,12 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         String identifier = uniqueId.toString();
         Practitioner pgPractitioner = get(identifier);
 
-        return pgPractitioner == null ? null : pgPractitioner.getIdentifier();
+        return pgPractitioner == null ? null : pgPractitioner.getId();
     }
 
     @Override
     protected Object getUniqueField(Practitioner practitioner) {
-        return practitioner == null ? null : practitioner;
+        return practitioner == null ? null : practitioner.getIdentifier();
     }
 
 }
