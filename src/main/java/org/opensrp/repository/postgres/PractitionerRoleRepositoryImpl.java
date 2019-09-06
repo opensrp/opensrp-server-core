@@ -56,10 +56,12 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
             return;
         }
 
-        if (retrievePrimaryKey(practitionerRole) == null) {
-            return; // practitionerRole already added
+        Long id = retrievePrimaryKey(practitionerRole);
+        if ( id == null) {
+            return; // practitionerRole does not exist
         }
 
+        practitionerRole.setId(id);
         practitionerRoleMapper.updateByPrimaryKey(practitionerRole);
     }
 
@@ -77,16 +79,17 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
             return;
         }
 
-        String id = retrievePrimaryKey(practitionerRole);
+        Long id = retrievePrimaryKey(practitionerRole);
         if (id == null) {
             return;
         }
+        practitionerRole.setId(id);
 
         practitionerRoleMapper.deleteByPrimaryKey(practitionerRole.getId());
     }
 
     @Override
-    protected String retrievePrimaryKey(PractitionerRole practitionerRole) {
+    protected Long retrievePrimaryKey(PractitionerRole practitionerRole) {
         Object uniqueId = getUniqueField(practitionerRole);
         if (uniqueId == null) {
             return null;
@@ -95,12 +98,12 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         String identifier = uniqueId.toString();
         PractitionerRole pgPractitionerRole = get(identifier);
 
-        return  pgPractitionerRole == null ? null : practitionerRole.getIdentifier();
+        return  pgPractitionerRole == null ? null : pgPractitionerRole.getId();
     }
 
     @Override
     protected Object getUniqueField(PractitionerRole practitionerRole) {
-        return practitionerRole == null ? null : practitionerRole;
+        return practitionerRole == null ? null : practitionerRole.getIdentifier();
     }
 
     @Override
