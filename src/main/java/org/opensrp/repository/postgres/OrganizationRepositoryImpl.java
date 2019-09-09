@@ -112,6 +112,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 					organizationLocation.setFromDate(fromDate);
 					organizationLocation.setToDate(toDate);
 					OrganizationLocationExample example = new OrganizationLocationExample();
+					example.createCriteria().andIdEqualTo(organizationLocation.getId());
 					organizationLocationMapper.updateByExample(organizationLocation, example);
 					break;
 				}
