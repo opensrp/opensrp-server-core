@@ -5,11 +5,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.LocalDate;
 import org.opensrp.domain.CodeSystem;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.postgres.OrganizationExample;
 import org.opensrp.domain.postgres.OrganizationLocation;
+import org.opensrp.domain.postgres.OrganizationLocationExample;
 import org.opensrp.repository.OrganizationRepository;
+import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,6 +25,9 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 
 	@Autowired
 	private CustomOrganizationMapper organizationMapper;
+
+	@Autowired
+	private CustomOrganizationLocationMapper organizationLocationMapper;
 
 	@Override
 	public Organization get(String id) {
@@ -95,13 +101,52 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 
 	@Override
-	public void assignLocationAndPlan(String organizationId, Long jurisdictionId, Long planId) {
+	public void assignLocationAndPlan(Long organizationId, Long jurisdictionId, Long planId, Date fromDate,
+			Date toDate) {
+		List<OrganizationLocation> assignedLocations = findAssignedLocations(organizationId);
+		if (assignedLocations.isEmpty()) {
+			insertOrganizationLocation(organizationId, jurisdictionId, planId);
+		} else {
+			for (OrganizationLocation organizationLocation : assignedLocations) {
+				if (isExistingAssignment(jurisdictionId, planId, organizationLocation)) {
+					organizationLocation.setFromDate(fromDate);
+					organizationLocation.setToDate(toDate);
+					OrganizationLocationExample example = new OrganizationLocationExample();
+					organizationLocationMapper.updateByExample(organizationLocation, example);
+					break;
+				}
+			}
+		}
+	}
 
+	private boolean isExistingAssignment(Long jurisdictionId, Long planId, OrganizationLocation organizationLocation) {
+		if (jurisdictionId != null && planId != null) {
+			return jurisdictionId.equals(organizationLocation.getOrganizationId())
+					&& planId.equals(organizationLocation.getPlanId());
+		} else if (jurisdictionId == null && planId != null) {
+			return planId.equals(organizationLocation.getPlanId());
+		} else if (jurisdictionId != null && planId == null) {
+			return jurisdictionId.equals(organizationLocation.getOrganizationId());
+		} else {
+			return false;
+		}
+	}
+
+	private void insertOrganizationLocation(Long organizationId, Long jurisdictionId, Long planId) {
+		OrganizationLocation organizationLocation = new OrganizationLocation();
+		organizationLocation.setOrganizationId(organizationId);
+		organizationLocation.setLocationId(jurisdictionId);
+		organizationLocation.setPlanId(planId);
+		organizationLocationMapper.insert(organizationLocation);
 	}
 
 	@Override
-	public List<OrganizationLocation> findAssignedLocations(String organizationIdentifier) {
-		return null;
+	public List<OrganizationLocation> findAssignedLocations(Long organizationId) {
+		OrganizationLocationExample example = new OrganizationLocationExample();
+		Date currentDate = new LocalDate().toDate();
+		example.createCriteria().andOrganizationIdEqualTo(organizationId).andFromDateGreaterThanOrEqualTo(currentDate)
+				.andToDateLessThanOrEqualTo(currentDate);
+		return organizationLocationMapper.selectByExample(example);
 	}
 
 	@Override
