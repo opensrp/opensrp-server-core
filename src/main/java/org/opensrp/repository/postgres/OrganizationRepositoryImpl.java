@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.CodeSystem;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.postgres.OrganizationExample;
+import org.opensrp.domain.postgres.OrganizationLocation;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,8 +100,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 
 	@Override
-	public void findAssignedLocations(String organizationIdentifier) {
-
+	public List<OrganizationLocation> findAssignedLocations(String organizationIdentifier) {
+		return null;
 	}
 
 	@Override
