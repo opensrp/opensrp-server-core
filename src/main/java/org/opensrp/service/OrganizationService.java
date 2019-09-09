@@ -3,11 +3,15 @@
  */
 package org.opensrp.service;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Organization;
+import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
+import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +22,10 @@ import org.springframework.stereotype.Service;
 public class OrganizationService {
 
 	private OrganizationRepository organizationRepository;
+
+	private LocationRepository locationRepository;
+
+	private PlanRepository planRepository;
 
 	/**
 	 * Get all organizations
@@ -88,8 +96,21 @@ public class OrganizationService {
 	 * @param organizationId the id of the organization
 	 * @param jurisdictionId the identifier of the jurisdiction
 	 * @param planId         the identifier of the plan
+	 * @param fromDate
+	 * @param toDate
 	 */
-	public void assignLocationAndPlan(Long organizationId, String jurisdictionId, String planId) {
+	public void assignLocationAndPlan(Long organizationId, String jurisdictionId, String planId, Date fromDate,
+			Date toDate) {
+		if (organizationId == null || organizationId == 0)
+			throw new IllegalArgumentException("organizationId cannot be null or empty");
+		if (StringUtils.isBlank(jurisdictionId) && StringUtils.isBlank(planId))
+			throw new IllegalArgumentException("jurisdictionId and planId cannot be null");
+		Calendar calendar = Calendar.getInstance();
+		if (fromDate == null)
+			fromDate = calendar.getTime();
+		organizationRepository.assignLocationAndPlan(organizationId,
+				locationRepository.retrievePrimaryKey(jurisdictionId, true), planRepository.retrievePrimaryKey(planId),
+				fromDate, toDate);
 
 	}
 
@@ -100,13 +121,38 @@ public class OrganizationService {
 	public void findAssignedLocationsAndPlans(Long organizationId) {
 
 	}
-	
-	/** Set the Organization repository
+
+	/**
+	 * Set the Organization repository
+	 * 
 	 * @param organizationRepository the organizationRepository to set
 	 */
 	@Autowired
 	public void setOrganizationRepository(OrganizationRepository organizationRepository) {
 		this.organizationRepository = organizationRepository;
+	}
+
+	/**
+	 * set the location repository
+	 * 
+	 * @param locationRepository the locationRepository to set
+	 */
+	@Autowired
+	/**
+	 * @param locationRepository the locationRepository to set
+	 */
+	public void setLocationRepository(LocationRepository locationRepository) {
+		this.locationRepository = locationRepository;
+	}
+
+	/**
+	 * set the plan Repository
+	 * 
+	 * @param planRepository the planRepository to set
+	 */
+	@Autowired
+	public void setPlanRepository(PlanRepository planRepository) {
+		this.planRepository = planRepository;
 	}
 
 }
