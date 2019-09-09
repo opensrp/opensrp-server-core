@@ -3,6 +3,7 @@ package org.opensrp.service;
 import static org.opensrp.common.AllConstants.Client.DEFAULTORDERBYFIELD;
 import static org.opensrp.common.AllConstants.Client.DEFAULTORDERBYTYPE;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -280,5 +281,27 @@ public class ClientService {
 	
 	public HouseholdClient findTotalCountByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
 		return allClients.findTotalCountByCriteria(clientSearchBean, addressSearchBean);
+	}
+	
+	public List<Client> getHouseholdList(List<String> ids, String clientType, AddressSearchBean addressSearchBean,
+	                                     ClientSearchBean searchBean, List<Client> clients) {
+		Map<String, HouseholdClient> householdClients = getMemberCountHouseholdHeadProviderByClients(ids, clientType);
+		
+		List<Client> clientList = new ArrayList<Client>();
+		
+		for (Client client : clients) {
+			HouseholdClient householdClient = householdClients.get(client.getBaseEntityId());
+			if (householdClient != null) {
+				client.addAttribute("memberCount", householdClient.getMemebrCount());
+				client.addAttribute("HouseholdHead", householdClient.getHouseholdHead());
+				client.addAttribute("ProvierId", householdClient.getProviderId());
+			} else {
+				client.addAttribute("memberCount", 0);
+				client.addAttribute("HouseholdHead", "");
+				client.addAttribute("ProvierId", "");
+			}
+			clientList.add(client);
+		}
+		return clientList;
 	}
 }
