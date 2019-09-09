@@ -3,13 +3,13 @@ package org.opensrp.domain;
 import com.google.gson.annotations.SerializedName;
 import org.codehaus.jackson.annotate.JsonProperty;
 
-public class PractitionerRoleDefinition {
+public class PractitionerRole {
 
     @JsonProperty
     private String identifier;
 
     @JsonProperty
-    Boolean active;
+    private Boolean active;
 
     @JsonProperty
     @SerializedName("organization_id")

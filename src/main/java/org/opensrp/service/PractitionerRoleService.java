@@ -1,7 +1,7 @@
 package org.opensrp.service;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.PractitionerRoleDefinition;
+import org.opensrp.domain.PractitionerRole;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,32 +22,32 @@ public class PractitionerRoleService {
         return practitionerRoleRepository;
     }
 
-    public PractitionerRoleDefinition getPractitionerRole(String identifier) {
+    public PractitionerRole getPractitionerRole(String identifier) {
         return StringUtils.isBlank(identifier) ? null : getPractitionerRoleRepository().get(identifier);
     }
 
-    public List<PractitionerRoleDefinition> getAllPractitionerRoles() {
+    public List<PractitionerRole> getAllPractitionerRoles() {
         return  getPractitionerRoleRepository().getAll();
     }
 
-    public void addOrUpdatePractitionerRole(PractitionerRoleDefinition practitionerRoleDefinition) {
-        if (StringUtils.isBlank(practitionerRoleDefinition.getIdentifier())) {
+    public void addOrUpdatePractitionerRole(PractitionerRole practitionerRole) {
+        if (StringUtils.isBlank(practitionerRole.getIdentifier())) {
             throw new IllegalArgumentException("Identifier not specified");
         }
 
-        if (getPractitionerRoleRepository().get(practitionerRoleDefinition.getIdentifier()) != null) {
-            getPractitionerRoleRepository().update(practitionerRoleDefinition);
+        if (getPractitionerRoleRepository().get(practitionerRole.getIdentifier()) != null) {
+            getPractitionerRoleRepository().update(practitionerRole);
         } else {
-            getPractitionerRoleRepository().add(practitionerRoleDefinition);
+            getPractitionerRoleRepository().add(practitionerRole);
         }
     }
 
-    public void deletePractitionerRole(PractitionerRoleDefinition practitionerRoleDefinition) {
-        if (StringUtils.isBlank(practitionerRoleDefinition.getIdentifier())) {
+    public void deletePractitionerRole(PractitionerRole practitionerRole) {
+        if (StringUtils.isBlank(practitionerRole.getIdentifier())) {
             throw new IllegalArgumentException("Identifier not specified");
         }
 
-        getPractitionerRoleRepository().safeRemove(practitionerRoleDefinition);
+        getPractitionerRoleRepository().safeRemove(practitionerRole);
     }
 
     public void getRolesForPractitioner(String practitionerIdentifier) {

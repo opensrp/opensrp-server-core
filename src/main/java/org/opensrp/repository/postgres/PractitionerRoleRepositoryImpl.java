@@ -1,9 +1,8 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.PractitionerRoleDefinition;
+import org.opensrp.domain.PractitionerRole;
 import org.opensrp.domain.postgres.Practitioner;
-import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.domain.postgres.PractitionerRoleExample;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerRoleMapper;
@@ -16,7 +15,7 @@ import java.util.List;
 import static org.opensrp.util.Utils.isEmptyList;
 
 @Repository
-public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<PractitionerRoleDefinition> implements PractitionerRoleRepository {
+public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<PractitionerRole> implements PractitionerRoleRepository {
 
     @Autowired
     private CustomPractitionerRoleMapper practitionerRoleMapper;
@@ -25,17 +24,17 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
     private PractitionerRepositoryImpl practitionerRepository;
 
     @Override
-    public PractitionerRoleDefinition get(String id) {
+    public PractitionerRole get(String id) {
         if (StringUtils.isBlank(id)) {
             return null;
         }
 
-        PractitionerRoleDefinition practitionerRoleDefinition = convert(getPractitionerRole(id));
-        return practitionerRoleDefinition;
+        PractitionerRole practitionerRole = convert(getPractitionerRole(id));
+        return practitionerRole;
     }
 
     @Override
-    public PractitionerRole getPractitionerRole(String id) {
+    public org.opensrp.domain.postgres.PractitionerRole getPractitionerRole(String id) {
         if (StringUtils.isBlank(id)) {
             return null;
         }
@@ -43,92 +42,92 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         PractitionerRoleExample practitionerRoleExample = new PractitionerRoleExample();
         practitionerRoleExample.createCriteria().andIdentifierEqualTo(id);
 
-        List<PractitionerRole> practitionerRoleList = practitionerRoleMapper.selectByExample(practitionerRoleExample);
+        List<org.opensrp.domain.postgres.PractitionerRole> practitionerRoleList = practitionerRoleMapper.selectByExample(practitionerRoleExample);
 
         return isEmptyList(practitionerRoleList) ? null : practitionerRoleList.get(0);
     }
 
     @Override
-    public void add(PractitionerRoleDefinition practitionerRoleDefinition) {
-        if (practitionerRoleDefinition == null) {
+    public void add(PractitionerRole practitionerRole) {
+        if (practitionerRole == null) {
             return;
         }
-        if (getUniqueField(practitionerRoleDefinition) == null) {
+        if (getUniqueField(practitionerRole) == null) {
             return;
         }
 
-        if (retrievePrimaryKey(practitionerRoleDefinition) != null) {
+        if (retrievePrimaryKey(practitionerRole) != null) {
             return; // practitionerRole already added
         }
 
-        PractitionerRole pgPractitionerRole = convert(practitionerRoleDefinition);
+        org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole = convert(practitionerRole);
         practitionerRoleMapper.insertSelective(pgPractitionerRole);
     }
 
     @Override
-    public void update(PractitionerRoleDefinition practitionerRoleDefinition) {
-        if (practitionerRoleDefinition == null) {
+    public void update(PractitionerRole practitionerRole) {
+        if (practitionerRole == null) {
             return;
         }
-        if (getUniqueField(practitionerRoleDefinition) == null) {
+        if (getUniqueField(practitionerRole) == null) {
             return;
         }
 
-        Long id = retrievePrimaryKey(practitionerRoleDefinition);
+        Long id = retrievePrimaryKey(practitionerRole);
         if ( id == null) {
             return; // practitionerRole does not exist
         }
 
-        PractitionerRole pgPractitionerRole = convert(practitionerRoleDefinition);
+        org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole = convert(practitionerRole);
         pgPractitionerRole.setId(id);
         practitionerRoleMapper.updateByPrimaryKey(pgPractitionerRole);
     }
 
     @Override
-    public List<PractitionerRoleDefinition> getAll() {
+    public List<PractitionerRole> getAll() {
         PractitionerRoleExample practitionerRoleExample = new PractitionerRoleExample();
-        List<PractitionerRole> pgPractitionerRoleList = practitionerRoleMapper.selectMany(practitionerRoleExample, 0,
+        List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoleList = practitionerRoleMapper.selectMany(practitionerRoleExample, 0,
                 DEFAULT_FETCH_SIZE);
         return convert(pgPractitionerRoleList);
     }
 
     @Override
-    public void safeRemove(PractitionerRoleDefinition practitionerRoleDefinition) {
-        if (practitionerRoleDefinition == null) {
+    public void safeRemove(PractitionerRole practitionerRole) {
+        if (practitionerRole == null) {
             return;
         }
 
-        Long id = retrievePrimaryKey(practitionerRoleDefinition);
+        Long id = retrievePrimaryKey(practitionerRole);
         if (id == null) {
             return;
         }
 
-        PractitionerRole pgPractitionerRole = convert(practitionerRoleDefinition);
+        org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole = convert(practitionerRole);
         pgPractitionerRole.setId(id);
 
         practitionerRoleMapper.deleteByPrimaryKey(pgPractitionerRole.getId());
     }
 
     @Override
-    protected Long retrievePrimaryKey(PractitionerRoleDefinition practitionerRoleDefinition) {
-        Object uniqueId = getUniqueField(practitionerRoleDefinition);
+    protected Long retrievePrimaryKey(PractitionerRole practitionerRole) {
+        Object uniqueId = getUniqueField(practitionerRole);
         if (uniqueId == null) {
             return null;
         }
 
         String identifier = uniqueId.toString();
-        PractitionerRole pgPractitionerRole = getPractitionerRole(identifier);
+        org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole = getPractitionerRole(identifier);
 
         return  pgPractitionerRole == null ? null : pgPractitionerRole.getId();
     }
 
     @Override
-    protected Object getUniqueField(PractitionerRoleDefinition practitionerRoleDefinition) {
-        return practitionerRoleDefinition == null ? null : practitionerRoleDefinition.getIdentifier();
+    protected Object getUniqueField(PractitionerRole practitionerRole) {
+        return practitionerRole == null ? null : practitionerRole.getIdentifier();
     }
 
     @Override
-    public List<PractitionerRoleDefinition> getRolesForPractitioner(String practitionerIdentifier) {
+    public List<PractitionerRole> getRolesForPractitioner(String practitionerIdentifier) {
         if (StringUtils.isBlank(practitionerIdentifier)) {
             return null;
         }
@@ -142,45 +141,45 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         PractitionerRoleExample practitionerRoleExample = new PractitionerRoleExample();
         practitionerRoleExample.createCriteria().andPractitionerIdEqualTo(practitioner.getId());
 
-        List<PractitionerRole> pgPractitionerRoles =  practitionerRoleMapper.selectMany(practitionerRoleExample, 0, DEFAULT_FETCH_SIZE);
+        List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoles =  practitionerRoleMapper.selectMany(practitionerRoleExample, 0, DEFAULT_FETCH_SIZE);
 
         return  convert(pgPractitionerRoles);
     }
 
-    private PractitionerRoleDefinition convert(PractitionerRole pgPractitionerRole) {
+    private PractitionerRole convert(org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole) {
         if (pgPractitionerRole == null) {
             return null;
         }
-        PractitionerRoleDefinition practitionerRoleDefinition = new PractitionerRoleDefinition();
-        practitionerRoleDefinition.setIdentifier(pgPractitionerRole.getIdentifier());
-        practitionerRoleDefinition.setActive(pgPractitionerRole.getActive());
-        practitionerRoleDefinition.setOrganizationId(pgPractitionerRole.getOrganizationId());
-        practitionerRoleDefinition.setPractitionerId(pgPractitionerRole.getPractitionerId());
-        practitionerRoleDefinition.setCode(pgPractitionerRole.getCode());
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier(pgPractitionerRole.getIdentifier());
+        practitionerRole.setActive(pgPractitionerRole.getActive());
+        practitionerRole.setOrganizationId(pgPractitionerRole.getOrganizationId());
+        practitionerRole.setPractitionerId(pgPractitionerRole.getPractitionerId());
+        practitionerRole.setCode(pgPractitionerRole.getCode());
 
-        return practitionerRoleDefinition;
+        return practitionerRole;
     }
 
-    private PractitionerRole convert(PractitionerRoleDefinition practitionerRoleDefinition) {
-        if (practitionerRoleDefinition == null) {
+    private org.opensrp.domain.postgres.PractitionerRole convert(PractitionerRole practitionerRole) {
+        if (practitionerRole == null) {
             return null;
         }
-        PractitionerRole pgPractitionerRole = new PractitionerRole();
-        pgPractitionerRole.setIdentifier(practitionerRoleDefinition.getIdentifier());
-        pgPractitionerRole.setActive(practitionerRoleDefinition.getActive());
-        pgPractitionerRole.setOrganizationId(practitionerRoleDefinition.getOrganizationId());
-        pgPractitionerRole.setPractitionerId(practitionerRoleDefinition.getPractitionerId());
-        pgPractitionerRole.setCode(practitionerRoleDefinition.getCode());
+        org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole = new org.opensrp.domain.postgres.PractitionerRole();
+        pgPractitionerRole.setIdentifier(practitionerRole.getIdentifier());
+        pgPractitionerRole.setActive(practitionerRole.getActive());
+        pgPractitionerRole.setOrganizationId(practitionerRole.getOrganizationId());
+        pgPractitionerRole.setPractitionerId(practitionerRole.getPractitionerId());
+        pgPractitionerRole.setCode(practitionerRole.getCode());
 
         return pgPractitionerRole;
     }
 
-    private List<PractitionerRoleDefinition> convert(List<PractitionerRole> pgPractitionerRoles) {
-        List<PractitionerRoleDefinition> practitionerRoles = new ArrayList<>();
+    private List<PractitionerRole> convert(List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoles) {
+        List<PractitionerRole> practitionerRoles = new ArrayList<>();
         if (isEmptyList(pgPractitionerRoles)) {
             return practitionerRoles;
         }
-        for(PractitionerRole pgPractitionerRole : pgPractitionerRoles) {
+        for(org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole : pgPractitionerRoles) {
             practitionerRoles.add(convert(pgPractitionerRole));
         }
         return practitionerRoles;

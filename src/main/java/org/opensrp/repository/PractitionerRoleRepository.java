@@ -1,13 +1,12 @@
 package org.opensrp.repository;
 
-import org.opensrp.domain.PractitionerRoleDefinition;
-import org.opensrp.domain.postgres.PractitionerRole;
+import org.opensrp.domain.PractitionerRole;
 
 import java.util.List;
 
-public interface PractitionerRoleRepository extends BaseRepository<PractitionerRoleDefinition> {
+public interface PractitionerRoleRepository extends BaseRepository<PractitionerRole> {
 
-    List<PractitionerRoleDefinition>  getRolesForPractitioner(String practitionerIdentifier);
+    List<PractitionerRole>  getRolesForPractitioner(String practitionerIdentifier);
 
-    public PractitionerRole getPractitionerRole(String id);
+    public org.opensrp.domain.postgres.PractitionerRole getPractitionerRole(String id);
 }
