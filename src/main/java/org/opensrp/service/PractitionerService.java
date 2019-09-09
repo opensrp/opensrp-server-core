@@ -1,7 +1,7 @@
 package org.opensrp.service;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.PractitionerDefinition;
+import org.opensrp.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,32 +22,32 @@ public class PractitionerService {
         return practitionerRepository;
     }
 
-    public PractitionerDefinition getPractitioner(String identifier) {
+    public Practitioner getPractitioner(String identifier) {
         return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().get(identifier);
     }
 
-    public List<PractitionerDefinition> getAllPractitioners() {
+    public List<Practitioner> getAllPractitioners() {
         return getPractitionerRepository().getAll();
     }
 
-    public void addOrUpdatePractitioner(PractitionerDefinition practitionerDefinition) {
-        if (StringUtils.isBlank(practitionerDefinition.getIdentifier())) {
+    public void addOrUpdatePractitioner(Practitioner practitioner) {
+        if (StringUtils.isBlank(practitioner.getIdentifier())) {
             throw new IllegalArgumentException("Identifier not specified");
         }
 
-        if (getPractitionerRepository().get(practitionerDefinition.getIdentifier()) != null) {
-            getPractitionerRepository().update(practitionerDefinition);
+        if (getPractitionerRepository().get(practitioner.getIdentifier()) != null) {
+            getPractitionerRepository().update(practitioner);
         } else {
-            getPractitionerRepository().add(practitionerDefinition);
+            getPractitionerRepository().add(practitioner);
         }
     }
 
-    public void deletePractitioner(PractitionerDefinition practitionerDefinition) {
-        if (StringUtils.isBlank(practitionerDefinition.getIdentifier())) {
+    public void deletePractitioner(Practitioner practitioner) {
+        if (StringUtils.isBlank(practitioner.getIdentifier())) {
             throw new IllegalArgumentException("Identifier not specified");
         }
 
-        getPractitionerRepository().safeRemove(practitionerDefinition);
+        getPractitionerRepository().safeRemove(practitioner);
 
     }
 }

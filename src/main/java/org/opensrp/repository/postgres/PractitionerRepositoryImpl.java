@@ -1,12 +1,10 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.PractitionerDefinition;
-import org.opensrp.domain.postgres.Practitioner;
+import org.opensrp.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerExample;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerMapper;
-import org.opensrp.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,23 +15,23 @@ import java.util.List;
 import static org.opensrp.util.Utils.isEmptyList;
 
 @Repository
-public class PractitionerRepositoryImpl extends BaseRepositoryImpl<PractitionerDefinition> implements PractitionerRepository {
+public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner> implements PractitionerRepository {
 
     @Autowired
     private CustomPractitionerMapper practitionerMapper;
 
     @Override
-    public PractitionerDefinition get(String id) {
+    public Practitioner get(String id) {
         if (StringUtils.isBlank(id)) {
             return null;
         }
 
-        PractitionerDefinition practitionerDefinition = convert(getPractitioner(id));
-        return practitionerDefinition;
+        Practitioner practitioner = convert(getPractitioner(id));
+        return practitioner;
     }
 
     @Override
-    public Practitioner getPractitioner(String id) {
+    public org.opensrp.domain.postgres.Practitioner getPractitioner(String id) {
         if (StringUtils.isBlank(id)) {
             return null;
         }
@@ -41,131 +39,131 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<PractitionerD
         PractitionerExample practitionerExample = new PractitionerExample();
         practitionerExample.createCriteria().andIdentifierEqualTo(id).andDateDeletedIsNull();
 
-        List<Practitioner> practitionerList = practitionerMapper.selectByExample(practitionerExample);
+        List<org.opensrp.domain.postgres.Practitioner> practitionerList = practitionerMapper.selectByExample(practitionerExample);
 
-        return Utils.isEmptyList(practitionerList) ? null : practitionerList.get(0);
+        return isEmptyList(practitionerList) ? null : practitionerList.get(0);
 
     }
 
     @Override
-    public void add(PractitionerDefinition practitionerDefinition) {
-        if (practitionerDefinition == null) {
+    public void add(Practitioner practitioner) {
+        if (practitioner == null) {
             return;
         }
-        if (getUniqueField(practitionerDefinition) == null) {
+        if (getUniqueField(practitioner) == null) {
             return;
         }
 
-        if (retrievePrimaryKey(practitionerDefinition) != null) {
+        if (retrievePrimaryKey(practitioner) != null) {
             return; // practitioner already added
         }
 
-        Practitioner pgPractitioner = convert(practitionerDefinition);
+        org.opensrp.domain.postgres.Practitioner pgPractitioner = convert(practitioner);
 
         practitionerMapper.insertSelective(pgPractitioner);
 
     }
 
     @Override
-    public void update(PractitionerDefinition practitionerDefinition) {
-        if (practitionerDefinition == null) {
+    public void update(Practitioner practitioner) {
+        if (practitioner == null) {
             return;
         }
-        if (getUniqueField(practitionerDefinition) == null) {
+        if (getUniqueField(practitioner) == null) {
             return;
         }
 
-        Long id = retrievePrimaryKey(practitionerDefinition);
+        Long id = retrievePrimaryKey(practitioner);
         if ( id == null) {
             return; // practitioner does not exist
         }
 
-        Practitioner pgPractitioner = convert(practitionerDefinition);
+        org.opensrp.domain.postgres.Practitioner pgPractitioner = convert(practitioner);
 
         pgPractitioner.setId(id);
         practitionerMapper.updateByPrimaryKey(pgPractitioner);
     }
 
     @Override
-    public List<PractitionerDefinition> getAll() {
+    public List<Practitioner> getAll() {
         PractitionerExample practitionerExample = new PractitionerExample();
         practitionerExample.createCriteria().andDateDeletedIsNull();
-        List<Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, 0,
+        List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, 0,
                 DEFAULT_FETCH_SIZE);
         return convert(pgPractitionerList);
     }
 
     @Override
-    public void safeRemove(PractitionerDefinition practitionerDefinition) {
-        if (practitionerDefinition == null) {
+    public void safeRemove(Practitioner practitioner) {
+        if (practitioner == null) {
             return;
         }
 
-        Long id = retrievePrimaryKey(practitionerDefinition);
+        Long id = retrievePrimaryKey(practitioner);
         if (id == null) {
             return;
         }
 
-        Practitioner pgPractitioner = convert(practitionerDefinition);
+        org.opensrp.domain.postgres.Practitioner pgPractitioner = convert(practitioner);
         pgPractitioner.setId(id);
         pgPractitioner.setDateDeleted(new Date());
         practitionerMapper.updateByPrimaryKey(pgPractitioner);
     }
 
     @Override
-    protected Long retrievePrimaryKey(PractitionerDefinition practitionerDefinition) {
-        Object uniqueId = getUniqueField(practitionerDefinition);
+    protected Long retrievePrimaryKey(Practitioner practitioner) {
+        Object uniqueId = getUniqueField(practitioner);
         if (uniqueId == null) {
             return null;
         }
 
         String identifier = uniqueId.toString();
-        Practitioner pgPractitioner = getPractitioner(identifier);
+        org.opensrp.domain.postgres.Practitioner pgPractitioner = getPractitioner(identifier);
 
         return pgPractitioner == null ? null : pgPractitioner.getId();
     }
 
     @Override
-    protected Object getUniqueField(PractitionerDefinition practitionerDefinition) {
-        return practitionerDefinition == null ? null : practitionerDefinition.getIdentifier();
+    protected Object getUniqueField(Practitioner practitioner) {
+        return practitioner == null ? null : practitioner.getIdentifier();
     }
 
-    private PractitionerDefinition convert(Practitioner pgPractitioner) {
+    private Practitioner convert(org.opensrp.domain.postgres.Practitioner pgPractitioner) {
         if (pgPractitioner == null) {
             return null;
         }
-        PractitionerDefinition practitionerDefinition = new PractitionerDefinition();
-        practitionerDefinition.setIdentifier(pgPractitioner.getIdentifier());
-        practitionerDefinition.setActive(pgPractitioner.getActive());
-        practitionerDefinition.setName(pgPractitioner.getName());
-        practitionerDefinition.setUserId(pgPractitioner.getUserId());
-        practitionerDefinition.setUserName(pgPractitioner.getUsername());
-        practitionerDefinition.setDateDeleted(pgPractitioner.getDateDeleted());
+        Practitioner practitioner = new Practitioner();
+        practitioner.setIdentifier(pgPractitioner.getIdentifier());
+        practitioner.setActive(pgPractitioner.getActive());
+        practitioner.setName(pgPractitioner.getName());
+        practitioner.setUserId(pgPractitioner.getUserId());
+        practitioner.setUserName(pgPractitioner.getUsername());
+        practitioner.setDateDeleted(pgPractitioner.getDateDeleted());
 
-        return practitionerDefinition;
+        return practitioner;
     }
 
-    private Practitioner convert(PractitionerDefinition practitionerDefinition) {
-        if (practitionerDefinition == null) {
+    private org.opensrp.domain.postgres.Practitioner convert(Practitioner practitioner) {
+        if (practitioner == null) {
             return null;
         }
-        Practitioner pgPractitioner = new Practitioner();
-        pgPractitioner.setIdentifier(practitionerDefinition.getIdentifier());
-        pgPractitioner.setActive(practitionerDefinition.getActive());
-        pgPractitioner.setName(practitionerDefinition.getName());
-        pgPractitioner.setUserId(practitionerDefinition.getUserId());
-        pgPractitioner.setUsername(practitionerDefinition.getUserName());
-        pgPractitioner.setDateDeleted(practitionerDefinition.getDateDeleted());
+        org.opensrp.domain.postgres.Practitioner pgPractitioner = new org.opensrp.domain.postgres.Practitioner();
+        pgPractitioner.setIdentifier(practitioner.getIdentifier());
+        pgPractitioner.setActive(practitioner.getActive());
+        pgPractitioner.setName(practitioner.getName());
+        pgPractitioner.setUserId(practitioner.getUserId());
+        pgPractitioner.setUsername(practitioner.getUserName());
+        pgPractitioner.setDateDeleted(practitioner.getDateDeleted());
 
         return pgPractitioner;
     }
 
-    private List<PractitionerDefinition> convert(List<Practitioner> pgPractitioners) {
-        List<PractitionerDefinition> practitioners = new ArrayList<>();
+    private List<Practitioner> convert(List<org.opensrp.domain.postgres.Practitioner> pgPractitioners) {
+        List<Practitioner> practitioners = new ArrayList<>();
         if (isEmptyList(pgPractitioners)) {
             return practitioners;
         }
-        for(Practitioner pgPractitioner : pgPractitioners) {
+        for(org.opensrp.domain.postgres.Practitioner pgPractitioner : pgPractitioners) {
             practitioners.add(convert(pgPractitioner));
         }
         return practitioners;
