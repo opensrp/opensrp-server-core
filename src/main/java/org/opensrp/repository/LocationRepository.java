@@ -67,4 +67,13 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @return location together with it's children whose id matches the provided param
 	 */
 	List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry,	String id, int pageSize);
+	
+	
+	 /**
+     * Gets the location primary key 
+     * @param identifier of of the plan
+     * @param isJurisdiction whether the to search for jurisdiction or structure
+     * @return the numerical primary key of a jurisdiction
+     */
+    public Long retrievePrimaryKey(String identifier, boolean isJurisdiction);
 }

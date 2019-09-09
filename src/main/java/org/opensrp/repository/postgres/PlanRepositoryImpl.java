@@ -144,6 +144,18 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         return convert(plans);
     }
 
+	@Override
+	public Long retrievePrimaryKey(String identifier) {
+		if (StringUtils.isBlank(identifier)) {
+			return null;
+		}
+		PlanExample example = new PlanExample();
+		example.createCriteria().andIdentifierEqualTo(identifier);
+		List<Plan> pgEntity = planMapper.selectByExample(example);
+
+		return pgEntity.isEmpty() ? null : pgEntity.get(0).getId();
+	}
+
     @Override
     protected Long retrievePrimaryKey(PlanDefinition plan) {
         Object uniqueId = getUniqueField(plan);
@@ -151,13 +163,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             return null;
         }
 
-        String identifier = uniqueId.toString();
-        
-        PlanExample example=new PlanExample();
-        example.createCriteria().andIdentifierEqualTo(identifier);
-    	List<Plan> pgEntity = planMapper.selectByExample(example);
-
-        return pgEntity.isEmpty() ? null : pgEntity.get(0).getId();
+        return retrievePrimaryKey(uniqueId.toString());
     }
 
     @Override
