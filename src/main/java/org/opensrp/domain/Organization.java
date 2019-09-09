@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author Samuel Githengi created on 08/30/19
  */
-public class Organization implements Serializable{
+public class Organization implements Serializable {
 
 	private static final long serialVersionUID = -9204925528493297488L;
 
@@ -18,6 +18,8 @@ public class Organization implements Serializable{
 	private boolean active;
 
 	private String name;
+
+	private String partOf;
 
 	public List<CodeSystem> type;
 
@@ -43,6 +45,14 @@ public class Organization implements Serializable{
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getPartOf() {
+		return partOf;
+	}
+
+	public void setPartOf(String partOf) {
+		this.partOf = partOf;
 	}
 
 	public List<CodeSystem> getType() {
