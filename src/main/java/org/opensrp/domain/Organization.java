@@ -13,15 +13,25 @@ public class Organization implements Serializable {
 
 	private static final long serialVersionUID = -9204925528493297488L;
 
+	private Long id;
+
 	private String identifier;
 
 	private boolean active;
 
 	private String name;
 
-	private String partOf;
+	private Long partOf;
 
 	public List<CodeSystem> type;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
 
 	public String getIdentifier() {
 		return identifier;
@@ -47,11 +57,11 @@ public class Organization implements Serializable {
 		this.name = name;
 	}
 
-	public String getPartOf() {
+	public Long getPartOf() {
 		return partOf;
 	}
 
-	public void setPartOf(String partOf) {
+	public void setPartOf(Long partOf) {
 		this.partOf = partOf;
 	}
 

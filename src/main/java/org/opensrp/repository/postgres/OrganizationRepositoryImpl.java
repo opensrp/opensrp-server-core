@@ -67,8 +67,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 
 	@Override
 	public List<Organization> getAll() {
-		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectMany(new OrganizationExample(), 0,
-				DEFAULT_FETCH_SIZE);
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper
+				.selectMany(new OrganizationExample(), 0, DEFAULT_FETCH_SIZE);
 		return convert(organizations);
 	}
 
@@ -90,6 +90,16 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		pgOrganization.setDateDeleted(new Date());
 
 		organizationMapper.updateByPrimaryKey(pgOrganization);
+
+	}
+
+	@Override
+	public void assignLocationAndPlan(String organizationId, Long jurisdictionId, Long planId) {
+
+	}
+
+	@Override
+	public void findAssignedLocations(String organizationIdentifier) {
 
 	}
 
@@ -137,6 +147,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		organization.setIdentifier(pgEntity.getIdentifier());
 		organization.setActive(pgEntity.getActive());
 		organization.setName(pgEntity.getName());
+		organization.setPartOf(pgEntity.getId());
 		if (pgEntity.getType() instanceof List<?>) {
 			organization.setType((List<CodeSystem>) pgEntity.getType());
 		}
@@ -162,6 +173,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		pgOrganization.setActive(organization.isActive());
 		pgOrganization.setName(organization.getName());
 		pgOrganization.setType(organization.getType());
+		pgOrganization.setParentId(organization.getPartOf());
 		return pgOrganization;
 	}
 
