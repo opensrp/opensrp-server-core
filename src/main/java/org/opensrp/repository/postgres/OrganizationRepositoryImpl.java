@@ -67,8 +67,9 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 
 	@Override
 	public List<Organization> getAll() {
-		
-		return null;
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectMany(new OrganizationExample(), 0,
+				DEFAULT_FETCH_SIZE);
+		return convert(organizations);
 	}
 
 	@Override
