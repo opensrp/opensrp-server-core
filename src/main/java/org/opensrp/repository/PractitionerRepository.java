@@ -1,9 +1,8 @@
 package org.opensrp.repository;
 
-import org.opensrp.domain.PractitionerDefinition;
-import org.opensrp.domain.postgres.Practitioner;
+import org.opensrp.domain.Practitioner;
 
-public interface PractitionerRepository extends BaseRepository<PractitionerDefinition> {
+public interface PractitionerRepository extends BaseRepository<Practitioner> {
 
-    Practitioner getPractitioner(String id);
+    org.opensrp.domain.postgres.Practitioner getPractitioner(String id);
 }

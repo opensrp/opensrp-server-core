@@ -5,13 +5,13 @@ import org.codehaus.jackson.annotate.JsonProperty;
 
 import java.util.Date;
 
-public class PractitionerDefinition {
+public class Practitioner {
 
     @JsonProperty
     private String identifier;
 
     @JsonProperty
-    Boolean active;
+    private Boolean active;
 
     @JsonProperty
     private String name;
