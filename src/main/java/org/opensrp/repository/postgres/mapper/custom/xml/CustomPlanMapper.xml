@@ -50,5 +50,44 @@
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
+	
+	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Plan"
+		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into core.plan
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="identifier != null">
+        identifier,
+      </if>
+      <if test="json != null">
+        json,
+      </if>
+      <if test="dateDeleted != null">
+        date_deleted,
+      </if>
+      <if test="serverVersion != null">
+        server_version,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="identifier != null">
+        #{identifier,jdbcType=VARCHAR},
+      </if>
+      <if test="json != null">
+        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler},
+      </if>
+      <if test="dateDeleted != null">
+        #{dateDeleted,jdbcType=TIMESTAMP},
+      </if>
+      <if test="serverVersion != null">
+        #{serverVersion,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
 
 </mapper>
