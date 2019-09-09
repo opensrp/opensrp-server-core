@@ -136,7 +136,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields) {
         PlanExample planExample = new PlanExample();
         if (ids != null && !ids.isEmpty()) {
-            planExample.createCriteria().andIdIn(ids);
+            planExample.createCriteria().andIdentifierIn(ids);
         }
         List<String>  optionalFields = fields != null && fields.size() > 0 ? fields : null;
         List<Plan> plans = planMetadataMapper.selectManyByIds(planExample, optionalFields, 0, DEFAULT_FETCH_SIZE);
