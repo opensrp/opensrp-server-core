@@ -62,7 +62,7 @@ public abstract class BaseRepositoryTest {
 			for (String tableName : tableNames) {
 				Connection connection = DataSourceUtils.getConnection(openSRPDataSource);
 				Statement statement = connection.createStatement();
-				statement.executeUpdate("TRUNCATE " + tableName);
+				statement.executeUpdate("TRUNCATE " + tableName +" CASCADE");
 				connection.close();
 			}
 		} catch (Exception e) {
