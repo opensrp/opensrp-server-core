@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.postgres.OrganizationLocation;
+import org.opensrp.domain.postgres.OrganizationLocationExample.Criteria;
 import org.opensrp.repository.postgres.mapper.OrganizationLocationMapper;
 
 /**
@@ -23,5 +25,19 @@ public interface CustomOrganizationLocationMapper extends OrganizationLocationMa
 	 */
 	List<AssignedLocations> findAssignedlocationsAndPlans(@Param("organizationId") Long organizationId,
 			@Param("fromDate") Date fromDate, @Param("toDate") Date toDate);
+
+	/**
+	 * Gets the locations and plans assigned to an organization valid until now
+	 * 
+	 * @param example  the criteria for filtering
+	 * @param orderByClause the order by clause
+	 * @param currentDate   todays date
+	 * @return organization locations and plans assigned to an organization valid
+	 *         until now
+	 */
+	List<OrganizationLocation> selectByExampleAndDateTo(@Param("oredCriteria") List<Criteria> oredCriteria,
+			@Param("orderByClause") String orderByClause, @Param("currentDate") Date currentDate);
+
+
 
 }

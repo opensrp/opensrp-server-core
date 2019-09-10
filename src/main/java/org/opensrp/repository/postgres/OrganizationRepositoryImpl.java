@@ -127,9 +127,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		Date currentDate = new LocalDate().toDate();
 		example.createCriteria().andOrganizationIdEqualTo(organizationId).andFromDateGreaterThanOrEqualTo(currentDate);
-		example.or(example.createCriteria().andToDateLessThanOrEqualTo(currentDate));
-		example.or(example.createCriteria().andToDateIsNull());
-		return organizationLocationMapper.selectByExample(example);
+		return organizationLocationMapper.selectByExampleAndDateTo(example.getOredCriteria(),
+				example.getOrderByClause(), currentDate);
 	}
 
 	private boolean isExistingAssignment(Long jurisdictionId, Long planId, OrganizationLocation organizationLocation) {
