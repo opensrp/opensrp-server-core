@@ -50,7 +50,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			return;
 		}
 
-		organizationMapper.insert(pgOrganization);
+		organizationMapper.insertSelective(pgOrganization);
 	}
 
 	@Override
@@ -105,21 +105,17 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	public void assignLocationAndPlan(Long organizationId, String jurisdictionIdentifier, Long jurisdictionId,
 			String planIdentifier, Long planId, Date fromDate, Date toDate) {
 		List<OrganizationLocation> assignedLocations = getAssignedLocations(organizationId);
-
-		if (assignedLocations.isEmpty()) {
-			insertOrganizationLocation(organizationId, jurisdictionId, planId);
-		} else {
-			for (OrganizationLocation organizationLocation : assignedLocations) {
-				if (isExistingAssignment(jurisdictionId, planId, organizationLocation)) {
-					organizationLocation.setFromDate(fromDate);
-					organizationLocation.setToDate(toDate);
-					OrganizationLocationExample example = new OrganizationLocationExample();
-					example.createCriteria().andIdEqualTo(organizationLocation.getId());
-					organizationLocationMapper.updateByExample(organizationLocation, example);
-					break;
-				}
+		for (OrganizationLocation organizationLocation : assignedLocations) {
+			if (isExistingAssignment(jurisdictionId, planId, organizationLocation)) {
+				organizationLocation.setFromDate(fromDate);
+				organizationLocation.setToDate(toDate);
+				OrganizationLocationExample example = new OrganizationLocationExample();
+				example.createCriteria().andIdEqualTo(organizationLocation.getId());
+				organizationLocationMapper.updateByExample(organizationLocation, example);
+				return;
 			}
 		}
+		insertOrganizationLocation(organizationId, jurisdictionId, planId);
 
 	}
 
@@ -149,7 +145,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		organizationLocation.setOrganizationId(organizationId);
 		organizationLocation.setLocationId(jurisdictionId);
 		organizationLocation.setPlanId(planId);
-		organizationLocationMapper.insert(organizationLocation);
+		organizationLocationMapper.insertSelective(organizationLocation);
 	}
 
 	@Override
