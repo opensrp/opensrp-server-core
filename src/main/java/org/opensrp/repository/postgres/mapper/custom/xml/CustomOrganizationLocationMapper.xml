@@ -4,7 +4,7 @@
 	namespace="org.opensrp.repository.postgres.mapper.custom.CustomOrganizationLocationMapper">
 
   <resultMap id="BaseResultMap" type="org.opensrp.domain.AssignedLocations">
-    <id column="identifier" jdbcType=""VARCHAR"" property="planId" />
+    <result column="identifier" jdbcType="VARCHAR" property="planId" />
     <result column="geojson_id" jdbcType="VARCHAR" property="jurisdictionId" />
     <result column="from_date" jdbcType="TIMESTAMP" property="fromDate" />
     <result column="to_date" jdbcType="TIMESTAMP" property="toDate" />
@@ -22,8 +22,8 @@
 		from team.organization_location ol
 		left join core.plan p on p.id=ol.plan_id
 		left join core.location_metadata l on l.location_id=ol.location_id
-		where ol.organization_id = #{organizationId,jdbcType=BIGINT} AND ol.from_date  >=  #{fromDate,jdbcType=TIMESTAMP} 
-		and ( ol.to_date is null  OR ol.to_date  <=  #{toDate,jdbcType=TIMESTAMP} )	
+		where ol.organization_id = #{organizationId,jdbcType=BIGINT} AND ol.from_date <![CDATA[ >= ]]>  #{fromDate,jdbcType=TIMESTAMP} 
+		and ( ol.to_date is null  OR ol.to_date  <![CDATA[ <= ]]> #{toDate,jdbcType=TIMESTAMP} )	
 	</select>
 
 </mapper>
