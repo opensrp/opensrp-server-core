@@ -5,6 +5,7 @@ package org.opensrp.domain;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Samuel Githengi created on 08/30/19
@@ -24,6 +25,8 @@ public class Organization implements Serializable {
 	private Long partOf;
 
 	public List<CodeSystem> type;
+
+	private Set<AssignedLocations> assignedLocations;
 
 	public Long getId() {
 		return id;
@@ -71,6 +74,14 @@ public class Organization implements Serializable {
 
 	public void setType(List<CodeSystem> type) {
 		this.type = type;
+	}
+
+	public Set<AssignedLocations> getAssignedLocations() {
+		return assignedLocations;
+	}
+
+	public void setAssignedLocations(Set<AssignedLocations> assignedLocations) {
+		this.assignedLocations = assignedLocations;
 	}
 
 }

@@ -5,10 +5,14 @@ package org.opensrp.service;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Organization;
+import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.postgres.OrganizationLocation;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
@@ -108,17 +112,27 @@ public class OrganizationService {
 		Calendar calendar = Calendar.getInstance();
 		if (fromDate == null)
 			fromDate = calendar.getTime();
-		organizationRepository.assignLocationAndPlan(organizationId,
-				locationRepository.retrievePrimaryKey(jurisdictionId, true), planRepository.retrievePrimaryKey(planId),
+		organizationRepository.assignLocationAndPlan(organizationId,jurisdictionId,
+				locationRepository.retrievePrimaryKey(jurisdictionId, true), planId,planRepository.retrievePrimaryKey(planId),
 				fromDate, toDate);
 
 	}
 
 	/**
+	 * Gets the locations and Plans assigned to a location
 	 * 
-	 * @param organizationId
+	 * @param organizationId the organization id
+	 * 
+	 * @return the assigned locations and plans 
 	 */
-	public void findAssignedLocationsAndPlans(Long organizationId) {
+	public Set<AssignedLocations> findAssignedLocationsAndPlans(Long organizationId) {
+		Set<AssignedLocations> assignedLocations = new HashSet<>();
+		for (OrganizationLocation organizationLocation : organizationRepository.findAssignedLocations(organizationId)) {
+			AssignedLocations locations = new AssignedLocations();
+			locations.setFromDate(organizationLocation.getFromDate());
+			locations.setToDate(organizationLocation.getToDate());
+		}
+		return assignedLocations;
 
 	}
 
