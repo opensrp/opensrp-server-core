@@ -139,7 +139,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             planExample.createCriteria().andIdentifierIn(ids);
         }
         List<String>  optionalFields = fields != null && fields.size() > 0 ? fields : null;
-        List<Plan> plans = planMetadataMapper.selectManyByIds(planExample, optionalFields, 0, DEFAULT_FETCH_SIZE);
+        List<Plan> plans = planMapper.selectManyReturnOptionalFields(planExample, optionalFields, 0, DEFAULT_FETCH_SIZE);
 
         return convert(plans);
     }

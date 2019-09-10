@@ -15,4 +15,7 @@ public interface CustomPlanMapper extends PlanMapper {
 			@Param("limit") int limit);
 
 	int insertSelectiveAndSetId(Plan plan);
+
+	List<Plan> selectManyReturnOptionalFields(@Param("example") PlanExample planExample, @Param("fields") List<String> fields, @Param("offset") int offset,
+							   @Param("limit") int limit);
 }
