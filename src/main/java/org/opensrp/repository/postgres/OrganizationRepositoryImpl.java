@@ -115,7 +115,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 				return;
 			}
 		}
-		insertOrganizationLocation(organizationId, jurisdictionId, planId);
+		insertOrganizationLocation(organizationId, jurisdictionId, planId, fromDate, toDate);
 
 	}
 
@@ -140,11 +140,13 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		}
 	}
 
-	private void insertOrganizationLocation(Long organizationId, Long jurisdictionId, Long planId) {
+	private void insertOrganizationLocation(Long organizationId, Long jurisdictionId, Long planId, Date fromDate, Date toDate) {
 		OrganizationLocation organizationLocation = new OrganizationLocation();
 		organizationLocation.setOrganizationId(organizationId);
 		organizationLocation.setLocationId(jurisdictionId);
 		organizationLocation.setPlanId(planId);
+		organizationLocation.setFromDate(fromDate);
+		organizationLocation.setToDate(toDate);
 		organizationLocationMapper.insertSelective(organizationLocation);
 	}
 
