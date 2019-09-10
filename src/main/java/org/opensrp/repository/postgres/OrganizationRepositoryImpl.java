@@ -129,12 +129,12 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 
 	private boolean isExistingAssignment(Long jurisdictionId, Long planId, OrganizationLocation organizationLocation) {
 		if (jurisdictionId != null && planId != null) {
-			return jurisdictionId.equals(organizationLocation.getOrganizationId())
+			return jurisdictionId.equals(organizationLocation.getLocationId())
 					&& planId.equals(organizationLocation.getPlanId());
 		} else if (jurisdictionId == null && planId != null) {
 			return planId.equals(organizationLocation.getPlanId());
 		} else if (jurisdictionId != null && planId == null) {
-			return jurisdictionId.equals(organizationLocation.getOrganizationId());
+			return jurisdictionId.equals(organizationLocation.getLocationId());
 		} else {
 			return false;
 		}
