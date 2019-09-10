@@ -4,19 +4,19 @@
 	namespace="org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper">
 
 	<select id="selectMany"
-		resultMap="org.opensrp.repository.postgres.mapper.OrganuzationMapper.BaseResultMap">
+		resultMap="org.opensrp.repository.postgres.mapper.OrganizationMapper.BaseResultMap">
 		select
 		<if test="example.distinct">
 			distinct
 		</if>
 		<include
-			refid="org.opensrp.repository.postgres.mapper.OrganuzationMapper.Base_Column_List" />
-		from core.location_metadata lm
+			refid="org.opensrp.repository.postgres.mapper.OrganizationMapper.Base_Column_List" />
+		from team.organization o
 		<if test="_parameter != null">
 			<include refid="Example_Where_Clause" />
 		</if>
 		<if test="example.orderByClause != null">
-			order by lm.${example.orderByClause}
+			order by o.${example.orderByClause}
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
