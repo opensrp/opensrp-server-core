@@ -11,6 +11,4 @@ public interface CustomPlanMetadataMapper extends PlanMetadataMapper {
 	List<Plan> selectMany(@Param("example") PlanExample planExample, @Param("operationalAreaIds") List<String> operationalAreaIds, @Param("offset") int offset,
 			@Param("limit") int limit);
 
-	List<Plan> selectManyByIds(@Param("example") PlanExample planExample, @Param("fields") List<String> fields, @Param("offset") int offset,
-						  @Param("limit") int limit);
 }
