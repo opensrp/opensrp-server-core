@@ -22,8 +22,13 @@ public class ErrorTraceService {
 		this.allErrorTrace = allErrorTrace;
 	}
 	
+	/**
+	 * Saves logs to on database
+	 * This method has been disabled and logs are no longer saved on the database from 06/September/2018
+	 * @param Error
+	 */
 	public void addError(ErrorTrace entity) {
-		allErrorTrace.add(entity);
+		//allErrorTrace.add(entity);
 	}
 	
 	/**
@@ -47,8 +52,13 @@ public class ErrorTraceService {
 		
 	}
 	
+	/**
+	 * Update logs saved on database
+	 * This method has been disabled logs are no longer saved on the database from 06/September/2018
+	 * @param Error
+	 */
 	public void updateError(ErrorTrace entity) {
-		allErrorTrace.update(entity);
+		//allErrorTrace.update(entity);
 	}
 	
 	public List<ErrorTrace> getAllErrors() throws DocumentNotFoundException {
