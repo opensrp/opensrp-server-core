@@ -23,13 +23,13 @@ public interface CustomOrganizationLocationMapper extends OrganizationLocationMa
 	 * @param organizationId
 	 * @return
 	 */
-	List<AssignedLocations> findAssignedlocationsAndPlans(@Param("organizationId") Long organizationId,
-			@Param("fromDate") Date fromDate, @Param("toDate") Date toDate);
+	List<AssignedLocations> findAssignedlocationsAndPlans(@Param("oredCriteria") List<Criteria> oredCriteria,
+			@Param("orderByClause") String orderByClause, @Param("toDate") Date toDate);
 
 	/**
 	 * Gets the locations and plans assigned to an organization valid until now
 	 * 
-	 * @param example  the criteria for filtering
+	 * @param example       the criteria for filtering
 	 * @param orderByClause the order by clause
 	 * @param currentDate   todays date
 	 * @return organization locations and plans assigned to an organization valid
@@ -37,7 +37,5 @@ public interface CustomOrganizationLocationMapper extends OrganizationLocationMa
 	 */
 	List<OrganizationLocation> selectByExampleAndDateTo(@Param("oredCriteria") List<Criteria> oredCriteria,
 			@Param("orderByClause") String orderByClause, @Param("currentDate") Date currentDate);
-
-
 
 }

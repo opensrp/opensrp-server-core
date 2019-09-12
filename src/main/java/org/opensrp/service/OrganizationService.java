@@ -112,7 +112,7 @@ public class OrganizationService {
 	}
 
 	/**
-	 * Gets the locations and Plans assigned to a location
+	 * Gets the locations and Plans assigned to an organization
 	 * 
 	 * @param organizationId the organization id
 	 * 
@@ -120,6 +120,18 @@ public class OrganizationService {
 	 */
 	public List<AssignedLocations> findAssignedLocationsAndPlans(Long organizationId) {
 		return organizationRepository.findAssignedLocations(organizationId);
+
+	}
+	
+	/**
+	 * Gets the locations and Plans assigned to a list of organizations
+	 * 
+	 * @param organizationId the organization id s
+	 * 
+	 * @return the assigned locations and plans
+	 */
+	public List<AssignedLocations> findAssignedLocationsAndPlans(List<Long> organizationIds) {
+		return organizationRepository.findAssignedLocations(organizationIds);
 
 	}
 

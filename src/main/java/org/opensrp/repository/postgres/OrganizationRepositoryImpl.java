@@ -154,7 +154,19 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	@Override
 	public List<AssignedLocations> findAssignedLocations(Long organizationId) {
 		Date currentDate = new LocalDate().toDate();
-		return organizationLocationMapper.findAssignedlocationsAndPlans(organizationId, currentDate, currentDate);
+		OrganizationLocationExample example = new OrganizationLocationExample();
+		example.createCriteria().andOrganizationIdEqualTo(organizationId).andFromDateLessThanOrEqualTo(currentDate);
+		return organizationLocationMapper.findAssignedlocationsAndPlans(example.getOredCriteria(),
+				example.getOrderByClause(), currentDate);
+	}
+
+	@Override
+	public List<AssignedLocations> findAssignedLocations(List<Long> organizationIds) {
+		Date currentDate = new LocalDate().toDate();
+		OrganizationLocationExample example = new OrganizationLocationExample();
+		example.createCriteria().andOrganizationIdIn(organizationIds).andFromDateLessThanOrEqualTo(currentDate);
+		return organizationLocationMapper.findAssignedlocationsAndPlans(example.getOredCriteria(),
+				example.getOrderByClause(), currentDate);
 	}
 
 	@Override
