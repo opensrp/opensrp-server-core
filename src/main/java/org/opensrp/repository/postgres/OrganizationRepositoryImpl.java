@@ -140,7 +140,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		}
 	}
 
-	private void insertOrganizationLocation(Long organizationId, Long jurisdictionId, Long planId, Date fromDate, Date toDate) {
+	private void insertOrganizationLocation(Long organizationId, Long jurisdictionId, Long planId, Date fromDate,
+			Date toDate) {
 		OrganizationLocation organizationLocation = new OrganizationLocation();
 		organizationLocation.setOrganizationId(organizationId);
 		organizationLocation.setLocationId(jurisdictionId);
@@ -191,7 +192,6 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		return organizations.isEmpty() ? null : organizations.get(0);
 	}
 
-	@SuppressWarnings("unchecked")
 	private Organization convert(org.opensrp.domain.postgres.Organization pgEntity) {
 		if (pgEntity == null) {
 			return null;
@@ -201,8 +201,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		organization.setActive(pgEntity.getActive());
 		organization.setName(pgEntity.getName());
 		organization.setPartOf(pgEntity.getId());
-		if (pgEntity.getType() instanceof List<?>) {
-			organization.setType((List<CodeSystem>) pgEntity.getType());
+		if (pgEntity.getType() instanceof CodeSystem) {
+			organization.setType((CodeSystem) pgEntity.getType());
 		}
 
 		return organization;

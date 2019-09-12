@@ -4,7 +4,6 @@
 package org.opensrp.domain;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -24,7 +23,7 @@ public class Organization implements Serializable {
 
 	private Long partOf;
 
-	public List<CodeSystem> type;
+	public CodeSystem type;
 
 	private Set<AssignedLocations> assignedLocations;
 
@@ -68,11 +67,11 @@ public class Organization implements Serializable {
 		this.partOf = partOf;
 	}
 
-	public List<CodeSystem> getType() {
+	public CodeSystem getType() {
 		return type;
 	}
 
-	public void setType(List<CodeSystem> type) {
+	public void setType(CodeSystem type) {
 		this.type = type;
 	}
 
