@@ -42,4 +42,10 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 */
 	List<AssignedLocations> findAssignedLocations(List<Long> organizationIds);
 
+	/**
+	 * @param id
+	 * @return
+	 */
+	Organization getByPrimaryKey(Long id);
+
 }

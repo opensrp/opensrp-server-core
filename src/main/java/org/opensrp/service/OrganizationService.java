@@ -46,6 +46,18 @@ public class OrganizationService {
 		return organizationRepository.get(identifier);
 	}
 
+	
+	
+	/**
+	 * Get the organization that has the identifier
+	 * 
+	 * @param identifier
+	 * @return organization with matching identifier
+	 */
+	public Organization getOrganization(Long id) {
+		return organizationRepository.getByPrimaryKey(id);
+	}
+
 	/**
 	 * Adds or Updates an Organization
 	 * 

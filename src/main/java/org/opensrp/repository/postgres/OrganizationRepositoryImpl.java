@@ -36,6 +36,17 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 
 	@Override
+	public Organization getByPrimaryKey(Long id) {
+		if (id == null) {
+			return null;
+		}
+		OrganizationExample example = new OrganizationExample();
+		example.createCriteria().andIdEqualTo(id).andDateDeletedIsNull();
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectByExample(example);
+		return organizations.isEmpty() ? null : convert(organizations.get(0));
+	}
+
+	@Override
 	public void add(Organization entity) {
 		if (getUniqueField(entity) == null) {
 			return;
