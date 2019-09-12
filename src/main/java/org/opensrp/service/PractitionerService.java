@@ -1,53 +1,76 @@
 package org.opensrp.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Practitioner;
+import org.opensrp.domain.PractitionerRole;
 import org.opensrp.repository.PractitionerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class PractitionerService {
 
-    private PractitionerRepository practitionerRepository;
+	private PractitionerRepository practitionerRepository;
 
-    @Autowired
-    public void setPractitionerRepository(PractitionerRepository practitionerRepository) {
-        this.practitionerRepository = practitionerRepository;
-    }
+	private PractitionerRoleService practitionerRoleService;
 
-    public PractitionerRepository getPractitionerRepository() {
-        return practitionerRepository;
-    }
+	@Autowired
+	public void setPractitionerRepository(PractitionerRepository practitionerRepository) {
+		this.practitionerRepository = practitionerRepository;
+	}
 
-    public Practitioner getPractitioner(String identifier) {
-        return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().get(identifier);
-    }
+	/**
+	 * @param practitionerRoleService the practitionerRoleService to set
+	 */
+	@Autowired
+	public void setPractitionerRoleService(PractitionerRoleService practitionerRoleService) {
+		this.practitionerRoleService = practitionerRoleService;
+	}
 
-    public List<Practitioner> getAllPractitioners() {
-        return getPractitionerRepository().getAll();
-    }
+	public PractitionerRepository getPractitionerRepository() {
+		return practitionerRepository;
+	}
 
-    public void addOrUpdatePractitioner(Practitioner practitioner) {
-        if (StringUtils.isBlank(practitioner.getIdentifier())) {
-            throw new IllegalArgumentException("Identifier not specified");
-        }
+	public Practitioner getPractitioner(String identifier) {
+		return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().get(identifier);
+	}
 
-        if (getPractitionerRepository().get(practitioner.getIdentifier()) != null) {
-            getPractitionerRepository().update(practitioner);
-        } else {
-            getPractitionerRepository().add(practitioner);
-        }
-    }
+	public List<Practitioner> getAllPractitioners() {
+		return getPractitionerRepository().getAll();
+	}
 
-    public void deletePractitioner(Practitioner practitioner) {
-        if (StringUtils.isBlank(practitioner.getIdentifier())) {
-            throw new IllegalArgumentException("Identifier not specified");
-        }
+	public void addOrUpdatePractitioner(Practitioner practitioner) {
+		if (StringUtils.isBlank(practitioner.getIdentifier())) {
+			throw new IllegalArgumentException("Identifier not specified");
+		}
 
-        getPractitionerRepository().safeRemove(practitioner);
+		if (getPractitionerRepository().get(practitioner.getIdentifier()) != null) {
+			getPractitionerRepository().update(practitioner);
+		} else {
+			getPractitionerRepository().add(practitioner);
+		}
+	}
 
-    }
+	public void deletePractitioner(Practitioner practitioner) {
+		if (StringUtils.isBlank(practitioner.getIdentifier())) {
+			throw new IllegalArgumentException("Identifier not specified");
+		}
+
+		getPractitionerRepository().safeRemove(practitioner);
+
+	}
+
+	public List<Long> getOrganizationsByUserId(String userId) {
+		Practitioner practioner = getPractitionerRepository().getPractitionerByUserId(userId);
+		List<Long> organizationIds = new ArrayList<>();
+		for (PractitionerRole practitionerRole : practitionerRoleService
+				.getRolesForPractitioner(practioner.getIdentifier())) {
+			organizationIds.add(practitionerRole.getOrganizationId());
+		}
+		return organizationIds;
+
+	}
 }

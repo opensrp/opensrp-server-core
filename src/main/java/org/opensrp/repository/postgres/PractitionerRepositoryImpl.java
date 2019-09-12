@@ -109,6 +109,21 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         pgPractitioner.setDateDeleted(new Date());
         practitionerMapper.updateByPrimaryKey(pgPractitioner);
     }
+    
+    @Override
+    public Practitioner getPractitionerByUserId(String userId) {
+        if (StringUtils.isBlank(userId)) {
+            return null;
+        }
+
+        PractitionerExample practitionerExample = new PractitionerExample();
+        practitionerExample.createCriteria().andUserIdEqualTo(userId).andDateDeletedIsNull();
+
+        List<org.opensrp.domain.postgres.Practitioner> practitionerList = practitionerMapper.selectByExample(practitionerExample);
+
+        return  isEmptyList(practitionerList) ? null : convert(practitionerList.get(0));
+
+    }
 
     @Override
     protected Long retrievePrimaryKey(Practitioner practitioner) {

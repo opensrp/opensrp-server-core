@@ -50,12 +50,12 @@ public class PractitionerRoleService {
         getPractitionerRoleRepository().safeRemove(practitionerRole);
     }
 
-    public void getRolesForPractitioner(String practitionerIdentifier) {
+    public List<PractitionerRole> getRolesForPractitioner(String practitionerIdentifier) {
         if (StringUtils.isBlank(practitionerIdentifier)) {
             throw new IllegalArgumentException("Identifier not specified");
         }
 
-        getPractitionerRoleRepository().getRolesForPractitioner(practitionerIdentifier);
+        return getPractitionerRoleRepository().getRolesForPractitioner(practitionerIdentifier);
     }
 
 }
