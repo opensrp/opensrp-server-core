@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opensrp.domain.Practitioner;
 import org.opensrp.domain.PractitionerRole;
 import org.opensrp.repository.PractitionerRepository;
@@ -63,14 +64,14 @@ public class PractitionerService {
 
 	}
 
-	public List<Long> getOrganizationsByUserId(String userId) {
+	public ImmutablePair<Practitioner, List<Long>> getOrganizationsByUserId(String userId) {
 		Practitioner practioner = getPractitionerRepository().getPractitionerByUserId(userId);
 		List<Long> organizationIds = new ArrayList<>();
 		for (PractitionerRole practitionerRole : practitionerRoleService
 				.getRolesForPractitioner(practioner.getIdentifier())) {
 			organizationIds.add(practitionerRole.getOrganizationId());
 		}
-		return organizationIds;
+		return new ImmutablePair<>(practioner, organizationIds);
 
 	}
 }
