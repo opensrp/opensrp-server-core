@@ -143,9 +143,9 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			return jurisdictionId.equals(organizationLocation.getLocationId())
 					&& planId.equals(organizationLocation.getPlanId());
 		} else if (jurisdictionId == null && planId != null) {
-			return planId.equals(organizationLocation.getPlanId());
+			return planId.equals(organizationLocation.getPlanId()) && organizationLocation.getLocationId()==null;
 		} else if (jurisdictionId != null && planId == null) {
-			return jurisdictionId.equals(organizationLocation.getLocationId());
+			return jurisdictionId.equals(organizationLocation.getLocationId()) && organizationLocation.getPlanId()==null;
 		} else {
 			return false;
 		}
