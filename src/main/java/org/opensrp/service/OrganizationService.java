@@ -106,12 +106,9 @@ public class OrganizationService {
 			throw new IllegalArgumentException("organizationId cannot be null or empty");
 		if (StringUtils.isBlank(jurisdictionId) && StringUtils.isBlank(planId))
 			throw new IllegalArgumentException("jurisdictionId and planId cannot be null");
-		Calendar calendar = Calendar.getInstance();
-		if (fromDate == null)
-			fromDate = calendar.getTime();
 		organizationRepository.assignLocationAndPlan(organizationId, jurisdictionId,
 				locationRepository.retrievePrimaryKey(jurisdictionId, true), planId,
-				planRepository.retrievePrimaryKey(planId), fromDate, toDate);
+				planRepository.retrievePrimaryKey(planId), fromDate == null ? new Date() : fromDate, toDate);
 
 	}
 
