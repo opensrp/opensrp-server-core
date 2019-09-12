@@ -122,7 +122,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	private List<OrganizationLocation> getAssignedLocations(Long organizationId) {
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		Date currentDate = new LocalDate().toDate();
-		example.createCriteria().andOrganizationIdEqualTo(organizationId).andFromDateGreaterThanOrEqualTo(currentDate);
+		example.createCriteria().andOrganizationIdEqualTo(organizationId).andFromDateLessThanOrEqualTo(currentDate);
 		return organizationLocationMapper.selectByExampleAndDateTo(example.getOredCriteria(),
 				example.getOrderByClause(), currentDate);
 	}
