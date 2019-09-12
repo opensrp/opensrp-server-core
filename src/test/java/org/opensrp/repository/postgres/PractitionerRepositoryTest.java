@@ -47,7 +47,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
     }
 
     @Test
-    public void testGetShouldGetPlanById() {
+    public void testGetShouldGetPractitionerById() {
 
         Practitioner practitioner1 = initTestPractitioner1();
         practitionerRepository.add(practitioner1);
@@ -66,7 +66,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
     }
 
     @Test
-    public void testGetShouldnotReturnDeletedPlans() {
+    public void testGetShouldnotReturnDeletedPractitioners() {
         Practitioner practitioner1 = initTestPractitioner1();
         practitionerRepository.add(practitioner1);
 
@@ -136,12 +136,12 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertNotNull(practitioners);
         assertEquals(2,practitioners.size());
 
-        practitioner2.setDateDeleted(new Date());
-        practitionerRepository.update(practitioner2);
+        practitionerRepository.safeRemove(practitioner2);
 
         practitioners = practitionerRepository.getAll();
         assertNotNull(practitioners);
-        assertEquals(1,practitioners.size());
+        assertEquals(1, practitioners.size());
+        assertEquals(practitioner1.getIdentifier(), practitioners.get(0).getIdentifier());
     }
 
     private Practitioner initTestPractitioner1(){
