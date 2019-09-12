@@ -69,7 +69,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			return;
 		}
 
-		organizationMapper.updateByPrimaryKey(pgOrganization);
+		organizationMapper.updateByPrimaryKeySelective(pgOrganization);
 
 	}
 
@@ -97,7 +97,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		}
 		pgOrganization.setDateDeleted(new Date());
 
-		organizationMapper.updateByPrimaryKey(pgOrganization);
+		organizationMapper.updateByPrimaryKeySelective(pgOrganization);
 
 	}
 
