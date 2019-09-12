@@ -200,7 +200,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		organization.setIdentifier(pgEntity.getIdentifier());
 		organization.setActive(pgEntity.getActive());
 		organization.setName(pgEntity.getName());
-		organization.setPartOf(pgEntity.getId());
+		organization.setId(pgEntity.getId());
+		organization.setPartOf(pgEntity.getParentId());
 		if (pgEntity.getType() instanceof CodeSystem) {
 			organization.setType((CodeSystem) pgEntity.getType());
 		}
