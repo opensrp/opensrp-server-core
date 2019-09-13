@@ -157,6 +157,9 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         practitionerRole.setActive(pgPractitionerRole.getActive());
         practitionerRole.setOrganizationId(pgPractitionerRole.getOrganizationId());
         org.opensrp.domain.Practitioner pgPractitioner = practitionerRepository.getByPrimaryKey(pgPractitionerRole.getPractitionerId());
+        if (pgPractitioner == null) {
+            return null; // practitioner already deleted
+        }
         practitionerRole.setPractitionerIdentifier(pgPractitioner.getIdentifier());
         practitionerRole.setCode(pgPractitionerRole.getCode());
 
