@@ -31,6 +31,17 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
     }
 
     @Override
+    public Practitioner getByPrimaryKey(Long id) {
+        if (id == null) {
+            return null;
+        }
+        PractitionerExample example = new PractitionerExample();
+        example.createCriteria().andIdEqualTo(id).andDateDeletedIsNull();
+        List<org.opensrp.domain.postgres.Practitioner> practitioners = practitionerMapper.selectByExample(example);
+        return practitioners.isEmpty() ? null : convert(practitioners.get(0));
+    }
+
+    @Override
     public org.opensrp.domain.postgres.Practitioner getPractitioner(String id) {
         if (StringUtils.isBlank(id)) {
             return null;

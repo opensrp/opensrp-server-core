@@ -16,8 +16,8 @@ public class PractitionerRole {
     private Long organizationId;
 
     @JsonProperty
-    @SerializedName("practitioner_id")
-    private Long practitionerId;
+    @SerializedName("practitioner_identifier")
+    private String practitionerIdentifier;
 
     @JsonProperty
     private String code;
@@ -46,12 +46,12 @@ public class PractitionerRole {
         this.organizationId = organizationId;
     }
 
-    public Long getPractitionerId() {
-        return practitionerId;
+    public String getPractitionerIdentifier() {
+        return practitionerIdentifier;
     }
 
-    public void setPractitionerId(Long practitionerId) {
-        this.practitionerId = practitionerId;
+    public void setPractitionerIdentifier(String practitionerIdentifier) {
+        this.practitionerIdentifier = practitionerIdentifier;
     }
 
     public String getCode() {

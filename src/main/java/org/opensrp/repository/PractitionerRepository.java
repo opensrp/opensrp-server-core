@@ -11,4 +11,6 @@ public interface PractitionerRepository extends BaseRepository<Practitioner> {
 	 * @return
 	 */
 	Practitioner getPractitionerByUserId(String userId);
+
+	Practitioner getByPrimaryKey(Long id);
 }

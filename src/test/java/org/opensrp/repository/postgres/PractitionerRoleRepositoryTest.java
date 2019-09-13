@@ -44,7 +44,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals("pr1-identifier", practitionerRoles.get(0).getIdentifier());
         assertEquals(true, practitionerRoles.get(0).getActive());
         assertEquals(1, practitionerRoles.get(0).getOrganizationId().longValue());
-        assertEquals(1, practitionerRoles.get(0).getPractitionerId().longValue());
+       // assertEquals(1, practitionerRoles.get(0).getPractitionerId().longValue());
         assertEquals("pr1Code", practitionerRoles.get(0).getCode());
     }
 
@@ -62,7 +62,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals("pr2-identifier", practitionerRole.getIdentifier());
         assertEquals(true, practitionerRole.getActive());
         assertEquals(1, practitionerRole.getOrganizationId().longValue());
-        assertEquals(2, practitionerRole.getPractitionerId().longValue());
+        //assertEquals(2, practitionerRole.getPractitionerId().longValue());
         assertEquals("pr2Code", practitionerRole.getCode());
 
     }
@@ -132,7 +132,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         practitionerRole.setIdentifier("pr1-identifier");
         practitionerRole.setActive(true);
         practitionerRole.setOrganizationId(1l);
-        practitionerRole.setPractitionerId(1l);
+       // practitionerRole.setPractitionerId(1l);
         practitionerRole.setCode("pr1Code");
         return practitionerRole;
     }
@@ -142,7 +142,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         practitionerRole.setIdentifier("pr2-identifier");
         practitionerRole.setActive(true);
         practitionerRole.setOrganizationId(1l);
-        practitionerRole.setPractitionerId(2l);
+        //practitionerRole.setPractitionerId(2l);
         practitionerRole.setCode("pr2Code");
         return practitionerRole;
     }
