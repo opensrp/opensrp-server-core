@@ -6,7 +6,7 @@
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
 
-	<version>TEAM-MANAGEMENT-PREVIEW-SNAPSHOT-01</version>
+	<version>01-TEAM-MANAGEMENT-PREVIEW-SNAPSHOT</version>
 
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
