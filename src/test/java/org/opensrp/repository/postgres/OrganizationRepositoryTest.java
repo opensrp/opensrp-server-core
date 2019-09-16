@@ -8,14 +8,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
+import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
 import org.opensrp.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Samuel Githengi created on 09/16/19
  */
 public class OrganizationRepositoryTest extends BaseRepositoryTest {
-
+	
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	
 	@Autowired
 	private OrganizationRepository organizationRepository;
 
@@ -68,7 +75,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(identifier, savedOrganization.getIdentifier());
 		assertEquals("Ateam", savedOrganization.getName());
 		assertNull(savedOrganization.getType());
-		assertEquals(1,savedOrganization.getPartOf(),0);
+		assertEquals(1, savedOrganization.getPartOf(), 0);
 
 	}
 
@@ -109,13 +116,38 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testSafeRemove() {
-		
-		Organization organization= organizationRepository.getByPrimaryKey(2l);
+
+		Organization organization = organizationRepository.getByPrimaryKey(2l);
 		organizationRepository.safeRemove(organization);
-		
-		assertNull( organizationRepository.getByPrimaryKey(2l));
-		
+
+		assertNull(organizationRepository.getByPrimaryKey(2l));
+
 		assertEquals(2, organizationRepository.getAll().size());
+
+	}
+
+	@Test
+	public void testAssignLocationAndPlan() {
+
+	}
+
+	@Test
+	public void testFindAssignedLocations() {
+		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(1l);
+		assertEquals(2, assignedLocations.size());
+
+		assignedLocations = organizationRepository.findAssignedLocations(2l);
+		assertEquals(1, assignedLocations.size());
+		System.out.print(ReflectionToStringBuilder.toString(assignedLocations.get(0)));
+		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", assignedLocations.get(0).getJurisdictionId());
+		assertEquals("7f2ae03f-9569-5535-918c-9d976b3ae5f8", assignedLocations.get(0).getPlanId());
+		assertEquals("2019-09-10", dateFormat.format(assignedLocations.get(0).getFromDate()));
+		assertEquals("2021-09-10", dateFormat.format(assignedLocations.get(0).getToDate()));
+
+	}
+
+	@Test
+	public void testFindAssignedLocationsMutipleIds() {
 
 	}
 
