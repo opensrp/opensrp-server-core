@@ -10,7 +10,9 @@ import static org.junit.Assert.assertNull;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -129,7 +131,32 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testAssignLocationAndPlan() {
+		String identifier = UUID.randomUUID().toString();
+		Organization organization = new Organization();
+		organization.setIdentifier(identifier);
+		organization.setName("ATeam");
+		organizationRepository.add(organization);
 
+		organization = organizationRepository.get(identifier);
+		Calendar calendar = Calendar.getInstance();
+		Date fromDate = calendar.getTime();
+		calendar.add(Calendar.YEAR, 2);
+		Date toDate = calendar.getTime();
+		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
+				"7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, toDate);
+
+		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(organization.getId());
+		assertEquals(1, assignedLocations.size());
+		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", assignedLocations.get(0).getJurisdictionId());
+		assertEquals("9d1403a5-756d-517b-91d6-5b19059a69f0", assignedLocations.get(0).getPlanId());
+		assertEquals(dateFormat.format(fromDate), dateFormat.format(assignedLocations.get(0).getFromDate()));
+		assertEquals(dateFormat.format(toDate), dateFormat.format(assignedLocations.get(0).getToDate()));
+
+		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
+				"7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, null);
+
+		assignedLocations = organizationRepository.findAssignedLocations(organization.getId());
+		assertNull(assignedLocations.get(0).getToDate());
 	}
 
 	@Test
