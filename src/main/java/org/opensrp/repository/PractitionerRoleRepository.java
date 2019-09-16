@@ -8,5 +8,7 @@ public interface PractitionerRoleRepository extends BaseRepository<PractitionerR
 
     List<PractitionerRole>  getRolesForPractitioner(String practitionerIdentifier);
 
+    List<org.opensrp.domain.postgres.PractitionerRole>  getPgRolesForPractitioner(String practitionerIdentifier);
+
     public org.opensrp.domain.postgres.PractitionerRole getPractitionerRole(String id);
 }

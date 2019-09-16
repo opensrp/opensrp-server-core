@@ -3,6 +3,7 @@ package org.opensrp.repository.postgres;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensrp.domain.PractitionerRole;
+import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -43,9 +44,9 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals(1, practitionerRoles.size());
         assertEquals("pr1-identifier", practitionerRoles.get(0).getIdentifier());
         assertEquals(true, practitionerRoles.get(0).getActive());
-        assertEquals(1, practitionerRoles.get(0).getOrganizationId().longValue());
-       // assertEquals(1, practitionerRoles.get(0).getPractitionerId().longValue());
-        assertEquals("pr1Code", practitionerRoles.get(0).getCode());
+        assertEquals("org1", practitionerRoles.get(0).getOrganizationIdentifier());
+        assertEquals("p1-identifier", practitionerRoles.get(0).getPractitionerIdentifier());
+        assertEquals("pr1Code", practitionerRoles.get(0).getCode().getText());
     }
 
     @Test
@@ -61,9 +62,9 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertNotNull(practitionerRole);
         assertEquals("pr2-identifier", practitionerRole.getIdentifier());
         assertEquals(true, practitionerRole.getActive());
-        assertEquals(1, practitionerRole.getOrganizationId().longValue());
-        //assertEquals(2, practitionerRole.getPractitionerId().longValue());
-        assertEquals("pr2Code", practitionerRole.getCode());
+        assertEquals("org1", practitionerRole.getOrganizationIdentifier());
+        assertEquals("p2-identifier", practitionerRole.getPractitionerIdentifier());
+        assertEquals("pr2Code", practitionerRole.getCode().getText());
 
     }
 
@@ -76,17 +77,17 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertNotNull(addedPractitionerRole);
         assertEquals("pr2-identifier", addedPractitionerRole.getIdentifier());
         assertEquals(true, addedPractitionerRole.getActive());
-        assertEquals("pr2Code", addedPractitionerRole.getCode());
+        assertEquals("pr2Code", addedPractitionerRole.getCode().getText());
 
         practitionerRole2.setActive(false);
-        practitionerRole2.setCode("updatedCode");
+        practitionerRole2.getCode().setText("updatedCode");
         practitionerRoleRepository.update(practitionerRole2);
 
         PractitionerRole updatedPractitionerRole = practitionerRoleRepository.get(practitionerRole2.getIdentifier());
         assertNotNull(updatedPractitionerRole);
         assertEquals("pr2-identifier", updatedPractitionerRole.getIdentifier());
         assertEquals(false, updatedPractitionerRole.getActive());
-        assertEquals("updatedCode", updatedPractitionerRole.getCode());
+        assertEquals("updatedCode", updatedPractitionerRole.getCode().getText());
     }
 
     @Test
@@ -131,9 +132,11 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         PractitionerRole practitionerRole = new PractitionerRole();
         practitionerRole.setIdentifier("pr1-identifier");
         practitionerRole.setActive(true);
-        practitionerRole.setOrganizationId(1l);
-       // practitionerRole.setPractitionerId(1l);
-        practitionerRole.setCode("pr1Code");
+        practitionerRole.setOrganizationIdentifier("org1");
+        practitionerRole.setPractitionerIdentifier("p1-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr1Code");
+        practitionerRole.setCode(code);
         return practitionerRole;
     }
 
@@ -141,9 +144,11 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         PractitionerRole practitionerRole = new PractitionerRole();
         practitionerRole.setIdentifier("pr2-identifier");
         practitionerRole.setActive(true);
-        practitionerRole.setOrganizationId(1l);
-        //practitionerRole.setPractitionerId(2l);
-        practitionerRole.setCode("pr2Code");
+        practitionerRole.setOrganizationIdentifier("org1");
+        practitionerRole.setPractitionerIdentifier("p2-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr2Code");
+        practitionerRole.setCode(code);
         return practitionerRole;
     }
 

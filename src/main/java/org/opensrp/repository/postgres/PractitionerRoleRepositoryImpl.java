@@ -1,9 +1,12 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensrp.domain.Organization;
 import org.opensrp.domain.PractitionerRole;
+import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.domain.postgres.Practitioner;
 import org.opensrp.domain.postgres.PractitionerRoleExample;
+import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerRoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,9 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
 
     @Autowired
     private PractitionerRepositoryImpl practitionerRepository;
+
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     @Override
     public PractitionerRole get(String id) {
@@ -130,6 +136,12 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
 
     @Override
     public List<PractitionerRole> getRolesForPractitioner(String practitionerIdentifier) {
+
+        return  convert(getPgRolesForPractitioner(practitionerIdentifier));
+    }
+
+    @Override
+    public List<org.opensrp.domain.postgres.PractitionerRole> getPgRolesForPractitioner(String practitionerIdentifier) {
         if (StringUtils.isBlank(practitionerIdentifier)) {
             return null;
         }
@@ -144,24 +156,30 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         practitionerRoleExample.createCriteria().andPractitionerIdEqualTo(practitioner.getId());
 
         List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoles =  practitionerRoleMapper.selectMany(practitionerRoleExample, 0, DEFAULT_FETCH_SIZE);
-
-        return  convert(pgPractitionerRoles);
+        return pgPractitionerRoles;
     }
 
     private PractitionerRole convert(org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole) {
         if (pgPractitionerRole == null) {
             return null;
         }
-        PractitionerRole practitionerRole = new PractitionerRole();
-        practitionerRole.setIdentifier(pgPractitionerRole.getIdentifier());
-        practitionerRole.setActive(pgPractitionerRole.getActive());
-        practitionerRole.setOrganizationId(pgPractitionerRole.getOrganizationId());
         org.opensrp.domain.Practitioner pgPractitioner = practitionerRepository.getByPrimaryKey(pgPractitionerRole.getPractitionerId());
         if (pgPractitioner == null) {
             return null; // practitioner already deleted
         }
+
+        Organization pgOrganinization = organizationRepository.getByPrimaryKey(pgPractitionerRole.getOrganizationId());
+        if (pgOrganinization == null) {
+            return null; // organization already deleted
+        }
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier(pgPractitionerRole.getIdentifier());
+        practitionerRole.setActive(pgPractitionerRole.getActive());
+        practitionerRole.setOrganizationIdentifier(pgOrganinization.getIdentifier());
         practitionerRole.setPractitionerIdentifier(pgPractitioner.getIdentifier());
-        practitionerRole.setCode(pgPractitionerRole.getCode());
+        PractitionerRoleCode code =  new PractitionerRoleCode();
+        code.setText(pgPractitionerRole.getCode());
+        practitionerRole.setCode(code);
 
         return practitionerRole;
     }
@@ -174,10 +192,11 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole = new org.opensrp.domain.postgres.PractitionerRole();
         pgPractitionerRole.setIdentifier(practitionerRole.getIdentifier());
         pgPractitionerRole.setActive(practitionerRole.getActive());
-        pgPractitionerRole.setOrganizationId(practitionerRole.getOrganizationId());
+        Long  organizationId = getOrganizationId(practitionerRole.getOrganizationIdentifier());
+        pgPractitionerRole.setOrganizationId(organizationId);
         Long practitionerId = getPractitionerId(practitionerRole.getPractitionerIdentifier());
         pgPractitionerRole.setPractitionerId(practitionerId);
-        pgPractitionerRole.setCode(practitionerRole.getCode());
+        pgPractitionerRole.setCode(practitionerRole.getCode().getText());
 
         return pgPractitionerRole;
     }
@@ -196,6 +215,12 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
     private Long getPractitionerId (String practitionerIdentifier) {
         Practitioner practitioner = practitionerRepository.getPractitioner(practitionerIdentifier);
         Long practitionerId = practitioner != null ? practitioner.getId() : null;
+        return practitionerId;
+    }
+
+    private Long getOrganizationId (String organizationIdentifier) {
+        Organization organization = organizationRepository.get(organizationIdentifier);
+        Long practitionerId = organization != null ? organization.getId() : null;
         return practitionerId;
     }
 }
