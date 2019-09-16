@@ -29,7 +29,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
     @Override
     protected Set<String> getDatabaseScripts() {
         Set<String> scripts = new HashSet<>();
-        scripts.add("organization.sql");
+        scripts.add("practitioner.sql");
         return scripts;
     }
 
