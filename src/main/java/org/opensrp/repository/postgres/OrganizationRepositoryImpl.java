@@ -86,8 +86,10 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 
 	@Override
 	public List<Organization> getAll() {
-		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper
-				.selectMany(new OrganizationExample(), 0, DEFAULT_FETCH_SIZE);
+		OrganizationExample example = new OrganizationExample();
+		example.createCriteria().andDateDeletedIsNull();
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectMany(example, 0,
+				DEFAULT_FETCH_SIZE);
 		return convert(organizations);
 	}
 
@@ -143,9 +145,10 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			return jurisdictionId.equals(organizationLocation.getLocationId())
 					&& planId.equals(organizationLocation.getPlanId());
 		} else if (jurisdictionId == null && planId != null) {
-			return planId.equals(organizationLocation.getPlanId()) && organizationLocation.getLocationId()==null;
+			return planId.equals(organizationLocation.getPlanId()) && organizationLocation.getLocationId() == null;
 		} else if (jurisdictionId != null && planId == null) {
-			return jurisdictionId.equals(organizationLocation.getLocationId()) && organizationLocation.getPlanId()==null;
+			return jurisdictionId.equals(organizationLocation.getLocationId())
+					&& organizationLocation.getPlanId() == null;
 		} else {
 			return false;
 		}
