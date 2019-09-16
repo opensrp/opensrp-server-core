@@ -17,9 +17,9 @@ import java.util.UUID;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Test;
 import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.Code;
 import org.opensrp.domain.Organization;
 import org.opensrp.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +46,11 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, organization.getId(), 0);
 		assertEquals("fcc19470-d599-11e9-bb65-2a2ae2dbcce4", organization.getIdentifier());
 		assertEquals("The Luang", organization.getName());
-		assertEquals(
-				"{\"coding\":[[{\"system\":\"http://terminology.hl7.org/CodeSystem/organization-type\",\"code\":\"team\",\"display\":]\"Team\"}]}",
-				new ObjectMapper().writeValueAsString(organization.getType()));
+		assertEquals(1, organization.getType().getCoding().size());
+		Code code = organization.getType().getCoding().get(0);
+		assertEquals("http://terminology.hl7.org/CodeSystem/organization-type", code.getSystem());
+		assertEquals("team", code.getCode());
+		assertEquals("Team", code.getDisplay());
 		assertNull(organization.getPartOf());
 
 		assertNull(organizationRepository.get("121sd"));
