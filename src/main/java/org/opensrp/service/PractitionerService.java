@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opensrp.domain.Practitioner;
-import org.opensrp.domain.PractitionerRole;
+import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PractitionerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,7 +68,7 @@ public class PractitionerService {
 		Practitioner practioner = getPractitionerRepository().getPractitionerByUserId(userId);
 		List<Long> organizationIds = new ArrayList<>();
 		for (PractitionerRole practitionerRole : practitionerRoleService
-				.getRolesForPractitioner(practioner.getIdentifier())) {
+				.getPgRolesForPractitioner(practioner.getIdentifier())) {
 			organizationIds.add(practitionerRole.getOrganizationId());
 		}
 		return new ImmutablePair<>(practioner, organizationIds);

@@ -58,4 +58,12 @@ public class PractitionerRoleService {
         return getPractitionerRoleRepository().getRolesForPractitioner(practitionerIdentifier);
     }
 
+    public List<org.opensrp.domain.postgres.PractitionerRole> getPgRolesForPractitioner(String practitionerIdentifier) {
+        if (StringUtils.isBlank(practitionerIdentifier)) {
+            throw new IllegalArgumentException("Identifier not specified");
+        }
+
+        return getPractitionerRoleRepository().getPgRolesForPractitioner(practitionerIdentifier);
+    }
+
 }

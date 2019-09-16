@@ -44,7 +44,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals(1, practitionerRoles.size());
         assertEquals("pr1-identifier", practitionerRoles.get(0).getIdentifier());
         assertEquals(true, practitionerRoles.get(0).getActive());
-        assertEquals(1, practitionerRoles.get(0).getOrganizationId().longValue());
+        assertEquals("org1", practitionerRoles.get(0).getOrganizationIdentifier());
         assertEquals("p1-identifier", practitionerRoles.get(0).getPractitionerIdentifier());
         assertEquals("pr1Code", practitionerRoles.get(0).getCode().getText());
     }
@@ -62,7 +62,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertNotNull(practitionerRole);
         assertEquals("pr2-identifier", practitionerRole.getIdentifier());
         assertEquals(true, practitionerRole.getActive());
-        assertEquals(1, practitionerRole.getOrganizationId().longValue());
+        assertEquals("org1", practitionerRole.getOrganizationIdentifier());
         assertEquals("p2-identifier", practitionerRole.getPractitionerIdentifier());
         assertEquals("pr2Code", practitionerRole.getCode().getText());
 
@@ -132,7 +132,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         PractitionerRole practitionerRole = new PractitionerRole();
         practitionerRole.setIdentifier("pr1-identifier");
         practitionerRole.setActive(true);
-        practitionerRole.setOrganizationId(1l);
+        practitionerRole.setOrganizationIdentifier("org1");
         practitionerRole.setPractitionerIdentifier("p1-identifier");
         PractitionerRoleCode code = new PractitionerRoleCode();
         code.setText("pr1Code");
@@ -144,7 +144,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         PractitionerRole practitionerRole = new PractitionerRole();
         practitionerRole.setIdentifier("pr2-identifier");
         practitionerRole.setActive(true);
-        practitionerRole.setOrganizationId(1l);
+        practitionerRole.setOrganizationIdentifier("org1");
         practitionerRole.setPractitionerIdentifier("p2-identifier");
         PractitionerRoleCode code = new PractitionerRoleCode();
         code.setText("pr2Code");

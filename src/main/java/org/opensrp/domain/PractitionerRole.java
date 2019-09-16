@@ -16,7 +16,7 @@ public class PractitionerRole implements Serializable {
 
     @JsonProperty
     @SerializedName("organization")
-    private Long organizationId;
+    private String organizationIdentifier;
 
     @JsonProperty
     @SerializedName("practitioner")
@@ -41,12 +41,12 @@ public class PractitionerRole implements Serializable {
         this.active = active;
     }
 
-    public Long getOrganizationId() {
-        return organizationId;
+    public String getOrganizationIdentifier() {
+        return organizationIdentifier;
     }
 
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
+    public void setOrganizationIdentifier(String organizationIdentifier) {
+        this.organizationIdentifier = organizationIdentifier;
     }
 
     public String getPractitionerIdentifier() {
