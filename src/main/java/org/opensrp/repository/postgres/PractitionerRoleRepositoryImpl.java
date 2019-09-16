@@ -2,6 +2,7 @@ package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.PractitionerRole;
+import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.domain.postgres.Practitioner;
 import org.opensrp.domain.postgres.PractitionerRoleExample;
 import org.opensrp.repository.PractitionerRoleRepository;
@@ -152,16 +153,18 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         if (pgPractitionerRole == null) {
             return null;
         }
-        PractitionerRole practitionerRole = new PractitionerRole();
-        practitionerRole.setIdentifier(pgPractitionerRole.getIdentifier());
-        practitionerRole.setActive(pgPractitionerRole.getActive());
-        practitionerRole.setOrganizationId(pgPractitionerRole.getOrganizationId());
         org.opensrp.domain.Practitioner pgPractitioner = practitionerRepository.getByPrimaryKey(pgPractitionerRole.getPractitionerId());
         if (pgPractitioner == null) {
             return null; // practitioner already deleted
         }
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier(pgPractitionerRole.getIdentifier());
+        practitionerRole.setActive(pgPractitionerRole.getActive());
+        practitionerRole.setOrganizationId(pgPractitionerRole.getOrganizationId());
         practitionerRole.setPractitionerIdentifier(pgPractitioner.getIdentifier());
-        practitionerRole.setCode(pgPractitionerRole.getCode());
+        PractitionerRoleCode code =  new PractitionerRoleCode();
+        code.setText(pgPractitionerRole.getCode());
+        practitionerRole.setCode(code);
 
         return practitionerRole;
     }
@@ -177,7 +180,7 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         pgPractitionerRole.setOrganizationId(practitionerRole.getOrganizationId());
         Long practitionerId = getPractitionerId(practitionerRole.getPractitionerIdentifier());
         pgPractitionerRole.setPractitionerId(practitionerId);
-        pgPractitionerRole.setCode(practitionerRole.getCode());
+        pgPractitionerRole.setCode(practitionerRole.getCode().getText());
 
         return pgPractitionerRole;
     }

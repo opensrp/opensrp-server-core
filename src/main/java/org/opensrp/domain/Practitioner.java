@@ -1,12 +1,13 @@
 package org.opensrp.domain;
 
-import com.google.gson.annotations.SerializedName;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Practitioner {
+public class Practitioner implements Serializable {
 
+    private static final long serialVersionUID = -8367551045898354954L;
     @JsonProperty
     private String identifier;
 
@@ -17,15 +18,12 @@ public class Practitioner {
     private String name;
 
     @JsonProperty
-    @SerializedName("user_id")
     private String userId;
 
     @JsonProperty
-    @SerializedName("username")
     private String userName;
 
     @JsonProperty
-    @SerializedName("date_deleted")
     private Date dateDeleted;
 
     public String getIdentifier() {
