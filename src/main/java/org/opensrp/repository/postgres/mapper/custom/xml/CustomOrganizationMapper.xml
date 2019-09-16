@@ -45,7 +45,7 @@
                 </when>
               </choose>
             </foreach>
-            <foreach collection="example.criteria.typeCriteria" item="criterion">
+            <foreach collection="criteria.typeCriteria" item="criterion">
               <choose>
                 <when test="criterion.noValue">
                   and ${criterion.condition}
