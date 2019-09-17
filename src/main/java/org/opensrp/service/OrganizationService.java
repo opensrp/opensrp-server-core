@@ -71,7 +71,7 @@ public class OrganizationService {
 		if (entity != null) {
 			organizationRepository.update(entity);
 		} else {
-			organizationRepository.add(entity);
+			organizationRepository.add(organization);
 		}
 
 	}
