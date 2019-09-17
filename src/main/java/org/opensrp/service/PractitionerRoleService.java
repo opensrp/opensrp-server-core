@@ -30,7 +30,7 @@ public class PractitionerRoleService {
         return  getPractitionerRoleRepository().getAll();
     }
 
-    public void addOrUpdatePractitionerRole(PractitionerRole practitionerRole) {
+    public PractitionerRole addOrUpdatePractitionerRole(PractitionerRole practitionerRole) {
         if (StringUtils.isBlank(practitionerRole.getIdentifier())) {
             throw new IllegalArgumentException("Identifier not specified");
         }
@@ -40,6 +40,7 @@ public class PractitionerRoleService {
         } else {
             getPractitionerRoleRepository().add(practitionerRole);
         }
+        return practitionerRole;
     }
 
     public void deletePractitionerRole(PractitionerRole practitionerRole) {
