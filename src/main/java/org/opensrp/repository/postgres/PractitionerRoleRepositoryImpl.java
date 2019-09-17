@@ -66,7 +66,6 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
             return; // practitionerRole already added
         }
 
-        Long practitionerId = getPractitionerId(practitionerRole.getPractitionerIdentifier());
         org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole = convert(practitionerRole);
         practitionerRoleMapper.insertSelective(pgPractitionerRole);
     }
