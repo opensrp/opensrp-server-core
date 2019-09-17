@@ -128,6 +128,22 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals(practitionerRole1.getIdentifier(), practitionerRoles.get(0).getIdentifier());
     }
 
+    @Test
+    public void testGetPgRolesForPractitioner() {
+
+        PractitionerRole practitionerRole1 = initTestPractitionerRole1();
+        practitionerRoleRepository.add(practitionerRole1);
+
+        List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoles = practitionerRoleRepository.getPgRolesForPractitioner(practitionerRole1.getPractitionerIdentifier());
+
+        assertNotNull(pgPractitionerRoles);
+        assertEquals(1, pgPractitionerRoles.size());
+        assertEquals(practitionerRole1.getIdentifier(), pgPractitionerRoles.get(0).getIdentifier());
+        assertEquals(practitionerRole1.getActive(), pgPractitionerRoles.get(0).getActive());
+        assertEquals(practitionerRole1.getCode().getText(), pgPractitionerRoles.get(0).getCode());
+
+    }
+
     private static PractitionerRole initTestPractitionerRole1(){
         PractitionerRole practitionerRole = new PractitionerRole();
         practitionerRole.setIdentifier("pr1-identifier");
