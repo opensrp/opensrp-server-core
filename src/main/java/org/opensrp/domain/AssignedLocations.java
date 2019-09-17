@@ -11,12 +11,17 @@ import java.util.Date;
 public class AssignedLocations {
 
 	private String jurisdictionId;
-	
+
 	private String planId;
-	
+
 	private Date fromDate;
-	
+
 	private Date toDate;
+
+	public AssignedLocations(String jurisdictionId, String planId) {
+		setJurisdictionId(jurisdictionId);
+		setPlanId(planId);
+	}
 
 	public String getJurisdictionId() {
 		return jurisdictionId;
@@ -49,7 +54,5 @@ public class AssignedLocations {
 	public void setToDate(Date toDate) {
 		this.toDate = toDate;
 	}
-	
-	
-	
+
 }

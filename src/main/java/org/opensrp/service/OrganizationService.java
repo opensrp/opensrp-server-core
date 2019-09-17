@@ -46,8 +46,6 @@ public class OrganizationService {
 		return organizationRepository.get(identifier);
 	}
 
-	
-	
 	/**
 	 * Get the organization that has the identifier
 	 * 
@@ -58,16 +56,23 @@ public class OrganizationService {
 		return organizationRepository.getByPrimaryKey(id);
 	}
 
+	private void validateIdentifier(Organization organization) {
+		validateIdentifier(organization.getIdentifier());
+	}
+
+	private void validateIdentifier(String identifier) {
+		if (StringUtils.isBlank(identifier))
+			throw new IllegalArgumentException("Organization Identifier not specified");
+	}
+
 	/**
 	 * Adds or Updates an Organization
 	 * 
 	 * @param organization to add on update
 	 */
 	public void addOrUpdateOrganization(Organization organization) {
-		String identifier = organization.getIdentifier();
-		if (StringUtils.isBlank(identifier))
-			throw new IllegalArgumentException("Identifier not specified");
-		Organization entity = organizationRepository.get(identifier);
+		validateIdentifier(organization);
+		Organization entity = organizationRepository.get(organization.getIdentifier());
 		if (entity != null) {
 			organizationRepository.update(entity);
 		} else {
@@ -82,9 +87,7 @@ public class OrganizationService {
 	 * @param organization to add
 	 */
 	public void addOrganization(Organization organization) {
-		String identifier = organization.getIdentifier();
-		if (StringUtils.isBlank(identifier))
-			throw new IllegalArgumentException("Identifier not specified");
+		validateIdentifier(organization);
 		organizationRepository.add(organization);
 
 	}
@@ -95,9 +98,7 @@ public class OrganizationService {
 	 * @param organization to update
 	 */
 	public void updateOrganization(Organization organization) {
-		String identifier = organization.getIdentifier();
-		if (StringUtils.isBlank(identifier))
-			throw new IllegalArgumentException("Identifier not specified");
+		validateIdentifier(organization);
 		organizationRepository.update(organization);
 
 	}
@@ -111,13 +112,18 @@ public class OrganizationService {
 	 * @param fromDate
 	 * @param toDate
 	 */
-	public void assignLocationAndPlan(Long organizationId, String jurisdictionId, String planId, Date fromDate,
+	public void assignLocationAndPlan(String identifier, String jurisdictionId, String planId, Date fromDate,
 			Date toDate) {
-		if (organizationId == null || organizationId == 0)
-			throw new IllegalArgumentException("organizationId cannot be null or empty");
+		validateIdentifier(identifier);
+		if (StringUtils.isBlank(identifier))
+			throw new IllegalArgumentException("identifier cannot be null or empty");
 		if (StringUtils.isBlank(jurisdictionId) && StringUtils.isBlank(planId))
 			throw new IllegalArgumentException("jurisdictionId and planId cannot be null");
-		organizationRepository.assignLocationAndPlan(organizationId, jurisdictionId,
+		Organization organization = getOrganization(identifier);
+		if (organization == null)
+			throw new IllegalArgumentException("Organization not found");
+
+		organizationRepository.assignLocationAndPlan(organization.getId(), jurisdictionId,
 				locationRepository.retrievePrimaryKey(jurisdictionId, true), planId,
 				planRepository.retrievePrimaryKey(planId), fromDate == null ? new Date() : fromDate, toDate);
 
@@ -130,11 +136,15 @@ public class OrganizationService {
 	 * 
 	 * @return the assigned locations and plans
 	 */
-	public List<AssignedLocations> findAssignedLocationsAndPlans(Long organizationId) {
-		return organizationRepository.findAssignedLocations(organizationId);
+	public List<AssignedLocations> findAssignedLocationsAndPlans(String identifier) {
+		validateIdentifier(identifier);
+		Organization organization = getOrganization(identifier);
+		if (organization == null)
+			throw new IllegalArgumentException("Organization not found");
+		return organizationRepository.findAssignedLocations(organization.getId());
 
 	}
-	
+
 	/**
 	 * Gets the locations and Plans assigned to a list of organizations
 	 * 
