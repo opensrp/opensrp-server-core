@@ -22,6 +22,9 @@ public class AssignedLocations {
 		setJurisdictionId(jurisdictionId);
 		setPlanId(planId);
 	}
+	
+	public AssignedLocations() {//Default constructor, needed by mybatis
+	}
 
 	public String getJurisdictionId() {
 		return jurisdictionId;
