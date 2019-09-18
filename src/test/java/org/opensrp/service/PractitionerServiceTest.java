@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,11 +26,15 @@ public class PractitionerServiceTest {
 
     private PractitionerRepository practitionerRepository;
 
+    private PractitionerRoleService practitionerRoleService;
+
     @Before
     public void setUp() {
         practitionerRepository = mock(PractitionerRepository.class);
         practitionerService = new PractitionerService();
         practitionerService.setPractitionerRepository(practitionerRepository);
+        practitionerRoleService = mock(PractitionerRoleService.class);
+        practitionerService.setPractitionerRoleService(practitionerRoleService);
     }
 
     @Test
@@ -71,12 +76,39 @@ public class PractitionerServiceTest {
         verify(practitionerRepository).update(eq(practitioner));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddOrUpdateWithoutPractitionerIdentifier() {
+        Practitioner practitioner = initTestPractitioner();
+        practitioner.setIdentifier(null);
+        practitionerService.addOrUpdatePractitioner(practitioner);
+        verify(practitionerRepository, never()).update(eq(practitioner));
+    }
+
+
     @Test
     public void testDeleteShouldCallRepostorySafeRemoveMethod() {
         when(practitionerRepository.get(anyString())).thenReturn(initTestPractitioner());
         Practitioner practitioner = initTestPractitioner();
         practitionerService.deletePractitioner(practitioner);
         verify(practitionerRepository).safeRemove(eq(practitioner));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteWithoutPlanIdentifier() {
+        Practitioner practitioner = initTestPractitioner();
+        practitioner.setIdentifier(null);
+        practitionerService.deletePractitioner(practitioner);
+        verify(practitionerRepository, never()).safeRemove(eq(practitioner));
+    }
+
+    @Test
+    public void testGetOrganizationByUserIdShouldCallGetPgRolesForPractitionerMethod() {
+        Practitioner practitioner = initTestPractitioner();
+        when(practitionerRepository.getPractitionerByUserId(anyString())).thenReturn(practitioner);
+
+        practitionerService.getOrganizationsByUserId("user-id");
+        verify(practitionerRepository).getPractitionerByUserId(eq("user-id"));
+        verify(practitionerRoleService).getPgRolesForPractitioner(eq(practitioner.getIdentifier()));
     }
 
     private Practitioner initTestPractitioner(){
