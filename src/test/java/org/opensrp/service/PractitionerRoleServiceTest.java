@@ -47,7 +47,7 @@ public class PractitionerRoleServiceTest {
         assertEquals("pr1-identifier", actutalPractitionerRoles.get(0).getIdentifier());
     }
 
-    @Tes
+    @Test
     public void testGetPractitionerRoleByIdentifier() {
         PractitionerRole expectedPractitionerRole = initTestPractitionerRole();
         when(practitionerRoleRepository.get(anyString())).thenReturn(expectedPractitionerRole);
