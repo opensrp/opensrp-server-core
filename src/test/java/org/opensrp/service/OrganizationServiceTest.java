@@ -189,7 +189,6 @@ public class OrganizationServiceTest {
 		when(organizationRepository.get(identifier)).thenReturn(organization);
 		organization.setId(1233l);
 		String planIdentifier = UUID.randomUUID().toString();
-		;
 		String jurisdictionIdentifier = null;
 		Long locationId = null;
 		Long planId = 19871l;
@@ -202,6 +201,27 @@ public class OrganizationServiceTest {
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, dateFrom, dateTo);
 		verify(organizationRepository).assignLocationAndPlan(eq(1233l), eq(jurisdictionIdentifier), eq(locationId),
 				eq(planIdentifier), eq(planId), eq(dateFrom), eq(dateTo));
+	}
+	
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testAssignLocationAndPlanWithoutIdentifier() {
+		String planIdentifier = UUID.randomUUID().toString();
+		String jurisdictionIdentifier = null;
+		organizationService.assignLocationAndPlan(null, jurisdictionIdentifier, planIdentifier, null, null);
+		verify(organizationRepository,never()).assignLocationAndPlan(anyLong(), eq(jurisdictionIdentifier), anyLong(),
+				eq(planIdentifier), anyLong(), any(Date.class), any(Date.class));
+	}
+	
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testAssignLocationAndMissingOrganization() {
+		String planIdentifier = UUID.randomUUID().toString();
+		String jurisdictionIdentifier = UUID.randomUUID().toString();
+		when(organizationRepository.get(identifier)).thenReturn(null);
+		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, null, null);
+		verify(organizationRepository,never()).assignLocationAndPlan(anyLong(), eq(jurisdictionIdentifier), anyLong(),
+				eq(planIdentifier), anyLong(), any(Date.class), any(Date.class));
 	}
 
 	@Test
@@ -220,7 +240,7 @@ public class OrganizationServiceTest {
 	public void testFindAssignedLocationsAndPlansOrganitionMissing() {
 		organization.setId(12l);
 		organizationService.findAssignedLocationsAndPlans(identifier);
-		verify(organizationRepository, never()).findAssignedLocations(12l);
+		verify(organizationRepository, never()).findAssignedLocations(anyLong());
 
 	}
 
