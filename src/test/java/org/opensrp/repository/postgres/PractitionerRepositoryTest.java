@@ -13,6 +13,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class PractitionerRepositoryTest extends BaseRepositoryTest{
@@ -47,7 +48,25 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
     }
 
     @Test
-    public void testGetShouldGetPractitionerById() {
+    public void testAddShouldNotInsertRecordIfPractitionerIsNull() {
+        practitionerRepository.add(null);
+
+        List<Practitioner> practitioners = practitionerRepository.getAll();
+        assertTrue(practitioners.isEmpty());
+    }
+
+    @Test
+    public void testAddShouldNotInsertRecordIfPractitionerIdentifierIsNull() {
+        Practitioner expectedPractitioner = initTestPractitioner1();
+        expectedPractitioner.setIdentifier(null);
+        practitionerRepository.add(expectedPractitioner);
+
+        List<Practitioner> practitioners = practitionerRepository.getAll();
+        assertTrue(practitioners.isEmpty());
+    }
+
+    @Test
+    public void testGetShouldGetPractitionerByIdentifier() {
 
         Practitioner practitioner1 = initTestPractitioner1();
         practitionerRepository.add(practitioner1);
@@ -63,6 +82,15 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals("Practioner2", practitioner.getUserName());
         assertEquals("user2", practitioner.getUserId());
 
+    }
+
+    @Test
+    public void testGetShouldGetReturnsNullIfIdentifierIsNullOrEmpty() {
+        Practitioner practitioner = practitionerRepository.get(null);
+        assertNull(practitioner);
+
+        practitioner = practitionerRepository.get("");
+        assertNull(practitioner);
     }
 
     @Test
@@ -107,6 +135,60 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
     }
 
     @Test
+    public void testUpdateWithNullParamDoesNotUpdateExistingRecord() {
+        Practitioner practitioner1 = initTestPractitioner1();
+        practitionerRepository.add(practitioner1);
+
+        Practitioner addedPractitioner = practitionerRepository.get(practitioner1.getIdentifier());
+        assertNotNull(addedPractitioner);
+        assertEquals("practitoner-1-identifier", addedPractitioner.getIdentifier());
+        assertEquals(true, addedPractitioner.getActive());
+        assertEquals("Practitioner", addedPractitioner.getName());
+
+        practitionerRepository.update(null);
+
+        Practitioner updatedPractitioner = practitionerRepository.get(practitioner1.getIdentifier());
+        assertNotNull(addedPractitioner);
+        assertEquals("practitoner-1-identifier", updatedPractitioner.getIdentifier());
+        assertEquals(true, updatedPractitioner.getActive());
+        assertEquals("Practitioner", updatedPractitioner.getName());
+    }
+
+    @Test
+    public void testUpdateWithNullIdentifierDoesNotUpdateExistingRecord() {
+        Practitioner practitioner1 = initTestPractitioner1();
+        String practitioner1Identifier = practitioner1.getIdentifier();
+        practitionerRepository.add(practitioner1);
+
+        Practitioner addedPractitioner = practitionerRepository.get(practitioner1.getIdentifier());
+        assertNotNull(addedPractitioner);
+        assertEquals("practitoner-1-identifier", addedPractitioner.getIdentifier());
+        assertEquals(true, addedPractitioner.getActive());
+        assertEquals("Practitioner", addedPractitioner.getName());
+
+        practitioner1.setIdentifier(null);
+        practitioner1.setActive(false);
+        practitioner1.setName("Practitioner edit");
+        practitionerRepository.update(practitioner1);
+
+        Practitioner updatedPractitioner = practitionerRepository.get(practitioner1Identifier);
+        assertNotNull(updatedPractitioner);
+        assertEquals("practitoner-1-identifier", updatedPractitioner.getIdentifier());
+        assertEquals(true, updatedPractitioner.getActive());
+        assertEquals("Practitioner", updatedPractitioner.getName());
+    }
+
+    @Test
+    public void testUpdateWithNonExistingRecordNotUpdate() {
+        Practitioner practitioner1 = initTestPractitioner1();
+
+        practitionerRepository.update(practitioner1);
+
+        Practitioner updatedPractitioner = practitionerRepository.get(practitioner1.getIdentifier());
+        assertNull(updatedPractitioner);
+    }
+
+    @Test
     public void testGetAllShouldGetAllPractitioners() {
         Practitioner practitioner1 = initTestPractitioner1();
         practitionerRepository.add(practitioner1);
@@ -142,6 +224,64 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertNotNull(practitioners);
         assertEquals(1, practitioners.size());
         assertEquals(practitioner1.getIdentifier(), practitioners.get(0).getIdentifier());
+    }
+
+    @Test
+    public void testSafeRemoveWithEmptyParamDoesNotAffectExistingRecord() {
+        Practitioner practitioner1 = initTestPractitioner1();
+        practitionerRepository.add(practitioner1);
+
+        List<Practitioner> practitioners = practitionerRepository.getAll();
+        assertNotNull(practitioners);
+        assertEquals(1,practitioners.size());
+
+        practitionerRepository.safeRemove(null);
+
+        practitioners = practitionerRepository.getAll();
+        assertNotNull(practitioners);
+        assertEquals(1, practitioners.size());
+        assertEquals(practitioner1.getIdentifier(), practitioners.get(0).getIdentifier());
+    }
+
+    @Test
+    public void testSafeRemoveWithNonExistingRecordShouldDoesNotAffectExistingRecord() {
+        Practitioner practitioner1 = initTestPractitioner1();
+        practitionerRepository.add(practitioner1);
+
+        List<Practitioner> practitioners = practitionerRepository.getAll();
+        assertNotNull(practitioners);
+        assertEquals(1,practitioners.size());
+
+        Practitioner practitioner2 = initTestPractitioner2();
+        practitionerRepository.safeRemove(practitioner2);
+
+        practitioners = practitionerRepository.getAll();
+        assertNotNull(practitioners);
+        assertEquals(1, practitioners.size());
+        assertEquals(practitioner1.getIdentifier(), practitioners.get(0).getIdentifier());
+    }
+
+    @Test
+    public void testGetPractitionerByUserId() {
+        Practitioner expectedPractitioner = initTestPractitioner2();
+        practitionerRepository.add(expectedPractitioner);
+
+        Practitioner actualPractitioner = practitionerRepository.getPractitionerByUserId(expectedPractitioner.getUserId());
+        assertNotNull(actualPractitioner);
+        assertEquals("practitoner-2-identifier", actualPractitioner.getIdentifier());
+        assertEquals(false, actualPractitioner.getActive());
+        assertEquals("Second Practitioner", actualPractitioner.getName());
+        assertEquals("Practioner2", actualPractitioner.getUserName());
+        assertEquals("user2", actualPractitioner.getUserId());
+    }
+
+    @Test
+    public void testGetPractitionerByUserIdWithNullUserIdReturnsNull() {
+        Practitioner expectedPractitioner = initTestPractitioner2();
+        expectedPractitioner.setUserId(null);
+
+        Practitioner actualPractitioner = practitionerRepository.getPractitionerByUserId(expectedPractitioner.getUserId());
+        assertNull(actualPractitioner);
     }
 
     private Practitioner initTestPractitioner1(){

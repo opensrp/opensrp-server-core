@@ -43,7 +43,7 @@ public class PractitionerService {
 		return getPractitionerRepository().getAll();
 	}
 
-	public void addOrUpdatePractitioner(Practitioner practitioner) {
+	public Practitioner addOrUpdatePractitioner(Practitioner practitioner) {
 		if (StringUtils.isBlank(practitioner.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
@@ -53,6 +53,7 @@ public class PractitionerService {
 		} else {
 			getPractitionerRepository().add(practitioner);
 		}
+		return practitioner;
 	}
 
 	public void deletePractitioner(Practitioner practitioner) {
