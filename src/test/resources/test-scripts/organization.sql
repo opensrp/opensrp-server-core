@@ -14,7 +14,9 @@ INSERT INTO team.organization (id, identifier, active, name, type, date_deleted,
 
 
 INSERT INTO core.location (id, json) VALUES (2243, '{"id": "304cbcd4-0850-404a-a8b1-486b02f7b84d", "type": "Feature", "properties": {"name": "TLv1_02", "status": "Active", "version": 0, "parentId": "dad42fa6-b9b8-4658-bf25-bfa7ab5b16ae", "OpenMRS_Id": "de28c78d-3111-4266-957b-c731a3330c1d", "geographicLevel": 4}, "serverVersion": 1568331709467}');
+INSERT INTO core.location (id, json) VALUES (224, '{"id": "3270", "type": "Feature", "geometry": {"type": "MultiPolygon"}, "properties": {"name": "NYJ_6", "status": "Active", "version": 0, "parentId": "2977", "geographicLevel": 2}, "serverVersion": 1545220000265}');
 INSERT INTO core.location_metadata (id, location_id, geojson_id, type, parent_id, uuid, status, server_version, name) VALUES (2243, 2243, '304cbcd4-0850-404a-a8b1-486b02f7b84d', null, 'dad42fa6-b9b8-4658-bf25-bfa7ab5b16ae', null, 'ACTIVE', 1568331709467, 'TLv1_02');
+INSERT INTO core.location_metadata (id, location_id, geojson_id, type, parent_id, uuid, status, server_version, name) VALUES (224, 224, '3270', null, '2977', null, 'ACTIVE', 1545220000265, 'NYJ_6');
 
 INSERT INTO core.plan (identifier, json, date_deleted, server_version, id) VALUES ('36adfd55-3a61-4fcf-be39-3c9ccb2ffd78', '{}', null, 1567765433007, 162);
 INSERT INTO core.plan (identifier, json, date_deleted, server_version, id) VALUES ('9d1403a5-756d-517b-91d6-5b19059a69f0', '{}', null, 1567765433007, 11);

@@ -195,6 +195,7 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         pgPractitionerRole.setOrganizationId(organizationId);
         Long practitionerId = getPractitionerId(practitionerRole.getPractitionerIdentifier());
         pgPractitionerRole.setPractitionerId(practitionerId);
+        if(practitionerRole.getCode()!=null)
         pgPractitionerRole.setCode(practitionerRole.getCode().getText());
 
         return pgPractitionerRole;
