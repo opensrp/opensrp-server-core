@@ -80,6 +80,32 @@ public class PractitionerRoleServiceTest {
         verify(practitionerRoleRepository).safeRemove(eq(practitionerRole));
     }
 
+    @Test
+    public void testGetRolesForPractitionerShouldCallGetRolesForPractitionerMethod() {
+        List<PractitionerRole> expectedPractitionerRoles = new ArrayList<>();
+        expectedPractitionerRoles.add(initTestPractitionerRole());
+        when(practitionerRoleRepository.getRolesForPractitioner(anyString())).thenReturn(expectedPractitionerRoles);
+
+        List<PractitionerRole> actutalPractitionerRoles = practitionerRoleService.getRolesForPractitioner("identifier");
+        verify(practitionerRoleRepository).getRolesForPractitioner(anyString());
+        assertEquals(1, actutalPractitionerRoles.size());
+        assertEquals("pr1-identifier", actutalPractitionerRoles.get(0).getIdentifier());
+    }
+
+    @Test
+    public void testGetPgRolesForPractitionerShouldCallGetPgRolesForPractitionerMethod() {
+        List<org.opensrp.domain.postgres.PractitionerRole> expectedPractitionerRoles = new ArrayList<>();
+        org.opensrp.domain.postgres.PractitionerRole practitionerRole = new org.opensrp.domain.postgres.PractitionerRole();
+        practitionerRole.setIdentifier("pr1-identifier");
+        expectedPractitionerRoles.add(practitionerRole);
+        when(practitionerRoleRepository.getPgRolesForPractitioner(anyString())).thenReturn(expectedPractitionerRoles);
+
+        List<org.opensrp.domain.postgres.PractitionerRole> actutalPractitionerRoles = practitionerRoleService.getPgRolesForPractitioner("identifier");
+        verify(practitionerRoleRepository).getPgRolesForPractitioner(anyString());
+        assertEquals(1, actutalPractitionerRoles.size());
+        assertEquals("pr1-identifier", actutalPractitionerRoles.get(0).getIdentifier());
+    }
+
     private static PractitionerRole initTestPractitionerRole(){
         PractitionerRole practitionerRole = new PractitionerRole();
         practitionerRole.setIdentifier("pr1-identifier");
