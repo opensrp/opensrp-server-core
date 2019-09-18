@@ -112,17 +112,16 @@ public class Event extends BaseDataObject {
 	}
 	
 	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
-	    String locationId, String formSubmissionId, String teamId, String team, Integer clientApplicationVersion, Integer clientDatabaseVersion) {
-
+				 String locationId, String formSubmissionId, String teamId, String team, Integer clientApplicationVersion,
+				 Integer clientDatabaseVersion) {
 		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team);
 		setClientApplicationVersion(clientApplicationVersion);
 		setClientDatabaseVersion(clientDatabaseVersion);
-		setChildLocationId(childLocationId);
 	}
 
     public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
                  String locationId, String formSubmissionId, String teamId, String team, String childLocationId,
-                 Integer clientApplicationVersion, Integer clientDatabaseVersion) {
+				 Integer clientApplicationVersion, Integer clientDatabaseVersion) {
 
         this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team, clientApplicationVersion, clientDatabaseVersion);
         setChildLocationId(childLocationId);
