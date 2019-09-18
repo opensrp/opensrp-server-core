@@ -322,14 +322,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		if(ids == null || ids.isEmpty()) {
+		if (ids == null || ids.isEmpty()) {
 			return null;
 		}
 
 		locationMetadataExample.createCriteria().andGeojsonIdIn(ids);
 
-		List<Location> locations = locationMetadataMapper.selectManyById(locationMetadataExample,
-				returnGeometry, 0, DEFAULT_FETCH_SIZE);
+		List<Location> locations = locationMetadataMapper.selectManyById(locationMetadataExample, returnGeometry, 0,
+				DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
 
@@ -339,14 +339,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id, int pageSize) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		if(id == null) {
+		if (id == null) {
 			return null;
 		}
 
 		int limit = Math.abs(pageSize);
 		limit = limit < FETCH_SIZE_LIMIT ? limit : FETCH_SIZE_LIMIT;
-		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample,
-				returnGeometry, id, 0, limit);
+		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample, returnGeometry,
+				id, 0, limit);
 		return convert(locations);
 	}
 
@@ -359,7 +359,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 		String identifier = uniqueId.toString();
 
-		if (entity.isJurisdiction()) {
+		return retrievePrimaryKey(identifier, entity.isJurisdiction());
+	}
+
+	@Override
+	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction) {
+
+		if (isJurisdiction) {
 			Location pgEntity = locationMetadataMapper.findById(identifier, true);
 			if (pgEntity == null) {
 				return null;

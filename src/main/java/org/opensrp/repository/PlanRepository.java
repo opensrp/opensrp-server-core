@@ -21,4 +21,12 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
      * @return plan definitions whose identifiers match the provided params
      */
     List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields);
+    
+    
+    /**
+     * Gets the plan primary key 
+     * @param identifier of of the plan
+     * @return the numerical primary key of a plan
+     */
+    public Long retrievePrimaryKey(String identifier);
 }
