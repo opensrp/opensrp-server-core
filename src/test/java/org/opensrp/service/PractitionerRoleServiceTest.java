@@ -13,9 +13,11 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -45,7 +47,7 @@ public class PractitionerRoleServiceTest {
         assertEquals("pr1-identifier", actutalPractitionerRoles.get(0).getIdentifier());
     }
 
-    @Test
+    @Tes
     public void testGetPractitionerRoleByIdentifier() {
         PractitionerRole expectedPractitionerRole = initTestPractitionerRole();
         when(practitionerRoleRepository.get(anyString())).thenReturn(expectedPractitionerRole);
@@ -72,12 +74,29 @@ public class PractitionerRoleServiceTest {
         verify(practitionerRoleRepository).update(eq(practitionerRole));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testAddOrUpdateWithNullIdentifier() {
+        when(practitionerRoleRepository.get(anyString())).thenReturn(initTestPractitionerRole());
+        PractitionerRole practitionerRole = initTestPractitionerRole();
+        practitionerRole.setIdentifier(null);
+        practitionerRoleService.addOrUpdatePractitionerRole(practitionerRole);
+        verify(practitionerRoleRepository, never()).update(eq(practitionerRole));
+    }
+
     @Test
     public void testDeleteShouldCallRepostorySafeRemoveMethod() {
         when(practitionerRoleRepository.get(anyString())).thenReturn(initTestPractitionerRole());
         PractitionerRole practitionerRole = initTestPractitionerRole();
         practitionerRoleService.deletePractitionerRole(practitionerRole);
         verify(practitionerRoleRepository).safeRemove(eq(practitionerRole));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDeleteWithNullIdentifier() {
+        PractitionerRole practitionerRole = initTestPractitionerRole();
+        practitionerRole.setIdentifier(null);
+        practitionerRoleService.deletePractitionerRole(practitionerRole);
+        verify(practitionerRoleRepository, never()).safeRemove(eq(practitionerRole));
     }
 
     @Test
@@ -92,6 +111,14 @@ public class PractitionerRoleServiceTest {
         assertEquals("pr1-identifier", actutalPractitionerRoles.get(0).getIdentifier());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetRolesForPractitionerWithNullIdentifier() {
+
+        List<PractitionerRole> actutalPractitionerRoles = practitionerRoleService.getRolesForPractitioner(null);
+        assertTrue(actutalPractitionerRoles.isEmpty());
+        verify(practitionerRoleRepository, never()).getRolesForPractitioner(anyString());
+    }
+
     @Test
     public void testGetPgRolesForPractitionerShouldCallGetPgRolesForPractitionerMethod() {
         List<org.opensrp.domain.postgres.PractitionerRole> expectedPractitionerRoles = new ArrayList<>();
@@ -104,6 +131,14 @@ public class PractitionerRoleServiceTest {
         verify(practitionerRoleRepository).getPgRolesForPractitioner(anyString());
         assertEquals(1, actutalPractitionerRoles.size());
         assertEquals("pr1-identifier", actutalPractitionerRoles.get(0).getIdentifier());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testGetPgRolesForPractitionerWithNullIdentifier() {
+
+        List<org.opensrp.domain.postgres.PractitionerRole> actutalPractitionerRoles = practitionerRoleService.getPgRolesForPractitioner(null);
+        assertTrue(actutalPractitionerRoles.isEmpty());
+        verify(practitionerRoleRepository, never()).getPgRolesForPractitioner(anyString());
     }
 
     private static PractitionerRole initTestPractitionerRole(){
