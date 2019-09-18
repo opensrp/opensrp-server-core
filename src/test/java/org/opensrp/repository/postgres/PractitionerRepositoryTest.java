@@ -157,6 +157,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
     @Test
     public void testUpdateWithNullIdentifierDoesNotUpdateExistingRecord() {
         Practitioner practitioner1 = initTestPractitioner1();
+        String practitioner1Identifier = practitioner1.getIdentifier();
         practitionerRepository.add(practitioner1);
 
         Practitioner addedPractitioner = practitionerRepository.get(practitioner1.getIdentifier());
@@ -170,11 +171,11 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         practitioner1.setName("Practitioner edit");
         practitionerRepository.update(practitioner1);
 
-        Practitioner updatedPractitioner = practitionerRepository.get(practitioner1.getIdentifier());
-        assertNotNull(addedPractitioner);
-        assertEquals("practitoner-1-identifier", addedPractitioner.getIdentifier());
-        assertEquals(true, addedPractitioner.getActive());
-        assertEquals("Practitioner", addedPractitioner.getName());
+        Practitioner updatedPractitioner = practitionerRepository.get(practitioner1Identifier);
+        assertNotNull(updatedPractitioner);
+        assertEquals("practitoner-1-identifier", updatedPractitioner.getIdentifier());
+        assertEquals(true, updatedPractitioner.getActive());
+        assertEquals("Practitioner", updatedPractitioner.getName());
     }
 
     @Test
@@ -226,7 +227,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
     }
 
     @Test
-    public void testSafeRemoveWithEmptyParamShouldDoesNotAffectExistingRecord() {
+    public void testSafeRemoveWithEmptyParamDoesNotAffectExistingRecord() {
         Practitioner practitioner1 = initTestPractitioner1();
         practitionerRepository.add(practitioner1);
 

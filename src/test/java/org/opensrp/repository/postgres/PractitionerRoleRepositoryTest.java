@@ -13,6 +13,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
@@ -50,7 +51,25 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void testGetShouldGetPractitionerRoleById() {
+    public void testAddShouldNotInsertRecordIfPractitionerRoleIsNull() {
+        practitionerRoleRepository.add(null);
+
+        List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAll();
+        assertTrue(practitionerRoles.isEmpty());
+    }
+
+    @Test
+    public void testAddShouldNotInsertRecordIfPractitionerRoleIdentifierIsNull() {
+        PractitionerRole expectedPractitionerRole = initTestPractitionerRole1();
+        expectedPractitionerRole.setIdentifier(null);
+        practitionerRoleRepository.add(expectedPractitionerRole);
+
+        List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAll();
+        assertTrue(practitionerRoles.isEmpty());
+    }
+
+    @Test
+    public void testGetShouldGetPractitionerRoleByIdentifier() {
 
         PractitionerRole practitionerRole1 = initTestPractitionerRole1();
         practitionerRoleRepository.add(practitionerRole1);
@@ -66,6 +85,19 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals("p2-identifier", practitionerRole.getPractitionerIdentifier());
         assertEquals("pr2Code", practitionerRole.getCode().getText());
 
+    }
+
+    @Test
+    public void testGetShouldGetReturnsNullIfIdentifierIsNullOrEmpty() {
+
+        PractitionerRole practitionerRole1 = initTestPractitionerRole1();
+        practitionerRoleRepository.add(practitionerRole1);
+
+        PractitionerRole practitionerRole = practitionerRoleRepository.get(null);
+        assertNull(practitionerRole);
+
+        practitionerRole = practitionerRoleRepository.get("");
+        assertNull(practitionerRole);
     }
 
     @Test
@@ -88,6 +120,61 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals("pr2-identifier", updatedPractitionerRole.getIdentifier());
         assertEquals(false, updatedPractitionerRole.getActive());
         assertEquals("updatedCode", updatedPractitionerRole.getCode().getText());
+    }
+
+    @Test
+    public void testUpdateWithNullParamDoesNotUpdateExistingRecord() {
+        PractitionerRole practitionerRole2 = initTestPractitionerRole2();
+        practitionerRoleRepository.add(practitionerRole2);
+
+        PractitionerRole addedPractitionerRole = practitionerRoleRepository.get(practitionerRole2.getIdentifier());
+        assertNotNull(addedPractitionerRole);
+        assertEquals("pr2-identifier", addedPractitionerRole.getIdentifier());
+        assertEquals(true, addedPractitionerRole.getActive());
+        assertEquals("pr2Code", addedPractitionerRole.getCode().getText());
+
+        practitionerRoleRepository.update(null);
+
+        PractitionerRole updatedPractitionerRole = practitionerRoleRepository.get(practitionerRole2.getIdentifier());
+        assertNotNull(updatedPractitionerRole);
+        assertEquals("pr2-identifier", addedPractitionerRole.getIdentifier());
+        assertEquals(true, addedPractitionerRole.getActive());
+        assertEquals("pr2Code", addedPractitionerRole.getCode().getText());
+    }
+
+    @Test
+    public void testUpdateWithNullIdentifierDoesNotUpdateExistingRecord() {
+        PractitionerRole practitionerRole2 = initTestPractitionerRole2();
+        String practitionerRole2Identifier = practitionerRole2.getIdentifier();
+        practitionerRoleRepository.add(practitionerRole2);
+
+        PractitionerRole addedPractitionerRole = practitionerRoleRepository.get(practitionerRole2.getIdentifier());
+        assertNotNull(addedPractitionerRole);
+        assertEquals("pr2-identifier", addedPractitionerRole.getIdentifier());
+        assertEquals(true, addedPractitionerRole.getActive());
+        assertEquals("pr2Code", addedPractitionerRole.getCode().getText());
+
+        practitionerRole2.setIdentifier(null);
+        practitionerRole2.setActive(false);
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("Updated code");
+        practitionerRole2.setCode(code);
+        practitionerRoleRepository.update(practitionerRole2);
+
+        PractitionerRole updatedPractitionerRole = practitionerRoleRepository.get(practitionerRole2Identifier);
+        assertNotNull(updatedPractitionerRole);
+        assertEquals("pr2-identifier", addedPractitionerRole.getIdentifier());
+        assertEquals(true, addedPractitionerRole.getActive());
+        assertEquals("pr2Code", addedPractitionerRole.getCode().getText());
+    }
+
+    @Test
+    public void testUpdateWithNonExistingRecordDoesNotUpdate() {
+        PractitionerRole practitionerRole2 = initTestPractitionerRole2();
+        practitionerRoleRepository.update(practitionerRole2);
+
+        PractitionerRole updatedPractitionerRole = practitionerRoleRepository.get(practitionerRole2.getIdentifier());
+        assertNull(updatedPractitionerRole);
     }
 
     @Test
@@ -120,6 +207,41 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertNotNull(practitionerRoles);
         assertEquals(2,practitionerRoles.size());
 
+        practitionerRoleRepository.safeRemove(practitionerRole2);
+
+        practitionerRoles = practitionerRoleRepository.getAll();
+        assertNotNull(practitionerRoles);
+        assertEquals(1, practitionerRoles.size());
+        assertEquals(practitionerRole1.getIdentifier(), practitionerRoles.get(0).getIdentifier());
+    }
+
+    @Test
+    public void testSafeRemoveWithEmptyParamShouldDoesNotAffectExistingRecord() {
+        PractitionerRole practitionerRole1 = initTestPractitionerRole1();
+        practitionerRoleRepository.add(practitionerRole1);
+
+        List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAll();
+        assertNotNull(practitionerRoles);
+        assertEquals(1,practitionerRoles.size());
+
+        practitionerRoleRepository.safeRemove(null);
+
+        practitionerRoles = practitionerRoleRepository.getAll();
+        assertNotNull(practitionerRoles);
+        assertEquals(1, practitionerRoles.size());
+        assertEquals(practitionerRole1.getIdentifier(), practitionerRoles.get(0).getIdentifier());
+    }
+
+    @Test
+    public void testSafeRemoveWithNonExistingRecordDoesNotAffectExistingRecord() {
+        PractitionerRole practitionerRole1 = initTestPractitionerRole1();
+        practitionerRoleRepository.add(practitionerRole1);
+
+        List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAll();
+        assertNotNull(practitionerRoles);
+        assertEquals(1,practitionerRoles.size());
+
+        PractitionerRole practitionerRole2 = initTestPractitionerRole2();
         practitionerRoleRepository.safeRemove(practitionerRole2);
 
         practitionerRoles = practitionerRoleRepository.getAll();
