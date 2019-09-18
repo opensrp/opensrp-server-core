@@ -149,9 +149,9 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
 
         Practitioner updatedPractitioner = practitionerRepository.get(practitioner1.getIdentifier());
         assertNotNull(addedPractitioner);
-        assertEquals("practitoner-1-identifier", addedPractitioner.getIdentifier());
-        assertEquals(true, addedPractitioner.getActive());
-        assertEquals("Practitioner", addedPractitioner.getName());
+        assertEquals("practitoner-1-identifier", updatedPractitioner.getIdentifier());
+        assertEquals(true, updatedPractitioner.getActive());
+        assertEquals("Practitioner", updatedPractitioner.getName());
     }
 
     @Test
