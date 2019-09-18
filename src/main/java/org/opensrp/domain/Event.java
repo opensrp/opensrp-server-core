@@ -84,6 +84,9 @@ public class Event extends BaseDataObject {
 	
 	@JsonProperty
 	private String team;
+
+	@JsonProperty
+	private String childLocationId;
 	
 	public Event() {
 		this.version = System.currentTimeMillis();
@@ -109,13 +112,23 @@ public class Event extends BaseDataObject {
 	}
 	
 	public Event(String baseEntityId, String eventType, DateTime eventDate, String entityType, String providerId,
-	    String locationId, String formSubmissionId, String teamId, String team, Integer clientApplicationVersion,
-	    Integer clientDatabaseVersion) {
+	    String locationId, String formSubmissionId, String teamId, String team, String childLocationId,
+				 Integer clientApplicationVersion, Integer clientDatabaseVersion) {
+
 		this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team);
 		setClientApplicationVersion(clientApplicationVersion);
 		setClientDatabaseVersion(clientDatabaseVersion);
+		setChildLocationId(childLocationId);
 	}
-	
+
+	public String getChildLocationId() {
+		return childLocationId;
+	}
+
+	public void setChildLocationId(String childLocationId) {
+		this.childLocationId = childLocationId;
+	}
+
 	public List<Obs> getObs() {
 		if (obs == null) {
 			obs = new ArrayList<>();
@@ -355,7 +368,12 @@ public class Event extends BaseDataObject {
 		this.entityType = entityType;
 		return this;
 	}
-	
+
+	public Event withChildLocationId(String childLocationId) {
+		setChildLocationId(childLocationId);
+		return this;
+	}
+
 	/**
 	 * WARNING: Overrides all existing obs
 	 *
