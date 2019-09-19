@@ -1,5 +1,13 @@
 package org.opensrp.repository.postgres;
 
+import static org.opensrp.util.Utils.isEmptyList;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.Jurisdiction;
@@ -12,14 +20,6 @@ import org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.opensrp.util.Utils.isEmptyList;
 
 /**
  * Created by Vincent Karuri on 02/05/2019
@@ -144,6 +144,18 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         return convert(plans);
     }
 
+	@Override
+	public Long retrievePrimaryKey(String identifier) {
+		if (StringUtils.isBlank(identifier)) {
+			return null;
+		}
+		PlanExample example = new PlanExample();
+		example.createCriteria().andIdentifierEqualTo(identifier);
+		List<Plan> pgEntity = planMapper.selectByExample(example);
+
+		return pgEntity.isEmpty() ? null : pgEntity.get(0).getId();
+	}
+
     @Override
     protected Long retrievePrimaryKey(PlanDefinition plan) {
         Object uniqueId = getUniqueField(plan);
@@ -151,13 +163,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             return null;
         }
 
-        String identifier = uniqueId.toString();
-        
-        PlanExample example=new PlanExample();
-        example.createCriteria().andIdentifierEqualTo(identifier);
-    	List<Plan> pgEntity = planMapper.selectByExample(example);
-
-        return pgEntity.isEmpty() ? null : pgEntity.get(0).getId();
+        return retrievePrimaryKey(uniqueId.toString());
     }
 
     @Override
