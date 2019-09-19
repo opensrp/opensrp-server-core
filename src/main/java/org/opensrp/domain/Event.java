@@ -124,7 +124,7 @@ public class Event extends BaseDataObject {
 				 Integer clientApplicationVersion, Integer clientDatabaseVersion) {
 
         this(baseEntityId, eventType, eventDate, entityType, providerId, locationId, formSubmissionId, teamId, team, clientApplicationVersion, clientDatabaseVersion);
-        this.childLocationId = childLocationId;
+        setChildLocationId(childLocationId);
     }
 
 	public String getChildLocationId() {
