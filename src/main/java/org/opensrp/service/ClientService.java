@@ -56,6 +56,10 @@ public class ClientService {
 		return allClients.findByRelationShip(relationalId);
 	}
 	
+	public List<Client> findByRelationshipIdAndType(String relationshipType, String entityId) {
+		return allClients.findByRelationshipId(relationshipType, entityId);
+	}
+	
 	public List<Client> findAllByAttribute(String attributeType, String attribute) {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
