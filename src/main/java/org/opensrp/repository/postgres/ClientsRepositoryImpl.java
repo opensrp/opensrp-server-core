@@ -426,7 +426,17 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public HouseholdClient findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
-		// TODO Auto-generated method stub
+		
 		return clientMetadataMapper.selectCountBySearchBean(searchBean, addressSearchBean);
+	}
+	
+	@Override
+	public List<Client> findMembersByRelationshipId(String baseEntityId) {
+		
+		List<org.opensrp.domain.postgres.Client> members = new ArrayList<org.opensrp.domain.postgres.Client>();
+		if (!StringUtils.isBlank(baseEntityId)) {
+			members = clientMetadataMapper.selectMembersByRelationshipId(baseEntityId);
+		}
+		return convert(members);
 	}
 }

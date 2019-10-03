@@ -308,4 +308,8 @@ public class ClientService {
 		}
 		return clientList;
 	}
+	
+	public List<Client> findMembersByRelationshipId(String relationshipId) {
+		return allClients.findMembersByRelationshipId(relationshipId);
+	}
 }

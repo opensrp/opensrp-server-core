@@ -216,4 +216,10 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 		return null;
 	}
 	
+	@Override
+	public List<Client> findMembersByRelationshipId(String baseEntityId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

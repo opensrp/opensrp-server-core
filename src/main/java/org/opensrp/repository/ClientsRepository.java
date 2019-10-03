@@ -57,4 +57,6 @@ public interface ClientsRepository extends BaseRepository<Client> {
 	List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids, String clientType);
 	
 	HouseholdClient findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	List<Client> findMembersByRelationshipId(String relationshipId);
 }

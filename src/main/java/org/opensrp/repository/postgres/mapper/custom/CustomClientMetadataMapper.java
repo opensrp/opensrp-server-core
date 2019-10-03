@@ -30,4 +30,6 @@ public interface CustomClientMetadataMapper extends ClientMetadataMapper {
 	
 	List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(@Param("example") ClientMetadataExample example,
 	                                                                      @Param("clientType") String clientType);
+	
+	List<Client> selectMembersByRelationshipId(@Param("baseEntityId") String baseEntityId);
 }
