@@ -3,7 +3,10 @@ package org.opensrp.domain;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
+import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.openpojo.reflection.impl.PojoClassFactory;
@@ -110,5 +113,12 @@ public class EventTest {
 		assertEquals("val", event.getDetails().get("key"));
 		
 	}
-	
+
+	@Test
+	public void testConstructor() {
+		Event event = new Event("baseEntityId", "eventType", new DateTime(), "entityType", "providerId",
+				"locationId", "formSubmissionId", "teamId", "team", "childLocationId",
+				1, 1);
+		assertEquals(event.getChildLocationId(), "childLocationId");
+	}
 }
