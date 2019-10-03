@@ -1,5 +1,6 @@
 package org.opensrp.search;
 
+import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
@@ -47,6 +48,16 @@ public class ClientSearchBean {
 	private String orderByField; // The field name which used to order result 
 	
 	private String orderByType; // type of order ASC or DESC
+	
+	private List<String> locations;
+	
+	public List<String> getLocations() {
+		return locations;
+	}
+	
+	public void setLocations(List<String> locations) {
+		this.locations = locations;
+	}
 	
 	public String getOrderByField() {
 		return orderByField;

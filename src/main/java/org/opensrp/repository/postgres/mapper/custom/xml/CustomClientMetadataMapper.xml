@@ -61,6 +61,18 @@
 		</where>
 	</sql>
 	
+    <sql id="LcoationId_Where_Clause">	
+        <if test="clientBean.locations != null">
+            INNER JOIN			
+            <foreach close=")" collection="clientBean.locations" item="listItem" open="( VALUES " separator=",">
+                (#{listItem})
+            </foreach>
+            vals(v)
+            ON (em.location_id = v)
+		</if>
+		
+	
+    </sql>
 	
 	<select id="selectMany"
 		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
@@ -211,6 +223,7 @@
 		<if test="addressBean!=null and addressBean.hasFilter">
 			join jsonb_array_elements(json->'addresses') as address on true	
 		</if>
+		<include refid="LcoationId_Where_Clause" />
 		<where>
 			<trim prefixOverrides="and">
 			 	cm.date_deleted is null
