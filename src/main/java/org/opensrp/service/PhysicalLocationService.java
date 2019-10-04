@@ -165,6 +165,20 @@ public class PhysicalLocationService {
 	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry,	List<String> ids) {
 		return locationRepository.findLocationsByIds(returnGeometry, ids);
 	}
+	
+
+	/**
+	 * This methods searches for locations using a list of provided location ids.It
+	 * returns location whose is in the list or whose parent is in list It returns
+	 * the Geometry optionally if @param returnGeometry is set to true.
+	 * 
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param ids            list of location ids
+	 * @return jurisdictions whose ids match the provided params
+	 */
+	public List<PhysicalLocation> findLocationsByIdsOrParentIds(boolean returnGeometry,	List<String> ids) {
+		return locationRepository.findLocationsByIdsOrParentIds(returnGeometry, ids);
+	}
 
 	/**
 	 * This methods searches for a location and it's children using the provided location id
