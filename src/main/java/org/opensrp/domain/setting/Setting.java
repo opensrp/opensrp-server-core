@@ -3,6 +3,7 @@ package org.opensrp.domain.setting;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
+import org.json.JSONArray;
 
 @JsonSubTypes({ @Type(value = SettingConfiguration.class, name = "Setting") })
 public class Setting {
@@ -12,6 +13,9 @@ public class Setting {
 	
 	@JsonProperty
 	private String value;
+
+	@JsonProperty
+	private JSONArray values;
 	
 	@JsonProperty
 	private String label;
@@ -34,7 +38,7 @@ public class Setting {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
 	public String getLabel() {
 		return label;
 	}
@@ -46,9 +50,18 @@ public class Setting {
 	public String getDescription() {
 		return description;
 	}
-	
+
+	public JSONArray getValues() {
+		return values;
+	}
+
+	public void setValues(JSONArray values) {
+		this.values = values;
+	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
+
 }

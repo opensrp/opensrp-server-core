@@ -1,10 +1,12 @@
 package org.opensrp.service;
 
-import java.util.List;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.ibm.icu.util.Calendar;
 import org.joda.time.DateTime;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
+import org.opensrp.repository.postgres.handler.SettingTypeHandler;
 import org.opensrp.search.SettingSearchBean;
 import org.opensrp.util.DateTimeTypeConverter;
 import org.slf4j.Logger;
@@ -12,10 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.ibm.icu.util.Calendar;
+import java.io.IOException;
+import java.util.List;
 
 @Service
 public class SettingService {
@@ -59,10 +59,14 @@ public class SettingService {
 	}
 	
 	public synchronized String saveSetting(String jsonSettingConfiguration) {
-		
-		SettingConfiguration settingConfigurations = gson.fromJson(jsonSettingConfiguration,
-		    new TypeToken<SettingConfiguration>() {}.getType());
-		
+		SettingTypeHandler settingTypeHandler = new SettingTypeHandler();
+		SettingConfiguration settingConfigurations = null;
+		try {
+			settingConfigurations = settingTypeHandler.mapper.readValue(jsonSettingConfiguration, SettingConfiguration.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		
 		if (settingConfigurations.getId() != null && settingRepository.get(settingConfigurations.getId()) != null) {
