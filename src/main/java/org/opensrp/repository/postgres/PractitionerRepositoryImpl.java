@@ -81,6 +81,10 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
             return; // practitioner already added
         }
 
+        if (getPractitionerByUserId(practitioner.getUserId()) != null) {
+            return; // practitioner with this user id already added
+        }
+
         org.opensrp.domain.postgres.Practitioner pgPractitioner = convert(practitioner);
 
         practitionerMapper.insertSelective(pgPractitioner);
