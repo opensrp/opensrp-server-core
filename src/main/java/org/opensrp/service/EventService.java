@@ -324,4 +324,8 @@ public class EventService {
 	public List<Event> findByProviderAndEntityType(String provider) {
 		return allEvents.findByProvider(provider);
 	}
+
+	public List<String> findAllidsByEventType(String eventType) {
+		return allEvents.findIdsByEventType(eventType);
+	}
 }

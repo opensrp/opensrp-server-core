@@ -155,10 +155,10 @@
 		<if test="example.distinct">
 			distinct
 		</if>
-		base_entity_id
+		document_id
 		from core.event_metadata em
 		<if test="_parameter != null">
-			<include refid="Event_Example_Where_Clause" />
+			<include refid="Rowbounds_Example_Where_Clause" />
 		</if>
 		<if test="example.orderByClause != null">
 			order by em.${example.orderByClause}

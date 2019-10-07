@@ -22,5 +22,5 @@ public interface CustomEventMetadataMapper extends EventMetadataMapper {
 	List<Event> selectNotInOpenMRSByServerVersionAndType(@Param("eventType") String type, @Param("from") long serverVersion,
 	        @Param("to") long calendar, @Param("limit") int limit);
 
-	List<String> selectManyIds(EventMetadataExample eventMetadataExample);
+	List<String> selectManyIds(@Param("example") EventMetadataExample example);
 }
