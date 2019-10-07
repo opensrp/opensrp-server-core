@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.joda.time.DateTime;
-import org.opensrp.domain.postgres.Manifest;
+import org.opensrp.domain.Manifest;
 import org.opensrp.util.DateTimeTypeConverter;
 import org.postgresql.util.PGobject;
 

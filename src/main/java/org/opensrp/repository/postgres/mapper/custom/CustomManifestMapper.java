@@ -9,8 +9,10 @@ import java.util.List;
 
 public interface CustomManifestMapper extends ManifestMapper {
 
-    Manifest selectByIdentifier(String identifier);
+    Manifest selectByIdentifier(Long identifier);
+
+    int insertSelectiveAndSetId(Manifest task);
 
     List<Manifest> selectMany(@Param("example") ManifestExample manifestExample,
-                          @Param("offset") int offset, @Param("limit") int limit);
+                              @Param("offset") int offset, @Param("limit") int limit);
 }

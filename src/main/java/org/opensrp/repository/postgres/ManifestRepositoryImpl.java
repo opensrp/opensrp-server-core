@@ -24,7 +24,8 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
             return null;
         }
 
-        org.opensrp.domain.postgres.Manifest pgManifest = manifestMapper.selectByIdentifier(id);
+        Long myID = Long.parseLong(id);
+        org.opensrp.domain.postgres.Manifest pgManifest = manifestMapper.selectByIdentifier(myID);
         if (pgManifest == null) {
             return null;
         }
@@ -47,7 +48,7 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
             return;
         }
 
-        manifestMapper.insertSelective(pgManifest);
+        manifestMapper.insertSelectiveAndSetId(pgManifest);
 
     }
 
@@ -73,9 +74,9 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
 
     @Override
     public List<Manifest> getAll() {
-        List<org.opensrp.domain.postgres.Manifest> tasks = manifestMapper.selectMany(new ManifestExample(), 0,
+        List<org.opensrp.domain.postgres.Manifest> manifests = manifestMapper.selectMany(new ManifestExample(), 0,
                 DEFAULT_FETCH_SIZE);
-        return convert(tasks);
+        return convert(manifests);
     }
 
     @Override
@@ -100,9 +101,13 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
             return null;
         }
 
-        String identifier = uniqueId.toString();
+        Long identifier = Long.parseLong(uniqueId.toString());
 
-        return StringUtils.isNotBlank(identifier) ? Long.parseLong(identifier) : null;
+        org.opensrp.domain.postgres.Manifest pgManifest = manifestMapper.selectByIdentifier(identifier);
+        if (pgManifest == null) {
+            return null;
+        }
+        return pgManifest.getId();
     }
 
     @Override
@@ -110,7 +115,7 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         if (manifest == null) {
             return null;
         }
-        return manifest.getId();
+        return manifest.getIdentifier();
     }
 
     private Manifest convert(org.opensrp.domain.postgres.Manifest pgManifest) {
@@ -128,23 +133,30 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         org.opensrp.domain.postgres.Manifest pgManifest = new org.opensrp.domain.postgres.Manifest();
         pgManifest.setId(primaryKey);
         pgManifest.setJson(manifest);
+        pgManifest.setAppId(manifest.getAppId());
+        pgManifest.setAppVersion(manifest.getAppVersion());
+
+        if (manifest.getCreatedAt() != null)
+            pgManifest.setCreatedAt(manifest.getCreatedAt().getMillis());
+        if (manifest.getUpdatedAt() != null)
+            pgManifest.setUpdatedAt(manifest.getUpdatedAt().getMillis());
 
         return pgManifest;
     }
 
-    private List<Manifest> convert(List<org.opensrp.domain.postgres.Manifest> tasks) {
-        if (tasks == null || tasks.isEmpty()) {
+    private List<Manifest> convert(List<org.opensrp.domain.postgres.Manifest> manifests) {
+        if (manifests == null || manifests.isEmpty()) {
             return new ArrayList<>();
         }
 
-        List<Manifest> convertedTasks = new ArrayList<>();
-        for (org.opensrp.domain.postgres.Manifest manifest : tasks) {
-            Manifest convertedTask = convert(manifest);
-            if (convertedTask != null) {
-                convertedTasks.add(convertedTask);
+        List<Manifest> convertedManifests = new ArrayList<>();
+        for (org.opensrp.domain.postgres.Manifest manifest : manifests) {
+            Manifest convertedManifest = convert(manifest);
+            if (convertedManifest != null) {
+                convertedManifests.add(convertedManifest);
             }
         }
 
-        return convertedTasks;
+        return convertedManifests;
     }
 }

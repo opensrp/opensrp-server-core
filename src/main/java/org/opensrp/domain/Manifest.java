@@ -4,22 +4,24 @@ import org.joda.time.DateTime;
 
 public class Manifest {
 
-    private String id;
+    private String identifier;
 
     private String json;
 
-    private String app_version;
+    private String appId;
+
+    private String appVersion;
 
     private DateTime createdAt;
 
     private DateTime updatedAt;
 
-    public String getId() {
-        return id;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getJson() {
@@ -30,12 +32,20 @@ public class Manifest {
         this.json = json;
     }
 
-    public String getApp_version() {
-        return app_version;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setApp_version(String app_version) {
-        this.app_version = app_version;
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public void setAppVersion(String appVersion) {
+        this.appVersion = appVersion;
     }
 
     public DateTime getCreatedAt() {

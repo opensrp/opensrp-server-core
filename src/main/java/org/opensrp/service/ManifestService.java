@@ -30,10 +30,10 @@ public class ManifestService {
     }
 
     public void addOrUpdateManifest(Manifest manifest) {
-        if (StringUtils.isBlank(manifest.getId()))
+        if (StringUtils.isBlank(manifest.getIdentifier()))
             throw new IllegalArgumentException("Id not specified");
         manifest.setUpdatedAt(new DateTime());
-        if (manifestRepository.get(manifest.getId()) != null) {
+        if (manifestRepository.get(manifest.getIdentifier()) != null) {
             manifestRepository.update(manifest);
         } else {
             manifest.setCreatedAt(new DateTime());
@@ -42,7 +42,7 @@ public class ManifestService {
     }
 
     public Manifest addManifest(Manifest manifest) {
-        if (StringUtils.isBlank(manifest.getId()))
+        if (StringUtils.isBlank(manifest.getIdentifier()))
             throw new IllegalArgumentException("Id not specified");
         manifest.setCreatedAt(new DateTime());
         manifest.setUpdatedAt(new DateTime());
@@ -52,7 +52,7 @@ public class ManifestService {
     }
 
     public Manifest updateManifest(Manifest manifest) {
-        if (StringUtils.isBlank(manifest.getId()))
+        if (StringUtils.isBlank(manifest.getIdentifier()))
             throw new IllegalArgumentException("Id not specified");
         manifest.setUpdatedAt(new DateTime());
         manifestRepository.update(manifest);
@@ -72,7 +72,7 @@ public class ManifestService {
                 addOrUpdateManifest(manifest);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
-                manifestWithErrors.add(manifest.getId());
+                manifestWithErrors.add(manifest.getIdentifier());
             }
         }
         return manifestWithErrors;
