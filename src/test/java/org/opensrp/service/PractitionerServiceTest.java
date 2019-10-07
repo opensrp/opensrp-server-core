@@ -3,15 +3,18 @@ package org.opensrp.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opensrp.domain.Organization;
 import org.opensrp.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -28,6 +31,8 @@ public class PractitionerServiceTest {
 
     private PractitionerRoleService practitionerRoleService;
 
+    private OrganizationService organizationService;
+
     @Before
     public void setUp() {
         practitionerRepository = mock(PractitionerRepository.class);
@@ -35,6 +40,8 @@ public class PractitionerServiceTest {
         practitionerService.setPractitionerRepository(practitionerRepository);
         practitionerRoleService = mock(PractitionerRoleService.class);
         practitionerService.setPractitionerRoleService(practitionerRoleService);
+        organizationService = mock(OrganizationService.class);
+        practitionerService.setOrganizationService(organizationService);
     }
 
     @Test
@@ -109,6 +116,26 @@ public class PractitionerServiceTest {
         practitionerService.getOrganizationsByUserId("user-id");
         verify(practitionerRepository).getPractitionerByUserId(eq("user-id"));
         verify(practitionerRoleService).getPgRolesForPractitioner(eq(practitioner.getIdentifier()));
+    }
+
+    @Test
+    public void testGetPractitionersByOrgIdentifier() {
+
+        Practitioner practitioner = initTestPractitioner();
+        when(practitionerRepository.getPractitionersByOrgId(anyLong()))
+                .thenReturn(Collections.singletonList(practitioner));
+
+        Organization organization = new Organization();
+        organization.setId(1l);
+        organization.setIdentifier("org1");
+        when(organizationService.getOrganization("org1")).thenReturn(organization);
+
+        practitionerService.getPractitionersByOrgIdentifier("org1");
+
+        verify(organizationService).validateIdentifier(anyString());
+        verify(organizationService).getOrganization(anyString());
+        verify(practitionerRepository).getPractitionersByOrgId(anyLong());
+
     }
 
     private Practitioner initTestPractitioner(){

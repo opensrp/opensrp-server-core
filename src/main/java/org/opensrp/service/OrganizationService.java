@@ -60,7 +60,7 @@ public class OrganizationService {
 		validateIdentifier(organization.getIdentifier());
 	}
 
-	private void validateIdentifier(String identifier) {
+	public void validateIdentifier(String identifier) {
 		if (StringUtils.isBlank(identifier))
 			throw new IllegalArgumentException("Organization Identifier not specified");
 	}
