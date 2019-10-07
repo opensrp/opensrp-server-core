@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.opensrp.domain.Organization;
 import org.opensrp.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PractitionerRepository;
@@ -18,6 +19,8 @@ public class PractitionerService {
 
 	private PractitionerRoleService practitionerRoleService;
 
+	private OrganizationService organizationService;
+
 	@Autowired
 	public void setPractitionerRepository(PractitionerRepository practitionerRepository) {
 		this.practitionerRepository = practitionerRepository;
@@ -29,6 +32,11 @@ public class PractitionerService {
 	@Autowired
 	public void setPractitionerRoleService(PractitionerRoleService practitionerRoleService) {
 		this.practitionerRoleService = practitionerRoleService;
+	}
+
+	@Autowired
+	public void setOrganizationService(OrganizationService organizationService) {
+		this.organizationService = organizationService;
 	}
 
 	public PractitionerRepository getPractitionerRepository() {
@@ -74,5 +82,12 @@ public class PractitionerService {
 		}
 		return new ImmutablePair<>(practioner, organizationIds);
 
+	}
+
+	public List<Practitioner> getPractitionersByOrgIdentifier(String organizationIdentifier) {
+		organizationService.validateIdentifier(organizationIdentifier);
+		Organization organization = organizationService.getOrganization(organizationIdentifier);
+
+		return getPractitionerRepository().getPractitionersByOrgId(organization.getId());
 	}
 }

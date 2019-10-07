@@ -76,4 +76,13 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
      * @return the numerical primary key of a jurisdiction
      */
     public Long retrievePrimaryKey(String identifier, boolean isJurisdiction);
+
+    /**
+	 * This methods searches for locations using a list of provided location ids.It returns location whose is in the list or whose parent is in list
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param ids list of location ids
+	 * @return jurisdictions whose ids match the provided params
+	 */
+	List<PhysicalLocation> findLocationsByIdsOrParentIds(boolean returnGeometry, List<String> ids);
 }

@@ -8,11 +8,27 @@ import java.sql.SQLException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
+import org.codehaus.jackson.Version;
+import org.codehaus.jackson.map.module.SimpleModule;
+import org.json.JSONArray;
 import org.opensrp.domain.setting.SettingConfiguration;
+import org.opensrp.util.JsonArrayDeserializer;
+import org.opensrp.util.JsonArraySerializer;
 import org.postgresql.util.PGobject;
 
 public class SettingTypeHandler extends BaseTypeHandler implements TypeHandler<SettingConfiguration> {
-	
+
+	public SettingTypeHandler() {
+		super();
+		SimpleModule jsonArrayDeserializerModule = new SimpleModule("JsonArrayDeserializerModule", new Version(0, 0, 0, null));
+		jsonArrayDeserializerModule.addDeserializer(JSONArray.class, new JsonArrayDeserializer());
+		mapper.registerModule(jsonArrayDeserializerModule);
+
+		SimpleModule jsonArraySerializerModule = new SimpleModule("JsonArraySerializerModule", new Version(0, 0, 0, null));
+		jsonArraySerializerModule.addSerializer(JSONArray.class, new JsonArraySerializer());
+		mapper.registerModule(jsonArraySerializerModule);
+	}
+
 	@Override
 	public void setParameter(PreparedStatement ps, int i, SettingConfiguration parameter, JdbcType jdbcType) throws SQLException {
 		try {
@@ -70,4 +86,5 @@ public class SettingTypeHandler extends BaseTypeHandler implements TypeHandler<S
 			throw new SQLException(e);
 		}
 	}
+
 }
