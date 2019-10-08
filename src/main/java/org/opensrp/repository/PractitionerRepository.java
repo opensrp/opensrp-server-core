@@ -2,6 +2,8 @@ package org.opensrp.repository;
 
 import org.opensrp.domain.Practitioner;
 
+import java.util.List;
+
 public interface PractitionerRepository extends BaseRepository<Practitioner> {
 
     org.opensrp.domain.postgres.Practitioner getPractitioner(String id);
@@ -13,4 +15,6 @@ public interface PractitionerRepository extends BaseRepository<Practitioner> {
 	Practitioner getPractitionerByUserId(String userId);
 
 	Practitioner getByPrimaryKey(Long id);
+
+	List<Practitioner> getPractitionersByOrgId(Long orgId);
 }

@@ -42,6 +42,18 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
     }
 
     @Override
+    public List<Practitioner> getPractitionersByOrgId(Long orgId) {
+        if (orgId == null) {
+            return new ArrayList<>();
+        }
+        PractitionerExample practitionerExample = new PractitionerExample();
+        practitionerExample.createCriteria().andDateDeletedIsNull();
+        List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectManyByOrgId(practitionerExample,
+                orgId,0, DEFAULT_FETCH_SIZE);
+        return convert(pgPractitionerList);
+    }
+
+    @Override
     public org.opensrp.domain.postgres.Practitioner getPractitioner(String id) {
         if (StringUtils.isBlank(id)) {
             return null;
@@ -67,6 +79,10 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 
         if (retrievePrimaryKey(practitioner) != null) {
             return; // practitioner already added
+        }
+
+        if (getPractitionerByUserId(practitioner.getUserId()) != null) {
+            return; // practitioner with this user id already added
         }
 
         org.opensrp.domain.postgres.Practitioner pgPractitioner = convert(practitioner);
