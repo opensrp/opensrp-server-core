@@ -11,4 +11,10 @@ public interface PractitionerRoleRepository extends BaseRepository<PractitionerR
     List<org.opensrp.domain.postgres.PractitionerRole>  getPgRolesForPractitioner(String practitionerIdentifier);
 
     public org.opensrp.domain.postgres.PractitionerRole getPractitionerRole(String id);
+
+    public List<org.opensrp.domain.postgres.PractitionerRole> getPractitionerRole(Long organizationId, Long practitionerId);
+
+    void safeRemove(String identifier);
+
+    void safeRemove(Long organizationId, Long practitionerId);
 }

@@ -54,6 +54,20 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
     }
 
     @Override
+    public List<org.opensrp.domain.postgres.PractitionerRole> getPractitionerRole(Long organizationId, Long practitionerId) {
+        if (organizationId == null || practitionerId == null) {
+            return null;
+        }
+
+        PractitionerRoleExample practitionerRoleExample = new PractitionerRoleExample();
+        practitionerRoleExample.createCriteria().andOrganizationIdEqualTo(organizationId).andPractitionerIdEqualTo(practitionerId);
+
+        List<org.opensrp.domain.postgres.PractitionerRole> practitionerRoleList = practitionerRoleMapper.selectByExample(practitionerRoleExample);
+
+        return isEmptyList(practitionerRoleList) ? null : practitionerRoleList;
+    }
+
+    @Override
     public void add(PractitionerRole practitionerRole) {
         if (practitionerRole == null) {
             return;
@@ -113,6 +127,34 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         pgPractitionerRole.setId(id);
 
         practitionerRoleMapper.deleteByPrimaryKey(pgPractitionerRole.getId());
+    }
+
+    @Override
+    public void safeRemove(String identifier) {
+
+        org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole = getPractitionerRole(identifier);
+
+        if (pgPractitionerRole == null) {
+            return;
+        }
+
+        practitionerRoleMapper.deleteByPrimaryKey(pgPractitionerRole.getId());
+
+    }
+
+    @Override
+    public void safeRemove(Long organizationId, Long practitionerId) {
+
+        List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoles = getPractitionerRole(organizationId, practitionerId);
+
+        if (pgPractitionerRoles == null || pgPractitionerRoles.isEmpty()) {
+            return;
+        }
+
+        for (org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole: pgPractitionerRoles ) {
+            practitionerRoleMapper.deleteByPrimaryKey(pgPractitionerRole.getId());
+        }
+
     }
 
     @Override
