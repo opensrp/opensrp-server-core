@@ -352,6 +352,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return convert(locations);
 	}
 
+	@Override
+	public List<String> findAllStructureIds() {
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		return structureMetadataMapper.selectManyIds(structureMetadataExample);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

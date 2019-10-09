@@ -46,5 +46,7 @@ public interface EventsRepository extends BaseRepository<Event> {
 	List<Event> findEventByEventTypeBetweenTwoDates(String eventType);
 	
 	List<Event> findByProvider(String provider);
+
+	List<String> findIdsByEventType(String eventType);
 	
 }

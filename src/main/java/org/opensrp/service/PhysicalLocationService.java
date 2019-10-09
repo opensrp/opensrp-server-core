@@ -192,4 +192,12 @@ public class PhysicalLocationService {
 		return locationRepository.findLocationByIdWithChildren(returnGeometry, id, pageSize);
 	}
 
+	/**
+	 * This method searches for all structure ids
+	 * @return a list of strcuture ids
+	 */
+	public List<String> findAllStructureIds() {
+		return locationRepository.findAllStructureIds();
+	}
+
 }

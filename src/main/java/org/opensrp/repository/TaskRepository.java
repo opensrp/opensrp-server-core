@@ -10,4 +10,10 @@ public interface TaskRepository extends BaseRepository<Task> {
 
 	List<Task> findByEmptyServerVersion();
 
+	/**
+	 * This method fetches all task Ids
+	 * @return a list of task ids
+	 */
+	List<String> findAllIds();
+
 }
