@@ -48,7 +48,7 @@
 	        </if>
 	        <if test="operationalAreaIds != null">
          			and p.id in ( select plan_id from core.plan_metadata where 
-             			pm.operational_area_id IN <foreach item="operationalAreaId" collection="operationalAreaIds" open="(" separator="," close=")">#{operationalAreaId}</foreach>
+             			operational_area_id IN <foreach item="operationalAreaId" collection="operationalAreaIds" open="(" separator="," close=")">#{operationalAreaId}</foreach>
 	            	)	
 	        </if>
         </where>
