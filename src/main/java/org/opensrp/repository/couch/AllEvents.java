@@ -220,7 +220,12 @@ public class AllEvents extends MotechBaseRepository<Event> implements EventsRepo
 	public List<Event> findByProvider(String provider) {
 		return db.queryView(createQuery("events_by_provider_and_entity_type").key(provider).includeDocs(true), Event.class);
 	}
-	
+
+	@Override
+	public List<String> findIdsByEventType(String eventType) {
+		return null; //TODO Should this be implemented????
+	}
+
 	public synchronized Event addEvent(CouchDbConnector targetDb, Event event) {
 		//		Event e = find(targetDb,event);
 		//		if(e != null){
