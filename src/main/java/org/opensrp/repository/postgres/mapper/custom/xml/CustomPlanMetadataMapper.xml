@@ -9,7 +9,6 @@
 
 
     <sql id="Example_Where_Clause">
-        <where>
             <foreach collection="example.oredCriteria" item="criteria" separator="or">
                 <if test="criteria.valid">
                     <trim prefix="(" prefixOverrides="and" suffix=")">
@@ -36,7 +35,6 @@
                     </trim>
                 </if>
             </foreach>
-        </where>
     </sql>
 
     <select id="selectMany"
@@ -44,14 +42,18 @@
         select
         <include refid="Base_Column_List" />
         from core.plan p
-        <if test="operationalAreaIds != null">
-         and p.id in ( select plan_id from core.plan_metadata where 
+        <where>
+	        <if test="_parameter != null">
+	            <include refid="Example_Where_Clause" />
+	        </if>
+	        <if test="operationalAreaIds != null">
+	        	<trim prefixOverrides="and ">
+         			and p.id in ( select plan_id from core.plan_metadata where 
              			pm.operational_area_id IN <foreach item="operationalAreaId" collection="operationalAreaIds" open="(" separator="," close=")">#{operationalAreaId}</foreach>
-            	)
-        </if>
-        <if test="_parameter != null">
-            <include refid="Example_Where_Clause" />
-        </if>
+	            	)	
+	            </trim>	
+	        </if>
+        </where>
         <if test="example.orderByClause != null">
             order by pm.${example.orderByClause}
         </if>
