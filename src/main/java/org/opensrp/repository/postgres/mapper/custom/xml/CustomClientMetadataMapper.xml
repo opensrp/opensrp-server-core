@@ -150,16 +150,19 @@
 					cm.middle_name ilike #{name} or
 					cm.last_name ilike #{name} or
 					cm.unique_id ilike #{name} or
-					c.json -> 'attributes' ->> 'phoneNumber' ilike #{name}	or
-					em.provider_id ilike #{name}				
+					c.json -> 'attributes' ->> 'phoneNumber' ilike #{name}
+					<if test="clientBean.clientType!=null">
+					or
+					em.provider_id ilike #{name}
+					</if>				
 				)
 		</if>		
 		
-		<if test="clientBean.clientType != null">					
+		<if test="clientBean.clientType!=null">					
 			and em.entity_type = #{clientBean.clientType,jdbcType=VARCHAR}
 		</if>
 		
-		<if test="clientBean.providerId != null">					
+		<if test="clientBean.clientType != null">					
 			and em.provider_id = #{clientBean.providerId,jdbcType=VARCHAR}
 		</if>
 		<if test="clientBean.gender != null">
@@ -217,8 +220,10 @@
 		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
-		<include refid="Base_Table_List" />		
-		<include refid="Join_With_Event_Meta_Data_Table" />		
+		<include refid="Base_Table_List" />	
+		<if test="clientBean.clientType!=null">	
+			<include refid="Join_With_Event_Meta_Data_Table" />
+		</if>		
 		<if test="addressBean!=null and addressBean.hasFilter">
 			join jsonb_array_elements(json->'addresses') as address on true	
 		</if>
@@ -233,7 +238,11 @@
 				
 			</trim>
 		</where>
-		 order by ${clientBean.orderByField}  ${clientBean.orderByType}  LIMIT #{limit} OFFSET #{offset}
+		<if test="clientBean.orderByField!=null and addressBean.orderByType!=null">
+		 order by ${clientBean.orderByField}  ${clientBean.orderByType}  
+		</if>
+		 
+		LIMIT #{limit} OFFSET #{offset}
 	</select>
 	
 	
