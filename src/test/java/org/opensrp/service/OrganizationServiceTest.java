@@ -255,4 +255,29 @@ public class OrganizationServiceTest {
 		verify(organizationRepository).findAssignedLocations(organizationIds);
 	}
 
+	@Test
+	public void testFindAssignedLocationsAndPlansByPlanIdentifier() {
+		AssignedLocations assigment = new AssignedLocations("loc1", "plan1");
+		List<AssignedLocations> expected = Collections.singletonList(assigment);
+		when(planRepository.retrievePrimaryKey(anyString())).thenReturn(1l);
+		when(organizationRepository.findAssignedLocationsByPlanId(1l)).thenReturn(expected);
+		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlansByPlanIdentifier(identifier);
+		assertEquals(expected, assigned);
+		verify(organizationRepository).findAssignedLocationsByPlanId(1l);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testFindAssignedLocationsAndPlansByPlanIdentifierWithNullParam() {
+		organizationService.findAssignedLocationsAndPlansByPlanIdentifier(null);
+		verify(organizationRepository, never()).findAssignedLocations(anyLong());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testFindAssignedLocationsAndPlansByPlanIdentifierMissingPlan() {
+		when(planRepository.retrievePrimaryKey(anyString())).thenReturn(null);
+
+		organizationService.findAssignedLocationsAndPlansByPlanIdentifier("plan-id-1");
+		verify(organizationRepository, never()).findAssignedLocations(anyLong());
+	}
+
 }
