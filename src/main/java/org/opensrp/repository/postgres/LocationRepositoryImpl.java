@@ -332,6 +332,25 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 				DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
+	
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<PhysicalLocation> findLocationsByIdsOrParentIds(boolean returnGeometry, List<String> ids) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		if (ids == null || ids.isEmpty()) {
+			return null;
+		}
+
+		locationMetadataExample.createCriteria().andGeojsonIdIn(ids);
+		
+		locationMetadataExample.or(locationMetadataExample.createCriteria().andParentIdIn(ids));
+		List<Location> locations = locationMetadataMapper.selectManyById(locationMetadataExample, returnGeometry, 0,
+				DEFAULT_FETCH_SIZE);
+		return convert(locations);
+	}
 
 	/**
 	 * {@inheritDoc}
