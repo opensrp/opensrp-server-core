@@ -1,6 +1,8 @@
 package org.opensrp.repository.postgres;
 
 import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
+import static org.opensrp.common.AllConstants.Client.DEFAULTORDERBYFIELD;
+import static org.opensrp.common.AllConstants.Client.DEFAULTORDERBYTYPE;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -215,7 +217,25 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 			pageSize = DEFAULT_FETCH_SIZE;
 		}
 		
+		String orderByField = searchBean.getOrderByField();
+		String orderByType = searchBean.getOrderByType();
+		String orderByFieldName = "";
+		String orderByTypeName = "";
+		if (orderByField != null) {
+			orderByFieldName = orderByField;
+		} else {
+			orderByFieldName = DEFAULTORDERBYFIELD;
+		}
+		
+		if (orderByType != null) {
+			orderByTypeName = orderByType;
+		} else {
+			orderByTypeName = DEFAULTORDERBYTYPE;
+		}
+		searchBean.setOrderByField(orderByFieldName);
+		searchBean.setOrderByType(orderByTypeName);
 		int offset = searchBean.getPageNumber() * pageSize;
+		System.out.println("Loction:" + searchBean.getLocations());
 		return convert(clientMetadataMapper.selectBySearchBean(searchBean, addressSearchBean, offset, pageSize));
 	}
 	

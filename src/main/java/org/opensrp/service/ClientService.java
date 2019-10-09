@@ -1,8 +1,5 @@
 package org.opensrp.service;
 
-import static org.opensrp.common.AllConstants.Client.DEFAULTORDERBYFIELD;
-import static org.opensrp.common.AllConstants.Client.DEFAULTORDERBYTYPE;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -72,24 +69,6 @@ public class ClientService {
 	                                   DateTime lastEditFrom, DateTime lastEditTo) {
 		clientSearchBean.setLastEditFrom(lastEditFrom);
 		clientSearchBean.setLastEditTo(lastEditTo);
-		String orderByField = clientSearchBean.getOrderByField();
-		String orderByType = clientSearchBean.getOrderByType();
-		String orderByFieldName = "";
-		String orderByTypeName = "";
-		if (orderByField != null) {
-			orderByFieldName = orderByField;
-		} else {
-			orderByFieldName = DEFAULTORDERBYFIELD;
-		}
-		
-		if (orderByType != null) {
-			orderByTypeName = orderByType;
-		} else {
-			orderByTypeName = DEFAULTORDERBYTYPE;
-		}
-		clientSearchBean.setOrderByField(orderByFieldName);
-		
-		clientSearchBean.setOrderByType(orderByTypeName);
 		
 		return allClients.findByCriteria(clientSearchBean, addressSearchBean);//db.queryView(q.includeDocs(true), Client.class);
 	}
