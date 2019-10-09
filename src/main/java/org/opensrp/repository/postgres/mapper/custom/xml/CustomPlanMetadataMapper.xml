@@ -47,11 +47,9 @@
 	            <include refid="Example_Where_Clause" />
 	        </if>
 	        <if test="operationalAreaIds != null">
-	        	<trim prefixOverrides="and ">
          			and p.id in ( select plan_id from core.plan_metadata where 
              			pm.operational_area_id IN <foreach item="operationalAreaId" collection="operationalAreaIds" open="(" separator="," close=")">#{operationalAreaId}</foreach>
 	            	)	
-	            </trim>	
 	        </if>
         </where>
         <if test="example.orderByClause != null">
