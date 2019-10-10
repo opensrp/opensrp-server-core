@@ -256,8 +256,10 @@ public class ClientService {
 		List<HouseholdClient> householdClients = allClients.selectMemberCountHouseholdHeadProviderByClients("", ids,
 		    clientType);
 		Map<String, HouseholdClient> households = new HashMap<String, HouseholdClient>();
-		for (HouseholdClient householdClient : householdClients) {
-			households.put(householdClient.getRelationalId(), householdClient);
+		if (householdClients != null) {
+			for (HouseholdClient householdClient : householdClients) {
+				households.put(householdClient.getRelationalId(), householdClient);
+			}
 		}
 		return households;
 	}
@@ -273,17 +275,19 @@ public class ClientService {
 		List<Client> clientList = new ArrayList<Client>();
 		
 		for (Client client : clients) {
-			HouseholdClient householdClient = householdClients.get(client.getBaseEntityId());
-			if (householdClient != null) {
-				client.addAttribute("memberCount", householdClient.getMemebrCount());
-				client.addAttribute("HouseholdHead", householdClient.getHouseholdHead());
-				client.addAttribute("ProvierId", householdClient.getProviderId());
-			} else {
-				client.addAttribute("memberCount", 0);
-				client.addAttribute("HouseholdHead", "");
-				client.addAttribute("ProvierId", "");
+			if (householdClients != null) {
+				HouseholdClient householdClient = householdClients.get(client.getBaseEntityId());
+				if (householdClient != null) {
+					client.addAttribute("memberCount", householdClient.getMemebrCount());
+					client.addAttribute("HouseholdHead", householdClient.getHouseholdHead());
+					client.addAttribute("ProvierId", householdClient.getProviderId());
+				} else {
+					client.addAttribute("memberCount", 0);
+					client.addAttribute("HouseholdHead", "");
+					client.addAttribute("ProvierId", "");
+				}
+				clientList.add(client);
 			}
-			clientList.add(client);
 		}
 		return clientList;
 	}
