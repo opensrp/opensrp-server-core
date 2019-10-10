@@ -208,4 +208,19 @@ public class TaskServiceTest {
 		assertEquals("This should be assigned to patrick.", task.getNotes().get(0).getText());
 	}
 
+	@Test
+	public void testFindAllTaskIds() {
+		List<String> expectedTaskIds = new ArrayList<>();
+		expectedTaskIds.add("task1");
+		expectedTaskIds.add("task2");
+
+		when(taskRepository.findAllIds()).thenReturn(expectedTaskIds);
+		List<String> actualTaskIds = taskService.findAllTaskIds();
+
+		verify(taskRepository).findAllIds();
+		assertEquals(2, actualTaskIds.size());
+		assertEquals(expectedTaskIds.get(0).toString(), actualTaskIds.get(0).toString());
+		assertEquals(expectedTaskIds.get(1).toString(), actualTaskIds.get(1).toString());
+	}
+
 }

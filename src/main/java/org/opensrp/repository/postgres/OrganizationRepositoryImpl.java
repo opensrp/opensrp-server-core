@@ -184,6 +184,15 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 
 	@Override
+	public List<AssignedLocations> findAssignedLocationsByPlanId(Long planId) {
+		Date currentDate = new LocalDate().toDate();
+		OrganizationLocationExample example = new OrganizationLocationExample();
+		example.createCriteria().andPlanIdEqualTo(planId).andFromDateLessThanOrEqualTo(currentDate);
+		return organizationLocationMapper.findAssignedlocationsAndPlans(example.getOredCriteria(),
+				example.getOrderByClause(), currentDate);
+	}
+
+	@Override
 	protected Long retrievePrimaryKey(Organization organization) {
 		String identifier = getUniqueField(organization);
 		if (identifier == null) {

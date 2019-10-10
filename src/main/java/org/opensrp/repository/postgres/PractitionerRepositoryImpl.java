@@ -136,6 +136,19 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         pgPractitioner.setDateDeleted(new Date());
         practitionerMapper.updateByPrimaryKey(pgPractitioner);
     }
+
+    @Override
+    public void safeRemove(String identifier) {
+
+        org.opensrp.domain.postgres.Practitioner pgPractitioner = getPractitioner(identifier);
+
+        if (pgPractitioner == null) {
+            return;
+        }
+
+        pgPractitioner.setDateDeleted(new Date());
+        practitionerMapper.updateByPrimaryKey(pgPractitioner);
+    }
     
     @Override
     public Practitioner getPractitionerByUserId(String userId) {

@@ -17,4 +17,6 @@ public interface PractitionerRepository extends BaseRepository<Practitioner> {
 	Practitioner getByPrimaryKey(Long id);
 
 	List<Practitioner> getPractitionersByOrgId(Long orgId);
+
+	void safeRemove(String identifier);
 }

@@ -47,6 +47,10 @@ public class PractitionerService {
 		return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().get(identifier);
 	}
 
+	public org.opensrp.domain.postgres.Practitioner getPgPractitioner(String identifier) {
+		return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().getPractitioner(identifier);
+	}
+
 	public List<Practitioner> getAllPractitioners() {
 		return getPractitionerRepository().getAll();
 	}
@@ -70,6 +74,15 @@ public class PractitionerService {
 		}
 
 		getPractitionerRepository().safeRemove(practitioner);
+
+	}
+
+	public void deletePractitioner(String identifier) {
+		if (StringUtils.isBlank(identifier)) {
+			throw new IllegalArgumentException("Identifier not specified");
+		}
+
+		getPractitionerRepository().safeRemove(identifier);
 
 	}
 

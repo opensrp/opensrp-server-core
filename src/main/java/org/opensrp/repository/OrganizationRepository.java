@@ -48,4 +48,13 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 */
 	Organization getByPrimaryKey(Long id);
 
+	/**
+	 * Gets the plans and jurisdictions using filtered by plan identifier
+	 *
+	 * @param planId the Plan Id
+	 *
+	 * @return list of assigned locations and plans
+	 */
+	List<AssignedLocations> findAssignedLocationsByPlanId(Long planId);
+
 }

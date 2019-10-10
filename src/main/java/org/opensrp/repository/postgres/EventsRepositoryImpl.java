@@ -389,6 +389,17 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	}
 
 	@Override
+	public List<String> findIdsByEventType(String eventType) {
+		EventMetadataExample example = new EventMetadataExample();
+
+		if (!StringUtils.isBlank(eventType)) {
+			example.createCriteria().andEventTypeEqualTo(eventType);
+		}
+
+		return eventMetadataMapper.selectManyIds(example);
+	}
+
+	@Override
 	protected Long retrievePrimaryKey(Event t) {
 		Object uniqueId = getUniqueField(t);
 		if (uniqueId == null) {

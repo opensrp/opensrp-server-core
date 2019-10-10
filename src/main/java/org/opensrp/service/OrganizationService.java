@@ -132,7 +132,7 @@ public class OrganizationService {
 	/**
 	 * Gets the locations and Plans assigned to an organization
 	 * 
-	 * @param organizationId the organization id
+	 * @param identifier the organization identifier
 	 * 
 	 * @return the assigned locations and plans
 	 */
@@ -148,12 +148,32 @@ public class OrganizationService {
 	/**
 	 * Gets the locations and Plans assigned to a list of organizations
 	 * 
-	 * @param organizationId the organization id s
+	 * @param organizationIds the organization ids
 	 * 
 	 * @return the assigned locations and plans
 	 */
 	public List<AssignedLocations> findAssignedLocationsAndPlans(List<Long> organizationIds) {
 		return organizationRepository.findAssignedLocations(organizationIds);
+
+	}
+
+	/**
+	 * Gets the locations and Plans using the Plan Identifier
+	 *
+	 * @param planIdentifier the plan identifier
+	 *
+	 * @return the assigned locations and plans
+	 */
+	public List<AssignedLocations> findAssignedLocationsAndPlansByPlanIdentifier(String planIdentifier) {
+		if (StringUtils.isBlank(planIdentifier))
+			throw new IllegalArgumentException("PlanIdentifier Identifier not specified");
+
+		Long planId = planRepository.retrievePrimaryKey(planIdentifier);
+
+        if (planId == null)
+            throw new IllegalArgumentException("Plan not found");
+
+		return organizationRepository.findAssignedLocationsByPlanId(planId);
 
 	}
 

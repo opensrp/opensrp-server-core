@@ -475,6 +475,22 @@ public class PhysicalLocationServiceTest {
 
 	}
 
+	@Test
+	public void testFindAllStructureIds() {
+		List<String> expectedStructureIds = new ArrayList<>();
+		expectedStructureIds.add("Structure-1");
+		expectedStructureIds.add("Structure-2");
+
+		when(locationRepository.findAllStructureIds()).thenReturn(expectedStructureIds);
+		List<String> actualStructureIds = locationService.findAllStructureIds();
+
+		verify(locationRepository).findAllStructureIds();
+		assertEquals(2, actualStructureIds.size());
+		assertEquals(expectedStructureIds.get(0).toString(), actualStructureIds.get(0).toString());
+		assertEquals(expectedStructureIds.get(1).toString(), actualStructureIds.get(1).toString());
+
+	}
+
 	private PhysicalLocation createLocation() {
 		PhysicalLocation parentLocation = PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.parentJson,
 				PhysicalLocation.class);

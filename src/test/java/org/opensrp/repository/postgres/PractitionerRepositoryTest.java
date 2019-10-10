@@ -235,7 +235,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertNotNull(practitioners);
         assertEquals(1,practitioners.size());
 
-        practitionerRepository.safeRemove(null);
+        practitionerRepository.safeRemove(new Practitioner());
 
         practitioners = practitionerRepository.getAll();
         assertNotNull(practitioners);
