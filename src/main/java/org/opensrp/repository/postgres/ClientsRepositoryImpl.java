@@ -1,8 +1,6 @@
 package org.opensrp.repository.postgres;
 
 import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
-import static org.opensrp.common.AllConstants.Client.DEFAULTORDERBYFIELD;
-import static org.opensrp.common.AllConstants.Client.DEFAULTORDERBYTYPE;
 
 import java.util.ArrayList;
 import java.util.Calendar;

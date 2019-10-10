@@ -39,8 +39,6 @@ import org.opensrp.search.ClientSearchBean;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.mysql.fabric.xmlrpc.base.Array;
-
 //TODO: Write couch-lucene related method test cases e.g: findByCriteria
 public class ClientServiceTest extends BaseIntegrationTest {
 	
