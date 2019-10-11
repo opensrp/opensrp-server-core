@@ -10,6 +10,8 @@ import java.util.Date;
  */
 public class AssignedLocations {
 
+	private String organizationId;
+
 	private String jurisdictionId;
 
 	private String planId;
@@ -24,6 +26,14 @@ public class AssignedLocations {
 	}
 	
 	public AssignedLocations() {//Default constructor, needed by mybatis
+	}
+
+	public String getOrganizationId() {
+		return organizationId;
+	}
+
+	public void setOrganizationId(String organizationId) {
+		this.organizationId = organizationId;
 	}
 
 	public String getJurisdictionId() {

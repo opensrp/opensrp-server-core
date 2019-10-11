@@ -8,10 +8,12 @@
     <result column="geojson_id" jdbcType="VARCHAR" property="jurisdictionId" />
     <result column="from_date" jdbcType="TIMESTAMP" property="fromDate" />
     <result column="to_date" jdbcType="TIMESTAMP" property="toDate" />
+	<result column="org_identifier" jdbcType="VARCHAR" property="organizationId" />
+
   </resultMap>
   
    <sql id="Base_Column_List">
-       p.identifier,l.geojson_id,ol.from_date,ol.to_date
+       p.identifier,l.geojson_id,ol.from_date,ol.to_date, org.identifier as org_identifier
     </sql>
   
 	<select id="findAssignedlocationsAndPlans"
@@ -22,6 +24,7 @@
 		from team.organization_location ol
 		left join core.plan p on p.id=ol.plan_id
 		left join core.location_metadata l on l.location_id=ol.location_id
+		left join team.organization org on org.id=ol.organization_id
 		<include refid="org.opensrp.repository.postgres.mapper.OrganizationLocationMapper.Example_Where_Clause" />
 		and ( ol.to_date is null  OR ol.to_date  <![CDATA[ >= ]]> #{toDate,jdbcType=TIMESTAMP} )	
 	</select>
