@@ -101,6 +101,10 @@ public class PractitionerService {
 		organizationService.validateIdentifier(organizationIdentifier);
 		Organization organization = organizationService.getOrganization(organizationIdentifier);
 
+		if (organization == null) {
+			throw new IllegalArgumentException("Organization does not exist");
+		}
+
 		return getPractitionerRepository().getPractitionersByOrgId(organization.getId());
 	}
 }
