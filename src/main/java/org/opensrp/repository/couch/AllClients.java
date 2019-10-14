@@ -206,19 +206,18 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 	@Override
 	public List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
 	                                                                             String clientType) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	@Override
 	public HouseholdClient findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 	
 	@Override
 	public List<Client> findMembersByRelationshipId(String baseEntityId) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 	
