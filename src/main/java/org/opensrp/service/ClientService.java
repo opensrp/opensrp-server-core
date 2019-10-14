@@ -1,13 +1,17 @@
 package org.opensrp.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.domain.Address;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
@@ -49,6 +53,10 @@ public class ClientService {
 		return allClients.findByRelationShip(relationalId);
 	}
 	
+	public List<Client> findByRelationshipIdAndType(String relationshipType, String entityId) {
+		return allClients.findByRelationshipId(relationshipType, entityId);
+	}
+	
 	public List<Client> findAllByAttribute(String attributeType, String attribute) {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
@@ -58,9 +66,10 @@ public class ClientService {
 	}
 	
 	public List<Client> findByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean,
-	        DateTime lastEditFrom, DateTime lastEditTo) {
+	                                   DateTime lastEditFrom, DateTime lastEditTo) {
 		clientSearchBean.setLastEditFrom(lastEditFrom);
 		clientSearchBean.setLastEditTo(lastEditTo);
+		
 		return allClients.findByCriteria(clientSearchBean, addressSearchBean);//db.queryView(q.includeDocs(true), Client.class);
 	}
 	
@@ -109,8 +118,8 @@ public class ClientService {
 		for (String idt : client.getIdentifiers().keySet()) {
 			List<Client> cl = allClients.findAllByIdentifier(client.getIdentifier(idt));
 			if (cl.size() > 1) {
-				throw new IllegalArgumentException(
-				        "Multiple clients with identifier type " + idt + " and ID " + client.getIdentifier(idt) + " exist.");
+				throw new IllegalArgumentException("Multiple clients with identifier type " + idt + " and ID "
+				        + client.getIdentifier(idt) + " exist.");
 			} else if (cl.size() != 0) {
 				return cl.get(0);
 			}
@@ -158,8 +167,8 @@ public class ClientService {
 				throw new IllegalArgumentException("No client found with given list of identifiers. Consider adding new!");
 			}
 			
-			original = (Client) Utils.getMergedJSON(original, updatedClient, Arrays.asList(Client.class.getDeclaredFields()),
-			    Client.class);
+			original = (Client) Utils.getMergedJSON(original, updatedClient,
+			    Arrays.asList(Client.class.getDeclaredFields()), Client.class);
 			
 			for (Address a : updatedClient.getAddresses()) {
 				if (original.getAddress(a.getAddressType()) == null) {
@@ -241,5 +250,49 @@ public class ClientService {
 			allClients.add(client);
 		}
 		return client;
+	}
+	
+	public Map<String, HouseholdClient> getMemberCountHouseholdHeadProviderByClients(List<String> ids, String clientType) {
+		List<HouseholdClient> householdClients = allClients.selectMemberCountHouseholdHeadProviderByClients("", ids,
+		    clientType);
+		Map<String, HouseholdClient> households = new HashMap<String, HouseholdClient>();
+		if (householdClients != null) {
+			for (HouseholdClient householdClient : householdClients) {
+				households.put(householdClient.getRelationalId(), householdClient);
+			}
+		}
+		return households;
+	}
+	
+	public HouseholdClient findTotalCountByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
+		return allClients.findTotalCountByCriteria(clientSearchBean, addressSearchBean);
+	}
+	
+	public List<Client> getHouseholdList(List<String> ids, String clientType, AddressSearchBean addressSearchBean,
+	                                     ClientSearchBean searchBean, List<Client> clients) {
+		Map<String, HouseholdClient> householdClients = getMemberCountHouseholdHeadProviderByClients(ids, clientType);
+		
+		List<Client> clientList = new ArrayList<Client>();
+		
+		for (Client client : clients) {
+			if (householdClients != null) {
+				HouseholdClient householdClient = householdClients.get(client.getBaseEntityId());
+				if (householdClient != null) {
+					client.addAttribute("memberCount", householdClient.getMemebrCount());
+					client.addAttribute("HouseholdHead", householdClient.getHouseholdHead());
+					client.addAttribute("ProvierId", householdClient.getProviderId());
+				} else {
+					client.addAttribute("memberCount", 0);
+					client.addAttribute("HouseholdHead", "");
+					client.addAttribute("ProvierId", "");
+				}
+				clientList.add(client);
+			}
+		}
+		return clientList;
+	}
+	
+	public List<Client> findMembersByRelationshipId(String relationshipId) {
+		return allClients.findMembersByRelationshipId(relationshipId);
 	}
 }

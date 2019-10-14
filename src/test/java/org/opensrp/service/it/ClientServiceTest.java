@@ -17,6 +17,7 @@ import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
 import static org.utils.CouchDbAccessUtils.addObjectToRepository;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +32,10 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.couch.AllClients;
+import org.opensrp.search.AddressSearchBean;
+import org.opensrp.search.ClientSearchBean;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -127,9 +131,8 @@ public class ClientServiceTest extends BaseIntegrationTest {
 		addObjectToRepository(asList(expectedClient, expectedClient2, invalidClient), allClients);
 		List<Client> expectedClientList = asList(expectedClient, expectedClient2);
 		
-		List<Client> actualClientList = clientService.findByRelationshipIdAndDateCreated("id",
-		    new DateTime(100L, DateTimeZone.UTC).toLocalDate().toString(),
-		    new DateTime(200L, DateTimeZone.UTC).toLocalDate().toString());
+		List<Client> actualClientList = clientService.findByRelationshipIdAndDateCreated("id", new DateTime(100L,
+		        DateTimeZone.UTC).toLocalDate().toString(), new DateTime(200L, DateTimeZone.UTC).toLocalDate().toString());
 		
 		assertTwoListAreSameIgnoringOrder(expectedClientList, actualClientList);
 	}
@@ -260,7 +263,7 @@ public class ClientServiceTest extends BaseIntegrationTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void shouldThrowIllegalArgumentExceptionIfAClientAlreadyExistWithSameIdentifierWithCouchDbConnector()
-	        throws IOException {
+	    throws IOException {
 		Client expectedClient = getClient();
 		addObjectToRepository(Collections.singletonList(expectedClient), allClients);
 		expectedClient.setBaseEntityId(DIFFERENT_BASE_ENTITY_ID);
@@ -496,4 +499,27 @@ public class ClientServiceTest extends BaseIntegrationTest {
 		assertObjectUpdate(expectedClient, dbClients.get(0));
 	}
 	
+	@Test
+	public void shouldFindMembersByRelationshipId() {
+		List<Client> expectedClient = clientService.findMembersByRelationshipId("0154839f-8766-4eda-b729-89067c7a8c5d");
+		assertNull(expectedClient);
+	}
+	
+	@Test
+	public void shouldGetHouseholdList() {
+		List<String> ids = new ArrayList<String>();
+		ids.add("0154839f-8766-4eda-b729-89067c7a8c5d");
+		List<Client> clients = new ArrayList<Client>();
+		List<Client> expectedClients = clientService.getHouseholdList(ids, "ec_member", new AddressSearchBean(),
+		    new ClientSearchBean(), clients);
+		assertEquals(expectedClients.size(), 0);
+	}
+	
+	@Test
+	public void shouldGetMemberCountHouseholdHeadProviderByClients() {
+		List<String> id = new ArrayList<String>();
+		id.add("28caef27-d1b3-497b-8a55-954f2f0f6e24");
+		Map<String, HouseholdClient> results = clientService.getMemberCountHouseholdHeadProviderByClients(id, "ec_member");
+		assertEquals(results.size(), 0);
+	}
 }
