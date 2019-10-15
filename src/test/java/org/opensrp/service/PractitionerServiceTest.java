@@ -143,7 +143,7 @@ public class PractitionerServiceTest {
         practitioner.setIdentifier("practitoner-1-identifier");
         practitioner.setActive(true);
         practitioner.setName("Practitioner");
-        practitioner.setUserName("Practioner1");
+        practitioner.setUsername("Practioner1");
         practitioner.setUserId("user1");
         return practitioner;
     }
