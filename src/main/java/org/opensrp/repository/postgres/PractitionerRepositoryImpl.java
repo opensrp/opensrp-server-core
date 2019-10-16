@@ -192,8 +192,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         practitioner.setActive(pgPractitioner.getActive());
         practitioner.setName(pgPractitioner.getName());
         practitioner.setUserId(pgPractitioner.getUserId());
-        practitioner.setUserName(pgPractitioner.getUsername());
-        practitioner.setDateDeleted(pgPractitioner.getDateDeleted());
+        practitioner.setUsername(pgPractitioner.getUsername());
 
         return practitioner;
     }
@@ -207,8 +206,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         pgPractitioner.setActive(practitioner.getActive());
         pgPractitioner.setName(practitioner.getName());
         pgPractitioner.setUserId(practitioner.getUserId());
-        pgPractitioner.setUsername(practitioner.getUserName());
-        pgPractitioner.setDateDeleted(practitioner.getDateDeleted());
+        pgPractitioner.setUsername(practitioner.getUsername());
 
         return pgPractitioner;
     }

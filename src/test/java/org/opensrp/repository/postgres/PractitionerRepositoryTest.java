@@ -43,7 +43,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals("practitoner-1-identifier",practitioners.get(0).getIdentifier());
         assertEquals(true,practitioners.get(0).getActive());
         assertEquals("Practitioner",practitioners.get(0).getName());
-        assertEquals("Practioner1",practitioners.get(0).getUserName());
+        assertEquals("Practioner1",practitioners.get(0).getUsername());
         assertEquals("user1",practitioners.get(0).getUserId());
     }
 
@@ -79,7 +79,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals("practitoner-2-identifier", practitioner.getIdentifier());
         assertEquals(false, practitioner.getActive());
         assertEquals("Second Practitioner", practitioner.getName());
-        assertEquals("Practioner2", practitioner.getUserName());
+        assertEquals("Practioner2", practitioner.getUsername());
         assertEquals("user2", practitioner.getUserId());
 
     }
@@ -99,8 +99,9 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         practitionerRepository.add(practitioner1);
 
         Practitioner practitioner2 = initTestPractitioner2();
-        practitioner2.setDateDeleted(new Date());
         practitionerRepository.add(practitioner2);
+
+        practitionerRepository.safeRemove(practitioner2.getIdentifier());
 
         List<Practitioner> practitioners = practitionerRepository.getAll();
         assertNotNull(practitioners);
@@ -108,7 +109,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals("practitoner-1-identifier",practitioners.get(0).getIdentifier());
         assertEquals(true,practitioners.get(0).getActive());
         assertEquals("Practitioner",practitioners.get(0).getName());
-        assertEquals("Practioner1",practitioners.get(0).getUserName());
+        assertEquals("Practioner1",practitioners.get(0).getUsername());
         assertEquals("user1",practitioners.get(0).getUserId());
     }
 
@@ -271,7 +272,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals("practitoner-2-identifier", actualPractitioner.getIdentifier());
         assertEquals(false, actualPractitioner.getActive());
         assertEquals("Second Practitioner", actualPractitioner.getName());
-        assertEquals("Practioner2", actualPractitioner.getUserName());
+        assertEquals("Practioner2", actualPractitioner.getUsername());
         assertEquals("user2", actualPractitioner.getUserId());
     }
 
@@ -289,7 +290,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         practitioner.setIdentifier("practitoner-1-identifier");
         practitioner.setActive(true);
         practitioner.setName("Practitioner");
-        practitioner.setUserName("Practioner1");
+        practitioner.setUsername("Practioner1");
         practitioner.setUserId("user1");
         return practitioner;
     }
@@ -299,7 +300,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         practitioner.setIdentifier("practitoner-2-identifier");
         practitioner.setActive(false);
         practitioner.setName("Second Practitioner");
-        practitioner.setUserName("Practioner2");
+        practitioner.setUsername("Practioner2");
         practitioner.setUserId("user2");
         return practitioner;
     }
