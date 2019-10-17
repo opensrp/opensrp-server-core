@@ -11,8 +11,11 @@ public interface CustomManifestMapper extends ManifestMapper {
 
     Manifest selectByIdentifier(Long identifier);
 
-    int insertSelectiveAndSetId(Manifest task);
+    int insertSelectiveAndSetId(Manifest manifest);
 
     List<Manifest> selectMany(@Param("example") ManifestExample manifestExample,
                               @Param("offset") int offset, @Param("limit") int limit);
+
+    List<Manifest> selectByAppId(@Param("appId") long appId);
+
 }

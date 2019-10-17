@@ -40,7 +40,7 @@ public class ManifestServiceTest {
         String appVersion = "1234234";
         String json = "{}";
         String appId = "1234567op";
-        
+
         manifest.setAppId(appId);
         manifest.setAppVersion(appVersion);
         manifest.setIdentifier(identifier);
@@ -64,8 +64,8 @@ public class ManifestServiceTest {
     public void testGetManifestByIdentifier() {
         Manifest expectedManifest = initTestManifest();
         when(manifestRepository.get(anyString())).thenReturn(expectedManifest);
-
         Manifest actutalManifest = manifestService.getManifest(expectedManifest.getIdentifier());
+
         verify(manifestRepository).get(anyString());
         assertNotNull(actutalManifest);
         assertEquals("mani1234", actutalManifest.getIdentifier());
@@ -97,9 +97,7 @@ public class ManifestServiceTest {
          manifestService.updateManifest(manifest);
          verify(manifestRepository).update(eq(manifest));
     }
-    
-    
-    
+       
     @Test
     public void testSaveManifest() {
     	 when(manifestRepository.get(anyString())).thenReturn(null); 
@@ -111,4 +109,25 @@ public class ManifestServiceTest {
          verify(manifestRepository).add(eq(manifest));  
          }
     
+    @Test
+    public void testGetManifestByAppId() {
+        Manifest expectedManifest = initTestManifest();
+        when(manifestRepository.getManifestByAppId(anyString())).thenReturn(expectedManifest);
+
+        Manifest actutalManifest = manifestService.getManifestByAppId(expectedManifest.getAppId());
+        verify(manifestRepository).getManifestByAppId(anyString());
+        assertNotNull(actutalManifest);
+        assertEquals("1234567op", actutalManifest.getAppId());
+   
+    }   
+    
+    @Test
+    public void testDeleteShouldCallRepostorySafeRemoveMethod() {
+        when(manifestRepository.get(anyString())).thenReturn(initTestManifest());
+        Manifest manifest = initTestManifest();
+        manifestService.deleteManifest(manifest);
+        verify(manifestRepository).safeRemove(eq(manifest));
+    }
+
+
 }

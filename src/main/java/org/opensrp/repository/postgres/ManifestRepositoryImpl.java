@@ -12,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.opensrp.util.Utils.isEmptyList;
+
+
 @Repository
 public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> implements ManifestRepository {
 
@@ -23,7 +26,6 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         if (StringUtils.isBlank(id)) {
             return null;
         }
-
         Long myID = Long.parseLong(id);
         org.opensrp.domain.postgres.Manifest pgManifest = manifestMapper.selectByIdentifier(myID);
         if (pgManifest == null) {
@@ -38,16 +40,13 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         if (getUniqueField(entity) == null) {
             return;
         }
-
         if (retrievePrimaryKey(entity) != null) { // Manifest already added
             return;
         }
-
         org.opensrp.domain.postgres.Manifest pgManifest = convert(entity, null);
         if (pgManifest == null) {
             return;
         }
-
         manifestMapper.insertSelectiveAndSetId(pgManifest);
 
     }
@@ -74,9 +73,24 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
 
     @Override
     public List<Manifest> getAll() {
-        List<org.opensrp.domain.postgres.Manifest> manifests = manifestMapper.selectMany(new ManifestExample(), 0,
+        ManifestExample manifestExample = new ManifestExample();
+        List<org.opensrp.domain.postgres.Manifest> pgManifestList = manifestMapper.selectMany(manifestExample, 0,
                 DEFAULT_FETCH_SIZE);
-        return convert(manifests);
+        return convert(pgManifestList);
+    }
+
+    @Override
+    public Manifest getManifestByAppId(String appId) {
+        if (StringUtils.isBlank(appId)) {
+            return null;
+        }
+        Long myID = Long.parseLong(appId);
+        List<org.opensrp.domain.postgres.Manifest> manifestList = manifestMapper.selectByAppId(myID);
+
+        if(manifestList == null ) {
+        	return null;
+        }
+     	return convert(manifestList.get(0));
     }
 
     @Override
@@ -92,6 +106,18 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         }
 
         manifestMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public org.opensrp.domain.postgres.Manifest getManifest(String id) {
+        if (StringUtils.isBlank(id)) {
+            return null;
+        }
+        ManifestExample manifestExample = new ManifestExample();
+        List<org.opensrp.domain.postgres.Manifest> manifestList = manifestMapper.selectByExample(manifestExample);
+
+        return isEmptyList(manifestList) ? null : manifestList.get(0);
+
     }
 
     @Override

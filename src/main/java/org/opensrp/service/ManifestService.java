@@ -1,6 +1,6 @@
 package org.opensrp.service;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Manifest;
 import org.opensrp.repository.ManifestRepository;
@@ -23,6 +23,9 @@ public class ManifestService {
     @Autowired
     public void setManifestRepository(ManifestRepository manifestRepository) {
         this.manifestRepository = manifestRepository;
+    }
+    public ManifestRepository getManifestRepository() {
+        return manifestRepository;
     }
 
     public List<Manifest> getAllManifest() {
@@ -62,7 +65,7 @@ public class ManifestService {
     public Manifest getManifest(String identifier) {
         if (StringUtils.isBlank(identifier))
             return null;
-        return manifestRepository.get(identifier);
+        return getManifestRepository().get(identifier);
     }
 
     public Set<String> saveManifests(List<Manifest> manifests) {
@@ -76,5 +79,19 @@ public class ManifestService {
             }
         }
         return manifestWithErrors;
+    }
+
+
+    public void deleteManifest(Manifest manifest) {
+        if (StringUtils.isBlank(manifest.getIdentifier())) {
+            throw new IllegalArgumentException("Identifier not specified");
+        }
+        manifestRepository.safeRemove(manifest);
+    }
+
+    public Manifest getManifestByAppId(String appId) {
+        if (StringUtils.isBlank(appId))
+            return null;
+        return manifestRepository.getManifestByAppId(appId);
     }
 }
