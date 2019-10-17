@@ -190,10 +190,9 @@
 			distinct
 		</if>
 
-		pm.operational_area_id as identifier,  location.json -> 'properties' ->> 'name' as name
+		pm.operational_area_id as identifier,  lm.name
 		FROM core.plan_metadata pm
 		JOIN core.location_metadata lm ON pm.operational_area_id = lm.geojson_id
-		JOIN core.location location ON lm.location_id = location.id
 		WHERE pm.identifier = #{planIdentifier,jdbcType=VARCHAR}
 
 		<if test="example.orderByClause != null">
