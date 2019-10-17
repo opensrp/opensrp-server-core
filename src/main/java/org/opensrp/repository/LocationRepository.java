@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.opensrp.domain.LocationDetails;
+import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 
@@ -99,5 +99,5 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @param planIdentifier identifier of the plan
 	 * @return list of location details i.e. identifier and name
 	 */
-	List<LocationDetails> findLocationDetailsByPlanId(String planIdentifier);
+	List<LocationDetail> findLocationDetailsByPlanId(String planIdentifier);
 }

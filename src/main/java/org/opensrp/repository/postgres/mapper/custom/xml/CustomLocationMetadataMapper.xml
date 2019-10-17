@@ -177,7 +177,7 @@
 
 	</select>
 
-	<resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetails">
+	<resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetail">
 		<result column="identifier" jdbcType="VARCHAR" property="identifier" />
 		<result column="name" jdbcType="VARCHAR" property="name" />
 	</resultMap>

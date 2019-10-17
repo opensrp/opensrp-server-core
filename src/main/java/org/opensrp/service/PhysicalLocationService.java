@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.opensrp.domain.LocationDetails;
+import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
@@ -207,7 +207,7 @@ public class PhysicalLocationService {
 	 * @param planIdentifier identifier of the plan
 	 * @return list of location details i.e. identifier and name
 	 */
-	public List <LocationDetails> findLocationDetailsByPlanId(String planIdentifier) {
+	public List <LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
 		return  locationRepository.findLocationDetailsByPlanId(planIdentifier);
 	}
 
