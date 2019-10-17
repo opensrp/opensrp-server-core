@@ -1,5 +1,6 @@
 package org.opensrp.search;
 
+import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
@@ -35,6 +36,60 @@ public class ClientSearchBean {
 	private String middleName;
 	
 	private String lastName;
+	
+	private String clientType;
+	
+	private String providerId;
+	
+	private int pageNumber = 0;
+	
+	private int pageSize = 0;
+	
+	private String orderByField; // The field name which used to order result 
+	
+	private String orderByType; // type of order ASC or DESC
+	
+	private List<String> locations;
+	
+	public List<String> getLocations() {
+		return locations;
+	}
+	
+	public void setLocations(List<String> locations) {
+		this.locations = locations;
+	}
+	
+	public String getOrderByField() {
+		return orderByField;
+	}
+	
+	public void setOrderByField(String orderByField) {
+		this.orderByField = orderByField;
+	}
+	
+	public String getOrderByType() {
+		return orderByType;
+	}
+	
+	public void setOrderByType(String orderByType) {
+		this.orderByType = orderByType;
+	}
+	
+	public int getPageSize() {
+		return pageSize;
+	}
+	
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize;
+	}
+	
+	public int getPageNumber() {
+		return pageNumber;
+	}
+	
+	public void setPageNumber(int pageNumber) {
+		this.pageNumber = pageNumber;
+	}
 	
 	public String getNameLike() {
 		return nameLike;
@@ -154,6 +209,22 @@ public class ClientSearchBean {
 	
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+	
+	public String getClientType() {
+		return clientType;
+	}
+	
+	public void setClientType(String clientType) {
+		this.clientType = clientType;
+	}
+	
+	public String getProviderId() {
+		return providerId;
+	}
+	
+	public void setProviderId(String providerId) {
+		this.providerId = providerId;
 	}
 	
 }

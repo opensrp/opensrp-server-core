@@ -7,6 +7,7 @@ import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE
 
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.joda.time.DateTime;
@@ -271,6 +272,22 @@ public class EventServiceTest extends BaseRepositoryTest {
 		assertEquals(1, updatedEvent.getObs().size());
 		assertEquals("3.5", updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
 		assertEquals(0, Minutes.minutesBetween(DateTime.now(), updatedEvent.getDateEdited()).getMinutes());
+	}
+
+	@Test
+	public void testFindAllIdsByEventType() {
+
+		String growthMonitoringEventype = "Growth Monitoring";
+		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype);
+
+		assertNotNull(actualEventIds);
+		assertEquals(4, actualEventIds.size());
+
+		assertEquals("05934ae338431f28bf6793b24177a1dc", actualEventIds.get(0));
+		assertEquals("05934ae338431f28bf6793b241780bac", actualEventIds.get(1));
+		assertEquals("05934ae338431f28bf6793b241781149", actualEventIds.get(2));
+		assertEquals("05934ae338431f28bf6793b241781a1e", actualEventIds.get(3));
+
 	}
 	
 }

@@ -143,4 +143,13 @@ public class TaskService {
 		}
 		return updatedTaskIds;
 	}
+
+	/**
+	 * This method searches for all task Ids
+	 *
+	 * @return a list of all task ids
+	 */
+	public List<String> findAllTaskIds() {
+		return taskRepository.findAllIds();
+	}
 }

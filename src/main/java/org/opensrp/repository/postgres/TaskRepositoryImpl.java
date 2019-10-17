@@ -125,6 +125,12 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
+	public List<String> findAllIds() {
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		return taskMetadataMapper.selectManyIds(taskMetadataExample);
+	}
+
+	@Override
 	@Transactional
 	public void safeRemove(Task entity) {
 		if (entity == null) {

@@ -66,4 +66,19 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
+	<select id="selectManyIds" resultType="java.lang.String">
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+		identifier
+		from core.task_metadata tm
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="example.orderByClause != null">
+			order by tm.${example.orderByClause}
+		</if>
+	</select>
+
 </mapper>

@@ -324,4 +324,13 @@ public class EventService {
 	public List<Event> findByProviderAndEntityType(String provider) {
 		return allEvents.findByProvider(provider);
 	}
+
+	/**
+	 * This method searches for event ids filtered by eventType
+	 * @param eventType used to filter the event ids
+	 * @return a list of event ids
+	 */
+	public List<String> findAllIdsByEventType(String eventType) {
+		return allEvents.findIdsByEventType(eventType);
+	}
 }

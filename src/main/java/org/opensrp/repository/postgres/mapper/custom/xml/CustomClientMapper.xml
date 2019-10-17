@@ -74,12 +74,12 @@
 	</select>
 	
 	
-	<select id="selectByRelationshipIdOfType" parameterType="map"
+	<select id="selectByRelationshipIdOfType" 
 		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
 		select
 		<include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List" />
 		from core.client
-		where json -> 'relationships'->#{relationshipType,jdbcType=VARCHAR} ?? #{relationshipId,jdbcType=VARCHAR}
+		where json -> 'relationships'->#{relationshipType} ->>0 =  #{relationshipId}
 		and date_deleted is null
 	</select>
 	

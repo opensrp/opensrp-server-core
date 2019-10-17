@@ -47,6 +47,10 @@ public class PractitionerService {
 		return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().get(identifier);
 	}
 
+	public org.opensrp.domain.postgres.Practitioner getPgPractitioner(String identifier) {
+		return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().getPractitioner(identifier);
+	}
+
 	public List<Practitioner> getAllPractitioners() {
 		return getPractitionerRepository().getAll();
 	}
@@ -73,6 +77,15 @@ public class PractitionerService {
 
 	}
 
+	public void deletePractitioner(String identifier) {
+		if (StringUtils.isBlank(identifier)) {
+			throw new IllegalArgumentException("Identifier not specified");
+		}
+
+		getPractitionerRepository().safeRemove(identifier);
+
+	}
+
 	public ImmutablePair<Practitioner, List<Long>> getOrganizationsByUserId(String userId) {
 		Practitioner practioner = getPractitionerRepository().getPractitionerByUserId(userId);
 		List<Long> organizationIds = new ArrayList<>();
@@ -87,6 +100,10 @@ public class PractitionerService {
 	public List<Practitioner> getPractitionersByOrgIdentifier(String organizationIdentifier) {
 		organizationService.validateIdentifier(organizationIdentifier);
 		Organization organization = organizationService.getOrganization(organizationIdentifier);
+
+		if (organization == null) {
+			throw new IllegalArgumentException("Organization does not exist");
+		}
 
 		return getPractitionerRepository().getPractitionersByOrgId(organization.getId());
 	}

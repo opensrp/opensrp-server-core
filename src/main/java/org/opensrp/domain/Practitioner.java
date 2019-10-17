@@ -1,32 +1,21 @@
 package org.opensrp.domain;
 
-import com.google.gson.annotations.SerializedName;
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import java.io.Serializable;
 import java.util.Date;
 
 public class Practitioner implements Serializable {
 
     private static final long serialVersionUID = -8367551045898354954L;
-    @JsonProperty
+
     private String identifier;
 
-    @JsonProperty
     private Boolean active;
 
-    @JsonProperty
     private String name;
 
-    @JsonProperty
     private String userId;
 
-    @JsonProperty
-    @SerializedName("username")
-    private String userName;
-
-    @JsonProperty
-    private Date dateDeleted;
+    private String username;
 
     public String getIdentifier() {
         return identifier;
@@ -60,19 +49,12 @@ public class Practitioner implements Serializable {
         this.userId = userId;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public Date getDateDeleted() {
-        return dateDeleted;
-    }
-
-    public void setDateDeleted(Date dateDeleted) {
-        this.dateDeleted = dateDeleted;
-    }
 }
