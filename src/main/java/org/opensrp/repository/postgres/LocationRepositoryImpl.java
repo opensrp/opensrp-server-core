@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.opensrp.domain.LocationDetails;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
@@ -356,6 +357,17 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<String> findAllStructureIds() {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		return structureMetadataMapper.selectManyIds(structureMetadataExample);
+	}
+
+	/**
+	 *
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<LocationDetails> findLocationDetailsByPlanId(String planIdentifier) {
+
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		return locationMetadataMapper.selectDetailsByPlanId(locationMetadataExample, planIdentifier, 0 , FETCH_SIZE_LIMIT);
 	}
 
 	/**
