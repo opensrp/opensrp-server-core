@@ -26,4 +26,10 @@ public class FileSystemMultimediaFileManager extends BaseMultimediaFileManager {
         File multimediaFilePath = new File(fileName);
         multimediaFile.transferTo(multimediaFilePath);
     }
+
+    @Override
+    public File retrieveFile(String filePath) {
+        File file = new File(filePath);
+        return file.exists() ? file : null;
+    }
 }

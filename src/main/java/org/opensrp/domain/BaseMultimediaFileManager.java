@@ -49,12 +49,6 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
         return saveMultimediaFile(multimedia, file);
     }
 
-    @Override
-    public File retrieveFile(String filePath) {
-        File file = new File(filePath);
-        return file.exists() ? file : null;
-    }
-
     public String saveMultimediaFile(MultimediaDTO multimediaDTO, MultipartFile file) {
 
         if (uploadFile(multimediaDTO, file)) {

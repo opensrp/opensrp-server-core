@@ -4,6 +4,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.apache.commons.codec.binary.Base64;
@@ -25,41 +26,52 @@ import java.io.InputStream;
 public class S3MultimediaFileManager extends BaseMultimediaFileManager {
 
     @Value("#{opensrp['aws_access_key_id']}")
-    String awsAccessKeyId;
+    private String awsAccessKeyId;
 
     @Value("#{opensrp['aws_secret_access_key']}")
-    String awsSecretAccessKey;
+    private String awsSecretAccessKey;
 
     @Value("#{opensrp['aws_region']}")
-    String awsRegion;
+    private String awsRegion;
 
     @Value("#{opensrp['aws_bucket']}")
-    String awsBucket;
+    private String s3Bucket;
 
     @Value("#{opensrp['aws_key_folder']}")
-    String awsKeyFolder;
+    private String awsKeyFolder;
+
+    private  AmazonS3 s3Client;
 
     @Autowired
     public S3MultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
         super(multimediaRepository, clientService);
+        s3Client = AmazonS3ClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey)))
+                .withRegion(awsRegion)
+                .build();
     }
 
     @Override
     protected void persistFileToStorage(String fileName, MultipartFile multipartFile) throws IOException {
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
-                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey)))
-                .withRegion(awsRegion)
-                .build();
-
         File multimediaFile = multipartFileToFile(fileName, multipartFile);
         byte[] md5 = DigestUtils.md5(new FileInputStream(multimediaFile));
         InputStream inputStream = new FileInputStream(multimediaFile);
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multimediaFile.length());
         metadata.setContentMD5(new String(Base64.encodeBase64(md5)));
-        PutObjectRequest request = new PutObjectRequest(awsBucket, awsKeyFolder + multimediaFile.getName(), inputStream, metadata);
+        PutObjectRequest request = new PutObjectRequest(s3Bucket, awsKeyFolder + multimediaFile.getName(), inputStream, metadata);
         s3Client.putObject(request);
         multimediaFile.delete();
+    }
+
+    @Override
+    public File retrieveFile(String filePath) {
+        File file = null;
+        if (s3Client.doesObjectExist(s3Bucket, filePath)) {
+            File localFile = new File(filePath);
+            s3Client.getObject(new GetObjectRequest(s3Bucket, filePath), localFile);
+        }
+        return file;
     }
 
     private File multipartFileToFile(String fileName, MultipartFile multipart) throws IOException {
