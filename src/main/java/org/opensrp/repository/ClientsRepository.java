@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
@@ -59,4 +60,6 @@ public interface ClientsRepository extends BaseRepository<Client> {
 	HouseholdClient findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 	
 	List<Client> findMembersByRelationshipId(String relationshipId);
+	
+	List<Client> findAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 }

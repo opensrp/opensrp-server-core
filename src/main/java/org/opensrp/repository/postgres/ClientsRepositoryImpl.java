@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.CustomClient;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
 import org.opensrp.domain.postgres.HouseholdClient;
@@ -315,7 +316,6 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		if (client == null || client.getJson() == null || !(client.getJson() instanceof Client)) {
 			return null;
 		}
-		
 		return (Client) client.getJson();
 	}
 	
@@ -438,5 +438,48 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 			members = clientMetadataMapper.selectMembersByRelationshipId(baseEntityId);
 		}
 		return convert(members);
+	}
+	
+	@Override
+	public List<Client> findAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		List<org.opensrp.domain.postgres.CustomClient> clients = clientMetadataMapper.selectAllClients(searchBean,
+		    addressSearchBean, "ec_household");
+		System.out.println(clients);
+		//System.out.println(CustomClientconvert(clients));
+		return CustomClientconvert(clients);
+	}
+	
+	private Client customClientConvert(org.opensrp.domain.postgres.CustomClient customClient) {
+		System.err.println("OKKKKK");
+		if (customClient == null || customClient.getJson() == null || !(customClient.getJson() instanceof CustomClient)) {
+			
+			System.err.println("d:" + customClient);
+			return null;
+		}
+		System.err.println("okkkk:" + customClient.getLastContactDate());
+		Client cl = (Client) customClient.getJson();
+		cl.addAttribute("last_contact_date", customClient.getLastContactDate());
+		cl.addAttribute("edd", customClient.getEdd());
+		cl.addAttribute("risk_category", customClient.getRiskCategory());
+		
+		System.out.println("::::" + cl);
+		//cl.setLastContactDate(customClient.getLastContactDate());
+		return cl;
+	}
+	
+	protected List<Client> CustomClientconvert(List<org.opensrp.domain.postgres.CustomClient> clients) {
+		if (clients == null || clients.isEmpty()) {
+			return new ArrayList<>();
+		}
+		
+		List<Client> convertedClients = new ArrayList<>();
+		for (org.opensrp.domain.postgres.CustomClient client : clients) {
+			Client convertedClient = customClientConvert(client);
+			if (convertedClient != null) {
+				convertedClients.add(convertedClient);
+			}
+		}
+		
+		return convertedClients;
 	}
 }

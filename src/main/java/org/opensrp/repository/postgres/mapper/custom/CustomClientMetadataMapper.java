@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Client;
 import org.opensrp.domain.postgres.ClientMetadataExample;
+import org.opensrp.domain.postgres.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.postgres.mapper.ClientMetadataMapper;
 import org.opensrp.search.AddressSearchBean;
@@ -32,4 +33,8 @@ public interface CustomClientMetadataMapper extends ClientMetadataMapper {
 	                                                                      @Param("clientType") String clientType);
 	
 	List<Client> selectMembersByRelationshipId(@Param("baseEntityId") String baseEntityId);
+	
+	List<CustomClient> selectAllClients(@Param("clientBean") ClientSearchBean searchBean,
+	                                    @Param("addressBean") AddressSearchBean addressSearchBean,
+	                                    @Param("clientType") String clientType);
 }

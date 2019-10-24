@@ -14,6 +14,7 @@ import org.joda.time.DateTime;
 import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.lucene.LuceneClientRepository;
@@ -218,6 +219,12 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 	@Override
 	public List<Client> findMembersByRelationshipId(String baseEntityId) {
 		
+		return null;
+	}
+	
+	@Override
+	public List<Client> findAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 	

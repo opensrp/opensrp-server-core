@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.domain.Address;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
@@ -294,5 +295,9 @@ public class ClientService {
 	
 	public List<Client> findMembersByRelationshipId(String relationshipId) {
 		return allClients.findMembersByRelationshipId(relationshipId);
+	}
+	
+	public List<Client> findAllClients(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
+		return allClients.findAllClients(clientSearchBean, addressSearchBean);
 	}
 }
