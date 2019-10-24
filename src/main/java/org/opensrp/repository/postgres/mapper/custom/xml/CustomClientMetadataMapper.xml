@@ -151,7 +151,7 @@
 					cm.last_name ilike #{name} or
 					cm.unique_id ilike #{name} or
 					c.json -> 'attributes' ->> 'phoneNumber' ilike #{name}
-					<if test="clientBean.clientType!=null">
+					<if test="clientBean.providerId!=null">
 					or
 					em.provider_id ilike #{name}
 					</if>				
@@ -162,7 +162,7 @@
 			and em.entity_type = #{clientBean.clientType,jdbcType=VARCHAR}
 		</if>
 		
-		<if test="clientBean.clientType != null">					
+		<if test="clientBean.providerId != null">					
 			and em.provider_id = #{clientBean.providerId,jdbcType=VARCHAR}
 		</if>
 		<if test="clientBean.gender != null">
