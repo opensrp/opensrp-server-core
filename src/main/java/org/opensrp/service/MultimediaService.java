@@ -56,7 +56,7 @@ public class MultimediaService {
 		return multimediaRepository.get(entityId, contentType, fileCategory);
 	}
 
-	public boolean saveFile(MultimediaDTO multimedia, MultipartFile file) {
+	public String saveFile(MultimediaDTO multimedia, MultipartFile file) {
 		return fileManager.saveFile(multimedia, file);
 	}
 

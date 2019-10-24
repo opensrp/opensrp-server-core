@@ -36,9 +36,8 @@ public class FileSystemMultimediaFileManager implements MultimediaFileManager {
     }
 
     @Override
-    public boolean saveFile(MultimediaDTO multimedia, MultipartFile file) {
-        String status = saveMultimediaFile(multimedia, file);
-        return SUCCESS.equals(status) ? true : false;
+    public String saveFile(MultimediaDTO multimedia, MultipartFile file) {
+        return saveMultimediaFile(multimedia, file);
     }
 
     @Override

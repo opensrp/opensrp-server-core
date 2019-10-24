@@ -11,7 +11,7 @@ import java.io.File;
  */
 public interface MultimediaFileManager {
 
-    boolean saveFile(MultimediaDTO multimedia, MultipartFile file);
+    String saveFile(MultimediaDTO multimedia, MultipartFile file);
 
     File retrieveFile(String filePath);
 }
