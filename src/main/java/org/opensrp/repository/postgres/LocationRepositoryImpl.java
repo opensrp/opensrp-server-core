@@ -367,7 +367,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
 
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		return locationMetadataMapper.selectDetailsByPlanId(locationMetadataExample, planIdentifier, 0 , FETCH_SIZE_LIMIT);
+		return locationMetadataMapper.selectDetailsByPlanId(locationMetadataExample, planIdentifier);
 	}
 
 	/**
