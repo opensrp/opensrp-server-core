@@ -25,14 +25,11 @@ public class MultimediaService {
 	private final MultimediaRepository multimediaRepository;
 
 	private MultimediaFileManager fileManager;
-	
-	@Value("#{opensrp['multimedia.directory.name']}")
-	public static String baseMultimediaDirPath;
 
 	@Autowired
-	public MultimediaService(MultimediaRepository multimediaRepository, ClientService clientService) {
+	public MultimediaService(MultimediaRepository multimediaRepository, MultimediaFileManager fileManager) {
 		this.multimediaRepository = multimediaRepository;
-		this.fileManager = new FileSystemMultimediaFileManager(multimediaRepository, clientService);
+		this.fileManager = fileManager;
 	}
 
 	public List<Multimedia> getMultimediaFiles(String providerId) {

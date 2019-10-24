@@ -6,6 +6,9 @@ import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -16,6 +19,8 @@ import static org.opensrp.service.MultimediaService.*;
 /**
  * Created by Vincent Karuri on 24/10/2019
  */
+
+@Component
 public class FileSystemMultimediaFileManager implements MultimediaFileManager {
 
     private final MultimediaRepository multimediaRepository;
@@ -24,12 +29,16 @@ public class FileSystemMultimediaFileManager implements MultimediaFileManager {
 
     private String multimediaDirPath;
 
+    @Value("#{opensrp['multimedia.directory.name']}")
+    private String baseMultimediaDirPath;
+
     private static Logger logger = LoggerFactory.getLogger(FileSystemMultimediaFileManager.class.getName());
 
     private final String SUCCESS = "success";
 
     private final String FAIL = "fail";
 
+    @Autowired
     public FileSystemMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
         this.multimediaRepository = multimediaRepository;
         this.clientService = clientService;
