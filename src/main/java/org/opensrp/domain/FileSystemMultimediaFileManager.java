@@ -1,6 +1,5 @@
 package org.opensrp.domain;
 
-import org.opensrp.domain.contract.MultimediaFileManager;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
