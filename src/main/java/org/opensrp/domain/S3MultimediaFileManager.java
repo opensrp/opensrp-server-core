@@ -68,8 +68,7 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
     public File retrieveFile(String filePath) {
         File file = null;
         if (s3Client.doesObjectExist(s3Bucket, filePath)) {
-            File localFile = new File(filePath);
-            s3Client.getObject(new GetObjectRequest(s3Bucket, filePath), localFile);
+            s3Client.getObject(new GetObjectRequest(s3Bucket, filePath), file);
         }
         return file;
     }
