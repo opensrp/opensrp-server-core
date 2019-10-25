@@ -25,8 +25,6 @@ public class MultimediaService {
 
 	private final MultimediaRepository multimediaRepository;
 
-	@Autowired
-	@Qualifier("S3MultimediaFileManager")
 	private MultimediaFileManager fileManager;
 
 	@Autowired
@@ -61,5 +59,15 @@ public class MultimediaService {
 
 	public File retrieveFile(String filePath) {
 		return fileManager.retrieveFile(filePath);
+	}
+
+	@Autowired
+	@Qualifier("S3MultimediaFileManager")
+	public void setFileManager(MultimediaFileManager fileManager) {
+		this.fileManager = fileManager;
+	}
+
+	public MultimediaFileManager getFileManager() {
+		return fileManager;
 	}
 }
