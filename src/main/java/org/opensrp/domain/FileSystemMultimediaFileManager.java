@@ -13,7 +13,7 @@ import java.io.IOException;
  * Created by Vincent Karuri on 24/10/2019
  */
 
-@Component
+@Component("FileSystemMultimediaFileManager")
 public class FileSystemMultimediaFileManager extends BaseMultimediaFileManager {
 
     @Autowired

@@ -6,6 +6,7 @@ import org.opensrp.domain.contract.MultimediaFileManager;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.MultimediaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,12 +25,13 @@ public class MultimediaService {
 
 	private final MultimediaRepository multimediaRepository;
 
+	@Autowired
+	@Qualifier("S3MultimediaFileManager")
 	private MultimediaFileManager fileManager;
 
 	@Autowired
-	public MultimediaService(MultimediaRepository multimediaRepository, MultimediaFileManager fileManager) {
+	public MultimediaService(MultimediaRepository multimediaRepository) {
 		this.multimediaRepository = multimediaRepository;
-		this.fileManager = fileManager;
 	}
 
 	public List<Multimedia> getMultimediaFiles(String providerId) {
