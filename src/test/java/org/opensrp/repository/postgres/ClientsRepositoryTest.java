@@ -18,7 +18,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.domain.Client;
-import org.opensrp.domain.postgres.HouseholdClient;
+import org.opensrp.domain.postgres.ClientCustomField;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
@@ -510,7 +510,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	public void shouldGetMemberCountHouseholdHeadProviderByClients() {
 		List<String> id = new ArrayList<String>();
 		id.add("28caef27-d1b3-497b-8a55-95Rf2f0f6e24");
-		List<HouseholdClient> householdClient = clientsRepository.selectMemberCountHouseholdHeadProviderByClients("", id,
+		List<ClientCustomField> householdClient = clientsRepository.selectMemberCountHouseholdHeadProviderByClients("", id,
 		    "ec_family");
 		assertEquals(householdClient.size(), 0);
 		assertNotNull(householdClient);

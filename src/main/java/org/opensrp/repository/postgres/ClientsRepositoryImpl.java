@@ -8,15 +8,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.opensrp.domain.CustomClient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
-import org.opensrp.domain.CustomClient;
+import org.opensrp.domain.postgres.ClientCustomField;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
-import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
@@ -417,15 +417,15 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	public List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
-	                                                                             String clientType) {
+	public List<ClientCustomField> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
+	                                                                               String clientType) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		clientMetadataExample.createCriteria().andRelationalIdIn(ids);
 		return clientMetadataMapper.selectMemberCountHouseholdHeadProviderByClients(clientMetadataExample, clientType);
 	}
 	
 	@Override
-	public HouseholdClient findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+	public ClientCustomField findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		
 		return clientMetadataMapper.selectCountBySearchBean(searchBean, addressSearchBean);
 	}
@@ -433,37 +433,40 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	@Override
 	public List<Client> findMembersByRelationshipId(String baseEntityId) {
 		
-		List<org.opensrp.domain.postgres.Client> members = new ArrayList<org.opensrp.domain.postgres.Client>();
+		List<org.opensrp.domain.postgres.CustomClient> members = new ArrayList<org.opensrp.domain.postgres.CustomClient>();
 		if (!StringUtils.isBlank(baseEntityId)) {
 			members = clientMetadataMapper.selectMembersByRelationshipId(baseEntityId);
 		}
-		return convert(members);
+		return CustomClientconvert(members);
 	}
 	
 	@Override
 	public List<Client> findAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		int pageSize = searchBean.getPageSize();
+		if (pageSize == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		}
+		
+		int offset = searchBean.getPageNumber() * pageSize;
+		
 		List<org.opensrp.domain.postgres.CustomClient> clients = clientMetadataMapper.selectAllClients(searchBean,
-		    addressSearchBean, "ec_household");
-		System.out.println(clients);
-		//System.out.println(CustomClientconvert(clients));
+		    addressSearchBean, offset, pageSize);
 		return CustomClientconvert(clients);
 	}
 	
 	private Client customClientConvert(org.opensrp.domain.postgres.CustomClient customClient) {
-		System.err.println("OKKKKK");
+		
 		if (customClient == null || customClient.getJson() == null || !(customClient.getJson() instanceof CustomClient)) {
-			
-			System.err.println("d:" + customClient);
 			return null;
 		}
-		System.err.println("okkkk:" + customClient.getLastContactDate());
+		
 		Client cl = (Client) customClient.getJson();
 		cl.addAttribute("last_contact_date", customClient.getLastContactDate());
 		cl.addAttribute("edd", customClient.getEdd());
 		cl.addAttribute("risk_category", customClient.getRiskCategory());
-		
-		System.out.println("::::" + cl);
-		//cl.setLastContactDate(customClient.getLastContactDate());
+		cl.addAttribute("age_year_part", customClient.getAgeYearPart());
+		cl.addAttribute("age_month_part", customClient.getAgeMonthPart());
+		cl.addAttribute("registration_status", customClient.getRegistrationStatus());
 		return cl;
 	}
 	
@@ -481,5 +484,11 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		}
 		
 		return convertedClients;
+	}
+	
+	@Override
+	public ClientCustomField findCountAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		
+		return clientMetadataMapper.selectCountAllClients(searchBean, addressSearchBean);
 	}
 }

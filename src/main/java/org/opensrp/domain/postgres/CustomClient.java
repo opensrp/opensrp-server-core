@@ -14,6 +14,36 @@ public class CustomClient extends Client {
 	
 	private String immunizationStatus;
 	
+	private String registrationStatus;
+	
+	private int ageYearPart;
+	
+	private int ageMonthPart;
+	
+	public String getRegistrationStatus() {
+		return registrationStatus;
+	}
+	
+	public void setRegistrationStatus(String registrationStatus) {
+		this.registrationStatus = registrationStatus;
+	}
+	
+	public int getAgeYearPart() {
+		return ageYearPart;
+	}
+	
+	public void setAgeYearPart(int ageYearPart) {
+		this.ageYearPart = ageYearPart;
+	}
+	
+	public int getAgeMonthPart() {
+		return ageMonthPart;
+	}
+	
+	public void setAgeMonthPart(int ageMonthPart) {
+		this.ageMonthPart = ageMonthPart;
+	}
+	
 	public Date getLastContactDate() {
 		return lastContactDate;
 	}

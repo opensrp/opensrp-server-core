@@ -14,8 +14,7 @@ import org.joda.time.DateTime;
 import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
-import org.opensrp.domain.CustomClient;
-import org.opensrp.domain.postgres.HouseholdClient;
+import org.opensrp.domain.postgres.ClientCustomField;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.lucene.LuceneClientRepository;
 import org.opensrp.search.AddressSearchBean;
@@ -205,13 +204,13 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 	}
 	
 	@Override
-	public List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
-	                                                                             String clientType) {
+	public List<ClientCustomField> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
+	                                                                               String clientType) {
 		return null;
 	}
 	
 	@Override
-	public HouseholdClient findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+	public ClientCustomField findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		
 		return null;
 	}
@@ -224,6 +223,12 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 	
 	@Override
 	public List<Client> findAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public ClientCustomField findCountAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -32,7 +32,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
 import org.opensrp.domain.Client;
-import org.opensrp.domain.postgres.HouseholdClient;
+import org.opensrp.domain.postgres.ClientCustomField;
 import org.opensrp.repository.couch.AllClients;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
@@ -519,7 +519,7 @@ public class ClientServiceTest extends BaseIntegrationTest {
 	public void shouldGetMemberCountHouseholdHeadProviderByClients() {
 		List<String> id = new ArrayList<String>();
 		id.add("28caef27-d1b3-497b-8a55-954f2f0f6e24");
-		Map<String, HouseholdClient> results = clientService.getMemberCountHouseholdHeadProviderByClients(id, "ec_member");
+		Map<String, ClientCustomField> results = clientService.getMemberCountHouseholdHeadProviderByClients(id, "ec_member");
 		assertEquals(results.size(), 0);
 	}
 }

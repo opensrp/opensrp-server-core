@@ -22,22 +22,24 @@
       This element was generated on Fri Apr 06 16:01:06 EAT 2018.
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
-    <result column="json" jdbcType="OTHER" property="json" typeHandler="org.opensrp.repository.postgres.handler.CustomClientTypeHandler" />
-    <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted" />
-    <result column="last_contact_date" jdbcType="TIMESTAMP" property="lastContactDate"/>
-    <result column="edd" jdbcType="TIMESTAMP" property="edd"/>
-    <result column="gestational_age" jdbcType="VARCHAR" property="gestationalAge"/>
-    <result column="risk_category" jdbcType="VARCHAR" property="riskCategory"/>
-    <result column="immunization_status" jdbcType="VARCHAR" property="immunizationStatus"/>
+	    <result column="json" jdbcType="OTHER" property="json" typeHandler="org.opensrp.repository.postgres.handler.CustomClientTypeHandler" />
+	    <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted" />
+	    <result column="last_contact_date" jdbcType="TIMESTAMP" property="lastContactDate"/>
+	    <result column="edd" jdbcType="TIMESTAMP" property="edd"/>
+	    <result column="gestational_age" jdbcType="VARCHAR" property="gestationalAge"/>
+	    <result column="risk_category" jdbcType="VARCHAR" property="riskCategory"/>
+	    <result column="immunization_status" jdbcType="VARCHAR" property="immunizationStatus"/>
+	    <result column="age_year_part" jdbcType="BIGINT" property="ageYearPart"/>
+		<result column="age_month_part" jdbcType="BIGINT" property="ageMonthPart"/>
+		<result column="registration_status" jdbcType="VARCHAR" property="registrationStatus"/>
   </resultMap>
-	<resultMap id="householdClientMap" type="org.opensrp.domain.postgres.HouseholdClient">
+	<resultMap id="householdClientMap" type="org.opensrp.domain.postgres.ClientCustomField">
 		<id column="member_count" jdbcType="BIGINT" property="memebrCount" />
 		<result column="provider_id" jdbcType="VARCHAR" property="providerId"/>
 		<result column="household_head" jdbcType="VARCHAR" property="householdHead"/>	
-		<result column="relational_id" jdbcType="VARCHAR" property="relationalId"/>
-		
+		<result column="relational_id" jdbcType="VARCHAR" property="relationalId"/>		
 	</resultMap>
-	<resultMap id="totalCountMap" type="org.opensrp.domain.postgres.HouseholdClient">		
+	<resultMap id="totalCountMap" type="org.opensrp.domain.postgres.ClientCustomField">		
 		<result column="total_count" jdbcType="BIGINT" property="totalCount"/>
 	</resultMap>	
 		
@@ -252,7 +254,7 @@
 				
 			</trim>
 		</where>
-		<if test="clientBean.orderByField!=null and addressBean.orderByType!=null">
+		<if test="clientBean.orderByField!=null and clientBean.orderByType!=null">
 		 order by ${clientBean.orderByField}  ${clientBean.orderByType}  
 		</if>
 		 
@@ -270,6 +272,7 @@
 		<if test="addressBean!=null and addressBean.hasFilter">
 			join jsonb_array_elements(json->'addresses') as address on true	
 		</if>
+		<include refid="LocationId_Where_Clause" />
 		<where>
 			<trim prefixOverrides="and">
 			 	cm.date_deleted is null
@@ -310,33 +313,87 @@
 	</select>
 	
 	<select id="selectMembersByRelationshipId"
-		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
+		resultMap="BaseCustomClientResultMap">
 		<if test="baseEntityId != null">
-			select
-			<include refid="Base_Column_List" />
-			<include refid="Base_Table_List" />		
-			<where>
-				<trim prefixOverrides="and">
-				 	cm.date_deleted is null				
-					and
-					cm.relational_id = #{baseEntityId}				
-				</trim>
-			</where>
-			 order by first_name  ASC
-		 </if>
+			with clm as(
+				select c.id,c."json",cm.base_entity_id from core.client as c    
+			    	join core.client_metadata cm on cm.client_id = c.id
+			     where cm.relational_id = #{baseEntityId}
+			),
+			em as(
+				select em.id, em.base_entity_id,em.event_type,max(em.id) over
+			 		(partition by em.base_entity_id ) as last_id
+				from core.event_metadata as em  
+				where em.base_entity_id = any(
+					select base_entity_id from clm
+				)
+			)
+			select clm."json",clm.id,em.event_type as registration_status from clm join em on clm.base_entity_id = em.base_entity_id
+			and em.id = em.last_id
+		</if>		
+		
 	</select>
 	
-	<select id="selectAllClients" resultMap="BaseCustomClientResultMap">
-	with t as(
-		select em.id, em.base_entity_id,em.event_date,max(em.id) over(partition by em.base_entity_id) last_id
-		from core.event_metadata em
+	<select id="selectAllClients" resultMap="BaseCustomClientResultMap">		
+		
+		with em as(
+			select em.entity_type,em.location_id, em.id, em.base_entity_id,em.event_date,max(em.id) over(partition by em.base_entity_id) last_id
+			from core.event_metadata em
+			<include refid="LocationId_Where_Clause" />
 		)
-		select t.base_entity_id,t.event_date last_contact_date,c.id,c."json" from t join 
-		core.client_metadata cm on t.base_entity_id = cm.base_entity_id
-		join core.client c on  cm.client_id = c.id 
-		where t.id=t.last_id
-		limit 100
-	
+		select em.event_date last_contact_date,c.id,c."json" ,
+		EXTRACT(year FROM age(current_date,cm.birth_date)) :: int as age_year_part
+   		,EXTRACT(month FROM age(current_date,cm.birth_date)) :: int as age_month_part
+		from em join 
+		core.client_metadata cm on em.base_entity_id = cm.base_entity_id
+		join core.client c on  cm.client_id = c.id 		
+		<where>
+			<trim prefixOverrides="and">
+				cm.date_deleted is null and em.id=em.last_id				
+				 <include refid="ClientBean_Where_Clause_All_Clients"/>				
+			</trim>
+	    </where>
+	    <if test="clientBean.orderByField!=null and clientBean.orderByType!=null">
+			 order by ${clientBean.orderByField}  ${clientBean.orderByType}  
+		</if>
+		 LIMIT #{limit} OFFSET #{offset}	
 	
 	</select>
+	
+	<select id="selectCountAllClients" resultMap="totalCountMap">		
+		with em as(
+			select em.entity_type,em.location_id, em.id, em.base_entity_id,em.event_date,max(em.id) over(partition by em.base_entity_id) last_id
+			from core.event_metadata em
+			<include refid="LocationId_Where_Clause" />
+		)
+		select count(*) as total_count from em join 
+		core.client_metadata cm on em.base_entity_id = cm.base_entity_id
+		join core.client c on  cm.client_id = c.id 		
+		<where>
+			<trim prefixOverrides="and">
+				cm.date_deleted is null and em.id=em.last_id				
+				 <include refid="ClientBean_Where_Clause_All_Clients"/>				
+			</trim>
+	    </where>
+	</select>
+	
+	<sql id="ClientBean_Where_Clause_All_Clients">
+		<if test="clientBean.nameLike != null">
+			<bind name="name" value="'%' + clientBean.nameLike + '%'" />
+			and (	cm.first_name ilike #{name} or
+					cm.middle_name ilike #{name} or
+					cm.last_name ilike #{name} or
+					cm.unique_id ilike #{name} 
+				)
+		</if>		
+		
+		<if test="clientBean.clientType != null">					
+			and em.entity_type != #{clientBean.clientType,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="clientBean.gender != null">
+			and c.json->>'gender' = #{clientBean.gender,jdbcType=VARCHAR}
+		</if>
+	
+	</sql>
 </mapper>
