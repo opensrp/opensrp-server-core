@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
@@ -198,6 +199,16 @@ public class PhysicalLocationService {
 	 */
 	public List<String> findAllStructureIds() {
 		return locationRepository.findAllStructureIds();
+	}
+
+	/**
+	 * This method searches for location identifier and name using a plan identifier.
+	 *
+	 * @param planIdentifier identifier of the plan
+	 * @return list of location details i.e. identifier and name
+	 */
+	public List <LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
+		return  locationRepository.findLocationDetailsByPlanId(planIdentifier);
 	}
 
 }
