@@ -515,4 +515,32 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals(householdClient.size(), 0);
 		assertNotNull(householdClient);
 	}
+	
+	@Test
+	public void shouldFindAllClientsByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType("ec_family");
+		List<Client> clients = clientsRepository.findAllClientsByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+	}
+	
+	@Test
+	public void shouldFindCountAllClientsByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType("ec_family");
+		ClientCustomField clientCustomField = clientsRepository.findCountAllClientsByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clientCustomField);
+		assertNotEquals(clientCustomField.getTotalCount(), 0);
+	}
+	
+	@Test
+	public void shouldFindHouseholdByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType("ec_family");
+		List<Client> clients = clientsRepository.findHouseholdByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+	}
 }
