@@ -27,10 +27,14 @@ public class PlanService {
 	private OrganizationService organizationService;
 	
 	@Autowired
-	public void setPlanRepository(PlanRepository planRepository) {
+	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
+	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService) {
 		this.planRepository = planRepository;
+		this.practitionerService = practitionerService;
+		this.practitionerRoleService = practitionerRoleService;
+		this.organizationService = organizationService;
 	}
-	
+
 	public PlanRepository getPlanRepository() {
 		return planRepository;
 	}
