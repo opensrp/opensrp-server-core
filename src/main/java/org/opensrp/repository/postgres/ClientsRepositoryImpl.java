@@ -438,7 +438,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		if (!StringUtils.isBlank(baseEntityId)) {
 			members = clientMetadataMapper.selectMembersByRelationshipId(baseEntityId);
 		}
-		return CustomClientconvert(members);
+		return CustomClientConvert(members);
 	}
 	
 	@Override
@@ -452,7 +452,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		
 		List<org.opensrp.domain.postgres.CustomClient> clients = clientMetadataMapper.selectAllClientsBySearchBean(
 		    searchBean, addressSearchBean, offset, pageSize);
-		return CustomClientconvert(clients);
+		return CustomClientConvert(clients);
 	}
 	
 	private Client customClientConvert(org.opensrp.domain.postgres.CustomClient customClient) {
@@ -471,7 +471,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		return cl;
 	}
 	
-	protected List<Client> CustomClientconvert(List<org.opensrp.domain.postgres.CustomClient> clients) {
+	protected List<Client> CustomClientConvert(List<org.opensrp.domain.postgres.CustomClient> clients) {
 		if (clients == null || clients.isEmpty()) {
 			return new ArrayList<>();
 		}

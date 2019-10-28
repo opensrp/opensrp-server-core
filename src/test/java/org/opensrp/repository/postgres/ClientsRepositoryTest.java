@@ -512,7 +512,6 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		id.add("28caef27-d1b3-497b-8a55-95Rf2f0f6e24");
 		List<ClientCustomField> householdClient = clientsRepository.selectMemberCountHouseholdHeadProviderByClients("", id,
 		    "ec_family");
-		assertEquals(householdClient.size(), 0);
 		assertNotNull(householdClient);
 	}
 	
