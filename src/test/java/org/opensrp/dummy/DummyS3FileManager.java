@@ -1,7 +1,7 @@
 package org.opensrp.dummy;
 
 import com.amazonaws.services.s3.AmazonS3;
-import org.opensrp.domain.S3MultimediaFileManager;
+import org.opensrp.service.multimedia.S3MultimediaFileManager;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.springframework.context.annotation.Primary;

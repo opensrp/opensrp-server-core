@@ -4,7 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
-import org.opensrp.domain.BaseMultimediaFileManager;
+import org.opensrp.service.multimedia.BaseMultimediaFileManager;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.couch.MultimediaRepositoryImpl;

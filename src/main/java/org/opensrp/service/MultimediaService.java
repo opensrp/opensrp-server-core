@@ -1,13 +1,11 @@
 package org.opensrp.service;
 
-import org.opensrp.domain.FileSystemMultimediaFileManager;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.domain.contract.MultimediaFileManager;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.MultimediaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,11 +31,6 @@ public class MultimediaService {
 	public MultimediaService(MultimediaRepository multimediaRepository, ClientService clientService) {
 		this.multimediaRepository = multimediaRepository;
 		this.clientService = clientService;
-	}
-
-	@Autowired
-	public MultimediaService(MultimediaRepository multimediaRepository) {
-		this.multimediaRepository = multimediaRepository;
 	}
 
 	public List<Multimedia> getMultimediaFiles(String providerId) {
