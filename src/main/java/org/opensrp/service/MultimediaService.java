@@ -62,7 +62,7 @@ public class MultimediaService {
 	}
 
 	@Autowired
-	@Qualifier("S3MultimediaFileManager")
+	@Qualifier("multimedia_file_manager")
 	public void setFileManager(MultimediaFileManager fileManager) {
 		this.fileManager = fileManager;
 	}
