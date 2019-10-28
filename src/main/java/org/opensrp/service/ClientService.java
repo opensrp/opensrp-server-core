@@ -11,7 +11,7 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.domain.Address;
 import org.opensrp.domain.Client;
-import org.opensrp.domain.postgres.ClientCustomField;
+import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
@@ -252,32 +252,32 @@ public class ClientService {
 		return client;
 	}
 	
-	public Map<String, ClientCustomField> getMemberCountHouseholdHeadProviderByClients(List<String> ids, String clientType) {
-		List<ClientCustomField> householdClients = allClients.selectMemberCountHouseholdHeadProviderByClients("", ids,
+	public Map<String, HouseholdClient> getMemberCountHouseholdHeadProviderByClients(List<String> ids, String clientType) {
+		List<HouseholdClient> householdClients = allClients.selectMemberCountHouseholdHeadProviderByClients("", ids,
 		    clientType);
-		Map<String, ClientCustomField> households = new HashMap<String, ClientCustomField>();
+		Map<String, HouseholdClient> households = new HashMap<String, HouseholdClient>();
 		if (householdClients != null) {
-			for (ClientCustomField householdClient : householdClients) {
+			for (HouseholdClient householdClient : householdClients) {
 				households.put(householdClient.getRelationalId(), householdClient);
 			}
 		}
 		return households;
 	}
 	
-	public ClientCustomField findTotalCountHouseholdByCriteria(ClientSearchBean clientSearchBean,
+	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean clientSearchBean,
 	                                                           AddressSearchBean addressSearchBean) {
 		return allClients.findTotalCountHouseholdByCriteria(clientSearchBean, addressSearchBean);
 	}
 	
 	public List<Client> getHouseholdList(List<String> ids, String clientType, AddressSearchBean addressSearchBean,
 	                                     ClientSearchBean searchBean, List<Client> clients) {
-		Map<String, ClientCustomField> householdClients = getMemberCountHouseholdHeadProviderByClients(ids, clientType);
+		Map<String, HouseholdClient> householdClients = getMemberCountHouseholdHeadProviderByClients(ids, clientType);
 		
 		List<Client> clientList = new ArrayList<Client>();
 		
 		for (Client client : clients) {
 			if (householdClients != null) {
-				ClientCustomField householdClient = householdClients.get(client.getBaseEntityId());
+				HouseholdClient householdClient = householdClients.get(client.getBaseEntityId());
 				if (householdClient != null) {
 					client.addAttribute("memberCount", householdClient.getMemebrCount());
 					client.addAttribute("HouseholdHead", householdClient.getHouseholdHead());
@@ -301,7 +301,7 @@ public class ClientService {
 		return allClients.findAllClientsByCriteria(clientSearchBean, addressSearchBean);
 	}
 	
-	public ClientCustomField findTotalCountAllClientsByCriteria(ClientSearchBean clientSearchBean,
+	public HouseholdClient findTotalCountAllClientsByCriteria(ClientSearchBean clientSearchBean,
 	                                                            AddressSearchBean addressSearchBean) {
 		return allClients.findCountAllClientsByCriteria(clientSearchBean, addressSearchBean);
 	}

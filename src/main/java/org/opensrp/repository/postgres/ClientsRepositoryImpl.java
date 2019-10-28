@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
-import org.opensrp.domain.postgres.ClientCustomField;
+import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
 import org.opensrp.repository.ClientsRepository;
@@ -417,7 +417,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	public List<ClientCustomField> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
+	public List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
 	                                                                               String clientType) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		clientMetadataExample.createCriteria().andRelationalIdIn(ids);
@@ -425,7 +425,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	public ClientCustomField findTotalCountHouseholdByCriteria(ClientSearchBean searchBean,
+	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean,
 	                                                           AddressSearchBean addressSearchBean) {
 		
 		return clientMetadataMapper.selectHouseholdCountBySearchBean(searchBean, addressSearchBean);
@@ -488,7 +488,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	public ClientCustomField findCountAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+	public HouseholdClient findCountAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		
 		return clientMetadataMapper.selectCountAllClientsBySearchBean(searchBean, addressSearchBean);
 	}

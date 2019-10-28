@@ -1,6 +1,6 @@
 package org.opensrp.domain.postgres;
 
-public class ClientCustomField {
+public class HouseholdClient {
 	
 	private int memebrCount;
 	

@@ -33,13 +33,13 @@
 		<result column="age_month_part" jdbcType="BIGINT" property="ageMonthPart"/>
 		<result column="registration_status" jdbcType="VARCHAR" property="registrationStatus"/>
   </resultMap>
-	<resultMap id="householdClientMap" type="org.opensrp.domain.postgres.ClientCustomField">
+	<resultMap id="householdClientMap" type="org.opensrp.domain.postgres.HouseholdClient">
 		<id column="member_count" jdbcType="BIGINT" property="memebrCount" />
 		<result column="provider_id" jdbcType="VARCHAR" property="providerId"/>
 		<result column="household_head" jdbcType="VARCHAR" property="householdHead"/>	
 		<result column="relational_id" jdbcType="VARCHAR" property="relationalId"/>		
 	</resultMap>
-	<resultMap id="totalCountMap" type="org.opensrp.domain.postgres.ClientCustomField">		
+	<resultMap id="totalCountMap" type="org.opensrp.domain.postgres.HouseholdClient">		
 		<result column="total_count" jdbcType="BIGINT" property="totalCount"/>
 	</resultMap>	
 		

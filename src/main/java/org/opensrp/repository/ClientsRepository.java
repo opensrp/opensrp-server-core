@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.opensrp.domain.Client;
-import org.opensrp.domain.postgres.ClientCustomField;
+import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 
@@ -54,15 +54,15 @@ public interface ClientsRepository extends BaseRepository<Client> {
 	
 	List<Client> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar);
 	
-	List<ClientCustomField> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids, String clientType);
+	List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids, String clientType);
 	
-	ClientCustomField findTotalCountHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 	
 	List<Client> findMembersByRelationshipId(String relationshipId);
 	
 	List<Client> findAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 	
-	ClientCustomField findCountAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	HouseholdClient findCountAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 	
 	List<Client> findHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 }
