@@ -504,6 +504,8 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	public void shouldFindMembersByRelationshipId() {
 		List<Client> expectedClient = clientsRepository.findMembersByRelationshipId("0154839f-8766-4eda-b729-89067c7a8c5d");
 		assertNotNull(expectedClient);
+		assertEquals(0, expectedClient.size());
+		
 	}
 	
 	@Test
@@ -513,6 +515,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		List<HouseholdClient> householdClient = clientsRepository.selectMemberCountHouseholdHeadProviderByClients("", id,
 		    "ec_family");
 		assertNotNull(householdClient);
+		assertEquals(0, householdClient.size());
 	}
 	
 	@Test
@@ -522,6 +525,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		searchBean.setClientType("ec_family");
 		List<Client> clients = clientsRepository.findAllClientsByCriteria(searchBean, addressSearchBean);
 		assertNotNull(clients);
+		assertEquals(1, clients.size());
 	}
 	
 	@Test
@@ -531,7 +535,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		searchBean.setClientType("ec_family");
 		HouseholdClient clientCustomField = clientsRepository.findCountAllClientsByCriteria(searchBean, addressSearchBean);
 		assertNotNull(clientCustomField);
-		assertNotEquals(clientCustomField.getTotalCount(), 0);
+		assertNotEquals(0, clientCustomField.getTotalCount());
 	}
 	
 	@Test
@@ -541,5 +545,6 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		searchBean.setClientType("ec_family");
 		List<Client> clients = clientsRepository.findHouseholdByCriteria(searchBean, addressSearchBean);
 		assertNotNull(clients);
+		assertEquals(0, clients.size());
 	}
 }
