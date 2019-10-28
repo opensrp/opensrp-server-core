@@ -56,11 +56,13 @@ public interface ClientsRepository extends BaseRepository<Client> {
 	
 	List<ClientCustomField> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids, String clientType);
 	
-	ClientCustomField findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	ClientCustomField findTotalCountHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 	
 	List<Client> findMembersByRelationshipId(String relationshipId);
 	
-	List<Client> findAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	List<Client> findAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 	
-	ClientCustomField findCountAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	ClientCustomField findCountAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	List<Client> findHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 }

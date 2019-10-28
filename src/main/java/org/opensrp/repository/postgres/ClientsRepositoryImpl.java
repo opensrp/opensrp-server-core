@@ -425,9 +425,10 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	public ClientCustomField findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+	public ClientCustomField findTotalCountHouseholdByCriteria(ClientSearchBean searchBean,
+	                                                           AddressSearchBean addressSearchBean) {
 		
-		return clientMetadataMapper.selectCountBySearchBean(searchBean, addressSearchBean);
+		return clientMetadataMapper.selectHouseholdCountBySearchBean(searchBean, addressSearchBean);
 	}
 	
 	@Override
@@ -441,7 +442,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	public List<Client> findAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+	public List<Client> findAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		int pageSize = searchBean.getPageSize();
 		if (pageSize == 0) {
 			pageSize = DEFAULT_FETCH_SIZE;
@@ -449,8 +450,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		
 		int offset = searchBean.getPageNumber() * pageSize;
 		
-		List<org.opensrp.domain.postgres.CustomClient> clients = clientMetadataMapper.selectAllClients(searchBean,
-		    addressSearchBean, offset, pageSize);
+		List<org.opensrp.domain.postgres.CustomClient> clients = clientMetadataMapper.selectAllClientsBySearchBean(
+		    searchBean, addressSearchBean, offset, pageSize);
 		return CustomClientconvert(clients);
 	}
 	
@@ -487,8 +488,19 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	public ClientCustomField findCountAllClients(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+	public ClientCustomField findCountAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		
-		return clientMetadataMapper.selectCountAllClients(searchBean, addressSearchBean);
+		return clientMetadataMapper.selectCountAllClientsBySearchBean(searchBean, addressSearchBean);
+	}
+	
+	@Override
+	public List<Client> findHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		int pageSize = searchBean.getPageSize();
+		if (pageSize == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		}
+		
+		int offset = searchBean.getPageNumber() * pageSize;
+		return convert(clientMetadataMapper.selectHouseholdBySearchBean(searchBean, addressSearchBean, offset, pageSize));
 	}
 }

@@ -264,8 +264,9 @@ public class ClientService {
 		return households;
 	}
 	
-	public ClientCustomField findTotalCountByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
-		return allClients.findTotalCountByCriteria(clientSearchBean, addressSearchBean);
+	public ClientCustomField findTotalCountHouseholdByCriteria(ClientSearchBean clientSearchBean,
+	                                                           AddressSearchBean addressSearchBean) {
+		return allClients.findTotalCountHouseholdByCriteria(clientSearchBean, addressSearchBean);
 	}
 	
 	public List<Client> getHouseholdList(List<String> ids, String clientType, AddressSearchBean addressSearchBean,
@@ -296,11 +297,20 @@ public class ClientService {
 		return allClients.findMembersByRelationshipId(relationshipId);
 	}
 	
-	public List<Client> findAllClients(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
-		return allClients.findAllClients(clientSearchBean, addressSearchBean);
+	public List<Client> findAllClientsByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
+		return allClients.findAllClientsByCriteria(clientSearchBean, addressSearchBean);
 	}
 	
-	public ClientCustomField findTotalCountAllClients(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
-		return allClients.findCountAllClients(clientSearchBean, addressSearchBean);
+	public ClientCustomField findTotalCountAllClientsByCriteria(ClientSearchBean clientSearchBean,
+	                                                            AddressSearchBean addressSearchBean) {
+		return allClients.findCountAllClientsByCriteria(clientSearchBean, addressSearchBean);
+	}
+	
+	public List<Client> findHouseholdByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean,
+	                                            DateTime lastEditFrom, DateTime lastEditTo) {
+		clientSearchBean.setLastEditFrom(lastEditFrom);
+		clientSearchBean.setLastEditTo(lastEditTo);
+		return allClients.findHouseholdByCriteria(clientSearchBean, addressSearchBean);
+		
 	}
 }
