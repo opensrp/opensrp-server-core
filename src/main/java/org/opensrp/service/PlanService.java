@@ -124,7 +124,7 @@ public class PlanService {
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans a user has access to
 	 */
-	public List<PlanDefinition> getPlansByIdentifiersandServerVersion(String username, long serverVersion) {
+	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion) {
 		org.opensrp.domain.Practitioner practitioner = practitionerService.getPractionerByUsername(username);
 		if (practitioner != null) {
 			List<PractitionerRole> roles = practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier());
