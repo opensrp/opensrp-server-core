@@ -134,7 +134,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
      * {@inheritDoc}
      */
     @Override
-    public List<PlanDefinition> getPlansByIdentifiersandServerVersion(List<String> planIdentifiers,Long serverVersion ) {
+    public List<PlanDefinition> getPlansByIdentifiersAndServerVersion(List<String> planIdentifiers,Long serverVersion ) {
         PlanExample planExample = new PlanExample();
         planExample.createCriteria().andIdentifierIn(planIdentifiers).andServerVersionGreaterThanOrEqualTo(serverVersion);
         List<Plan> plans = planMapper.selectMany(planExample, 0, DEFAULT_FETCH_SIZE);
@@ -147,7 +147,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
      * {@inheritDoc}
      */
     @Override
-    public List<PlanDefinition> getPlansByIdsandServerVersion(List<Long> planIds,Long serverVersion ) {
+    public List<PlanDefinition> getPlansByIdsAndServerVersion(List<Long> planIds,Long serverVersion ) {
         PlanExample planExample = new PlanExample();
         planExample.createCriteria().andIdIn(planIds).andServerVersionGreaterThanOrEqualTo(serverVersion);
         List<Plan> plans = planMapper.selectMany(planExample, 0, DEFAULT_FETCH_SIZE);

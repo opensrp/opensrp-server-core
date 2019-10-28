@@ -92,13 +92,13 @@ public class PlanService {
 	}
 	
 	/**
-	 * Gets the plans using planId that have server version >=  the server version param
-	 * @param planIds the list of Ids
+	 * Gets the plans using plan Identifiers that have server version >=  the server version param
+	 * @param planIds the list of planIdentifiers
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans matching the above
 	 */
-	public List<PlanDefinition> getPlansByIdsandServerVersion(List<Long> planIds, long serverVersion) {
-		return planRepository.getPlansByIdsandServerVersion(planIds, serverVersion);
+	public List<PlanDefinition> getPlansByIdsAndServerVersion(List<String> planIdentifiers, long serverVersion) {
+		return planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
 	
 	/**
@@ -116,7 +116,7 @@ public class PlanService {
 			List<Long> planIds = new ArrayList<>();
 			for (PractitionerRole role : roles)
 				planIds.add(role.getOrganizationId());
-			return planRepository.getPlansByIdsandServerVersion(planIds, serverVersion);
+			return planRepository.getPlansByIdsAndServerVersion(planIds, serverVersion);
 		}
 		
 		return null;
