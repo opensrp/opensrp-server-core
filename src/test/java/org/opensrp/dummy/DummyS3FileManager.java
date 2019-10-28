@@ -1,4 +1,4 @@
-package org.opensrp.test;
+package org.opensrp.dummy;
 
 import com.amazonaws.services.s3.AmazonS3;
 import org.opensrp.domain.S3MultimediaFileManager;

@@ -44,7 +44,7 @@
 
 	<context:component-scan base-package="org.opensrp.service.formSubmission.ziggy" />
 
-	<context:component-scan base-package="org.opensrp.test" />
+	<context:component-scan base-package="org.opensrp.dummy" />
 
 	<bean id="httpClient" class="org.opensrp.util.OpenSRPHttpClientFactoryBean" />
 
