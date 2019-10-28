@@ -30,7 +30,7 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
      */
     public Long retrievePrimaryKey(String identifier);
 
-	/** Gets the plans using the plan identifiers and greater than or equal to server version
+	/** Gets the plans using the plan identifiers and whose server version is greater than or equal to server version
 	 * @param planIds the plan identifiers
 	 * @param serverVersion 
 	 * @return plans with the identifiers and server version greater than or equal to server version param
