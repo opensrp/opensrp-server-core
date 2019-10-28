@@ -8,6 +8,7 @@ import java.util.List;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
@@ -22,6 +23,8 @@ public class PlanService {
 	private PractitionerService practitionerService;
 	
 	private PractitionerRoleService practitionerRoleService;
+	
+	private OrganizationService organizationService;
 	
 	@Autowired
 	public void setPlanRepository(PlanRepository planRepository) {
@@ -92,20 +95,30 @@ public class PlanService {
 	}
 	
 	/**
-	 * Gets the plans using plan Identifiers that have server version >=  the server version param
-	 * @param planIds the list of planIdentifiers
+	 * Gets the plans using organization Ids that have server version >= the server version param
+	 * 
+	 * @param organizationIds the list of organization Ids
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans matching the above
 	 */
-	public List<PlanDefinition> getPlansByIdsAndServerVersion(List<String> planIdentifiers, long serverVersion) {
+	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
+		
+		List<AssignedLocations> assignedPlansAndLocations = organizationService
+		        .findAssignedLocationsAndPlans(organizationIds);
+		List<String> planIdentifiers = new ArrayList<>();
+		for (AssignedLocations assignedLocation : assignedPlansAndLocations) {
+			planIdentifiers.add(assignedLocation.getPlanId());
+		}
 		return planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
 	
 	/**
-	 * Gets the plans that a user has access to according to the plan location assignment that have server version >=  the server version param
+	 * Gets the plans that a user has access to according to the plan location assignment that have
+	 * server version >= the server version param
+	 * 
 	 * @param username the username of user
 	 * @param serverVersion the server version to filter plans with
-	 * @return the plans a user has access to 
+	 * @return the plans a user has access to
 	 */
 	public List<PlanDefinition> getPlansByIdentifiersandServerVersion(String username, long serverVersion) {
 		org.opensrp.domain.Practitioner practitioner = practitionerService.getPractionerByUsername(username);
@@ -113,10 +126,10 @@ public class PlanService {
 			List<PractitionerRole> roles = practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier());
 			if (roles.isEmpty())
 				return null;
-			List<Long> planIds = new ArrayList<>();
+			List<Long> organizationIds = new ArrayList<>();
 			for (PractitionerRole role : roles)
-				planIds.add(role.getOrganizationId());
-			return planRepository.getPlansByIdsAndServerVersion(planIds, serverVersion);
+				organizationIds.add(role.getOrganizationId());
+			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
 		}
 		
 		return null;
