@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.opensrp.domain.Geometry.GeometryType;
+import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.PhysicalLocationTest;
@@ -488,6 +490,24 @@ public class PhysicalLocationServiceTest {
 		assertEquals(2, actualStructureIds.size());
 		assertEquals(expectedStructureIds.get(0).toString(), actualStructureIds.get(0).toString());
 		assertEquals(expectedStructureIds.get(1).toString(), actualStructureIds.get(1).toString());
+
+	}
+
+	@Test
+	public void testFindLocationDetailsByPlanId() {
+		List<LocationDetail> expectedLocationDetails = new ArrayList<>();
+		LocationDetail locationDetail = new LocationDetail();
+		locationDetail.setIdentifier("identifier-1");
+		locationDetail.setName("location-one");
+		expectedLocationDetails.add(locationDetail);
+
+		when(locationRepository.findLocationDetailsByPlanId("identifier-1")).thenReturn(expectedLocationDetails);
+		List<LocationDetail> actualLocationDetails = locationService.findLocationDetailsByPlanId("identifier-1");
+
+		verify(locationRepository).findLocationDetailsByPlanId(anyString());
+		assertEquals(1, actualLocationDetails.size());
+		assertEquals(actualLocationDetails.get(0).getIdentifier(), "identifier-1");
+		assertEquals(actualLocationDetails.get(0).getName(), "location-one");
 
 	}
 
