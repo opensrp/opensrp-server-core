@@ -91,6 +91,22 @@ public class PlanService {
 		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields);
 	}
 	
+	/**
+	 * Gets the plans using planId that have server version >=  the server version param
+	 * @param planIds the list of Ids
+	 * @param serverVersion the server version to filter plans with
+	 * @return the plans matching the above
+	 */
+	public List<PlanDefinition> getPlansByIdsandServerVersion(List<Long> planIds, long serverVersion) {
+		return planRepository.getPlansByIdsandServerVersion(planIds, serverVersion);
+	}
+	
+	/**
+	 * Gets the plans that a user has access to according to the plan location assignment that have server version >=  the server version param
+	 * @param username the username of user
+	 * @param serverVersion the server version to filter plans with
+	 * @return the plans a user has access to 
+	 */
 	public List<PlanDefinition> getPlansByIdentifiersandServerVersion(String username, long serverVersion) {
 		org.opensrp.domain.Practitioner practitioner = practitionerService.getPractionerByUsername(username);
 		if (practitioner != null) {
