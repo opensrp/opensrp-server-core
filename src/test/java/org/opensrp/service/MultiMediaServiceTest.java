@@ -14,12 +14,14 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.junit.Before;
 import org.junit.Test;
+import org.opensrp.domain.BaseMultimediaFileManager;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
+import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,12 +44,16 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 	
 	@Value("#{opensrp['multimedia.directory.name']}")
 	private String baseMultimediaDirPath;
-	
+
+	@Autowired
+	@Qualifier("FileSystemMultimediaFileManager")
+	private BaseMultimediaFileManager fileManager;
+
 	@Before
 	public void setUp() {
 		clientService = new ClientService(clientsRepository);
 		multimediaService = new MultimediaService(multimediaRepository, clientService);
-		multimediaService.baseMultimediaDirPath = baseMultimediaDirPath;
+		Whitebox.setInternalState(fileManager, "baseMultimediaDirPath", baseMultimediaDirPath);
 	}
 	
 	@Override
@@ -66,7 +72,7 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 		MultimediaDTO multimediaDTO = new MultimediaDTO(baseEntityId, "biddemo", multimediaFile.getContentType(), "",
 		        "profilepic");
 		
-		assertTrue(multimediaService.uploadFile(multimediaDTO, multimediaFile));
+		assertTrue(fileManager.uploadFile(multimediaDTO, multimediaFile));
 		
 		//assertEquals(multimediaFile, multimediaService.findByCaseId("469597f0-eefe-4171-afef-f7234cbb2859"));
 		
@@ -77,7 +83,6 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 		assertTrue(file.canRead());
 		
 		assertEquals(content, new String(Files.readAllBytes(Paths.get(file.getAbsolutePath()))));
-		
 	}
 	
 	@Test
@@ -88,7 +93,7 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 		MultimediaDTO multimediaDTO = new MultimediaDTO(baseEntityId, "biddemo", multimediaFile.getContentType(), "",
 		        "profile_picture");
 		
-		assertEquals("success", multimediaService.saveMultimediaFile(multimediaDTO, multimediaFile));
+		assertEquals("success", fileManager.saveMultimediaFile(multimediaDTO, multimediaFile));
 		
 		File file = new File(baseMultimediaDirPath + File.separator + MultimediaService.IMAGES_DIR + File.separator
 		        + baseEntityId + ".jpg");
@@ -109,5 +114,4 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 		assertEquals(baseEntityId + ".jpg", client.getAttribute("Patient Image"));
 		assertEquals(0, Minutes.minutesBetween(client.getDateEdited(), DateTime.now()).getMinutes());
 	}
-	
 }

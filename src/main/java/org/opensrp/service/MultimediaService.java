@@ -27,6 +27,14 @@ public class MultimediaService {
 
 	private MultimediaFileManager fileManager;
 
+	private ClientService clientService;
+
+	@Autowired
+	public MultimediaService(MultimediaRepository multimediaRepository, ClientService clientService) {
+		this.multimediaRepository = multimediaRepository;
+		this.clientService = clientService;
+	}
+
 	@Autowired
 	public MultimediaService(MultimediaRepository multimediaRepository) {
 		this.multimediaRepository = multimediaRepository;

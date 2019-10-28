@@ -1,29 +1,10 @@
 package org.opensrp.service.it;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.opensrp.util.SampleFullDomainObject.CASE_ID;
-import static org.opensrp.util.SampleFullDomainObject.DIFFERENT_BASE_ENTITY_ID;
-import static org.opensrp.util.SampleFullDomainObject.PROVIDER_ID;
-import static org.opensrp.util.SampleFullDomainObject.getMultimedia;
-import static org.opensrp.util.SampleFullDomainObject.getMultimediaDTO;
-import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
+import org.opensrp.domain.BaseMultimediaFileManager;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.couch.MultimediaRepositoryImpl;
@@ -31,6 +12,17 @@ import org.opensrp.service.MultimediaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static org.opensrp.util.SampleFullDomainObject.*;
+import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
+import static org.utils.CouchDbAccessUtils.addObjectToRepository;
 
 /**
  * If tests fail check property `'multimedia.directory.name` in `opensrp.properties`.
@@ -44,12 +36,15 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 	private MultimediaService multimediaService;
 	
 	@Value("#{opensrp['multimedia.directory.name']}")
-	String baseMultimediaDirPath;
+	private String baseMultimediaDirPath;
+	
+	private BaseMultimediaFileManager fileManager;
 	
 	@Before
 	public void setUp() {
 		multimediaRepository.removeAll();
 		deleteFolders("../multimedia");
+		fileManager = (BaseMultimediaFileManager) multimediaService.getFileManager();
 	}
 	
 	@After
@@ -105,7 +100,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/jpeg");
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
-		Boolean result = multimediaService.uploadFile(multimediaDTO, mockMultipartFile);
+		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
 		
 		assertTrue(result);
 		assertTrue(new File(baseImagePath).exists());
@@ -119,7 +114,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/gif");
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
-		Boolean result = multimediaService.uploadFile(multimediaDTO, mockMultipartFile);
+		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
 		
 		assertTrue(result);
 		assertTrue(new File(baseImagePath).exists());
@@ -133,7 +128,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/png");
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
-		Boolean result = multimediaService.uploadFile(multimediaDTO, mockMultipartFile);
+		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
 		
 		assertTrue(result);
 		assertTrue(new File(baseImagePath).exists());
@@ -147,7 +142,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		MultimediaDTO multimediaDTO = getMultimediaDTO("application/octet-stream");
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
-		Boolean result = multimediaService.uploadFile(multimediaDTO, mockMultipartFile);
+		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
 		
 		assertTrue(result);
 		assertTrue(new File(baseImagePath).exists());
@@ -159,7 +154,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		MultimediaDTO multimediaDTO = getMultimediaDTO("unknown");
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
-		assertFalse(multimediaService.uploadFile(multimediaDTO, mockMultipartFile));
+		assertFalse(fileManager.uploadFile(multimediaDTO, mockMultipartFile));
 	}
 	
 	@Test
@@ -168,7 +163,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
 		when(mockMultipartFile.isEmpty()).thenReturn(true);
-		assertFalse(multimediaService.uploadFile(multimediaDTO, mockMultipartFile));
+		assertFalse(fileManager.uploadFile(multimediaDTO, mockMultipartFile));
 	}
 	
 	@Test
@@ -179,7 +174,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		expectedMultimedia.setContentType("image/png");
 		expectedMultimedia.setFilePath("../multimedia/opensrp/images/caseId.png");
 		
-		String result = multimediaService.saveMultimediaFile(multimediaDTO, mockMultipartFile);
+		String result = fileManager.saveMultimediaFile(multimediaDTO, mockMultipartFile);
 		
 		assertEquals("success", result);
 		List<Multimedia> dbFiles = multimediaRepository.getAll();
@@ -192,7 +187,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		MultimediaDTO multimediaDTO = getMultimediaDTO("unknown");
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
-		String result = multimediaService.saveMultimediaFile(multimediaDTO, mockMultipartFile);
+		String result = fileManager.saveMultimediaFile(multimediaDTO, mockMultipartFile);
 		
 		assertEquals("fail", result);
 		List<Multimedia> dbFiles = multimediaRepository.getAll();

@@ -11,8 +11,6 @@
 	<util:properties id="opensrp" location="classpath:/opensrp.properties" />
 
 	<import resource="classpath:applicationPlatformCommonAPI.xml" />
-	<!-- <import resource="classpath:applicationContext-opensrp-form.xml" /> -->
-
 	<import resource="classpath:applicationScheduler.xml" />
 	<import resource="classpath:applicationPlatformServerAPI.xml" />
 	<import resource="classpath:applicationSmsHttp.xml" />
@@ -45,6 +43,8 @@
 	</context:component-scan>
 
 	<context:component-scan base-package="org.opensrp.service.formSubmission.ziggy" />
+
+	<context:component-scan base-package="org.opensrp.test" />
 
 	<bean id="httpClient" class="org.opensrp.util.OpenSRPHttpClientFactoryBean" />
 

@@ -19,6 +19,7 @@ import static org.opensrp.service.MultimediaService.*;
 /**
  * Created by Vincent Karuri on 24/10/2019
  */
+
 @Component
 public abstract class BaseMultimediaFileManager implements MultimediaFileManager {
 
@@ -70,8 +71,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                     clientService.updateClient(client);
                 }
                 return SUCCESS;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.getMessage();
             }
         }
@@ -130,8 +130,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                 persistFileToStorage(fileName, multimediaFile);
 
                 return true;
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 logger.error("", e);
                 return false;
             }

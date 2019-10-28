@@ -79,7 +79,7 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
     }
 
     @PostConstruct
-    private AmazonS3 getS3Client() {
+    protected AmazonS3 getS3Client() {
         if (s3Client == null) {
             s3Client = AmazonS3ClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey)))
