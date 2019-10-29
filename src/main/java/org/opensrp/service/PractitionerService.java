@@ -96,6 +96,16 @@ public class PractitionerService {
 		return new ImmutablePair<>(practioner, organizationIds);
 
 	}
+	
+	/**
+	 * Get practitioner using username 
+	 * @param username
+	 * @return practitioner with the username
+	 */
+	public Practitioner getPractionerByUsername(String username) {
+		return getPractitionerRepository().getPractitionerByUsername(username);
+
+	}
 
 	public List<Practitioner> getPractitionersByOrgIdentifier(String organizationIdentifier) {
 		organizationService.validateIdentifier(organizationIdentifier);

@@ -137,6 +137,19 @@ public class PractitionerServiceTest {
         verify(practitionerRepository).getPractitionersByOrgId(anyLong());
 
     }
+    
+	@Test
+	public void testGetPractionerByUsername() {
+		String username = "janedoe";
+		Practitioner practitioner = initTestPractitioner();
+		when(practitionerRepository.getPractitionerByUsername(username)).thenReturn(practitioner);
+		
+		Practitioner actual = practitionerService.getPractionerByUsername("janedoe");
+		
+		verify(practitionerRepository).getPractitionerByUsername(username);
+		assertEquals(practitioner, actual);
+		
+	}
 
     private Practitioner initTestPractitioner(){
         Practitioner practitioner = new Practitioner();
