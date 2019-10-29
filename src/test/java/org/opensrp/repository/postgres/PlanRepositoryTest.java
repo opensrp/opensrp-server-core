@@ -426,6 +426,10 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         
         plans = planRepository.getPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7","identifier_8"), 3l);
         assertEquals(0,plans.size());
+        
+        
+        plans = planRepository.getPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_70"), 0l);
+        assertEquals(0,plans.size());
 
     }
 
