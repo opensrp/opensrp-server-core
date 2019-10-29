@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.opensrp.service.MultimediaService.IMAGES_DIR;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +55,7 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 		clientService = new ClientService(clientsRepository);
 		multimediaService = new MultimediaService(multimediaRepository, clientService);
 		Whitebox.setInternalState(fileManager, "baseMultimediaDirPath", baseMultimediaDirPath);
+		Whitebox.setInternalState(fileManager, "clientService", clientService);
 	}
 	
 	@Override
@@ -76,7 +78,7 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 		
 		//assertEquals(multimediaFile, multimediaService.findByCaseId("469597f0-eefe-4171-afef-f7234cbb2859"));
 		
-		File file = new File(baseMultimediaDirPath + File.separator + MultimediaService.IMAGES_DIR + File.separator
+		File file = new File(baseMultimediaDirPath + File.separator + IMAGES_DIR + File.separator
 		        + baseEntityId + ".jpg");
 		System.out.println(file.getAbsolutePath());
 		assertTrue(file.exists());
@@ -87,15 +89,16 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testSaveMultimediaFile() throws IOException {
-		String baseEntityId = "469597f0-eefe-4171-afef-f7234cbb2859";
+		String baseEntityId = "040d4f18-8140-479c-aa21-725612073490";
 		String content = "876nsfsdfs-sdfsfsdf";
+
 		MultipartFile multimediaFile = new MockMultipartFile("mockFile", "test1.jpg", "image/jpeg", content.getBytes());
 		MultimediaDTO multimediaDTO = new MultimediaDTO(baseEntityId, "biddemo", multimediaFile.getContentType(), "",
-		        "profile_picture");
+		        "profilepic");
 		
 		assertEquals("success", fileManager.saveMultimediaFile(multimediaDTO, multimediaFile));
 		
-		File file = new File(baseMultimediaDirPath + File.separator + MultimediaService.IMAGES_DIR + File.separator
+		File file = new File(baseMultimediaDirPath + File.separator + IMAGES_DIR + File.separator
 		        + baseEntityId + ".jpg");
 		System.out.println(file.getAbsolutePath());
 		assertTrue(file.exists());
@@ -109,8 +112,8 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 		assertEquals(multimediaDTO.getContentType(), savedMultimedia.getContentType());
 		assertEquals(multimediaDTO.getFileCategory(), savedMultimedia.getFileCategory());
 		
-		assertEquals(5, multimediaService.getMultimediaFiles("biddemo").size());
-		assertEquals(6, multimediaRepository.getAll().size());
+		assertEquals(4, multimediaService.getMultimediaFiles("biddemo").size());
+		assertEquals(5, multimediaRepository.getAll().size());
 		assertEquals(baseEntityId + ".jpg", client.getAttribute("Patient Image"));
 		assertEquals(0, Minutes.minutesBetween(client.getDateEdited(), DateTime.now()).getMinutes());
 	}
