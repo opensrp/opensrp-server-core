@@ -1,40 +1,49 @@
 package org.opensrp.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.opensrp.domain.PlanDefinition;
-import org.opensrp.repository.PlanRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.opensrp.domain.PlanDefinition;
+import org.opensrp.repository.PlanRepository;
 
 /**
  * Created by Vincent Karuri on 06/05/2019
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
 public class PlanServiceTest {
 
-    @Autowired
+	@Rule
+	public MockitoRule rule = MockitoJUnit.rule();
+	
     private PlanService planService;
 
     @Mock
     private PlanRepository planRepository;
+	
+    @Mock
+	private PractitionerService practitionerService;
+	
+    @Mock
+	private PractitionerRoleService practitionerRoleService;
+	
+    @Mock
+	private OrganizationService organizationService;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        planService.setPlanRepository(planRepository);
+        planService =  new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService);
     }
 
     @Test
