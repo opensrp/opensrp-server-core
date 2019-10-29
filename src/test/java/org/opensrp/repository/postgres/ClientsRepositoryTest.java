@@ -441,7 +441,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals(6, clientsRepository.findByServerVersion(1520935878136l).size());
 		
 		List<Client> clients = clientsRepository.findByServerVersion(1521003136406l);
-		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce");
+		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce", "f5934ae338431f28bf6793b24159ce5a");
 		assertEquals(3, clients.size());
 		for (Client client : clients) {
 			assertTrue(client.getServerVersion() >= 1521003136406l);
