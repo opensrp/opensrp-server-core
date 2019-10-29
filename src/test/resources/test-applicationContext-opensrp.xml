@@ -6,9 +6,9 @@
                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
 	<context:property-placeholder
-		location="classpath:maven.properties,classpath:activemq.properties,classpath:opensrp.properties" />
+		location="classpath:maven.properties,classpath:activemq.properties,classpath:test-opensrp.properties" />
 	<util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
-	<util:properties id="opensrp" location="classpath:/opensrp.properties" />
+	<util:properties id="opensrp" location="classpath:/test-opensrp.properties" />
 
 	<import resource="classpath:applicationPlatformCommonAPI.xml" />
 	<import resource="classpath:applicationScheduler.xml" />
