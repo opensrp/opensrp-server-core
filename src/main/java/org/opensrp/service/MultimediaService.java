@@ -71,4 +71,8 @@ public class MultimediaService {
 	public MultimediaFileManager getFileManager() {
 		return fileManager;
 	}
+
+	public ClientService getClientService() {
+		return clientService;
+	}
 }

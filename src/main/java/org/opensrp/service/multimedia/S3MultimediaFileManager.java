@@ -79,6 +79,7 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
     }
 
     @PostConstruct
+    @SuppressWarnings("unused")
     private AmazonS3 getS3Client() {
         if (s3Client == null) {
             s3Client = AmazonS3ClientBuilder.standard()
