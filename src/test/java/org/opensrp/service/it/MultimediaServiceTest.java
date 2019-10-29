@@ -19,10 +19,19 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.opensrp.service.MultimediaService.IMAGES_DIR;
-import static org.opensrp.util.SampleFullDomainObject.*;
+import static org.opensrp.util.SampleFullDomainObject.CASE_ID;
+import static org.opensrp.util.SampleFullDomainObject.DIFFERENT_BASE_ENTITY_ID;
+import static org.opensrp.util.SampleFullDomainObject.PROVIDER_ID;
+import static org.opensrp.util.SampleFullDomainObject.getMultimedia;
+import static org.opensrp.util.SampleFullDomainObject.getMultimediaDTO;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
 import static org.utils.CouchDbAccessUtils.addObjectToRepository;
 
@@ -33,7 +42,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 	
 	@Autowired
 	private MultimediaRepositoryImpl multimediaRepository;
-	
+
 	@Autowired
 	private MultimediaService multimediaService;
 	
