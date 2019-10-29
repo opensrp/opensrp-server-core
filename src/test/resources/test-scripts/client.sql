@@ -1,9 +1,9 @@
 --clear data
 TRUNCATE TABLE core.client CASCADE;
 
-ALTER SEQUENCE core.client_id_seq RESTART;
+ALTER SEQUENCE core.client_id_seq RESTART WITH 17;
 
-ALTER SEQUENCE core.client_metadata_id_seq RESTART;
+ALTER SEQUENCE core.client_metadata_id_seq RESTART WITH 17;
 
 INSERT INTO core.client (id, json) VALUES 
 (1, '{"_id": "05934ae338431f28bf6793b24159ce5d", "type": "Client", "gender": "Male", "lastName": "Child", "_rev": "2-0b2b71f8189f101a5c4c69e44d4886f5", "addresses": [{"addressType": "usual_residence", "addressFields": {"address2": "Dre0", "address3": "78e20b3d-f25e-436f-9cb0-9a505d362f34"}}], "birthdate": "2018-03-01T03:00:00.000", "firstName": "Second", "attributes": {}, "dateEdited": "2018-03-13T00:52:58.942", "dateCreated": "2018-03-13T00:48:59.829", "identifiers": {"ZEIR_ID": "218221-0", "OPENMRS_UUID": "8796f967-2f7a-40f7-8586-d63dbc81b709"}, "baseEntityId": "287be17c-30a7-4482-8816-e2382ec502f1", "relationships": {"mother": ["22b8570a-3207-4af7-8da7-8a1c5b84d3ff"]}, "birthdateApprox": false, "deathdateApprox": false}'),

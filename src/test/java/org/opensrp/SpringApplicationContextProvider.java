@@ -8,7 +8,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
-public class SpringApplicationContextProvider extends TestResourceLoader {
+public abstract class SpringApplicationContextProvider extends TestResourceLoader {
 	
 	public static ApplicationContext context;
 	
