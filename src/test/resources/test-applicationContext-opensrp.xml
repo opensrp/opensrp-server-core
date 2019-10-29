@@ -40,10 +40,12 @@
 			expression="org.opensrp.service.*DrishtiSMS.*" />
 	 	<context:exclude-filter type="regex"
 			expression="org.opensrp.service.*reporting.*" />
-		<context:exclude-filter type="regex"
+
+		<!-- uncomment this to allow intellij test runs -->
+		<!-- <context:exclude-filter type="regex"
 								expression="org.opensrp.service.formSubmission.*" />
 		<context:exclude-filter type="regex"
-								expression="org.opensrp.service.FormSubmissionDataMigrationService" />
+								expression="org.opensrp.service.FormSubmissionDataMigrationService" /> -->
 	</context:component-scan>
 
 	<bean id="httpClient" class="org.opensrp.util.OpenSRPHttpClientFactoryBean" />
