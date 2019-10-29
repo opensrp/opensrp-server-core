@@ -472,9 +472,16 @@ public class ClientServiceTest extends BaseIntegrationTest {
 		List<Client> dbClients = allClients.getAll();
 		assertEquals(1, dbClients.size());
 		assertEquals(expectedClient, actualClient);
-		
-		assertNotEquals(expectedServerVersion, dbClients.get(0).getServerVersion());
-		assertObjectUpdate(expectedClient, dbClients.get(0));
+
+		actualClient = dbClients.get(0);
+		assertNotEquals(expectedServerVersion, actualClient.getServerVersion());
+		assertEquals(expectedClient.getFirstName(), actualClient.getFirstName());
+		assertEquals(expectedClient.getLastName(), actualClient.getLastName());
+		assertEquals(expectedClient.getMiddleName(), actualClient.getMiddleName());
+		assertEquals(expectedClient.getBirthdate(), actualClient.getBirthdate());
+		assertEquals(expectedClient.getDeathdate(), actualClient.getDeathdate());
+		assertEquals(expectedClient.getFirstName(), actualClient.getFirstName());
+		assertEquals(expectedClient.getBaseEntityId(), actualClient.getBaseEntityId());
 	}
 	
 	@Test(expected = RuntimeException.class)
