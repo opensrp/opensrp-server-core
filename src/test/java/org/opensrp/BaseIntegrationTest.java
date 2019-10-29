@@ -2,12 +2,9 @@ package org.opensrp;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 
-public class BaseIntegrationTest extends SpringApplicationContextProvider {
-	
-	@Ignore
-	@Test
-	public void testOk() {
-	}
-	
+@ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
+public abstract class BaseIntegrationTest extends SpringApplicationContextProvider {
+
 }

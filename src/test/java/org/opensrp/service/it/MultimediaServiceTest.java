@@ -10,6 +10,7 @@ import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.couch.MultimediaRepositoryImpl;
 import org.opensrp.service.MultimediaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +21,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.opensrp.service.MultimediaService.IMAGES_DIR;
 import static org.opensrp.util.SampleFullDomainObject.*;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
 import static org.utils.CouchDbAccessUtils.addObjectToRepository;
@@ -38,13 +40,18 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 	@Value("#{opensrp['multimedia.directory.name']}")
 	private String baseMultimediaDirPath;
 	
+	private String BASE_IMAGE_PATH = baseMultimediaDirPath + File.separator + IMAGES_DIR+ File.separator;
+
+	@Autowired
+	@Qualifier("multimedia_file_manager")
 	private BaseMultimediaFileManager fileManager;
-	
+
 	@Before
 	public void setUp() {
 		multimediaRepository.removeAll();
 		deleteFolders("../multimedia");
 		fileManager = (BaseMultimediaFileManager) multimediaService.getFileManager();
+		BASE_IMAGE_PATH = baseMultimediaDirPath + File.separator + IMAGES_DIR+ File.separator;
 	}
 	
 	@After
@@ -95,57 +102,54 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 	
 	@Test
 	public void shouldUploadJpegFile() throws IOException {
-		String baseImagePath = baseMultimediaDirPath + "/" + "images/";
-		String pathname = baseImagePath + CASE_ID + ".jpg";
+		String pathname = BASE_IMAGE_PATH + File.separator + CASE_ID + ".jpg";
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/jpeg");
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
 		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
 		
 		assertTrue(result);
-		assertTrue(new File(baseImagePath).exists());
+		assertTrue(new File(BASE_IMAGE_PATH).exists());
 		verify(mockMultipartFile, times(1)).transferTo(new File(pathname));
 	}
 	
 	@Test
 	public void shouldUploadGifFile() throws IOException {
-		String baseImagePath = baseMultimediaDirPath + "/" + "images/";
-		String pathname = baseImagePath + CASE_ID + ".gif";
+		String pathname = BASE_IMAGE_PATH + File.separator + CASE_ID + ".gif";
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/gif");
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
 		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
 		
 		assertTrue(result);
-		assertTrue(new File(baseImagePath).exists());
+		assertTrue(new File(BASE_IMAGE_PATH).exists());
 		verify(mockMultipartFile, times(1)).transferTo(new File(pathname));
 	}
 	
 	@Test
 	public void shouldUploadPngFile() throws IOException {
-		String baseImagePath = baseMultimediaDirPath + "/" + "images/";
-		String pathname = baseImagePath + CASE_ID + ".png";
+		String pathname = BASE_IMAGE_PATH + CASE_ID + ".png";
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/png");
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
 		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
 		
 		assertTrue(result);
-		assertTrue(new File(baseImagePath).exists());
+		assertTrue(new File(BASE_IMAGE_PATH).exists());
 		verify(mockMultipartFile, times(1)).transferTo(new File(pathname));
 	}
 	
 	@Test
 	public void shouldUploadVideoOctetStreamFile() throws IOException {
-		String baseImagePath = baseMultimediaDirPath + "/" + "videos/";
-		String pathname = baseImagePath + CASE_ID + ".mp4";
+		String BASE_IMAGE_PATH = baseMultimediaDirPath + "/" + "videos/";
+		String pathname = BASE_IMAGE_PATH + CASE_ID + ".mp4";
 		MultimediaDTO multimediaDTO = getMultimediaDTO("application/octet-stream");
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		
 		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
 		
 		assertTrue(result);
-		assertTrue(new File(baseImagePath).exists());
+		assertTrue(new File(BASE_IMAGE_PATH).exists());
 		verify(mockMultipartFile, times(1)).transferTo(new File(pathname));
 	}
 	
@@ -172,14 +176,20 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		MultipartFile mockMultipartFile = mock(MultipartFile.class);
 		Multimedia expectedMultimedia = getMultimedia();
 		expectedMultimedia.setContentType("image/png");
-		expectedMultimedia.setFilePath("../multimedia/opensrp/images/caseId.png");
+		expectedMultimedia.setFilePath(BASE_IMAGE_PATH + CASE_ID + ".png");
 		
 		String result = fileManager.saveMultimediaFile(multimediaDTO, mockMultipartFile);
 		
 		assertEquals("success", result);
 		List<Multimedia> dbFiles = multimediaRepository.getAll();
 		assertEquals(1, dbFiles.size());
-		assertEquals(expectedMultimedia, dbFiles.get(0));
+
+		Multimedia actualMultimedia = dbFiles.get(0);
+		assertEquals(expectedMultimedia.getFilePath(), actualMultimedia.getFilePath());
+		assertEquals(expectedMultimedia.getProviderId(), actualMultimedia.getProviderId());
+		assertEquals(expectedMultimedia.getContentType(), actualMultimedia.getContentType());
+		assertEquals(expectedMultimedia.getFileCategory(), actualMultimedia.getFileCategory());
+		assertEquals(expectedMultimedia.getCaseId(), actualMultimedia.getCaseId());
 	}
 	
 	@Test
