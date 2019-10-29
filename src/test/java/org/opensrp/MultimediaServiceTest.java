@@ -13,6 +13,7 @@ import org.opensrp.service.ClientService;
 import org.opensrp.service.MultimediaService;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,13 +42,14 @@ public class MultimediaServiceTest {
 	@Mock
 	private ClientService clientService;
 
+	@Autowired
+	@Qualifier("multimedia_file_manager")
 	private BaseMultimediaFileManager fileManager;
 	
 	@Before
 	public void setUp() {
 		initMocks(this);
 		multimediaService = new MultimediaService(multimediaRepository, clientService);
-		fileManager = (BaseMultimediaFileManager) multimediaService.getFileManager();
 	}
 
 	@Test
@@ -65,7 +67,7 @@ public class MultimediaServiceTest {
 	@Test
 	public void testUploadFileShouldSetCorrectFilePath() {
 		final String BASE_MULTIMEDIA_DIR_PATH = "baseMultimediaDirPath";
-		Whitebox.setInternalState(multimediaService, "baseMultimediaDirPath", BASE_MULTIMEDIA_DIR_PATH );
+		Whitebox.setInternalState(fileManager, "baseMultimediaDirPath", BASE_MULTIMEDIA_DIR_PATH );
 
 		MultimediaDTO multimedia = new MultimediaDTO("caseId1", "provideId1", "image/jpeg", "filePath1", "multi_version");
 		fileManager.uploadFile(multimedia, mock(MultipartFile.class));
