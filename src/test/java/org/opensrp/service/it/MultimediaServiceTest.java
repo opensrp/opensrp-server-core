@@ -9,6 +9,8 @@ import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.couch.MultimediaRepositoryImpl;
 import org.opensrp.service.MultimediaService;
 import org.opensrp.service.multimedia.BaseMultimediaFileManager;
+import org.opensrp.service.multimedia.FileSystemMultimediaFileManager;
+import org.opensrp.service.multimedia.MultimediaFileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -211,5 +214,24 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		assertEquals("fail", result);
 		List<Multimedia> dbFiles = multimediaRepository.getAll();
 		assertEquals(0, dbFiles.size());
+	}
+
+	@Test
+	public void testRetrieveFileShouldCallFileManager() {
+		MultimediaFileManager fileManager = mock(FileSystemMultimediaFileManager.class);
+		multimediaService.setFileManager(fileManager);
+		multimediaService.retrieveFile("file_path");
+		verify(fileManager).retrieveFile(eq("file_path"));
+	}
+
+	@Test
+	public void testSaveFileShouldCallFileManager() {
+		MultimediaFileManager fileManager = mock(FileSystemMultimediaFileManager.class);
+		multimediaService.setFileManager(fileManager);
+
+		MultipartFile multipartFile = mock(MultipartFile.class);
+		MultimediaDTO multimediaDTO = mock(MultimediaDTO.class);
+		multimediaService.saveFile(multimediaDTO, multipartFile);
+		verify(fileManager).saveFile(eq(multimediaDTO), eq(multipartFile));
 	}
 }
