@@ -18,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -27,12 +26,11 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.utils.TestUtils.getBasePackageFilePath;
 
 /**
  * Created by Vincent Karuri on 30/10/2019
  */
-public class S3MultimediaFileManagerTest {
+public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 	private S3MultimediaFileManager s3MultimediaFileManager;
 
@@ -43,16 +41,7 @@ public class S3MultimediaFileManagerTest {
 	private ArgumentCaptor<GetObjectRequest> getObjectRequestArgumentCaptor = ArgumentCaptor.forClass(GetObjectRequest.class);
 
 	@Captor
-	private ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
-
-	@Captor
 	private ArgumentCaptor<PutObjectRequest> putObjectRequestArgumentCaptor = ArgumentCaptor.forClass(PutObjectRequest.class);
-
-	@Captor
-	private ArgumentCaptor<InputStream> inputStreamArgumentCaptor = ArgumentCaptor.forClass(InputStream.class);
-
-	@Captor
-	private ArgumentCaptor<ObjectMetadata> objectMetadataArgumentCaptor = ArgumentCaptor.forClass(ObjectMetadata.class);
 
 	@Mock
 	private ClientService clientService;
@@ -66,7 +55,7 @@ public class S3MultimediaFileManagerTest {
 	@Before
 	public void setUp() throws IOException {
 		MockitoAnnotations.initMocks(this);
-		createTestFile();
+		super.setUp();
 		s3MultimediaFileManager = new S3MultimediaFileManager(multimediaRepository, clientService);
 		Whitebox.setInternalState(s3MultimediaFileManager, "s3Client", s3Client);
 	}
@@ -77,8 +66,8 @@ public class S3MultimediaFileManagerTest {
 
 		MultipartFile multipartFile = mock(MultipartFile.class);
 		s3MultimediaFileManager.persistFileToStorage(getTestFilePath(), multipartFile);
-		verify(multipartFile).transferTo(fileArgumentCaptor.capture());
 
+		verify(multipartFile).transferTo(fileArgumentCaptor.capture());
 		verify(s3Client).putObject(putObjectRequestArgumentCaptor.capture());
 
 		PutObjectRequest putObjectRequest = putObjectRequestArgumentCaptor.getValue();
@@ -118,13 +107,14 @@ public class S3MultimediaFileManagerTest {
 		assertNull(s3MultimediaFileManager.retrieveFile("non_existent_file"));
 	}
 
-	private String getTestFilePath() {
-		return getBasePackageFilePath() + "/src/test/java/org/opensrp/service/multimedia/test_file";
-	}
-
-	private void createTestFile() throws IOException {
-		PrintWriter writer = new PrintWriter(getTestFilePath(), "UTF-8");
-		writer.println("The first line");
-		writer.close();
+	@Test
+	public void testGetS3ClientShouldReturnNonNullS3Client() throws Exception {
+		Whitebox.setInternalState(s3MultimediaFileManager, "awsRegion", "region");
+		Whitebox.setInternalState(s3MultimediaFileManager, "awsAccessKeyId", "region");
+		Whitebox.setInternalState(s3MultimediaFileManager, "awsSecretAccessKey", "awsSecretAccessKey");
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3Client", (Object[]) null);
+		AmazonS3Client s3Client = Whitebox.invokeMethod(s3MultimediaFileManager, "getS3Client");
+		assertNotNull(s3Client);
+		assertEquals("region", s3Client.getRegionName());
 	}
 }

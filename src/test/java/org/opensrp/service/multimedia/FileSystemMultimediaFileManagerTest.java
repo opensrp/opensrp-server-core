@@ -23,7 +23,7 @@ import static org.utils.TestUtils.getBasePackageFilePath;
 /**
  * Created by Vincent Karuri on 30/10/2019
  */
-public class FileSystemMultimediaFileManagerTest {
+public class FileSystemMultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 	private FileSystemMultimediaFileManager fileSystemMultimediaFileManager;
 
@@ -37,8 +37,9 @@ public class FileSystemMultimediaFileManagerTest {
 	private MultimediaRepository multimediaRepository;
 
 	@Before
-	public void setUp() {
+	public void setUp() throws IOException {
 		MockitoAnnotations.initMocks(this);
+		super.setUp();
 		fileSystemMultimediaFileManager = new FileSystemMultimediaFileManager(multimediaRepository, clientService);
 	}
 
