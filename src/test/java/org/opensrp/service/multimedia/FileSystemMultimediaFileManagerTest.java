@@ -55,7 +55,7 @@ public class FileSystemMultimediaFileManagerTest {
 
 	@Test
 	public void testRetrieveFileShouldRetrieveFileFromFileSystem() {
-		String testFilePath = getBasePackageFilePath() + "/src/test/java/org/opensrp/service/multimedia/";
+		String testFilePath = getBasePackageFilePath() + "/src/test/java/org/opensrp/service/multimedia/test_file";
 		assertNotNull(fileSystemMultimediaFileManager.retrieveFile(testFilePath));
 	}
 
