@@ -13,10 +13,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
-import org.opensrp.domain.postgres.CustomClient;
-import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
+import org.opensrp.domain.postgres.CustomClient;
+import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
@@ -433,7 +433,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	@Override
 	public List<Client> findMembersByRelationshipId(String baseEntityId) {
 		
-		List<org.opensrp.domain.postgres.CustomClient> members = new ArrayList<org.opensrp.domain.postgres.CustomClient>();
+		List<CustomClient> members = new ArrayList<CustomClient>();
 		if (!StringUtils.isBlank(baseEntityId)) {
 			members = clientMetadataMapper.selectMembersByRelationshipId(baseEntityId);
 		}
@@ -449,12 +449,12 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		
 		int offset = searchBean.getPageNumber() * pageSize;
 		
-		List<org.opensrp.domain.postgres.CustomClient> clients = clientMetadataMapper.selectAllClientsBySearchBean(
-		    searchBean, addressSearchBean, offset, pageSize);
+		List<CustomClient> clients = clientMetadataMapper.selectAllClientsBySearchBean(searchBean, addressSearchBean,
+		    offset, pageSize);
 		return customClientConvert(clients);
 	}
 	
-	private Client customClientConvert(org.opensrp.domain.postgres.CustomClient customClient) {
+	private Client customClientConvert(CustomClient customClient) {
 		
 		if (customClient == null || customClient.getJson() == null || !(customClient.getJson() instanceof Client)) {
 			return null;
@@ -465,13 +465,13 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		return cl;
 	}
 	
-	protected List<Client> customClientConvert(List<org.opensrp.domain.postgres.CustomClient> clients) {
+	protected List<Client> customClientConvert(List<CustomClient> clients) {
 		if (clients == null || clients.isEmpty()) {
 			return new ArrayList<>();
 		}
 		
 		List<Client> convertedClients = new ArrayList<>();
-		for (org.opensrp.domain.postgres.CustomClient client : clients) {
+		for (CustomClient client : clients) {
 			Client convertedClient = customClientConvert(client);
 			if (convertedClient != null) {
 				convertedClients.add(convertedClient);
