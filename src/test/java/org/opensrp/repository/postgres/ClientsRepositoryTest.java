@@ -502,20 +502,21 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void shouldFindMembersByRelationshipId() {
-		List<Client> expectedClient = clientsRepository.findMembersByRelationshipId("0154839f-8766-4eda-b729-89067c7a8c5d");
+		List<Client> expectedClient = clientsRepository.findMembersByRelationshipId("43930c23-c787-4ddb-ab76-770f77e7b17d");
 		assertNotNull(expectedClient);
-		assertEquals(0, expectedClient.size());
+		assertEquals(1, expectedClient.size());
 		
 	}
 	
 	@Test
 	public void shouldGetMemberCountHouseholdHeadProviderByClients() {
 		List<String> id = new ArrayList<String>();
-		id.add("28caef27-d1b3-497b-8a55-95Rf2f0f6e24");
+		id.add("43930c23-c787-4ddb-ab76-770f77e7b17d");
 		List<HouseholdClient> householdClient = clientsRepository.selectMemberCountHouseholdHeadProviderByClients("", id,
-		    "ec_family");
-		assertNotNull(householdClient);
-		assertEquals(0, householdClient.size());
+		    "mother");
+		
+		assertEquals("biddemo", householdClient.get(0).getProviderId());
+		assertEquals(1, householdClient.get(0).getMemebrCount());
 	}
 	
 	@Test
@@ -523,9 +524,12 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		AddressSearchBean addressSearchBean = new AddressSearchBean();
 		ClientSearchBean searchBean = new ClientSearchBean();
 		searchBean.setClientType("ec_family");
+		List<String> locationUuids = new ArrayList<String>();
+		locationUuids.add("42abc582-6658-488b-922e-7be500c070f3");
+		searchBean.setLocations(locationUuids);
 		List<Client> clients = clientsRepository.findAllClientsByCriteria(searchBean, addressSearchBean);
 		assertNotNull(clients);
-		assertEquals(1, clients.size());
+		assertEquals(2, clients.size());
 	}
 	
 	@Test
@@ -533,18 +537,21 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		AddressSearchBean addressSearchBean = new AddressSearchBean();
 		ClientSearchBean searchBean = new ClientSearchBean();
 		searchBean.setClientType("ec_family");
-		HouseholdClient clientCustomField = clientsRepository.findCountAllClientsByCriteria(searchBean, addressSearchBean);
-		assertNotNull(clientCustomField);
-		assertNotEquals(0, clientCustomField.getTotalCount());
+		List<String> locationUuids = new ArrayList<String>();
+		locationUuids.add("42abc582-6658-488b-922e-7be500c070f3");
+		searchBean.setLocations(locationUuids);
+		HouseholdClient householdClient = clientsRepository.findCountAllClientsByCriteria(searchBean, addressSearchBean);
+		assertNotNull(householdClient.getTotalCount());
+		assertEquals(2, householdClient.getTotalCount());
 	}
 	
 	@Test
 	public void shouldFindHouseholdByCriteria() {
 		AddressSearchBean addressSearchBean = new AddressSearchBean();
 		ClientSearchBean searchBean = new ClientSearchBean();
-		searchBean.setClientType("ec_family");
+		searchBean.setNameLike("Janu");
 		List<Client> clients = clientsRepository.findHouseholdByCriteria(searchBean, addressSearchBean);
 		assertNotNull(clients);
-		assertEquals(0, clients.size());
+		assertEquals(4, clients.size());
 	}
 }

@@ -8,12 +8,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.opensrp.domain.CustomClient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.postgres.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
@@ -418,15 +418,14 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
-	                                                                               String clientType) {
+	                                                                             String clientType) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		clientMetadataExample.createCriteria().andRelationalIdIn(ids);
 		return clientMetadataMapper.selectMemberCountHouseholdHeadProviderByClients(clientMetadataExample, clientType);
 	}
 	
 	@Override
-	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean,
-	                                                           AddressSearchBean addressSearchBean) {
+	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		
 		return clientMetadataMapper.selectHouseholdCountBySearchBean(searchBean, addressSearchBean);
 	}
@@ -457,17 +456,12 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	private Client customClientConvert(org.opensrp.domain.postgres.CustomClient customClient) {
 		
-		if (customClient == null || customClient.getJson() == null || !(customClient.getJson() instanceof CustomClient)) {
+		if (customClient == null || customClient.getJson() == null || !(customClient.getJson() instanceof Client)) {
 			return null;
 		}
 		
 		Client cl = (Client) customClient.getJson();
-		cl.addAttribute("last_contact_date", customClient.getLastContactDate());
-		cl.addAttribute("edd", customClient.getEdd());
-		cl.addAttribute("risk_category", customClient.getRiskCategory());
-		cl.addAttribute("age_year_part", customClient.getAgeYearPart());
-		cl.addAttribute("age_month_part", customClient.getAgeMonthPart());
-		cl.addAttribute("registration_status", customClient.getRegistrationStatus());
+		cl.addAttribute("dynamicProperties", customClient.getDynamicProperties());
 		return cl;
 	}
 	
