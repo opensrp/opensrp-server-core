@@ -1,20 +1,19 @@
 package org.opensrp.repository.postgres;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensrp.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class PractitionerRepositoryTest extends BaseRepositoryTest{
 
@@ -283,6 +282,23 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
 
         Practitioner actualPractitioner = practitionerRepository.getPractitionerByUserId(expectedPractitioner.getUserId());
         assertNull(actualPractitioner);
+    }
+    
+    
+
+    @Test
+    public void testGetPractitionerByUsername() {
+        Practitioner expectedPractitioner = initTestPractitioner2();
+        practitionerRepository.add(expectedPractitioner);
+
+        Practitioner actualPractitioner = practitionerRepository.getPractitionerByUsername(expectedPractitioner.getUsername());
+        assertNotNull(actualPractitioner);
+        assertEquals(expectedPractitioner.getIdentifier(),actualPractitioner.getIdentifier());
+        assertEquals(expectedPractitioner.getName(),actualPractitioner.getName());
+        assertEquals(expectedPractitioner.getUserId(),actualPractitioner.getUserId());
+        assertEquals(expectedPractitioner.getUsername(),actualPractitioner.getUsername());
+        
+        assertNull( practitionerRepository.getPractitionerByUsername("janeDoe"));
     }
 
     private Practitioner initTestPractitioner1(){
