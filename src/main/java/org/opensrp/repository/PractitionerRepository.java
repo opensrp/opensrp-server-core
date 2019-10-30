@@ -19,4 +19,10 @@ public interface PractitionerRepository extends BaseRepository<Practitioner> {
 	List<Practitioner> getPractitionersByOrgId(Long orgId);
 
 	void safeRemove(String identifier);
+
+	/** Get the practitioner using username
+	 * @param username to get 
+	 * @return practitioner
+	 */
+	Practitioner getPractitionerByUsername(String username);
 }
