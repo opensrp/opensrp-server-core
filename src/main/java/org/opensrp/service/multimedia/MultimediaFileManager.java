@@ -11,7 +11,22 @@ import java.io.File;
  */
 public interface MultimediaFileManager {
 
+    /**
+     *
+     * Persists a {@link MultipartFile} to storage
+     *
+     * @param multimedia
+     * @param file
+     * @return
+     */
     String saveFile(MultimediaDTO multimedia, MultipartFile file);
 
+    /**
+     *
+     * Retrieves a file from storage or null if it doesn't exist
+     *
+     * @param filePath
+     * @return
+     */
     File retrieveFile(String filePath);
 }

@@ -54,10 +54,25 @@ public class MultimediaService {
 		return multimediaRepository.get(entityId, contentType, fileCategory);
 	}
 
+	/**
+	 *
+	 * Persists a {@link MultipartFile} to storage
+	 *
+	 * @param multimedia
+	 * @param file
+	 * @return
+	 */
 	public String saveFile(MultimediaDTO multimedia, MultipartFile file) {
 		return fileManager.saveFile(multimedia, file);
 	}
 
+	/**
+	 *
+	 * Retrieves a file from storage or null if it doesn't exist
+	 *
+	 * @param filePath
+	 * @return
+	 */
 	public File retrieveFile(String filePath) {
 		return fileManager.retrieveFile(filePath);
 	}

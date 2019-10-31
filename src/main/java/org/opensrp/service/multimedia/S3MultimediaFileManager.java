@@ -47,6 +47,9 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
         super(multimediaRepository, clientService);
     }
 
+	/**
+	 * {@inheritDoc}
+	 */
     @Override
     protected void persistFileToStorage(String fileName, MultipartFile multipartFile) throws IOException {
         File multimediaFile = multipartFileToFile(fileName, multipartFile);
@@ -60,6 +63,9 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
         multimediaFile.delete();
     }
 
+	/**
+	 * {@inheritDoc}
+	 */
     @Override
     public File retrieveFile(String filePath) {
         File file = null;
@@ -71,7 +77,16 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
         return file;
     }
 
-    private File multipartFileToFile(String fileName, MultipartFile multipart) throws IOException {
+	/**
+	 *
+	 * Converts {@link MultipartFile} to {@link File}
+	 *
+	 * @param fileName
+	 * @param multipart
+	 * @return
+	 * @throws IOException
+	 */
+	private File multipartFileToFile(String fileName, MultipartFile multipart) throws IOException {
         File tempFile = new File(fileName);
         multipart.transferTo(tempFile);
         tempFile.deleteOnExit();

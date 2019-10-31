@@ -46,8 +46,17 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
         this.clientService = clientService;
     }
 
+    /**
+     * Persists a {@link MultipartFile} with the given {@param fileName} to storage
+     * @param fileName
+     * @param multimediaFile
+     * @throws IOException
+     */
     protected abstract void persistFileToStorage(String fileName, MultipartFile multimediaFile) throws IOException;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String saveFile(MultimediaDTO multimedia, MultipartFile file) {
         return saveMultimediaFile(multimedia, file);

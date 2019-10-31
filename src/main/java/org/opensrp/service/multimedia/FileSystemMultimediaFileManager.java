@@ -22,12 +22,18 @@ public class FileSystemMultimediaFileManager extends BaseMultimediaFileManager {
         super(multimediaRepository, clientService);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void persistFileToStorage(String fileName, MultipartFile multimediaFile) throws IOException {
         File multimediaFilePath = new File(fileName);
         multimediaFile.transferTo(multimediaFilePath);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public File retrieveFile(String filePath) {
         File file = new File(filePath);
