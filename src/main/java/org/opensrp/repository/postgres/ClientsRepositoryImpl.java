@@ -15,6 +15,7 @@ import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
+import org.opensrp.domain.postgres.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
@@ -315,7 +316,6 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		if (client == null || client.getJson() == null || !(client.getJson() instanceof Client)) {
 			return null;
 		}
-		
 		return (Client) client.getJson();
 	}
 	
@@ -425,18 +425,76 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	public HouseholdClient findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		
-		return clientMetadataMapper.selectCountBySearchBean(searchBean, addressSearchBean);
+		return clientMetadataMapper.selectHouseholdCountBySearchBean(searchBean, addressSearchBean);
 	}
 	
 	@Override
 	public List<Client> findMembersByRelationshipId(String baseEntityId) {
 		
-		List<org.opensrp.domain.postgres.Client> members = new ArrayList<org.opensrp.domain.postgres.Client>();
+		List<CustomClient> members = new ArrayList<CustomClient>();
 		if (!StringUtils.isBlank(baseEntityId)) {
 			members = clientMetadataMapper.selectMembersByRelationshipId(baseEntityId);
 		}
-		return convert(members);
+		return customClientConvert(members);
+	}
+	
+	@Override
+	public List<Client> findAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		int pageSize = searchBean.getPageSize();
+		if (pageSize == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		}
+		
+		int offset = searchBean.getPageNumber() * pageSize;
+		
+		List<CustomClient> clients = clientMetadataMapper.selectAllClientsBySearchBean(searchBean, addressSearchBean,
+		    offset, pageSize);
+		return customClientConvert(clients);
+	}
+	
+	private Client customClientConvert(CustomClient customClient) {
+		
+		if (customClient == null || customClient.getJson() == null || !(customClient.getJson() instanceof Client)) {
+			return null;
+		}
+		
+		Client cl = (Client) customClient.getJson();
+		cl.addAttribute("dynamicProperties", customClient.getDynamicProperties());
+		return cl;
+	}
+	
+	protected List<Client> customClientConvert(List<CustomClient> clients) {
+		if (clients == null || clients.isEmpty()) {
+			return new ArrayList<>();
+		}
+		
+		List<Client> convertedClients = new ArrayList<>();
+		for (CustomClient client : clients) {
+			Client convertedClient = customClientConvert(client);
+			if (convertedClient != null) {
+				convertedClients.add(convertedClient);
+			}
+		}
+		
+		return convertedClients;
+	}
+	
+	@Override
+	public HouseholdClient findCountAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		
+		return clientMetadataMapper.selectCountAllClientsBySearchBean(searchBean, addressSearchBean);
+	}
+	
+	@Override
+	public List<Client> findHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		int pageSize = searchBean.getPageSize();
+		if (pageSize == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		}
+		
+		int offset = searchBean.getPageNumber() * pageSize;
+		return convert(clientMetadataMapper.selectHouseholdBySearchBean(searchBean, addressSearchBean, offset, pageSize));
 	}
 }

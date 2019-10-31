@@ -264,8 +264,9 @@ public class ClientService {
 		return households;
 	}
 	
-	public HouseholdClient findTotalCountByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
-		return allClients.findTotalCountByCriteria(clientSearchBean, addressSearchBean);
+	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean clientSearchBean,
+	                                                           AddressSearchBean addressSearchBean) {
+		return allClients.findTotalCountHouseholdByCriteria(clientSearchBean, addressSearchBean);
 	}
 	
 	public List<Client> getHouseholdList(List<String> ids, String clientType, AddressSearchBean addressSearchBean,
@@ -294,5 +295,22 @@ public class ClientService {
 	
 	public List<Client> findMembersByRelationshipId(String relationshipId) {
 		return allClients.findMembersByRelationshipId(relationshipId);
+	}
+	
+	public List<Client> findAllClientsByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
+		return allClients.findAllClientsByCriteria(clientSearchBean, addressSearchBean);
+	}
+	
+	public HouseholdClient findTotalCountAllClientsByCriteria(ClientSearchBean clientSearchBean,
+	                                                            AddressSearchBean addressSearchBean) {
+		return allClients.findCountAllClientsByCriteria(clientSearchBean, addressSearchBean);
+	}
+	
+	public List<Client> findHouseholdByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean,
+	                                            DateTime lastEditFrom, DateTime lastEditTo) {
+		clientSearchBean.setLastEditFrom(lastEditFrom);
+		clientSearchBean.setLastEditTo(lastEditTo);
+		return allClients.findHouseholdByCriteria(clientSearchBean, addressSearchBean);
+		
 	}
 }
