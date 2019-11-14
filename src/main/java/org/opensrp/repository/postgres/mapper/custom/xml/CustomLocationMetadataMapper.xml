@@ -113,7 +113,7 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
-	<select id="selectManyById"
+	<select id="selectManyWithOptionalGeometry"
 			resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
 
 		select

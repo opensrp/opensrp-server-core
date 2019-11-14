@@ -211,4 +211,32 @@ public class PhysicalLocationService {
 		return  locationRepository.findLocationDetailsByPlanId(planIdentifier);
 	}
 
+	/**
+	 * This method searches for jurisdictions ordered by serverVersion ascending
+	 *
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param serverVersion
+	 * @param sortBy field to sort by
+	 * @param sortOrder Order by which to sort the jurisdictions
+	 * @param limit upper limit on number of jurisdictions to fetch
+	 * @return list of jurisdictions
+	 */
+	public List<PhysicalLocation> findAllLocationsPaginated(boolean returnGeometry, Long serverVersion, String sortBy, String sortOrder, int limit) {
+		return locationRepository.findAllLocationsPaginated(returnGeometry, serverVersion, sortBy, sortOrder, limit);
+	};
+
+	/**
+	 * This method searches for structures ordered by serverVersion ascending
+	 *
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param serverVersion
+	 * @param sortBy field to sort by
+	 * @param sortOrder Order by which to sort the structures
+	 * @param limit upper limit on number of structures to fetch
+	 * @return list of structures
+	 */
+	public List<PhysicalLocation> findAllStructuresPaginated(boolean returnGeometry, Long serverVersion, String sortBy, String sortOrder, int limit) {
+		return locationRepository.findAllStructuresPaginated(returnGeometry, serverVersion, sortBy, sortOrder, limit);
+	};
+
 }
