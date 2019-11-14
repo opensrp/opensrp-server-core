@@ -43,7 +43,7 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @param serverVersion
 	 * @param sortBy field to sort by
 	 * @param sortOrder Order by which to sort the plans
-	 * @param limit upper limit on number of plas to fetch
+	 * @param limit upper limit on number of plans to fetch
 	 * @return list of plan identifiers
 	 */
 	List<PlanDefinition> getAllPlansPaginated(Long serverVersion, String sortBy, String sortOrder, int limit);

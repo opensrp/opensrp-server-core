@@ -130,6 +130,20 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		return taskMetadataMapper.selectManyIds(taskMetadataExample);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Task> getAllTasksPaginated(Long serverVersion, String sortBy, String sortOrder, int limit) {
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		taskMetadataExample.setOrderByClause(getOrderByClause(sortBy, sortOrder));
+
+		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
+				limit);
+		return convert(tasks);
+	}
+
 	@Override
 	@Transactional
 	public void safeRemove(Task entity) {

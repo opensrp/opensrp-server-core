@@ -152,4 +152,17 @@ public class TaskService {
 	public List<String> findAllTaskIds() {
 		return taskRepository.findAllIds();
 	}
+
+	/**
+	 *  This method searches for tasks ordered by serverVersion ascending
+	 *
+	 * @param serverVersion
+	 * @param sortBy field to sort by
+	 * @param sortOrder Order by which to sort the plans
+	 * @param limit upper limit on number of tasks to fetch
+	 * @return list of plan identifiers
+	 */
+	public List<Task> getAllTasksPaginated(Long serverVersion, String sortBy, String sortOrder, int limit) {
+		return taskRepository.getAllTasksPaginated(serverVersion, sortBy, sortOrder, limit);
+	}
 }

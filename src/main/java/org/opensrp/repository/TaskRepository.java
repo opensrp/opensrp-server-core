@@ -16,4 +16,15 @@ public interface TaskRepository extends BaseRepository<Task> {
 	 */
 	List<String> findAllIds();
 
+	/**
+	 *  This method searches for tasks ordered by serverVersion ascending
+	 *
+	 * @param serverVersion
+	 * @param sortBy field to sort by
+	 * @param sortOrder Order by which to sort the plans
+	 * @param limit upper limit on number of tasks to fetch
+	 * @return list of plan identifiers
+	 */
+	List<Task> getAllTasksPaginated(Long serverVersion, String sortBy, String sortOrder, int limit);
+
 }
