@@ -141,7 +141,20 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         return convert(plans);
     }
-    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PlanDefinition> getAllPlansPaginated(Long serverVersion,String sortBy, String sortOrder, int limit) {
+        PlanExample planExample = new PlanExample();
+        planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull();
+        planExample.setOrderByClause(getOrderByClause(sortBy, sortOrder));
+
+        List<Plan> plans = planMapper.selectMany(planExample, 0, limit);
+
+        return convert(plans);
+    }
 
     /**
      * {@inheritDoc}
