@@ -106,23 +106,19 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param serverVersion
-	 * @param sortBy field to sort by
-	 * @param sortOrder Order by which to sort the jurisdictions
 	 * @param limit upper limit on number of jurisdictions to fetch
 	 * @return list of jurisdictions
 	 */
-	List<PhysicalLocation> findAllLocationsPaginated(boolean returnGeometry, Long serverVersion, String sortBy, String sortOrder, int limit);
+	List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit);
 
 	/**
 	 * This method searches for structures ordered by serverVersion ascending
 	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param serverVersion
-	 * @param sortBy field to sort by
-	 * @param sortOrder Order by which to sort the structures
 	 * @param limit upper limit on number of structures to fetch
 	 * @return list of structures
 	 */
-	List<PhysicalLocation> findAllStructuresPaginated(boolean returnGeometry, Long serverVersion, String sortBy, String sortOrder, int limit);
+	List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit);
 
 }

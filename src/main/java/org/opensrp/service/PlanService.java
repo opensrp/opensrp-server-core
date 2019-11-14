@@ -143,11 +143,9 @@ public class PlanService {
 	 *  This method searches for plans ordered by serverVersion ascending
 	 *
 	 * @param serverVersion
-	 * @param sortBy field to sort by
-	 * @param sortOrder Order by which to sort the plans
 	 * @param limit upper limit on number of plas to fetch
 	 * @return list of plan identifiers
 	 */
-	public List<PlanDefinition> getAllPlansPaginated(Long serverVersion, String sortBy, String sortOrder, int limit) {
-		return getPlanRepository().getAllPlansPaginated(serverVersion, sortBy, sortOrder, limit);	}
+	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit) {
+		return getPlanRepository().getAllPlans(serverVersion, limit);	}
 }

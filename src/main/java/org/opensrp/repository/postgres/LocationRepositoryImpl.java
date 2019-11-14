@@ -391,10 +391,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<PhysicalLocation> findAllLocationsPaginated(boolean returnGeometry, Long serverVersion, String sortBy, String sortOrder, int limit) {
+	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		locationMetadataExample.setOrderByClause(getOrderByClause(sortBy, sortOrder));
+		locationMetadataExample.setOrderByClause(getOrderByClause("serverVersion", "asc"));
 
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample, returnGeometry, 0, limit);
 		return convert(locations);
@@ -404,10 +404,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<PhysicalLocation> findAllStructuresPaginated(boolean returnGeometry, Long serverVersion, String sortBy, String sortOrder, int limit) {
+	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit) {
         StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
         structureMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-        structureMetadataExample.setOrderByClause(getOrderByClause(sortBy, sortOrder));
+        structureMetadataExample.setOrderByClause(getOrderByClause("serverVersion",  "asc"));
 
         List<Location> locations = structureMetadataMapper.selectManyByProperties(structureMetadataExample, null, returnGeometry, 0, limit);
         return convert(locations);

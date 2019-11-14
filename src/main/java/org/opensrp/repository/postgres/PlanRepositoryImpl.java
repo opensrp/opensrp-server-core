@@ -146,10 +146,10 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
      * {@inheritDoc}
      */
     @Override
-    public List<PlanDefinition> getAllPlansPaginated(Long serverVersion,String sortBy, String sortOrder, int limit) {
+    public List<PlanDefinition> getAllPlans(Long serverVersion, int limit) {
         PlanExample planExample = new PlanExample();
         planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull();
-        planExample.setOrderByClause(getOrderByClause(sortBy, sortOrder));
+        planExample.setOrderByClause(getOrderByClause("serverVersion",  "asc"));
 
         List<Plan> plans = planMapper.selectMany(planExample, 0, limit);
 

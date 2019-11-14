@@ -134,10 +134,10 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Task> getAllTasksPaginated(Long serverVersion, String sortBy, String sortOrder, int limit) {
+	public List<Task> getAllTasks(Long serverVersion, int limit) {
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
 		taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		taskMetadataExample.setOrderByClause(getOrderByClause(sortBy, sortOrder));
+		taskMetadataExample.setOrderByClause(getOrderByClause("serverVersion", "asc"));
 
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
 				limit);
