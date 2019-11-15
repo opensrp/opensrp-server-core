@@ -36,4 +36,13 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @return plans with the identifiers and server version greater than or equal to server version param
 	 */
 	List<PlanDefinition> getPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion);
+
+	/**
+	 *  This method searches for plans ordered by serverVersion ascending
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of plans to fetch
+	 * @return list of plan identifiers
+	 */
+	List<PlanDefinition> getAllPlans(Long serverVersion, int limit);
 }

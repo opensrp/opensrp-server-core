@@ -152,4 +152,15 @@ public class TaskService {
 	public List<String> findAllTaskIds() {
 		return taskRepository.findAllIds();
 	}
+
+	/**
+	 *  This method searches for tasks ordered by serverVersion ascending
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of tasks to fetch
+	 * @return list of plan identifiers
+	 */
+	public List<Task> getAllTasks(Long serverVersion, int limit) {
+		return taskRepository.getAllTasks(serverVersion, limit);
+	}
 }

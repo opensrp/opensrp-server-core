@@ -211,4 +211,27 @@ public class PhysicalLocationService {
 		return  locationRepository.findLocationDetailsByPlanId(planIdentifier);
 	}
 
+	/**
+	 * This method searches for jurisdictions ordered by serverVersion ascending
+	 *
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param serverVersion
+	 * @param limit upper limit on number of jurisdictions to fetch
+	 * @return list of jurisdictions
+	 */
+	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit) {
+		return locationRepository.findAllLocations(returnGeometry, serverVersion, limit);
+	};
+
+	/**
+	 * This method searches for structures ordered by serverVersion ascending
+	 *
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param limit upper limit on number of structures to fetch
+	 * @return list of structures
+	 */
+	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit) {
+		return locationRepository.findAllStructures(returnGeometry, serverVersion, limit);
+	};
+
 }

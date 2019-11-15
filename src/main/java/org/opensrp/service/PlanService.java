@@ -138,4 +138,14 @@ public class PlanService {
 		
 		return null;
 	}
+
+	/**
+	 *  This method searches for plans ordered by serverVersion ascending
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of plas to fetch
+	 * @return list of plan identifiers
+	 */
+	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit) {
+		return getPlanRepository().getAllPlans(serverVersion, limit);	}
 }
