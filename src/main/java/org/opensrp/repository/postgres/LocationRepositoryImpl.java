@@ -394,7 +394,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		locationMetadataExample.setOrderByClause(getOrderByClause("serverVersion", "asc"));
+		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample, returnGeometry, 0, limit);
 		return convert(locations);
@@ -407,7 +407,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit) {
         StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
         structureMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-        structureMetadataExample.setOrderByClause(getOrderByClause("serverVersion",  "asc"));
+        structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION,  ASCENDING));
 
         List<Location> locations = structureMetadataMapper.selectManyByProperties(structureMetadataExample, null, returnGeometry, 0, limit);
         return convert(locations);

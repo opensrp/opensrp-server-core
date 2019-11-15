@@ -137,7 +137,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	public List<Task> getAllTasks(Long serverVersion, int limit) {
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
 		taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		taskMetadataExample.setOrderByClause(getOrderByClause("serverVersion", "asc"));
+		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
 				limit);
