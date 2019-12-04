@@ -114,7 +114,7 @@ public class MultimediaService {
 					// allow saving multiple multimedia associated with one client
 					String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
 					new File(dirPath).mkdirs();
-					fileName = dirPath + File.separator + UUID.randomUUID() + fileExt;
+					fileName = dirPath + File.separator + multimediaFile.getOriginalFilename();
 				} else {
 					// overwrite previously saved image
 					new File(multimediaDirPath).mkdirs();
