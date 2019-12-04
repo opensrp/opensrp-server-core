@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.text.pattern.Patterns.*;
 import static org.junit.Assert.assertEquals;
@@ -65,9 +66,10 @@ public class MultimediaServiceTest {
 		Whitebox.setInternalState(multimediaService, "baseMultimediaDirPath", BASE_MULTIMEDIA_DIR_PATH );
 
 		MultimediaDTO multimedia = new MultimediaDTO("caseId1", "provideId1", "image/jpeg", "filePath1", "multi_version");
-		multimediaService.uploadFile(multimedia, mock(MultipartFile.class));
-		PatternMatcher matcher = new PatternMatcher(sequence(text(BASE_MULTIMEDIA_DIR_PATH  + "/patient_images/caseId1/"), oneOrMore(anyCharacter()), text(".jpg")));
-		assertThat(multimedia.getFilePath(), matcher);
+		MultipartFile multipartFile = mock(MultipartFile.class);
+		doReturn("original_file_name").when(multipartFile).getOriginalFilename();
+		multimediaService.uploadFile(multimedia, multipartFile);
+		assertEquals(multimedia.getFilePath(), BASE_MULTIMEDIA_DIR_PATH  + "/patient_images/caseId1/original_file_name");
 
 		multimedia = new MultimediaDTO("caseId1", "provideId1", "image/jpeg", "filePath1", "profileimage");
 		multimediaService.uploadFile(multimedia, mock(MultipartFile.class));
