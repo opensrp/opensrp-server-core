@@ -131,7 +131,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                     // allow saving multiple multimedia associated with one client
                     String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
                     makeMultimediaDir(dirPath);
-                    fileName = dirPath + File.separator + UUID.randomUUID() + fileExt;
+                    fileName = dirPath + File.separator + multimediaFile.getOriginalFilename() + fileExt;
                 } else {
                     // overwrite previously saved image
                     makeMultimediaDir(multimediaDirPath);
