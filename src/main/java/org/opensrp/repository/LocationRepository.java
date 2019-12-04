@@ -100,4 +100,25 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @return list of location details i.e. identifier and name
 	 */
 	List<LocationDetail> findLocationDetailsByPlanId(String planIdentifier);
+
+	/**
+	 * This method searches for jurisdictions ordered by serverVersion ascending
+	 *
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param serverVersion
+	 * @param limit upper limit on number of jurisdictions to fetch
+	 * @return list of jurisdictions
+	 */
+	List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit);
+
+	/**
+	 * This method searches for structures ordered by serverVersion ascending
+	 *
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param serverVersion
+	 * @param limit upper limit on number of structures to fetch
+	 * @return list of structures
+	 */
+	List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit);
+
 }
