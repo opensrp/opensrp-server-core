@@ -121,15 +121,15 @@ public class XlsFormDownloaderService {
 	public String format(String unformattedXml) {
 		try {
 			final org.w3c.dom.Document document = parseXmlFile(unformattedXml);
-			
-			OutputFormat format = new OutputFormat(document);
+
+			OutputFormat format = new OutputFormat("XML", null, true);
 			format.setLineWidth(380);
 			//format.setIndenting(true);
 			format.setIndent(2);
 			Writer out = new StringWriter();
 			XMLSerializer serializer = new XMLSerializer(out, format);
 			serializer.serialize(document);
-			
+
 			return out.toString();
 		}
 		catch (IOException e) {
