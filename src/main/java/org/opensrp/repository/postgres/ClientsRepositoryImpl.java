@@ -497,4 +497,17 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		int offset = searchBean.getPageNumber() * pageSize;
 		return convert(clientMetadataMapper.selectHouseholdBySearchBean(searchBean, addressSearchBean, offset, pageSize));
 	}
+	
+	@Override
+	public List<Client> findANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		int pageSize = searchBean.getPageSize();
+		if (pageSize == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		}
+		
+		int offset = searchBean.getPageNumber() * pageSize;
+		List<CustomClient> clients = clientMetadataMapper.selectANCBySearchBean(searchBean, addressSearchBean, offset,
+		    pageSize);
+		return customClientConvert(clients);
+	}
 }

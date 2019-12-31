@@ -265,7 +265,7 @@ public class ClientService {
 	}
 	
 	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean clientSearchBean,
-	                                                           AddressSearchBean addressSearchBean) {
+	                                                         AddressSearchBean addressSearchBean) {
 		return allClients.findTotalCountHouseholdByCriteria(clientSearchBean, addressSearchBean);
 	}
 	
@@ -302,7 +302,7 @@ public class ClientService {
 	}
 	
 	public HouseholdClient findTotalCountAllClientsByCriteria(ClientSearchBean clientSearchBean,
-	                                                            AddressSearchBean addressSearchBean) {
+	                                                          AddressSearchBean addressSearchBean) {
 		return allClients.findCountAllClientsByCriteria(clientSearchBean, addressSearchBean);
 	}
 	
@@ -312,5 +312,9 @@ public class ClientService {
 		clientSearchBean.setLastEditTo(lastEditTo);
 		return allClients.findHouseholdByCriteria(clientSearchBean, addressSearchBean);
 		
+	}
+	
+	public List<Client> findAllANCByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
+		return allClients.findANCByCriteria(clientSearchBean, addressSearchBean);
 	}
 }

@@ -1,5 +1,6 @@
 package org.opensrp.search;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +51,10 @@ public class ClientSearchBean {
 	private String orderByType; // type of order ASC or DESC
 	
 	private List<String> locations;
+	
+	private Date startDate;
+	
+	private Date endDate;
 	
 	public List<String> getLocations() {
 		return locations;
@@ -225,6 +230,22 @@ public class ClientSearchBean {
 	
 	public void setProviderId(String providerId) {
 		this.providerId = providerId;
+	}
+	
+	public Date getStartDate() {
+		return startDate;
+	}
+	
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+	
+	public Date getEndDate() {
+		return endDate;
+	}
+	
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 	
 }
