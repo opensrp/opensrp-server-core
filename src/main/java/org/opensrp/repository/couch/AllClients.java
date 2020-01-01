@@ -245,4 +245,22 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 		return null;
 	}
 	
+	@Override
+	public int findCountANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
+	@Override
+	public List<Client> findChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public int findCountChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	
 }

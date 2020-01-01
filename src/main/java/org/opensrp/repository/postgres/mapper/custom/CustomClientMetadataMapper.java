@@ -48,4 +48,14 @@ public interface CustomClientMetadataMapper extends ClientMetadataMapper {
 	List<CustomClient> selectANCBySearchBean(@Param("clientBean") ClientSearchBean searchBean,
 	                                         @Param("addressBean") AddressSearchBean addressSearchBean,
 	                                         @Param("offset") int offset, @Param("limit") int limit);
+	
+	int selectCountANCBySearchBean(@Param("clientBean") ClientSearchBean searchBean,
+	                               @Param("addressBean") AddressSearchBean addressSearchBean);
+	
+	List<CustomClient> selectChildBySearchBean(@Param("clientBean") ClientSearchBean searchBean,
+	                                           @Param("addressBean") AddressSearchBean addressSearchBean,
+	                                           @Param("offset") int offset, @Param("limit") int limit);
+	
+	int selectCountChildBySearchBean(@Param("clientBean") ClientSearchBean searchBean,
+	                                 @Param("addressBean") AddressSearchBean addressSearchBean);
 }

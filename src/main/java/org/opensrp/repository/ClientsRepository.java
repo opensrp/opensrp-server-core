@@ -68,4 +68,10 @@ public interface ClientsRepository extends BaseRepository<Client> {
 	
 	List<Client> findANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 	
+	int findCountANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	List<Client> findChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
+	int findCountChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+	
 }

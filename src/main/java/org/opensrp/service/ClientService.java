@@ -317,4 +317,16 @@ public class ClientService {
 	public List<Client> findAllANCByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
 		return allClients.findANCByCriteria(clientSearchBean, addressSearchBean);
 	}
+	
+	public int findCountANCByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
+		return allClients.findCountANCByCriteria(clientSearchBean, addressSearchBean);
+	}
+	
+	public List<Client> findAllChildByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
+		return allClients.findChildByCriteria(clientSearchBean, addressSearchBean);
+	}
+	
+	public int findCountChildByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
+		return allClients.findCountChildByCriteria(clientSearchBean, addressSearchBean);
+	}
 }

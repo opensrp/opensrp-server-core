@@ -510,4 +510,27 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		    pageSize);
 		return customClientConvert(clients);
 	}
+	
+	@Override
+	public int findCountANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		return clientMetadataMapper.selectCountANCBySearchBean(searchBean, addressSearchBean);
+	}
+	
+	@Override
+	public List<Client> findChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		int pageSize = searchBean.getPageSize();
+		if (pageSize == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		}
+		
+		int offset = searchBean.getPageNumber() * pageSize;
+		List<CustomClient> clients = clientMetadataMapper.selectChildBySearchBean(searchBean, addressSearchBean, offset,
+		    pageSize);
+		return customClientConvert(clients);
+	}
+	
+	@Override
+	public int findCountChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		return clientMetadataMapper.selectCountChildBySearchBean(searchBean, addressSearchBean);
+	}
 }
