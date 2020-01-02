@@ -639,7 +639,7 @@
 			where
 				last_obs.id = cl.id 
 				<if test="clientBean.startDate != null and clientBean.endDate != null ">					
-					and  edd between ${clientBean.startDate} and  ${clientBean.endDate}		
+					and  Date(edd) between '${clientBean.startDate}' and  '${clientBean.endDate}'		
 				</if>
 				
 				)

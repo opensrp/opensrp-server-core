@@ -5,6 +5,7 @@ import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -500,14 +501,9 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Client> findANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
-		int pageSize = searchBean.getPageSize();
-		if (pageSize == 0) {
-			pageSize = DEFAULT_FETCH_SIZE;
-		}
-		
-		int offset = searchBean.getPageNumber() * pageSize;
-		List<CustomClient> clients = clientMetadataMapper.selectANCBySearchBean(searchBean, addressSearchBean, offset,
-		    pageSize);
+		Map<String, Integer> pageSizeAndOffset = getPageSizeAndOffset(searchBean);
+		List<CustomClient> clients = clientMetadataMapper.selectANCBySearchBean(searchBean, addressSearchBean,
+		    pageSizeAndOffset.get("offset"), pageSizeAndOffset.get("pageSize"));
 		return customClientConvert(clients);
 	}
 	
@@ -518,19 +514,28 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Client> findChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
-		int pageSize = searchBean.getPageSize();
-		if (pageSize == 0) {
-			pageSize = DEFAULT_FETCH_SIZE;
-		}
-		
-		int offset = searchBean.getPageNumber() * pageSize;
-		List<CustomClient> clients = clientMetadataMapper.selectChildBySearchBean(searchBean, addressSearchBean, offset,
-		    pageSize);
+		Map<String, Integer> pageSizeAndOffset = getPageSizeAndOffset(searchBean);
+		List<CustomClient> clients = clientMetadataMapper.selectChildBySearchBean(searchBean, addressSearchBean,
+		    pageSizeAndOffset.get("offset"), pageSizeAndOffset.get("pageSize"));
 		return customClientConvert(clients);
 	}
 	
 	@Override
 	public int findCountChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		return clientMetadataMapper.selectCountChildBySearchBean(searchBean, addressSearchBean);
+	}
+	
+	private Map<String, Integer> getPageSizeAndOffset(ClientSearchBean searchBean) {
+		Map<String, Integer> pageSizeAndOffset = new HashMap<>();
+		int pageSize = searchBean.getPageSize();
+		if (pageSize == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		}
+		
+		int offset = searchBean.getPageNumber() * pageSize;
+		pageSizeAndOffset.put("pageSize", pageSize);
+		pageSizeAndOffset.put("offset", offset);
+		return pageSizeAndOffset;
+		
 	}
 }
