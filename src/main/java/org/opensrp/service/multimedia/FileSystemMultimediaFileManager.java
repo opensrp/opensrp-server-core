@@ -37,6 +37,6 @@ public class FileSystemMultimediaFileManager extends BaseMultimediaFileManager {
     @Override
     public File retrieveFile(String filePath) {
         File file = new File(filePath);
-        return file.exists() ? file : null;
+        return file.exists() && file.canRead() ? file : null;
     }
 }

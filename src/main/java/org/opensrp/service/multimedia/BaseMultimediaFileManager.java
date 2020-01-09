@@ -84,7 +84,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                 }
                 return SUCCESS;
             } catch (Exception e) {
-                e.getMessage();
+                logger.error("", e);
             }
         }
 
