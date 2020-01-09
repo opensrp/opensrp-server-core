@@ -63,6 +63,11 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
         multimediaFile.delete();
     }
 
+	@Override
+	protected String getMultiMediaDir() {
+		return File.separator + "tmp" + File.separator;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

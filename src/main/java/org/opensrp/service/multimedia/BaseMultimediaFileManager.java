@@ -29,10 +29,10 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
 
     private final ClientService clientService;
 
-    private String multimediaDirPath;
+    protected String multimediaDirPath;
 
     @Value("#{opensrp['multimedia.directory.name']}")
-    private String baseMultimediaDirPath;
+    protected String baseMultimediaDirPath;
 
     private static Logger logger = LoggerFactory.getLogger(FileSystemMultimediaFileManager.class.getName());
 
@@ -101,7 +101,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
     public boolean uploadFile(MultimediaDTO multimediaDTO, MultipartFile multimediaFile) {
         if (!multimediaFile.isEmpty()) {
             try {
-                multimediaDirPath = baseMultimediaDirPath + File.separator;
+                multimediaDirPath = getMultiMediaDir();
                 String fileExt = ".jpg";
                 switch (multimediaDTO.getContentType()) {
 
@@ -149,6 +149,8 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
             return false;
         }
     }
+
+    protected abstract String getMultiMediaDir();
 
     private void makeMultimediaDir(String dirPath) {
         File file = new File(dirPath);

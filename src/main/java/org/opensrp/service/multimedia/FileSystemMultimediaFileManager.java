@@ -31,6 +31,11 @@ public class FileSystemMultimediaFileManager extends BaseMultimediaFileManager {
         multimediaFile.transferTo(multimediaFilePath);
     }
 
+    @Override
+    protected String getMultiMediaDir() {
+       return baseMultimediaDirPath + File.separator;
+    }
+
     /**
      * {@inheritDoc}
      */
