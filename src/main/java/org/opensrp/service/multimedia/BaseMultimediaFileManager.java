@@ -23,7 +23,6 @@ import static org.opensrp.service.MultimediaService.VIDEOS_DIR;
  * Created by Vincent Karuri on 24/10/2019
  */
 
-@Component
 public abstract class BaseMultimediaFileManager implements MultimediaFileManager {
 
     private final MultimediaRepository multimediaRepository;
@@ -37,9 +36,9 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
 
     private static Logger logger = LoggerFactory.getLogger(FileSystemMultimediaFileManager.class.getName());
 
-    private final String SUCCESS = "success";
+    private static final String SUCCESS = "success";
 
-    private final String FAIL = "fail";
+    private static final String FAIL = "fail";
 
     public BaseMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
         this.multimediaRepository = multimediaRepository;
