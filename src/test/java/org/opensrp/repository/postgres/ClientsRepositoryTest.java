@@ -444,7 +444,6 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		    "b0cb057b-c396-4ec9-bfab-388117a9a5f6", "28ea8f0a-fa53-447d-b8f9-ad07263b382c");
 		assertEquals(6, clients.size());
 		for (Client client : clients) {
-			System.err.println("" + client.getId());
 			assertTrue(client.getServerVersion() >= 1521003136406l);
 			assertTrue(expectedIds.contains(client.getId()));
 		}
@@ -555,6 +554,74 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		List<Client> clients = clientsRepository.findHouseholdByCriteria(searchBean, addressSearchBean);
 		assertNotNull(clients);
 		assertEquals(4, clients.size());
+	}
+	
+	@Test
+	public void shouldFindANCByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setNameLike("Nobonita");
+		searchBean.setClientType(null);
+		List<Client> clients = clientsRepository.findANCByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindAllANCByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType(null);
+		List<Client> clients = clientsRepository.findANCByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindChildByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setNameLike("mala");
+		searchBean.setClientType(null);
+		List<Client> clients = clientsRepository.findChildByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindANCByLocation() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType(null);
+		List<String> locations = new ArrayList<>();
+		locations.add("ce39f858-a2f6-4676-8db1-81fbb1891b01");
+		searchBean.setLocations(locations);
+		List<Client> clients = clientsRepository.findChildByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindAllChildByCriteria() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType(null);
+		List<Client> clients = clientsRepository.findChildByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
+	}
+	
+	@Test
+	public void shouldFindChildByLocation() {
+		AddressSearchBean addressSearchBean = new AddressSearchBean();
+		ClientSearchBean searchBean = new ClientSearchBean();
+		searchBean.setClientType(null);
+		List<String> locations = new ArrayList<>();
+		locations.add("ce39f858-a2f6-4676-8db1-81fbb1891b01");
+		searchBean.setLocations(locations);
+		List<Client> clients = clientsRepository.findChildByCriteria(searchBean, addressSearchBean);
+		assertNotNull(clients);
+		assertEquals(1, clients.size());
 	}
 	
 }
