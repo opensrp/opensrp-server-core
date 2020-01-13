@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -26,6 +27,9 @@ import static org.utils.TestUtils.getBasePackageFilePath;
 public class FileSystemMultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 	private FileSystemMultimediaFileManager fileSystemMultimediaFileManager;
+
+	@Value("#{opensrp['multimedia.directory.name']}")
+	private String baseMultimediaDirPath;
 
 	@Captor
 	private ArgumentCaptor<File> fileArgumentCaptor = ArgumentCaptor.forClass(File.class);
@@ -63,5 +67,10 @@ public class FileSystemMultimediaFileManagerTest extends BaseMultimediaFileManag
 	@Test
 	public void testRetrieveFileShouldReturnNullForNonExistentFile() {
 		assertNull(fileSystemMultimediaFileManager.retrieveFile("non_existent_file"));
+	}
+
+	@Test
+	public void testGetMultiMediaDirShouldReturnCorrectFilePath() {
+		assertEquals(baseMultimediaDirPath + File.separator, fileSystemMultimediaFileManager.getMultiMediaDir());
 	}
 }

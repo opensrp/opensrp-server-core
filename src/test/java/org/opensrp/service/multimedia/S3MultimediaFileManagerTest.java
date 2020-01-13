@@ -116,4 +116,9 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 		assertNotNull(s3Client);
 		assertEquals("region", s3Client.getRegionName());
 	}
+
+	@Test
+	public void testGetMultiMediaDirShouldReturnCorrectFilePath() {
+		assertEquals(File.separator + "tmp" + File.separator, s3MultimediaFileManager.getMultiMediaDir());
+	}
 }

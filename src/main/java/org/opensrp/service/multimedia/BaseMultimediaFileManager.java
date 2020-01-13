@@ -8,12 +8,10 @@ import org.opensrp.service.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 import static org.opensrp.service.MultimediaService.IMAGES_DIR;
 import static org.opensrp.service.MultimediaService.MULTI_VERSION;
