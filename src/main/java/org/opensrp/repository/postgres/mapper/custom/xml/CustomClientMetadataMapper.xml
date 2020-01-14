@@ -25,6 +25,10 @@
         <result column="age_year_part" property="age_year_part"/>
         <result column="age_month_part" property="age_month_part"/>
         <result column="registration_status" property="registration_status"/>
+        <result column="provider_id" property="provider_id"/>
+        <result column="lmp" property="lmp"/>
+        <result column="family_head" property="family_head"/>
+        
     </resultMap>
 	<resultMap id="BaseCustomClientResultMap" type="org.opensrp.domain.postgres.CustomClient">    
     	<id column="id" jdbcType="BIGINT" property="id" />
@@ -40,8 +44,7 @@
 	</resultMap>
 	<resultMap id="totalCountMap" type="org.opensrp.domain.postgres.HouseholdClient">		
 		<result column="total_count" jdbcType="BIGINT" property="totalCount"/>
-	</resultMap>	
-		
+	</resultMap>
 	
 	<sql id="Example_Where_Clause">
 		<where>
@@ -477,7 +480,7 @@
 			<bind name="name" value="'%' + clientBean.nameLike + '%'" />
 			and (	cm.first_name ilike #{name} or
 					cm.middle_name ilike #{name} or
-					cm.last_name ilike #{name} or
+					cm.last_name ilike #{name} or					
 					cm.unique_id ilike #{name} 
 				)
 		</if>		
@@ -491,4 +494,310 @@
 		</if>
 	
 	</sql>
+	<sql id="ClientBean_Where_Clause_All_ANC_CHILD">
+		<if test="clientBean.nameLike != null">
+			<bind name="name" value="'%' + clientBean.nameLike + '%'" />
+			and (	cm.first_name ilike #{name} or
+					cm.middle_name ilike #{name} or
+					cm.last_name ilike #{name} or
+					fh.family_head ilike #{name} or
+					cm.unique_id ilike #{name} 
+				)
+		</if>
+		
+		<if test="clientBean.gender != null">
+			and cm.gender = #{clientBean.gender,jdbcType=VARCHAR}
+		</if>
+	
+	</sql>
+	<sql id="ANC">
+		with anc_event as(
+			select
+				e.json,
+				em.event_type,
+				em.location_id,
+				em.provider_id,
+				em.event_date,
+				em.base_entity_id,
+				em.id,
+				max(em.id) over(partition by em.base_entity_id) last_id
+			from
+				core.event_metadata em
+			join core."event" e on
+				em.id = e.id
+			where
+				(em.event_type = 'Update ANC Registration'
+				or em.event_type = 'ANC Registration')
+				<if test="clientBean.locations != null">
+					and em.location_id = any (array           	
+	            	<foreach close="]" collection="clientBean.locations" item="listItem"
+											open="[" separator=",">
+						#{listItem}
+					</foreach>
+					)				
+				</if>
+			)	
+			,
+			last_anc_event as (
+			select
+				em.id,
+				em.last_id,
+				cm.base_entity_id,
+				em.event_type,
+				cm.first_name,
+				cm.last_name,
+				cm.middle_name,
+				cm.unique_id,
+				cm.relational_id,
+				cm.birth_date,
+				em.json as ejson ,
+				em.provider_id,
+				em.event_date,
+				em.location_id
+			from
+				anc_event em
+			join core.client_metadata cm on
+				em.base_entity_id = cm.base_entity_id
+			where
+				em.id = em.last_id ),
+			anc_event_client as (
+			select
+				c.json,
+				c.id,
+				ce.ejson ,
+				ce.base_entity_id,
+				ce.provider_id,
+				ce.event_date,
+				ce.location_id,
+				ce.relational_id,
+				extract(year
+			from
+				age(current_date, ce.birth_date)) :: int as age_year_part,
+				extract(month
+			from
+				age(current_date, ce.birth_date)) :: int as age_month_part,
+				ce.first_name,
+				ce.unique_id,
+				ce.middle_name,
+				ce.last_name
+			from
+				last_anc_event ce
+			join core.client as c on
+				c.json->>'baseEntityId' = ce.base_entity_id ),
+			obs as(
+			select
+				id,
+				jsonb_array_elements(ejson->'obs') o
+			from
+				anc_event_client ) ,
+			last_obs as(
+			select
+				id,
+				max(to_date((o->'values'->>0), 'dd-mm-yyyy')) filter(
+			where
+				(o->>'formSubmissionField') = 'edd_note') edd,
+				max(to_date((o->'values'->>0), 'dd-mm-yyyy')) filter(
+			where
+				(o->>'formSubmissionField') = 'last_menstrual_period') lmp,
+				max(floor(extract(days from (now() - to_date((o->'values'->>0), 'dd-mm-yyyy') )) / 7)) filter(
+			where
+				(o->>'formSubmissionField') = 'last_menstrual_period' ) gestAge
+			from
+				obs
+			group by
+				id),
+			family_head as (
+			select
+				cm.base_entity_id,
+				concat(cm.first_name, ' ', cm.last_name) as family_head
+			from
+				core.client_metadata cm
+			where
+				cm.base_entity_id = any (
+				select
+					relational_id
+				from
+					anc_event_client) ),
+			anc_list as (
+			select
+				cl.first_name,
+				cl.last_name,
+				cl.middle_name,
+				cl.unique_id,
+				cl.age_year_part,
+				cl.age_month_part,	
+				cl.relational_id,
+				cl.event_date last_contact_date,
+				cl.provider_id,
+				cl.json ,
+				edd,
+				coalesce(lmp,(edd- interval '180 DAY')::date) as lmp,
+				coalesce(gestAge, floor(extract(days from(now()-(edd- interval '180 DAY')::date))/ 7)) gest_age
+			from
+				last_obs,
+				anc_event_client as cl
+			where
+				last_obs.id = cl.id 
+				<if test="clientBean.startDate != null and clientBean.endDate != null ">					
+					and  Date(edd) between '${clientBean.startDate}' and  '${clientBean.endDate}'		
+				</if>
+				
+				)
+	
+	</sql>
+	
+	<sql id="Child">
+		with child_event as(
+		select
+			e.json,
+			em.event_type,
+			em.location_id,
+			em.provider_id,
+			em.event_date,
+			em.base_entity_id,
+			em.id,
+			max(em.id) over(partition by em.base_entity_id) last_id
+		from
+			core.event_metadata em
+		join core."event" e on
+			em.id = e.id
+		where
+			(em.event_type = 'Child Registration'
+			or em.event_type = 'Update Child Registration'
+			or em.event_type = 'PNC Child Registration')
+			<if test="clientBean.locations != null">
+				and em.location_id = any (array           	
+	            	<foreach close="]" collection="clientBean.locations" item="listItem" open="[" separator=",">
+						#{listItem}
+					</foreach>
+					)				
+			</if>			
+			),
+		last_event as(
+		select
+			ce.id,
+			ce.last_id,
+			cm.base_entity_id,
+			ce.event_type,
+			cm.first_name,
+			cm.unique_id,
+			cm.last_name,
+			cm.middle_name,
+			cm.relational_id,
+			cm.birth_date,
+			ce.json as ejson ,
+			ce.provider_id,
+			ce.event_date,
+			ce.location_id
+		from
+			child_event ce
+		join core.client_metadata cm on
+			ce.base_entity_id = cm.base_entity_id
+		where
+			ce.id = ce.last_id ) ,
+		child_client as (
+		select
+			c.json,
+			c.id,
+			le.provider_id,
+			le.event_date last_contact_date,
+			le.location_id,
+			le.base_entity_id,
+			le.first_name,
+			le.last_name,
+			le.middle_name,
+			le.birth_date,
+			le.unique_id,
+			le.relational_id,
+			c."json"->>'gender' gender,
+			extract(year
+		from
+			age(current_date, le.birth_date)) :: int as age_year_part ,
+			extract(month
+		from
+			age(current_date, le.birth_date)) :: int as age_month_part ,
+			extract(day
+		from
+			age(current_date, le.birth_date)) :: int as day ,
+			(date_part('day', current_date::timestamp - le.birth_date::timestamp))/ 365.25 years
+		from
+			last_event le
+		join core.client as c on
+			c.json->>'baseEntityId' = le.base_entity_id ),
+		family_head as (
+		select
+			cm.base_entity_id,
+			concat(cm.first_name, ' ', cm.last_name) as family_head
+		from
+			core.client_metadata cm
+		where
+			cm.base_entity_id = any (
+			select
+				relational_id
+			from
+				child_client) )
+		
+	
+	</sql>
+	<select id="selectANCBySearchBean" resultMap="BaseCustomClientResultMap">
+		<include refid="ANC"/>	
+		select * from anc_list cm join family_head fh on  cm.relational_id = fh.base_entity_id			
+		<where>
+			<trim prefixOverrides="and">							
+				 <include refid="ClientBean_Where_Clause_All_ANC_CHILD"/>				
+			</trim>
+	    </where>			
+
+		<if test="clientBean.orderByField!=null and clientBean.orderByType!=null">
+				 order by ${clientBean.orderByField}  ${clientBean.orderByType}  
+		</if>
+		LIMIT #{limit} OFFSET #{offset}	
+	</select>
+	
+	<select id="selectCountANCBySearchBean" resultType="Integer">
+		<include refid="ANC"/>	
+		select count(*) from anc_list cm join family_head fh on  cm.relational_id = fh.base_entity_id			
+		<where>
+			<trim prefixOverrides="and">							
+				 <include refid="ClientBean_Where_Clause_All_ANC_CHILD"/>				
+			</trim>
+	    </where>
+	</select>
+	
+	<select id="selectChildBySearchBean" resultMap="BaseCustomClientResultMap">
+		<include refid="Child"/>	
+		select
+			*
+		from
+			child_client cm
+		join family_head fh on
+			cm.relational_id = fh.base_entity_id			
+		<where>
+			<trim prefixOverrides="and">							
+				 <include refid="ClientBean_Where_Clause_All_ANC_CHILD"/>				
+			</trim>
+	    </where>			
+
+		<if test="clientBean.orderByField!=null and clientBean.orderByType!=null">
+				 order by ${clientBean.orderByField}  ${clientBean.orderByType}  
+		</if>
+		LIMIT #{limit} OFFSET #{offset}	
+	</select>
+	
+	<select id="selectCountChildBySearchBean" resultType="Integer">
+		<include refid="Child"/>	
+		select
+			count(*)
+		from
+			child_client cm
+		join family_head fh on
+			cm.relational_id = fh.base_entity_id			
+		<where>
+			<trim prefixOverrides="and">							
+				 <include refid="ClientBean_Where_Clause_All_ANC_CHILD"/>				
+			</trim>
+	    </where>
+	</select>
+	
+	
 </mapper>

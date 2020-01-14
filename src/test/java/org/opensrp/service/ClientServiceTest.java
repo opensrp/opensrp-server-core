@@ -47,7 +47,7 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		        .withGender("Male").withFirstName("xobili").withLastName("mbangwa");
 		client.withIdentifier("ZEIR_ID", "233864-8").withAttribute("Home_Facility", "Linda");
 		clientService.addClient(client);
-		assertEquals(16, clientService.findAllClients().size());
+		assertEquals(20, clientService.findAllClients().size());
 		
 		Client savedClient = clientService.find("f67823b0-378e-4a35-93fc-bb00def74e2f");
 		assertNotNull(savedClient.getId());
@@ -73,8 +73,8 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		Client client = new Client("33d9a17f-d729-4276-9891-b43e8b60fd12");
 		assertEquals("05934ae338431f28bf6793b24159c647", clientService.findClient(client).getId());
 		
-		client.withIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE, "9c4260f2-d296-4af1-b771-debda1b6cfd1").withIdentifier("ZEIR_ID",
-		    "218220-2");
+		client.withIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE, "9c4260f2-d296-4af1-b771-debda1b6cfd1").withIdentifier(
+		    "ZEIR_ID", "218220-2");
 		assertEquals("05934ae338431f28bf6793b24159c647", clientService.findClient(client).getId());
 		
 		client = new Client("");
@@ -116,8 +116,8 @@ public class ClientServiceTest extends BaseRepositoryTest {
 	@Test()
 	public void testUpdateClient() throws JSONException {
 		Client client = clientService.find("67007c17-97bb-4732-a1b8-3a0c292b5432");
-		client.withFirstName("Conses").withMiddleName("Divens").withIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE,
-		    "2321312-dsfsd");
+		client.withFirstName("Conses").withMiddleName("Divens")
+		        .withIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE, "2321312-dsfsd");
 		clientService.updateClient(client);
 		
 		Client updatedClient = clientService.find("67007c17-97bb-4732-a1b8-3a0c292b5432");
@@ -131,8 +131,9 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		Client client = clientService.find("cc127350-c1cd-4c3a-99d4-4d632882f522");
 		Address address = new Address().withCountry("KE").withStateProvince("Punja").withAddressType("home");
 		
-		client.withFirstName("Conses").withMiddleName("Divens").withIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE, "2321312-dsfsd")
-		        .withAttribute("Zone", "Zone3").withAddress(address);
+		client.withFirstName("Conses").withMiddleName("Divens")
+		        .withIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE, "2321312-dsfsd").withAttribute("Zone", "Zone3")
+		        .withAddress(address);
 		
 		Client mergedClient = clientService.mergeClient(client);
 		assertEquals("Conses", mergedClient.getFirstName());
@@ -149,7 +150,7 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		        .withGender("Male").withFirstName("xobili").withLastName("mbangwa");
 		client.withIdentifier("ZEIR_ID", "233864-8").withAttribute("Home_Facility", "Linda");
 		clientService.addorUpdate(client);
-		assertEquals(16, clientService.findAllClients().size());
+		assertEquals(20, clientService.findAllClients().size());
 		
 		Client savedClient = clientService.find("f67823b0-378e-4a35-93fc-bb00def74e2f");
 		assertNotNull(savedClient.getId());
@@ -175,7 +176,7 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		        .withGender("Male").withFirstName("xobili").withLastName("mbangwa");
 		client.withIdentifier("ZEIR_ID", "233864-8").withAttribute("Home_Facility", "Linda");
 		clientService.addorUpdate(client, false);
-		assertEquals(16, clientService.findAllClients().size());
+		assertEquals(20, clientService.findAllClients().size());
 		
 		Client savedClient = clientService.find("f67823b0-378e-4a35-93fc-bb00def74e2f");
 		assertNotNull(savedClient.getId());

@@ -128,15 +128,15 @@ public class EventServiceTest extends BaseRepositoryTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddEventDuplicateBaseEntityFormSubmission() {
-		Event event = new Event().withBaseEntityId("58b33379-dab2-4f5c-8f09-6d2bd63023d8")
-		        .withFormSubmissionId("5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
+		Event event = new Event().withBaseEntityId("58b33379-dab2-4f5c-8f09-6d2bd63023d8").withFormSubmissionId(
+		    "5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
 		eventService.addEvent(event);
 	}
 	
 	@Test(expected = DuplicateKeyException.class)
 	public void testAddEventDuplicateFormSubmission() {
-		Event event = new Event().withBaseEntityId("58b33379-dab2-4f")
-		        .withFormSubmissionId("5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
+		Event event = new Event().withBaseEntityId("58b33379-dab2-4f").withFormSubmissionId(
+		    "5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
 		eventService.addEvent(event);
 		
 	}
@@ -161,7 +161,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(15, eventService.getAll().size());
+		assertEquals(19, eventService.getAll().size());
 		
 		//Test with card identifier type
 		event = new Event().withEventType("Out of Area Service").withProviderId("tester112")
@@ -170,7 +170,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(15, eventService.getAll().size());
+		assertEquals(19, eventService.getAll().size());
 		
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		event = new Event().withEventType("Out of Area Service - Growth Monitoring")
@@ -180,7 +180,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
 		
-		assertEquals(16, eventService.getAll().size());
+		assertEquals(20, eventService.getAll().size());
 		
 	}
 	
@@ -273,21 +273,21 @@ public class EventServiceTest extends BaseRepositoryTest {
 		assertEquals("3.5", updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
 		assertEquals(0, Minutes.minutesBetween(DateTime.now(), updatedEvent.getDateEdited()).getMinutes());
 	}
-
+	
 	@Test
 	public void testFindAllIdsByEventType() {
-
+		
 		String growthMonitoringEventype = "Growth Monitoring";
 		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype);
-
+		
 		assertNotNull(actualEventIds);
 		assertEquals(4, actualEventIds.size());
-
+		
 		assertEquals("05934ae338431f28bf6793b24177a1dc", actualEventIds.get(0));
 		assertEquals("05934ae338431f28bf6793b241780bac", actualEventIds.get(1));
 		assertEquals("05934ae338431f28bf6793b241781149", actualEventIds.get(2));
 		assertEquals("05934ae338431f28bf6793b241781a1e", actualEventIds.get(3));
-
+		
 	}
 	
 }
