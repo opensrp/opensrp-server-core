@@ -161,7 +161,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(19, eventService.getAll().size());
+		assertEquals(20, eventService.getAll().size());
 		
 		//Test with card identifier type
 		event = new Event().withEventType("Out of Area Service").withProviderId("tester112")
@@ -170,7 +170,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(19, eventService.getAll().size());
+		assertEquals(20, eventService.getAll().size());
 		
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		event = new Event().withEventType("Out of Area Service - Growth Monitoring")
@@ -180,7 +180,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
 		
-		assertEquals(20, eventService.getAll().size());
+		assertEquals(21, eventService.getAll().size());
 		
 	}
 	

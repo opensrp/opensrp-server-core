@@ -336,7 +336,8 @@
 		<if test="clientBean.nameLike != null">
 			<bind name="name" value="'%' + clientBean.nameLike + '%'" />
 			and (	family_first_name ilike #{name} or
-					family_head ilike #{name} or					
+					family_head_first_name ilike #{name} or	
+					family_head_last_name ilike #{name} or					
 					phone_number = #{name} or
 					provider_id = #{name} or
 					unique_id = #{name} 
