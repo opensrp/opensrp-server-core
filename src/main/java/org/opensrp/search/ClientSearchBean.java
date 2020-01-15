@@ -51,6 +51,10 @@ public class ClientSearchBean {
 	
 	private List<String> locations;
 	
+	private DateTime startDate;
+	
+	private DateTime endDate;
+	
 	public List<String> getLocations() {
 		return locations;
 	}
@@ -225,6 +229,22 @@ public class ClientSearchBean {
 	
 	public void setProviderId(String providerId) {
 		this.providerId = providerId;
+	}
+	
+	public DateTime getStartDate() {
+		return startDate;
+	}
+	
+	public void setStartDate(DateTime startDate) {
+		this.startDate = startDate;
+	}
+	
+	public DateTime getEndDate() {
+		return endDate;
+	}
+	
+	public void setEndDate(DateTime endDate) {
+		this.endDate = endDate;
 	}
 	
 }
