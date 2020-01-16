@@ -107,7 +107,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		List<Client> clients = clientsRepository.getAll();
 		
 		//test deleted clients
-		assertEquals(18, clients.size());
+		assertEquals(19, clients.size());
 
 		for (Client client : clients)
 			assertNotEquals("05934ae338431f28bf6793b24164cbd9", client.getId());
@@ -152,7 +152,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		
 		List<Client> clients = clientsRepository.findAllClients();
 
-		assertEquals(18, clients.size());
+		assertEquals(19, clients.size());
 		for (Client client : clients)
 			assertNotEquals("05934ae338431f28bf6793b24164cbd9", client.getId());
 		
@@ -331,7 +331,6 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	public void testFindByCriteriaWithoutAddressBean() {
 		ClientSearchBean searchBean = new ClientSearchBean();
 		assertEquals(20, clientsRepository.findByCriteria(searchBean).size());
-		assertEquals(19, clientsRepository.findByCriteria(searchBean).size());
 		
 		searchBean.setNameLike("Janu");
 		assertEquals(4, clientsRepository.findByCriteria(searchBean).size());
@@ -445,8 +444,8 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		List<Client> clients = clientsRepository.findByServerVersion(1521003136406l);
 		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce",
 		    "ade884f8-2685-45fd-93f8-122045b2635e", "2e14b66f-206c-4314-a0f7-c5d2c4d9860f",
-		    "b0cb057b-c396-4ec9-bfab-388117a9a5f6", "28ea8f0a-fa53-447d-b8f9-ad07263b382c");
-		assertEquals(6, clients.size());
+		    "b0cb057b-c396-4ec9-bfab-388117a9a5f6", "28ea8f0a-fa53-447d-b8f9-ad07263b382c", "f5934ae338431f28bf6793b24159ce5a");
+		assertEquals(7, clients.size());
 		for (Client client : clients) {
 			assertTrue(client.getServerVersion() >= 1521003136406l);
 			assertTrue(expectedIds.contains(client.getId()));
