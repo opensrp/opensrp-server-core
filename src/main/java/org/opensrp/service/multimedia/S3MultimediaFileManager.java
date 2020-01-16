@@ -28,16 +28,16 @@ import java.io.InputStream;
 @Component("S3MultimediaFileManager")
 public class S3MultimediaFileManager extends BaseMultimediaFileManager {
 
-    @Value("#{opensrp['aws_access_key_id']}")
+    @Value("#{opensrp['aws_access_key_id'] ?: ''}")
     private String awsAccessKeyId;
 
-    @Value("#{opensrp['aws_secret_access_key']}")
+    @Value("#{opensrp['aws_secret_access_key'] ?: ''}")
     private String awsSecretAccessKey;
 
-    @Value("#{opensrp['aws_region']}")
+    @Value("#{opensrp['aws_region'] ?: ''}")
     private String awsRegion;
 
-    @Value("#{opensrp['aws_bucket']}")
+    @Value("#{opensrp['aws_bucket'] ?: ''}")
     private String s3Bucket;
 
     private AmazonS3 s3Client;
