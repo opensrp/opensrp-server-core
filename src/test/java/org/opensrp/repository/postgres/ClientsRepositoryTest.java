@@ -57,10 +57,11 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testAdd() {
 		Client client = new Client("f67823b0-378e-4a35-93fc-bb00def74e2f").withBirthdate(new DateTime("2017-03-31"), true)
-		        .withGender("Male").withFirstName("xobili").withLastName("mbangwa");
+				.withGender("Male").withFirstName("xobili").withLastName("mbangwa");
+
 		client.withIdentifier("ZEIR_ID", "233864-8").withAttribute("Home_Facility", "Linda");
 		clientsRepository.add(client);
-		assertEquals(20, clientsRepository.getAll().size());
+		assertEquals(21, clientsRepository.getAll().size());
 		
 		Client savedClient = clientsRepository.findByBaseEntityId("f67823b0-378e-4a35-93fc-bb00def74e2f");
 		assertNotNull(savedClient.getId());
@@ -99,14 +100,15 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testGetAll() {
-		assertEquals(19, clientsRepository.getAll().size());
-		
+		assertEquals(20, clientsRepository.getAll().size());
+
 		clientsRepository.safeRemove(clientsRepository.get("05934ae338431f28bf6793b24164cbd9"));
 		
 		List<Client> clients = clientsRepository.getAll();
 		
 		//test deleted clients
-		assertEquals(18, clients.size());
+		assertEquals(19, clients.size());
+
 		for (Client client : clients)
 			assertNotEquals("05934ae338431f28bf6793b24164cbd9", client.getId());
 		
@@ -119,7 +121,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		Client client = clientsRepository.get("05934ae338431f28bf6793b2416946b7");
 		clientsRepository.safeRemove(client);
 		List<Client> clients = clientsRepository.getAll();
-		assertEquals(18, clients.size());
+		assertEquals(19, clients.size());
 		
 		for (Client cl : clients)
 			assertNotEquals("05934ae338431f28bf6793b2416946b7", cl.getId());
@@ -144,13 +146,13 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindAllClients() {
-		assertEquals(19, clientsRepository.findAllClients().size());
+		assertEquals(20, clientsRepository.findAllClients().size());
 		
 		clientsRepository.safeRemove(clientsRepository.get("05934ae338431f28bf6793b24164cbd9"));
 		
 		List<Client> clients = clientsRepository.findAllClients();
-		
-		assertEquals(18, clients.size());
+
+		assertEquals(19, clients.size());
 		for (Client client : clients)
 			assertNotEquals("05934ae338431f28bf6793b24164cbd9", client.getId());
 		
@@ -278,7 +280,8 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	public void testFindByCriteria() {
 		ClientSearchBean searchBean = new ClientSearchBean();
 		AddressSearchBean addressSearchBean = new AddressSearchBean();
-		assertEquals(19, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+
+		assertEquals(20, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
 		
 		searchBean.setNameLike("Janu");
 		assertEquals(4, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
@@ -327,7 +330,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindByCriteriaWithoutAddressBean() {
 		ClientSearchBean searchBean = new ClientSearchBean();
-		assertEquals(19, clientsRepository.findByCriteria(searchBean).size());
+		assertEquals(20, clientsRepository.findByCriteria(searchBean).size());
 		
 		searchBean.setNameLike("Janu");
 		assertEquals(4, clientsRepository.findByCriteria(searchBean).size());
@@ -381,7 +384,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		to = from;
 		from = new DateTime("2018-01-01");
 		clients = clientsRepository.findByCriteria(new AddressSearchBean(), from, to);
-		assertEquals(10, clients.size());
+		assertEquals(11, clients.size());
 		
 		for (Client client : clients) {
 			assertTrue(client.getDateEdited().isEqual(from) || client.getDateEdited().isAfter(from));
@@ -437,12 +440,12 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindByServerVersion() {
-		assertEquals(9, clientsRepository.findByServerVersion(1520935878136l).size());
+		assertEquals(10, clientsRepository.findByServerVersion(1520935878136l).size());
 		List<Client> clients = clientsRepository.findByServerVersion(1521003136406l);
 		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce",
 		    "ade884f8-2685-45fd-93f8-122045b2635e", "2e14b66f-206c-4314-a0f7-c5d2c4d9860f",
-		    "b0cb057b-c396-4ec9-bfab-388117a9a5f6", "28ea8f0a-fa53-447d-b8f9-ad07263b382c");
-		assertEquals(6, clients.size());
+		    "b0cb057b-c396-4ec9-bfab-388117a9a5f6", "28ea8f0a-fa53-447d-b8f9-ad07263b382c", "f5934ae338431f28bf6793b24159ce5a");
+		assertEquals(7, clients.size());
 		for (Client client : clients) {
 			assertTrue(client.getServerVersion() >= 1521003136406l);
 			assertTrue(expectedIds.contains(client.getId()));
