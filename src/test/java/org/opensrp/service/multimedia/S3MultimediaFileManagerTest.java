@@ -61,7 +61,8 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 	@Test
 	public void testPersistFileToStorageShouldPersistFileToS3() throws IOException {
-		Whitebox.setInternalState(s3MultimediaFileManager, "s3Bucket", "s3Bucket");
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketFolderPath", getTestFileFolder());
 
 		MultipartFile multipartFile = mock(MultipartFile.class);
 		s3MultimediaFileManager.persistFileToStorage(getTestFilePath(), multipartFile);
@@ -84,7 +85,7 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 	@Test
 	public void testRetrieveFileShouldRetrieveFileFromS3() {
 		String testFilePath = getTestFilePath();
-		Whitebox.setInternalState(s3MultimediaFileManager, "s3Bucket", "s3Bucket");
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
 		doReturn(true).when(s3Client).doesObjectExist("s3Bucket", testFilePath);
 		doReturn(mock(ObjectMetadata.class)).when(s3Client).getObject(getObjectRequestArgumentCaptor.capture(), fileArgumentCaptor.capture());
 		assertNotNull(s3MultimediaFileManager.retrieveFile(testFilePath));
@@ -101,7 +102,7 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 	@Test
 	public void testRetrieveFileShouldReturnNullForNonExistentS3File() {
-		Whitebox.setInternalState(s3MultimediaFileManager, "s3Bucket", "s3Bucket");
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
 		doReturn(false).when(s3Client).doesObjectExist("s3Bucket", "non_existent_file");
 		assertNull(s3MultimediaFileManager.retrieveFile("non_existent_file"));
 	}

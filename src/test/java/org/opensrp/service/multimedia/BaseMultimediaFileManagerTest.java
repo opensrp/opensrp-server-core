@@ -32,6 +32,10 @@ public abstract class BaseMultimediaFileManagerTest {
 	}
 
 	protected String getTestFilePath() {
-		return getBasePackageFilePath() + "/src/test/java/org/opensrp/service/multimedia/test_file";
+		return getTestFileFolder() + File.separator + "test_file";
+	}
+
+	protected String getTestFileFolder() {
+		return getBasePackageFilePath() + "/src/test/java/org/opensrp/service/multimedia";
 	}
 }
