@@ -37,10 +37,13 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
     @Value("#{opensrp['aws_region'] ?: ''}")
     private String awsRegion;
 
-    @Value("#{opensrp['aws_bucket'] ?: ''}")
-    private String s3Bucket;
+    @Value("#{opensrp['s3_bucket_name'] ?: ''}")
+    private String s3BucketName;
 
-    private AmazonS3 s3Client;
+	@Value("#{opensrp['s3_bucket_folder_path'] ?: ''}")
+	private String s3BucketFolderPath;
+
+	private AmazonS3 s3Client;
 
     @Autowired
     public S3MultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
@@ -58,9 +61,16 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(multimediaFile.length());
         metadata.setContentMD5(new String(Base64.encodeBase64(md5)));
-        PutObjectRequest request = new PutObjectRequest(s3Bucket, multimediaFile.getPath(), inputStream, metadata);
+        PutObjectRequest request = new PutObjectRequest(s3BucketName, getS3FilePath(multimediaFile.getPath()), inputStream, metadata);
         s3Client.putObject(request);
         multimediaFile.delete();
+    }
+
+    private String getS3FilePath(String localFilePath) {
+    	String[] filePathLevels = localFilePath.split("/");
+    	String fileName = filePathLevels.length > 0 ? filePathLevels[filePathLevels.length - 1] : "";
+    	String s3FilePath = "".equals(s3BucketFolderPath) ? fileName : s3BucketFolderPath + File.separator + fileName;
+    	return s3FilePath;
     }
 
 	@Override
@@ -74,10 +84,10 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
     @Override
     public File retrieveFile(String filePath) {
         File file = null;
-        if (s3Client.doesObjectExist(s3Bucket, filePath)) {
+        if (s3Client.doesObjectExist(s3BucketName, filePath)) {
             // make sure tomcat has permissions to save to filePath
             file = new File(filePath);
-            s3Client.getObject(new GetObjectRequest(s3Bucket, filePath), file);
+            s3Client.getObject(new GetObjectRequest(s3BucketName, filePath), file);
         }
         return file;
     }
