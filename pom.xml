@@ -5,7 +5,7 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>1.3.4-SNAPSHOT</version>
+	<version>1.3.5-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>http://github.com/OpenSRP/opensrp-server-core</url>
@@ -23,6 +23,7 @@
 		<opensrp.api.version>1.0.1</opensrp.api.version>
 		<opensrp.form.version>1.0.1</opensrp.form.version>
 		<opensrp.interface.version>1.0.1</opensrp.interface.version>
+		<jackson.version>2.8.6</jackson.version>
 
 	</properties>
 
@@ -121,7 +122,21 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.2.2</version>
+			<version>${jackson.version}</version>
+		</dependency>
+
+		<!-- need this for the aws sdk -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk</artifactId>
+			<version>1.11.659</version>
 		</dependency>
 
 		<dependency>

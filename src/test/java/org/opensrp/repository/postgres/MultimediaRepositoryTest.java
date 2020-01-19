@@ -30,7 +30,7 @@ public class MultimediaRepositoryTest extends BaseRepositoryTest {
 	public void testGet() {
 		Multimedia multimedia = multimediaRepository.get("05934ae338431f28bf6793b241f0c5ca");
 		assertEquals("040d4f18-8140-479c-aa21-725612073490", multimedia.getCaseId());
-		assertEquals("/opt/patient_images/040d4f18-8140-479c-aa21-725612073490.jpg", multimedia.getFilePath());
+		assertEquals("/opt/multimedia/patient_images/040d4f18-8140-479c-aa21-725612073490.jpg", multimedia.getFilePath());
 		assertEquals("profilepic", multimedia.getFileCategory());
 		
 		assertNull(multimediaRepository.get("05934ae338431f28bf6793b241fa"));
@@ -101,7 +101,7 @@ public class MultimediaRepositoryTest extends BaseRepositoryTest {
 	public void testFindByCaseId() {
 		Multimedia multimedia = multimediaRepository.findByCaseId("87dc3230-84f7-4088-b257-e8b3130ab86b");
 		assertEquals("091488163b6ecd589a915372a0ad3b0d", multimedia.getId());
-		assertEquals("/opt/patient_images/87dc3230-84f7-4088-b257-e8b3130ab86b.jpg", multimedia.getFilePath());
+		assertEquals("/opt/multimedia/patient_images/87dc3230-84f7-4088-b257-e8b3130ab86b.jpg", multimedia.getFilePath());
 		assertEquals("profilepic", multimedia.getFileCategory());
 		
 		assertNull(multimediaRepository.findByCaseId("05934ae338431f28bf6793b241fa"));

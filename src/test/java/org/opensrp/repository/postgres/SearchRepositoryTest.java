@@ -68,6 +68,7 @@ public class SearchRepositoryTest extends BaseRepositoryTest {
 		assertEquals("aabcd2cc-c111-41c6-85e6-cb5d9e350d08", clients.get(0).getBaseEntityId());
 		
 		ClientSearchBean searchBean = new ClientSearchBean();
+		
 		assertEquals(20, searchRepository.findByCriteria(searchBean, null, null, null, 20).size());
 		
 		searchBean.setNameLike("Jan");
