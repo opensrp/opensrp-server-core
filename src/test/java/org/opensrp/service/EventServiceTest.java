@@ -3,11 +3,14 @@ package org.opensrp.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.DateTime;
@@ -282,11 +285,17 @@ public class EventServiceTest extends BaseRepositoryTest {
 		
 		assertNotNull(actualEventIds);
 		assertEquals(4, actualEventIds.size());
-		
-		assertEquals("05934ae338431f28bf6793b24177a1dc", actualEventIds.get(0));
-		assertEquals("05934ae338431f28bf6793b241780bac", actualEventIds.get(1));
-		assertEquals("05934ae338431f28bf6793b241781149", actualEventIds.get(2));
-		assertEquals("05934ae338431f28bf6793b241781a1e", actualEventIds.get(3));
+
+		Map<String, Boolean> expectedIdMap = new HashMap<>();
+		expectedIdMap.put("05934ae338431f28bf6793b24177a1dc", true);
+		expectedIdMap.put("05934ae338431f28bf6793b241780bac", true);
+		expectedIdMap.put("05934ae338431f28bf6793b241781149", true);
+		expectedIdMap.put("05934ae338431f28bf6793b241781a1e", true);
+
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(0)));
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(1)));
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(2)));
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(3)));
 		
 	}
 
