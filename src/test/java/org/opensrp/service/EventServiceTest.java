@@ -278,7 +278,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testFindAllIdsByEventType() {
 		
 		String growthMonitoringEventype = "Growth Monitoring";
-		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype);
+		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype, false);
 		
 		assertNotNull(actualEventIds);
 		assertEquals(4, actualEventIds.size());
@@ -288,6 +288,18 @@ public class EventServiceTest extends BaseRepositoryTest {
 		assertEquals("05934ae338431f28bf6793b241781149", actualEventIds.get(2));
 		assertEquals("05934ae338431f28bf6793b241781a1e", actualEventIds.get(3));
 		
+	}
+
+	@Test
+	public void testFindAllDeletedIdsByEventType() {
+
+		String growthMonitoringEventype = "Growth Monitoring";
+		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype, true);
+
+		assertNotNull(actualEventIds);
+		assertEquals(1, actualEventIds.size());
+
+		assertEquals("cfcc0e7e3cef11eab77f2e728ce88125", actualEventIds.get(0));
 	}
 	
 }

@@ -222,7 +222,7 @@ public class AllEvents extends MotechBaseRepository<Event> implements EventsRepo
 	}
 
 	@Override
-	public List<String> findIdsByEventType(String eventType) {
+	public List<String> findIdsByEventType(String eventType, boolean isDeleted) {
 		return null; //TODO Should this be implemented????
 	}
 

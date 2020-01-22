@@ -327,10 +327,13 @@ public class EventService {
 
 	/**
 	 * This method searches for event ids filtered by eventType
+	 * and whether or not there are deleted
+	 *
 	 * @param eventType used to filter the event ids
+	 * @param isDeleted used to determine whether to return non-deleted or deleted event ids
 	 * @return a list of event ids
 	 */
-	public List<String> findAllIdsByEventType(String eventType) {
-		return allEvents.findIdsByEventType(eventType);
+	public List<String> findAllIdsByEventType(String eventType, boolean isDeleted) {
+		return allEvents.findIdsByEventType(eventType, isDeleted);
 	}
 }

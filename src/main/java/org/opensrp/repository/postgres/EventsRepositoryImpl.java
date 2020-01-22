@@ -389,11 +389,15 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	}
 
 	@Override
-	public List<String> findIdsByEventType(String eventType) {
+	public List<String> findIdsByEventType(String eventType, boolean isDeleted) {
 		EventMetadataExample example = new EventMetadataExample();
 
 		if (!StringUtils.isBlank(eventType)) {
-			example.createCriteria().andEventTypeEqualTo(eventType);
+			if (isDeleted) {
+				example.createCriteria().andEventTypeEqualTo(eventType).andDateDeletedIsNotNull();
+			} else {
+				example.createCriteria().andEventTypeEqualTo(eventType).andDateDeletedIsNull();
+			}
 		}
 
 		return eventMetadataMapper.selectManyIds(example);

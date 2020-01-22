@@ -47,6 +47,6 @@ public interface EventsRepository extends BaseRepository<Event> {
 	
 	List<Event> findByProvider(String provider);
 
-	List<String> findIdsByEventType(String eventType);
+	List<String> findIdsByEventType(String eventType, boolean isDeleted);
 	
 }
