@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -327,13 +328,13 @@ public class EventService {
 
 	/**
 	 * This method searches for event ids filtered by eventType
-	 * and whether or not there are deleted
+	 * and the date they were deleted
 	 *
 	 * @param eventType used to filter the event ids
-	 * @param isDeleted used to determine whether to return non-deleted or deleted event ids
+	 * @param dateDeleted date  on or after which deleted event ids should be returned
 	 * @return a list of event ids
 	 */
-	public List<String> findAllIdsByEventType(String eventType, boolean isDeleted) {
-		return allEvents.findIdsByEventType(eventType, isDeleted);
+	public List<String> findAllIdsByEventType(String eventType, Date dateDeleted) {
+		return allEvents.findIdsByEventType(eventType, dateDeleted);
 	}
 }

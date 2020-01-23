@@ -2,6 +2,7 @@ package org.opensrp.repository.couch;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.ektorp.ComplexKey;
@@ -222,7 +223,7 @@ public class AllEvents extends MotechBaseRepository<Event> implements EventsRepo
 	}
 
 	@Override
-	public List<String> findIdsByEventType(String eventType, boolean isDeleted) {
+	public List<String> findIdsByEventType(String eventType, Date dateDeleted) {
 		return null; //TODO Should this be implemented????
 	}
 

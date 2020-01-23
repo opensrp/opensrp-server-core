@@ -7,6 +7,10 @@ import static org.junit.Assert.assertTrue;
 import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -276,12 +280,19 @@ public class EventServiceTest extends BaseRepositoryTest {
 		assertEquals("3.5", updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
 		assertEquals(0, Minutes.minutesBetween(DateTime.now(), updatedEvent.getDateEdited()).getMinutes());
 	}
-	
+	@Test
+	public void testFindAllEventIds() {
+		List<String> actualEventIds = eventService.findAllIdsByEventType(null, null);
+
+		assertNotNull(actualEventIds);
+		assertEquals(19, actualEventIds.size());
+	}
+
 	@Test
 	public void testFindAllIdsByEventType() {
 		
 		String growthMonitoringEventype = "Growth Monitoring";
-		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype, false);
+		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype, null);
 		
 		assertNotNull(actualEventIds);
 		assertEquals(4, actualEventIds.size());
@@ -303,7 +314,38 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testFindAllDeletedIdsByEventType() {
 
 		String growthMonitoringEventype = "Growth Monitoring";
-		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype, true);
+
+		String string = "January 1, 2018";
+		DateFormat format = new SimpleDateFormat("MMMM d, yyyy");
+		Date date = null;
+		try {
+			date = format.parse(string);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype, date);
+
+		assertNotNull(actualEventIds);
+		assertEquals(1, actualEventIds.size());
+
+		assertEquals("cfcc0e7e3cef11eab77f2e728ce88125", actualEventIds.get(0));
+	}
+
+	@Test
+	public void testFindAllDeletedIds() {
+
+		String string = "January 1, 1970";
+		DateFormat format = new SimpleDateFormat("MMMM d, yyyy");
+		Date date = null;
+		try {
+			date = format.parse(string);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+
+		List<String> actualEventIds = eventService.findAllIdsByEventType(null, date);
 
 		assertNotNull(actualEventIds);
 		assertEquals(1, actualEventIds.size());
