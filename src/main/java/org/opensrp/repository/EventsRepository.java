@@ -1,6 +1,7 @@
 package org.opensrp.repository;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.opensrp.domain.Event;
@@ -47,6 +48,6 @@ public interface EventsRepository extends BaseRepository<Event> {
 	
 	List<Event> findByProvider(String provider);
 
-	List<String> findIdsByEventType(String eventType);
+	List<String> findIdsByEventType(String eventType, Date dateDeleted);
 	
 }

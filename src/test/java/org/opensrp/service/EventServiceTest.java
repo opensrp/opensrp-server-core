@@ -3,11 +3,18 @@ package org.opensrp.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.DateTime;
@@ -275,19 +282,77 @@ public class EventServiceTest extends BaseRepositoryTest {
 	}
 	
 	@Test
+	public void testFindAllEventIds() {
+		List<String> actualEventIds = eventService.findAllIdsByEventType(null, null);
+		
+		assertNotNull(actualEventIds);
+		assertEquals(20, actualEventIds.size());
+	}
+	
+	@Test
 	public void testFindAllIdsByEventType() {
 		
 		String growthMonitoringEventype = "Growth Monitoring";
-		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype);
+		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype, null);
 		
 		assertNotNull(actualEventIds);
 		assertEquals(4, actualEventIds.size());
 		
-		assertEquals("05934ae338431f28bf6793b24177a1dc", actualEventIds.get(0));
-		assertEquals("05934ae338431f28bf6793b241780bac", actualEventIds.get(1));
-		assertEquals("05934ae338431f28bf6793b241781149", actualEventIds.get(2));
-		assertEquals("05934ae338431f28bf6793b241781a1e", actualEventIds.get(3));
+		Map<String, Boolean> expectedIdMap = new HashMap<>();
+		expectedIdMap.put("05934ae338431f28bf6793b24177a1dc", true);
+		expectedIdMap.put("05934ae338431f28bf6793b241780bac", true);
+		expectedIdMap.put("05934ae338431f28bf6793b241781149", true);
+		expectedIdMap.put("05934ae338431f28bf6793b241781a1e", true);
 		
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(0)));
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(1)));
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(2)));
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(3)));
+		
+	}
+	
+	@Test
+	public void testFindAllDeletedIdsByEventType() {
+		
+		String growthMonitoringEventype = "Growth Monitoring";
+		
+		String string = "January 1, 2018";
+		DateFormat format = new SimpleDateFormat("MMMM d, yyyy");
+		Date date = null;
+		try {
+			date = format.parse(string);
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype, date);
+		
+		assertNotNull(actualEventIds);
+		assertEquals(1, actualEventIds.size());
+		
+		assertEquals("cfcc0e7e3cef11eab77f2e728ce88125", actualEventIds.get(0));
+	}
+	
+	@Test
+	public void testFindAllDeletedIds() {
+		
+		String string = "January 1, 1970";
+		DateFormat format = new SimpleDateFormat("MMMM d, yyyy");
+		Date date = null;
+		try {
+			date = format.parse(string);
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		List<String> actualEventIds = eventService.findAllIdsByEventType(null, date);
+		
+		assertNotNull(actualEventIds);
+		assertEquals(1, actualEventIds.size());
+		
+		assertEquals("cfcc0e7e3cef11eab77f2e728ce88125", actualEventIds.get(0));
 	}
 	
 }
