@@ -493,6 +493,7 @@
 			family_and_family_head_and_phone_member_count as(	
 			select
 				ffhp.*,
+				member_count,
 				c."json",
 				c."json"->>'dateCreated' ,
 				c.date_deleted,
