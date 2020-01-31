@@ -185,6 +185,7 @@ public class TaskServiceTest {
 		updates.add(taskUpdate);
 		when(taskRepository.get("tsk11231jh22")).thenReturn(task);
 		taskService.updateTaskStatus(updates);
+		assertEquals(now, taskUpdate.getServerVersion().longValue());
 
 		ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
 		verify(taskRepository).update(argumentCaptor.capture());
