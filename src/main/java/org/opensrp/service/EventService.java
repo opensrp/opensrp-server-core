@@ -93,12 +93,39 @@ public class EventService {
 		return null;
 	}
 	
+	/**
+	 * Find an event using the event Id
+	 * @param eventId the if for the event
+	 * @return an event matching the eventId
+	 */
 	public Event findById(String eventId) {
 		try {
-			if (eventId == null || eventId.isEmpty()) {
+			if (StringUtils.isEmpty(eventId) ) {
 				return null;
 			}
 			return allEvents.findById(eventId);
+		}
+		catch (Exception e) {
+			logger.error("", e);
+		}
+		return null;
+	}
+	
+	/**
+	 * Find an event using an event Id or form Submission Id
+	 * @param eventId the if for the event
+	 * @param formSubmissionId form submission id for the events
+	 * @return an event matching the eventId or formsubmission id
+	 */
+	public Event findByIdOrFormSubmissionId(String eventId, String formSubmissionId) {
+		try {
+			if (StringUtils.isEmpty(eventId) && StringUtils.isNotEmpty(formSubmissionId)) {
+				return findByFormSubmissionId(formSubmissionId);
+			}
+			Event event = findById(eventId);
+			if (event == null && StringUtils.isNotEmpty(formSubmissionId)) {
+				return findByFormSubmissionId(formSubmissionId);
+			}
 		}
 		catch (Exception e) {
 			logger.error("", e);
@@ -216,7 +243,7 @@ public class EventService {
 	}
 	
 	public synchronized Event addorUpdateEvent(Event event) {
-		Event existingEvent = findById(event.getId());
+		Event existingEvent = findByIdOrFormSubmissionId(event.getId(),event.getFormSubmissionId());
 		if (existingEvent != null) {
 			event.setDateEdited(DateTime.now());
 			event.setServerVersion(null);
