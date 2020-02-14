@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
@@ -224,6 +225,43 @@ public class EventServiceTest extends BaseRepositoryTest {
 		event.setDateVoided(new DateTime());
 		eventService.addorUpdateEvent(event);
 		assertNull(eventService.findByFormSubmissionId(event.getFormSubmissionId()));
+	}
+	
+	@Test
+	public void testAddorUpdateEventWithMissingEventIdUpdatesEvent() {
+		String baseEntityId=UUID.randomUUID().toString();
+		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
+		Event event = new Event().withBaseEntityId(baseEntityId).withEventType("Growth Monitoring")
+		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs);
+		
+		eventService.addorUpdateEvent(event);
+		
+		Event updatedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
+		String eventId=updatedEvent.getId();
+		assertEquals(baseEntityId, updatedEvent.getBaseEntityId());
+		assertEquals("Growth Monitoring", updatedEvent.getEventType());
+		assertEquals(1, updatedEvent.getObs().size());
+		assertEquals("3.5", updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		assertNull(updatedEvent.getDateEdited());
+		
+		updatedEvent.setId(null);
+		updatedEvent.setTeam("ATeam");
+		updatedEvent.setProviderId("tester11");
+		updatedEvent.setLocationId("321312-fsff-2328");
+		eventService.addorUpdateEvent(updatedEvent);
+		
+		updatedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
+		assertEquals(eventId, updatedEvent.getId());
+		assertEquals("ATeam", updatedEvent.getTeam());
+		assertEquals("tester11", updatedEvent.getProviderId());
+		assertEquals("321312-fsff-2328", updatedEvent.getLocationId());
+		assertEquals(EventsRepositoryImpl.REVISION_PREFIX + 2, updatedEvent.getRevision());
+		assertNotNull(updatedEvent.getDateEdited());
+		
+		List<Event> events = eventService.findByBaseEntityId(baseEntityId);
+		assertEquals(1,events.size());
+		assertEquals(eventId,events.get(0).getId());
+		
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
