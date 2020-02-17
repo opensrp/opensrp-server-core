@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.codehaus.jackson.Version;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.module.SimpleModule;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.junit.Before;
@@ -29,6 +32,8 @@ import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.repository.postgres.EventsRepositoryImpl;
+import org.opensrp.repository.postgres.handler.BaseTypeHandler;
+import org.opensrp.util.DateTimeDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
@@ -206,7 +211,6 @@ public class EventServiceTest extends BaseRepositoryTest {
 		assertEquals(1, updatedEvent.getObs().size());
 		assertEquals("3.5", updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
 		assertNull(updatedEvent.getDateEdited());
-		
 		event.setTeam("ATeam");
 		event.setProviderId("tester11");
 		event.setLocationId("321312-fsff-2328");
@@ -228,12 +232,16 @@ public class EventServiceTest extends BaseRepositoryTest {
 	}
 	
 	@Test
-	public void testAddorUpdateEventWithMissingEventIdUpdatesEvent() {
+	public void testAddorUpdateEventWithMissingEventIdUpdatesEvent() throws Exception {
 		String baseEntityId=UUID.randomUUID().toString();
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		Event event = new Event().withBaseEntityId(baseEntityId).withEventType("Growth Monitoring")
 		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs);
-		
+		ObjectMapper mapper=BaseTypeHandler.mapper;
+		SimpleModule dateTimeModule = new SimpleModule("DateTimeModule", new Version(0, 0, 0, null));
+		dateTimeModule.addDeserializer(DateTime.class, new DateTimeDeserializer());
+		mapper.registerModule(dateTimeModule);
+		String jsonString = mapper.writeValueAsString(event);
 		eventService.addorUpdateEvent(event);
 		
 		Event updatedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
@@ -244,11 +252,11 @@ public class EventServiceTest extends BaseRepositoryTest {
 		assertEquals("3.5", updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
 		assertNull(updatedEvent.getDateEdited());
 		
-		updatedEvent.setId(null);
-		updatedEvent.setTeam("ATeam");
-		updatedEvent.setProviderId("tester11");
-		updatedEvent.setLocationId("321312-fsff-2328");
-		eventService.addorUpdateEvent(updatedEvent);
+		Event originalEventWithoutId=mapper.readValue(jsonString, Event.class);
+		originalEventWithoutId.setTeam("ATeam");
+		originalEventWithoutId.setProviderId("tester11");
+		originalEventWithoutId.setLocationId("321312-fsff-2328");
+		eventService.addorUpdateEvent(originalEventWithoutId);
 		
 		updatedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
 		assertEquals(eventId, updatedEvent.getId());
@@ -387,7 +395,6 @@ public class EventServiceTest extends BaseRepositoryTest {
 
 		assertNotNull(actualEventIds);
 		assertEquals(1, actualEventIds.size());
-
 		assertEquals("cfcc0e7e3cef11eab77f2e728ce88125", actualEventIds.get(0));
 	}
 	
