@@ -118,11 +118,11 @@ public class EventService {
 	 * @return an event matching the eventId or formsubmission id
 	 */
 	public Event findByIdOrFormSubmissionId(String eventId, String formSubmissionId) {
-		try {
-			if (StringUtils.isEmpty(eventId) && StringUtils.isNotEmpty(formSubmissionId)) {
-				return findByFormSubmissionId(formSubmissionId);
+		Event event=null;
+		try {	
+			if(StringUtils.isNotEmpty(eventId)) {
+				 event = findById(eventId);
 			}
-			Event event = findById(eventId);
 			if (event == null && StringUtils.isNotEmpty(formSubmissionId)) {
 				return findByFormSubmissionId(formSubmissionId);
 			}
@@ -130,7 +130,7 @@ public class EventService {
 		catch (Exception e) {
 			logger.error("", e);
 		}
-		return null;
+		return event;
 	}
 	
 	public synchronized Event addEvent(Event event) {
@@ -245,6 +245,8 @@ public class EventService {
 	public synchronized Event addorUpdateEvent(Event event) {
 		Event existingEvent = findByIdOrFormSubmissionId(event.getId(),event.getFormSubmissionId());
 		if (existingEvent != null) {
+			event.setId(existingEvent.getId());
+			event.setRevision(existingEvent.getRevision());
 			event.setDateEdited(DateTime.now());
 			event.setServerVersion(null);
 			event.setRevision(existingEvent.getRevision());
