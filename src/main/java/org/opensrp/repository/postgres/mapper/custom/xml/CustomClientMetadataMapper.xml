@@ -777,7 +777,7 @@
 				cl.json ,
 				edd,
 				coalesce(lmp,(edd- interval '180 DAY')::date) as lmp,
-				coalesce(gestAge, floor(extract(days from(now()-(edd- interval '180 DAY')::date))/ 7)) gest_age
+				coalesce(gestAge, floor(extract(days from(now()-(edd- interval '180 DAY')::date))/ 7)) gestational_age
 			from
 				last_obs,
 				anc_event_client as cl
