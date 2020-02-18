@@ -12,7 +12,6 @@
 
 	<properties>
 		<main.basedir>${project.basedir}</main.basedir>
-		<motech.version>0.11</motech.version>
 		<spring.version>5.2.3.RELEASE</spring.version>
 		<spring.data.version>2.2.4.RELEASE</spring.data.version>
 		<mybatis.version>3.5.4</mybatis.version>
@@ -84,44 +83,10 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<repository>
-			<id>motech.opensrp</id>
-			<name>Motech Snapshots Repository</name>
-			<url>http://nexus.motechproject.org/content/repositories/opensrp-server</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>${opensrp.updatePolicy}</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>motech.nexus</id>
-			<name>Motech Snapshots Repository</name>
-			<url>http://nexus.motechproject.org/content/repositories/snapshots</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>${opensrp.updatePolicy}</updatePolicy>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>motech.nexus.release</id>
-			<name>Motech Snapshots Repository</name>
-			<url>http://nexus.motechproject.org/content/repositories/releases</url>
-		</repository>
 	</repositories>
 
 
 	<dependencies>
-		<dependency>
-			<artifactId>motech-platform-server-api</artifactId>
-			<groupId>org.motechproject</groupId>
-			<version>${motech.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.ldriscoll</groupId>
-			<artifactId>ektorplucene</artifactId>
-			<version>0.2.0</version>
-		</dependency>
-
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -140,17 +105,6 @@
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk</artifactId>
 			<version>1.11.659</version>
-		</dependency>
-
-		<dependency>
-			<artifactId>motech-sms-api</artifactId>
-			<groupId>org.motechproject</groupId>
-			<version>${motech.version}</version>
-		</dependency>
-		<dependency>
-			<artifactId>motech-sms-http</artifactId>
-			<groupId>org.motechproject</groupId>
-			<version>${motech.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -216,11 +170,6 @@
 			<version>${opensrp.interface.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.motechproject</groupId>
-			<artifactId>motech-scheduletracking-api</artifactId>
-			<version>${motech.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.5</version>
@@ -251,12 +200,6 @@
 			<groupId>org.powermock</groupId>
 			<artifactId>powermock-api-mockito</artifactId>
 			<version>1.7.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.motechproject</groupId>
-			<artifactId>motech-testing-utils</artifactId>
-			<version>${motech.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
