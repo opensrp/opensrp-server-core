@@ -52,13 +52,13 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testGetAll() {
 		List<Event> events = eventsRepository.getAll();
-		assertEquals(19, events.size());
+		assertEquals(20, events.size());
 		
 		//test with deleted event
 		Event event = eventsRepository.findById("05934ae338431f28bf6793b2419c319a");
 		eventsRepository.safeRemove(event);
 		events = eventsRepository.getAll();
-		assertEquals(18, events.size());
+		assertEquals(19, events.size());
 		for (Event e : events)
 			assertNotEquals("05934ae338431f28bf6793b2419c319a", e.getId());
 		
@@ -255,17 +255,17 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindByServerVersion() {
-		assertEquals(19, eventsRepository.findByServerVersion(0).size());
+		assertEquals(20, eventsRepository.findByServerVersion(0).size());
 		
 		//missing data
 		assertTrue(eventsRepository.findByServerVersion(1578908926000l).isEmpty());
 		
 		List<Event> events = eventsRepository.findByServerVersion(1521469045587l);
-		assertEquals(7, events.size());
+		assertEquals(8, events.size());
 		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241780bac", "05934ae338431f28bf6793b241781149",
 		    "05934ae338431f28bf6793b241781a1e", "05934ae338431f28bf6793b241781149", "34166bde-2d40-4cb9-aec7-d8e4feb47c53",
 		    "66c1ffdc-697c-4d31-b50d-6396ccb6368c", "f9db43e1-1b15-4d26-ba56-29136edb73d6",
-		    "18a43e36-5701-4afc-b901-8eb4ce0e2002");
+		    "18a43e36-5701-4afc-b901-8eb4ce0e2002", "d945f800-eeca-415e-b737-e5611e19f706");
 		for (Event event : events) {
 			assertTrue(event.getServerVersion() >= 1521469045587l);
 			assertTrue(expectedIds.contains(event.getId()));
@@ -280,7 +280,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testNotInOpenMRSByServerVersion() {
 		Calendar cal = Calendar.getInstance();
-		assertEquals(11, eventsRepository.notInOpenMRSByServerVersion(0, cal).size());
+		assertEquals(12, eventsRepository.notInOpenMRSByServerVersion(0, cal).size());
 		
 		cal.setTimeInMillis(1521469045589l);
 		
@@ -566,7 +566,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		Event event = eventsRepository.get("05934ae338431f28bf6793b241bdb88c");
 		eventsRepository.safeRemove(event);
 		List<Event> events = eventsRepository.getAll();
-		assertEquals(18, events.size());
+		assertEquals(19, events.size());
 		for (Event e : events)
 			assertNotEquals("05934ae338431f28bf6793b241bdb88c", e.getId());
 		assertNull(eventsRepository.get("05934ae338431f28bf6793b241bdb88c"));
