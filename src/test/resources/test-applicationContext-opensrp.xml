@@ -18,7 +18,8 @@
 
 	<context:component-scan base-package="org.opensrp.domain" />
 	<context:component-scan base-package="org.opensrp.repository" />
-	<context:component-scan base-package="org.opensrp.scheduler" />
+	<!-- TODO delete after removing the motech scheduling package
+	<context:component-scan base-package="org.opensrp.scheduler" />  -->
 	<context:component-scan base-package="org.opensrp.form" />
 	<context:component-scan base-package="org.opensrp.service">
 		<!--These classes are excluded to enable the context load. This is because
@@ -33,10 +34,6 @@
 			expression="org.opensrp.service.*DrishtiSMS.*" />
 	 	<context:exclude-filter type="regex"
 			expression="org.opensrp.service.*reporting.*" />
-		
-		<!-- TODO remove after fixing multimedia beans import -->
-		<context:exclude-filter type="regex"
-			expression="org.opensrp.service.multimedia.*" />
 			
 		<!-- TODO remove after fixing multimedia beans import -->
 		<context:exclude-filter type="regex"
@@ -58,6 +55,21 @@
 		<constructor-arg value="${couchdb.db.opensrp}" />
 		<constructor-arg ref="couchDbInstance" />
 	</bean>
+	<bean id="opensrpMCTSDatabaseConnector" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="${couchdb.db.mcts}" />
+		<constructor-arg ref="couchDbInstance" />
+	</bean>
+
+	<bean id="opensrpErrorTraceDatabaseConnector" class="org.ektorp.impl.StdCouchDbConnector">
+		<constructor-arg value="${couchdb.db.error}" />
+		<constructor-arg ref="couchDbInstance" />
+	</bean>
+
+	 <bean id="opensrpFormDatabaseConnector" class="org.ektorp.impl.StdCouchDbConnector">
+        <constructor-arg value="${couchdb.db.form}"/>
+        <constructor-arg ref="couchDbInstance"/>
+    </bean>
+    
 	<bean id="ds"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="${jdbc.driverClassName}" />
