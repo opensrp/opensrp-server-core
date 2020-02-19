@@ -30,15 +30,7 @@
 			expression="org.opensrp.service.formSubmission.EventsListener" />
 		<context:exclude-filter type="regex"
 			expression="org.opensrp.service.formSubmission.handler.EventsRouter" />
-		<context:exclude-filter type="regex"
-			expression="org.opensrp.service.*DrishtiSMS.*" />
-	 	<context:exclude-filter type="regex"
-			expression="org.opensrp.service.*reporting.*" />
 
-		<context:exclude-filter type="regex"
-								expression="org.opensrp.service.formSubmission.*" />
-		<context:exclude-filter type="regex"
-								expression="org.opensrp.service.FormSubmissionDataMigrationService" />
 	</context:component-scan>
 
 	<bean id="httpClient" class="org.opensrp.util.OpenSRPHttpClientFactoryBean" />
