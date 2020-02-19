@@ -300,6 +300,12 @@
 			<artifactId>ektorplucene</artifactId>
 			<version>0.2.0</version>
 		</dependency>
+		<!-- TODO remove when this https://github.com/OpenSRP/opensrp-server-core/issues/145 is implemented -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>5.2.3.RELEASE</version>
+		</dependency>
 		
 	</dependencies>
 
