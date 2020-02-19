@@ -1,11 +1,12 @@
 package org.opensrp.service.formSubmission;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
+
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -29,6 +30,7 @@ import org.opensrp.form.service.FormSubmissionMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.xml.sax.SAXException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 public class FormEntityConverterTest extends BaseIntegrationTest {
@@ -39,17 +41,17 @@ public class FormEntityConverterTest extends BaseIntegrationTest {
 	@Autowired
 	private FormEntityConverter formEntityConverter;
 	
-	private Gson gson = new Gson();
+	private ObjectMapper objectMapper = new ObjectMapper();
 	
 	@Test
 	public void test() throws Exception {
 		FormSubmission fs = getFormSubmissionFor("new_household_registration", 1);
 		System.out.println("************************form submission ************************");
-		System.out.println(gson.toJson(fs));
+		System.out.println(objectMapper.writeValueAsString(fs));
 		System.out.println("************************form submission ************************");
 		System.out.println("************************ client ************************");
 		Client client = formEntityConverter.getClientFromFormSubmission(fs);
-		System.out.println(gson.toJson(client));
+		System.out.println(objectMapper.writeValueAsString(client));
 		System.out.println("************************ client ************************");
 	}
 	
