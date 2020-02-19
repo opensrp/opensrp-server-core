@@ -19,8 +19,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.codehaus.jackson.Version;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.module.SimpleModule;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.junit.Before;
@@ -37,6 +35,9 @@ import org.opensrp.util.DateTimeDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public class EventServiceTest extends BaseRepositoryTest {
 	
@@ -238,7 +239,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		Event event = new Event().withBaseEntityId(baseEntityId).withEventType("Growth Monitoring")
 		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs);
 		ObjectMapper mapper = BaseTypeHandler.mapper;
-		SimpleModule dateTimeModule = new SimpleModule("DateTimeModule", new Version(0, 0, 0, null));
+		SimpleModule dateTimeModule = new SimpleModule("DateTimeModule");
 		dateTimeModule.addDeserializer(DateTime.class, new DateTimeDeserializer());
 		mapper.registerModule(dateTimeModule);
 		String jsonString = mapper.writeValueAsString(event);

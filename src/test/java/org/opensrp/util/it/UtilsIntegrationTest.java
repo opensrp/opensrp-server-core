@@ -1,6 +1,8 @@
 package org.opensrp.util.it;
 
-import static junit.framework.Assert.assertEquals;
+
+
+import static org.junit.Assert.assertEquals;
 
 import java.net.MalformedURLException;
 
