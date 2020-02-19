@@ -6,9 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.JsonNodeFactory;
-import org.codehaus.jackson.node.ObjectNode;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.ViewResult;
@@ -17,6 +14,10 @@ import org.opensrp.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Repository
 public class ZiggyDataHandler {
@@ -66,7 +67,7 @@ public class ZiggyDataHandler {
 				details.put(fieldName, updatedFieldsMap.get(fieldName));
 			}
 		}
-		entity.put(EntityDataMap.DETAILS, details);
+		entity.set(EntityDataMap.DETAILS, details);
 		
 		db.update(entity);
 		return entityId;
