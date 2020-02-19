@@ -34,10 +34,6 @@
 			expression="org.opensrp.service.*DrishtiSMS.*" />
 	 	<context:exclude-filter type="regex"
 			expression="org.opensrp.service.*reporting.*" />
-			
-		<!-- TODO remove after fixing multimedia beans import -->
-		<context:exclude-filter type="regex"
-			expression="org.opensrp.service.multimedia.*" />
 
 		<context:exclude-filter type="regex"
 								expression="org.opensrp.service.formSubmission.*" />
