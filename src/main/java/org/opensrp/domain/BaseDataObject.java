@@ -6,6 +6,7 @@ import org.motechproject.model.MotechBaseDataObject;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+//TODO move properties in the couchdb classes when couch db is removed
 public abstract class BaseDataObject extends MotechBaseDataObject {
 
 	private static final long serialVersionUID = 1L;

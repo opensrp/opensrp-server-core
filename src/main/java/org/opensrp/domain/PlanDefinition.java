@@ -1,11 +1,12 @@
 package org.opensrp.domain;
 
-import com.google.gson.annotations.SerializedName;
-import org.codehaus.jackson.annotate.JsonProperty;
+import java.util.List;
+
 import org.joda.time.LocalDate;
 import org.opensrp.domain.postgres.Jurisdiction;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by samuelgithengi on 4/29/19.
