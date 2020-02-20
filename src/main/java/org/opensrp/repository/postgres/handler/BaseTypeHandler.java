@@ -13,10 +13,15 @@ public class BaseTypeHandler {
 	public static final ObjectMapper mapper = new StdObjectMapperFactory().createObjectMapper();;
 	
 	protected BaseTypeHandler() {
+		createObjectMapper();
+	}
+	
+	public static ObjectMapper createObjectMapper() {
 		SimpleModule dateTimeModule = new SimpleModule("DateTimeModule");
 		dateTimeModule.addDeserializer(DateTime.class, new DateTimeDeserializer());
 		dateTimeModule.addSerializer(DateTime.class, new DateTimeSerializer());
 		mapper.registerModule(dateTimeModule);
+		return mapper;
 	}
 	
 }

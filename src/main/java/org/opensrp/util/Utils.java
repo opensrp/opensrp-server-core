@@ -30,14 +30,16 @@ import org.ektorp.http.HttpClient;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbConnector;
 import org.ektorp.impl.StdCouchDbInstance;
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.form.domain.FormSubmission;
+import org.opensrp.repository.postgres.handler.BaseTypeHandler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.mysql.jdbc.StringUtils;
 
@@ -63,12 +65,12 @@ public class Utils {
 	}
 	
 	public static Object getMergedJSON(Object original, Object updated, List<Field> fn, Class<?> clazz)
-	        throws JSONException {
+	        throws JSONException, JsonMappingException, JsonProcessingException {
 		
-		Gson gs = new GsonBuilder().registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
-		JSONObject originalJo = new JSONObject(gs.toJson(original, clazz));
+		ObjectMapper objectMapper= BaseTypeHandler.createObjectMapper();
+		JSONObject originalJo = new JSONObject(objectMapper.writeValueAsString(original));
 		
-		JSONObject updatedJo = new JSONObject(gs.toJson(updated, clazz));
+		JSONObject updatedJo = new JSONObject(objectMapper.writeValueAsString(updated));
 		
 		JSONObject mergedJson = new JSONObject();
 		if (originalJo.length() > 0) {
@@ -83,7 +85,7 @@ public class Utils {
 			}
 		}
 		if (mergedJson.length() > 0)
-			return gs.fromJson(mergedJson.toString(), clazz);
+			return objectMapper.readValue(mergedJson.toString(), clazz);
 		return original;
 	}
 	
