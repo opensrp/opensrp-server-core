@@ -10,6 +10,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class MotechBaseDataObject extends org.motechproject.model.MotechBaseDataObject {
 	
+	private static final long serialVersionUID = 1L;
+	
 	@JsonProperty
 	protected String type;
 	
@@ -22,7 +24,5 @@ public class MotechBaseDataObject extends org.motechproject.model.MotechBaseData
 		super();
 		this.type = type;
 	}
-	
-	private static final long serialVersionUID = 1L;
 	
 }

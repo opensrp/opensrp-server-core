@@ -81,7 +81,6 @@ public class JsonParser {
 		//System.out.println(phoneNosNode);
 		while (elements.hasNext()) {
 			JsonNode jjNode = elements.next();
-			Iterator<JsonNode> phones = node.elements();
 			
 			if (!jjNode.get("type").asText().equalsIgnoreCase("group")
 			        && !jjNode.get("type").asText().equalsIgnoreCase("repeat")) {
@@ -186,7 +185,6 @@ public class JsonParser {
 		//System.out.println(phoneNosNode);
 		while (elements.hasNext()) {
 			JsonNode jjNode = elements.next();
-			Iterator<JsonNode> phones = node.elements();
 			
 			if (jjNode.get("type").asText().equalsIgnoreCase("repeat")) {
 				

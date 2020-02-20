@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import org.codehaus.jackson.Version;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.junit.Before;

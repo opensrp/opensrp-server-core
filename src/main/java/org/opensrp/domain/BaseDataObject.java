@@ -5,7 +5,7 @@ import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public abstract class BaseDataObject extends org.opensrp.domain.MotechBaseDataObject {
+public abstract class BaseDataObject extends MotechBaseDataObject {
 
 	private static final long serialVersionUID = 1L;
 	 
