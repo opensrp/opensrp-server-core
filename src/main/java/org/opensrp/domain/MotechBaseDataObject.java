@@ -12,9 +12,6 @@ public class MotechBaseDataObject extends org.motechproject.model.MotechBaseData
 	
 	private static final long serialVersionUID = 1L;
 	
-	@JsonProperty
-	protected String type;
-	
 	protected MotechBaseDataObject() {
 		super();
 		this.type = this.getClass().getSimpleName();
@@ -24,5 +21,11 @@ public class MotechBaseDataObject extends org.motechproject.model.MotechBaseData
 		super();
 		this.type = type;
 	}
+	
+	@JsonProperty
+	public String getType() {
+		return type;
+	}
+	
 	
 }
