@@ -16,6 +16,7 @@
 		<spring.data.version>2.2.4.RELEASE</spring.data.version>
 		<mybatis.version>3.5.4</mybatis.version>
 		<mybatis.spring.version>2.0.3</mybatis.spring.version>
+		<hibernate.version>5.4.12.Final</hibernate.version>
 		<mysql.connector.version>5.1.36</mysql.connector.version>
 		<opensrp.updatePolicy>always</opensrp.updatePolicy>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -242,8 +243,13 @@
 		<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-annotations -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
-			<version>4.2.8.Final</version>
+			<version>${hibernate.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-orm -->
 		<dependency>
