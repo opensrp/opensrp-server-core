@@ -189,7 +189,7 @@ public class PlanServiceTest {
 		expectedPlanIds.add("Location-2");
 
 		when(planRepository.findAllIds()).thenReturn(expectedPlanIds);
-		List<String> actualPlanIds = planRepository.findAllIds();
+		List<String> actualPlanIds = planService.findAllIds();
 
 		verify(planRepository).findAllIds();
 		assertEquals(2, actualPlanIds.size());

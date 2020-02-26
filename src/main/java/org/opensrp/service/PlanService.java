@@ -148,4 +148,12 @@ public class PlanService {
 	 */
 	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit) {
 		return getPlanRepository().getAllPlans(serverVersion, limit);	}
+
+	/**
+	 * This method searches for all location ids
+	 * @return a list of location ids
+	 */
+	public List<String> findAllIds() {
+		return planRepository.findAllIds();
+	}
 }
