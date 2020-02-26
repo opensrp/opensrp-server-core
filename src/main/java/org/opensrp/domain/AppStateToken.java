@@ -3,10 +3,11 @@ package org.opensrp.domain;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.LocalDate;
 import org.motechproject.model.MotechBaseDataObject;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @TypeDiscriminator("doc.type === 'AppStateToken'")
 public class AppStateToken extends MotechBaseDataObject {

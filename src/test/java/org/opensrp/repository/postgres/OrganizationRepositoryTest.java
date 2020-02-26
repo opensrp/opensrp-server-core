@@ -18,13 +18,14 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.Test;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Code;
 import org.opensrp.domain.Organization;
 import org.opensrp.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * @author Samuel Githengi created on 09/16/19

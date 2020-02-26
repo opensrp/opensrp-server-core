@@ -2,9 +2,10 @@ package org.opensrp.domain.setting;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.opensrp.domain.BaseDataObject;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @TypeDiscriminator("doc.type == 'SettingConfiguration'")
 public class SettingConfiguration extends BaseDataObject {

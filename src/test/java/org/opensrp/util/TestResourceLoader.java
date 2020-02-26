@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.opensrp.form.domain.FormSubmission;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -15,7 +16,6 @@ import org.springframework.core.io.support.PropertiesLoaderUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
-import com.ibm.icu.impl.Assert;
 
 public class TestResourceLoader {
 	
@@ -36,7 +36,7 @@ public class TestResourceLoader {
 			formDirPath = props.getProperty("form.directory.name");
 		}
 		catch (IOException e) {
-			Assert.fail(e);
+			Assert.fail(e.getMessage());
 		}
 		
 	}

@@ -1,8 +1,9 @@
 package org.opensrp.service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.ibm.icu.util.Calendar;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
@@ -14,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.util.List;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 @Service
 public class SettingService {

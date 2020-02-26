@@ -85,7 +85,7 @@ public class UniqueIdRepository {
 	public Integer totalUnUsedIds() {
 		String sql = "select count(*) from " + UniqueId.tbName + " where " + UniqueId.COL_STATUS + "='"
 		        + UniqueId.STATUS_NOT_USED + "'";
-		return jdbcTemplate.queryForInt(sql);
+		return jdbcTemplate. queryForObject(sql,Integer.class);
 	}
 	
 	public int[] markAsUsed(final List<String> ids) {

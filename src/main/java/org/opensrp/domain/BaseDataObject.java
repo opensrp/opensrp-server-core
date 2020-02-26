@@ -1,12 +1,14 @@
 package org.opensrp.domain;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.codehaus.jackson.annotate.JsonProperty;
 import org.joda.time.DateTime;
-import org.motechproject.model.MotechBaseDataObject;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class BaseDataObject extends MotechBaseDataObject {
-	
+
+	private static final long serialVersionUID = 1L;
+	 
 	@JsonProperty
 	private User creator;
 	
@@ -39,9 +41,6 @@ public abstract class BaseDataObject extends MotechBaseDataObject {
 	
 	@JsonProperty
 	private Integer clientDatabaseVersion;
-	
-	public BaseDataObject() {
-	}
 	
 	public User getCreator() {
 		return creator;

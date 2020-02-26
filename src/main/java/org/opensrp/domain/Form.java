@@ -2,9 +2,11 @@ package org.opensrp.domain;
 
 import java.util.List;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_DEFAULT)
+@JsonSerialize
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class Form {
 	
 	private String bind_type;
