@@ -201,4 +201,20 @@
 
 	</select>
 
+	<select id="selectManyIds"	resultType="java.lang.String">
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+		geojson_id
+		from core.location_metadata lm
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="example.orderByClause != null">
+			order by lm.${example.orderByClause}
+		</if>
+
+	</select>
+
 </mapper>

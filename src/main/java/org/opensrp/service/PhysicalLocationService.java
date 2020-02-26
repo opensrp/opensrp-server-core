@@ -234,4 +234,12 @@ public class PhysicalLocationService {
 		return locationRepository.findAllStructures(returnGeometry, serverVersion, limit);
 	};
 
+	/**
+	 * This method searches for all location ids
+	 * @return a list of location ids
+	 */
+	public List<String> findAllLocationIds() {
+		return locationRepository.findAllStructureIds();
+	}
+
 }

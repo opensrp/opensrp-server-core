@@ -121,4 +121,10 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 */
 	List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit);
 
+	/**
+	 * This method fetches all location Ids
+	 * @return a list of location Ids
+	 */
+	List<String> findAllLocationIds();
+
 }

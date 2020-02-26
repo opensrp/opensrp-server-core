@@ -45,4 +45,10 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @return list of plan identifiers
 	 */
 	List<PlanDefinition> getAllPlans(Long serverVersion, int limit);
+
+	/**
+	 * This method fetches all plan Ids
+	 * @return a list of plan Ids
+	 */
+	List<String> findAllIds();
 }

@@ -414,6 +414,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
+	public List<String> findAllLocationIds() {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		return locationMetadataMapper.selectManyIds(locationMetadataExample);
+	}
+
+	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);
 		if (uniqueId == null) {
