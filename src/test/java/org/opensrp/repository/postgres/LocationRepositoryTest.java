@@ -672,4 +672,14 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("3735", locations.get(1).getId());
 	}
 
+	@Test
+	public void testFindAllLocationIds() {
+
+		List<String> locationsIds = locationRepository.findAllLocationIds();
+		assertEquals(2, locationsIds.size());
+		assertEquals("3734", locationsIds.get(0));
+		assertEquals("3735", locationsIds.get(1));
+
+	}
+
 }

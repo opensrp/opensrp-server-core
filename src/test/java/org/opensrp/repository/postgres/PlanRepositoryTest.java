@@ -433,9 +433,46 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
     }
 
+    @Test
+    public void testGetAllIdsShouldGetAllPlanIds() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_6");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        planRepository.add(plan);
+
+        List<String> planids = planRepository.findAllIds();
+        assertEquals(planids.size(), 2);
+
+        Set<String> ids = new HashSet<>();
+        ids.add("identifier_6");
+        ids.add("identifier_7");
+        assertTrue(testIfAllIdsExistsInIdList(planids, ids));
+    }
+
     private boolean testIfAllIdsExists(List<PlanDefinition> plans, Set<String> ids) {
         for (PlanDefinition plan : plans) {
             ids.remove(plan.getIdentifier());
+        }
+        return ids.size() == 0;
+    }
+
+    private boolean testIfAllIdsExistsInIdList(List<String> planIds, Set<String> ids) {
+        for (String planId : planIds) {
+            ids.remove(planId);
         }
         return ids.size() == 0;
     }

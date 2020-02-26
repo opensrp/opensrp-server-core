@@ -239,7 +239,7 @@ public class PhysicalLocationService {
 	 * @return a list of location ids
 	 */
 	public List<String> findAllLocationIds() {
-		return locationRepository.findAllStructureIds();
+		return locationRepository.findAllLocationIds();
 	}
 
 }

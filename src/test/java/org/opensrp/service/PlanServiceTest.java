@@ -181,4 +181,20 @@ public class PlanServiceTest {
 		verify(organizationService).findAssignedLocationsAndPlans(organizationIds);
 		assertEquals(expected, plans);
 	}
+
+	@Test
+	public void testFindAllPlanIds() {
+		List<String> expectedPlanIds = new ArrayList<>();
+		expectedPlanIds.add("Location-1");
+		expectedPlanIds.add("Location-2");
+
+		when(planRepository.findAllIds()).thenReturn(expectedPlanIds);
+		List<String> actualPlanIds = planRepository.findAllIds();
+
+		verify(planRepository).findAllIds();
+		assertEquals(2, actualPlanIds.size());
+		assertEquals(expectedPlanIds.get(0).toString(), actualPlanIds.get(0).toString());
+		assertEquals(expectedPlanIds.get(1).toString(), actualPlanIds.get(1).toString());
+
+	}
 }
