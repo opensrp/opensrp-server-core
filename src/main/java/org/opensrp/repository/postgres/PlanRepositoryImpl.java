@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.Jurisdiction;
 import org.opensrp.domain.postgres.Plan;
@@ -156,10 +157,37 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         return convert(plans);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<String> findAllIds() {
-        PlanExample example = new PlanExample();
-        return planMapper.selectManyIds(example);
+    public AllIdsModel findAllIds(Long serverVersion, int limit, Date dateDeleted) {
+        AllIdsModel idsModel = new AllIdsModel();
+        Long lastServerVersion;
+        PlanExample planExample = new PlanExample();
+        PlanExample.Criteria criteria = planExample.createCriteria();
+        criteria.andServerVersionGreaterThan(serverVersion);
+
+        if (dateDeleted != null) {
+            criteria.andDateDeletedGreaterThanOrEqualTo(dateDeleted);
+        } else {
+            criteria.andDateDeletedIsNull();
+        }
+
+        planExample.setOrderByClause(getOrderByClause(SERVER_VERSION,  ASCENDING));
+        List<String> planIdentifiers = planMapper.selectManyIds(planExample, 0, limit);
+        idsModel.setIdentifiers(planIdentifiers);
+
+        if (planIdentifiers != null && !planIdentifiers.isEmpty()) {
+            planExample = new PlanExample();
+            planExample.createCriteria().andIdentifierEqualTo(planIdentifiers.get(planIdentifiers.size() - 1));
+            List<Plan> plans = planMapper.selectByExample(planExample);
+
+            lastServerVersion = plans != null && !plans.isEmpty() ? plans.get(0).getServerVersion() : null;
+            idsModel.setLastServerVersion(lastServerVersion);
+        }
+
+        return idsModel;
 
     }
 

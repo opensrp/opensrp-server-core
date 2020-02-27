@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -8,6 +9,7 @@ import java.util.List;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
@@ -151,9 +153,13 @@ public class PlanService {
 
 	/**
 	 * This method searches for all location ids
-	 * @return a list of location ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of plans to fetch
+	 * @param dateDeleted date  on or after which deleted event ids should be returned
+	 * @return a list of location ids and the last server version
 	 */
-	public List<String> findAllIds() {
-		return planRepository.findAllIds();
+	public AllIdsModel findAllIds(Long serverVersion, int limit, Date dateDeleted ) {
+		return planRepository.findAllIds(serverVersion, limit, dateDeleted);
 	}
 }

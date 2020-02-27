@@ -1,7 +1,12 @@
 package org.opensrp.repository.postgres;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.Jurisdiction;
 import org.opensrp.repository.PlanRepository;
@@ -443,6 +448,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         jurisdiction.setCode("operation_area_1");
         jurisdictions.add(jurisdiction);
         plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1234l);
         planRepository.add(plan);
 
         plan = new PlanDefinition();
@@ -452,16 +458,95 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         jurisdiction.setCode("operation_area_2");
         jurisdictions.add(jurisdiction);
         plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        List<String> planids = planRepository.findAllIds();
-        assertEquals(planids.size(), 2);
+        AllIdsModel planIdsObject = planRepository.findAllIds(0l, 1, null);
 
-        Set<String> ids = new HashSet<>();
-        ids.add("identifier_6");
-        ids.add("identifier_7");
-        assertTrue(testIfAllIdsExistsInIdList(planids, ids));
+        List<String> planids = planIdsObject.getIdentifiers();
+        assertEquals(1, planids.size());
+
+        assertEquals("identifier_6", planids.get(0));
+        assertEquals(1234l, planIdsObject.getLastServerVersion().longValue());
     }
+
+    @Test
+    public void testGetAllIdsShouldGetAllPlanIdsOrderedByServerVersion() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_6");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1234l);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1235l);
+        planRepository.add(plan);
+
+        AllIdsModel planIdsObject = planRepository.findAllIds(0l, 10, null);
+
+        List<String> planids = planIdsObject.getIdentifiers();
+        assertEquals(2, planids.size());
+
+        assertEquals("identifier_6", planids.get(0));
+        assertEquals("identifier_7", planids.get(1));
+        assertEquals(1235l, planIdsObject.getLastServerVersion().longValue());
+    }
+
+    @Test
+    public void testGetAllIdsShouldGetAllDeletedPlanIds() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_6");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1234l);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1235l);
+        planRepository.add(plan);
+
+        planRepository.safeRemove(plan);
+
+        String string = "January 1, 2018";
+        DateFormat format = new SimpleDateFormat("MMMM d, yyyy");
+        Date date = null;
+        try {
+            date = format.parse(string);
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        AllIdsModel planIdsObject = planRepository.findAllIds(0l, 1, date);
+
+        List<String> planids = planIdsObject.getIdentifiers();
+        assertEquals(1, planids.size());
+
+        assertEquals("identifier_7", planids.get(0));
+        assertEquals(1235l, planIdsObject.getLastServerVersion().longValue());
+    }
+
 
     private boolean testIfAllIdsExists(List<PlanDefinition> plans, Set<String> ids) {
         for (PlanDefinition plan : plans) {

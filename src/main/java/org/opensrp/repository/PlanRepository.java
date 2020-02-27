@@ -1,5 +1,7 @@
 package org.opensrp.repository;
 
+import java.util.Date;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.PlanDefinition;
 
 import java.util.List;
@@ -48,7 +50,11 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 
 	/**
 	 * This method fetches all plan Ids
-	 * @return a list of plan Ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of plans to fetch
+	 * @param dateDeleted date  on or after which deleted plan ids should be returned
+	 * @return a list of plan Ids  and the last server version
 	 */
-	List<String> findAllIds();
+	AllIdsModel findAllIds(Long serverVersion, int limit, Date dateDeleted);
 }
