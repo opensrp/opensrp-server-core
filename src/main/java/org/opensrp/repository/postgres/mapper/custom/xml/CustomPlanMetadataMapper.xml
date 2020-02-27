@@ -60,20 +60,4 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
-    <select id="selectManyIds"	resultType="java.lang.String">
-        select
-        <if test="example.distinct">
-            distinct
-        </if>
-        identifier
-        from core.plan_metadata pm
-        <if test="_parameter != null">
-            <include refid="Example_Where_Clause" />
-        </if>
-        <if test="example.orderByClause != null">
-            order by pm.${example.orderByClause}
-        </if>
-
-    </select>
-
 </mapper>

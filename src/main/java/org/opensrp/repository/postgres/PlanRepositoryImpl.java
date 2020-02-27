@@ -158,8 +158,8 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
     @Override
     public List<String> findAllIds() {
-        PlanMetadataExample example = new PlanMetadataExample();
-        return planMetadataMapper.selectManyIds(example);
+        PlanExample example = new PlanExample();
+        return planMapper.selectManyIds(example);
 
     }
 
