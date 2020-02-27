@@ -3,7 +3,6 @@ package org.opensrp.repository.postgres.mapper.custom;
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Plan;
 import org.opensrp.domain.postgres.PlanExample;
-import org.opensrp.domain.postgres.PlanMetadataExample;
 import org.opensrp.repository.postgres.mapper.PlanMetadataMapper;
 
 import java.util.List;
