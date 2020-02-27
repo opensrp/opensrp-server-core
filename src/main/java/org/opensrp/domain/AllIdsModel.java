@@ -4,9 +4,9 @@ import java.util.List;
 
 public class AllIdsModel {
 
-    List<String> identifiers;
+    private List<String> identifiers;
 
-    Long lastServerVersion;
+    private Long lastServerVersion;
 
     public List<String> getIdentifiers() {
         return identifiers;

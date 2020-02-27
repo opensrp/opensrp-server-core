@@ -555,10 +555,4 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         return ids.size() == 0;
     }
 
-    private boolean testIfAllIdsExistsInIdList(List<String> planIds, Set<String> ids) {
-        for (String planId : planIds) {
-            ids.remove(planId);
-        }
-        return ids.size() == 0;
-    }
 }
