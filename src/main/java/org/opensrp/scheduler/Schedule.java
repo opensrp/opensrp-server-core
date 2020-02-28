@@ -6,10 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.mysql.jdbc.StringUtils;
 
 import ch.maxant.rules.CompileException;
 import ch.maxant.rules.DuplicateNameException;
@@ -85,7 +84,7 @@ public class Schedule {
 	}
 	
 	public boolean haspassLogic() {
-		return !StringUtils.isEmptyOrWhitespaceOnly(passLogic);
+		return !StringUtils.isBlank(passLogic);
 	}
 	
 	public boolean passesValidations(Map<String, String> flvl) {
