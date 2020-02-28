@@ -3,7 +3,6 @@ package org.opensrp.repository.couch;
 import java.util.List;
 
 import org.ektorp.CouchDbConnector;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Search;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository("couchSearchRepository")
 @Primary
-public class SearchRepositoryImpl extends MotechBaseRepository<Search> implements SearchRepository {
+public class SearchRepositoryImpl extends BaseRepository<Search> implements SearchRepository {
 	
 	private LuceneSearchRepository sr;
 	

@@ -4,8 +4,7 @@ import java.util.List;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.View;
-import org.motechproject.dao.MotechBaseRepository;
-import org.motechproject.util.DateUtil;
+import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Camp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AllCamp extends MotechBaseRepository<Camp> {
+public class AllCamp extends BaseRepository<Camp> {
 	
 	@Autowired
 	public AllCamp(@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR) CouchDbConnector db) {
@@ -41,7 +40,7 @@ public class AllCamp extends MotechBaseRepository<Camp> {
 	
 	public void updateCamp(Camp camp) {
 		camp.setStatus(false);
-		camp.setTimestamp(DateUtil.now().getMillis());
+		camp.setTimestamp(DateTime.now().getMillis());
 		camp.setId(camp.getId());
 		camp.setRevision(camp.getRevision());
 		this.update(camp);

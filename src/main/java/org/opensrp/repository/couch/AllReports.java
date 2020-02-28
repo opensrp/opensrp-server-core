@@ -7,7 +7,6 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 import org.joda.time.DateTime;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Report;
 import org.opensrp.repository.ReportsRepository;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository("couchReportsRepository")
 @Primary
-public class AllReports extends MotechBaseRepository<Report> implements ReportsRepository {
+public class AllReports extends BaseRepository<Report> implements ReportsRepository {
 	
 	private LuceneReportRepository lrr;
 	

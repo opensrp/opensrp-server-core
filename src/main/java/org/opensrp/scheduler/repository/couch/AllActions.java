@@ -10,8 +10,8 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 import org.joda.time.DateTime;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
+import org.opensrp.repository.couch.BaseRepository;
 import org.opensrp.repository.lucene.LuceneActionRepository;
 import org.opensrp.scheduler.Action;
 import org.opensrp.scheduler.repository.ActionsRepository;
@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AllActions extends MotechBaseRepository<Action> implements ActionsRepository {
+public class AllActions extends BaseRepository<Action> implements ActionsRepository {
 	
 	private static Logger logger = LoggerFactory.getLogger(AllActions.class.toString());
 	

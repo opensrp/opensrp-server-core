@@ -2,12 +2,12 @@ package org.opensrp.repository.couch;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.UpdateConflictException;
 import org.ektorp.support.GenerateView;
 import org.ektorp.util.Assert;
 import org.ektorp.util.Documents;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.AppStateToken;
 import org.opensrp.repository.AppStateTokensRepository;
@@ -16,11 +16,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
-import com.mysql.jdbc.StringUtils;
-
 @Repository("couchAppStateTokensRepository")
 @Primary
-public class AllAppStateTokens extends MotechBaseRepository<AppStateToken> implements AppStateTokensRepository {
+public class AllAppStateTokens extends BaseRepository<AppStateToken> implements AppStateTokensRepository {
 	
 	private CouchDbConnector db;
 	
@@ -66,7 +64,7 @@ public class AllAppStateTokens extends MotechBaseRepository<AppStateToken> imple
 	
 	public AppStateToken registerAppStateToken(CouchDbConnector db, Enum<?> tokenName, Object defaultValue,
 	        String description, boolean suppressExceptionIfExists) {
-		if (tokenName == null || StringUtils.isEmptyOrWhitespaceOnly(description)) {
+		if (tokenName == null || StringUtils.isBlank(description)) {
 			throw new IllegalArgumentException("Token name and description must be provided");
 		}
 		

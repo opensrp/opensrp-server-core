@@ -6,7 +6,6 @@ import java.util.List;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.DocumentNotFoundException;
 import org.ektorp.support.View;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.ErrorTrace;
 import org.opensrp.repository.ErrorTraceRepository;
@@ -20,7 +19,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository("couchErrorTraceRepository")
 @Primary
-public class AllErrorTrace extends MotechBaseRepository<ErrorTrace> implements ErrorTraceRepository {
+public class AllErrorTrace extends BaseRepository<ErrorTrace> implements ErrorTraceRepository {
 	
 	@Autowired
 	protected AllErrorTrace(@Qualifier(AllConstants.OPENSRP_ERRORTRACE_DATABASE) CouchDbConnector db) {
