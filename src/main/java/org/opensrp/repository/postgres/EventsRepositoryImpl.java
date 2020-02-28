@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Event;
 import org.opensrp.domain.postgres.EventMetadata;
 import org.opensrp.domain.postgres.EventMetadataExample;
@@ -389,9 +390,12 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	}
 
 	@Override
-	public List<String> findIdsByEventType(String eventType, Date dateDeleted) {
+	public AllIdsModel findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit) {
+		AllIdsModel idsModel = new AllIdsModel();
+		Long lastServerVersion;
 		EventMetadataExample example = new EventMetadataExample();
 		Criteria criteria = example.createCriteria();
+		criteria.andServerVersionGreaterThan(serverVersion);
 
 		if (!StringUtils.isBlank(eventType)) {
 			criteria.andEventTypeEqualTo(eventType);
@@ -403,7 +407,23 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 			criteria.andDateDeletedIsNull();
 		}
 
-		return eventMetadataMapper.selectManyIds(example);
+		example.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+
+		List<String> eventIdentifiers = eventMetadataMapper.selectManyIds(example, 0, fetchLimit);
+		idsModel.setIdentifiers(eventIdentifiers);
+
+		if (eventIdentifiers != null && !eventIdentifiers.isEmpty()) {
+			example = new EventMetadataExample();
+			example.createCriteria().andDocumentIdEqualTo(eventIdentifiers.get(eventIdentifiers.size() -1));
+			List<EventMetadata> eventMetaDataList = eventMetadataMapper.selectByExample(example);
+
+			lastServerVersion = eventMetaDataList != null && !eventMetaDataList.isEmpty() ?
+					eventMetaDataList.get(0).getServerVersion() : null;
+			idsModel.setLastServerVersion(lastServerVersion);
+		}
+		return idsModel;
 	}
 
 	@Override

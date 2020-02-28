@@ -26,6 +26,7 @@ import org.joda.time.Minutes;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.Client;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Event;
 import org.opensrp.domain.Obs;
 import org.opensrp.repository.ClientsRepository;
@@ -329,7 +330,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindAllEventIds() {
-		List<String> actualEventIds = eventService.findAllIdsByEventType(null, null);
+		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(null, null, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getIdentifiers();
 		
 		assertNotNull(actualEventIds);
 		assertEquals(20, actualEventIds.size());
@@ -339,7 +341,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testFindAllIdsByEventType() {
 		
 		String growthMonitoringEventype = "Growth Monitoring";
-		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype, null);
+		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getIdentifiers();
 		
 		assertNotNull(actualEventIds);
 		assertEquals(4, actualEventIds.size());
@@ -371,8 +374,9 @@ public class EventServiceTest extends BaseRepositoryTest {
 		catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
-		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype, date);
+
+		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, date, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getIdentifiers();
 		
 		assertNotNull(actualEventIds);
 		assertEquals(1, actualEventIds.size());
@@ -392,12 +396,59 @@ public class EventServiceTest extends BaseRepositoryTest {
 		catch (ParseException e) {
 			e.printStackTrace();
 		}
-		
-		List<String> actualEventIds = eventService.findAllIdsByEventType(null, date);
+
+		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(null, date, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getIdentifiers();
 		
 		assertNotNull(actualEventIds);
 		assertEquals(1, actualEventIds.size());
 		assertEquals("cfcc0e7e3cef11eab77f2e728ce88125", actualEventIds.get(0));
+	}
+
+	@Test
+	public void testFindAllIdsByEventTypeOrderedByServerVersion() {
+
+		String growthMonitoringEventype = "Growth Monitoring";
+		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getIdentifiers();
+
+		assertNotNull(actualEventIds);
+		assertEquals(4, actualEventIds.size());
+		assertEquals("05934ae338431f28bf6793b24177a1dc", actualEventIds.get(0));
+		assertEquals("05934ae338431f28bf6793b241780bac", actualEventIds.get(1));
+		assertEquals("05934ae338431f28bf6793b241781149", actualEventIds.get(2));
+		assertEquals("05934ae338431f28bf6793b241781a1e", actualEventIds.get(3));
+		assertEquals(1521469045590l, eventIdsModel.getLastServerVersion().longValue());
+
+	}
+
+	@Test
+	public void testFindAllIdsByEventTypeLimitsByGivenParam() {
+
+		String growthMonitoringEventype = "Growth Monitoring";
+		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 2);
+		List<String> actualEventIds = eventIdsModel.getIdentifiers();
+
+		assertNotNull(actualEventIds);
+		assertEquals(2, actualEventIds.size());
+		assertEquals("05934ae338431f28bf6793b24177a1dc", actualEventIds.get(0));
+		assertEquals("05934ae338431f28bf6793b241780bac", actualEventIds.get(1));
+		assertEquals(1521469045588l, eventIdsModel.getLastServerVersion().longValue());
+
+	}
+
+	@Test
+	public void testFindAllIdsOrdersByServerVersionAnd() {
+
+		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(null, null, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getIdentifiers();
+
+		assertNotNull(actualEventIds);
+		assertEquals(20, actualEventIds.size());
+		assertEquals("05934ae338431f28bf6793b2417696bf", actualEventIds.get(0));
+		assertEquals("34166bde-2d40-4cb9-aec7-d8e4feb47c53", actualEventIds.get(19));
+		assertEquals(1573736256054l, eventIdsModel.getLastServerVersion().longValue());
+
 	}
 	
 }

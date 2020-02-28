@@ -15,6 +15,7 @@ import org.ektorp.util.Documents;
 import org.joda.time.DateTime;
 import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Event;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.lucene.LuceneEventRepository;
@@ -223,7 +224,7 @@ public class AllEvents extends MotechBaseRepository<Event> implements EventsRepo
 	}
 
 	@Override
-	public List<String> findIdsByEventType(String eventType, Date dateDeleted) {
+	public AllIdsModel findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit) {
 		return null; //TODO Should this be implemented????
 	}
 
