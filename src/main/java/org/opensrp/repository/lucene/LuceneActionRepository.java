@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.scheduler.Action;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,6 @@ import com.github.ldriscoll.ektorplucene.LuceneQuery;
 import com.github.ldriscoll.ektorplucene.LuceneResult;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
-import com.mysql.jdbc.StringUtils;
 
 @FullText({ @Index(name = "by_all_criteria", analyzer = "perfield:{baseEntityId:\"keyword\"}", index = "function(doc) {"
         + "if (doc.type !== 'Action') return null;"
@@ -65,11 +65,11 @@ public class LuceneActionRepository extends CouchDbRepositorySupportWithLucene<A
 				ids.add(providerId);
 			}
 			qf.inList(PROVIDER_ID, ids);
-		} else if ((providerId != null && !StringUtils.isEmptyOrWhitespaceOnly(providerId))) {
+		} else if ((providerId != null && !StringUtils.isBlank(providerId))) {
 			qf.eq(PROVIDER_ID, providerId);
 		}
 		
-		if (StringUtils.isEmptyOrWhitespaceOnly(qf.query())) {
+		if (StringUtils.isBlank(qf.query())) {
 			throw new RuntimeException("At least one search filter must be specified");
 		}
 		query.setQuery(qf.query());

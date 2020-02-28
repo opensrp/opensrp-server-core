@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants.BaseEntity;
 import org.opensrp.domain.Report;
@@ -23,7 +24,6 @@ import com.github.ldriscoll.ektorplucene.LuceneQuery;
 import com.github.ldriscoll.ektorplucene.LuceneResult;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
-import com.mysql.jdbc.StringUtils;
 
 @FullText({
         @Index(name = "by_all_criteria", analyzer = "perfield:{baseEntityId:\"keyword\",locationId:\"keyword\"}", index = "function(doc) {   if(doc.type !== 'Report') return null;   var arr1 = ['baseEntityId','reportType','providerId','locationId'];   var ret = new Document(); var serverVersion = doc.serverVersion;ret.add(serverVersion, {'field': 'serverVersion'});  for (var i in arr1){     ret.add(doc[arr1[i]], {'field':arr1[i]});   }   if(doc.reportDate){     var bd=doc.reportDate.substring(0,19);      ret.add(bd, {'field':'reportDate','type':'date'});   }          var crd = doc.dateCreated.substring(0, 19);     ret.add(crd, {'field' : 'lastEdited','type' : 'date'});          if(doc.dateEdited){     var led = doc.dateEdited.substring(0, 19);     ret.add(led, {'field' : 'lastEdited','type' : 'date'});         }        return ret;   }"),
@@ -53,20 +53,20 @@ public class LuceneReportRepository extends CouchDbRepositorySupportWithLucene<R
 		if (lastEditFrom != null && lastEditTo != null) {
 			qf.between(LAST_UPDATE, lastEditFrom, lastEditTo);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(baseEntityId)) {
+		if (!StringUtils.isBlank(baseEntityId)) {
 			qf.eq(BASE_ENTITY_ID, baseEntityId);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(reportType)) {
+		if (!StringUtils.isBlank(reportType)) {
 			qf.eq(REPORT_TYPE, reportType);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(providerId)) {
+		if (!StringUtils.isBlank(providerId)) {
 			qf.eq(PROVIDER_ID, providerId);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(locationId)) {
+		if (!StringUtils.isBlank(locationId)) {
 			qf.eq(LOCATION_ID, locationId);
 		}
 		
-		if (StringUtils.isEmptyOrWhitespaceOnly(qf.query())) {
+		if (StringUtils.isBlank(qf.query())) {
 			throw new RuntimeException("Atleast one search filter must be specified");
 		}
 		query.setQuery(qf.query());
@@ -115,15 +115,15 @@ public class LuceneReportRepository extends CouchDbRepositorySupportWithLucene<R
 				ids.add(providerId);
 			}
 			qf.inList(PROVIDER_ID, ids);
-		} else if ((providerId != null && !StringUtils.isEmptyOrWhitespaceOnly(providerId))) {
+		} else if ((providerId != null && !StringUtils.isBlank(providerId))) {
 			qf.eq(PROVIDER_ID, providerId);
 		}
 		
-		if (!StringUtils.isEmptyOrWhitespaceOnly(locationId)) {
+		if (!StringUtils.isBlank(locationId)) {
 			qf.eq(LOCATION_ID, locationId);
 		}
 		
-		if (!StringUtils.isEmptyOrWhitespaceOnly(baseEntityId)) {
+		if (!StringUtils.isBlank(baseEntityId)) {
 			if (baseEntityId.contains(",")) {
 				Query q = new Query(FilterType.OR);
 				String[] idsArray = org.apache.commons.lang.StringUtils.split(baseEntityId, ",");
@@ -136,7 +136,7 @@ public class LuceneReportRepository extends CouchDbRepositorySupportWithLucene<R
 			}
 		}
 		
-		if (StringUtils.isEmptyOrWhitespaceOnly(qf.query())) {
+		if (StringUtils.isBlank(qf.query())) {
 			throw new RuntimeException("Atleast one search filter must be specified");
 		}
 		query.setQuery(qf.query());

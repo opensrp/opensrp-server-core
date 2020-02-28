@@ -12,6 +12,7 @@ import static org.opensrp.common.AllConstants.Stock.VALUE;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.common.AllConstants.BaseEntity;
 import org.opensrp.domain.Stock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,6 @@ import com.github.ldriscoll.ektorplucene.LuceneQuery;
 import com.github.ldriscoll.ektorplucene.LuceneResult;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
-import com.mysql.jdbc.StringUtils;
 
 @FullText({
         @Index(name = "by_all_criteria", analyzer = "perfield:{identifier:\"keyword\",providerid:\"keyword\"}", index = "function(doc) { if (doc.type !== 'Stock') return null; var arr1 = ['identifier', 'vaccine_type_id', 'transaction_type', 'providerid', 'value', 'to_from', 'sync_status', 'timeStamp']; var ret = new Document(); var serverVersion = doc.serverVersion; ret.add(serverVersion, { 'field': 'serverVersion' }); for (var i in arr1) { ret.add(doc[arr1[i]], { 'field': arr1[i] }); } if (doc.date_created) { var dc = doc.date_updated; ret.add(dc, { 'field': 'dateCreated' }); } if (doc.date_updated) { var da = doc.date_updated; ret.add(da, { 'field': 'dateUpdated' }); } return ret; }"),
@@ -46,28 +46,28 @@ public class LuceneStockRepository extends CouchDbRepositorySupportWithLucene<St
 		LuceneQuery query = new LuceneQuery("Stock", "by_all_criteria");
 		
 		Query qf = new Query(FilterType.AND);
-		if (!StringUtils.isEmptyOrWhitespaceOnly(identifier)) {
+		if (!StringUtils.isBlank(identifier)) {
 			qf.eq(IDENTIFIER, identifier);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(vaccine_type_id)) {
+		if (!StringUtils.isBlank(vaccine_type_id)) {
 			qf.eq(VACCINE_TYPE_ID, vaccine_type_id);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(transaction_type)) {
+		if (!StringUtils.isBlank(transaction_type)) {
 			qf.eq(TRANSACTION_TYPE, transaction_type);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(providerid)) {
+		if (!StringUtils.isBlank(providerid)) {
 			qf.eq(PROVIDERID, providerid);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(value)) {
+		if (!StringUtils.isBlank(value)) {
 			qf.eq(VALUE, value);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(date_created)) {
+		if (!StringUtils.isBlank(date_created)) {
 			qf.eq(DATE_CREATED, date_created);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(to_from)) {
+		if (!StringUtils.isBlank(to_from)) {
 			qf.eq(TO_FROM, to_from);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(date_updated)) {
+		if (!StringUtils.isBlank(date_updated)) {
 			qf.eq(DATE_UPDATED, date_updated);
 		}
 		
@@ -75,7 +75,7 @@ public class LuceneStockRepository extends CouchDbRepositorySupportWithLucene<St
 			qf.between(BaseEntity.SERVER_VERSIOIN, serverVersion, Long.MAX_VALUE);
 		}
 		
-		if (StringUtils.isEmptyOrWhitespaceOnly(qf.query())) {
+		if (StringUtils.isBlank(qf.query())) {
 			throw new RuntimeException("Atleast one search filter must be specified");
 		}
 		query.setQuery(qf.query());
@@ -99,32 +99,32 @@ public class LuceneStockRepository extends CouchDbRepositorySupportWithLucene<St
 		LuceneQuery query = new LuceneQuery("Stock", "by_all_criteria");
 		
 		Query qf = new Query(FilterType.AND);
-		if (!StringUtils.isEmptyOrWhitespaceOnly(identifier)) {
+		if (!StringUtils.isBlank(identifier)) {
 			qf.eq(IDENTIFIER, identifier);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(vaccine_type_id)) {
+		if (!StringUtils.isBlank(vaccine_type_id)) {
 			qf.eq(VACCINE_TYPE_ID, vaccine_type_id);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(transaction_type)) {
+		if (!StringUtils.isBlank(transaction_type)) {
 			qf.eq(TRANSACTION_TYPE, transaction_type);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(providerid)) {
+		if (!StringUtils.isBlank(providerid)) {
 			qf.eq(PROVIDERID, providerid);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(value)) {
+		if (!StringUtils.isBlank(value)) {
 			qf.eq(VALUE, value);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(date_created)) {
+		if (!StringUtils.isBlank(date_created)) {
 			qf.eq(DATE_CREATED, date_created);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(to_from)) {
+		if (!StringUtils.isBlank(to_from)) {
 			qf.eq(TO_FROM, to_from);
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(date_updated)) {
+		if (!StringUtils.isBlank(date_updated)) {
 			qf.eq(DATE_UPDATED, date_updated);
 		}
 		
-		if (StringUtils.isEmptyOrWhitespaceOnly(qf.query())) {
+		if (StringUtils.isBlank(qf.query())) {
 			throw new RuntimeException("Atleast one search filter must be specified");
 		}
 		query.setQuery(qf.query());

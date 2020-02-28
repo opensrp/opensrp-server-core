@@ -3,9 +3,8 @@ package org.opensrp.repository.lucene;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
-
-import com.mysql.jdbc.StringUtils;
 
 public class Query {
 	
@@ -23,7 +22,7 @@ public class Query {
 	
 	public Query(FilterType filterType, Query from) {
 		this.filterType = filterType;
-		if (from != null && !StringUtils.isEmptyOrWhitespaceOnly(from.query)) {
+		if (from != null && !StringUtils.isBlank(from.query)) {
 			this.query = "(" + from.query + ")";
 		}
 	}
@@ -80,14 +79,14 @@ public class Query {
 	}
 	
 	private void addToQuery(String q) {
-		if (!StringUtils.isEmptyOrWhitespaceOnly(query)) {
+		if (!StringUtils.isBlank(query)) {
 			query += filterType.name() + " " + q;
 		} else
 			query += q;
 	}
 	
 	public void addToQuery(Query from) {
-		if (from != null && !StringUtils.isEmptyOrWhitespaceOnly(from.query)) {
+		if (from != null && !StringUtils.isBlank(from.query)) {
 			addToQuery("(" + from.query + ")");
 		}
 	}

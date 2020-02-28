@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants.BaseEntity;
 import org.opensrp.domain.Event;
@@ -27,7 +28,6 @@ import com.github.ldriscoll.ektorplucene.LuceneQuery;
 import com.github.ldriscoll.ektorplucene.LuceneResult;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
-import com.mysql.jdbc.StringUtils;
 
 @FullText({
         @Index(name = "by_all_criteria", analyzer = "perfield:{baseEntityId:\"keyword\",locationId:\"keyword\"}", index = "function(doc) {   if(doc.type !== 'Event') return null;   var arr1 = ['baseEntityId','eventType','entityType','providerId','locationId','teamId','team'];   var ret = new Document(); var serverVersion = doc.serverVersion;ret.add(serverVersion, {'field': 'serverVersion'});  for (var i in arr1){     ret.add(doc[arr1[i]], {'field':arr1[i]});   }   if(doc.eventDate){     var bd=doc.eventDate.substring(0,19);      ret.add(bd, {'field':'eventDate','type':'date'});   }          var crd = doc.dateCreated.substring(0, 19);     ret.add(crd, {'field' : 'lastEdited','type' : 'date'});          if(doc.dateEdited){     var led = doc.dateEdited.substring(0, 19);     ret.add(led, {'field' : 'lastEdited','type' : 'date'});         }        return ret;   }"),
@@ -59,7 +59,7 @@ public class LuceneEventRepository extends CouchDbRepositorySupportWithLucene<Ev
 		addQueryParameter(qf, TEAM, eventSearchBean.getTeam());
 		addQueryParameter(qf, TEAM_ID, eventSearchBean.getTeamId());
 		
-		if (StringUtils.isEmptyOrWhitespaceOnly(qf.query())) {
+		if (StringUtils.isBlank(qf.query())) {
 			throw new RuntimeException("Atleast one search filter must be specified");
 		}
 		query.setQuery(qf.query());
@@ -77,7 +77,7 @@ public class LuceneEventRepository extends CouchDbRepositorySupportWithLucene<Ev
 	}
 	
 	private void addQueryParameter(Query query, String parameter, String value) {
-		if (!StringUtils.isEmptyOrWhitespaceOnly(value))
+		if (!StringUtils.isBlank(value))
 			query.eq(parameter, value);
 	}
 	
@@ -104,7 +104,7 @@ public class LuceneEventRepository extends CouchDbRepositorySupportWithLucene<Ev
 			qf.between(BaseEntity.SERVER_VERSIOIN, eventSearchBean.getServerVersion(), Long.MAX_VALUE);
 		}
 		
-		if (eventSearchBean.getTeam() != null && !StringUtils.isEmptyOrWhitespaceOnly(eventSearchBean.getTeam())) {
+		if (eventSearchBean.getTeam() != null && !StringUtils.isBlank(eventSearchBean.getTeam())) {
 			if (eventSearchBean.getTeam().contains(",")) {
 				String[] teamArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getTeam(), ",");
 				List<String> teams = new ArrayList<>(Arrays.asList(teamArray));
@@ -114,7 +114,7 @@ public class LuceneEventRepository extends CouchDbRepositorySupportWithLucene<Ev
 			}
 		}
 		
-		if (eventSearchBean.getTeamId() != null && !StringUtils.isEmptyOrWhitespaceOnly(eventSearchBean.getTeamId())) {
+		if (eventSearchBean.getTeamId() != null && !StringUtils.isBlank(eventSearchBean.getTeamId())) {
 			if (eventSearchBean.getTeamId().contains(",")) {
 				String[] teamArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getTeamId());
 				List<String> teams = new ArrayList<>(Arrays.asList(teamArray));
@@ -125,7 +125,7 @@ public class LuceneEventRepository extends CouchDbRepositorySupportWithLucene<Ev
 		}
 		
 		if ((eventSearchBean.getProviderId() != null
-		        && !StringUtils.isEmptyOrWhitespaceOnly(eventSearchBean.getProviderId()))) {
+		        && !StringUtils.isBlank(eventSearchBean.getProviderId()))) {
 			if (eventSearchBean.getProviderId().contains(",")) {
 				String[] providerArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getProviderId(), ",");
 				List<String> providers = new ArrayList<>(Arrays.asList(providerArray));
@@ -136,7 +136,7 @@ public class LuceneEventRepository extends CouchDbRepositorySupportWithLucene<Ev
 		}
 		
 		if (eventSearchBean.getLocationId() != null
-		        || !StringUtils.isEmptyOrWhitespaceOnly(eventSearchBean.getLocationId())) {
+		        || !StringUtils.isBlank(eventSearchBean.getLocationId())) {
 			if (eventSearchBean.getLocationId().contains(",")) {
 				String[] locationArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getLocationId(), ",");
 				List<String> locations = new ArrayList<>(Arrays.asList(locationArray));
@@ -146,7 +146,7 @@ public class LuceneEventRepository extends CouchDbRepositorySupportWithLucene<Ev
 			}
 		}
 		
-		if (!StringUtils.isEmptyOrWhitespaceOnly(eventSearchBean.getBaseEntityId())) {
+		if (!StringUtils.isBlank(eventSearchBean.getBaseEntityId())) {
 			if (eventSearchBean.getBaseEntityId().contains(",")) {
 				Query q = new Query(FilterType.OR);
 				String[] idsArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getBaseEntityId(), ",");
@@ -159,7 +159,7 @@ public class LuceneEventRepository extends CouchDbRepositorySupportWithLucene<Ev
 			}
 		}
 		
-		if (eventSearchBean.getEventType() != null || !StringUtils.isEmptyOrWhitespaceOnly(eventSearchBean.getEventType())) {
+		if (eventSearchBean.getEventType() != null || !StringUtils.isBlank(eventSearchBean.getEventType())) {
 			if (eventSearchBean.getEventType().contains(",")) {
 				Query q = new Query(FilterType.OR);
 				String[] eventArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getEventType(), ",");
@@ -172,7 +172,7 @@ public class LuceneEventRepository extends CouchDbRepositorySupportWithLucene<Ev
 			}
 		}
 		
-		if (StringUtils.isEmptyOrWhitespaceOnly(qf.query())) {
+		if (StringUtils.isBlank(qf.query())) {
 			throw new RuntimeException("Atleast one search filter must be specified");
 		}
 		query.setQuery(qf.query());
