@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.util.DateUtil;
+import org.joda.time.DateTime;
 import org.opensrp.domain.MotechBaseDataObject;
 import org.opensrp.dto.ActionData;
 
@@ -59,7 +59,7 @@ public class Action extends MotechBaseDataObject {
 		this.data = actionData.getData();
 		this.actionTarget = actionData.getTarget();
 		this.actionType = actionData.getType();
-		this.timeStamp = DateUtil.now().getMillis();
+		this.timeStamp = DateTime.now().getMillis();
 		this.details = actionData.getDetails();
 		this.isActionActive = true;
 	}
