@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Task;
 import org.opensrp.domain.postgres.TaskMetadata;
 import org.opensrp.domain.postgres.TaskMetadataExample;
@@ -124,10 +125,34 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		return convert(tasks);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public List<String> findAllIds() {
+	public AllIdsModel findAllIds(Long serverVersion, int limit) {
+		AllIdsModel idsModel = new AllIdsModel();
+		Long lastServerVersion;
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		return taskMetadataMapper.selectManyIds(taskMetadataExample);
+		taskMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
+		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+
+		List<String> taskIdentifiers = taskMetadataMapper.selectManyIds(taskMetadataExample, 0,
+				fetchLimit);
+		idsModel.setIdentifiers(taskIdentifiers);
+
+		if (taskIdentifiers != null && !taskIdentifiers.isEmpty()) {
+			taskMetadataExample = new TaskMetadataExample();
+			taskMetadataExample.createCriteria().andIdentifierEqualTo(taskIdentifiers.get(taskIdentifiers.size() - 1));
+			List<TaskMetadata> taskMetaDataList = taskMetadataMapper.selectByExample(taskMetadataExample);
+
+			lastServerVersion = taskMetaDataList != null && !taskMetaDataList.isEmpty() ?
+					taskMetaDataList.get(0).getServerVersion() : null;
+
+			idsModel.setLastServerVersion(lastServerVersion);
+		}
+
+		return idsModel;
 	}
 
 	/**

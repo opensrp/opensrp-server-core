@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Task;
 import org.opensrp.domain.Task.TaskStatus;
 import org.opensrp.repository.TaskRepository;
@@ -206,6 +207,25 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, tasks.size());
 		assertEquals("iyr-998njoo", tasks.get(0).getIdentifier());
 
+	}
+
+	@Test
+	public void testFindAllIdsShouldOrderByServerVersion() {
+		AllIdsModel idsModel = taskRepository.findAllIds(0l, 10);
+		List<String> taskIdentifiers = idsModel.getIdentifiers();
+		assertEquals(2, taskIdentifiers.size());
+		assertEquals("tsk11231jh22", taskIdentifiers.get(0));
+		assertEquals("iyr-998njoo", taskIdentifiers.get(1));
+		assertEquals(1542031602680l, idsModel.getLastServerVersion().longValue());
+	}
+
+	@Test
+	public void testFindAllIdsShouldLimitByGivenParam() {
+		AllIdsModel idsModel = taskRepository.findAllIds(0l, 1);
+		List<String> taskIdentifiers = idsModel.getIdentifiers();
+		assertEquals(1, taskIdentifiers.size());
+		assertEquals("tsk11231jh22", taskIdentifiers.get(0));
+		assertEquals(1542027762554l, idsModel.getLastServerVersion().longValue());
 	}
 
 }

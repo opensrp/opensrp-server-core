@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Task;
 import org.opensrp.domain.Task.TaskStatus;
 import org.opensrp.domain.TaskUpdate;
@@ -211,14 +212,18 @@ public class TaskServiceTest {
 
 	@Test
 	public void testFindAllTaskIds() {
+		AllIdsModel idsModel = new AllIdsModel();
 		List<String> expectedTaskIds = new ArrayList<>();
 		expectedTaskIds.add("task1");
 		expectedTaskIds.add("task2");
+		idsModel.setIdentifiers(expectedTaskIds);
+		idsModel.setLastServerVersion(1234l);
 
-		when(taskRepository.findAllIds()).thenReturn(expectedTaskIds);
-		List<String> actualTaskIds = taskService.findAllTaskIds();
+		when(taskRepository.findAllIds(anyLong(), anyInt())).thenReturn(idsModel);
+		AllIdsModel actualIdsModels = taskService.findAllTaskIds(0l, 10);
+		List<String> actualTaskIds = actualIdsModels.getIdentifiers();
 
-		verify(taskRepository).findAllIds();
+		verify(taskRepository).findAllIds(0l, 10);
 		assertEquals(2, actualTaskIds.size());
 		assertEquals(expectedTaskIds.get(0).toString(), actualTaskIds.get(0).toString());
 		assertEquals(expectedTaskIds.get(1).toString(), actualTaskIds.get(1).toString());

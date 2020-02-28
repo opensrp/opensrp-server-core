@@ -14,5 +14,6 @@ public interface CustomTaskMetadataMapper extends TaskMetadataMapper {
 	List<Task> selectMany(@Param("example") TaskMetadataExample taskMetadataExample,
 			@Param("offset") int offset, @Param("limit") int limit);
 
-	List<String> selectManyIds(@Param("example") TaskMetadataExample taskMetadataExample);
+	List<String> selectManyIds(@Param("example") TaskMetadataExample taskMetadataExample,
+			@Param("offset") int offset, @Param("limit") int limit );
 }
