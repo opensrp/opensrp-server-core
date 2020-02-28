@@ -22,6 +22,7 @@ import java.util.UUID;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.joda.time.LocalDate;
 import org.junit.Test;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Geometry;
 import org.opensrp.domain.Geometry.GeometryType;
@@ -673,12 +674,23 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testFindAllLocationIds() {
+	public void testFindAllLocationIdsShouldOrderByServerVersion() {
 
-		List<String> locationsIds = locationRepository.findAllLocationIds();
+		AllIdsModel idsModel = locationRepository.findAllLocationIds(-2l, 10);
+		List<String> locationsIds = idsModel.getIdentifiers();
 		assertEquals(2, locationsIds.size());
 		assertEquals("3734", locationsIds.get(0));
 		assertEquals("3735", locationsIds.get(1));
+
+	}
+
+	@Test
+	public void testFindAllLocationIdsShouldLimitByGivenParam() {
+
+		AllIdsModel idsModel = locationRepository.findAllLocationIds(-2l, 1);
+		List<String> locationsIds = idsModel.getIdentifiers();
+		assertEquals(1, locationsIds.size());
+		assertEquals("3734", locationsIds.get(0));
 
 	}
 

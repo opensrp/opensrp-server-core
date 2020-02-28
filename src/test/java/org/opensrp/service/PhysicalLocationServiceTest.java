@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -26,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
@@ -513,17 +516,22 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testFindAllLocationIds() {
+		AllIdsModel idsModel = new AllIdsModel();
 		List<String> expectedLocationIds = new ArrayList<>();
 		expectedLocationIds.add("Location-1");
 		expectedLocationIds.add("Location-2");
+		idsModel.setIdentifiers(expectedLocationIds);
+		idsModel.setLastServerVersion(1234l);
 
-		when(locationRepository.findAllLocationIds()).thenReturn(expectedLocationIds);
-		List<String> actualLocationIds = locationService.findAllLocationIds();
+		when(locationRepository.findAllLocationIds(anyLong(), anyInt())).thenReturn(idsModel);
+		AllIdsModel actualIdsModelList = locationService.findAllLocationIds(0l, 10);
 
-		verify(locationRepository).findAllLocationIds();
+		List<String> actualLocationIds = actualIdsModelList.getIdentifiers();
+		verify(locationRepository).findAllLocationIds(0l, 10);
 		assertEquals(2, actualLocationIds.size());
 		assertEquals(expectedLocationIds.get(0).toString(), actualLocationIds.get(0).toString());
 		assertEquals(expectedLocationIds.get(1).toString(), actualLocationIds.get(1).toString());
+		assertEquals(1234l, actualIdsModelList.getLastServerVersion().longValue());
 
 	}
 

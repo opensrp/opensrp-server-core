@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -236,10 +237,13 @@ public class PhysicalLocationService {
 
 	/**
 	 * This method searches for all location ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of location ids to fetch
 	 * @return a list of location ids
 	 */
-	public List<String> findAllLocationIds() {
-		return locationRepository.findAllLocationIds();
+	public AllIdsModel findAllLocationIds(Long serverVersion, int limit) {
+		return locationRepository.findAllLocationIds(serverVersion, limit);
 	}
 
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -413,10 +414,31 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
         return convert(locations);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public List<String> findAllLocationIds() {
+	public AllIdsModel findAllLocationIds(Long serverVersion, int limit) {
+		AllIdsModel idsModel = new AllIdsModel();
+		Long lastServerVersion;
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		return locationMetadataMapper.selectManyIds(locationMetadataExample);
+		locationMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
+
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+
+		List<String> locationIdentifiers = locationMetadataMapper.selectManyIds(locationMetadataExample, 0, fetchLimit );
+		idsModel.setIdentifiers(locationIdentifiers);
+
+		if (locationIdentifiers != null && !locationIdentifiers.isEmpty()) {
+			locationMetadataExample = new LocationMetadataExample();
+			locationMetadataExample.createCriteria().andGeojsonIdEqualTo(locationIdentifiers.get(locationIdentifiers.size() -1 ));
+			List<LocationMetadata> locationMetadataList = locationMetadataMapper.selectByExample(locationMetadataExample);
+
+			lastServerVersion = locationMetadataList != null && !locationMetadataList.isEmpty() ? locationMetadataList.get(0).getServerVersion() : null;
+			idsModel.setLastServerVersion(lastServerVersion);
+		}
+
+		return idsModel;
 	}
 
 	@Override

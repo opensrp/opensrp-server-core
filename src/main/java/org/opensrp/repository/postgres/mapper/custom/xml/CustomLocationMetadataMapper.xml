@@ -214,6 +214,7 @@
 		<if test="example.orderByClause != null">
 			order by lm.${example.orderByClause}
 		</if>
+		LIMIT #{limit} OFFSET #{offset}
 
 	</select>
 

@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -123,8 +124,11 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 
 	/**
 	 * This method fetches all location Ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of location ids to fetch
 	 * @return a list of location Ids
 	 */
-	List<String> findAllLocationIds();
+	AllIdsModel findAllLocationIds(Long serverVersion, int limit);
 
 }
