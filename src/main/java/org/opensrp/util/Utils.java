@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -41,7 +42,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.mysql.jdbc.StringUtils;
 
 public class Utils {
 	
@@ -129,7 +129,7 @@ public class Utils {
 		while (i.hasNext()) {
 			Row r = i.next();
 			for (Cell c : r) {
-				if (!StringUtils.isEmptyOrWhitespaceOnly(c.getStringCellValue())) {
+				if (!StringUtils.isBlank(c.getStringCellValue())) {
 					return r.getRowNum();
 				}
 			}
@@ -139,7 +139,7 @@ public class Utils {
 	
 	private static boolean isRowEmpty(List<String> rcontent) {
 		for (String r : rcontent) {
-			if (!StringUtils.isEmptyOrWhitespaceOnly(r)) {
+			if (!StringUtils.isBlank(r)) {
 				return false;
 			}
 		}

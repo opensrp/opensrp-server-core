@@ -2,12 +2,11 @@ package org.opensrp.service;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.AppStateToken;
 import org.opensrp.repository.AppStateTokensRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.mysql.jdbc.StringUtils;
 
 @Service
 public class ConfigService {
@@ -92,7 +91,7 @@ public class ConfigService {
 	}
 	
 	private void checkIfNameAndDescriptionExist(Enum<?> tokenName, String description) {
-		if (tokenName == null || StringUtils.isEmptyOrWhitespaceOnly(description)) {
+		if (tokenName == null || StringUtils.isBlank(description)) {
 			throw new IllegalArgumentException("Token name and description must be provided");
 		}
 	}
