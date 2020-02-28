@@ -17,7 +17,7 @@
 		<mybatis.version>3.5.4</mybatis.version>
 		<mybatis.spring.version>2.0.3</mybatis.spring.version>
 		<hibernate.version>5.4.12.Final</hibernate.version>
-		<mysql.connector.version>5.1.36</mysql.connector.version>
+		<mysql.connector.version>8.0.19</mysql.connector.version>
 		<opensrp.updatePolicy>always</opensrp.updatePolicy>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
@@ -299,6 +299,11 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20190722</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.connector.version}</version>
 		</dependency>
 		<!-- TODO To remove when removing couchdb -->
 		<!-- https://mvnrepository.com/artifact/org.ektorp/org.ektorp -->
