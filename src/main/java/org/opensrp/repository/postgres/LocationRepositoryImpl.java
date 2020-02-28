@@ -355,9 +355,29 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public List<String> findAllStructureIds() {
+	public AllIdsModel findAllStructureIds(Long serverVersion, int limit) {
+		AllIdsModel idsModel = new AllIdsModel();
+		Long lastServerVersion;
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
-		return structureMetadataMapper.selectManyIds(structureMetadataExample);
+		structureMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
+		structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+
+		List<String> structureIdentifiers = structureMetadataMapper.selectManyIds(structureMetadataExample,  0, fetchLimit);
+		idsModel.setIdentifiers(structureIdentifiers);
+
+		if (structureIdentifiers != null && !structureIdentifiers.isEmpty()) {
+			structureMetadataExample = new StructureMetadataExample();
+			structureMetadataExample.createCriteria().andGeojsonIdEqualTo(structureIdentifiers.get(structureIdentifiers.size() - 1));
+			List<StructureMetadata> structureMetaDataList = structureMetadataMapper.selectByExample(structureMetadataExample);
+
+			lastServerVersion = structureMetaDataList != null && !structureMetaDataList.isEmpty() ?
+					structureMetaDataList.get(0).getServerVersion() : null;
+			idsModel.setLastServerVersion(lastServerVersion);
+		}
+
+		return idsModel;
 	}
 
 	/**
@@ -423,6 +443,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		Long lastServerVersion;
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
+		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
 

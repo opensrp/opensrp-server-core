@@ -196,10 +196,13 @@ public class PhysicalLocationService {
 
 	/**
 	 * This method searches for all structure ids
-	 * @return a list of strcuture ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of structure ids to fetch
+	 * @return a list of structure ids as well as the lastServerVersion
 	 */
-	public List<String> findAllStructureIds() {
-		return locationRepository.findAllStructureIds();
+	public AllIdsModel findAllStructureIds(Long serverVersion, int limit) {
+		return locationRepository.findAllStructureIds(serverVersion, limit);
 	}
 
 	/**

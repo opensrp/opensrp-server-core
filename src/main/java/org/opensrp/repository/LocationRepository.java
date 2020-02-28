@@ -90,9 +90,12 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 
     /**
      * This method fetches all structure Ids
-     * @return a list of structure Ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of structure ids to fetch
+     * @return a list of structure Ids and last server version
      */
-	List<String> findAllStructureIds();
+	AllIdsModel findAllStructureIds(Long serverVersion, int limit);
 
 	/**
 	 * This method searches for location identifier and name using a plan identifier.

@@ -482,14 +482,19 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testFindAllStructureIds() {
+		AllIdsModel idsModel = new AllIdsModel();
 		List<String> expectedStructureIds = new ArrayList<>();
 		expectedStructureIds.add("Structure-1");
 		expectedStructureIds.add("Structure-2");
+		idsModel.setIdentifiers(expectedStructureIds);
+		idsModel.setLastServerVersion(1234l);
 
-		when(locationRepository.findAllStructureIds()).thenReturn(expectedStructureIds);
-		List<String> actualStructureIds = locationService.findAllStructureIds();
+		when(locationRepository.findAllStructureIds(anyLong(), anyInt())).thenReturn(idsModel);
+		AllIdsModel actualIdModels = locationService.findAllStructureIds(0l, 2);
 
-		verify(locationRepository).findAllStructureIds();
+		List<String> actualStructureIds = actualIdModels.getIdentifiers();
+
+		verify(locationRepository).findAllStructureIds(0l, 2);
 		assertEquals(2, actualStructureIds.size());
 		assertEquals(expectedStructureIds.get(0).toString(), actualStructureIds.get(0).toString());
 		assertEquals(expectedStructureIds.get(1).toString(), actualStructureIds.get(1).toString());
