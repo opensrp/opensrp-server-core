@@ -39,10 +39,6 @@ public class BaseEntity extends BaseDataObject {
 	protected BaseEntity() {
 	}
 	
-	public String type() {
-		return type;
-	}
-	
 	public BaseEntity(String baseEntityId) {
 		this.baseEntityId = baseEntityId;
 	}

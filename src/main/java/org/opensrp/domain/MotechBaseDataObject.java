@@ -3,29 +3,36 @@
  */
 package org.opensrp.domain;
 
+import org.ektorp.support.CouchDbDocument;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Samuel Githengi created on 02/19/20
  */
-public class MotechBaseDataObject extends org.motechproject.model.MotechBaseDataObject {
+public class MotechBaseDataObject extends CouchDbDocument {
 	
 	private static final long serialVersionUID = 1L;
 	
+	@JsonProperty
+	private String type;
+	
 	protected MotechBaseDataObject() {
 		super();
-		this.type = this.getClass().getSimpleName();
+		setType(this.getClass().getSimpleName());
 	}
 	
 	protected MotechBaseDataObject(String type) {
 		super();
-		this.type = type;
+		setType(type);
 	}
 	
-	@JsonProperty
 	public String getType() {
 		return type;
 	}
 	
+	public void setType(String type) {
+		this.type = type;
+	}
 	
 }
