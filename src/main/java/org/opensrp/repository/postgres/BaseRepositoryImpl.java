@@ -1,7 +1,7 @@
 package org.opensrp.repository.postgres;
 
-import org.motechproject.model.MotechBaseDataObject;
 import org.opensrp.common.AllConstants.BaseEntity;
+import org.opensrp.domain.MotechBaseDataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
