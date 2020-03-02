@@ -37,7 +37,7 @@ public abstract class BaseRepository<T extends MotechBaseDataObject> extends Cou
 			entity.setRevision(entityInDb.getRevision());
 			update(entity);
 		} else
-			throw new RuntimeException(String.format("Duplicate entities found for %s:%s", businessFieldName, businessId));
+			throw new IllegalStateException(String.format("Duplicate entities found for %s:%s", businessFieldName, businessId));
 	}
 	
 	private List<T> entities(String businessFieldName, String businessId) {
