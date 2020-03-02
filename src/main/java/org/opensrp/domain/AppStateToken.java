@@ -9,7 +9,7 @@ import org.joda.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @TypeDiscriminator("doc.type === 'AppStateToken'")
-public class AppStateToken extends MotechBaseDataObject {
+public class AppStateToken extends BaseDataEntity {
 	
 	@JsonProperty
 	private String name;

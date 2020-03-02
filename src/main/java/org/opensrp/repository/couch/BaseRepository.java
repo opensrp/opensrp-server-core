@@ -11,13 +11,13 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.ViewQuery;
 import org.ektorp.support.CouchDbRepositorySupport;
 import org.ektorp.support.GenerateView;
-import org.opensrp.domain.MotechBaseDataObject;
+import org.opensrp.domain.BaseDataEntity;
 
 
 /**
  * @author Samuel Githengi created on 02/28/20
  */
-public abstract class BaseRepository<T extends MotechBaseDataObject> extends CouchDbRepositorySupport<T> {
+public abstract class BaseRepository<T extends BaseDataEntity> extends CouchDbRepositorySupport<T> {
 	
 	private Class<T> type;
 	

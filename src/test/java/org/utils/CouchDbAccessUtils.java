@@ -7,7 +7,7 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbInstance;
-import org.opensrp.domain.BaseDataObject;import org.opensrp.domain.MotechBaseDataObject;
+import org.opensrp.domain.BaseDataObject;import org.opensrp.domain.BaseDataEntity;
 import org.opensrp.repository.couch.BaseRepository;
 
 import com.github.ldriscoll.ektorplucene.LuceneAwareCouchDbConnector;
@@ -20,7 +20,7 @@ public final class CouchDbAccessUtils {
 		
 	}
 	
-	public static <T extends MotechBaseDataObject, R extends BaseRepository<T>> void addObjectToRepository(List<T> objectList, R repository) {
+	public static <T extends BaseDataEntity, R extends BaseRepository<T>> void addObjectToRepository(List<T> objectList, R repository) {
 		for (T object : objectList) {
 			repository.add(object);
 		}

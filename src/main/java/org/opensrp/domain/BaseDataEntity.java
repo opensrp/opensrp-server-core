@@ -10,19 +10,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @author Samuel Githengi created on 02/19/20
  */
-public class MotechBaseDataObject extends CouchDbDocument {
+public class BaseDataEntity extends CouchDbDocument {
 	
 	private static final long serialVersionUID = 1L;
 	
 	@JsonProperty
 	private String type;
 	
-	protected MotechBaseDataObject() {
+	protected BaseDataEntity() {
 		super();
 		setType(this.getClass().getSimpleName());
 	}
 	
-	protected MotechBaseDataObject(String type) {
+	protected BaseDataEntity(String type) {
 		super();
 		setType(type);
 	}

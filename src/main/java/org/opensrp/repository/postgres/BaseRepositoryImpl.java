@@ -1,7 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import org.opensrp.common.AllConstants.BaseEntity;
-import org.opensrp.domain.MotechBaseDataObject;
+import org.opensrp.domain.BaseDataEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public abstract class BaseRepositoryImpl<T> {
 		return orderByClause;
 	}
 	
-	protected void setRevision(MotechBaseDataObject entity) {
+	protected void setRevision(BaseDataEntity entity) {
 		if (entity.isNew())
 			entity.setRevision(REVISION_PREFIX + 1);
 		else if (entity.getRevision().startsWith(REVISION_PREFIX))

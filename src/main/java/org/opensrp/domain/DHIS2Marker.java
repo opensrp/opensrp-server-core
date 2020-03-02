@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Service
 @TypeDiscriminator("doc.type == 'DHIS2Marker'")
-public class DHIS2Marker extends MotechBaseDataObject {
+public class DHIS2Marker extends BaseDataEntity {
 	
 	private static final long serialVersionUID = 1L;
 	

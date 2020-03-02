@@ -8,7 +8,7 @@ import org.ektorp.support.TypeDiscriminator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @TypeDiscriminator("doc.type == 'Multimedia'")
-public class Multimedia extends MotechBaseDataObject {
+public class Multimedia extends BaseDataEntity {
 	
 	@JsonProperty
 	private String caseId;

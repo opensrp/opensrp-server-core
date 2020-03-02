@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author muhammad.ahmed@ihsinformatics.com Created on May 25, 2015
  */
 @TypeDiscriminator("doc.type == 'ErrorTrace'")
-public class ErrorTrace extends MotechBaseDataObject {
+public class ErrorTrace extends BaseDataEntity {
 	
 	/*
 	 * @JsonProperty private String id;

@@ -8,7 +8,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.opensrp.domain.MotechBaseDataObject;
+import org.opensrp.domain.BaseDataEntity;
 import org.opensrp.dto.AlertStatus;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * The entity which helps in identifying the type of action applicable for the entity or provider
  */
 @TypeDiscriminator("doc.type === 'Alert'")
-public class Alert extends MotechBaseDataObject {
+public class Alert extends BaseDataEntity {
 	
 	public enum AlertType {
 		notification,
