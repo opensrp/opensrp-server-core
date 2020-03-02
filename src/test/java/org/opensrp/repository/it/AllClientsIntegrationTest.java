@@ -1,6 +1,5 @@
 package org.opensrp.repository.it;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -21,7 +20,6 @@ import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.opensrp.common.Gender;
 import org.opensrp.domain.Address;
 import org.opensrp.domain.Client;
