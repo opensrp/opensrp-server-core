@@ -96,14 +96,6 @@ public class SettingConfiguration extends BaseDataObject {
 		this.version = version;
 	}
 	
-	public String getType() {
-		return type;
-	}
-	
-	public void setType(String type) {
-		this.type = type;
-	}
-	
 	public List<Setting> getSettings() {
 		return settings;
 	}

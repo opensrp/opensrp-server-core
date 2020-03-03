@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.common.AllConstants.DHIS2Constants;
 import org.opensrp.domain.DHIS2Marker;
@@ -13,7 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AllDHIS2Marker extends MotechBaseRepository<DHIS2Marker> {
+public class AllDHIS2Marker extends BaseRepository<DHIS2Marker> {
 	
 	@Autowired
 	protected AllDHIS2Marker(@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR) CouchDbConnector db) {

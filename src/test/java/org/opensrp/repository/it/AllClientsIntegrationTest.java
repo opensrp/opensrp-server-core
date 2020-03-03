@@ -1,7 +1,5 @@
 package org.opensrp.repository.it;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -17,7 +15,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.ektorp.CouchDbConnector;
-import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.junit.Before;
@@ -228,7 +225,7 @@ public class AllClientsIntegrationTest {
 		
 		Client ce = clientService.getByBaseEntityId("testclient2");
 		assertEquals("testclient2", ce.getBaseEntityId());
-		assertTrue(Client.class.getSimpleName().equals(ce.type()));
+		assertTrue(Client.class.getSimpleName().equals(ce.getType()));
 		assertEquals("birthplace", ce.getAddresses().get(0).getAddressType());
 		assertEquals("Mughal", ce.getAttribute("ethnicity"));
 		assertEquals("01001222", ce.getIdentifier("program id"));
@@ -263,8 +260,8 @@ public class AllClientsIntegrationTest {
 		
 		List<Client> ce = clientService.findAllByAttribute("ETHNICITY", "Mughal");
 		assertTrue(ce.size() == 2);
-		assertThat(ce, Matchers.<Client> hasItem(Matchers.<Client> hasProperty("baseEntityId", equalTo("testclient2"))));
-		assertThat(ce, Matchers.<Client> hasItem(Matchers.<Client> hasProperty("baseEntityId", equalTo("testclient3"))));
+		assertEquals("testclient2", ce.get(0).getBaseEntityId());
+		assertEquals("testclient3", ce.get(1).getBaseEntityId());
 	}
 	
 }

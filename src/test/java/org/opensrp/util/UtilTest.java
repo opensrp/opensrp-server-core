@@ -1,8 +1,8 @@
 package org.opensrp.util;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.List;
@@ -12,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
-import org.opensrp.form.domain.FormSubmission;
 
 public class UtilTest extends TestResourceLoader {
 	
@@ -34,7 +33,7 @@ public class UtilTest extends TestResourceLoader {
 	@Test(expected = Exception.class)
 	public void testErrorForInvalidJsonInGetStringFromJson() {
 		String formSubmission = "Invalid  JSON";
-		Map<String, String> map = Utils.getStringMapFromJSON(formSubmission);
+		Utils.getStringMapFromJSON(formSubmission);
 	}
 	
 	@Test
@@ -45,19 +44,6 @@ public class UtilTest extends TestResourceLoader {
 		assertEquals("declaredFieldTwo", fieldList.get(1));
 	}
 	
-	@Test
-	public void testGetZiggyParam() throws IOException, JSONException {
-		FormSubmission formSubmission = getFormSubmissionFor("new_household_registration", 1);
-		String ziggyParams = Utils.getZiggyParams(formSubmission);
-		JSONObject jsonObject = new JSONObject(ziggyParams);
-		
-		assertEquals(formSubmission.anmId(), jsonObject.get("anmId"));
-		assertEquals(formSubmission.formName(), jsonObject.get("formName"));
-		assertEquals(formSubmission.serverVersion(), Long.parseLong((String) jsonObject.get("serverVersion")));
-		assertEquals(formSubmission.entityId(), jsonObject.get("entityId"));
-		assertEquals(formSubmission.instanceId(), jsonObject.get("instanceId"));
-		assertEquals(formSubmission.clientVersion(), Long.parseLong((String) jsonObject.get("clientVersion")));
-	}
 	
 	@Test
 	public void testGetXlsToJson() throws IOException, JSONException {
@@ -81,7 +67,7 @@ public class UtilTest extends TestResourceLoader {
 	@Test(expected = Exception.class)
 	public void testGetXlsToJsonForInvalidXls() throws IOException, JSONException {
 		String path = getFullPath("sampleXLS/invalidXLS.xls");
-		JSONArray jsonArray = Utils.getXlsToJson(path);
+		Utils.getXlsToJson(path);
 	}
 	
 }

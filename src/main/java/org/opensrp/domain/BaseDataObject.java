@@ -5,7 +5,7 @@ import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public abstract class BaseDataObject extends MotechBaseDataObject {
+public abstract class BaseDataObject extends BaseDataEntity {
 
 	private static final long serialVersionUID = 1L;
 	 

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Client;
 import org.opensrp.search.AddressSearchBean;
@@ -34,7 +35,6 @@ import com.github.ldriscoll.ektorplucene.LuceneQuery;
 import com.github.ldriscoll.ektorplucene.LuceneResult;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
-import com.mysql.jdbc.StringUtils;
 
 @FullText({
         @Index(name = "by_all_criteria", analyzer = "perfield:{baseEntityId:\"keyword\",mother:\"keyword\"}", index = "function (doc) {  if(doc.type !== 'Client') return null;  var docl = new Array();  var len = doc.addresses &&  doc.addresses.length >0 ? doc.addresses.length : 1;  for(var al = 0; al < len; al++) {    var arr1 = ['firstName', 'middleName', 'lastName', 'gender'];    var arr2 = ['addressType', 'country', 'stateProvince', 'cityVillage', 'countyDistrict', 'subDistrict', 'town', 'subTown'];    var ret = new Document(); var baseEntityId = doc.baseEntityId;ret.add(baseEntityId, {'field': 'baseEntityId'});    for(var i in arr1) {      ret.add(doc[arr1[i]], {'field' : arr1[i]});    }    for(var key in doc.attributes) {      ret.add(doc.attributes[key], {'field' : key});    } if (doc.relationships) { for (var key in doc.relationships) { ret.add(doc.relationships[key], { 'field': key }); }}    if(doc.addresses) {      var ad = doc.addresses[al];      if(ad){        for(var i in arr2) {          ret.add(ad[arr2[i]], {'field' : arr2[i]});        }      }              }    var bd = doc.birthdate.substring(0, 19);    ret.add(bd, {'field' : 'birthdate','type' : 'date'});        var crd = doc.dateCreated.substring(0, 19);    ret.add(crd, {'field' : 'lastEdited','type' : 'date'});        if(doc.dateEdited){    var led = doc.dateEdited.substring(0, 19);    ret.add(led, {'field' : 'lastEdited','type' : 'date'});        }        docl.push(ret);    }  return docl; }"),
@@ -71,13 +71,13 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 		LuceneQuery query = new LuceneQuery("Client", "by_all_criteria");
 		
 		Query q = new Query(FilterType.OR);
-		if (!StringUtils.isEmptyOrWhitespaceOnly(searchBean.getNameLike())) {
+		if (!StringUtils.isBlank(searchBean.getNameLike())) {
 			q.like(FIRST_NAME, searchBean.getNameLike());
 			q.like(MIDDLE_NAME, searchBean.getNameLike());
 			q.like(LAST_NAME, searchBean.getNameLike());
 		}
 		Query qf = new Query(FilterType.AND, q);
-		if (!StringUtils.isEmptyOrWhitespaceOnly(searchBean.getGender())) {
+		if (!StringUtils.isBlank(searchBean.getGender())) {
 			qf.eq(GENDER, searchBean.getGender());
 		}
 		if (searchBean.getBirthdateFrom() != null && searchBean.getBirthdateTo() != null) {
@@ -89,34 +89,34 @@ public class LuceneClientRepository extends CouchDbRepositorySupportWithLucene<C
 		if (searchBean.getLastEditFrom() != null & searchBean.getLastEditTo() != null) {
 			qf.between(LAST_UPDATE, searchBean.getLastEditFrom(), searchBean.getLastEditTo());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(searchBean.getAttributeValue())) {
+		if (!StringUtils.isBlank(searchBean.getAttributeValue())) {
 			qf.eq(searchBean.getAttributeType(), searchBean.getAttributeValue());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getAddressType())) {
+		if (!StringUtils.isBlank(addressSearchBean.getAddressType())) {
 			qf.eq(ADDRESS_TYPE, addressSearchBean.getAddressType());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getCountry())) {
+		if (!StringUtils.isBlank(addressSearchBean.getCountry())) {
 			qf.eq(COUNTRY, addressSearchBean.getCountry());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getStateProvince())) {
+		if (!StringUtils.isBlank(addressSearchBean.getStateProvince())) {
 			qf.eq(STATE_PROVINCE, addressSearchBean.getStateProvince());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getCityVillage())) {
+		if (!StringUtils.isBlank(addressSearchBean.getCityVillage())) {
 			qf.eq(CITY_VILLAGE, addressSearchBean.getCityVillage());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getCountyDistrict())) {
+		if (!StringUtils.isBlank(addressSearchBean.getCountyDistrict())) {
 			qf.eq(COUNTY_DISTRICT, addressSearchBean.getCountyDistrict());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getSubDistrict())) {
+		if (!StringUtils.isBlank(addressSearchBean.getSubDistrict())) {
 			qf.eq(SUB_DISTRICT, addressSearchBean.getSubDistrict());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getSubTown())) {
+		if (!StringUtils.isBlank(addressSearchBean.getSubTown())) {
 			qf.eq(TOWN, addressSearchBean.getTown());
 		}
-		if (!StringUtils.isEmptyOrWhitespaceOnly(addressSearchBean.getSubTown())) {
+		if (!StringUtils.isBlank(addressSearchBean.getSubTown())) {
 			qf.eq(SUB_TOWN, addressSearchBean.getSubTown());
 		}
-		if (StringUtils.isEmptyOrWhitespaceOnly(qf.query())) {
+		if (StringUtils.isBlank(qf.query())) {
 			throw new RuntimeException("Atleast one search filter must be specified");
 		}
 		query.setQuery(qf.query());

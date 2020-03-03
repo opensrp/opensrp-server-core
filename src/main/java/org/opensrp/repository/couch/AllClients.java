@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
@@ -11,7 +12,6 @@ import org.ektorp.support.View;
 import org.ektorp.util.Assert;
 import org.ektorp.util.Documents;
 import org.joda.time.DateTime;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
@@ -24,11 +24,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
-import com.mysql.jdbc.StringUtils;
-
 @Repository("couchClientsRepository")
 @Primary
-public class AllClients extends MotechBaseRepository<Client> implements ClientsRepository {
+public class AllClients extends BaseRepository<Client> implements ClientsRepository {
 	
 	private LuceneClientRepository lcr;
 	
@@ -40,7 +38,7 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 	
 	@GenerateView
 	public Client findByBaseEntityId(String baseEntityId) {
-		if (StringUtils.isEmptyOrWhitespaceOnly(baseEntityId))
+		if (StringUtils.isBlank(baseEntityId))
 			return null;
 		List<Client> clients = queryView("by_baseEntityId", baseEntityId);
 		if (clients == null || clients.isEmpty()) {
@@ -51,7 +49,7 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 	
 	@GenerateView
 	public Client findByBaseEntityId(CouchDbConnector targetDb, String baseEntityId) {
-		if (StringUtils.isEmptyOrWhitespaceOnly(baseEntityId))
+		if (StringUtils.isBlank(baseEntityId))
 			return null;
 		List<Client> clients = queryView(targetDb, "by_baseEntityId", baseEntityId);
 		if (clients == null || clients.isEmpty()) {

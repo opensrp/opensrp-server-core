@@ -8,7 +8,6 @@ import org.ektorp.UpdateConflictException;
 import org.ektorp.support.View;
 import org.ektorp.util.Assert;
 import org.ektorp.util.Documents;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Stock;
 import org.opensrp.repository.StocksRepository;
@@ -21,7 +20,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository("couchStocksRepository")
 @Primary
-public class AllStocks extends MotechBaseRepository<Stock> implements StocksRepository {
+public class AllStocks extends BaseRepository<Stock> implements StocksRepository {
 	
 	private LuceneStockRepository lsr;
 	

@@ -9,9 +9,9 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
 import org.joda.time.DateTime;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.dto.AlertStatus;
+import org.opensrp.repository.couch.BaseRepository;
 import org.opensrp.scheduler.Alert;
 import org.opensrp.scheduler.Alert.AlertType;
 import org.opensrp.scheduler.Alert.TriggerType;
@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AllAlerts extends MotechBaseRepository<Alert> implements AlertsRepository {
+public class AllAlerts extends BaseRepository<Alert> implements AlertsRepository {
 	
 	private static Logger logger = LoggerFactory.getLogger(AllAlerts.class.toString());
 	

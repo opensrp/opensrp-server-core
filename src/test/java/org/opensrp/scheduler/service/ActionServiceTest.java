@@ -1,7 +1,7 @@
 package org.opensrp.scheduler.service;
 
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opensrp.dto.AlertStatus.normal;
@@ -33,7 +33,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import com.google.gson.Gson;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ DateTime.class, org.motechproject.util.DateUtil.class })
+@PrepareForTest({ DateTime.class })
 public class ActionServiceTest {
 	
 	public static final String ANM_1 = "ANM 1";
@@ -149,10 +149,10 @@ public class ActionServiceTest {
 	
 	@Test
 	public void shouldCloseBeneficiary() throws Exception {
-		PowerMockito.mockStatic(org.motechproject.util.DateUtil.class);
+		PowerMockito.mockStatic(DateTime.class);
 		DateTime dateTime = mock(DateTime.class);
 		
-		when(org.motechproject.util.DateUtil.now()).thenReturn(new DateTime(0l));
+		when(DateTime.now()).thenReturn(new DateTime(0l));
 		PowerMockito.whenNew(DateTime.class).withNoArguments().thenReturn(dateTime);
 		when(dateTime.toLocalDate()).thenReturn(new LocalDate(0l));
 		

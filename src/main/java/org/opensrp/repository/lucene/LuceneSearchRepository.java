@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Search;
 import org.opensrp.search.ClientSearchBean;
@@ -22,7 +23,6 @@ import com.github.ldriscoll.ektorplucene.LuceneQuery;
 import com.github.ldriscoll.ektorplucene.LuceneResult;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
-import com.mysql.jdbc.StringUtils;
 
 @FullText({
         @Index(name = "by_all_criteria", index = "function(doc){ if(doc.type!=='Client') return null; var arr1=['firstName','middleName','lastName','gender']; var ret=new Document(); for(var i in arr1){ ret.add(doc[arr1[i]],{'field':arr1[i]}) } for (var key in doc.identifiers) { ret.add(doc.identifiers[key], {'field': key}); } for(var key in doc.attributes){ ret.add(doc.attributes[key],{'field':key}) } var bd=doc.birthdate.substring(0,19); ret.add(bd,{'field':'birthdate','type':'date'}); var crd=doc.dateCreated.substring(0,19); ret.add(crd,{'field':'lastEdited','type':'date'}); if(doc.dateEdited){ var led=doc.dateEdited.substring(0,19); ret.add(led,{'field':'lastEdited','type':'date'}) } return ret }") })
@@ -45,26 +45,26 @@ public class LuceneSearchRepository extends CouchDbRepositorySupportWithLucene<S
 		LuceneQuery query = new LuceneQuery("Search", "by_all_criteria");
 		
 		Query q = new Query(FilterType.OR);
-		if (!StringUtils.isEmptyOrWhitespaceOnly(clientSearchBean.getNameLike())) {
+		if (!StringUtils.isBlank(clientSearchBean.getNameLike())) {
 			q.likeWithWildCard(FIRST_NAME, clientSearchBean.getNameLike());
 			q.likeWithWildCard(MIDDLE_NAME, clientSearchBean.getNameLike());
 			q.likeWithWildCard(LAST_NAME, clientSearchBean.getNameLike());
 		}
 		
 		Query qf = new Query(FilterType.AND, q);
-		if (!StringUtils.isEmptyOrWhitespaceOnly(firstName)) {
+		if (!StringUtils.isBlank(firstName)) {
 			qf.likeWithWildCard(FIRST_NAME, firstName);
 		}
 		
-		if (!StringUtils.isEmptyOrWhitespaceOnly(middleName)) {
+		if (!StringUtils.isBlank(middleName)) {
 			qf.likeWithWildCard(MIDDLE_NAME, middleName);
 		}
 		
-		if (!StringUtils.isEmptyOrWhitespaceOnly(lastName)) {
+		if (!StringUtils.isBlank(lastName)) {
 			qf.likeWithWildCard(LAST_NAME, lastName);
 		}
 		
-		if (!StringUtils.isEmptyOrWhitespaceOnly(clientSearchBean.getGender())) {
+		if (!StringUtils.isBlank(clientSearchBean.getGender())) {
 			qf.eq(GENDER, clientSearchBean.getGender());
 		}
 		
@@ -72,8 +72,8 @@ public class LuceneSearchRepository extends CouchDbRepositorySupportWithLucene<S
 			for (Map.Entry<String, String> entry : clientSearchBean.getIdentifiers().entrySet()) {
 				String identifierType = entry.getKey();
 				String identifierValue = entry.getValue();
-				if (!StringUtils.isEmptyOrWhitespaceOnly(identifierType)
-				        && !StringUtils.isEmptyOrWhitespaceOnly(identifierValue)) {
+				if (!StringUtils.isBlank(identifierType)
+				        && !StringUtils.isBlank(identifierValue)) {
 					qf.likeWithWildCard(identifierType, identifierValue);
 				}
 			}
@@ -86,8 +86,8 @@ public class LuceneSearchRepository extends CouchDbRepositorySupportWithLucene<S
 			for (Map.Entry<String, String> entry : clientSearchBean.getAttributes().entrySet()) {
 				String attributeType = entry.getKey();
 				String attributeValue = entry.getValue();
-				if (!StringUtils.isEmptyOrWhitespaceOnly(attributeType)
-				        && !StringUtils.isEmptyOrWhitespaceOnly(attributeValue)) {
+				if (!StringUtils.isBlank(attributeType)
+				        && !StringUtils.isBlank(attributeValue)) {
 					if (attributeType.equals(INACTIVE) || attributeType.equals(LOST_TO_FOLLOW_UP)) {
 						if (attributeValue.equals(Boolean.TRUE.toString())) {
 							sq.eq(attributeType, attributeValue);
@@ -115,7 +115,7 @@ public class LuceneSearchRepository extends CouchDbRepositorySupportWithLucene<S
 			qf.between(LAST_UPDATE, clientSearchBean.getLastEditFrom(), clientSearchBean.getLastEditTo());
 		}
 		
-		if (StringUtils.isEmptyOrWhitespaceOnly(qf.query())) {
+		if (StringUtils.isBlank(qf.query())) {
 			throw new RuntimeException("Atleast one search filter must be specified");
 		}
 		query.setQuery(qf.query());

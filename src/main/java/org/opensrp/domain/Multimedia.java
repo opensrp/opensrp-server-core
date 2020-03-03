@@ -4,12 +4,11 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechBaseDataObject;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @TypeDiscriminator("doc.type == 'Multimedia'")
-public class Multimedia extends MotechBaseDataObject {
+public class Multimedia extends BaseDataEntity {
 	
 	@JsonProperty
 	private String caseId;

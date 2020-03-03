@@ -57,7 +57,7 @@ public class AllBaseEntitiesIntegrationTest {
 		
 		BaseEntity be = allBaseEntities.findByBaseEntityId("testclient1");
 		assertEquals("testclient1", be.getBaseEntityId());
-		assertTrue(Client.class.getSimpleName().equals(be.type()));
+		assertTrue(Client.class.getSimpleName().equals(be.getType()));
 		assertEquals("birthplace", be.getAddresses().get(0).getAddressType());
 		assertEquals("Mughal", be.getAttribute("ethnicity"));
 		assertEquals("01001221", be.getIdentifier("program id"));
@@ -85,7 +85,7 @@ public class AllBaseEntitiesIntegrationTest {
 		
 		BaseEntity be = allBaseEntities.findByBaseEntityId("testclient2");
 		assertEquals("testclient2", be.getBaseEntityId());
-		assertTrue(Client.class.getSimpleName().equals(be.type()));
+		assertTrue(Client.class.getSimpleName().equals(be.getType()));
 		assertEquals("01001222", be.getIdentifier("program id"));
 		
 		List<BaseEntity> be2 = allBaseEntities.findAllByIdentifier("01001222");

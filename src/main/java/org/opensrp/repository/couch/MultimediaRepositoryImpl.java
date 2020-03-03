@@ -6,7 +6,6 @@ import java.util.List;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.repository.MultimediaRepository;
@@ -17,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository("couchMultimediaRepository")
 @Primary
-public class MultimediaRepositoryImpl extends MotechBaseRepository<Multimedia> implements MultimediaRepository {
+public class MultimediaRepositoryImpl extends BaseRepository<Multimedia> implements MultimediaRepository {
 	
 	@Autowired
 	protected MultimediaRepositoryImpl(@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR) CouchDbConnector db) {

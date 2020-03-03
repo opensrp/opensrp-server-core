@@ -6,7 +6,6 @@ import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
 import org.ektorp.support.View;
-import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.BaseEntity;
 import org.opensrp.repository.BaseEntitiesRepository;
@@ -15,7 +14,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class AllBaseEntities extends MotechBaseRepository<BaseEntity> implements BaseEntitiesRepository {
+public class AllBaseEntities extends BaseRepository<BaseEntity> implements BaseEntitiesRepository {
 	
 	@Autowired
 	protected AllBaseEntities(@Qualifier(AllConstants.OPENSRP_DATABASE_CONNECTOR) CouchDbConnector db) {

@@ -1,14 +1,5 @@
 package org.opensrp.util;
 
-import static java.lang.String.valueOf;
-import static org.opensrp.common.AllConstants.Form.ANM_ID;
-import static org.opensrp.common.AllConstants.Form.CLIENT_VERSION;
-import static org.opensrp.common.AllConstants.Form.ENTITY_ID;
-import static org.opensrp.common.AllConstants.Form.FORM_NAME;
-import static org.opensrp.common.AllConstants.Form.INSTANCE_ID;
-import static org.opensrp.common.AllConstants.Form.SERVER_VERSION;
-import static org.opensrp.common.util.EasyMap.create;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -33,7 +25,6 @@ import org.ektorp.impl.StdCouchDbInstance;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.opensrp.form.domain.FormSubmission;
 import org.opensrp.repository.postgres.handler.BaseTypeHandler;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,7 +32,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.mysql.jdbc.StringUtils;
 
 public class Utils {
 	
@@ -89,13 +79,6 @@ public class Utils {
 		return original;
 	}
 	
-	public static String getZiggyParams(FormSubmission formSubmission) {
-		return new Gson().toJson(create(ANM_ID, formSubmission.anmId()).put(INSTANCE_ID, formSubmission.instanceId())
-		        .put(ENTITY_ID, formSubmission.entityId()).put(FORM_NAME, formSubmission.formName())
-		        .put(CLIENT_VERSION, valueOf(formSubmission.clientVersion()))
-		        .put(SERVER_VERSION, valueOf(formSubmission.serverVersion())).map());
-	}
-	
 	public static JSONArray getXlsToJson(String path) throws JSONException, IOException {
 		FileInputStream inp = new FileInputStream(new File(path));
 		// Get the workbook instance for XLS file
@@ -129,7 +112,7 @@ public class Utils {
 		while (i.hasNext()) {
 			Row r = i.next();
 			for (Cell c : r) {
-				if (!StringUtils.isEmptyOrWhitespaceOnly(c.getStringCellValue())) {
+				if (!StringUtils.isBlank(c.getStringCellValue())) {
 					return r.getRowNum();
 				}
 			}
@@ -139,7 +122,7 @@ public class Utils {
 	
 	private static boolean isRowEmpty(List<String> rcontent) {
 		for (String r : rcontent) {
-			if (!StringUtils.isEmptyOrWhitespaceOnly(r)) {
+			if (!StringUtils.isBlank(r)) {
 				return false;
 			}
 		}
