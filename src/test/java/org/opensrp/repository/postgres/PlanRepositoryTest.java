@@ -4,9 +4,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.Jurisdiction;
 import org.opensrp.repository.PlanRepository;
@@ -461,13 +461,13 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        AllIdsModel planIdsObject = planRepository.findAllIds(0l, 1, null);
+        Pair planIdsObject = planRepository.findAllIds(0l, 1, null);
 
-        List<String> planids = planIdsObject.getIdentifiers();
+        List<String> planids = (List<String>) planIdsObject.getLeft();
         assertEquals(1, planids.size());
 
         assertEquals("identifier_6", planids.get(0));
-        assertEquals(1234l, planIdsObject.getLastServerVersion().longValue());
+        assertEquals(1234l, planIdsObject.getRight());
     }
 
     @Test
@@ -493,14 +493,14 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        AllIdsModel planIdsObject = planRepository.findAllIds(0l, 10, null);
+        Pair planIdsObject = planRepository.findAllIds(0l, 10, null);
 
-        List<String> planids = planIdsObject.getIdentifiers();
+        List<String> planids = (List<String>) planIdsObject.getLeft();
         assertEquals(2, planids.size());
 
         assertEquals("identifier_6", planids.get(0));
         assertEquals("identifier_7", planids.get(1));
-        assertEquals(1235l, planIdsObject.getLastServerVersion().longValue());
+        assertEquals(1235l, planIdsObject.getRight());
     }
 
     @Test
@@ -538,13 +538,13 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
             e.printStackTrace();
         }
 
-        AllIdsModel planIdsObject = planRepository.findAllIds(0l, 1, date);
+        Pair planIdsObject = planRepository.findAllIds(0l, 1, date);
 
-        List<String> planids = planIdsObject.getIdentifiers();
+        List<String> planids = (List<String>) planIdsObject.getLeft();
         assertEquals(1, planids.size());
 
         assertEquals("identifier_7", planids.get(0));
-        assertEquals(1235l, planIdsObject.getLastServerVersion().longValue());
+        assertEquals(1235l, planIdsObject.getRight());
     }
 
 

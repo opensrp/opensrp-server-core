@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.opensrp.domain.AllIdsModel;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.Event;
 import org.opensrp.search.EventSearchBean;
 
@@ -59,6 +59,6 @@ public interface EventsRepository extends BaseRepository<Event> {
 	 * @param limit upper limit on number of tasks ids to fetch
 	 * @return a list of event ids and last server version
 	 */
-	AllIdsModel findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit);
+	Pair findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit);
 	
 }

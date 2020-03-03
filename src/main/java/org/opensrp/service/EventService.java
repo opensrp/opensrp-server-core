@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
-import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Event;
 import org.opensrp.domain.Obs;
 import org.opensrp.repository.EventsRepository;
@@ -366,7 +366,7 @@ public class EventService {
 	 * @param limit upper limit on number of tasks ids to fetch
 	 * @return a list of event ids
 	 */
-	public AllIdsModel findAllIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit) {
+	public Pair findAllIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit) {
 		return allEvents.findIdsByEventType(eventType, dateDeleted, serverVersion, limit);
 	}
 }

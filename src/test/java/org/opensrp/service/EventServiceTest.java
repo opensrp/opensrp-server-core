@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.module.SimpleModule;
@@ -26,7 +27,6 @@ import org.joda.time.Minutes;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.Client;
-import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Event;
 import org.opensrp.domain.Obs;
 import org.opensrp.repository.ClientsRepository;
@@ -330,8 +330,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindAllEventIds() {
-		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(null, null, 0l, 100);
-		List<String> actualEventIds = eventIdsModel.getIdentifiers();
+		Pair eventIdsModel = eventService.findAllIdsByEventType(null, null, 0l, 100);
+		List<String> actualEventIds = (List<String>) eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
 		assertEquals(20, actualEventIds.size());
@@ -341,8 +341,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testFindAllIdsByEventType() {
 		
 		String growthMonitoringEventype = "Growth Monitoring";
-		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 100);
-		List<String> actualEventIds = eventIdsModel.getIdentifiers();
+		Pair eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 100);
+		List<String> actualEventIds = (List<String>) eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
 		assertEquals(4, actualEventIds.size());
@@ -375,8 +375,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 			e.printStackTrace();
 		}
 
-		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, date, 0l, 100);
-		List<String> actualEventIds = eventIdsModel.getIdentifiers();
+		Pair eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, date, 0l, 100);
+		List<String> actualEventIds = (List<String>) eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
 		assertEquals(1, actualEventIds.size());
@@ -397,8 +397,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 			e.printStackTrace();
 		}
 
-		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(null, date, 0l, 100);
-		List<String> actualEventIds = eventIdsModel.getIdentifiers();
+		Pair eventIdsModel = eventService.findAllIdsByEventType(null, date, 0l, 100);
+		List<String> actualEventIds = (List<String>) eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
 		assertEquals(1, actualEventIds.size());
@@ -409,8 +409,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testFindAllIdsByEventTypeOrderedByServerVersion() {
 
 		String growthMonitoringEventype = "Growth Monitoring";
-		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 100);
-		List<String> actualEventIds = eventIdsModel.getIdentifiers();
+		Pair eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 100);
+		List<String> actualEventIds = (List<String>) eventIdsModel.getLeft();
 
 		assertNotNull(actualEventIds);
 		assertEquals(4, actualEventIds.size());
@@ -418,7 +418,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		assertEquals("05934ae338431f28bf6793b241780bac", actualEventIds.get(1));
 		assertEquals("05934ae338431f28bf6793b241781149", actualEventIds.get(2));
 		assertEquals("05934ae338431f28bf6793b241781a1e", actualEventIds.get(3));
-		assertEquals(1521469045590l, eventIdsModel.getLastServerVersion().longValue());
+		assertEquals(1521469045590l, eventIdsModel.getRight());
 
 	}
 
@@ -426,28 +426,28 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testFindAllIdsByEventTypeLimitsByGivenParam() {
 
 		String growthMonitoringEventype = "Growth Monitoring";
-		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 2);
-		List<String> actualEventIds = eventIdsModel.getIdentifiers();
+		Pair eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 2);
+		List<String> actualEventIds = (List<String>) eventIdsModel.getLeft();
 
 		assertNotNull(actualEventIds);
 		assertEquals(2, actualEventIds.size());
 		assertEquals("05934ae338431f28bf6793b24177a1dc", actualEventIds.get(0));
 		assertEquals("05934ae338431f28bf6793b241780bac", actualEventIds.get(1));
-		assertEquals(1521469045588l, eventIdsModel.getLastServerVersion().longValue());
+		assertEquals(1521469045588l, eventIdsModel.getRight());
 
 	}
 
 	@Test
 	public void testFindAllIdsOrdersByServerVersionAnd() {
 
-		AllIdsModel eventIdsModel = eventService.findAllIdsByEventType(null, null, 0l, 100);
-		List<String> actualEventIds = eventIdsModel.getIdentifiers();
+		Pair eventIdsModel = eventService.findAllIdsByEventType(null, null, 0l, 100);
+		List<String> actualEventIds = (List<String>) eventIdsModel.getLeft();
 
 		assertNotNull(actualEventIds);
 		assertEquals(20, actualEventIds.size());
 		assertEquals("05934ae338431f28bf6793b2417696bf", actualEventIds.get(0));
 		assertEquals("34166bde-2d40-4cb9-aec7-d8e4feb47c53", actualEventIds.get(19));
-		assertEquals(1573736256054l, eventIdsModel.getLastServerVersion().longValue());
+		assertEquals(1573736256054l, eventIdsModel.getRight());
 
 	}
 	

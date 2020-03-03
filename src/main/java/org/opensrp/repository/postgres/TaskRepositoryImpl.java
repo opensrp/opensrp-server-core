@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.AllIdsModel;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.Task;
 import org.opensrp.domain.postgres.TaskMetadata;
 import org.opensrp.domain.postgres.TaskMetadataExample;
@@ -129,9 +129,8 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	 * {@inheritDoc}
 	 */
 	@Override
-	public AllIdsModel findAllIds(Long serverVersion, int limit) {
-		AllIdsModel idsModel = new AllIdsModel();
-		Long lastServerVersion;
+	public Pair findAllIds(Long serverVersion, int limit) {
+		Long lastServerVersion = null;
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
 		taskMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
 		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
@@ -139,7 +138,6 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 
 		List<String> taskIdentifiers = taskMetadataMapper.selectManyIds(taskMetadataExample, 0,
 				fetchLimit);
-		idsModel.setIdentifiers(taskIdentifiers);
 
 		if (taskIdentifiers != null && !taskIdentifiers.isEmpty()) {
 			taskMetadataExample = new TaskMetadataExample();
@@ -149,10 +147,9 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 			lastServerVersion = taskMetaDataList != null && !taskMetaDataList.isEmpty() ?
 					taskMetaDataList.get(0).getServerVersion() : null;
 
-			idsModel.setLastServerVersion(lastServerVersion);
 		}
 
-		return idsModel;
+		return Pair.of(taskIdentifiers, lastServerVersion);
 	}
 
 	/**

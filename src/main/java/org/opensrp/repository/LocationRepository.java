@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.opensrp.domain.AllIdsModel;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -95,7 +95,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @param limit upper limit on number of structure ids to fetch
      * @return a list of structure Ids and last server version
      */
-	AllIdsModel findAllStructureIds(Long serverVersion, int limit);
+	Pair findAllStructureIds(Long serverVersion, int limit);
 
 	/**
 	 * This method searches for location identifier and name using a plan identifier.
@@ -132,6 +132,6 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @param limit upper limit on number of location ids to fetch
 	 * @return a list of location Ids
 	 */
-	AllIdsModel findAllLocationIds(Long serverVersion, int limit);
+	Pair findAllLocationIds(Long serverVersion, int limit);
 
 }

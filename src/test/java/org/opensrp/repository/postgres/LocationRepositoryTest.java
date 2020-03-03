@@ -18,11 +18,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
 import org.junit.Test;
-import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Geometry;
 import org.opensrp.domain.Geometry.GeometryType;
@@ -676,45 +675,45 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindAllLocationIdsShouldOrderByServerVersion() {
 
-		AllIdsModel idsModel = locationRepository.findAllLocationIds(-2l, 10);
-		List<String> locationsIds = idsModel.getIdentifiers();
+		Pair idsModel = locationRepository.findAllLocationIds(-2l, 10);
+		List<String> locationsIds = (List<String>) idsModel.getLeft();
 		assertEquals(2, locationsIds.size());
 		assertEquals("3735", locationsIds.get(0));
 		assertEquals("3734", locationsIds.get(1));
-		assertEquals(1542378347104l, idsModel.getLastServerVersion().longValue());
+		assertEquals(1542378347104l, idsModel.getRight());
 
 	}
 
 	@Test
 	public void testFindAllLocationIdsShouldLimitByGivenParam() {
 
-		AllIdsModel idsModel = locationRepository.findAllLocationIds(-2l, 1);
-		List<String> locationsIds = idsModel.getIdentifiers();
+		Pair idsModel = locationRepository.findAllLocationIds(-2l, 1);
+		List<String> locationsIds = (List<String>) idsModel.getLeft();
 		assertEquals(1, locationsIds.size());
 		assertEquals("3735", locationsIds.get(0));
-		assertEquals(-1l, idsModel.getLastServerVersion().longValue());
+		assertEquals(-1l, idsModel.getRight());
 
 	}
 
 	@Test
 	public void testFindAllStructureIdsShouldOrderByServerVersion() {
 
-		AllIdsModel idsModel = locationRepository.findAllStructureIds(0l, 10);
-		List<String> structureIds = idsModel.getIdentifiers();
+		Pair idsModel = locationRepository.findAllStructureIds(0l, 10);
+		List<String> structureIds = (List<String>) idsModel.getLeft();
 		assertEquals(2, structureIds.size());
 		assertEquals("90397", structureIds.get(0));
 		assertEquals("90398", structureIds.get(1));
-		assertEquals(1542376382862l, idsModel.getLastServerVersion().longValue());
+		assertEquals(1542376382862l, idsModel.getRight());
 	}
 
 	@Test
 	public void testFindAllStructureIdsShouldLimitByGivenParam() {
 
-		AllIdsModel idsModel = locationRepository.findAllStructureIds(0l, 1);
-		List<String> structureIds = idsModel.getIdentifiers();
+		Pair idsModel = locationRepository.findAllStructureIds(0l, 1);
+		List<String> structureIds = (List<String>) idsModel.getLeft();
 		assertEquals(1, structureIds.size());
 		assertEquals("90397", structureIds.get(0));
-		assertEquals(1542376382851l, idsModel.getLastServerVersion().longValue());
+		assertEquals(1542376382851l, idsModel.getRight());
 	}
 
 }

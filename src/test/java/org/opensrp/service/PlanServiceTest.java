@@ -15,13 +15,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
@@ -190,19 +190,17 @@ public class PlanServiceTest {
 		List<String> expectedPlanIds = new ArrayList<>();
 		expectedPlanIds.add("Location-1");
 		expectedPlanIds.add("Location-2");
-		AllIdsModel idsModel = new AllIdsModel();
-		idsModel.setIdentifiers(expectedPlanIds);
-		idsModel.setLastServerVersion(0l);
+		Pair idsModel = Pair.of(expectedPlanIds, 0l);
 
 		when(planRepository.findAllIds(anyLong(), anyInt(), (Date) any())).thenReturn(idsModel);
-		AllIdsModel planIdsObject = planService.findAllIds(0l, 10, null);
-		List<String> actualPlanIds = planIdsObject.getIdentifiers();
+		Pair planIdsObject = planService.findAllIds(0l, 10, null);
+		List<String> actualPlanIds = (List<String>) planIdsObject.getLeft();
 
 		verify(planRepository).findAllIds(0l, 10, null);
 		assertEquals(2, actualPlanIds.size());
 		assertEquals(expectedPlanIds.get(0).toString(), actualPlanIds.get(0).toString());
 		assertEquals(expectedPlanIds.get(1).toString(), actualPlanIds.get(1).toString());
-		assertEquals(0l, planIdsObject.getLastServerVersion().longValue());
+		assertEquals(0l, planIdsObject.getRight());
 
 	}
 }

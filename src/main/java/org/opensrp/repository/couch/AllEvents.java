@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
+import org.apache.commons.lang3.tuple.Pair;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.UpdateConflictException;
@@ -15,7 +15,6 @@ import org.ektorp.util.Documents;
 import org.joda.time.DateTime;
 import org.motechproject.dao.MotechBaseRepository;
 import org.opensrp.common.AllConstants;
-import org.opensrp.domain.AllIdsModel;
 import org.opensrp.domain.Event;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.lucene.LuceneEventRepository;
@@ -224,7 +223,7 @@ public class AllEvents extends MotechBaseRepository<Event> implements EventsRepo
 	}
 
 	@Override
-	public AllIdsModel findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit) {
+	public Pair findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit) {
 		return null; //TODO Should this be implemented????
 	}
 

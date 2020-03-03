@@ -9,7 +9,7 @@ import java.util.List;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.opensrp.domain.AllIdsModel;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
@@ -159,7 +159,7 @@ public class PlanService {
 	 * @param dateDeleted date  on or after which deleted event ids should be returned
 	 * @return a list of location ids and the last server version
 	 */
-	public AllIdsModel findAllIds(Long serverVersion, int limit, Date dateDeleted ) {
+	public Pair findAllIds(Long serverVersion, int limit, Date dateDeleted ) {
 		return planRepository.findAllIds(serverVersion, limit, dateDeleted);
 	}
 }

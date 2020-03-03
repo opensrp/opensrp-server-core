@@ -1,15 +1,12 @@
 package org.opensrp.repository.postgres;
 
-import static org.opensrp.util.Utils.isEmptyList;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
-import org.opensrp.domain.AllIdsModel;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.Jurisdiction;
 import org.opensrp.domain.postgres.Plan;
@@ -21,6 +18,8 @@ import org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import static org.opensrp.util.Utils.isEmptyList;
 
 /**
  * Created by Vincent Karuri on 02/05/2019
@@ -161,9 +160,8 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
      * {@inheritDoc}
      */
     @Override
-    public AllIdsModel findAllIds(Long serverVersion, int limit, Date dateDeleted) {
-        AllIdsModel idsModel = new AllIdsModel();
-        Long lastServerVersion;
+    public Pair findAllIds(Long serverVersion, int limit, Date dateDeleted) {
+        Long lastServerVersion = null;
         PlanExample planExample = new PlanExample();
         PlanExample.Criteria criteria = planExample.createCriteria();
         criteria.andServerVersionGreaterThan(serverVersion);
@@ -176,7 +174,6 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         planExample.setOrderByClause(getOrderByClause(SERVER_VERSION,  ASCENDING));
         List<String> planIdentifiers = planMapper.selectManyIds(planExample, 0, limit);
-        idsModel.setIdentifiers(planIdentifiers);
 
         if (planIdentifiers != null && !planIdentifiers.isEmpty()) {
             planExample = new PlanExample();
@@ -184,11 +181,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             List<Plan> plans = planMapper.selectByExample(planExample);
 
             lastServerVersion = plans != null && !plans.isEmpty() ? plans.get(0).getServerVersion() : null;
-            idsModel.setLastServerVersion(lastServerVersion);
         }
 
-        return idsModel;
-
+        return Pair.of(planIdentifiers, lastServerVersion);
     }
 
     /**

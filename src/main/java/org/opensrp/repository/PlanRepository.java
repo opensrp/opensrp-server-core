@@ -1,7 +1,7 @@
 package org.opensrp.repository;
 
 import java.util.Date;
-import org.opensrp.domain.AllIdsModel;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.PlanDefinition;
 
 import java.util.List;
@@ -56,5 +56,5 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @param dateDeleted date  on or after which deleted plan ids should be returned
 	 * @return a list of plan Ids  and the last server version
 	 */
-	AllIdsModel findAllIds(Long serverVersion, int limit, Date dateDeleted);
+	Pair findAllIds(Long serverVersion, int limit, Date dateDeleted);
 }

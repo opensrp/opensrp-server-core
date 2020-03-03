@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.opensrp.domain.AllIdsModel;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -355,9 +355,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public AllIdsModel findAllStructureIds(Long serverVersion, int limit) {
-		AllIdsModel idsModel = new AllIdsModel();
-		Long lastServerVersion;
+	public Pair findAllStructureIds(Long serverVersion, int limit) {
+		Long lastServerVersion = null;
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
 		structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
@@ -365,7 +364,6 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
 
 		List<String> structureIdentifiers = structureMetadataMapper.selectManyIds(structureMetadataExample,  0, fetchLimit);
-		idsModel.setIdentifiers(structureIdentifiers);
 
 		if (structureIdentifiers != null && !structureIdentifiers.isEmpty()) {
 			structureMetadataExample = new StructureMetadataExample();
@@ -374,10 +372,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 			lastServerVersion = structureMetaDataList != null && !structureMetaDataList.isEmpty() ?
 					structureMetaDataList.get(0).getServerVersion() : null;
-			idsModel.setLastServerVersion(lastServerVersion);
 		}
 
-		return idsModel;
+		return Pair.of(structureIdentifiers, lastServerVersion);
 	}
 
 	/**
@@ -438,9 +435,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public AllIdsModel findAllLocationIds(Long serverVersion, int limit) {
-		AllIdsModel idsModel = new AllIdsModel();
-		Long lastServerVersion;
+	public Pair findAllLocationIds(Long serverVersion, int limit) {
+		Long lastServerVersion = null;
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
 		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
@@ -448,7 +444,6 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
 
 		List<String> locationIdentifiers = locationMetadataMapper.selectManyIds(locationMetadataExample, 0, fetchLimit );
-		idsModel.setIdentifiers(locationIdentifiers);
 
 		if (locationIdentifiers != null && !locationIdentifiers.isEmpty()) {
 			locationMetadataExample = new LocationMetadataExample();
@@ -456,10 +451,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			List<LocationMetadata> locationMetadataList = locationMetadataMapper.selectByExample(locationMetadataExample);
 
 			lastServerVersion = locationMetadataList != null && !locationMetadataList.isEmpty() ? locationMetadataList.get(0).getServerVersion() : null;
-			idsModel.setLastServerVersion(lastServerVersion);
 		}
 
-		return idsModel;
+		return Pair.of(locationIdentifiers, lastServerVersion);
 	}
 
 	@Override
