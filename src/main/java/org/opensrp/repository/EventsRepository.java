@@ -59,6 +59,6 @@ public interface EventsRepository extends BaseRepository<Event> {
 	 * @param limit upper limit on number of tasks ids to fetch
 	 * @return a list of event ids and last server version
 	 */
-	Pair findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit);
+	Pair<List<String>, Long> findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit);
 	
 }

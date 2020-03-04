@@ -223,7 +223,7 @@ public class AllEvents extends MotechBaseRepository<Event> implements EventsRepo
 	}
 
 	@Override
-	public Pair findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit) {
+	public Pair<List<String>, Long> findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit) {
 		return null; //TODO Should this be implemented????
 	}
 

@@ -366,7 +366,7 @@ public class EventService {
 	 * @param limit upper limit on number of tasks ids to fetch
 	 * @return a list of event ids
 	 */
-	public Pair findAllIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit) {
+	public Pair<List<String>, Long> findAllIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit) {
 		return allEvents.findIdsByEventType(eventType, dateDeleted, serverVersion, limit);
 	}
 }
