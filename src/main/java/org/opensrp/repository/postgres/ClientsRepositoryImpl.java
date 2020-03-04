@@ -248,7 +248,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	@Override
 	public List<Client> findByEmptyServerVersion() {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
-		clientMetadataExample.createCriteria().andServerVersionIsNull().andDateDeletedIsNull();
+		clientMetadataExample.createCriteria().andServerVersionIsNull();
 		clientMetadataExample.setOrderByClause("client_id ASC");
 		
 		List<org.opensrp.domain.postgres.Client> clients = clientMetadataMapper.selectMany(clientMetadataExample, 0,
