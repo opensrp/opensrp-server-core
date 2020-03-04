@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.Event;
 import org.opensrp.search.EventSearchBean;
 
@@ -49,16 +48,6 @@ public interface EventsRepository extends BaseRepository<Event> {
 	
 	List<Event> findByProvider(String provider);
 
-	/**
-	 * This method searches for event ids filtered by eventType,
-	 * the date they were deleted and server version
-	 *
-	 * @param eventType used to filter the event ids
-	 * @param isDeleted whether to return deleted event ids
-	 * @param serverVersion
-	 * @param limit upper limit on number of tasks ids to fetch
-	 * @return a list of event ids and last server version
-	 */
-	Pair<List<String>, Long> findIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit);
+	List<String> findIdsByEventType(String eventType, Date dateDeleted);
 	
 }

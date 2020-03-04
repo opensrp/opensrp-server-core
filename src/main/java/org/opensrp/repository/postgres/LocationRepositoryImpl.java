@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -355,26 +354,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit) {
-		Long lastServerVersion = null;
+	public List<String> findAllStructureIds() {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
-		structureMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
-
-		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
-
-		List<String> structureIdentifiers = structureMetadataMapper.selectManyIds(structureMetadataExample,  0, fetchLimit);
-
-		if (structureIdentifiers != null && !structureIdentifiers.isEmpty()) {
-			structureMetadataExample = new StructureMetadataExample();
-			structureMetadataExample.createCriteria().andGeojsonIdEqualTo(structureIdentifiers.get(structureIdentifiers.size() - 1));
-			List<StructureMetadata> structureMetaDataList = structureMetadataMapper.selectByExample(structureMetadataExample);
-
-			lastServerVersion = structureMetaDataList != null && !structureMetaDataList.isEmpty() ?
-					structureMetaDataList.get(0).getServerVersion() : 0;
-		}
-
-		return Pair.of(structureIdentifiers, lastServerVersion);
+		return structureMetadataMapper.selectManyIds(structureMetadataExample);
 	}
 
 	/**
@@ -429,31 +411,6 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
         List<Location> locations = structureMetadataMapper.selectManyByProperties(structureMetadataExample, null, returnGeometry, 0, limit);
         return convert(locations);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit) {
-		Long lastServerVersion = null;
-		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
-
-		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
-
-		List<String> locationIdentifiers = locationMetadataMapper.selectManyIds(locationMetadataExample, 0, fetchLimit );
-
-		if (locationIdentifiers != null && !locationIdentifiers.isEmpty()) {
-			locationMetadataExample = new LocationMetadataExample();
-			locationMetadataExample.createCriteria().andGeojsonIdEqualTo(locationIdentifiers.get(locationIdentifiers.size() -1 ));
-			List<LocationMetadata> locationMetadataList = locationMetadataMapper.selectByExample(locationMetadataExample);
-
-			lastServerVersion = locationMetadataList != null && !locationMetadataList.isEmpty() ? locationMetadataList.get(0).getServerVersion() : 0;
-		}
-
-		return Pair.of(locationIdentifiers, lastServerVersion);
 	}
 
 	@Override

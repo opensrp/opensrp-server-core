@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -23,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -485,17 +482,14 @@ public class PhysicalLocationServiceTest {
 		List<String> expectedStructureIds = new ArrayList<>();
 		expectedStructureIds.add("Structure-1");
 		expectedStructureIds.add("Structure-2");
-		Pair<List<String>, Long> idsModel = Pair.of(expectedStructureIds, 1234l);
 
-		when(locationRepository.findAllStructureIds(anyLong(), anyInt())).thenReturn(idsModel);
-		Pair<List<String>, Long> actualIdModels = locationService.findAllStructureIds(0l, 2);
+		when(locationRepository.findAllStructureIds()).thenReturn(expectedStructureIds);
+		List<String> actualStructureIds = locationService.findAllStructureIds();
 
-		List<String> actualStructureIds = actualIdModels.getLeft();
-
-		verify(locationRepository).findAllStructureIds(0l, 2);
+		verify(locationRepository).findAllStructureIds();
 		assertEquals(2, actualStructureIds.size());
-		assertEquals(expectedStructureIds.get(0), actualStructureIds.get(0));
-		assertEquals(expectedStructureIds.get(1), actualStructureIds.get(1));
+		assertEquals(expectedStructureIds.get(0).toString(), actualStructureIds.get(0).toString());
+		assertEquals(expectedStructureIds.get(1).toString(), actualStructureIds.get(1).toString());
 
 	}
 
@@ -514,25 +508,6 @@ public class PhysicalLocationServiceTest {
 		assertEquals(1, actualLocationDetails.size());
 		assertEquals(actualLocationDetails.get(0).getIdentifier(), "identifier-1");
 		assertEquals(actualLocationDetails.get(0).getName(), "location-one");
-
-	}
-
-	@Test
-	public void testFindAllLocationIds() {
-		List<String> expectedLocationIds = new ArrayList<>();
-		expectedLocationIds.add("Location-1");
-		expectedLocationIds.add("Location-2");
-		Pair<List<String>, Long> idsModel = Pair.of(expectedLocationIds, 1234l);
-
-		when(locationRepository.findAllLocationIds(anyLong(), anyInt())).thenReturn(idsModel);
-		Pair<List<String>, Long> actualIdsModelList = locationService.findAllLocationIds(0l, 10);
-
-		List<String> actualLocationIds = actualIdsModelList.getLeft();
-		verify(locationRepository).findAllLocationIds(0l, 10);
-		assertEquals(2, actualLocationIds.size());
-		assertEquals(expectedLocationIds.get(0), actualLocationIds.get(0));
-		assertEquals(expectedLocationIds.get(1), actualLocationIds.get(1));
-		assertEquals(1234l, actualIdsModelList.getRight().longValue());
 
 	}
 

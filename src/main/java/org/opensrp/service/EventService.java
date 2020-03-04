@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
@@ -361,12 +360,10 @@ public class EventService {
 	 * and the date they were deleted
 	 *
 	 * @param eventType used to filter the event ids
-	 * @param isDeleted whether to return deleted event ids
-	 * @param serverVersion
-	 * @param limit upper limit on number of tasks ids to fetch
+	 * @param dateDeleted date  on or after which deleted event ids should be returned
 	 * @return a list of event ids
 	 */
-	public Pair<List<String>, Long> findAllIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit) {
-		return allEvents.findIdsByEventType(eventType, isDeleted, serverVersion, limit);
+	public List<String> findAllIdsByEventType(String eventType, Date dateDeleted) {
+		return allEvents.findIdsByEventType(eventType, dateDeleted);
 	}
 }
