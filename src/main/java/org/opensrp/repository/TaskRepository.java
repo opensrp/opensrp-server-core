@@ -1,7 +1,7 @@
 package org.opensrp.repository;
 
 import java.util.List;
-
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.Task;
 
 public interface TaskRepository extends BaseRepository<Task> {
@@ -12,9 +12,12 @@ public interface TaskRepository extends BaseRepository<Task> {
 
 	/**
 	 * This method fetches all task Ids
-	 * @return a list of task ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of tasks ids to fetch
+	 * @return a list of task ids and last server version
 	 */
-	List<String> findAllIds();
+	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit);
 
 	/**
 	 *  This method searches for tasks ordered by serverVersion ascending

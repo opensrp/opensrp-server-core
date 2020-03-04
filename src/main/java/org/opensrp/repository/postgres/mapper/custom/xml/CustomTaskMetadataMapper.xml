@@ -79,6 +79,7 @@
 		<if test="example.orderByClause != null">
 			order by tm.${example.orderByClause}
 		</if>
+		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
 </mapper>

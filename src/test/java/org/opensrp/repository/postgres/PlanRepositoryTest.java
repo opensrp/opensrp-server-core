@@ -1,5 +1,6 @@
 package org.opensrp.repository.postgres;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensrp.domain.PlanDefinition;
@@ -433,10 +434,111 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
     }
 
+    @Test
+    public void testGetAllIdsShouldGetAllPlanIds() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_6");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1234l);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1235l);
+        planRepository.add(plan);
+
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 1, false);
+
+        List<String> planids = planIdsObject.getLeft();
+        assertEquals(1, planids.size());
+
+        assertEquals("identifier_6", planids.get(0));
+        assertEquals(1234l, planIdsObject.getRight().longValue());
+    }
+
+    @Test
+    public void testGetAllIdsShouldGetAllPlanIdsOrderedByServerVersion() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_6");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1234l);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1235l);
+        planRepository.add(plan);
+
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 10, false);
+
+        List<String> planids = planIdsObject.getLeft();
+        assertEquals(2, planids.size());
+
+        assertEquals("identifier_6", planids.get(0));
+        assertEquals("identifier_7", planids.get(1));
+        assertEquals(1235l, planIdsObject.getRight().longValue());
+    }
+
+    @Test
+    public void testGetAllIdsShouldGetAllDeletedPlanIds() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_6");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_1");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1234l);
+        planRepository.add(plan);
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1235l);
+        planRepository.add(plan);
+
+        planRepository.safeRemove(plan);
+
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 1, true);
+
+        List<String> planids = planIdsObject.getLeft();
+        assertEquals(1, planids.size());
+
+        assertEquals("identifier_7", planids.get(0));
+        assertEquals(1235l, planIdsObject.getRight().longValue());
+    }
+
+
     private boolean testIfAllIdsExists(List<PlanDefinition> plans, Set<String> ids) {
         for (PlanDefinition plan : plans) {
             ids.remove(plan.getIdentifier());
         }
         return ids.size() == 0;
     }
+
 }
