@@ -1,6 +1,5 @@
 package org.opensrp.repository;
 
-import java.util.Date;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.PlanDefinition;
 
