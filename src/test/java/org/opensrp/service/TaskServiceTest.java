@@ -215,16 +215,16 @@ public class TaskServiceTest {
 		List<String> expectedTaskIds = new ArrayList<>();
 		expectedTaskIds.add("task1");
 		expectedTaskIds.add("task2");
-		Pair idsModel = Pair.of(expectedTaskIds, 1234l);
+		Pair<List<String>, Long> idsModel = Pair.of(expectedTaskIds, 1234l);
 
 		when(taskRepository.findAllIds(anyLong(), anyInt())).thenReturn(idsModel);
-		Pair actualIdsModels = taskService.findAllTaskIds(0l, 10);
-		List<String> actualTaskIds = (List<String>) actualIdsModels.getLeft();
+		Pair<List<String>, Long> actualIdsModels = taskService.findAllTaskIds(0l, 10);
+		List<String> actualTaskIds = actualIdsModels.getLeft();
 
 		verify(taskRepository).findAllIds(0l, 10);
 		assertEquals(2, actualTaskIds.size());
-		assertEquals(expectedTaskIds.get(0).toString(), actualTaskIds.get(0).toString());
-		assertEquals(expectedTaskIds.get(1).toString(), actualTaskIds.get(1).toString());
+		assertEquals(expectedTaskIds.get(0), actualTaskIds.get(0));
+		assertEquals(expectedTaskIds.get(1), actualTaskIds.get(1));
 	}
 
 }

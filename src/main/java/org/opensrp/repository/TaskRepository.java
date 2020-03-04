@@ -17,7 +17,7 @@ public interface TaskRepository extends BaseRepository<Task> {
 	 * @param limit upper limit on number of tasks ids to fetch
 	 * @return a list of task ids and last server version
 	 */
-	Pair findAllIds(Long serverVersion, int limit);
+	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit);
 
 	/**
 	 *  This method searches for tasks ordered by serverVersion ascending

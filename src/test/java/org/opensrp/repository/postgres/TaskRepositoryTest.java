@@ -211,21 +211,21 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testFindAllIdsShouldOrderByServerVersion() {
-		Pair idsModel = taskRepository.findAllIds(0l, 10);
-		List<String> taskIdentifiers = (List<String>) idsModel.getLeft();
+		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l, 10);
+		List<String> taskIdentifiers = idsModel.getLeft();
 		assertEquals(2, taskIdentifiers.size());
 		assertEquals("tsk11231jh22", taskIdentifiers.get(0));
 		assertEquals("iyr-998njoo", taskIdentifiers.get(1));
-		assertEquals(1542031602680l, idsModel.getRight());
+		assertEquals(1542031602680l, idsModel.getRight().longValue());
 	}
 
 	@Test
 	public void testFindAllIdsShouldLimitByGivenParam() {
-		Pair idsModel = taskRepository.findAllIds(0l, 1);
-		List<String> taskIdentifiers = (List<String>) idsModel.getLeft();
+		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l, 1);
+		List<String> taskIdentifiers = idsModel.getLeft();
 		assertEquals(1, taskIdentifiers.size());
 		assertEquals("tsk11231jh22", taskIdentifiers.get(0));
-		assertEquals(1542027762554l, idsModel.getRight());
+		assertEquals(1542027762554l, idsModel.getRight().longValue());
 	}
 
 }

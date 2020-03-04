@@ -129,10 +129,10 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Pair findAllIds(Long serverVersion, int limit) {
+	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit) {
 		Long lastServerVersion = null;
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
+		taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
 		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
 
@@ -145,7 +145,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 			List<TaskMetadata> taskMetaDataList = taskMetadataMapper.selectByExample(taskMetadataExample);
 
 			lastServerVersion = taskMetaDataList != null && !taskMetaDataList.isEmpty() ?
-					taskMetaDataList.get(0).getServerVersion() : null;
+					taskMetaDataList.get(0).getServerVersion() : 0;
 
 		}
 

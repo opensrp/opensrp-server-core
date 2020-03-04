@@ -145,7 +145,7 @@ public class TaskService {
 	 * @param limit upper limit on number of tasks ids to fetch
 	 * @return a list of all task ids and last server version
 	 */
-	public Pair findAllTaskIds(Long serverVersion, int limit) {
+	public Pair<List<String>, Long> findAllTaskIds(Long serverVersion, int limit) {
 		return taskRepository.findAllIds(serverVersion, limit);
 	}
 
