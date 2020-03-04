@@ -95,7 +95,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @param limit upper limit on number of structure ids to fetch
      * @return a list of structure Ids and last server version
      */
-	Pair findAllStructureIds(Long serverVersion, int limit);
+	Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit);
 
 	/**
 	 * This method searches for location identifier and name using a plan identifier.
@@ -132,6 +132,6 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @param limit upper limit on number of location ids to fetch
 	 * @return a list of location Ids
 	 */
-	Pair findAllLocationIds(Long serverVersion, int limit);
+	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit);
 
 }

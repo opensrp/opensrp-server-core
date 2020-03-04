@@ -355,10 +355,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public Pair findAllStructureIds(Long serverVersion, int limit) {
+	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit) {
 		Long lastServerVersion = null;
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
-		structureMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
+		structureMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
 		structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
@@ -371,7 +371,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			List<StructureMetadata> structureMetaDataList = structureMetadataMapper.selectByExample(structureMetadataExample);
 
 			lastServerVersion = structureMetaDataList != null && !structureMetaDataList.isEmpty() ?
-					structureMetaDataList.get(0).getServerVersion() : null;
+					structureMetaDataList.get(0).getServerVersion() : 0;
 		}
 
 		return Pair.of(structureIdentifiers, lastServerVersion);
@@ -435,10 +435,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Pair findAllLocationIds(Long serverVersion, int limit) {
+	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit) {
 		Long lastServerVersion = null;
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andServerVersionGreaterThan(serverVersion);
+		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
 		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
@@ -450,7 +450,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			locationMetadataExample.createCriteria().andGeojsonIdEqualTo(locationIdentifiers.get(locationIdentifiers.size() -1 ));
 			List<LocationMetadata> locationMetadataList = locationMetadataMapper.selectByExample(locationMetadataExample);
 
-			lastServerVersion = locationMetadataList != null && !locationMetadataList.isEmpty() ? locationMetadataList.get(0).getServerVersion() : null;
+			lastServerVersion = locationMetadataList != null && !locationMetadataList.isEmpty() ? locationMetadataList.get(0).getServerVersion() : 0;
 		}
 
 		return Pair.of(locationIdentifiers, lastServerVersion);

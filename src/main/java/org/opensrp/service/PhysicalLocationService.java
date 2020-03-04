@@ -201,7 +201,7 @@ public class PhysicalLocationService {
 	 * @param limit upper limit on number of structure ids to fetch
 	 * @return a list of structure ids as well as the lastServerVersion
 	 */
-	public Pair findAllStructureIds(Long serverVersion, int limit) {
+	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit) {
 		return locationRepository.findAllStructureIds(serverVersion, limit);
 	}
 
@@ -245,7 +245,7 @@ public class PhysicalLocationService {
 	 * @param limit upper limit on number of location ids to fetch
 	 * @return a list of location ids
 	 */
-	public Pair findAllLocationIds(Long serverVersion, int limit) {
+	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit) {
 		return locationRepository.findAllLocationIds(serverVersion, limit);
 	}
 

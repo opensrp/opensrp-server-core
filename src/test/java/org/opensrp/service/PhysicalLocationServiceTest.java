@@ -485,17 +485,17 @@ public class PhysicalLocationServiceTest {
 		List<String> expectedStructureIds = new ArrayList<>();
 		expectedStructureIds.add("Structure-1");
 		expectedStructureIds.add("Structure-2");
-		Pair idsModel = Pair.of(expectedStructureIds, 1234l);
+		Pair<List<String>, Long> idsModel = Pair.of(expectedStructureIds, 1234l);
 
 		when(locationRepository.findAllStructureIds(anyLong(), anyInt())).thenReturn(idsModel);
-		Pair actualIdModels = locationService.findAllStructureIds(0l, 2);
+		Pair<List<String>, Long> actualIdModels = locationService.findAllStructureIds(0l, 2);
 
-		List<String> actualStructureIds = (List<String>) actualIdModels.getLeft();
+		List<String> actualStructureIds = actualIdModels.getLeft();
 
 		verify(locationRepository).findAllStructureIds(0l, 2);
 		assertEquals(2, actualStructureIds.size());
-		assertEquals(expectedStructureIds.get(0).toString(), actualStructureIds.get(0).toString());
-		assertEquals(expectedStructureIds.get(1).toString(), actualStructureIds.get(1).toString());
+		assertEquals(expectedStructureIds.get(0), actualStructureIds.get(0));
+		assertEquals(expectedStructureIds.get(1), actualStructureIds.get(1));
 
 	}
 
@@ -522,17 +522,17 @@ public class PhysicalLocationServiceTest {
 		List<String> expectedLocationIds = new ArrayList<>();
 		expectedLocationIds.add("Location-1");
 		expectedLocationIds.add("Location-2");
-		Pair idsModel = Pair.of(expectedLocationIds, 1234l);
+		Pair<List<String>, Long> idsModel = Pair.of(expectedLocationIds, 1234l);
 
 		when(locationRepository.findAllLocationIds(anyLong(), anyInt())).thenReturn(idsModel);
-		Pair actualIdsModelList = locationService.findAllLocationIds(0l, 10);
+		Pair<List<String>, Long> actualIdsModelList = locationService.findAllLocationIds(0l, 10);
 
-		List<String> actualLocationIds = (List<String>) actualIdsModelList.getLeft();
+		List<String> actualLocationIds = actualIdsModelList.getLeft();
 		verify(locationRepository).findAllLocationIds(0l, 10);
 		assertEquals(2, actualLocationIds.size());
-		assertEquals(expectedLocationIds.get(0).toString(), actualLocationIds.get(0).toString());
-		assertEquals(expectedLocationIds.get(1).toString(), actualLocationIds.get(1).toString());
-		assertEquals(1234l, actualIdsModelList.getRight());
+		assertEquals(expectedLocationIds.get(0), actualLocationIds.get(0));
+		assertEquals(expectedLocationIds.get(1), actualLocationIds.get(1));
+		assertEquals(1234l, actualIdsModelList.getRight().longValue());
 
 	}
 

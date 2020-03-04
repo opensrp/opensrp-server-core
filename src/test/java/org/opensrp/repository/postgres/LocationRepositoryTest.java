@@ -675,45 +675,45 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindAllLocationIdsShouldOrderByServerVersion() {
 
-		Pair idsModel = locationRepository.findAllLocationIds(-2l, 10);
-		List<String> locationsIds = (List<String>) idsModel.getLeft();
+		Pair<List<String>, Long> idsModel = locationRepository.findAllLocationIds(-2l, 10);
+		List<String> locationsIds = idsModel.getLeft();
 		assertEquals(2, locationsIds.size());
 		assertEquals("3735", locationsIds.get(0));
 		assertEquals("3734", locationsIds.get(1));
-		assertEquals(1542378347104l, idsModel.getRight());
+		assertEquals(1542378347104l, idsModel.getRight().longValue());
 
 	}
 
 	@Test
 	public void testFindAllLocationIdsShouldLimitByGivenParam() {
 
-		Pair idsModel = locationRepository.findAllLocationIds(-2l, 1);
-		List<String> locationsIds = (List<String>) idsModel.getLeft();
+		Pair<List<String>, Long> idsModel = locationRepository.findAllLocationIds(-2l, 1);
+		List<String> locationsIds = idsModel.getLeft();
 		assertEquals(1, locationsIds.size());
 		assertEquals("3735", locationsIds.get(0));
-		assertEquals(-1l, idsModel.getRight());
+		assertEquals(-1l, idsModel.getRight().longValue());
 
 	}
 
 	@Test
 	public void testFindAllStructureIdsShouldOrderByServerVersion() {
 
-		Pair idsModel = locationRepository.findAllStructureIds(0l, 10);
-		List<String> structureIds = (List<String>) idsModel.getLeft();
+		Pair<List<String>, Long> idsModel = locationRepository.findAllStructureIds(0l, 10);
+		List<String> structureIds = idsModel.getLeft();
 		assertEquals(2, structureIds.size());
 		assertEquals("90397", structureIds.get(0));
 		assertEquals("90398", structureIds.get(1));
-		assertEquals(1542376382862l, idsModel.getRight());
+		assertEquals(1542376382862l, idsModel.getRight().longValue());
 	}
 
 	@Test
 	public void testFindAllStructureIdsShouldLimitByGivenParam() {
 
-		Pair idsModel = locationRepository.findAllStructureIds(0l, 1);
-		List<String> structureIds = (List<String>) idsModel.getLeft();
+		Pair<List<String>, Long> idsModel = locationRepository.findAllStructureIds(0l, 1);
+		List<String> structureIds = idsModel.getLeft();
 		assertEquals(1, structureIds.size());
 		assertEquals("90397", structureIds.get(0));
-		assertEquals(1542376382851l, idsModel.getRight());
+		assertEquals(1542376382851l, idsModel.getRight().longValue());
 	}
 
 }
