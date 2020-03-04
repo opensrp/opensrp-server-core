@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
@@ -192,11 +193,11 @@ public class PlanServiceTest {
 		expectedPlanIds.add("Location-2");
 		Pair<List<String>, Long> idsModel = Pair.of(expectedPlanIds, 0l);
 
-		when(planRepository.findAllIds(anyLong(), anyInt(), (Date) any())).thenReturn(idsModel);
-		Pair<List<String>, Long> planIdsObject = planService.findAllIds(0l, 10, null);
+		when(planRepository.findAllIds(anyLong(), anyInt(), anyBoolean())).thenReturn(idsModel);
+		Pair<List<String>, Long> planIdsObject = planService.findAllIds(0l, 10, false);
 		List<String> actualPlanIds = planIdsObject.getLeft();
 
-		verify(planRepository).findAllIds(0l, 10, null);
+		verify(planRepository).findAllIds(0l, 10, false);
 		assertEquals(2, actualPlanIds.size());
 		assertEquals(expectedPlanIds.get(0), actualPlanIds.get(0));
 		assertEquals(expectedPlanIds.get(1), actualPlanIds.get(1));

@@ -330,7 +330,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindAllEventIds() {
-		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(null, null, 0l, 100);
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(null, false, 0l, 100);
 		List<String> actualEventIds = eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
@@ -341,7 +341,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testFindAllIdsByEventType() {
 		
 		String growthMonitoringEventype = "Growth Monitoring";
-		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 100);
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, false, 0l, 100);
 		List<String> actualEventIds = eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
@@ -364,18 +364,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testFindAllDeletedIdsByEventType() {
 		
 		String growthMonitoringEventype = "Growth Monitoring";
-		
-		String string = "January 1, 2018";
-		DateFormat format = new SimpleDateFormat("MMMM d, yyyy");
-		Date date = null;
-		try {
-			date = format.parse(string);
-		}
-		catch (ParseException e) {
-			e.printStackTrace();
-		}
 
-		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, date, 0l, 100);
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, true, 0l, 100);
 		List<String> actualEventIds = eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
@@ -386,18 +376,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindAllDeletedIds() {
-		
-		String string = "January 1, 1970";
-		DateFormat format = new SimpleDateFormat("MMMM d, yyyy");
-		Date date = null;
-		try {
-			date = format.parse(string);
-		}
-		catch (ParseException e) {
-			e.printStackTrace();
-		}
 
-		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(null, date, 0l, 100);
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(null, true, 0l, 100);
 		List<String> actualEventIds = eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
@@ -409,7 +389,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testFindAllIdsByEventTypeOrderedByServerVersion() {
 
 		String growthMonitoringEventype = "Growth Monitoring";
-		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 100);
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, false, 0l, 100);
 		List<String> actualEventIds = eventIdsModel.getLeft();
 
 		assertNotNull(actualEventIds);
@@ -426,7 +406,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testFindAllIdsByEventTypeLimitsByGivenParam() {
 
 		String growthMonitoringEventype = "Growth Monitoring";
-		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, null, 0l, 2);
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, false, 0l, 2);
 		List<String> actualEventIds = eventIdsModel.getLeft();
 
 		assertNotNull(actualEventIds);
@@ -440,7 +420,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testFindAllIdsOrdersByServerVersionAnd() {
 
-		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(null, null, 0l, 100);
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(null, false, 0l, 100);
 		List<String> actualEventIds = eventIdsModel.getLeft();
 
 		assertNotNull(actualEventIds);

@@ -461,7 +461,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 1, null);
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 1, false);
 
         List<String> planids = planIdsObject.getLeft();
         assertEquals(1, planids.size());
@@ -493,7 +493,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 10, null);
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 10, false);
 
         List<String> planids = planIdsObject.getLeft();
         assertEquals(2, planids.size());
@@ -528,17 +528,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
         planRepository.safeRemove(plan);
 
-        String string = "January 1, 2018";
-        DateFormat format = new SimpleDateFormat("MMMM d, yyyy");
-        Date date = null;
-        try {
-            date = format.parse(string);
-        }
-        catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 1, date);
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 1, true);
 
         List<String> planids = planIdsObject.getLeft();
         assertEquals(1, planids.size());

@@ -54,11 +54,11 @@ public interface EventsRepository extends BaseRepository<Event> {
 	 * the date they were deleted and server version
 	 *
 	 * @param eventType used to filter the event ids
-	 * @param dateDeleted date  on or after which deleted event ids should be returned
+	 * @param isDeleted whether to return deleted event ids
 	 * @param serverVersion
 	 * @param limit upper limit on number of tasks ids to fetch
 	 * @return a list of event ids and last server version
 	 */
-	Pair<List<String>, Long> findIdsByEventType(String eventType, Date dateDeleted, Long serverVersion, int limit);
+	Pair<List<String>, Long> findIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit);
 	
 }

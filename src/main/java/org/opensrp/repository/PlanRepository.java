@@ -53,8 +53,8 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 *
 	 * @param serverVersion
 	 * @param limit upper limit on number of plans to fetch
-	 * @param dateDeleted date  on or after which deleted plan ids should be returned
+	 * @param isDeleted whether to return deleted plan ids
 	 * @return a list of plan Ids  and the last server version
 	 */
-	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Date dateDeleted);
+	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted);
 }
