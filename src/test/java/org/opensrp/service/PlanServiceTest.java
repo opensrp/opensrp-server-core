@@ -190,17 +190,17 @@ public class PlanServiceTest {
 		List<String> expectedPlanIds = new ArrayList<>();
 		expectedPlanIds.add("Location-1");
 		expectedPlanIds.add("Location-2");
-		Pair idsModel = Pair.of(expectedPlanIds, 0l);
+		Pair<List<String>, Long> idsModel = Pair.of(expectedPlanIds, 0l);
 
 		when(planRepository.findAllIds(anyLong(), anyInt(), (Date) any())).thenReturn(idsModel);
-		Pair planIdsObject = planService.findAllIds(0l, 10, null);
-		List<String> actualPlanIds = (List<String>) planIdsObject.getLeft();
+		Pair<List<String>, Long> planIdsObject = planService.findAllIds(0l, 10, null);
+		List<String> actualPlanIds = planIdsObject.getLeft();
 
 		verify(planRepository).findAllIds(0l, 10, null);
 		assertEquals(2, actualPlanIds.size());
-		assertEquals(expectedPlanIds.get(0).toString(), actualPlanIds.get(0).toString());
-		assertEquals(expectedPlanIds.get(1).toString(), actualPlanIds.get(1).toString());
-		assertEquals(0l, planIdsObject.getRight());
+		assertEquals(expectedPlanIds.get(0), actualPlanIds.get(0));
+		assertEquals(expectedPlanIds.get(1), actualPlanIds.get(1));
+		assertEquals(0l, planIdsObject.getRight().longValue());
 
 	}
 }

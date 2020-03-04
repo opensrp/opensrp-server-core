@@ -159,7 +159,7 @@ public class PlanService {
 	 * @param dateDeleted date  on or after which deleted event ids should be returned
 	 * @return a list of location ids and the last server version
 	 */
-	public Pair findAllIds(Long serverVersion, int limit, Date dateDeleted ) {
+	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Date dateDeleted ) {
 		return planRepository.findAllIds(serverVersion, limit, dateDeleted);
 	}
 }

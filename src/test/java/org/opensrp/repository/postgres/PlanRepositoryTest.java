@@ -461,13 +461,13 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        Pair planIdsObject = planRepository.findAllIds(0l, 1, null);
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 1, null);
 
-        List<String> planids = (List<String>) planIdsObject.getLeft();
+        List<String> planids = planIdsObject.getLeft();
         assertEquals(1, planids.size());
 
         assertEquals("identifier_6", planids.get(0));
-        assertEquals(1234l, planIdsObject.getRight());
+        assertEquals(1234l, planIdsObject.getRight().longValue());
     }
 
     @Test
@@ -493,14 +493,14 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        Pair planIdsObject = planRepository.findAllIds(0l, 10, null);
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 10, null);
 
-        List<String> planids = (List<String>) planIdsObject.getLeft();
+        List<String> planids = planIdsObject.getLeft();
         assertEquals(2, planids.size());
 
         assertEquals("identifier_6", planids.get(0));
         assertEquals("identifier_7", planids.get(1));
-        assertEquals(1235l, planIdsObject.getRight());
+        assertEquals(1235l, planIdsObject.getRight().longValue());
     }
 
     @Test
@@ -538,13 +538,13 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
             e.printStackTrace();
         }
 
-        Pair planIdsObject = planRepository.findAllIds(0l, 1, date);
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 1, date);
 
-        List<String> planids = (List<String>) planIdsObject.getLeft();
+        List<String> planids = planIdsObject.getLeft();
         assertEquals(1, planids.size());
 
         assertEquals("identifier_7", planids.get(0));
-        assertEquals(1235l, planIdsObject.getRight());
+        assertEquals(1235l, planIdsObject.getRight().longValue());
     }
 
 

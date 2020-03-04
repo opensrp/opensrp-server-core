@@ -56,5 +56,5 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @param dateDeleted date  on or after which deleted plan ids should be returned
 	 * @return a list of plan Ids  and the last server version
 	 */
-	Pair findAllIds(Long serverVersion, int limit, Date dateDeleted);
+	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Date dateDeleted);
 }

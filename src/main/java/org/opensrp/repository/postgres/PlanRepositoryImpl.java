@@ -160,11 +160,11 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
      * {@inheritDoc}
      */
     @Override
-    public Pair findAllIds(Long serverVersion, int limit, Date dateDeleted) {
+    public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Date dateDeleted) {
         Long lastServerVersion = null;
         PlanExample planExample = new PlanExample();
         PlanExample.Criteria criteria = planExample.createCriteria();
-        criteria.andServerVersionGreaterThan(serverVersion);
+        criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
 
         if (dateDeleted != null) {
             criteria.andDateDeletedGreaterThanOrEqualTo(dateDeleted);
@@ -180,7 +180,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             planExample.createCriteria().andIdentifierEqualTo(planIdentifiers.get(planIdentifiers.size() - 1));
             List<Plan> plans = planMapper.selectByExample(planExample);
 
-            lastServerVersion = plans != null && !plans.isEmpty() ? plans.get(0).getServerVersion() : null;
+            lastServerVersion = plans != null && !plans.isEmpty() ? plans.get(0).getServerVersion() : 0;
         }
 
         return Pair.of(planIdentifiers, lastServerVersion);
