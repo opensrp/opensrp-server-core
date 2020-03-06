@@ -18,15 +18,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PlanService {
-	
+
 	private PlanRepository planRepository;
-	
+
 	private PractitionerService practitionerService;
-	
+
 	private PractitionerRoleService practitionerRoleService;
-	
+
 	private OrganizationService organizationService;
-	
+
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
 	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService) {
@@ -39,11 +39,11 @@ public class PlanService {
 	public PlanRepository getPlanRepository() {
 		return planRepository;
 	}
-	
+
 	public List<PlanDefinition> getAllPlans() {
 		return getPlanRepository().getAll();
 	}
-	
+
 	public void addOrUpdatePlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -55,42 +55,42 @@ public class PlanService {
 			getPlanRepository().add(plan);
 		}
 	}
-	
+
 	public PlanDefinition addPlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().add(plan);
-		
+
 		return plan;
 	}
-	
+
 	public PlanDefinition updatePlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().update(plan);
-		
+
 		return plan;
 	}
-	
+
 	public PlanDefinition getPlan(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
 	}
-	
+
 	public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion,
 	        List<String> operationalAreaIds) {
 		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds);
 	}
-	
+
 	/**
 	 * This method searches for plans using a list of provided plan identifiers and returns a subset
 	 * of fields determined by the list of provided fields If no plan identifier(s) are provided the
 	 * method returns all available plans If no fields are provided the method returns all the
 	 * available fields
-	 * 
+	 *
 	 * @param ids list of plan identifiers
 	 * @param fields list of fields to return
 	 * @return plan definitions whose identifiers match the provided params
@@ -98,16 +98,16 @@ public class PlanService {
 	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields) {
 		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields);
 	}
-	
+
 	/**
 	 * Gets the plans using organization Ids that have server version >= the server version param
-	 * 
+	 *
 	 * @param organizationIds the list of organization Ids
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans matching the above
 	 */
 	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
-		
+
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 		        .findAssignedLocationsAndPlans(organizationIds);
 		List<String> planIdentifiers = new ArrayList<>();
@@ -116,16 +116,62 @@ public class PlanService {
 		}
 		return planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
-	
+
+	/**
+	 * Gets the plan identifiers using organization Ids
+	 *
+	 * @param organizationIds the list of organization Ids
+	 * @return the plan identifiers matching the above
+	 */
+	public List<String> getPlanIdentifiersByOrganizations(List<Long> organizationIds) {
+
+		List<AssignedLocations> assignedPlansAndLocations = organizationService
+				.findAssignedLocationsAndPlans(organizationIds);
+		List<String> planIdentifiers = new ArrayList<>();
+		for (AssignedLocations assignedLocation : assignedPlansAndLocations) {
+			planIdentifiers.add(assignedLocation.getPlanId());
+		}
+		return planIdentifiers;
+	}
+
 	/**
 	 * Gets the plans that a user has access to according to the plan location assignment that have
 	 * server version >= the server version param
-	 * 
+	 *
 	 * @param username the username of user
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans a user has access to
 	 */
 	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion) {
+
+		List<Long> organizationIds = getOrganizationIdsByUserName(username);
+		if (organizationIds != null) {
+			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the plan identifiers that a user has access to according to the plan location assignment
+	 *
+	 * @param username the username of user
+	 * @return the plans a user has access to
+	 */
+	public List<String> getPlanIdentifiersByUsername(String username) {
+		List<Long> organizationIds = getOrganizationIdsByUserName(username);
+		if (organizationIds != null) {
+			return getPlanIdentifiersByOrganizations(organizationIds);
+		}
+		return null;
+	}
+
+	/**
+	 * Gets the organization ids that a user is assigned to according to the plan location assignment
+	 *
+	 * @param username the username of user
+	 * @return the organization ids a user is assigned to
+	 */
+	public List<Long> getOrganizationIdsByUserName(String username) {
 		org.opensrp.domain.Practitioner practitioner = practitionerService.getPractionerByUsername(username);
 		if (practitioner != null) {
 			List<PractitionerRole> roles = practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier());
@@ -134,9 +180,9 @@ public class PlanService {
 			List<Long> organizationIds = new ArrayList<>();
 			for (PractitionerRole role : roles)
 				organizationIds.add(role.getOrganizationId());
-			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
+			return organizationIds;
 		}
-		
+
 		return null;
 	}
 
