@@ -158,8 +158,8 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		}
 		LocationTag locationTag = new LocationTag();
 		
-		locationTag.setName(locationTag.getName());
-		locationTag.setActive(locationTag.getActive());
+		locationTag.setName(pgLocationTag.getName());
+		locationTag.setActive(pgLocationTag.getActive());
 		locationTag.setDescription(pgLocationTag.getDescription());
 		
 		return locationTag;
@@ -172,7 +172,7 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		org.opensrp.domain.postgres.LocationTag pgLocationTag = new org.opensrp.domain.postgres.LocationTag();
 		pgLocationTag.setName(locationTag.getName());
 		pgLocationTag.setActive(locationTag.getActive());
-		pgLocationTag.setDescription(pgLocationTag.getDescription());
+		pgLocationTag.setDescription(locationTag.getDescription());
 		
 		return pgLocationTag;
 	}
