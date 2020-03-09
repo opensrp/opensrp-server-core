@@ -12,6 +12,7 @@ import org.opensrp.domain.Task.TaskStatus;
 import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
 import org.opensrp.util.TaskDateTimeTypeConverter;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*","org.w3c.*"})
 public class TaskServiceTest {
 
 	private static String dateFormat = "yyyy-MM-dd'T'HHmm";

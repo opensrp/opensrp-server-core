@@ -27,6 +27,7 @@ import org.opensrp.scheduler.Alert;
 import org.opensrp.scheduler.repository.couch.AllActions;
 import org.opensrp.scheduler.repository.couch.AllAlerts;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -34,6 +35,7 @@ import com.google.gson.Gson;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ DateTime.class })
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*","org.w3c.*"})
 public class ActionServiceTest {
 	
 	public static final String ANM_1 = "ANM 1";
