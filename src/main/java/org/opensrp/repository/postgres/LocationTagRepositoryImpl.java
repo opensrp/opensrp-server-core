@@ -118,7 +118,7 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		if (pgLocationTag == null) {
 			return;
 		}
-		
+		pgLocationTag.setId(id);
 		pgLocationTag.setActive(false);
 		locationTagMapper.updateByPrimaryKey(pgLocationTag);
 		
@@ -213,6 +213,13 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		        .selectByExample(locationTagExample);
 		
 		return isEmptyList(locationTagList) ? null : locationTagList.get(0);
+	}
+	
+	@Override
+	public List<LocationTag> findByLocationTagExample(LocationTagExample locationTagExample, int offset, int limit) {
+		List<org.opensrp.domain.postgres.LocationTag> pgLocationTagList = locationTagMapper.selectMany(locationTagExample,
+		    offset, limit);
+		return convert(pgLocationTagList);
 	}
 	
 }

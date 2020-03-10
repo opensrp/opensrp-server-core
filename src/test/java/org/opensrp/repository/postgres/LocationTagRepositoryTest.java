@@ -11,6 +11,7 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensrp.domain.LocationTag;
+import org.opensrp.domain.postgres.LocationTagExample;
 import org.opensrp.repository.LocationTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -64,15 +65,15 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testAddShouldAInActiveExistingLocationTag() {
-		LocationTag locationTag2 = initTestLocationTag2();
-		locationTagRepository.add(locationTag2);
-		org.opensrp.domain.postgres.LocationTag findLocationTag = locationTagRepository.getLocationTagByName("Division");
-		
+		LocationTag locationTag4 = initTestLocationTag4();
+		locationTagRepository.add(locationTag4);
+		org.opensrp.domain.postgres.LocationTag findLocationTag = locationTagRepository.getLocationTagByName("upazila");
+		System.err.println("findLocationTag" + findLocationTag);
 		locationTagRepository.safeRemove(findLocationTag.getId());
-		org.opensrp.domain.postgres.LocationTag getLocationTag = locationTagRepository.getLocationTagByName("Division");
+		org.opensrp.domain.postgres.LocationTag getLocationTag = locationTagRepository.getLocationTagByName("upazila");
 		assertNotNull(getLocationTag);
 		assertEquals(false, getLocationTag.getActive());
-		assertEquals("Division", getLocationTag.getName());
+		assertEquals("upazila", getLocationTag.getName());
 		
 	}
 	
@@ -120,6 +121,18 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		
 	}
 	
+	@Test
+	public void testGetShouldGetLocationTagByLocationTagExample() {
+		
+		LocationTag locationTag3 = initTestLocationTag3();
+		locationTagRepository.add(locationTag3);
+		LocationTagExample locationTagExample = new LocationTagExample();
+		
+		locationTagExample.createCriteria().andNameLike("d");
+		List<LocationTag> locationTags = locationTagRepository.findByLocationTagExample(locationTagExample, 0, 100);
+		System.err.println("locationTags:" + locationTags.toString());
+	}
+	
 	private LocationTag initTestLocationTag1() {
 		LocationTag locationTag = new LocationTag();
 		locationTag.setName("Country");
@@ -132,6 +145,22 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		LocationTag locationTag = new LocationTag();
 		locationTag.setName("Division");
 		locationTag.setDescription("second label tag name");
+		locationTag.setActive(true);
+		return locationTag;
+	}
+	
+	private LocationTag initTestLocationTag3() {
+		LocationTag locationTag = new LocationTag();
+		locationTag.setName("district");
+		locationTag.setDescription("third label tag name");
+		locationTag.setActive(true);
+		return locationTag;
+	}
+	
+	private LocationTag initTestLocationTag4() {
+		LocationTag locationTag = new LocationTag();
+		locationTag.setName("upazila");
+		locationTag.setDescription("fourth label tag name");
 		locationTag.setActive(true);
 		return locationTag;
 	}
