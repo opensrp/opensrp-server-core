@@ -18,15 +18,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PlanService {
-
+	
 	private PlanRepository planRepository;
-
+	
 	private PractitionerService practitionerService;
-
+	
 	private PractitionerRoleService practitionerRoleService;
-
+	
 	private OrganizationService organizationService;
-
+	
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
 	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService) {
@@ -35,15 +35,15 @@ public class PlanService {
 		this.practitionerRoleService = practitionerRoleService;
 		this.organizationService = organizationService;
 	}
-
+	
 	public PlanRepository getPlanRepository() {
 		return planRepository;
 	}
-
+	
 	public List<PlanDefinition> getAllPlans() {
 		return getPlanRepository().getAll();
 	}
-
+	
 	public void addOrUpdatePlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -55,36 +55,36 @@ public class PlanService {
 			getPlanRepository().add(plan);
 		}
 	}
-
+	
 	public PlanDefinition addPlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().add(plan);
-
+		
 		return plan;
 	}
-
+	
 	public PlanDefinition updatePlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().update(plan);
-
+		
 		return plan;
 	}
-
+	
 	public PlanDefinition getPlan(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
 	}
-
+	
 	public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion,
 	        List<String> operationalAreaIds) {
 		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds);
 	}
-
+	
 	/**
 	 * This method searches for plans using a list of provided plan identifiers and returns a subset
 	 * of fields determined by the list of provided fields If no plan identifier(s) are provided the
@@ -98,7 +98,7 @@ public class PlanService {
 	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields) {
 		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields);
 	}
-
+	
 	/**
 	 * Gets the plans using organization Ids that have server version >= the server version param
 	 *
@@ -107,7 +107,7 @@ public class PlanService {
 	 * @return the plans matching the above
 	 */
 	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
-
+		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 		        .findAssignedLocationsAndPlans(organizationIds);
 		List<String> planIdentifiers = new ArrayList<>();
@@ -116,7 +116,7 @@ public class PlanService {
 		}
 		return planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
-
+	
 	/**
 	 * Gets the plan identifiers using organization Ids
 	 *
@@ -124,16 +124,16 @@ public class PlanService {
 	 * @return the plan identifiers matching the above
 	 */
 	public List<String> getPlanIdentifiersByOrganizations(List<Long> organizationIds) {
-
+		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
-				.findAssignedLocationsAndPlans(organizationIds);
+		        .findAssignedLocationsAndPlans(organizationIds);
 		List<String> planIdentifiers = new ArrayList<>();
 		for (AssignedLocations assignedLocation : assignedPlansAndLocations) {
 			planIdentifiers.add(assignedLocation.getPlanId());
 		}
 		return planIdentifiers;
 	}
-
+	
 	/**
 	 * Gets the plans that a user has access to according to the plan location assignment that have
 	 * server version >= the server version param
@@ -143,14 +143,14 @@ public class PlanService {
 	 * @return the plans a user has access to
 	 */
 	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion) {
-
+		
 		List<Long> organizationIds = getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
 			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
 		}
 		return null;
 	}
-
+	
 	/**
 	 * Gets the plan identifiers that a user has access to according to the plan location assignment
 	 *
@@ -164,9 +164,10 @@ public class PlanService {
 		}
 		return null;
 	}
-
+	
 	/**
-	 * Gets the organization ids that a user is assigned to according to the plan location assignment
+	 * Gets the organization ids that a user is assigned to according to the plan location
+	 * assignment
 	 *
 	 * @param username the username of user
 	 * @return the organization ids a user is assigned to
@@ -182,29 +183,30 @@ public class PlanService {
 				organizationIds.add(role.getOrganizationId());
 			return organizationIds;
 		}
-
+		
 		return null;
 	}
-
+	
 	/**
-	 *  This method searches for plans ordered by serverVersion ascending
+	 * This method searches for plans ordered by serverVersion ascending
 	 *
 	 * @param serverVersion
 	 * @param limit upper limit on number of plas to fetch
 	 * @return list of plan identifiers
 	 */
 	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit) {
-		return getPlanRepository().getAllPlans(serverVersion, limit);	}
-
+		return getPlanRepository().getAllPlans(serverVersion, limit);
+	}
+	
 	/**
 	 * This method searches for all location ids
 	 *
 	 * @param serverVersion
 	 * @param limit upper limit on number of plans to fetch
-	 * @param  isDeleted whether to return deleted plan ids
+	 * @param isDeleted whether to return deleted plan ids
 	 * @return a list of location ids and the last server version
 	 */
-	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted ) {
+	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted) {
 		return planRepository.findAllIds(serverVersion, limit, isDeleted);
 	}
 }
