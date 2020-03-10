@@ -35,7 +35,9 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		if (getLocationTagByName(locationTag.getName()) != null) {
 			return; // location tag with this name id already added
 		}
-		
+		if (locationTag.getName().isEmpty()) {
+			return;
+		}
 		org.opensrp.domain.postgres.LocationTag pgPractitioner = convert(locationTag);
 		
 		locationTagMapper.insertSelective(pgPractitioner);
@@ -50,15 +52,24 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		if (getUniqueField(locationTag) == null) {
 			return;
 		}
-		Long id = getLocationTagByName(locationTag.getName()).getId();
+		Long id = locationTag.getId();
 		if (id == null) {
-			return; // practitioner does not exist
+			return; // location tag does not exist
+		}
+		if (locationTag.getName().isEmpty()) {
+			return;
 		}
 		
-		org.opensrp.domain.postgres.LocationTag pgLocationTag = convert(locationTag);
-		
-		pgLocationTag.setId(id);
-		locationTagMapper.updateByPrimaryKey(pgLocationTag);
+		org.opensrp.domain.postgres.LocationTag getPgLocationTag = getLocationTagByNameAndNotEqualId(locationTag.getName(),
+		    id);
+		if (getPgLocationTag == null) {
+			org.opensrp.domain.postgres.LocationTag pgLocationTag = convert(locationTag);
+			pgLocationTag.setId(id);
+			locationTagMapper.updateByPrimaryKey(pgLocationTag);
+		} else {
+			throw new IllegalArgumentException("Location tag name already exists");
+			
+		}
 		
 	}
 	
@@ -121,7 +132,6 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		
 		LocationTagExample locationTagExample = new LocationTagExample();
 		locationTagExample.createCriteria().andNameEqualTo(name);
-		
 		List<org.opensrp.domain.postgres.LocationTag> locationTagList = locationTagMapper
 		        .selectByExample(locationTagExample);
 		
@@ -186,6 +196,23 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 			locationTags.add(convert(pgLocationTag));
 		}
 		return locationTags;
+	}
+	
+	@Override
+	public org.opensrp.domain.postgres.LocationTag getLocationTagByNameAndNotEqualId(String name, Long id) {
+		if (StringUtils.isBlank(name)) {
+			return null;
+		}
+		if (id != 0) {
+			return null;
+		}
+		
+		LocationTagExample locationTagExample = new LocationTagExample();
+		locationTagExample.createCriteria().andNameEqualTo(name).andIdNotEqualTo(id);
+		List<org.opensrp.domain.postgres.LocationTag> locationTagList = locationTagMapper
+		        .selectByExample(locationTagExample);
+		
+		return isEmptyList(locationTagList) ? null : locationTagList.get(0);
 	}
 	
 }

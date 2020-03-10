@@ -8,5 +8,8 @@ public interface LocationTagRepository extends BaseRepository<LocationTag> {
 	
 	void safeRemove(Long id);
 	
-	org.opensrp.domain.postgres.LocationTag getLocationTagByName(String username);
+	org.opensrp.domain.postgres.LocationTag getLocationTagByName(String name);
+	
+	org.opensrp.domain.postgres.LocationTag getLocationTagByNameAndNotEqualId(String name, Long id);
+	
 }

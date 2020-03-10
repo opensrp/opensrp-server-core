@@ -2,6 +2,7 @@ package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +11,6 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensrp.domain.LocationTag;
-import org.opensrp.domain.Practitioner;
 import org.opensrp.repository.LocationTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,7 +31,7 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 	}
 	
 	@Test
-	public void testAddShouldAddNewPractitioner() {
+	public void testAddShouldAddNewLocationTag() {
 		LocationTag locationTag1 = initTestLocationTag1();
 		locationTagRepository.add(locationTag1);
 		
@@ -44,6 +44,82 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		
 	}
 	
+	@Test
+	public void testAddShouldUpdateExistingLocationTag() {
+		LocationTag locationTag2 = initTestLocationTag2();
+		locationTagRepository.add(locationTag2);
+		org.opensrp.domain.postgres.LocationTag getLocationTag = locationTagRepository.getLocationTagByName("Division");
+		locationTag2.setId(getLocationTag.getId());
+		locationTag2.setDescription("update second label tag name");
+		locationTag2.setName("Division Tag");
+		locationTagRepository.update(locationTag2);
+		List<LocationTag> locationTags = locationTagRepository.getAll();
+		assertNotNull(locationTags);
+		assertEquals(1, locationTags.size());
+		
+		assertEquals(true, locationTags.get(0).getActive());
+		assertEquals("Division Tag", locationTags.get(0).getName());
+		
+	}
+	
+	@Test
+	public void testAddShouldAInActiveExistingLocationTag() {
+		LocationTag locationTag2 = initTestLocationTag2();
+		locationTagRepository.add(locationTag2);
+		org.opensrp.domain.postgres.LocationTag findLocationTag = locationTagRepository.getLocationTagByName("Division");
+		
+		locationTagRepository.safeRemove(findLocationTag.getId());
+		org.opensrp.domain.postgres.LocationTag getLocationTag = locationTagRepository.getLocationTagByName("Division");
+		assertNotNull(getLocationTag);
+		assertEquals(false, getLocationTag.getActive());
+		assertEquals("Division", getLocationTag.getName());
+		
+	}
+	
+	@Test
+	public void testAddShouldAInActiveExistingLocationTagById() {
+		LocationTag locationTag2 = initTestLocationTag2();
+		locationTagRepository.add(locationTag2);
+		locationTagRepository.safeRemove(locationTag2);
+		org.opensrp.domain.postgres.LocationTag getLocationTag = locationTagRepository.getLocationTagByName("Division");
+		assertNotNull(getLocationTag);
+		assertEquals(false, getLocationTag.getActive());
+		assertEquals("Division", getLocationTag.getName());
+		
+	}
+	
+	@Test
+	public void testAddShouldNotAddRecordIfLocationTagIsNull() {
+		locationTagRepository.add(null);
+		List<LocationTag> locationTags = locationTagRepository.getAll();
+		assertTrue(locationTags.isEmpty());
+	}
+	
+	@Test
+	public void testAddShouldNotAddRecordIfLocationTagNameIsNullOrEmpty() {
+		LocationTag locationTag1 = initTestLocationTag1();
+		locationTag1.setName(null);
+		locationTagRepository.add(locationTag1);
+		
+		locationTag1.setName("");
+		locationTagRepository.add(locationTag1);
+		List<LocationTag> locationTags = locationTagRepository.getAll();
+		assertTrue(locationTags.isEmpty());
+	}
+	
+	@Test
+	public void testGetShouldGetLocationTagByName() {
+		
+		LocationTag locationTag1 = initTestLocationTag1();
+		locationTagRepository.add(locationTag1);
+		
+		org.opensrp.domain.postgres.LocationTag locationTag = locationTagRepository.getLocationTagByName("Country");
+		assertNotNull(locationTag);
+		assertEquals("Country", locationTag.getName());
+		assertEquals(true, locationTag.getActive());
+		
+	}
+	
 	private LocationTag initTestLocationTag1() {
 		LocationTag locationTag = new LocationTag();
 		locationTag.setName("Country");
@@ -52,21 +128,12 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		return locationTag;
 	}
 	
-	private Practitioner initTestPractitioner2() {
-		Practitioner practitioner = new Practitioner();
-		practitioner.setIdentifier("practitoner-2-identifier");
-		practitioner.setActive(false);
-		practitioner.setName("Second Practitioner");
-		practitioner.setUsername("Practioner2");
-		practitioner.setUserId("user2");
-		return practitioner;
-	}
-	
-	private boolean testIfAllIdsExists(List<Practitioner> practitioners, Set<String> ids) {
-		for (Practitioner practitioner : practitioners) {
-			ids.remove(practitioner.getIdentifier());
-		}
-		return ids.size() == 0;
+	private LocationTag initTestLocationTag2() {
+		LocationTag locationTag = new LocationTag();
+		locationTag.setName("Division");
+		locationTag.setDescription("second label tag name");
+		locationTag.setActive(true);
+		return locationTag;
 	}
 	
 }
