@@ -47,7 +47,7 @@ public class LocationTagServiceTest {
 	}
 	
 	@Test
-	public void testGetPractitionerByLocationTagName() {
+	public void testGetLocationTagByLocationTagName() {
 		List<LocationTag> expectedLocationTags = new ArrayList<>();
 		expectedLocationTags.add(initTestLocationTag());
 		LocationTagExample locationTagExample = new LocationTagExample();
@@ -62,7 +62,7 @@ public class LocationTagServiceTest {
 	}
 	
 	@Test
-	public void testGetPractitionerByLocationTagId() {
+	public void testGetLocationTagByLocationTagId() {
 		List<LocationTag> expectedLocationTags = new ArrayList<>();
 		expectedLocationTags.add(initTestLocationTag());
 		LocationTagExample locationTagExample = new LocationTagExample();
@@ -78,7 +78,7 @@ public class LocationTagServiceTest {
 	}
 	
 	@Test
-	public void testGetPractitionerByLocationTagActive() {
+	public void testGetLocationTagByLocationTagActive() {
 		List<LocationTag> expectedLocationTags = new ArrayList<>();
 		expectedLocationTags.add(initTestLocationTag());
 		LocationTagExample locationTagExample = new LocationTagExample();

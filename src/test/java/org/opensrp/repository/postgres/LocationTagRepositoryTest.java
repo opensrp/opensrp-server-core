@@ -68,7 +68,6 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		LocationTag locationTag4 = initTestLocationTag4();
 		locationTagRepository.add(locationTag4);
 		org.opensrp.domain.postgres.LocationTag findLocationTag = locationTagRepository.getLocationTagByName("upazila");
-		System.err.println("findLocationTag" + findLocationTag);
 		locationTagRepository.safeRemove(findLocationTag.getId());
 		org.opensrp.domain.postgres.LocationTag getLocationTag = locationTagRepository.getLocationTagByName("upazila");
 		assertNotNull(getLocationTag);
@@ -127,10 +126,15 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		LocationTag locationTag3 = initTestLocationTag3();
 		locationTagRepository.add(locationTag3);
 		LocationTagExample locationTagExample = new LocationTagExample();
-		
-		locationTagExample.createCriteria().andNameLike("d");
+		//locationTagExample.createCriteria().andNameEqualTo("district").andActiveEqualTo(true);
+		String d = "d";
+		locationTagExample.createCriteria().andNameLike('%' + d + '%');
 		List<LocationTag> locationTags = locationTagRepository.findByLocationTagExample(locationTagExample, 0, 100);
-		System.err.println("locationTags:" + locationTags.toString());
+		
+		assertEquals(1, locationTags.size());
+		assertEquals("district", locationTags.get(0).getName());
+		assertEquals(true, locationTags.get(0).getActive());
+		
 	}
 	
 	private LocationTag initTestLocationTag1() {
