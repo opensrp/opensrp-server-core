@@ -21,7 +21,7 @@ public class UniqueIdRepository {
 	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-	
+
 	public int save(UniqueId uniqueId) throws Exception {
 		String insertQuery = "insert into " + UniqueId.tbName + " (" + UniqueId.COL_LOCATION + "," + UniqueId.COL_OPENMRSID
 		        + "," + UniqueId.COL_STATUS + "," + UniqueId.COL_USEDBY + "," + UniqueId.COL_CREATED_AT
