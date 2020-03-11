@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.LocationTag;
+import org.opensrp.domain.postgres.LocationTagExample;
 import org.opensrp.repository.LocationTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,10 @@ public class LocationTagService {
 		
 		getLocationTagRepository().safeRemove(id);
 		
+	}
+	
+	public List<LocationTag> findByLocationTagExample(LocationTagExample locationTagExample, int offset, int limit) {
+		return getLocationTagRepository().findByLocationTagExample(locationTagExample, offset, limit);
 	}
 	
 }
