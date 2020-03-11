@@ -5,7 +5,7 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>1.3.10-SNAPSHOT</version>
+	<version>1.3.11-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>http://github.com/OpenSRP/opensrp-server-core</url>
@@ -552,7 +552,7 @@
 						<artifactId>sql-maven-plugin</artifactId>
 						<version>1.5</version>
 						<dependencies>
-							<!-- <dependency> <groupId>postgresql</groupId> <artifactId>postgresql</artifactId> 
+							<!-- <dependency> <groupId>postgresql</groupId> <artifactId>postgresql</artifactId>
 								<version>9.1-901.jdbc4</version> </dependency> -->
 							<dependency>
 								<groupId>mysql</groupId>
