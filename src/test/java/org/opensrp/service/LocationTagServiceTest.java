@@ -135,49 +135,6 @@ public class LocationTagServiceTest {
 		verify(locationTagRepository, never()).safeRemove(eq(locationTag));
 	}
 	
-	/*
-	@Test
-	public void testGetOrganizationByUserIdShouldCallGetPgRolesForPractitionerMethod() {
-		Practitioner practitioner = initTestPractitioner();
-		when(practitionerRepository.getPractitionerByUserId(anyString())).thenReturn(practitioner);
-		
-		practitionerService.getOrganizationsByUserId("user-id");
-		verify(practitionerRepository).getPractitionerByUserId(eq("user-id"));
-		verify(practitionerRoleService).getPgRolesForPractitioner(eq(practitioner.getIdentifier()));
-	}
-	
-	@Test
-	public void testGetPractitionersByOrgIdentifier() {
-		
-		Practitioner practitioner = initTestPractitioner();
-		when(practitionerRepository.getPractitionersByOrgId(anyLong())).thenReturn(Collections.singletonList(practitioner));
-		
-		Organization organization = new Organization();
-		organization.setId(1l);
-		organization.setIdentifier("org1");
-		when(organizationService.getOrganization("org1")).thenReturn(organization);
-		
-		practitionerService.getPractitionersByOrgIdentifier("org1");
-		
-		verify(organizationService).validateIdentifier(anyString());
-		verify(organizationService).getOrganization(anyString());
-		verify(practitionerRepository).getPractitionersByOrgId(anyLong());
-		
-	}
-	
-	@Test
-	public void testGetPractionerByUsername() {
-		String username = "janedoe";
-		Practitioner practitioner = initTestPractitioner();
-		when(practitionerRepository.getPractitionerByUsername(username)).thenReturn(practitioner);
-		
-		Practitioner actual = practitionerService.getPractionerByUsername("janedoe");
-		
-		verify(practitionerRepository).getPractitionerByUsername(username);
-		assertEquals(practitioner, actual);
-		
-	}
-	*/
 	private LocationTag initTestLocationTag() {
 		LocationTag locationTag = new LocationTag();
 		locationTag.setName("Country");
