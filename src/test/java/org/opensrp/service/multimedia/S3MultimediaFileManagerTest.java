@@ -122,4 +122,10 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 	public void testGetMultiMediaDirShouldReturnCorrectFilePath() {
 		assertEquals(File.separator + "tmp" + File.separator, s3MultimediaFileManager.getMultiMediaDir());
 	}
+
+	@Test
+	public void testGetS3FilePathShouldReutrnCorrectFilePath() throws Exception {
+		String truncatedFilePath = Whitebox.invokeMethod(s3MultimediaFileManager, "getS3FilePath", s3MultimediaFileManager.getMultiMediaDir() + "path/to/file");
+		assertEquals("path/to/file", truncatedFilePath);
+	}
 }
