@@ -16,7 +16,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.UniqueId;
-import org.opensrp.repository.UniqueIdPostgresRepository;
 import org.opensrp.repository.UniqueIdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +48,9 @@ public class OpenmrsIDService {
 	private static Logger logger = LoggerFactory.getLogger(OpenmrsIDService.class.toString());
 	
 	private HttpClient client;
-	
-	@Autowired
-	private UniqueIdRepository uniqueIdRepository;
 
 	@Autowired
-	private UniqueIdPostgresRepository uniqueIdPostgresRepository;
+	private UniqueIdRepository uniqueIdPostgresRepository;
 	
 	public static OpenmrsIDService createInstanceWithOpenMrsUrl(String openmrsUrl) {
 		OpenmrsIDService openmrsIDService = new OpenmrsIDService();

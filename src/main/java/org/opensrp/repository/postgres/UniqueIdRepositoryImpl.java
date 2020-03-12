@@ -5,13 +5,13 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.domain.postgres.UniqueIdExample;
-import org.opensrp.repository.UniqueIdPostgresRepository;
+import org.opensrp.repository.UniqueIdRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomUniqueIdMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> implements UniqueIdPostgresRepository {
+public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> implements UniqueIdRepository {
 
     @Autowired
     CustomUniqueIdMapper uniqueIdMapper;

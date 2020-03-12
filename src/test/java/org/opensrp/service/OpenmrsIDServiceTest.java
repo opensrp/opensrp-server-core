@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 import org.opensrp.domain.Address;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.UniqueId;
-import org.opensrp.repository.UniqueIdPostgresRepository;
 import org.opensrp.repository.UniqueIdRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +36,11 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 	
 	@Autowired
 	JdbcTemplate jdbcTemplate;
-	
+
 	@Autowired
 	UniqueIdRepository uniqueIdRepository;
 
-	@Autowired
-	UniqueIdPostgresRepository uniqueIdPostgresRepository;
-
-	private Set<String> scripts = new HashSet<String>();;
+	private Set<String> scripts = new HashSet<String>();
 
 	@Override
 	protected Set<String> getDatabaseScripts() {
@@ -122,14 +118,14 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 		
 		openmrsIDServiceSpy.downloadAndSaveIds(2, "test");
 
-		List<UniqueId> uniqueIds = uniqueIdPostgresRepository.getNotUsedIds(2);
+		List<UniqueId> uniqueIds = uniqueIdRepository.getNotUsedIds(2);
 		List<String> actualList = new ArrayList<>();
 		for (UniqueId uniqueId : uniqueIds) {
 			assertEquals("test", uniqueId.getUsedBy());
 			actualList.add(uniqueId.getOpenmrsId());
 		}
 		
-		assertEquals(2, (long) uniqueIdPostgresRepository.totalUnUsedIds());
+		assertEquals(2, (long) uniqueIdRepository.totalUnUsedIds());
 		assertEquals(downloadedIds, actualList);
 	}
 	
@@ -202,7 +198,7 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 			uniqueId.setCreatedAt(new Date());
 			uniqueId.setLocation("test");
 			notUsedUniqueIds.add(uniqueId);
-			uniqueIdPostgresRepository.add(uniqueId);
+			uniqueIdRepository.add(uniqueId);
 		}
 		return notUsedUniqueIds;
 	}
