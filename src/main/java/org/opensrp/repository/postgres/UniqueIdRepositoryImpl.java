@@ -63,6 +63,22 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
     }
 
     @Override
+    public void clearTable() {
+        UniqueIdExample example = new UniqueIdExample();
+        uniqueIdMapper.deleteByExample(example);
+    }
+
+    @Override
+    public boolean checkIfClientExists(String usedBy, String location) {
+        UniqueIdExample example = new UniqueIdExample();
+        example.createCriteria().andUsedByEqualTo(usedBy).andLocationEqualTo(location);
+
+        List<org.opensrp.domain.postgres.UniqueId> uniqueIds = uniqueIdMapper.selectByExample(example);
+
+        return (uniqueIds != null && !uniqueIds.isEmpty());
+    }
+
+    @Override
     public UniqueId get(String id) {
         if (StringUtils.isBlank(id)) {
             return null;

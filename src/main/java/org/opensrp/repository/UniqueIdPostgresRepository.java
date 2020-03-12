@@ -13,4 +13,8 @@ public interface UniqueIdPostgresRepository extends BaseRepository<UniqueId> {
 
     int markAsUsed(final List<String> ids);
 
+    void clearTable();
+
+    boolean checkIfClientExists(String usedBy, String location);
+
 }
