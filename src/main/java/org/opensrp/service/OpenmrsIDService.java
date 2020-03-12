@@ -181,8 +181,8 @@ public class OpenmrsIDService {
 		return uniqueIdPostgresRepository.getNotUsedIdsAsString(limit);
 	}
 	
-	public int[] markIdsAsUsed(List<String> ids) {
-		return uniqueIdRepository.markAsUsed(ids);
+	public Long[] markIdsAsUsed(List<String> ids) {
+		return uniqueIdPostgresRepository.markAsUsed(ids);
 	}
 	
 	public List<String> getOpenMRSIdentifiers(String source, String numberToGenerate, String userName, String password)

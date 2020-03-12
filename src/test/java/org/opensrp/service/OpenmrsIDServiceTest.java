@@ -184,7 +184,7 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 			idListAsString.add(ids.get(i).getOpenmrsId());
 		}
 		
-		int[] actualIds = openmrsIDService.markIdsAsUsed(idListAsString);
+		Long[] actualIds = openmrsIDService.markIdsAsUsed(idListAsString);
 		List<String> actualList = openmrsIDService.getNotUsedIdsAsString(100);
 		
 		assertEquals(size, actualIds.length);

@@ -11,7 +11,7 @@ public interface UniqueIdPostgresRepository extends BaseRepository<UniqueId> {
 
     Long totalUnUsedIds();
 
-    int markAsUsed(final List<String> ids);
+    Long[] markAsUsed(final List<String> ids);
 
     void clearTable();
 

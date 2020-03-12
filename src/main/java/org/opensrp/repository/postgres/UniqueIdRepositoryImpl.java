@@ -43,23 +43,23 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
     }
 
     @Override
-    public int markAsUsed(List<String> ids) {
+    public Long[] markAsUsed(List<String> ids) {
 
-        int updatedrecords = 0;
+        List<Long> updatedrecords = new ArrayList<>();
         UniqueIdExample example = new UniqueIdExample();
         example.createCriteria().andOpenmrsIdIn(ids);
         List<org.opensrp.domain.postgres.UniqueId> uniqueIdsToMarkAsUnused = uniqueIdMapper.selectByExample(example);
 
         if (uniqueIdsToMarkAsUnused == null || uniqueIdsToMarkAsUnused.isEmpty()) {
-            return 0;
+            return null;
         }
 
         for (org.opensrp.domain.postgres.UniqueId uniqueId: uniqueIdsToMarkAsUnused){
             uniqueId.setStatus(UniqueId.STATUS_USED);
             uniqueIdMapper.updateByPrimaryKey(uniqueId);
-            updatedrecords ++;
+            updatedrecords.add(uniqueId.getId());
         }
-        return updatedrecords;
+        return updatedrecords.toArray(new Long[uniqueIdsToMarkAsUnused.size()]);
     }
 
     @Override
