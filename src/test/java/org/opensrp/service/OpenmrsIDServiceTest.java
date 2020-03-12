@@ -13,23 +13,24 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Set;
 import org.joda.time.DateTime;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.opensrp.SpringApplicationContextProvider;
 import org.opensrp.domain.Address;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.UniqueId;
+import org.opensrp.repository.UniqueIdPostgresRepository;
 import org.opensrp.repository.UniqueIdRepository;
+import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-public class OpenmrsIDServiceTest extends SpringApplicationContextProvider {
+public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 	
 	@Autowired
 	OpenmrsIDService openmrsIDService;
@@ -39,8 +40,13 @@ public class OpenmrsIDServiceTest extends SpringApplicationContextProvider {
 	
 	@Autowired
 	UniqueIdRepository uniqueIdRepository;
+
+	@Autowired
+	UniqueIdPostgresRepository uniqueIdPostgresRepository;
+
+	private Set<String> scripts = new HashSet<String>();;
 	
-	@Before
+	/*@Before
 	public void setUp() {
 		String dropDbSql = "DROP TABLE IF EXISTS `unique_ids`;";
 		jdbcTemplate.execute(dropDbSql);
@@ -58,6 +64,12 @@ public class OpenmrsIDServiceTest extends SpringApplicationContextProvider {
 		String dropDbSql = "DROP TABLE IF EXISTS `unique_ids`;";
 		// jdbcTemplate.execute(dropDbSql);
 		
+	}
+*/
+	@Override
+	protected Set<String> getDatabaseScripts() {
+		scripts.add("unique_ids.sql");
+		return scripts;
 	}
 	
 	public Client createClient(String baseEntityId, String firstName, String lastName, String gender,
@@ -130,14 +142,14 @@ public class OpenmrsIDServiceTest extends SpringApplicationContextProvider {
 		
 		openmrsIDServiceSpy.downloadAndSaveIds(2, "test");
 		
-		List<UniqueId> uniqueIds = uniqueIdRepository.getNotUsedIds(2);
+		List<UniqueId> uniqueIds = uniqueIdPostgresRepository.getNotUsedIds(2);
 		List<String> actualList = new ArrayList<>();
 		for (UniqueId uniqueId : uniqueIds) {
 			assertEquals("test", uniqueId.getUsedBy());
 			actualList.add(uniqueId.getOpenmrsId());
 		}
 		
-		assertEquals(2, (int) uniqueIdRepository.totalUnUsedIds());
+		assertEquals(2, (long) uniqueIdPostgresRepository.totalUnUsedIds());
 		assertEquals(downloadedIds, actualList);
 	}
 	
@@ -210,7 +222,7 @@ public class OpenmrsIDServiceTest extends SpringApplicationContextProvider {
 			uniqueId.setCreatedAt(new Date());
 			uniqueId.setLocation("test");
 			notUsedUniqueIds.add(uniqueId);
-			uniqueIdRepository.save(uniqueId);
+			uniqueIdPostgresRepository.add(uniqueId);
 		}
 		return notUsedUniqueIds;
 	}
