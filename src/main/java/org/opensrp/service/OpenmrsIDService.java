@@ -16,6 +16,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.UniqueId;
+import org.opensrp.repository.UniqueIdPostgresRepository;
 import org.opensrp.repository.UniqueIdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,9 @@ public class OpenmrsIDService {
 	
 	@Autowired
 	private UniqueIdRepository uniqueIdRepository;
+
+	@Autowired
+	private UniqueIdPostgresRepository uniqueIdPostgresRepository;
 	
 	public static OpenmrsIDService createInstanceWithOpenMrsUrl(String openmrsUrl) {
 		OpenmrsIDService openmrsIDService = new OpenmrsIDService();
@@ -62,7 +66,7 @@ public class OpenmrsIDService {
 		this.client = HttpClientBuilder.create().build();
 	}
 	
-	public List<String> downloadOpenmrsIds(int size) {
+	public List<String> downloadOpenmrsIds(long size) {
 		List<String> ids = new ArrayList<String>();
 		String openmrsQueryUrl = this.openmrsUrl + OPENMRS_IDGEN_URL;
 		// Add query parameters
@@ -98,9 +102,9 @@ public class OpenmrsIDService {
 	 */
 	public void downloadAndSaveIds(int size, String userName) {
 		try {
-			Integer totalUnUsed = uniqueIdRepository.totalUnUsedIds();
+			Long totalUnUsed = uniqueIdPostgresRepository.totalUnUsedIds();
 			if (totalUnUsed < size) {
-				int numberToGenerate = size - totalUnUsed;
+				long numberToGenerate = size - totalUnUsed;
 				List<String> ids = downloadOpenmrsIds(numberToGenerate);
 				for (String id : ids) {
 					UniqueId uniqueId = new UniqueId();
@@ -108,7 +112,7 @@ public class OpenmrsIDService {
 					uniqueId.setOpenmrsId(id);
 					uniqueId.setUsedBy(userName);
 					uniqueId.setStatus(UniqueId.STATUS_NOT_USED);
-					uniqueIdRepository.save(uniqueId);
+					uniqueIdPostgresRepository.add(uniqueId);
 				}
 			}
 		}
@@ -120,7 +124,7 @@ public class OpenmrsIDService {
 	
 	public void clearRecords() {
 		try {
-			uniqueIdRepository.clearTable();
+			uniqueIdPostgresRepository.clearTable();
 		}
 		catch (Exception e) {
 			logger.error("", e);
@@ -130,18 +134,15 @@ public class OpenmrsIDService {
 	public Boolean checkIfClientExists(Client client) throws SQLException {
 		try {
 			String location = client.getAddress("usual_residence").getAddressField("address2");
-			String checkIfExistQuery = "SELECT count(*) from " + UniqueId.tbName + " WHERE " + UniqueId.COL_USEDBY
-			        + " = ? AND " + UniqueId.COL_LOCATION + " = ?";
-			String[] args = new String[2];
-			args[0] = (String) client.getAttribute(CHILD_REGISTER_CARD_NUMBER);
-			args[1] = location;
-			
-			int rowCount = uniqueIdRepository.checkIfExists(checkIfExistQuery, args);
+
+			String usedBy = (String) client.getAttribute(CHILD_REGISTER_CARD_NUMBER);
+
+			boolean clientExists = uniqueIdPostgresRepository.checkIfClientExists(usedBy, location);
 			
 			logger.info(
-			    "[checkIfClientExists] - Card Number:" + args[0] + " - [Exists] " + (rowCount == 0 ? "false" : "true"));
+			    "[checkIfClientExists] - Card Number:" + usedBy + " - [Exists] " + clientExists);
 			
-			return rowCount >= 1 ? true : false;
+			return clientExists;
 		}
 		catch (Exception e) {
 			logger.error("", e);
@@ -163,7 +164,7 @@ public class OpenmrsIDService {
 				uniqueId.setUsedBy(childRegisterCardNumber);
 				uniqueId.setLocation(location);
 				uniqueId.setCreatedAt(new Date());
-				uniqueIdRepository.save(uniqueId);
+				uniqueIdPostgresRepository.add(uniqueId);
 				logger.info("Assigned " + ZEIR_IDENTIFIER + " to " + client.fullName());
 			}
 		}
@@ -173,11 +174,11 @@ public class OpenmrsIDService {
 	}
 	
 	public List<UniqueId> getNotUsedIds(int limit) {
-		return uniqueIdRepository.getNotUsedIds(limit);
+		return uniqueIdPostgresRepository.getNotUsedIds(limit);
 	}
 	
 	public List<String> getNotUsedIdsAsString(int limit) {
-		return uniqueIdRepository.getNotUsedIdsAsString(limit);
+		return uniqueIdPostgresRepository.getNotUsedIdsAsString(limit);
 	}
 	
 	public int[] markIdsAsUsed(List<String> ids) {
