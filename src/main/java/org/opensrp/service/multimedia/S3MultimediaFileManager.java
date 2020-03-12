@@ -68,7 +68,7 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
     }
 
     private String getS3FilePath(String localFilePath) {
-	    return StringUtils.isBlank(localFilePath) ? "" : localFilePath.replace(getMultimediaDirPath(), "");
+	    return StringUtils.isBlank(localFilePath) ? "" : localFilePath.replace(getBaseMultiMediaDir(), "");
     }
 
 	@Override

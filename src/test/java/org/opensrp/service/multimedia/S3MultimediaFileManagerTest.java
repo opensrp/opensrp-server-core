@@ -135,8 +135,8 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 	@Test
 	public void testGetS3FilePathShouldReturnCorrectFilePath() throws Exception {
-		Whitebox.setInternalState(s3MultimediaFileManager, "multimediaDirPath", "multimedia/directory/path");
-		String truncatedFilePath = Whitebox.invokeMethod(s3MultimediaFileManager, "getS3FilePath", s3MultimediaFileManager.getMultimediaDirPath() + "path/to/file");
+		Whitebox.setInternalState(s3MultimediaFileManager, "baseMultimediaDirPath", "base/directory/path");
+		String truncatedFilePath = Whitebox.invokeMethod(s3MultimediaFileManager, "getS3FilePath", s3MultimediaFileManager.getBaseMultiMediaDir() + "path/to/file");
 		assertEquals("path/to/file", truncatedFilePath);
 	}
 

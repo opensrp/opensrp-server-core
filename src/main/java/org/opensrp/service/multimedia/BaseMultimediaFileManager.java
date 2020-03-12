@@ -142,11 +142,11 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
         if (MULTI_VERSION.equals(multimediaDTO.getFileCategory())) {
             // allow saving multiple multimedia associated with one client
             String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
-            makeMultimediaDir(dirPath);
+            createMultimediaDir(dirPath);
             fileName = dirPath + File.separator + multimediaFile.getOriginalFilename();
         } else {
             // overwrite previously saved image
-            makeMultimediaDir(multimediaDirPath);
+            createMultimediaDir(multimediaDirPath);
             fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
         }
 
@@ -156,7 +156,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
 
     protected abstract String getBaseMultiMediaDir();
 
-    private void makeMultimediaDir(String dirPath) {
+    private void createMultimediaDir(String dirPath) {
         File file = new File(dirPath);
         if (!file.exists()) {
             file.mkdirs();
