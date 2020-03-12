@@ -1,6 +1,5 @@
 package org.opensrp.service.multimedia;
 
-import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.File;
