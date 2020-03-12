@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> implements UniqueIdPostgresRepository {
 
     @Autowired
-    CustomUniqueIdMapper uniqueIdMapper;
+    private CustomUniqueIdMapper uniqueIdMapper;
 
     @Override
     public List<UniqueId> getNotUsedIds( int limit) {
@@ -143,7 +143,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
 
     @Override
     public void safeRemove(UniqueId entity) {
-
+        //Do nothing
     }
 
     private List<UniqueId> convert(List<org.opensrp.domain.postgres.UniqueId> pgEntities) {
