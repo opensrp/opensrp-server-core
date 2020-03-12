@@ -82,7 +82,7 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 		PutObjectRequest putObjectRequest = putObjectRequestArgumentCaptor.getValue();
 		assertEquals(putObjectRequest.getBucketName(), "s3Bucket");
-		assertEquals(putObjectRequest.getKey(), getTestFilePath());
+		assertEquals(putObjectRequest.getKey(), getTestFileFolder() +  File.separator + getTestFilePath());
 
 		File file = fileArgumentCaptor.getValue();
 		assertNotNull(file);
@@ -135,9 +135,10 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 	@Test
 	public void testGetS3FilePathShouldReturnCorrectFilePath() throws Exception {
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketFolderPath", "bucket_folder_path");
 		Whitebox.setInternalState(s3MultimediaFileManager, "baseMultimediaDirPath", "base/directory/path");
 		String truncatedFilePath = Whitebox.invokeMethod(s3MultimediaFileManager, "getS3FilePath", s3MultimediaFileManager.getBaseMultiMediaDir() + "path/to/file");
-		assertEquals("path/to/file", truncatedFilePath);
+		assertEquals("bucket_folder_path" + File.separator + "path/to/file", truncatedFilePath);
 	}
 
 	@Test
