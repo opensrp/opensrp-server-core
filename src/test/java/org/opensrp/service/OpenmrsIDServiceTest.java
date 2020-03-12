@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
 import static org.opensrp.service.OpenmrsIDService.CHILD_REGISTER_CARD_NUMBER;
 
 import java.sql.SQLException;
@@ -31,7 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class OpenmrsIDServiceTest extends BaseRepositoryTest {
-	
+
 	@Autowired
 	OpenmrsIDService openmrsIDService;
 	
@@ -45,27 +45,7 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 	UniqueIdPostgresRepository uniqueIdPostgresRepository;
 
 	private Set<String> scripts = new HashSet<String>();;
-	
-	/*@Before
-	public void setUp() {
-		String dropDbSql = "DROP TABLE IF EXISTS `unique_ids`;";
-		jdbcTemplate.execute(dropDbSql);
-		String tableCreationString = "CREATE TABLE `unique_ids` (\n" + "  `_id` bigint(20) NOT NULL AUTO_INCREMENT,\n"
-		        + "  `created_at` datetime DEFAULT NULL,\n" + "  `location` varchar(255) DEFAULT NULL,\n"
-		        + "  `openmrs_id` varchar(255) DEFAULT NULL,\n" + "  `status` varchar(255) DEFAULT NULL,\n"
-		        + "  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n"
-		        + "  `used_by` varchar(255) DEFAULT NULL,\n" + "  PRIMARY KEY (`_id`)\n"
-		        + ") ENGINE=InnoDB DEFAULT CHARSET=utf8;";
-		jdbcTemplate.execute(tableCreationString);
-	}
-	
-	@After
-	public void tearDown() {
-		String dropDbSql = "DROP TABLE IF EXISTS `unique_ids`;";
-		// jdbcTemplate.execute(dropDbSql);
-		
-	}
-*/
+
 	@Override
 	protected Set<String> getDatabaseScripts() {
 		scripts.add("unique_ids.sql");
@@ -138,10 +118,10 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 		downloadedIds.add("1");
 		downloadedIds.add("2");
 		OpenmrsIDService openmrsIDServiceSpy = Mockito.spy(openmrsIDService);
-		Mockito.doReturn(downloadedIds).when(openmrsIDServiceSpy).downloadOpenmrsIds(anyInt());
+		Mockito.doReturn(downloadedIds).when(openmrsIDServiceSpy).downloadOpenmrsIds(anyLong());
 		
 		openmrsIDServiceSpy.downloadAndSaveIds(2, "test");
-		
+
 		List<UniqueId> uniqueIds = uniqueIdPostgresRepository.getNotUsedIds(2);
 		List<String> actualList = new ArrayList<>();
 		for (UniqueId uniqueId : uniqueIds) {
