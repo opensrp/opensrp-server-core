@@ -33,9 +33,6 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 
 	@Autowired
 	OpenmrsIDService openmrsIDService;
-	
-	@Autowired
-	JdbcTemplate jdbcTemplate;
 
 	@Autowired
 	UniqueIdRepository uniqueIdRepository;

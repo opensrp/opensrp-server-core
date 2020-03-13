@@ -57,18 +57,6 @@
         <constructor-arg value="${couchdb.db.form}"/>
         <constructor-arg ref="couchDbInstance"/>
     </bean>
-    
-	<bean id="ds"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="${jdbc.driverClassName}" />
-		<property name="url" value="${jdbc.url}" />
-		<property name="username" value="${jdbc.username}" />
-		<property name="password" value="${jdbc.password}" />
-	</bean>
-
-	<bean id="template" class="org.springframework.jdbc.core.JdbcTemplate">
-		<property name="dataSource" ref="ds" />
-	</bean>
 
 	<alias name="${multimedia_file_manager}" alias="multimedia_file_manager"/>
 </beans>
