@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> implements UniqueIdRepository {
 
     @Autowired
-    CustomUniqueIdMapper uniqueIdMapper;
+    private CustomUniqueIdMapper uniqueIdMapper;
 
     @Override
     public List<UniqueId> getNotUsedIds( int limit) {
@@ -143,6 +143,16 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
 
     @Override
     public void safeRemove(UniqueId entity) {
+        if (getUniqueField(entity) == null){
+            return;
+        }
+
+        Long id = retrievePrimaryKey(entity);
+        if (id == null){ // unique id does not exist
+            return;
+        }
+
+        uniqueIdMapper.deleteByPrimaryKey(id);
 
     }
 
