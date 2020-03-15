@@ -14,6 +14,7 @@ import org.opensrp.domain.LocationTag;
 import org.opensrp.domain.postgres.LocationTagExample;
 import org.opensrp.repository.LocationTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 
 public class LocationTagRepositoryTest extends BaseRepositoryTest {
 	
@@ -45,6 +46,14 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		
 	}
 	
+	@Test(expected = DuplicateKeyException.class)
+	public void testAddShouldNotAddDuplicateLocationTag() {
+		LocationTag locationTag1 = initTestLocationTag1();
+		locationTagRepository.add(locationTag1);
+		locationTagRepository.add(locationTag1);
+		
+	}
+	
 	@Test
 	public void testAddShouldUpdateExistingLocationTag() {
 		LocationTag locationTag2 = initTestLocationTag2();
@@ -60,6 +69,20 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		
 		assertEquals(true, locationTags.get(0).getActive());
 		assertEquals("Division Tag", locationTags.get(0).getName());
+		
+	}
+	
+	@Test(expected = DuplicateKeyException.class)
+	public void testAddShouldNotUpdateExistingLocationTag() {
+		LocationTag locationTag2 = initTestLocationTag2();
+		locationTagRepository.add(locationTag2);
+		locationTag2.setName("Division Tag");
+		locationTagRepository.add(locationTag2);
+		org.opensrp.domain.postgres.LocationTag getLocationTag = locationTagRepository.getLocationTagByName("Division");
+		locationTag2.setId(getLocationTag.getId());
+		locationTag2.setDescription("update second label tag name");
+		locationTag2.setName("Division Tag");
+		locationTagRepository.update(locationTag2);
 		
 	}
 	
@@ -126,7 +149,6 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		LocationTag locationTag3 = initTestLocationTag3();
 		locationTagRepository.add(locationTag3);
 		LocationTagExample locationTagExample = new LocationTagExample();
-		//locationTagExample.createCriteria().andNameEqualTo("district").andActiveEqualTo(true);
 		String d = "d";
 		locationTagExample.createCriteria().andNameLike('%' + d + '%');
 		List<LocationTag> locationTags = locationTagRepository.findByLocationTagExample(locationTagExample, 0, 100);

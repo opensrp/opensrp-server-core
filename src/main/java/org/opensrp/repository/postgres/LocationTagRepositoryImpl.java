@@ -11,6 +11,7 @@ import org.opensrp.domain.postgres.LocationTagExample;
 import org.opensrp.repository.LocationTagRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationTagMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -29,11 +30,12 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		}
 		
 		if (retrievePrimaryKey(locationTag) != null) {
-			return; // location tag already added
+			throw new DuplicateKeyException("Location tag name already exists");
+			
 		}
 		
 		if (getLocationTagByName(locationTag.getName()) != null) {
-			return; // location tag with this name id already added
+			throw new DuplicateKeyException("Location tag name already exists");
 		}
 		if (locationTag.getName().isEmpty()) {
 			return;
@@ -62,12 +64,13 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		
 		org.opensrp.domain.postgres.LocationTag getPgLocationTag = getLocationTagByNameAndNotEqualId(locationTag.getName(),
 		    id);
+		
 		if (getPgLocationTag == null) {
 			org.opensrp.domain.postgres.LocationTag pgLocationTag = convert(locationTag);
 			pgLocationTag.setId(id);
 			locationTagMapper.updateByPrimaryKey(pgLocationTag);
 		} else {
-			throw new IllegalArgumentException("Location tag name already exists");
+			throw new DuplicateKeyException("Location tag name already exists");
 			
 		}
 		
