@@ -6,7 +6,10 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.powermock.reflect.Whitebox;
@@ -14,9 +17,14 @@ import org.powermock.reflect.Whitebox;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import org.mockito.Mockito;
 
 /**
  * Created by Vincent Karuri on 30/10/2019
@@ -60,7 +68,7 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
         s3MultimediaFileManager = Mockito.spy(s3MultimediaFileManager);
         s3MultimediaFileManager.persistFileToStorage(getTestFilePath(), testBytes);
 
-        verify(s3MultimediaFileManager).copyBytesToFile(fileArgumentCaptor.capture(), eq(testBytes));
+        verify(s3MultimediaFileManager).copyBytesToFile(fileArgumentCaptor.capture(), Mockito.eq(testBytes));
         verify(s3Client).putObject(putObjectRequestArgumentCaptor.capture());
 
         PutObjectRequest putObjectRequest = putObjectRequestArgumentCaptor.getValue();

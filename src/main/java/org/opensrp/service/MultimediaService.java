@@ -57,7 +57,8 @@ public class MultimediaService {
      *
      * @param multimedia
      * @param fileBytes
-     * @return
+     * @param originalFileName
+     * @return A {@link String} for resource path
      */
     public String saveFile(MultimediaDTO multimedia, byte[] fileBytes, String originalFileName) {
         return fileManager.saveFile(multimedia, fileBytes, originalFileName);
@@ -67,7 +68,7 @@ public class MultimediaService {
      * Retrieves a file from storage or null if it doesn't exist
      *
      * @param filePath
-     * @return
+     * @return A {@link File} if param path
      */
     public File retrieveFile(String filePath) {
         return fileManager.retrieveFile(filePath);
