@@ -8,14 +8,12 @@ import org.opensrp.service.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
-import static org.opensrp.service.MultimediaService.IMAGES_DIR;
-import static org.opensrp.service.MultimediaService.MULTI_VERSION;
-import static org.opensrp.service.MultimediaService.VIDEOS_DIR;
+import static org.opensrp.service.MultimediaService.*;
 
 /**
  * Created by Vincent Karuri on 24/10/2019
@@ -43,25 +41,32 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
         this.clientService = clientService;
     }
 
+    public void copyBytesToFile(File destination, byte[] fileBytes) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(destination)) {
+            fos.write(fileBytes);
+        }
+    }
+
     /**
-     * Persists a {@link MultipartFile} with the given {@param fileName} to storage
+     * Persists a {@link File} with the given {@param fileName} to storage
+     *
      * @param fileName
-     * @param multimediaFile
+     * @param fileBytes
      * @throws IOException
      */
-    protected abstract void persistFileToStorage(String fileName, MultipartFile multimediaFile) throws IOException;
+    protected abstract void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String saveFile(MultimediaDTO multimedia, MultipartFile file) {
-        return saveMultimediaFile(multimedia, file);
+    public String saveFile(MultimediaDTO multimedia, byte[] fileBytes, String originalFileName) {
+        return saveMultimediaFile(multimedia, fileBytes, originalFileName);
     }
 
-    public String saveMultimediaFile(MultimediaDTO multimediaDTO, MultipartFile file) {
+    public String saveMultimediaFile(MultimediaDTO multimediaDTO, byte[] fileBytes, String originalFileName) {
 
-        if (uploadFile(multimediaDTO, file)) {
+        if (uploadFile(multimediaDTO, fileBytes, originalFileName)) {
             try {
                 logger.info("Image path : " + multimediaDirPath);
 
@@ -92,12 +97,11 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
      * Saves a multi-part file uploaded to the server
      *
      * @param multimediaDTO {@link MultimediaDTO} object populated with information about the file to be saved
-     * @param multimediaFile {@link MultipartFile} file to save to disk
-     *
+     * @param fileBytes     {@link File} file to save to disk
      * @return true if the file was saved else false
      */
-    public boolean uploadFile(MultimediaDTO multimediaDTO, MultipartFile multimediaFile) {
-        if (!multimediaFile.isEmpty()) {
+    public boolean uploadFile(MultimediaDTO multimediaDTO, byte[] fileBytes, String originalFileName) {
+        if (fileBytes != null) {
             try {
                 multimediaDirPath = getMultiMediaDir();
                 String fileExt = ".jpg";
@@ -128,7 +132,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                     // allow saving multiple multimedia associated with one client
                     String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
                     makeMultimediaDir(dirPath);
-                    fileName = dirPath + File.separator + multimediaFile.getOriginalFilename();
+                    fileName = dirPath + File.separator + originalFileName;
                 } else {
                     // overwrite previously saved image
                     makeMultimediaDir(multimediaDirPath);
@@ -136,7 +140,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                 }
 
                 multimediaDTO.withFilePath(fileName);
-                persistFileToStorage(fileName, multimediaFile);
+                persistFileToStorage(fileName, fileBytes);
 
                 return true;
             } catch (Exception e) {

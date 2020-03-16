@@ -1,7 +1,6 @@
 package org.opensrp.service.multimedia;
 
 import org.opensrp.dto.form.MultimediaDTO;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 
@@ -12,17 +11,15 @@ import java.io.File;
 public interface MultimediaFileManager {
 
     /**
-     *
-     * Persists a {@link MultipartFile} to storage
+     * Persists a {@link byte[]} to storage
      *
      * @param multimedia
-     * @param file
+     * @param fileBytes
      * @return
      */
-    String saveFile(MultimediaDTO multimedia, MultipartFile file);
+    String saveFile(MultimediaDTO multimedia, byte[] fileBytes, String originalFileName);
 
     /**
-     *
      * Retrieves a file from storage or null if it doesn't exist
      *
      * @param filePath

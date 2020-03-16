@@ -14,7 +14,6 @@ import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -40,22 +39,22 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
     @Value("#{opensrp['s3_bucket_name'] ?: ''}")
     private String s3BucketName;
 
-	@Value("#{opensrp['s3_bucket_folder_path'] ?: ''}")
-	private String s3BucketFolderPath;
+    @Value("#{opensrp['s3_bucket_folder_path'] ?: ''}")
+    private String s3BucketFolderPath;
 
-	private AmazonS3 s3Client;
+    private AmazonS3 s3Client;
 
     @Autowired
     public S3MultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
         super(multimediaRepository, clientService);
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected void persistFileToStorage(String fileName, MultipartFile multipartFile) throws IOException {
-        File multimediaFile = multipartFileToFile(fileName, multipartFile);
+    protected void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException {
+        File multimediaFile = bytesToFile(fileName, fileBytes);
         byte[] md5 = DigestUtils.md5(new FileInputStream(multimediaFile));
         InputStream inputStream = new FileInputStream(multimediaFile);
         ObjectMetadata metadata = new ObjectMetadata();
@@ -67,20 +66,20 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
     }
 
     private String getS3FilePath(String localFilePath) {
-    	String[] filePathLevels = localFilePath.split("/");
-    	String fileName = filePathLevels.length > 0 ? filePathLevels[filePathLevels.length - 1] : "";
-    	String s3FilePath = "".equals(s3BucketFolderPath) ? fileName : s3BucketFolderPath + File.separator + fileName;
-    	return s3FilePath;
+        String[] filePathLevels = localFilePath.split("/");
+        String fileName = filePathLevels.length > 0 ? filePathLevels[filePathLevels.length - 1] : "";
+        String s3FilePath = "".equals(s3BucketFolderPath) ? fileName : s3BucketFolderPath + File.separator + fileName;
+        return s3FilePath;
     }
 
-	@Override
-	protected String getMultiMediaDir() {
-		return File.separator + "tmp" + File.separator;
-	}
+    @Override
+    protected String getMultiMediaDir() {
+        return File.separator + "tmp" + File.separator;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public File retrieveFile(String filePath) {
         File file = null;
@@ -92,18 +91,17 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
         return file;
     }
 
-	/**
-	 *
-	 * Converts {@link MultipartFile} to {@link File}
-	 *
-	 * @param fileName
-	 * @param multipart
-	 * @return
-	 * @throws IOException
-	 */
-	private File multipartFileToFile(String fileName, MultipartFile multipart) throws IOException {
+    /**
+     * Converts {@link byte[]} to {@link File}
+     *
+     * @param fileName
+     * @param fileBytes
+     * @return
+     * @throws IOException
+     */
+    private File bytesToFile(String fileName, byte[] fileBytes) throws IOException {
         File tempFile = new File(fileName);
-        multipart.transferTo(tempFile);
+        copyBytesToFile(tempFile, fileBytes);
         tempFile.deleteOnExit();
         return tempFile;
     }
