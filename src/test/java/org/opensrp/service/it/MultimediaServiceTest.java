@@ -60,7 +60,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
         multimediaRepository.removeAll();
         deleteFolders("../multimedia");
         fileManager = (BaseMultimediaFileManager) multimediaService.getFileManager();
-        fileManager = Mockito.spy(fileManager);
+        fileManager = spy(fileManager);
         BASE_IMAGE_PATH = baseMultimediaDirPath + File.separator + IMAGES_DIR + File.separator;
     }
 
