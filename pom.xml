@@ -5,7 +5,7 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>2.0.0-alpha5-SNAPSHOT</version>
+	<version>2.0.0-alpha6-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>http://github.com/OpenSRP/opensrp-server-core</url>
@@ -17,7 +17,6 @@
 		<mybatis.version>3.5.4</mybatis.version>
 		<mybatis.spring.version>2.0.3</mybatis.spring.version>
 		<hibernate.version>5.4.12.Final</hibernate.version>
-		<mysql.connector.version>8.0.19</mysql.connector.version>
 		<opensrp.updatePolicy>always</opensrp.updatePolicy>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
@@ -265,11 +264,6 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20190722</version>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql.connector.version}</version>
 		</dependency>
 		<!-- TODO To remove when removing couchdb -->
 		<!-- https://mvnrepository.com/artifact/org.ektorp/org.ektorp -->
@@ -562,68 +556,6 @@
 			<build>
 				<!-- <pluginManagement> -->
 				<plugins>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>sql-maven-plugin</artifactId>
-						<version>1.5</version>
-						<dependencies>
-							<!-- <dependency> <groupId>postgresql</groupId> <artifactId>postgresql</artifactId> 
-								<version>9.1-901.jdbc4</version> </dependency> -->
-							<dependency>
-								<groupId>mysql</groupId>
-								<artifactId>mysql-connector-java</artifactId>
-								<version>${mysql.connector.version}</version>
-							</dependency>
-						</dependencies>
-
-						<configuration>
-							<driver>${jdbc.driverClassName}</driver>
-							<url>${jdbc.url-wo-db}</url>
-							<username>${jdbc.username}</username>
-							<password>${jdbc.password}</password>
-							<skip>${maven.test.skip}</skip>
-						</configuration>
-
-						<executions>
-							<!-- Database init scripts for DBMS specific configuration -->
-							<execution>
-								<id>drop-create-relational-db</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>execute</goal>
-								</goals>
-								<configuration>
-									<url>${jdbc.url-wo-db}</url>
-									<username>${jdbc.username}</username>
-									<password>${jdbc.password}</password>
-									<autocommit>true</autocommit>
-									<sqlCommand>
-										drop database if exists ${db.quartz};
-										create
-										database ${db.quartz};
-									</sqlCommand>
-									<onError>abort</onError>
-								</configuration>
-							</execution>
-							<!-- END: Database init scripts for DBMS specific configuration -->
-							<execution>
-								<id>create-quartz-tables</id>
-								<phase>pre-integration-test</phase>
-								<goals>
-									<goal>execute</goal>
-								</goals>
-								<configuration>
-									<url>${jdbc.url-wo-db}/${db.quartz}</url>
-									<username>${jdbc.username}</username>
-									<password>${jdbc.password}</password>
-									<autocommit>true</autocommit>
-									<srcFiles>
-										<srcFile>configs/build/sql/tables_quartz_${jdbc.backend}.sql</srcFile>
-									</srcFiles>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-failsafe-plugin</artifactId>
