@@ -27,94 +27,96 @@ import java.io.InputStream;
 @Component("S3MultimediaFileManager")
 public class S3MultimediaFileManager extends BaseMultimediaFileManager {
 
-    @Value("#{opensrp['aws_access_key_id'] ?: ''}")
-    private String awsAccessKeyId;
+	@Value("#{opensrp['aws_access_key_id'] ?: ''}")
+	private String awsAccessKeyId;
 
-    @Value("#{opensrp['aws_secret_access_key'] ?: ''}")
-    private String awsSecretAccessKey;
+	@Value("#{opensrp['aws_secret_access_key'] ?: ''}")
+	private String awsSecretAccessKey;
 
-    @Value("#{opensrp['aws_region'] ?: ''}")
-    private String awsRegion;
+	@Value("#{opensrp['aws_region'] ?: ''}")
+	private String awsRegion;
 
-    @Value("#{opensrp['s3_bucket_name'] ?: ''}")
-    private String s3BucketName;
+	@Value("#{opensrp['s3_bucket_name'] ?: ''}")
+	private String s3BucketName;
 
-    @Value("#{opensrp['s3_bucket_folder_path'] ?: ''}")
-    private String s3BucketFolderPath;
+	@Value("#{opensrp['s3_bucket_folder_path'] ?: ''}")
+	private String s3BucketFolderPath;
 
-    private AmazonS3 s3Client;
+	private AmazonS3 s3Client;
 
-    @Autowired
-    public S3MultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
-        super(multimediaRepository, clientService);
-    }
+	@Autowired
+	public S3MultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
+		super(multimediaRepository, clientService);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException {
-        File multimediaFile = bytesToFile(fileName, fileBytes);
-        byte[] md5 = DigestUtils.md5(new FileInputStream(multimediaFile));
-        InputStream inputStream = new FileInputStream(multimediaFile);
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(multimediaFile.length());
-        metadata.setContentMD5(new String(Base64.encodeBase64(md5)));
-        PutObjectRequest request = new PutObjectRequest(s3BucketName, getS3FilePath(multimediaFile.getPath()), inputStream, metadata);
-        s3Client.putObject(request);
-        multimediaFile.delete();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException {
+		File multimediaFile = bytesToFile(fileName, fileBytes);
+		byte[] md5 = DigestUtils.md5(new FileInputStream(multimediaFile));
+		InputStream inputStream = new FileInputStream(multimediaFile);
+		ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setContentLength(multimediaFile.length());
+		metadata.setContentMD5(new String(Base64.encodeBase64(md5)));
+		PutObjectRequest request = new PutObjectRequest(s3BucketName, getS3FilePath(multimediaFile.getPath()), inputStream,
+				metadata);
+		s3Client.putObject(request);
+		multimediaFile.delete();
+	}
 
-    private String getS3FilePath(String localFilePath) {
-        String[] filePathLevels = localFilePath.split("/");
-        String fileName = filePathLevels.length > 0 ? filePathLevels[filePathLevels.length - 1] : "";
-        String s3FilePath = "".equals(s3BucketFolderPath) ? fileName : s3BucketFolderPath + File.separator + fileName;
-        return s3FilePath;
-    }
+	private String getS3FilePath(String localFilePath) {
+		String[] filePathLevels = localFilePath.split("/");
+		String fileName = filePathLevels.length > 0 ? filePathLevels[filePathLevels.length - 1] : "";
+		String s3FilePath = "".equals(s3BucketFolderPath) ? fileName : s3BucketFolderPath + File.separator + fileName;
+		return s3FilePath;
+	}
 
-    @Override
-    protected String getMultiMediaDir() {
-        return File.separator + "tmp" + File.separator;
-    }
+	@Override
+	protected String getMultiMediaDir() {
+		return File.separator + "tmp" + File.separator;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public File retrieveFile(String filePath) {
-        File file = null;
-        if (s3Client.doesObjectExist(s3BucketName, filePath)) {
-            // make sure tomcat has permissions to save to filePath
-            file = new File(filePath);
-            s3Client.getObject(new GetObjectRequest(s3BucketName, filePath), file);
-        }
-        return file;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public File retrieveFile(String filePath) {
+		File file = null;
+		if (s3Client.doesObjectExist(s3BucketName, filePath)) {
+			// make sure tomcat has permissions to save to filePath
+			file = new File(filePath);
+			s3Client.getObject(new GetObjectRequest(s3BucketName, filePath), file);
+		}
+		return file;
+	}
 
-    /**
-     * Converts {@link byte[]} to {@link File}
-     *
-     * @param fileName
-     * @param fileBytes
-     * @return
-     * @throws IOException
-     */
-    private File bytesToFile(String fileName, byte[] fileBytes) throws IOException {
-        File tempFile = new File(fileName);
-        copyBytesToFile(tempFile, fileBytes);
-        tempFile.deleteOnExit();
-        return tempFile;
-    }
+	/**
+	 * Converts {@link byte[]} to {@link File}
+	 *
+	 * @param fileName
+	 * @param fileBytes
+	 * @return
+	 * @throws IOException
+	 */
+	private File bytesToFile(String fileName, byte[] fileBytes) throws IOException {
+		File tempFile = new File(fileName);
+		copyBytesToFile(tempFile, fileBytes);
+		tempFile.deleteOnExit();
+		return tempFile;
+	}
 
-    @PostConstruct
-    @SuppressWarnings("unused")
-    private AmazonS3 getS3Client() {
-        if (s3Client == null) {
-            s3Client = AmazonS3ClientBuilder.standard()
-                    .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey)))
-                    .withRegion(awsRegion)
-                    .build();
-        }
-        return s3Client;
-    }
+	@PostConstruct
+	@SuppressWarnings("unused")
+	private AmazonS3 getS3Client() {
+		if (s3Client == null) {
+			s3Client = AmazonS3ClientBuilder.standard()
+					.withCredentials(
+							new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey)))
+					.withRegion(awsRegion)
+					.build();
+		}
+		return s3Client;
+	}
 }

@@ -15,31 +15,31 @@ import java.io.IOException;
 @Component("FileSystemMultimediaFileManager")
 public class FileSystemMultimediaFileManager extends BaseMultimediaFileManager {
 
-    @Autowired
-    public FileSystemMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
-        super(multimediaRepository, clientService);
-    }
+	@Autowired
+	public FileSystemMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
+		super(multimediaRepository, clientService);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException {
-        File multimediaFilePath = new File(fileName);
-        copyBytesToFile(multimediaFilePath, fileBytes);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException {
+		File multimediaFilePath = new File(fileName);
+		copyBytesToFile(multimediaFilePath, fileBytes);
+	}
 
-    @Override
-    protected String getMultiMediaDir() {
-        return baseMultimediaDirPath + File.separator;
-    }
+	@Override
+	protected String getMultiMediaDir() {
+		return baseMultimediaDirPath + File.separator;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public File retrieveFile(String filePath) {
-        File file = new File(filePath);
-        return file.exists() && file.canRead() ? file : null;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public File retrieveFile(String filePath) {
+		File file = new File(filePath);
+		return file.exists() && file.canRead() ? file : null;
+	}
 }

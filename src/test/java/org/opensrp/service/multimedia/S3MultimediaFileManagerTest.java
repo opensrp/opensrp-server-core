@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
@@ -24,103 +25,105 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import org.mockito.Mockito;
 
 /**
  * Created by Vincent Karuri on 30/10/2019
  */
 public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
-    private S3MultimediaFileManager s3MultimediaFileManager;
+	private S3MultimediaFileManager s3MultimediaFileManager;
 
-    @Captor
-    private ArgumentCaptor<File> fileArgumentCaptor = ArgumentCaptor.forClass(File.class);
+	@Captor
+	private ArgumentCaptor<File> fileArgumentCaptor = ArgumentCaptor.forClass(File.class);
 
-    @Captor
-    private ArgumentCaptor<GetObjectRequest> getObjectRequestArgumentCaptor = ArgumentCaptor.forClass(GetObjectRequest.class);
+	@Captor
+	private ArgumentCaptor<GetObjectRequest> getObjectRequestArgumentCaptor = ArgumentCaptor
+			.forClass(GetObjectRequest.class);
 
-    @Captor
-    private ArgumentCaptor<PutObjectRequest> putObjectRequestArgumentCaptor = ArgumentCaptor.forClass(PutObjectRequest.class);
+	@Captor
+	private ArgumentCaptor<PutObjectRequest> putObjectRequestArgumentCaptor = ArgumentCaptor
+			.forClass(PutObjectRequest.class);
 
-    @Mock
-    private ClientService clientService;
+	@Mock
+	private ClientService clientService;
 
-    @Mock
-    private MultimediaRepository multimediaRepository;
+	@Mock
+	private MultimediaRepository multimediaRepository;
 
-    @Mock
-    private AmazonS3Client s3Client;
+	@Mock
+	private AmazonS3Client s3Client;
 
-    @Before
-    public void setUp() throws IOException {
-        MockitoAnnotations.initMocks(this);
-        super.setUp();
-        s3MultimediaFileManager = new S3MultimediaFileManager(multimediaRepository, clientService);
-        Whitebox.setInternalState(s3MultimediaFileManager, "s3Client", s3Client);
-    }
+	@Before
+	public void setUp() throws IOException {
+		MockitoAnnotations.initMocks(this);
+		super.setUp();
+		s3MultimediaFileManager = new S3MultimediaFileManager(multimediaRepository, clientService);
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3Client", s3Client);
+	}
 
-    @Test
-    public void testPersistFileToStorageShouldPersistFileToS3() throws IOException {
-        Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
-        Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketFolderPath", getTestFileFolder());
+	@Test
+	public void testPersistFileToStorageShouldPersistFileToS3() throws IOException {
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketFolderPath", getTestFileFolder());
 
-        byte[] testBytes = new byte[10];
-        s3MultimediaFileManager = Mockito.spy(s3MultimediaFileManager);
-        s3MultimediaFileManager.persistFileToStorage(getTestFilePath(), testBytes);
+		byte[] testBytes = new byte[10];
+		s3MultimediaFileManager = Mockito.spy(s3MultimediaFileManager);
+		s3MultimediaFileManager.persistFileToStorage(getTestFilePath(), testBytes);
 
-        verify(s3MultimediaFileManager).copyBytesToFile(fileArgumentCaptor.capture(), Mockito.eq(testBytes));
-        verify(s3Client).putObject(putObjectRequestArgumentCaptor.capture());
+		verify(s3MultimediaFileManager).copyBytesToFile(fileArgumentCaptor.capture(), Mockito.eq(testBytes));
+		verify(s3Client).putObject(putObjectRequestArgumentCaptor.capture());
 
-        PutObjectRequest putObjectRequest = putObjectRequestArgumentCaptor.getValue();
-        assertEquals(putObjectRequest.getBucketName(), "s3Bucket");
-        assertEquals(putObjectRequest.getKey(), getTestFilePath());
+		PutObjectRequest putObjectRequest = putObjectRequestArgumentCaptor.getValue();
+		assertEquals(putObjectRequest.getBucketName(), "s3Bucket");
+		assertEquals(putObjectRequest.getKey(), getTestFilePath());
 
-        File file = fileArgumentCaptor.getValue();
-        assertNotNull(file);
-        assertEquals(file.getPath(), getTestFilePath());
+		File file = fileArgumentCaptor.getValue();
+		assertNotNull(file);
+		assertEquals(file.getPath(), getTestFilePath());
 
-        // ensure it cleans up temp file
-        assertFalse(new File(getTestFilePath()).exists());
-    }
+		// ensure it cleans up temp file
+		assertFalse(new File(getTestFilePath()).exists());
+	}
 
-    @Test
-    public void testRetrieveFileShouldRetrieveFileFromS3() {
-        String testFilePath = getTestFilePath();
-        Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
-        doReturn(true).when(s3Client).doesObjectExist("s3Bucket", testFilePath);
-        doReturn(mock(ObjectMetadata.class)).when(s3Client).getObject(getObjectRequestArgumentCaptor.capture(), fileArgumentCaptor.capture());
-        assertNotNull(s3MultimediaFileManager.retrieveFile(testFilePath));
+	@Test
+	public void testRetrieveFileShouldRetrieveFileFromS3() {
+		String testFilePath = getTestFilePath();
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
+		doReturn(true).when(s3Client).doesObjectExist("s3Bucket", testFilePath);
+		doReturn(mock(ObjectMetadata.class)).when(s3Client)
+				.getObject(getObjectRequestArgumentCaptor.capture(), fileArgumentCaptor.capture());
+		assertNotNull(s3MultimediaFileManager.retrieveFile(testFilePath));
 
-        File file = fileArgumentCaptor.getValue();
-        assertNotNull(file);
-        assertEquals(testFilePath, file.getPath());
+		File file = fileArgumentCaptor.getValue();
+		assertNotNull(file);
+		assertEquals(testFilePath, file.getPath());
 
-        GetObjectRequest getObjectRequest = getObjectRequestArgumentCaptor.getValue();
-        assertNotNull(getObjectRequest);
-        assertEquals(getObjectRequest.getBucketName(), "s3Bucket");
-        assertEquals(getObjectRequest.getKey(), testFilePath);
-    }
+		GetObjectRequest getObjectRequest = getObjectRequestArgumentCaptor.getValue();
+		assertNotNull(getObjectRequest);
+		assertEquals(getObjectRequest.getBucketName(), "s3Bucket");
+		assertEquals(getObjectRequest.getKey(), testFilePath);
+	}
 
-    @Test
-    public void testRetrieveFileShouldReturnNullForNonExistentS3File() {
-        Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
-        doReturn(false).when(s3Client).doesObjectExist("s3Bucket", "non_existent_file");
-        assertNull(s3MultimediaFileManager.retrieveFile("non_existent_file"));
-    }
+	@Test
+	public void testRetrieveFileShouldReturnNullForNonExistentS3File() {
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
+		doReturn(false).when(s3Client).doesObjectExist("s3Bucket", "non_existent_file");
+		assertNull(s3MultimediaFileManager.retrieveFile("non_existent_file"));
+	}
 
-    @Test
-    public void testGetS3ClientShouldReturnNonNullS3Client() throws Exception {
-        Whitebox.setInternalState(s3MultimediaFileManager, "awsRegion", "region");
-        Whitebox.setInternalState(s3MultimediaFileManager, "awsAccessKeyId", "region");
-        Whitebox.setInternalState(s3MultimediaFileManager, "awsSecretAccessKey", "awsSecretAccessKey");
-        Whitebox.setInternalState(s3MultimediaFileManager, "s3Client", (Object[]) null);
-        AmazonS3Client s3Client = Whitebox.invokeMethod(s3MultimediaFileManager, "getS3Client");
-        assertNotNull(s3Client);
-        assertEquals("region", s3Client.getRegionName());
-    }
+	@Test
+	public void testGetS3ClientShouldReturnNonNullS3Client() throws Exception {
+		Whitebox.setInternalState(s3MultimediaFileManager, "awsRegion", "region");
+		Whitebox.setInternalState(s3MultimediaFileManager, "awsAccessKeyId", "region");
+		Whitebox.setInternalState(s3MultimediaFileManager, "awsSecretAccessKey", "awsSecretAccessKey");
+		Whitebox.setInternalState(s3MultimediaFileManager, "s3Client", (Object[]) null);
+		AmazonS3Client s3Client = Whitebox.invokeMethod(s3MultimediaFileManager, "getS3Client");
+		assertNotNull(s3Client);
+		assertEquals("region", s3Client.getRegionName());
+	}
 
-    @Test
-    public void testGetMultiMediaDirShouldReturnCorrectFilePath() {
-        assertEquals(File.separator + "tmp" + File.separator, s3MultimediaFileManager.getMultiMediaDir());
-    }
+	@Test
+	public void testGetMultiMediaDirShouldReturnCorrectFilePath() {
+		assertEquals(File.separator + "tmp" + File.separator, s3MultimediaFileManager.getMultiMediaDir());
+	}
 }
