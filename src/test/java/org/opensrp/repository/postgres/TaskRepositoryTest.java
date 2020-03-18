@@ -169,6 +169,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 
 	}
 
+	@Test
 	public void testGetTasksByCampaignAndGroup() {
 		List<Task> tasks = taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 0);
 		assertEquals(1, tasks.size());
@@ -228,6 +229,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1542027762554l, idsModel.getRight().longValue());
 	}
 
+	@Test
 	public void testGetTasksByOwnerAndPlan() {
 		List<Task> tasks = taskRepository.getTasksByPlanAndOwner("IRS_2018_S1", "demouser", 0);
 		assertEquals(1, tasks.size());
@@ -239,6 +241,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setGroupIdentifier("2018_IRS-3734");
 		task.setBusinessStatus("Not Visited");
 		task.setStatus(TaskStatus.DRAFT);
+		task.setOwner("demouser");
 		task.setServerVersion(System.currentTimeMillis());
 		taskRepository.add(task);
 
