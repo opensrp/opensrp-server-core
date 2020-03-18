@@ -5,6 +5,7 @@ import static org.opensrp.util.Utils.isEmptyList;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.LocationTag;
 import org.opensrp.domain.postgres.LocationTagExample;
@@ -161,8 +162,7 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 	
 	@Override
 	public LocationTag get(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new NotImplementedException();
 	}
 	
 	private LocationTag convert(org.opensrp.domain.postgres.LocationTag pgLocationTag) {
