@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,14 +68,11 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
     }
 
     private String getS3FilePath(String localFilePath) {
-    	String[] filePathLevels = localFilePath.split("/");
-    	String fileName = filePathLevels.length > 0 ? filePathLevels[filePathLevels.length - 1] : "";
-    	String s3FilePath = "".equals(s3BucketFolderPath) ? fileName : s3BucketFolderPath + File.separator + fileName;
-    	return s3FilePath;
+	    return StringUtils.isBlank(localFilePath) ? "" : s3BucketFolderPath + File.separator + localFilePath.replace(getBaseMultiMediaDir(), "");
     }
 
 	@Override
-	protected String getMultiMediaDir() {
+	protected String getBaseMultiMediaDir() {
 		return File.separator + "tmp" + File.separator;
 	}
 
