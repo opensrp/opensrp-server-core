@@ -7,7 +7,6 @@ import org.opensrp.service.multimedia.MultimediaFileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.util.List;
@@ -56,14 +55,16 @@ public class MultimediaService {
 
 	/**
 	 *
-	 * Persists a {@link MultipartFile} to storage
+	 * Persists a {@link byte[]} to storage
 	 *
 	 * @param multimedia
-	 * @param file
+	 * @param fileBytes
+	 * @param originalFileName
+	 *
 	 * @return
 	 */
-	public String saveFile(MultimediaDTO multimedia, MultipartFile file) {
-		return fileManager.saveFile(multimedia, file);
+	public String saveFile(MultimediaDTO multimedia, byte[] fileBytes, String originalFileName) {
+		return fileManager.saveFile(multimedia, fileBytes, originalFileName);
 	}
 
 	/**
