@@ -31,4 +31,7 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 
 	List<LocationDetail> selectDetailsByPlanId(@Param("example") LocationMetadataExample locationMetadataExample,
 											   @Param("planIdentifier") String planIdentifier);
+
+	List<String> selectManyIds(@Param("example") LocationMetadataExample locationMetadataExample, @Param("offset") int offset,
+							   @Param("limit") int limit);
 }

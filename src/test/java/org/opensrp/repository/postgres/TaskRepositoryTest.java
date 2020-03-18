@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.domain.Task;
@@ -206,6 +207,25 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, tasks.size());
 		assertEquals("iyr-998njoo", tasks.get(0).getIdentifier());
 
+	}
+
+	@Test
+	public void testFindAllIdsShouldOrderByServerVersion() {
+		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l, 10);
+		List<String> taskIdentifiers = idsModel.getLeft();
+		assertEquals(2, taskIdentifiers.size());
+		assertEquals("tsk11231jh22", taskIdentifiers.get(0));
+		assertEquals("iyr-998njoo", taskIdentifiers.get(1));
+		assertEquals(1542031602680l, idsModel.getRight().longValue());
+	}
+
+	@Test
+	public void testFindAllIdsShouldLimitByGivenParam() {
+		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l, 1);
+		List<String> taskIdentifiers = idsModel.getLeft();
+		assertEquals(1, taskIdentifiers.size());
+		assertEquals("tsk11231jh22", taskIdentifiers.get(0));
+		assertEquals(1542027762554l, idsModel.getRight().longValue());
 	}
 
 }

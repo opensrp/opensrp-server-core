@@ -2,6 +2,8 @@ package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -181,4 +184,74 @@ public class PlanServiceTest {
 		verify(organizationService).findAssignedLocationsAndPlans(organizationIds);
 		assertEquals(expected, plans);
 	}
+
+	@Test
+	public void testFindAllPlanIds() {
+		List<String> expectedPlanIds = new ArrayList<>();
+		expectedPlanIds.add("Location-1");
+		expectedPlanIds.add("Location-2");
+		Pair<List<String>, Long> idsModel = Pair.of(expectedPlanIds, 0l);
+
+		when(planRepository.findAllIds(anyLong(), anyInt(), anyBoolean())).thenReturn(idsModel);
+		Pair<List<String>, Long> planIdsObject = planService.findAllIds(0l, 10, false);
+		List<String> actualPlanIds = planIdsObject.getLeft();
+
+		verify(planRepository).findAllIds(0l, 10, false);
+		assertEquals(2, actualPlanIds.size());
+		assertEquals(expectedPlanIds.get(0), actualPlanIds.get(0));
+		assertEquals(expectedPlanIds.get(1), actualPlanIds.get(1));
+		assertEquals(0l, planIdsObject.getRight().longValue());
+
+	}
+
+	@Test
+	public void testGetPlanIdentifiersByOrganizations() {
+
+		List<String> planIdentifiers = Arrays.asList("plan1", "plan2");
+		List<AssignedLocations> assignedLocations = new ArrayList<AssignedLocations>();
+		for (String id : planIdentifiers) {
+			AssignedLocations assignedLocation = new AssignedLocations();
+			assignedLocation.setPlanId(id);
+			assignedLocations.add(assignedLocation);
+		}
+		List<Long> organizationIds = Arrays.asList(1l, 40l);
+		when(organizationService.findAssignedLocationsAndPlans(organizationIds))
+				.thenReturn(assignedLocations);
+		List<String> actualPlanIdentifiers = planService.getPlanIdentifiersByOrganizations(organizationIds);
+
+		verify(organizationService).findAssignedLocationsAndPlans(organizationIds);
+		assertEquals(planIdentifiers, actualPlanIdentifiers);
+	}
+
+	@Test
+	public void testGetPlanIdentifiersByUserName() {
+
+		List<String> planIdentifiers = Arrays.asList("plan1", "plan2");
+		List<AssignedLocations> assignedLocations = new ArrayList<AssignedLocations>();
+		for (String id : planIdentifiers) {
+			AssignedLocations assignedLocation = new AssignedLocations();
+			assignedLocation.setPlanId(id);
+			assignedLocations.add(assignedLocation);
+		}
+		org.opensrp.domain.Practitioner practitioner = new org.opensrp.domain.Practitioner();
+		practitioner.setIdentifier("practioner-1");
+		List<Long> organizationIds = Arrays.asList(1l, 40l);
+		List<PractitionerRole> roles = new ArrayList<>();
+		for(long id:organizationIds) {
+			PractitionerRole role = new PractitionerRole();
+			role.setOrganizationId(id);
+			roles.add(role);
+		}
+		when(practitionerService.getPractionerByUsername("janedoe")).thenReturn(practitioner);
+		when(practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier())).thenReturn(roles);
+
+		when(organizationService.findAssignedLocationsAndPlans(organizationIds))
+				.thenReturn(assignedLocations);
+		List<String> actualPlanIdentifiers = planService.getPlanIdentifiersByOrganizations(organizationIds);
+
+		verify(organizationService).findAssignedLocationsAndPlans(organizationIds);
+		assertEquals(planIdentifiers, actualPlanIdentifiers);
+	}
+
+
 }
