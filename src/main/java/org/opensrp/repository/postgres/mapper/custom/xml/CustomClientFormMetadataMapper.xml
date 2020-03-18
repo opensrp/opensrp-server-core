@@ -21,15 +21,14 @@
 
 	<select id="countClientFormMetadataByFormIdentifier" parameterType="string" resultType="int">
 		select count(id)
-		from client_form_metadata
+		from core.client_form_metadata
 		WHERE identifier = #{formIdentifier, jdbcType=VARCHAR}
-		ORDER BY created_at DESC LIMIT 1
 	</select>
 
 
-	<select id="selectClientFormMetadataByFormVersionAndIdentifier" resultMap="BaseClientFormMetadataResultMap">
+	<select id="selectClientFormMetadataByFormVersionAndIdentifier" parameterType="map" resultMap="BaseClientFormMetadataResultMap">
 		select *
-		from client_form_metadata
+		from core.client_form_metadata
 		WHERE form_version = #{formVersion,jdbcType=VARCHAR} AND
 		identifier = #{formIdentifier, jdbcType=VARCHAR}
 		ORDER BY created_at DESC LIMIT 1
@@ -37,11 +36,11 @@
 
 	<insert id="insertClientFormMetadata" parameterType="org.opensrp.domain.postgres.ClientFormMetadata"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		insert into client_form_metadata(identifier, jurisdiction, form_version, label, module_name, created_at)
+		insert into core.client_form_metadata(identifier, jurisdiction, form_version, label, module_name, created_at)
 		 values (#{identifier}, #{jurisdiction}, #{formVersion}, #{label}, #{module}, #{createdAt})
 	</insert>
 
-	<select id="getAvailableClientFormVersions" parameterType="string" resultType="string">
-		SELECT id, form_version FROM client_form_metadata WHERE form_identifier = #{formIdentifier}
+	<select id="getAvailableClientFormVersions" parameterType="string" resultMap="IdVersionTuple">
+		SELECT id, form_version FROM core.client_form_metadata WHERE form_identifier = #{formIdentifier}
 	</select>
 </mapper>

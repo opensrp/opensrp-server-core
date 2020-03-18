@@ -14,12 +14,12 @@
 	<select id="selectClientFormById" parameterType="java.lang.Integer"
 		resultMap="BaseClientFormResultMap">
 		select *
-		from client_forms
+		from core.client_forms
 		WHERE id = #{id,jdbcType=BIGINT}
 	</select>
 
 	<insert id="insertClientForm" parameterType="org.opensrp.domain.postgres.ClientForm"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		insert into client_forms(json, created_at) values (#{json, jdbcType=OTHER}, ${createdAt, jdbcType=BIGINT})
+		insert into core.client_forms(json, created_at) values (#{json, jdbcType=OTHER}, ${createdAt, jdbcType=BIGINT})
 	</insert>
 </mapper>

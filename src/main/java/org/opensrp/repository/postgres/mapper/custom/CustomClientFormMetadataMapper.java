@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
 import edu.umd.cs.findbugs.annotations.NonNull;
+import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.IdVersionTuple;
 import org.opensrp.domain.postgres.ClientFormMetadata;
 import org.opensrp.repository.postgres.mapper.ClientFormMetadataMapper;
@@ -11,7 +12,7 @@ public interface CustomClientFormMetadataMapper extends ClientFormMetadataMapper
 
     int countClientFormMetadataByFormIdentifier(String formIdentifier);
 
-    ClientFormMetadata selectClientFormMetadataByFormVersionAndIdentifier(@NonNull String formVersion, @NonNull String formIdentifier);
+    ClientFormMetadata selectClientFormMetadataByFormVersionAndIdentifier(@Param("formVersion")@NonNull String formVersion, @Param("formIdentifier")@NonNull String formIdentifier);
 
     int insertClientFormMetadata(@NonNull ClientFormMetadata clientFormMetadata);
 
