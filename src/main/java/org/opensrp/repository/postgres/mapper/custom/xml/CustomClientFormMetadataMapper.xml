@@ -19,12 +19,12 @@
 		<result column="form_version" jdbcType="VARCHAR" property="version"/>
 	</resultMap>
 
-	<sql id="countClientFormMetadataByFormIdentifier">
+	<select id="countClientFormMetadataByFormIdentifier" parameterType="string" resultType="int">
 		select count(id)
 		from client_form_metadata
 		WHERE identifier = #{formIdentifier, jdbcType=VARCHAR}
 		ORDER BY created_at DESC LIMIT 1
-	</sql>
+	</select>
 
 
 	<select id="selectClientFormMetadataByFormVersionAndIdentifier" resultMap="BaseClientFormMetadataResultMap">
