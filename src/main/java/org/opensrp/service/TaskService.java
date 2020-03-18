@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Task;
 import org.opensrp.domain.TaskUpdate;
@@ -140,10 +141,12 @@ public class TaskService {
 	/**
 	 * This method searches for all task Ids
 	 *
-	 * @return a list of all task ids
+	 * @param serverVersion
+	 * @param limit upper limit on number of tasks ids to fetch
+	 * @return a list of all task ids and last server version
 	 */
-	public List<String> findAllTaskIds() {
-		return taskRepository.findAllIds();
+	public Pair<List<String>, Long> findAllTaskIds(Long serverVersion, int limit) {
+		return taskRepository.findAllIds(serverVersion, limit);
 	}
 
 	/**

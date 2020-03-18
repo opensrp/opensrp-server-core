@@ -9,6 +9,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,21 +61,17 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setContentLength(multimediaFile.length());
 		metadata.setContentMD5(new String(Base64.encodeBase64(md5)));
-		PutObjectRequest request = new PutObjectRequest(s3BucketName, getS3FilePath(multimediaFile.getPath()), inputStream,
-				metadata);
+		PutObjectRequest request = new PutObjectRequest(s3BucketName, getS3FilePath(multimediaFile.getPath()), inputStream, metadata);
 		s3Client.putObject(request);
 		multimediaFile.delete();
 	}
 
 	private String getS3FilePath(String localFilePath) {
-		String[] filePathLevels = localFilePath.split("/");
-		String fileName = filePathLevels.length > 0 ? filePathLevels[filePathLevels.length - 1] : "";
-		String s3FilePath = "".equals(s3BucketFolderPath) ? fileName : s3BucketFolderPath + File.separator + fileName;
-		return s3FilePath;
+		return StringUtils.isBlank(localFilePath) ? "" : s3BucketFolderPath + File.separator + localFilePath.replace(getBaseMultiMediaDir(), "");
 	}
 
 	@Override
-	protected String getMultiMediaDir() {
+	protected String getBaseMultiMediaDir() {
 		return File.separator + "tmp" + File.separator;
 	}
 
@@ -93,6 +90,7 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
 	}
 
 	/**
+	 *
 	 * Converts {@link byte[]} to {@link File}
 	 *
 	 * @param fileName
@@ -112,8 +110,7 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
 	private AmazonS3 getS3Client() {
 		if (s3Client == null) {
 			s3Client = AmazonS3ClientBuilder.standard()
-					.withCredentials(
-							new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey)))
+					.withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(awsAccessKeyId, awsSecretAccessKey)))
 					.withRegion(awsRegion)
 					.build();
 		}

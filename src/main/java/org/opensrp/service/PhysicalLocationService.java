@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -195,10 +196,13 @@ public class PhysicalLocationService {
 
 	/**
 	 * This method searches for all structure ids
-	 * @return a list of strcuture ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of structure ids to fetch
+	 * @return a list of structure ids as well as the lastServerVersion
 	 */
-	public List<String> findAllStructureIds() {
-		return locationRepository.findAllStructureIds();
+	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit) {
+		return locationRepository.findAllStructureIds(serverVersion, limit);
 	}
 
 	/**
@@ -233,5 +237,16 @@ public class PhysicalLocationService {
 	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit) {
 		return locationRepository.findAllStructures(returnGeometry, serverVersion, limit);
 	};
+
+	/**
+	 * This method searches for all location ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of location ids to fetch
+	 * @return a list of location ids
+	 */
+	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit) {
+		return locationRepository.findAllLocationIds(serverVersion, limit);
+	}
 
 }

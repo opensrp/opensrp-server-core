@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -216,14 +217,16 @@ public class TaskServiceTest {
 		List<String> expectedTaskIds = new ArrayList<>();
 		expectedTaskIds.add("task1");
 		expectedTaskIds.add("task2");
+		Pair<List<String>, Long> idsModel = Pair.of(expectedTaskIds, 1234l);
 
-		when(taskRepository.findAllIds()).thenReturn(expectedTaskIds);
-		List<String> actualTaskIds = taskService.findAllTaskIds();
+		when(taskRepository.findAllIds(anyLong(), anyInt())).thenReturn(idsModel);
+		Pair<List<String>, Long> actualIdsModels = taskService.findAllTaskIds(0l, 10);
+		List<String> actualTaskIds = actualIdsModels.getLeft();
 
-		verify(taskRepository).findAllIds();
+		verify(taskRepository).findAllIds(0l, 10);
 		assertEquals(2, actualTaskIds.size());
-		assertEquals(expectedTaskIds.get(0).toString(), actualTaskIds.get(0).toString());
-		assertEquals(expectedTaskIds.get(1).toString(), actualTaskIds.get(1).toString());
+		assertEquals(expectedTaskIds.get(0), actualTaskIds.get(0));
+		assertEquals(expectedTaskIds.get(1), actualTaskIds.get(1));
 	}
 
 }

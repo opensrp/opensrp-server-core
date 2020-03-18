@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -255,17 +256,17 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindByServerVersion() {
-		assertEquals(20, eventsRepository.findByServerVersion(0).size());
+		assertEquals(21, eventsRepository.findByServerVersion(0).size());
 		
 		//missing data
 		assertTrue(eventsRepository.findByServerVersion(1578908926000l).isEmpty());
 		
 		List<Event> events = eventsRepository.findByServerVersion(1521469045587l);
-		assertEquals(8, events.size());
+		assertEquals(9, events.size());
 		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241780bac", "05934ae338431f28bf6793b241781149",
 		    "05934ae338431f28bf6793b241781a1e", "05934ae338431f28bf6793b241781149", "34166bde-2d40-4cb9-aec7-d8e4feb47c53",
 		    "66c1ffdc-697c-4d31-b50d-6396ccb6368c", "f9db43e1-1b15-4d26-ba56-29136edb73d6",
-		    "18a43e36-5701-4afc-b901-8eb4ce0e2002", "d945f800-eeca-415e-b737-e5611e19f706");
+		    "18a43e36-5701-4afc-b901-8eb4ce0e2002", "d945f800-eeca-415e-b737-e5611e19f706","cfcc0e7e3cef11eab77f2e728ce88125");
 		for (Event event : events) {
 			assertTrue(event.getServerVersion() >= 1521469045587l);
 			assertTrue(expectedIds.contains(event.getId()));
@@ -274,7 +275,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		//test with deleted event
 		for (Event event : events)
 			eventsRepository.safeRemove(event);
-		assertTrue(eventsRepository.findByServerVersion(1521469045587l).isEmpty());
+		assertFalse(eventsRepository.findByServerVersion(1521469045587l).isEmpty());
 	}
 	
 	@Test
@@ -537,7 +538,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		//test with deleted event
 		for (Event e : events)
 			eventsRepository.safeRemove(e);
-		assertTrue(eventsRepository.findByEmptyServerVersion().isEmpty());
+		assertFalse(eventsRepository.findByEmptyServerVersion().isEmpty());
 	}
 	
 	@Test

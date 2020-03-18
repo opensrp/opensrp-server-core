@@ -72,6 +72,6 @@ public class FileSystemMultimediaFileManagerTest extends BaseMultimediaFileManag
 
 	@Test
 	public void testGetMultiMediaDirShouldReturnCorrectFilePath() {
-		assertEquals(baseMultimediaDirPath + File.separator, fileSystemMultimediaFileManager.getMultiMediaDir());
+		assertEquals(baseMultimediaDirPath + File.separator, fileSystemMultimediaFileManager.getBaseMultiMediaDir());
 	}
 }

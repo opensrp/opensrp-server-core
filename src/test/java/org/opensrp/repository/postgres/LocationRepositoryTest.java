@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.opensrp.domain.Client;
@@ -151,7 +151,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.add(physicalLocation);
 
 		assertEquals(2, locationRepository.getAll().size());
-		assertEquals(1, locationRepository.getAllStructures().size());
+		assertEquals(2, locationRepository.getAllStructures().size());
 
 	}
 
@@ -168,7 +168,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertNotEquals("MY Operational Area", physicalLocation.getProperties().getName());
 
 		assertEquals(2, locationRepository.getAll().size());
-		assertEquals(1, locationRepository.getAllStructures().size());
+		assertEquals(2, locationRepository.getAllStructures().size());
 
 	}
 
@@ -196,7 +196,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.add(physicalLocation);
 
 		assertEquals(2, locationRepository.getAll().size());
-		assertEquals(1, locationRepository.getAllStructures().size());
+		assertEquals(2, locationRepository.getAllStructures().size());
 
 	}
 
@@ -211,7 +211,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertNotEquals("Mwangala Household", physicalLocation.getProperties().getName());
 
 		assertEquals(2, locationRepository.getAll().size());
-		assertEquals(1, locationRepository.getAllStructures().size());
+		assertEquals(2, locationRepository.getAllStructures().size());
 
 	}
 
@@ -249,7 +249,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.add(physicalLocation);
 
 		assertEquals(2, locationRepository.getAll().size());
-		assertEquals(1, locationRepository.getAllStructures().size());
+		assertEquals(2, locationRepository.getAllStructures().size());
 
 	}
 
@@ -290,7 +290,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.add(structure);
 
 		assertEquals(2, locationRepository.getAll().size());
-		assertEquals(1, locationRepository.getAllStructures().size());
+		assertEquals(2, locationRepository.getAllStructures().size());
 
 	}
 
@@ -628,7 +628,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(structures.get(0).getGeometry());
 
 		structures = locationRepository.findStructuresByProperties(true, null, null);
-		assertEquals(1, structures.size());
+		assertEquals(2, structures.size());
 		assertEquals("90397", structures.get(0).getId());
 		assertEquals(GeometryType.POLYGON, structures.get(0).getGeometry().getType());
 		assertEquals(2, structures.get(0).getGeometry().getCoordinates().get(0).getAsJsonArray().get(0).getAsJsonArray()
@@ -670,6 +670,50 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(2, locations.size());
 		assertEquals("3734", locations.get(0).getId());
 		assertEquals("3735", locations.get(1).getId());
+	}
+
+	@Test
+	public void testFindAllLocationIdsShouldOrderByServerVersion() {
+
+		Pair<List<String>, Long> idsModel = locationRepository.findAllLocationIds(-2l, 10);
+		List<String> locationsIds = idsModel.getLeft();
+		assertEquals(2, locationsIds.size());
+		assertEquals("3735", locationsIds.get(0));
+		assertEquals("3734", locationsIds.get(1));
+		assertEquals(1542378347104l, idsModel.getRight().longValue());
+
+	}
+
+	@Test
+	public void testFindAllLocationIdsShouldLimitByGivenParam() {
+
+		Pair<List<String>, Long> idsModel = locationRepository.findAllLocationIds(-2l, 1);
+		List<String> locationsIds = idsModel.getLeft();
+		assertEquals(1, locationsIds.size());
+		assertEquals("3735", locationsIds.get(0));
+		assertEquals(-1l, idsModel.getRight().longValue());
+
+	}
+
+	@Test
+	public void testFindAllStructureIdsShouldOrderByServerVersion() {
+
+		Pair<List<String>, Long> idsModel = locationRepository.findAllStructureIds(0l, 10);
+		List<String> structureIds = idsModel.getLeft();
+		assertEquals(2, structureIds.size());
+		assertEquals("90397", structureIds.get(0));
+		assertEquals("90398", structureIds.get(1));
+		assertEquals(1542376382862l, idsModel.getRight().longValue());
+	}
+
+	@Test
+	public void testFindAllStructureIdsShouldLimitByGivenParam() {
+
+		Pair<List<String>, Long> idsModel = locationRepository.findAllStructureIds(0l, 1);
+		List<String> structureIds = idsModel.getLeft();
+		assertEquals(1, structureIds.size());
+		assertEquals("90397", structureIds.get(0));
+		assertEquals(1542376382851l, idsModel.getRight().longValue());
 	}
 
 }
