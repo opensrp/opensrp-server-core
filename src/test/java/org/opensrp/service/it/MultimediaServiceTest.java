@@ -14,7 +14,6 @@ import org.opensrp.service.multimedia.MultimediaFileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -111,87 +110,85 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		
 		assertTwoListAreSameIgnoringOrder(expectedMultimedias, actualMultimedias);
 	}
-	
+
 	@Test
 	public void shouldUploadJpegFile() throws IOException {
 		String pathname = BASE_IMAGE_PATH + File.separator + CASE_ID + ".jpg";
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/jpeg");
-		MultipartFile mockMultipartFile = mock(MultipartFile.class);
-		
-		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
-		
+		byte[] testBytes = new byte[10];
+
+		boolean result = fileManager.uploadFile(multimediaDTO, testBytes, "original_name.jpg");
+
 		assertTrue(result);
 		assertTrue(new File(BASE_IMAGE_PATH).exists());
-		verify(mockMultipartFile, times(1)).transferTo(new File(pathname));
+		verify(fileManager, times(1)).copyBytesToFile(new File(pathname), testBytes);
 	}
-	
+
 	@Test
 	public void shouldUploadGifFile() throws IOException {
 		String pathname = BASE_IMAGE_PATH + File.separator + CASE_ID + ".gif";
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/gif");
-		MultipartFile mockMultipartFile = mock(MultipartFile.class);
-		
-		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
-		
+		byte[] testBytes = new byte[10];
+
+		boolean result = fileManager.uploadFile(multimediaDTO, testBytes, "original_name.gif");
+
 		assertTrue(result);
 		assertTrue(new File(BASE_IMAGE_PATH).exists());
-		verify(mockMultipartFile, times(1)).transferTo(new File(pathname));
+		verify(fileManager, times(1)).copyBytesToFile(new File(pathname), testBytes);
 	}
-	
+
 	@Test
 	public void shouldUploadPngFile() throws IOException {
 		String pathname = BASE_IMAGE_PATH + CASE_ID + ".png";
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/png");
-		MultipartFile mockMultipartFile = mock(MultipartFile.class);
-		
-		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
-		
+		byte[] testBytes = new byte[10];
+
+		boolean result = fileManager.uploadFile(multimediaDTO, testBytes, "original_name.jpg");
+
 		assertTrue(result);
 		assertTrue(new File(BASE_IMAGE_PATH).exists());
-		verify(mockMultipartFile, times(1)).transferTo(new File(pathname));
+		verify(fileManager, times(1)).copyBytesToFile(new File(pathname), testBytes);
 	}
-	
+
 	@Test
 	public void shouldUploadVideoOctetStreamFile() throws IOException {
 		String BASE_IMAGE_PATH = baseMultimediaDirPath + "/" + "videos/";
 		String pathname = BASE_IMAGE_PATH + CASE_ID + ".mp4";
 		MultimediaDTO multimediaDTO = getMultimediaDTO("application/octet-stream");
-		MultipartFile mockMultipartFile = mock(MultipartFile.class);
-		
-		Boolean result = fileManager.uploadFile(multimediaDTO, mockMultipartFile);
-		
+		byte[] testBytes = new byte[10];
+
+		boolean result = fileManager.uploadFile(multimediaDTO, testBytes, "original_name.mp4");
+
 		assertTrue(result);
 		assertTrue(new File(BASE_IMAGE_PATH).exists());
-		verify(mockMultipartFile, times(1)).transferTo(new File(pathname));
+		verify(fileManager, times(1)).copyBytesToFile(new File(pathname), testBytes);
 	}
-	
+
 	@Test
 	public void shouldReturnFalseUnknownContentType() throws IOException {
 		MultimediaDTO multimediaDTO = getMultimediaDTO("unknown");
-		MultipartFile mockMultipartFile = mock(MultipartFile.class);
-		
-		assertFalse(fileManager.uploadFile(multimediaDTO, mockMultipartFile));
+		byte[] testBytes = new byte[10];
+
+		assertFalse(fileManager.uploadFile(multimediaDTO, testBytes, null));
 	}
-	
+
 	@Test
 	public void shouldReturnFalseFormEmptyMultiPartFile() {
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/jpeg");
-		MultipartFile mockMultipartFile = mock(MultipartFile.class);
-		
-		when(mockMultipartFile.isEmpty()).thenReturn(true);
-		assertFalse(fileManager.uploadFile(multimediaDTO, mockMultipartFile));
+
+		assertFalse(fileManager.uploadFile(multimediaDTO, null, null));
 	}
-	
+
 	@Test
 	public void shouldSaveMultimediaForSuccessfulUpdate() {
 		MultimediaDTO multimediaDTO = getMultimediaDTO("image/png");
-		MultipartFile mockMultipartFile = mock(MultipartFile.class);
+		byte[] testBytes = new byte[10];
 		Multimedia expectedMultimedia = getMultimedia();
 		expectedMultimedia.setContentType("image/png");
 		expectedMultimedia.setFilePath(BASE_IMAGE_PATH + CASE_ID + ".png");
-		
-		String result = fileManager.saveMultimediaFile(multimediaDTO, mockMultipartFile);
-		
+
+		String result = fileManager.saveMultimediaFile(multimediaDTO, testBytes, "original_name.png");
+
 		assertEquals("success", result);
 		List<Multimedia> dbFiles = multimediaRepository.getAll();
 		assertEquals(1, dbFiles.size());
@@ -203,14 +200,14 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		assertEquals(expectedMultimedia.getFileCategory(), actualMultimedia.getFileCategory());
 		assertEquals(expectedMultimedia.getCaseId(), actualMultimedia.getCaseId());
 	}
-	
+
 	@Test
 	public void shouldReturnFailForUnsuccessfulUpdate() {
 		MultimediaDTO multimediaDTO = getMultimediaDTO("unknown");
-		MultipartFile mockMultipartFile = mock(MultipartFile.class);
-		
-		String result = fileManager.saveMultimediaFile(multimediaDTO, mockMultipartFile);
-		
+		byte[] testBytes = new byte[10];
+
+		String result = fileManager.saveMultimediaFile(multimediaDTO, testBytes, "original_name");
+
 		assertEquals("fail", result);
 		List<Multimedia> dbFiles = multimediaRepository.getAll();
 		assertEquals(0, dbFiles.size());
@@ -229,9 +226,9 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 		MultimediaFileManager fileManager = mock(FileSystemMultimediaFileManager.class);
 		multimediaService.setFileManager(fileManager);
 
-		MultipartFile multipartFile = mock(MultipartFile.class);
+		byte[] testBytes = new byte[10];
 		MultimediaDTO multimediaDTO = mock(MultimediaDTO.class);
-		multimediaService.saveFile(multimediaDTO, multipartFile);
-		verify(fileManager).saveFile(eq(multimediaDTO), eq(multipartFile));
+		multimediaService.saveFile(multimediaDTO, testBytes, null);
+		verify(fileManager).saveFile(eq(multimediaDTO), eq(testBytes), eq(null));
 	}
 }

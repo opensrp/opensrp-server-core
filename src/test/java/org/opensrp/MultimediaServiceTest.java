@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -64,16 +62,17 @@ public class MultimediaServiceTest {
 	@Test
 	public void testUploadFileShouldSetCorrectFilePath() {
 		final String BASE_MULTIMEDIA_DIR_PATH = "baseMultimediaDirPath";
-		Whitebox.setInternalState(fileManager, "baseMultimediaDirPath", BASE_MULTIMEDIA_DIR_PATH );
+		Whitebox.setInternalState(fileManager, "baseMultimediaDirPath", BASE_MULTIMEDIA_DIR_PATH);
 
 		MultimediaDTO multimedia = new MultimediaDTO("caseId1", "provideId1", "image/jpeg", "filePath1", "multi_version");
-		MultipartFile multipartFile = mock(MultipartFile.class);
-		doReturn("original_file_name").when(multipartFile).getOriginalFilename();
-		fileManager.uploadFile(multimedia, multipartFile);
-		assertEquals(multimedia.getFilePath(), BASE_MULTIMEDIA_DIR_PATH  + "/patient_images/caseId1/original_file_name");
+		byte[] testBytes = new byte[10];
+		String originalFileName = "original_file_name";
+		//doReturn("original_file_name").when(multipartFile).getOriginalFilename();
+		fileManager.uploadFile(multimedia, testBytes, originalFileName);
+		assertEquals(multimedia.getFilePath(), BASE_MULTIMEDIA_DIR_PATH + "/patient_images/caseId1/original_file_name");
 
 		multimedia = new MultimediaDTO("caseId1", "provideId1", "image/jpeg", "filePath1", "profileimage");
-		fileManager.uploadFile(multimedia, mock(MultipartFile.class));
-		assertEquals(multimedia.getFilePath(), BASE_MULTIMEDIA_DIR_PATH  + "/patient_images/caseId1.jpg");
+		fileManager.uploadFile(multimedia, new byte[10], originalFileName);
+		assertEquals(multimedia.getFilePath(), BASE_MULTIMEDIA_DIR_PATH + "/patient_images/caseId1.jpg");
 	}
 }
