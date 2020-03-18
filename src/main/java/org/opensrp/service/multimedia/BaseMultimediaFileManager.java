@@ -97,63 +97,73 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
      * @return true if the file was saved else false
      */
     public boolean uploadFile(MultimediaDTO multimediaDTO, MultipartFile multimediaFile) {
+        boolean wasFileSaved = false;
         if (!multimediaFile.isEmpty()) {
             try {
-                multimediaDirPath = getMultiMediaDir();
-                String fileExt = ".jpg";
-                switch (multimediaDTO.getContentType()) {
-
-                    case "application/octet-stream":
-                        multimediaDirPath += VIDEOS_DIR;
-                        fileExt = ".mp4";
-                        break;
-                    case "image/jpeg":
-                        multimediaDirPath += IMAGES_DIR;
-                        fileExt = ".jpg";
-                        break;
-                    case "image/gif":
-                        multimediaDirPath += IMAGES_DIR;
-                        fileExt = ".gif";
-                        break;
-                    case "image/png":
-                        multimediaDirPath += IMAGES_DIR;
-                        fileExt = ".png";
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
-                }
-
-                String fileName;
-                if (MULTI_VERSION.equals(multimediaDTO.getFileCategory())) {
-                    // allow saving multiple multimedia associated with one client
-                    String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
-                    makeMultimediaDir(dirPath);
-                    fileName = dirPath + File.separator + multimediaFile.getOriginalFilename();
-                } else {
-                    // overwrite previously saved image
-                    makeMultimediaDir(multimediaDirPath);
-                    fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
-                }
-
+                String fileName = getMultimediaFilePath(multimediaDTO, multimediaFile);
                 multimediaDTO.withFilePath(fileName);
                 persistFileToStorage(fileName, multimediaFile);
-
-                return true;
+                wasFileSaved = true;
             } catch (Exception e) {
                 logger.error("", e);
-                return false;
             }
-        } else {
-            return false;
         }
+        return wasFileSaved;
     }
 
-    protected abstract String getMultiMediaDir();
 
-    private void makeMultimediaDir(String dirPath) {
+    private String getMultimediaFilePath(MultimediaDTO multimediaDTO, MultipartFile multimediaFile) {
+
+        multimediaDirPath = getBaseMultiMediaDir();
+        String fileExt = ".jpg";
+        switch (multimediaDTO.getContentType()) {
+
+            case "application/octet-stream":
+                multimediaDirPath += VIDEOS_DIR;
+                fileExt = ".mp4";
+                break;
+            case "image/jpeg":
+                multimediaDirPath += IMAGES_DIR;
+                fileExt = ".jpg";
+                break;
+            case "image/gif":
+                multimediaDirPath += IMAGES_DIR;
+                fileExt = ".gif";
+                break;
+            case "image/png":
+                multimediaDirPath += IMAGES_DIR;
+                fileExt = ".png";
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
+        }
+
+        String fileName;
+        if (MULTI_VERSION.equals(multimediaDTO.getFileCategory())) {
+            // allow saving multiple multimedia associated with one client
+            String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
+            createMultimediaDir(dirPath);
+            fileName = dirPath + File.separator + multimediaFile.getOriginalFilename();
+        } else {
+            // overwrite previously saved image
+            createMultimediaDir(multimediaDirPath);
+            fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
+        }
+
+        return fileName;
+    }
+
+
+    protected abstract String getBaseMultiMediaDir();
+
+    private void createMultimediaDir(String dirPath) {
         File file = new File(dirPath);
         if (!file.exists()) {
             file.mkdirs();
         }
+    }
+
+    public String getMultimediaDirPath() {
+        return multimediaDirPath;
     }
 }

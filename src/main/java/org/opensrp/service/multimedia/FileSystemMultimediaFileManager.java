@@ -32,7 +32,7 @@ public class FileSystemMultimediaFileManager extends BaseMultimediaFileManager {
     }
 
     @Override
-    protected String getMultiMediaDir() {
+    protected String getBaseMultiMediaDir() {
        return baseMultimediaDirPath + File.separator;
     }
 
