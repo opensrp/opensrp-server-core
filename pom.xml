@@ -23,7 +23,7 @@
 		<opensrp.api.version>1.0.1</opensrp.api.version>
 		<opensrp.form.version>1.0.1</opensrp.form.version>
 		<opensrp.interface.version>1.0.1</opensrp.interface.version>
-		<jackson.version>2.8.6</jackson.version>
+		<jackson.version>2.10.3</jackson.version>
 
 	</properties>
 
