@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Task;
 import org.opensrp.domain.TaskUpdate;
@@ -123,19 +124,12 @@ public class TaskService {
 			try {
 				Task.TaskStatus status = fromString(taskUpdate.getStatus());
 				if (task != null && status != null) {
-					if (taskUpdate.getServerVersion() >= task.getServerVersion()) {
 						task.setBusinessStatus(taskUpdate.getBusinessStatus());
 						task.setStatus(status);
 						task.setLastModified(new DateTime());
 						task.setServerVersion(null);
 						taskRepository.update(task);
 						updatedTaskIds.add(task.getIdentifier());
-					} else {
-						logger.info("Ignoring update of task status for " + task.getIdentifier()
-								+ " task on server is more recent");
-						// mark task as updated so that client does not try to sync it again
-						updatedTaskIds.add(task.getIdentifier());
-					}
 				}
 			} catch (Exception e) {
 				logger.error(e.getMessage(), e);
@@ -147,9 +141,22 @@ public class TaskService {
 	/**
 	 * This method searches for all task Ids
 	 *
-	 * @return a list of all task ids
+	 * @param serverVersion
+	 * @param limit upper limit on number of tasks ids to fetch
+	 * @return a list of all task ids and last server version
 	 */
-	public List<String> findAllTaskIds() {
-		return taskRepository.findAllIds();
+	public Pair<List<String>, Long> findAllTaskIds(Long serverVersion, int limit) {
+		return taskRepository.findAllIds(serverVersion, limit);
+	}
+
+	/**
+	 *  This method searches for tasks ordered by serverVersion ascending
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of tasks to fetch
+	 * @return list of plan identifiers
+	 */
+	public List<Task> getAllTasks(Long serverVersion, int limit) {
+		return taskRepository.getAllTasks(serverVersion, limit);
 	}
 }

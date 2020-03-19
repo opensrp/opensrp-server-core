@@ -1,6 +1,5 @@
 package org.opensrp;
 
-import org.hamcrest.text.pattern.PatternMatcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,8 +9,10 @@ import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.couch.MultimediaRepositoryImpl;
 import org.opensrp.service.ClientService;
 import org.opensrp.service.MultimediaService;
+import org.opensrp.service.multimedia.BaseMultimediaFileManager;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,9 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.text.pattern.Patterns.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -40,6 +39,9 @@ public class MultimediaServiceTest {
 	@Mock
 	private ClientService clientService;
 
+	@Autowired
+	@Qualifier("multimedia_file_manager")
+	private BaseMultimediaFileManager fileManager;
 	
 	@Before
 	public void setUp() {
@@ -62,15 +64,16 @@ public class MultimediaServiceTest {
 	@Test
 	public void testUploadFileShouldSetCorrectFilePath() {
 		final String BASE_MULTIMEDIA_DIR_PATH = "baseMultimediaDirPath";
-		Whitebox.setInternalState(multimediaService, "baseMultimediaDirPath", BASE_MULTIMEDIA_DIR_PATH );
+		Whitebox.setInternalState(fileManager, "baseMultimediaDirPath", BASE_MULTIMEDIA_DIR_PATH );
 
 		MultimediaDTO multimedia = new MultimediaDTO("caseId1", "provideId1", "image/jpeg", "filePath1", "multi_version");
-		multimediaService.uploadFile(multimedia, mock(MultipartFile.class));
-		PatternMatcher matcher = new PatternMatcher(sequence(text(BASE_MULTIMEDIA_DIR_PATH  + "/patient_images/caseId1/"), oneOrMore(anyCharacter()), text(".jpg")));
-		assertThat(multimedia.getFilePath(), matcher);
+		MultipartFile multipartFile = mock(MultipartFile.class);
+		doReturn("original_file_name").when(multipartFile).getOriginalFilename();
+		fileManager.uploadFile(multimedia, multipartFile);
+		assertEquals(multimedia.getFilePath(), BASE_MULTIMEDIA_DIR_PATH  + "/patient_images/caseId1/original_file_name");
 
 		multimedia = new MultimediaDTO("caseId1", "provideId1", "image/jpeg", "filePath1", "profileimage");
-		multimediaService.uploadFile(multimedia, mock(MultipartFile.class));
+		fileManager.uploadFile(multimedia, mock(MultipartFile.class));
 		assertEquals(multimedia.getFilePath(), BASE_MULTIMEDIA_DIR_PATH  + "/patient_images/caseId1.jpg");
 	}
 }

@@ -160,6 +160,25 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         return  isEmptyList(practitionerList) ? null : convert(practitionerList.get(0));
 
     }
+    
+    
+    @Override
+   /**
+    * {@inheritDoc}
+    */
+    public Practitioner getPractitionerByUsername(String username) {
+        if (StringUtils.isBlank(username)) {
+            return null;
+        }
+
+        PractitionerExample practitionerExample = new PractitionerExample();
+        practitionerExample.createCriteria().andUsernameEqualTo(username).andDateDeletedIsNull();
+
+        List<org.opensrp.domain.postgres.Practitioner> practitionerList = practitionerMapper.selectByExample(practitionerExample);
+
+        return  isEmptyList(practitionerList) ? null : convert(practitionerList.get(0));
+
+    }
 
     @Override
     protected Long retrievePrimaryKey(Practitioner practitioner) {

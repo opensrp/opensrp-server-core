@@ -5,6 +5,7 @@ import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,6 +16,7 @@ import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
+import org.opensrp.domain.postgres.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
@@ -246,7 +248,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	@Override
 	public List<Client> findByEmptyServerVersion() {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
-		clientMetadataExample.createCriteria().andServerVersionIsNull().andDateDeletedIsNull();
+		clientMetadataExample.createCriteria().andServerVersionIsNull();
 		clientMetadataExample.setOrderByClause("client_id ASC");
 		
 		List<org.opensrp.domain.postgres.Client> clients = clientMetadataMapper.selectMany(clientMetadataExample, 0,
@@ -315,7 +317,6 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		if (client == null || client.getJson() == null || !(client.getJson() instanceof Client)) {
 			return null;
 		}
-		
 		return (Client) client.getJson();
 	}
 	
@@ -425,18 +426,112 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	public HouseholdClient findTotalCountByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
 		
-		return clientMetadataMapper.selectCountBySearchBean(searchBean, addressSearchBean);
+		return clientMetadataMapper.selectHouseholdCountBySearchBean(searchBean, addressSearchBean);
 	}
 	
 	@Override
 	public List<Client> findMembersByRelationshipId(String baseEntityId) {
 		
-		List<org.opensrp.domain.postgres.Client> members = new ArrayList<org.opensrp.domain.postgres.Client>();
+		List<CustomClient> members = new ArrayList<CustomClient>();
 		if (!StringUtils.isBlank(baseEntityId)) {
 			members = clientMetadataMapper.selectMembersByRelationshipId(baseEntityId);
 		}
-		return convert(members);
+		return customClientConvert(members);
+	}
+	
+	@Override
+	public List<Client> findAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		int pageSize = searchBean.getPageSize();
+		if (pageSize == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		}
+		
+		int offset = searchBean.getPageNumber() * pageSize;
+		
+		List<CustomClient> clients = clientMetadataMapper.selectAllClientsBySearchBean(searchBean, addressSearchBean,
+		    offset, pageSize);
+		return customClientConvert(clients);
+	}
+	
+	private Client customClientConvert(CustomClient customClient) {
+		
+		if (customClient == null || customClient.getJson() == null || !(customClient.getJson() instanceof Client)) {
+			return null;
+		}
+		
+		Client cl = (Client) customClient.getJson();
+		cl.addAttribute("dynamicProperties", customClient.getDynamicProperties());
+		return cl;
+	}
+	
+	protected List<Client> customClientConvert(List<CustomClient> clients) {
+		if (clients == null || clients.isEmpty()) {
+			return new ArrayList<>();
+		}
+		
+		List<Client> convertedClients = new ArrayList<>();
+		for (CustomClient client : clients) {
+			Client convertedClient = customClientConvert(client);
+			if (convertedClient != null) {
+				convertedClients.add(convertedClient);
+			}
+		}
+		
+		return convertedClients;
+	}
+	
+	@Override
+	public HouseholdClient findCountAllClientsByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		
+		return clientMetadataMapper.selectCountAllClientsBySearchBean(searchBean, addressSearchBean);
+	}
+	
+	@Override
+	public List<Client> findHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		Map<String, Integer> pageSizeAndOffset = getPageSizeAndOffset(searchBean);
+		return customClientConvert(clientMetadataMapper.selectHouseholdBySearchBean(searchBean, addressSearchBean,
+		    pageSizeAndOffset.get("offset"), pageSizeAndOffset.get("pageSize")));
+	}
+	
+	@Override
+	public List<Client> findANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		Map<String, Integer> pageSizeAndOffset = getPageSizeAndOffset(searchBean);
+		List<CustomClient> clients = clientMetadataMapper.selectANCBySearchBean(searchBean, addressSearchBean,
+		    pageSizeAndOffset.get("offset"), pageSizeAndOffset.get("pageSize"));
+		return customClientConvert(clients);
+	}
+	
+	@Override
+	public int findCountANCByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		return clientMetadataMapper.selectCountANCBySearchBean(searchBean, addressSearchBean);
+	}
+	
+	@Override
+	public List<Client> findChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		Map<String, Integer> pageSizeAndOffset = getPageSizeAndOffset(searchBean);
+		List<CustomClient> clients = clientMetadataMapper.selectChildBySearchBean(searchBean, addressSearchBean,
+		    pageSizeAndOffset.get("offset"), pageSizeAndOffset.get("pageSize"));
+		return customClientConvert(clients);
+	}
+	
+	@Override
+	public int findCountChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+		return clientMetadataMapper.selectCountChildBySearchBean(searchBean, addressSearchBean);
+	}
+	
+	private Map<String, Integer> getPageSizeAndOffset(ClientSearchBean searchBean) {
+		Map<String, Integer> pageSizeAndOffset = new HashMap<>();
+		int pageSize = searchBean.getPageSize();
+		if (pageSize == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		}
+		
+		int offset = searchBean.getPageNumber() * pageSize;
+		pageSizeAndOffset.put("pageSize", pageSize);
+		pageSizeAndOffset.put("offset", offset);
+		return pageSizeAndOffset;
+		
 	}
 }

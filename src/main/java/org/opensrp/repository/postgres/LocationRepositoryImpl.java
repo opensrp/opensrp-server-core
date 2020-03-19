@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
@@ -328,7 +330,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 		locationMetadataExample.createCriteria().andGeojsonIdIn(ids);
 
-		List<Location> locations = locationMetadataMapper.selectManyById(locationMetadataExample, returnGeometry, 0,
+		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample, returnGeometry, 0,
 				DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
@@ -347,15 +349,43 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		locationMetadataExample.createCriteria().andGeojsonIdIn(ids);
 		
 		locationMetadataExample.or(locationMetadataExample.createCriteria().andParentIdIn(ids));
-		List<Location> locations = locationMetadataMapper.selectManyById(locationMetadataExample, returnGeometry, 0,
+		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample, returnGeometry, 0,
 				DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
 
 	@Override
-	public List<String> findAllStructureIds() {
+	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit) {
+		Long lastServerVersion = null;
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
-		return structureMetadataMapper.selectManyIds(structureMetadataExample);
+		structureMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+
+		List<String> structureIdentifiers = structureMetadataMapper.selectManyIds(structureMetadataExample,  0, fetchLimit);
+
+		if (structureIdentifiers != null && !structureIdentifiers.isEmpty()) {
+			structureMetadataExample = new StructureMetadataExample();
+			structureMetadataExample.createCriteria().andGeojsonIdEqualTo(structureIdentifiers.get(structureIdentifiers.size() - 1));
+			List<StructureMetadata> structureMetaDataList = structureMetadataMapper.selectByExample(structureMetadataExample);
+
+			lastServerVersion = structureMetaDataList != null && !structureMetaDataList.isEmpty() ?
+					structureMetaDataList.get(0).getServerVersion() : 0;
+		}
+
+		return Pair.of(structureIdentifiers, lastServerVersion);
+	}
+
+	/**
+	 *
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
+
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		return locationMetadataMapper.selectDetailsByPlanId(locationMetadataExample, planIdentifier);
 	}
 
 	/**
@@ -373,6 +403,57 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample, returnGeometry,
 				id, 0, limit);
 		return convert(locations);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+
+		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample, returnGeometry, 0, limit);
+		return convert(locations);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit) {
+        StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+        structureMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+        structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION,  ASCENDING));
+
+        List<Location> locations = structureMetadataMapper.selectManyByProperties(structureMetadataExample, null, returnGeometry, 0, limit);
+        return convert(locations);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit) {
+		Long lastServerVersion = null;
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+
+		List<String> locationIdentifiers = locationMetadataMapper.selectManyIds(locationMetadataExample, 0, fetchLimit );
+
+		if (locationIdentifiers != null && !locationIdentifiers.isEmpty()) {
+			locationMetadataExample = new LocationMetadataExample();
+			locationMetadataExample.createCriteria().andGeojsonIdEqualTo(locationIdentifiers.get(locationIdentifiers.size() -1 ));
+			List<LocationMetadata> locationMetadataList = locationMetadataMapper.selectByExample(locationMetadataExample);
+
+			lastServerVersion = locationMetadataList != null && !locationMetadataList.isEmpty() ? locationMetadataList.get(0).getServerVersion() : 0;
+		}
+
+		return Pair.of(locationIdentifiers, lastServerVersion);
 	}
 
 	@Override

@@ -1,14 +1,12 @@
 package org.opensrp.repository.postgres;
 
-import static org.opensrp.util.Utils.isEmptyList;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.Jurisdiction;
 import org.opensrp.domain.postgres.Plan;
@@ -20,6 +18,8 @@ import org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import static org.opensrp.util.Utils.isEmptyList;
 
 /**
  * Created by Vincent Karuri on 02/05/2019
@@ -127,6 +127,63 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         List<Plan> plans = planMetadataMapper.selectMany(planExample, operationalAreaIds, 0, DEFAULT_FETCH_SIZE);
 
         return convert(plans);
+    }
+    
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PlanDefinition> getPlansByIdentifiersAndServerVersion(List<String> planIdentifiers,Long serverVersion ) {
+        PlanExample planExample = new PlanExample();
+        planExample.createCriteria().andIdentifierIn(planIdentifiers).andServerVersionGreaterThanOrEqualTo(serverVersion);
+        List<Plan> plans = planMapper.selectMany(planExample, 0, DEFAULT_FETCH_SIZE);
+
+        return convert(plans);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PlanDefinition> getAllPlans(Long serverVersion, int limit) {
+        PlanExample planExample = new PlanExample();
+        planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull();
+        planExample.setOrderByClause(getOrderByClause(SERVER_VERSION,  ASCENDING));
+
+        List<Plan> plans = planMapper.selectMany(planExample, 0, limit);
+
+        return convert(plans);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted) {
+        Long lastServerVersion = null;
+        PlanExample planExample = new PlanExample();
+        PlanExample.Criteria criteria = planExample.createCriteria();
+        criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
+
+        if (isDeleted) {
+            criteria.andDateDeletedIsNotNull();
+        } else {
+            criteria.andDateDeletedIsNull();
+        }
+
+        planExample.setOrderByClause(getOrderByClause(SERVER_VERSION,  ASCENDING));
+        List<String> planIdentifiers = planMapper.selectManyIds(planExample, 0, limit);
+
+        if (planIdentifiers != null && !planIdentifiers.isEmpty()) {
+            planExample = new PlanExample();
+            planExample.createCriteria().andIdentifierEqualTo(planIdentifiers.get(planIdentifiers.size() - 1));
+            List<Plan> plans = planMapper.selectByExample(planExample);
+
+            lastServerVersion = plans != null && !plans.isEmpty() ? plans.get(0).getServerVersion() : 0;
+        }
+
+        return Pair.of(planIdentifiers, lastServerVersion);
     }
 
     /**

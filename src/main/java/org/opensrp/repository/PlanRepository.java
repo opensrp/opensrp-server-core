@@ -1,5 +1,6 @@
 package org.opensrp.repository;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.PlanDefinition;
 
 import java.util.List;
@@ -29,4 +30,30 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
      * @return the numerical primary key of a plan
      */
     public Long retrievePrimaryKey(String identifier);
+	
+	/** Gets the plans using the plan identifiers and whose server version is greater than or equal to server version
+	 * @param planIdentifiers the plan identifiers
+	 * @param serverVersion 
+	 * @return plans with the identifiers and server version greater than or equal to server version param
+	 */
+	List<PlanDefinition> getPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion);
+
+	/**
+	 *  This method searches for plans ordered by serverVersion ascending
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of plans to fetch
+	 * @return list of plan identifiers
+	 */
+	List<PlanDefinition> getAllPlans(Long serverVersion, int limit);
+
+	/**
+	 * This method fetches all plan Ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of plans to fetch
+	 * @param isDeleted whether to return deleted plan ids
+	 * @return a list of plan Ids  and the last server version
+	 */
+	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted);
 }

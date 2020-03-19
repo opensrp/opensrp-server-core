@@ -113,7 +113,7 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
-	<select id="selectManyById"
+	<select id="selectManyWithOptionalGeometry"
 			resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
 
 		select
@@ -170,6 +170,47 @@
 		SELECT location_id FROM locations
 		)
 
+		<if test="example.orderByClause != null">
+			order by lm.${example.orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+
+	</select>
+
+	<resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetail">
+		<result column="identifier" jdbcType="VARCHAR" property="identifier" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+	</resultMap>
+
+	<select id="selectDetailsByPlanId"
+			resultMap="DetailsResultMap">
+
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+
+		pm.operational_area_id as identifier,  lm.name
+		FROM core.plan_metadata pm
+		JOIN core.location_metadata lm ON pm.operational_area_id = lm.geojson_id
+		WHERE pm.identifier = #{planIdentifier,jdbcType=VARCHAR}
+
+		<if test="example.orderByClause != null">
+			order by lm.${example.orderByClause}
+		</if>
+
+	</select>
+
+	<select id="selectManyIds"	resultType="java.lang.String">
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+		geojson_id
+		from core.location_metadata lm
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
 		<if test="example.orderByClause != null">
 			order by lm.${example.orderByClause}
 		</if>

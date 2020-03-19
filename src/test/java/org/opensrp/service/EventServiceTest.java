@@ -3,13 +3,25 @@ package org.opensrp.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.codehaus.jackson.Version;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.module.SimpleModule;
 import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.junit.Before;
@@ -21,6 +33,8 @@ import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.repository.postgres.EventsRepositoryImpl;
+import org.opensrp.repository.postgres.handler.BaseTypeHandler;
+import org.opensrp.util.DateTimeDeserializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
@@ -128,15 +142,15 @@ public class EventServiceTest extends BaseRepositoryTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddEventDuplicateBaseEntityFormSubmission() {
-		Event event = new Event().withBaseEntityId("58b33379-dab2-4f5c-8f09-6d2bd63023d8")
-		        .withFormSubmissionId("5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
+		Event event = new Event().withBaseEntityId("58b33379-dab2-4f5c-8f09-6d2bd63023d8").withFormSubmissionId(
+		    "5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
 		eventService.addEvent(event);
 	}
 	
 	@Test(expected = DuplicateKeyException.class)
 	public void testAddEventDuplicateFormSubmission() {
-		Event event = new Event().withBaseEntityId("58b33379-dab2-4f")
-		        .withFormSubmissionId("5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
+		Event event = new Event().withBaseEntityId("58b33379-dab2-4f").withFormSubmissionId(
+		    "5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
 		eventService.addEvent(event);
 		
 	}
@@ -161,7 +175,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(15, eventService.getAll().size());
+		assertEquals(20, eventService.getAll().size());
 		
 		//Test with card identifier type
 		event = new Event().withEventType("Out of Area Service").withProviderId("tester112")
@@ -170,7 +184,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(15, eventService.getAll().size());
+		assertEquals(20, eventService.getAll().size());
 		
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		event = new Event().withEventType("Out of Area Service - Growth Monitoring")
@@ -180,7 +194,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
 		
-		assertEquals(16, eventService.getAll().size());
+		assertEquals(21, eventService.getAll().size());
 		
 	}
 	
@@ -198,7 +212,6 @@ public class EventServiceTest extends BaseRepositoryTest {
 		assertEquals(1, updatedEvent.getObs().size());
 		assertEquals("3.5", updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
 		assertNull(updatedEvent.getDateEdited());
-		
 		event.setTeam("ATeam");
 		event.setProviderId("tester11");
 		event.setLocationId("321312-fsff-2328");
@@ -217,6 +230,47 @@ public class EventServiceTest extends BaseRepositoryTest {
 		event.setDateVoided(new DateTime());
 		eventService.addorUpdateEvent(event);
 		assertNull(eventService.findByFormSubmissionId(event.getFormSubmissionId()));
+	}
+	
+	@Test
+	public void testAddorUpdateEventWithMissingEventIdUpdatesEvent() throws Exception {
+		String baseEntityId = UUID.randomUUID().toString();
+		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
+		Event event = new Event().withBaseEntityId(baseEntityId).withEventType("Growth Monitoring")
+		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs);
+		ObjectMapper mapper = BaseTypeHandler.mapper;
+		SimpleModule dateTimeModule = new SimpleModule("DateTimeModule", new Version(0, 0, 0, null));
+		dateTimeModule.addDeserializer(DateTime.class, new DateTimeDeserializer());
+		mapper.registerModule(dateTimeModule);
+		String jsonString = mapper.writeValueAsString(event);
+		eventService.addorUpdateEvent(event);
+		
+		Event updatedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
+		String eventId = updatedEvent.getId();
+		assertEquals(baseEntityId, updatedEvent.getBaseEntityId());
+		assertEquals("Growth Monitoring", updatedEvent.getEventType());
+		assertEquals(1, updatedEvent.getObs().size());
+		assertEquals("3.5", updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		assertNull(updatedEvent.getDateEdited());
+		
+		Event originalEventWithoutId = mapper.readValue(jsonString, Event.class);
+		originalEventWithoutId.setTeam("ATeam");
+		originalEventWithoutId.setProviderId("tester11");
+		originalEventWithoutId.setLocationId("321312-fsff-2328");
+		eventService.addorUpdateEvent(originalEventWithoutId);
+		
+		updatedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
+		assertEquals(eventId, updatedEvent.getId());
+		assertEquals("ATeam", updatedEvent.getTeam());
+		assertEquals("tester11", updatedEvent.getProviderId());
+		assertEquals("321312-fsff-2328", updatedEvent.getLocationId());
+		assertEquals(EventsRepositoryImpl.REVISION_PREFIX + 2, updatedEvent.getRevision());
+		assertNotNull(updatedEvent.getDateEdited());
+		
+		List<Event> events = eventService.findByBaseEntityId(baseEntityId);
+		assertEquals(1, events.size());
+		assertEquals(eventId, events.get(0).getId());
+		
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -273,20 +327,107 @@ public class EventServiceTest extends BaseRepositoryTest {
 		assertEquals("3.5", updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
 		assertEquals(0, Minutes.minutesBetween(DateTime.now(), updatedEvent.getDateEdited()).getMinutes());
 	}
-
+	
+	@Test
+	public void testFindAllEventIds() {
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(null, false, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getLeft();
+		
+		assertNotNull(actualEventIds);
+		assertEquals(20, actualEventIds.size());
+	}
+	
 	@Test
 	public void testFindAllIdsByEventType() {
+		
+		String growthMonitoringEventype = "Growth Monitoring";
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, false, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getLeft();
+		
+		assertNotNull(actualEventIds);
+		assertEquals(4, actualEventIds.size());
+		
+		Map<String, Boolean> expectedIdMap = new HashMap<>();
+		expectedIdMap.put("05934ae338431f28bf6793b24177a1dc", true);
+		expectedIdMap.put("05934ae338431f28bf6793b241780bac", true);
+		expectedIdMap.put("05934ae338431f28bf6793b241781149", true);
+		expectedIdMap.put("05934ae338431f28bf6793b241781a1e", true);
+		
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(0)));
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(1)));
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(2)));
+		assertTrue(expectedIdMap.containsKey(actualEventIds.get(3)));
+		
+	}
+	
+	@Test
+	public void testFindAllDeletedIdsByEventType() {
+		
+		String growthMonitoringEventype = "Growth Monitoring";
+
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, true, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getLeft();
+		
+		assertNotNull(actualEventIds);
+		assertEquals(1, actualEventIds.size());
+		
+		assertEquals("cfcc0e7e3cef11eab77f2e728ce88125", actualEventIds.get(0));
+	}
+	
+	@Test
+	public void testFindAllDeletedIds() {
+
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(null, true, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getLeft();
+		
+		assertNotNull(actualEventIds);
+		assertEquals(1, actualEventIds.size());
+		assertEquals("cfcc0e7e3cef11eab77f2e728ce88125", actualEventIds.get(0));
+	}
+
+	@Test
+	public void testFindAllIdsByEventTypeOrderedByServerVersion() {
 
 		String growthMonitoringEventype = "Growth Monitoring";
-		List<String> actualEventIds = eventService.findAllIdsByEventType(growthMonitoringEventype);
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, false, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getLeft();
 
 		assertNotNull(actualEventIds);
 		assertEquals(4, actualEventIds.size());
-
 		assertEquals("05934ae338431f28bf6793b24177a1dc", actualEventIds.get(0));
 		assertEquals("05934ae338431f28bf6793b241780bac", actualEventIds.get(1));
 		assertEquals("05934ae338431f28bf6793b241781149", actualEventIds.get(2));
 		assertEquals("05934ae338431f28bf6793b241781a1e", actualEventIds.get(3));
+		assertEquals(1521469045590l, eventIdsModel.getRight().longValue());
+
+	}
+
+	@Test
+	public void testFindAllIdsByEventTypeLimitsByGivenParam() {
+
+		String growthMonitoringEventype = "Growth Monitoring";
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(growthMonitoringEventype, false, 0l, 2);
+		List<String> actualEventIds = eventIdsModel.getLeft();
+
+		assertNotNull(actualEventIds);
+		assertEquals(2, actualEventIds.size());
+		assertEquals("05934ae338431f28bf6793b24177a1dc", actualEventIds.get(0));
+		assertEquals("05934ae338431f28bf6793b241780bac", actualEventIds.get(1));
+		assertEquals(1521469045588l, eventIdsModel.getRight().longValue());
+
+	}
+
+	@Test
+	public void testFindAllIdsOrdersByServerVersionAnd() {
+
+		Pair<List<String>, Long> eventIdsModel = eventService.findAllIdsByEventType(null, false, 0l, 100);
+		List<String> actualEventIds = eventIdsModel.getLeft();
+
+		assertNotNull(actualEventIds);
+		assertEquals(20, actualEventIds.size());
+		assertEquals("05934ae338431f28bf6793b2417696bf", actualEventIds.get(0));
+		assertEquals("34166bde-2d40-4cb9-aec7-d8e4feb47c53", actualEventIds.get(19));
+		assertEquals(1573736256054l, eventIdsModel.getRight().longValue());
 
 	}
 	

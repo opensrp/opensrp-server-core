@@ -2,12 +2,14 @@ package org.opensrp.service;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
@@ -92,9 +94,14 @@ public class EventService {
 		return null;
 	}
 	
+	/**
+	 * Find an event using the event Id
+	 * @param eventId the if for the event
+	 * @return an event matching the eventId
+	 */
 	public Event findById(String eventId) {
 		try {
-			if (eventId == null || eventId.isEmpty()) {
+			if (StringUtils.isEmpty(eventId) ) {
 				return null;
 			}
 			return allEvents.findById(eventId);
@@ -103,6 +110,28 @@ public class EventService {
 			logger.error("", e);
 		}
 		return null;
+	}
+	
+	/**
+	 * Find an event using an event Id or form Submission Id
+	 * @param eventId the if for the event
+	 * @param formSubmissionId form submission id for the events
+	 * @return an event matching the eventId or formsubmission id
+	 */
+	public Event findByIdOrFormSubmissionId(String eventId, String formSubmissionId) {
+		Event event=null;
+		try {	
+			if(StringUtils.isNotEmpty(eventId)) {
+				 event = findById(eventId);
+			}
+			if (event == null && StringUtils.isNotEmpty(formSubmissionId)) {
+				return findByFormSubmissionId(formSubmissionId);
+			}
+		}
+		catch (Exception e) {
+			logger.error("", e);
+		}
+		return event;
 	}
 	
 	public synchronized Event addEvent(Event event) {
@@ -215,8 +244,10 @@ public class EventService {
 	}
 	
 	public synchronized Event addorUpdateEvent(Event event) {
-		Event existingEvent = findById(event.getId());
+		Event existingEvent = findByIdOrFormSubmissionId(event.getId(),event.getFormSubmissionId());
 		if (existingEvent != null) {
+			event.setId(existingEvent.getId());
+			event.setRevision(existingEvent.getRevision());
 			event.setDateEdited(DateTime.now());
 			event.setServerVersion(null);
 			event.setRevision(existingEvent.getRevision());
@@ -327,10 +358,15 @@ public class EventService {
 
 	/**
 	 * This method searches for event ids filtered by eventType
+	 * and the date they were deleted
+	 *
 	 * @param eventType used to filter the event ids
+	 * @param isDeleted whether to return deleted event ids
+	 * @param serverVersion
+	 * @param limit upper limit on number of tasks ids to fetch
 	 * @return a list of event ids
 	 */
-	public List<String> findAllIdsByEventType(String eventType) {
-		return allEvents.findIdsByEventType(eventType);
+	public Pair<List<String>, Long> findAllIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit) {
+		return allEvents.findIdsByEventType(eventType, isDeleted, serverVersion, limit);
 	}
 }

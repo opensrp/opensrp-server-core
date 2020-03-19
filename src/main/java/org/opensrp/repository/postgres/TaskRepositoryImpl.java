@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.Task;
 import org.opensrp.domain.postgres.TaskMetadata;
 import org.opensrp.domain.postgres.TaskMetadataExample;
@@ -124,10 +125,45 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		return convert(tasks);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public List<String> findAllIds() {
+	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit) {
+		Long lastServerVersion = null;
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		return taskMetadataMapper.selectManyIds(taskMetadataExample);
+		taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+
+		List<String> taskIdentifiers = taskMetadataMapper.selectManyIds(taskMetadataExample, 0,
+				fetchLimit);
+
+		if (taskIdentifiers != null && !taskIdentifiers.isEmpty()) {
+			taskMetadataExample = new TaskMetadataExample();
+			taskMetadataExample.createCriteria().andIdentifierEqualTo(taskIdentifiers.get(taskIdentifiers.size() - 1));
+			List<TaskMetadata> taskMetaDataList = taskMetadataMapper.selectByExample(taskMetadataExample);
+
+			lastServerVersion = taskMetaDataList != null && !taskMetaDataList.isEmpty() ?
+					taskMetaDataList.get(0).getServerVersion() : 0;
+
+		}
+
+		return Pair.of(taskIdentifiers, lastServerVersion);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Task> getAllTasks(Long serverVersion, int limit) {
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+
+		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
+				limit);
+		return convert(tasks);
 	}
 
 	@Override

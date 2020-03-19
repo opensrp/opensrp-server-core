@@ -2,8 +2,9 @@ package org.opensrp.repository.couch;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
-
+import org.apache.commons.lang3.tuple.Pair;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.UpdateConflictException;
@@ -222,7 +223,7 @@ public class AllEvents extends MotechBaseRepository<Event> implements EventsRepo
 	}
 
 	@Override
-	public List<String> findIdsByEventType(String eventType) {
+	public Pair<List<String>, Long> findIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit) {
 		return null; //TODO Should this be implemented????
 	}
 

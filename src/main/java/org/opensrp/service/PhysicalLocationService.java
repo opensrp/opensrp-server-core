@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
@@ -194,10 +196,57 @@ public class PhysicalLocationService {
 
 	/**
 	 * This method searches for all structure ids
-	 * @return a list of strcuture ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of structure ids to fetch
+	 * @return a list of structure ids as well as the lastServerVersion
 	 */
-	public List<String> findAllStructureIds() {
-		return locationRepository.findAllStructureIds();
+	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit) {
+		return locationRepository.findAllStructureIds(serverVersion, limit);
+	}
+
+	/**
+	 * This method searches for location identifier and name using a plan identifier.
+	 *
+	 * @param planIdentifier identifier of the plan
+	 * @return list of location details i.e. identifier and name
+	 */
+	public List <LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
+		return  locationRepository.findLocationDetailsByPlanId(planIdentifier);
+	}
+
+	/**
+	 * This method searches for jurisdictions ordered by serverVersion ascending
+	 *
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param serverVersion
+	 * @param limit upper limit on number of jurisdictions to fetch
+	 * @return list of jurisdictions
+	 */
+	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit) {
+		return locationRepository.findAllLocations(returnGeometry, serverVersion, limit);
+	};
+
+	/**
+	 * This method searches for structures ordered by serverVersion ascending
+	 *
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param limit upper limit on number of structures to fetch
+	 * @return list of structures
+	 */
+	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit) {
+		return locationRepository.findAllStructures(returnGeometry, serverVersion, limit);
+	};
+
+	/**
+	 * This method searches for all location ids
+	 *
+	 * @param serverVersion
+	 * @param limit upper limit on number of location ids to fetch
+	 * @return a list of location ids
+	 */
+	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit) {
+		return locationRepository.findAllLocationIds(serverVersion, limit);
 	}
 
 }

@@ -16,17 +16,37 @@
 		join core.event_metadata em on cm.base_entity_id = em.base_entity_id
 	</sql>
 	
+	<resultMap id="clientDynamicProperties" type="map">
+        <result column="last_contact_date" property="last_contact_date"/>
+        <result column="edd" property="edd"/>
+        <result column="gestational_age" property="gestational_age"/>
+        <result column="risk_category" property="risk_category"/>
+        <result column="immunization_status" property="immunization_status"/>
+        <result column="age_year_part" property="age_year_part"/>
+        <result column="age_month_part" property="age_month_part"/>
+        <result column="registration_status" property="registration_status"/>
+        <result column="provider_id" property="provider_id"/>
+        <result column="lmp" property="lmp"/>
+        <result column="family_head" property="family_head"/>
+        <result column="member_count" property="member_count"/>
+        <result column="phone_number" property="phone_number"/>
+        
+    </resultMap>
+	<resultMap id="BaseCustomClientResultMap" type="org.opensrp.domain.postgres.CustomClient">    
+    	<id column="id" jdbcType="BIGINT" property="id" />
+	    <result column="json" jdbcType="OTHER" property="json" typeHandler="org.opensrp.repository.postgres.handler.ClientTypeHandler" />
+	    <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted" />
+	    <association property="dynamicProperties" resultMap="clientDynamicProperties"/>
+   	</resultMap>
 	<resultMap id="householdClientMap" type="org.opensrp.domain.postgres.HouseholdClient">
 		<id column="member_count" jdbcType="BIGINT" property="memebrCount" />
 		<result column="provider_id" jdbcType="VARCHAR" property="providerId"/>
 		<result column="household_head" jdbcType="VARCHAR" property="householdHead"/>	
-		<result column="relational_id" jdbcType="VARCHAR" property="relationalId"/>
-		
+		<result column="relational_id" jdbcType="VARCHAR" property="relationalId"/>		
 	</resultMap>
 	<resultMap id="totalCountMap" type="org.opensrp.domain.postgres.HouseholdClient">		
 		<result column="total_count" jdbcType="BIGINT" property="totalCount"/>
-	</resultMap>	
-		
+	</resultMap>
 	
 	<sql id="Example_Where_Clause">
 		<where>
@@ -151,7 +171,7 @@
 					cm.last_name ilike #{name} or
 					cm.unique_id ilike #{name} or
 					c.json -> 'attributes' ->> 'phoneNumber' ilike #{name}
-					<if test="clientBean.clientType!=null">
+					<if test="clientBean.providerId!=null">
 					or
 					em.provider_id ilike #{name}
 					</if>				
@@ -162,7 +182,7 @@
 			and em.entity_type = #{clientBean.clientType,jdbcType=VARCHAR}
 		</if>
 		
-		<if test="clientBean.clientType != null">					
+		<if test="clientBean.providerId != null">					
 			and em.provider_id = #{clientBean.providerId,jdbcType=VARCHAR}
 		</if>
 		<if test="clientBean.gender != null">
@@ -220,25 +240,279 @@
 		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
-		<include refid="Base_Table_List" />	
-		<if test="clientBean.clientType!=null">	
-			<include refid="Join_With_Event_Meta_Data_Table" />
-		</if>		
+		<include refid="Base_Table_List" />
 		<if test="addressBean!=null and addressBean.hasFilter">
 			join jsonb_array_elements(json->'addresses') as address on true	
 		</if>
-		<include refid="LocationId_Where_Clause" />
 		<where>
 			<trim prefixOverrides="and">
 			 	cm.date_deleted is null
-				
-				<include refid="ClientBean_Where_Clause" />
-				<include refid="AddressBean_Where_Clause" />
+				<if test="clientBean.nameLike != null">
+					<bind name="name" value="'%' + clientBean.nameLike + '%'" />
+					and (	cm.first_name ilike #{name} or
+							cm.middle_name ilike #{name} or
+							cm.last_name ilike #{name} 
+						)
+				</if>
+				<if test="clientBean.gender != null">
+					and c.json->>'gender' = #{clientBean.gender,jdbcType=VARCHAR}
+				</if>
+				<if test="clientBean.birthdateFrom != null and clientBean.birthdateTo != null">
+					and cm.birth_date  
+					between #{clientBean.birthdateFrom,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler} 
+					and	 	#{clientBean.birthdateTo,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler}
+				</if>
+				<if test="clientBean.deathdateFrom != null and clientBean.deathdateTo != null">
+					and (json->>'deathdate')::date
+					between #{clientBean.deathdateFrom,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler} 
+					and	 	#{clientBean.deathdateTo,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler}
+				</if>
+				<if test="clientBean.attributeType != null and clientBean.attributeValue != null">
+					and json -> 'attributes' ->> #{clientBean.attributeType,jdbcType=VARCHAR} = #{clientBean.attributeValue,jdbcType=VARCHAR}
+				</if>
+				<if test="clientBean.lastEditFrom != null and clientBean.lastEditTo != null">
+					and (json->>'dateEdited')::timestamp
+					between #{clientBean.lastEditFrom,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler} 
+					and	 	#{clientBean.lastEditTo,typeHandler=org.opensrp.repository.postgres.handler.DateTimeTypeHandler}
+				</if>
+				<if test="addressBean.addressType != null">
+					and address ->> 'addressType' = #{addressBean.addressType,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.country != null">
+					and address ->> 'country' = #{addressBean.country,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.stateProvince != null">
+					and address ->> 'stateProvince' = #{addressBean.stateProvince,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.cityVillage != null">
+					and address ->> 'cityVillage' = #{addressBean.cityVillage,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.countyDistrict != null">
+					and address ->> 'countyDistrict' = #{addressBean.countyDistrict,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.town != null">
+					and address ->> 'town' = #{addressBean.town,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.countyDistrict != null">
+					and address ->> 'subTown' = #{addressBean.subTown,jdbcType=VARCHAR}
+				</if>
+				<if test="addressBean.countyDistrict != null">
+					and address ->> 'subTown' = #{addressBean.subTown,jdbcType=VARCHAR}
+				</if>
 				<!-- Params for SearchRepository -->
-				
+				<if test="clientBean.firstName != null">	
+					<bind name="firstName" value="'%' + clientBean.firstName + '%'" />
+					and c.json->>'firstName' ilike #{firstName}
+				</if>
+				<if test="clientBean.middleName != null">
+					<bind name="middleName" value="'%' + clientBean.middleName + '%'" />
+					and c.json->>'middleName' ilike #{middleName}
+				</if>
+				<if test="clientBean.lastName != null">
+					<bind name="lastName" value="'%' + clientBean.lastName + '%'" />
+					and c.json->>'lastName' ilike #{lastName}
+				</if>
+				<if test="clientBean.identifiers != null" >
+					<trim prefix="and ("  suffix=")" >
+					 <foreach collection="clientBean.identifiers" index="key" item="value" separator=" or " >
+		        			json -> 'identifiers' ->> #{key,jdbcType=VARCHAR} = #{value,jdbcType=VARCHAR}
+		    			</foreach>
+		    			</trim>
+				</if>
+				<if test="clientBean.attributes != null" >
+					<trim prefix="and (" suffix=")" >			 
+					 <foreach collection="clientBean.attributes"  index="key" item="value" separator=" or " >
+		        			json -> 'attributes' ->> #{key,jdbcType=VARCHAR} = #{value,jdbcType=VARCHAR}
+		    			</foreach>
+		    			</trim>
+				</if>
 			</trim>
 		</where>
-		<if test="clientBean.orderByField!=null and addressBean.orderByType!=null">
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	
+	<sql id="ClientBean_Where_Clause_All_Household">
+		<if test="clientBean.nameLike != null">
+			<bind name="name" value="'%' + clientBean.nameLike + '%'" />
+			and (	family_first_name ilike #{name} or
+					family_head_first_name ilike #{name} or	
+					family_head_last_name ilike #{name} or					
+					phone_number = #{name} or
+					provider_id = #{name} or
+					unique_id = #{name} 
+				)
+		</if>	
+	</sql>
+	<sql id="household">
+		with family_event as (
+			select
+				em.*,
+				max(em.id) over(partition by em.base_entity_id) last_id
+			from
+				core.event_metadata em
+			where
+				em.entity_type = 'ec_family'
+				
+				<if test="clientBean.locations != null">
+				and em.location_id = any (array           	
+	            	<foreach close="]" collection="clientBean.locations" item="listItem" open="[" separator=",">
+						#{listItem}
+					</foreach>
+					)				
+			</if>	
+			),
+			distinct_family_event as (
+			select
+				fe.provider_id,
+				fe.location_id,
+				fe.event_date,
+				fe.entity_type,
+				fe.event_type,
+				cm.relational_id,
+				cm.base_entity_id,
+				cm.unique_id,
+				cm.first_name family_first_name,
+				cm.last_name family_last_name
+			from
+				family_event fe
+			join core.client_metadata cm
+					using(base_entity_id)
+			where
+				fe.id = fe.last_id ) ,
+			
+			 family_head as (
+			select
+				cm.relational_id family_base_entity_id,
+				cm.base_entity_id family_head_base_entity_id,
+				cm.first_name family_head_first_name,
+				cm.last_name family_head_last_name
+			from
+				core.client_metadata cm
+			where
+				cm.base_entity_id = any (
+				select
+					relational_id
+				from
+					distinct_family_event) )
+					,
+					
+			
+			family_head_event as (
+			select
+				e.json ejson,
+				em.base_entity_id,
+				em.id,
+				max(em.id) over(partition by em.base_entity_id) last_id
+			from
+				core.event_metadata em
+			join core."event" e on
+				em.id = e.id
+			where
+				em.base_entity_id = any (
+				select
+					family_head_base_entity_id
+				from
+					family_head ) )
+				,	
+				
+			family_head_last_event as (
+			select
+				id,
+				ejson,
+				base_entity_id
+			from
+				family_head_event fhe
+			where
+				id = last_id ),
+			obs as (
+			select
+				id,
+				base_entity_id,
+				jsonb_array_elements(ejson->'obs') o
+			from
+				family_head_last_event ) 
+				,
+			 
+			 phoneNumber as(
+			select
+				id,
+				max(base_entity_id) base_entity_id,
+				max(o->'values'->>0) filter(
+			where
+				(o->>'formSubmissionField') = 'phone_number') phone_number
+			from
+				obs
+			group by
+				id) 
+			,		
+			
+			 family_and_family_head_and_phone as(
+			select
+				pn.phone_number,
+				dfe.family_first_name,
+				dfe.family_last_name ,
+				dfe.base_entity_id,
+				dfe.unique_id,
+				fh.family_head_first_name,
+				fh.family_head_last_name,
+				fh.family_head_base_entity_id relational_id ,
+				concat(fh.family_head_first_name, ' ', fh.family_head_last_name) as family_head,
+				dfe.provider_id,
+				dfe.location_id
+			from
+				family_head fh
+			join distinct_family_event dfe on
+				fh.family_head_base_entity_id = dfe.relational_id
+			join phoneNumber pn on
+				fh.family_head_base_entity_id = pn.base_entity_id
+				<if test="clientBean.nameLike != null"> 
+					<where>
+						<trim prefixOverrides="and">
+							<include refid="ClientBean_Where_Clause_All_Household" />
+						</trim>
+					 </where>
+				 </if>
+				),
+				
+			 member_count as (
+			select
+				relational_id,
+				count(*) as member_count
+			from
+				core.client_metadata cm
+			where
+				relational_id = any (
+				select
+					base_entity_id
+				from
+					family_and_family_head_and_phone)
+			group by
+				relational_id ),
+				 
+			family_and_family_head_and_phone_member_count as(	
+			select
+				ffhp.*,
+				member_count,
+				c."json",
+				c."json"->>'dateCreated' ,
+				c.date_deleted,
+				c.id
+				
+			from
+				family_and_family_head_and_phone ffhp 
+				 join 	member_count mc on ffhp.base_entity_id = mc.relational_id
+				 join core.client c on c."json"->>'baseEntityId' = ffhp.base_entity_id	
+			)
+			
+	</sql>
+	
+	<select id="selectHouseholdBySearchBean"
+		resultMap="BaseCustomClientResultMap">
+		<include refid="household"/>	
+			select * from family_and_family_head_and_phone_member_count	
+		
+		<if test="clientBean.orderByField!=null and clientBean.orderByType!=null">
 		 order by ${clientBean.orderByField}  ${clientBean.orderByType}  
 		</if>
 		 
@@ -246,24 +520,10 @@
 	</select>
 	
 	
-	<select id="selectCountBySearchBean"
+	<select id="selectHouseholdCountBySearchBean"
 		resultMap="totalCountMap">
-		select count(*) as total_count		
-		<include refid="Base_Table_List" />
-		<if test="clientBean.clientType != null or clientBean.providerId != null ">
-			<include refid="Join_With_Event_Meta_Data_Table" />
-		</if>
-		<if test="addressBean!=null and addressBean.hasFilter">
-			join jsonb_array_elements(json->'addresses') as address on true	
-		</if>
-		<where>
-			<trim prefixOverrides="and">
-			 	cm.date_deleted is null
-				<include refid="ClientBean_Where_Clause" />
-				<include refid="AddressBean_Where_Clause" />
-			</trim>
-		</where>
-		
+		<include refid="household"/>	
+		select count(*) as total_count from family_and_family_head_and_phone_member_count			
 	</select>	
 	
 	
@@ -296,19 +556,393 @@
 	</select>
 	
 	<select id="selectMembersByRelationshipId"
-		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
+		resultMap="BaseCustomClientResultMap">
 		<if test="baseEntityId != null">
-			select
-			<include refid="Base_Column_List" />
-			<include refid="Base_Table_List" />		
-			<where>
-				<trim prefixOverrides="and">
-				 	cm.date_deleted is null				
-					and
-					cm.relational_id = #{baseEntityId}				
-				</trim>
-			</where>
-			 order by first_name  ASC
-		 </if>
+			with clm as(
+				select c.id,c."json",cm.base_entity_id from core.client as c    
+			    	join core.client_metadata cm on cm.client_id = c.id
+			     where cm.relational_id = #{baseEntityId}
+			),
+			em as(
+				select em.id, em.base_entity_id,em.event_type,max(em.id) over
+			 		(partition by em.base_entity_id ) as last_id
+				from core.event_metadata as em  
+				where em.base_entity_id = any(
+					select base_entity_id from clm
+				)
+			)
+			select clm."json",clm.id,em.event_type as registration_status from clm join em on clm.base_entity_id = em.base_entity_id
+			and em.id = em.last_id
+		</if>		
+		
 	</select>
+	
+	<select id="selectAllClientsBySearchBean" resultMap="BaseCustomClientResultMap">		
+		
+		with em as(
+			select em.entity_type,em.location_id, em.id, em.base_entity_id,em.event_date,max(em.id) over(partition by em.base_entity_id) last_id
+			from core.event_metadata em
+			<include refid="LocationId_Where_Clause" />
+		)
+		select em.event_date last_contact_date,c.id,c."json" ,
+		EXTRACT(year FROM age(current_date,cm.birth_date)) :: int as age_year_part
+   		,EXTRACT(month FROM age(current_date,cm.birth_date)) :: int as age_month_part
+		from em join 
+		core.client_metadata cm on em.base_entity_id = cm.base_entity_id
+		join core.client c on  cm.client_id = c.id 		
+		<where>
+			<trim prefixOverrides="and">
+				cm.date_deleted is null and em.id=em.last_id				
+				 <include refid="ClientBean_Where_Clause_All_Clients"/>				
+			</trim>
+	    </where>
+	    <if test="clientBean.orderByField!=null and clientBean.orderByType!=null">
+			 order by ${clientBean.orderByField}  ${clientBean.orderByType}  
+		</if>
+		 LIMIT #{limit} OFFSET #{offset}	
+	
+	</select>
+	
+	<select id="selectCountAllClientsBySearchBean" resultMap="totalCountMap">		
+		with em as(
+			select em.entity_type,em.location_id, em.id, em.base_entity_id,em.event_date,max(em.id) over(partition by em.base_entity_id) last_id
+			from core.event_metadata em
+			<include refid="LocationId_Where_Clause" />
+		)
+		select count(*) as total_count from em join 
+		core.client_metadata cm on em.base_entity_id = cm.base_entity_id
+		join core.client c on  cm.client_id = c.id 		
+		<where>
+			<trim prefixOverrides="and">
+				cm.date_deleted is null and em.id=em.last_id				
+				 <include refid="ClientBean_Where_Clause_All_Clients"/>				
+			</trim>
+	    </where>
+	</select>
+	
+	<sql id="ClientBean_Where_Clause_All_Clients">
+		<if test="clientBean.nameLike != null">
+			<bind name="name" value="'%' + clientBean.nameLike + '%'" />
+			and (	cm.first_name ilike #{name} or
+					cm.middle_name ilike #{name} or
+					cm.last_name ilike #{name} or					
+					cm.unique_id ilike #{name} 
+				)
+		</if>		
+		
+		<if test="clientBean.clientType != null">					
+			and em.entity_type != #{clientBean.clientType,jdbcType=VARCHAR}
+		</if>
+		
+		<if test="clientBean.gender != null">
+			and c.json->>'gender' = #{clientBean.gender,jdbcType=VARCHAR}
+		</if>
+	
+	</sql>
+	<sql id="ClientBean_Where_Clause_All_ANC_CHILD">
+		<if test="clientBean.nameLike != null">
+			<bind name="name" value="'%' + clientBean.nameLike + '%'" />
+			and (	cm.first_name ilike #{name} or
+					cm.middle_name ilike #{name} or
+					cm.last_name ilike #{name} or
+					fh.family_head ilike #{name} or
+					cm.unique_id ilike #{name} 
+				)
+		</if>
+		
+		<if test="clientBean.gender != null">
+			and cm.gender = #{clientBean.gender,jdbcType=VARCHAR}
+		</if>
+	
+	</sql>
+	<sql id="ANC">
+		with anc_event as(
+			select
+				e.json,
+				em.event_type,
+				em.location_id,
+				em.provider_id,
+				em.event_date,
+				em.base_entity_id,
+				em.id,
+				max(em.id) over(partition by em.base_entity_id) last_id
+			from
+				core.event_metadata em
+			join core."event" e on
+				em.id = e.id
+			where
+				(em.event_type = 'Update ANC Registration'
+				or em.event_type = 'ANC Registration')
+				<if test="clientBean.locations != null">
+					and em.location_id = any (array           	
+	            	<foreach close="]" collection="clientBean.locations" item="listItem"
+											open="[" separator=",">
+						#{listItem}
+					</foreach>
+					)				
+				</if>
+			)	
+			,
+			last_anc_event as (
+			select
+				em.id,
+				em.last_id,
+				cm.base_entity_id,
+				em.event_type,
+				cm.first_name,
+				cm.last_name,
+				cm.middle_name,
+				cm.unique_id,
+				cm.relational_id,
+				cm.birth_date,
+				em.json as ejson ,
+				em.provider_id,
+				em.event_date,
+				em.location_id
+			from
+				anc_event em
+			join core.client_metadata cm on
+				em.base_entity_id = cm.base_entity_id
+			where
+				em.id = em.last_id ),
+			anc_event_client as (
+			select
+				c.json,
+				c.id,
+				ce.ejson ,
+				ce.base_entity_id,
+				ce.provider_id,
+				ce.event_date,
+				ce.location_id,
+				ce.relational_id,
+				extract(year
+			from
+				age(current_date, ce.birth_date)) :: int as age_year_part,
+				extract(month
+			from
+				age(current_date, ce.birth_date)) :: int as age_month_part,
+				ce.first_name,
+				ce.unique_id,
+				ce.middle_name,
+				ce.last_name
+			from
+				last_anc_event ce
+			join core.client as c on
+				c.json->>'baseEntityId' = ce.base_entity_id ),
+			obs as(
+			select
+				id,
+				jsonb_array_elements(ejson->'obs') o
+			from
+				anc_event_client ) ,
+			last_obs as(
+			select
+				id,
+				max(to_date((o->'values'->>0), 'dd-mm-yyyy')) filter(
+			where
+				(o->>'formSubmissionField') = 'edd_note') edd,
+				max(to_date((o->'values'->>0), 'dd-mm-yyyy')) filter(
+			where
+				(o->>'formSubmissionField') = 'last_menstrual_period') lmp,
+				max(floor(extract(days from (now() - to_date((o->'values'->>0), 'dd-mm-yyyy') )) / 7)) filter(
+			where
+				(o->>'formSubmissionField') = 'last_menstrual_period' ) gestAge
+			from
+				obs
+			group by
+				id),
+			family_head as (
+			select
+				cm.base_entity_id,
+				concat(cm.first_name, ' ', cm.last_name) as family_head
+			from
+				core.client_metadata cm
+			where
+				cm.base_entity_id = any (
+				select
+					relational_id
+				from
+					anc_event_client) ),
+			anc_list as (
+			select
+				cl.first_name,
+				cl.last_name,
+				cl.middle_name,
+				cl.unique_id,
+				cl.age_year_part,
+				cl.age_month_part,	
+				cl.relational_id,
+				cl.event_date last_contact_date,
+				cl.provider_id,
+				cl.json ,
+				edd,
+				coalesce(lmp,(edd- interval '180 DAY')::date) as lmp,
+				coalesce(gestAge, floor(extract(days from(now()-(edd- interval '180 DAY')::date))/ 7)) gestational_age
+			from
+				last_obs,
+				anc_event_client as cl
+			where
+				last_obs.id = cl.id 
+				<if test="clientBean.startDate != null and clientBean.endDate != null ">					
+					and  Date(edd) between '${clientBean.startDate}' and  '${clientBean.endDate}'		
+				</if>
+				
+				)
+	
+	</sql>
+	
+	<sql id="Child">
+		with child_event as(
+		select
+			e.json,
+			em.event_type,
+			em.location_id,
+			em.provider_id,
+			em.event_date,
+			em.base_entity_id,
+			em.id,
+			max(em.id) over(partition by em.base_entity_id) last_id
+		from
+			core.event_metadata em
+		join core."event" e on
+			em.id = e.id
+		where
+			(em.event_type = 'Child Registration'
+			or em.event_type = 'Update Child Registration'
+			or em.event_type = 'PNC Child Registration')
+			<if test="clientBean.locations != null">
+				and em.location_id = any (array           	
+	            	<foreach close="]" collection="clientBean.locations" item="listItem" open="[" separator=",">
+						#{listItem}
+					</foreach>
+					)				
+			</if>			
+			),
+		last_event as(
+		select
+			ce.id,
+			ce.last_id,
+			cm.base_entity_id,
+			ce.event_type,
+			cm.first_name,
+			cm.unique_id,
+			cm.last_name,
+			cm.middle_name,
+			cm.relational_id,
+			cm.birth_date,
+			ce.json as ejson ,
+			ce.provider_id,
+			ce.event_date,
+			ce.location_id
+		from
+			child_event ce
+		join core.client_metadata cm on
+			ce.base_entity_id = cm.base_entity_id
+		where
+			ce.id = ce.last_id ) ,
+		child_client as (
+		select
+			c.json,
+			c.id,
+			le.provider_id,
+			le.event_date last_contact_date,
+			le.location_id,
+			le.base_entity_id,
+			le.first_name,
+			le.last_name,
+			le.middle_name,
+			le.birth_date,
+			le.unique_id,
+			le.relational_id,
+			c."json"->>'gender' gender,
+			extract(year
+		from
+			age(current_date, le.birth_date)) :: int as age_year_part ,
+			extract(month
+		from
+			age(current_date, le.birth_date)) :: int as age_month_part ,
+			extract(day
+		from
+			age(current_date, le.birth_date)) :: int as day ,
+			(date_part('day', current_date::timestamp - le.birth_date::timestamp))/ 365.25 years
+		from
+			last_event le
+		join core.client as c on
+			c.json->>'baseEntityId' = le.base_entity_id ),
+		family_head as (
+		select
+			cm.base_entity_id,
+			concat(cm.first_name, ' ', cm.last_name) as family_head
+		from
+			core.client_metadata cm
+		where
+			cm.base_entity_id = any (
+			select
+				relational_id
+			from
+				child_client) )
+		
+	
+	</sql>
+	<select id="selectANCBySearchBean" resultMap="BaseCustomClientResultMap">
+		<include refid="ANC"/>	
+		select * from anc_list cm join family_head fh on  cm.relational_id = fh.base_entity_id			
+		<where>
+			<trim prefixOverrides="and">							
+				 <include refid="ClientBean_Where_Clause_All_ANC_CHILD"/>				
+			</trim>
+	    </where>			
+
+		<if test="clientBean.orderByField!=null and clientBean.orderByType!=null">
+				 order by ${clientBean.orderByField}  ${clientBean.orderByType}  
+		</if>
+		LIMIT #{limit} OFFSET #{offset}	
+	</select>
+	
+	<select id="selectCountANCBySearchBean" resultType="Integer">
+		<include refid="ANC"/>	
+		select count(*) from anc_list cm join family_head fh on  cm.relational_id = fh.base_entity_id			
+		<where>
+			<trim prefixOverrides="and">							
+				 <include refid="ClientBean_Where_Clause_All_ANC_CHILD"/>				
+			</trim>
+	    </where>
+	</select>
+	
+	<select id="selectChildBySearchBean" resultMap="BaseCustomClientResultMap">
+		<include refid="Child"/>	
+		select
+			*
+		from
+			child_client cm
+		join family_head fh on
+			cm.relational_id = fh.base_entity_id			
+		<where>
+			<trim prefixOverrides="and">							
+				 <include refid="ClientBean_Where_Clause_All_ANC_CHILD"/>				
+			</trim>
+	    </where>			
+
+		<if test="clientBean.orderByField!=null and clientBean.orderByType!=null">
+				 order by ${clientBean.orderByField}  ${clientBean.orderByType}  
+		</if>
+		LIMIT #{limit} OFFSET #{offset}	
+	</select>
+	
+	<select id="selectCountChildBySearchBean" resultType="Integer">
+		<include refid="Child"/>	
+		select
+			count(*)
+		from
+			child_client cm
+		join family_head fh on
+			cm.relational_id = fh.base_entity_id			
+		<where>
+			<trim prefixOverrides="and">							
+				 <include refid="ClientBean_Where_Clause_All_ANC_CHILD"/>				
+			</trim>
+	    </where>
+	</select>
+	
+	
 </mapper>
