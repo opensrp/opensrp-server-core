@@ -7,11 +7,11 @@
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="identifier" jdbcType="VARCHAR" property="identifier"/>
 		<result column="jurisdiction" jdbcType="VARCHAR" property="jurisdiction"/>
-		<result column="form_version" jdbcType="VARCHAR" property="formVersion"/>
+		<result column="version" jdbcType="VARCHAR" property="version"/>
 		<result column="label" jdbcType="VARCHAR" property="label"/>
-		<result column="module_name" jdbcType="VARCHAR" property="module"/>
+		<result column="module" jdbcType="VARCHAR" property="module"/>
 		<result
-			column="created_at" jdbcType="BIGINT" property="createdAt"/>
+			column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
 	</resultMap>
 
 	<resultMap id="IdVersionTuple" type="org.opensrp.domain.IdVersionTuple">
@@ -29,18 +29,18 @@
 	<select id="selectClientFormMetadataByFormVersionAndIdentifier" parameterType="map" resultMap="BaseClientFormMetadataResultMap">
 		select *
 		from core.client_form_metadata
-		WHERE form_version = #{formVersion,jdbcType=VARCHAR} AND
+		WHERE version = #{formVersion, jdbcType=VARCHAR} AND
 		identifier = #{formIdentifier, jdbcType=VARCHAR}
 		ORDER BY created_at DESC LIMIT 1
 	</select>
 
 	<insert id="insertClientFormMetadata" parameterType="org.opensrp.domain.postgres.ClientFormMetadata"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		insert into core.client_form_metadata(identifier, jurisdiction, form_version, label, module_name, created_at)
-		 values (#{identifier}, #{jurisdiction}, #{formVersion}, #{label}, #{module}, #{createdAt})
+		insert into core.client_form_metadata(id, identifier, jurisdiction, version, label, module, created_at)
+		 values (#{id}, #{identifier}, #{jurisdiction}, #{version}, #{label}, #{module}, #{createdAt})
 	</insert>
 
 	<select id="getAvailableClientFormVersions" parameterType="string" resultMap="IdVersionTuple">
-		SELECT id, form_version FROM core.client_form_metadata WHERE form_identifier = #{formIdentifier}
+		SELECT id, version FROM core.client_form_metadata WHERE identifier = #{formIdentifier}
 	</select>
 </mapper>
