@@ -1,10 +1,10 @@
 package org.opensrp.domain;
 
-import org.joda.time.DateTime;
+import java.util.Date;
 
 public class Manifest {
 
-    private String identifier;
+    private int id;
 
     private String json;
 
@@ -12,16 +12,16 @@ public class Manifest {
 
     private String appVersion;
 
-    private DateTime createdAt;
+    private Date createdAt;
 
-    private DateTime updatedAt;
+    private Date updatedAt;
 
-    public String getIdentifier() {
-        return identifier;
+    public int getId() {
+        return id;
     }
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getJson() {
@@ -48,19 +48,19 @@ public class Manifest {
         this.appVersion = appVersion;
     }
 
-    public DateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(DateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public DateTime getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(DateTime updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

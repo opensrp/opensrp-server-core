@@ -77,11 +77,11 @@ public class ZiggyService {
 		
 		String jsFiles = ziggyFileLoader.getJSFiles();
 		
-		engine.eval(jsFiles);
+		/*engine.eval(jsFiles);
 		engine.eval(JS_INIT_SCRIPT);
 		
 		ziggyFormController = engine.get("controller");
-		invocable = (Invocable) engine;
+		invocable = (Invocable) engine;*/
 	}
 	
 	private Bindings getBindings(ScriptEngine engine) {

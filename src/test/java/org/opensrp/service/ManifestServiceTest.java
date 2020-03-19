@@ -36,14 +36,13 @@ public class ManifestServiceTest {
 
     private static Manifest initTestManifest(){
         Manifest manifest = new Manifest();
-        String identifier = "mani1234";
         String appVersion = "1234234";
         String json = "{}";
         String appId = "1234567op";
 
         manifest.setAppId(appId);
         manifest.setAppVersion(appVersion);
-        manifest.setIdentifier(identifier);
+        manifest.setId(23);
         manifest.setJson(json);
         return manifest;
     }
@@ -57,18 +56,18 @@ public class ManifestServiceTest {
         List<Manifest> actutalmanifest = manifestService.getAllManifest();
         verify(manifestRepository).getAll();
         assertEquals(1, actutalmanifest.size());
-        assertEquals("mani1234", actutalmanifest.get(0).getIdentifier());
+        assertEquals(23, actutalmanifest.get(0).getId());
     }
 
     @Test
     public void testGetManifestByIdentifier() {
         Manifest expectedManifest = initTestManifest();
         when(manifestRepository.get(anyString())).thenReturn(expectedManifest);
-        Manifest actutalManifest = manifestService.getManifest(expectedManifest.getIdentifier());
+        Manifest actutalManifest = manifestService.getManifest(expectedManifest.getId());
 
         verify(manifestRepository).get(anyString());
         assertNotNull(actutalManifest);
-        assertEquals("mani1234", actutalManifest.getIdentifier());
+        assertEquals(23, actutalManifest.getId());
     }
 
     @Test
@@ -84,6 +83,7 @@ public class ManifestServiceTest {
     public void testAddManifest() {
     	 when(manifestRepository.get(anyString())).thenReturn(null);
     	 Manifest manifest = initTestManifest();
+    	 manifest.setId(0);
     	 assertNotNull(manifest);
          manifestService.addManifest(manifest);
          verify(manifestRepository).add(eq(manifest));

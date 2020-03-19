@@ -26,11 +26,13 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         if (StringUtils.isBlank(id)) {
             return null;
         }
+
         Long myID = Long.parseLong(id);
         org.opensrp.domain.postgres.Manifest pgManifest = manifestMapper.selectByIdentifier(myID);
         if (pgManifest == null) {
             return null;
         }
+
         return convert(pgManifest);
     }
 
@@ -40,9 +42,11 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         if (getUniqueField(entity) == null) {
             return;
         }
+
         if (retrievePrimaryKey(entity) != null) { // Manifest already added
             return;
         }
+
         org.opensrp.domain.postgres.Manifest pgManifest = convert(entity, null);
         if (pgManifest == null) {
             return;
@@ -109,10 +113,11 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
     }
 
     @Override
-    public org.opensrp.domain.postgres.Manifest getManifest(String id) {
-        if (StringUtils.isBlank(id)) {
+    public org.opensrp.domain.postgres.Manifest getManifest(int id) {
+        if (id == 0) {
             return null;
         }
+
         ManifestExample manifestExample = new ManifestExample();
         List<org.opensrp.domain.postgres.Manifest> manifestList = manifestMapper.selectByExample(manifestExample);
 
@@ -141,13 +146,14 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         if (manifest == null) {
             return null;
         }
-        return manifest.getIdentifier();
+        return manifest.getId();
     }
 
     private Manifest convert(org.opensrp.domain.postgres.Manifest pgManifest) {
         if (pgManifest == null || pgManifest.getJson() == null || !(pgManifest.getJson() instanceof Manifest)) {
             return null;
         }
+
         return (Manifest) pgManifest.getJson();
     }
 
@@ -163,9 +169,9 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         pgManifest.setAppVersion(manifest.getAppVersion());
 
         if (manifest.getCreatedAt() != null)
-            pgManifest.setCreatedAt(manifest.getCreatedAt().getMillis());
+            pgManifest.setCreatedAt(manifest.getCreatedAt());
         if (manifest.getUpdatedAt() != null)
-            pgManifest.setUpdatedAt(manifest.getUpdatedAt().getMillis());
+            pgManifest.setUpdatedAt(manifest.getUpdatedAt());
 
         return pgManifest;
     }

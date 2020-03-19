@@ -84,10 +84,10 @@
                 #{appId,jdbcType=VARCHAR},
             </if>
             <if test="createdAt != null">
-                #{createdAt,jdbcType=BIGINT},
+                #{createdAt,jdbcType=TIMESTAMP},
             </if>
             <if test="updatedAt != null">
-                #{updatedAt,jdbcType=BIGINT},
+                #{updatedAt,jdbcType=TIMESTAMP},
             </if>
         </trim>
     </insert>
