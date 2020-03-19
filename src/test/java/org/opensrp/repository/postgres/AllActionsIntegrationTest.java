@@ -1,9 +1,8 @@
 package org.opensrp.repository.postgres;
 
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.opensrp.dto.AlertStatus.normal;
 import static org.opensrp.dto.BeneficiaryType.mother;
 
@@ -185,7 +184,7 @@ public class AllActionsIntegrationTest {
 	}
 	
 	@Test
-	public void shouldRemoveExistingAlertBeforeAddingNewOne() throws Exception {
+	public void shouldAllowAddingAnewAlertForExistingAlert() throws Exception {
 		Action existingAlert = new Action("entity id 1", "anm id 1", alert("schedule1", "milestone1"));
 		Action existingDifferentScheduleAlert = new Action("entity id 1", "anm id 1", alert("schedule2", "milestone3"));
 		allActions.add(existingAlert);
@@ -194,10 +193,13 @@ public class AllActionsIntegrationTest {
 		Action newAlert = new Action("entity id 1", "anm id 1", alert("schedule1", "milestone2"));
 		allActions.addOrUpdateAlert(newAlert);
 		
-		assertFalse(allActions.contains(existingAlert.getId()));
+		assertTrue(allActions.contains(existingAlert.getId()));
 		assertTrue(allActions.contains(existingDifferentScheduleAlert.getId()));
 		assertEquals(allActions.findAlertByANMIdEntityIdScheduleName("anm id 1", "entity id 1", "schedule1").get(0).getId(),
-		    newAlert.getId());
+			existingAlert.getId());
+		
+		assertEquals(allActions.findAlertByANMIdEntityIdScheduleName("anm id 1", "entity id 1", "schedule2").get(0).getId(),
+			existingDifferentScheduleAlert.getId());
 	}
 	
 	@Test

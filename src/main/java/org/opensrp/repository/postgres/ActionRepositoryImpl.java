@@ -167,6 +167,8 @@ public class ActionRepositoryImpl extends BaseRepositoryImpl<Action> implements 
 	@Override
 	public void deleteAllByTarget(String target) {
 		List<Long> idsToDelete = actionMapper.selectIdsByTarget(target);
+		if(idsToDelete.isEmpty())
+			return;
 		ActionMetadataExample metadataExample = new ActionMetadataExample();
 		metadataExample.createCriteria().andActionIdIn(idsToDelete);
 		actionMetadataMapper.deleteByExample(metadataExample);
@@ -204,9 +206,9 @@ public class ActionRepositoryImpl extends BaseRepositoryImpl<Action> implements 
 	@Override
 	public void markAlertAsInactiveFor(String providerId, String baseEntityId, String scheduleName) {
 		ActionMetadataExample metadataExample = new ActionMetadataExample();
-		metadataExample.createCriteria().andBaseEntityIdEqualTo(baseEntityId);
+		metadataExample.createCriteria().andBaseEntityIdEqualTo(baseEntityId).andProviderIdEqualTo(providerId);
 		Long actionsSize = actionMetadataMapper.countByExample(metadataExample);
-		List<Action> actions = convert(actionMetadataMapper.selectMany(metadataExample, 0, actionsSize.intValue()));
+		List<Action> actions = convert(actionMetadataMapper.selectManyBySchedule(metadataExample, scheduleName, 0,actionsSize.intValue()));
 		for (Action action : actions) {
 			action.markAsInActive();
 			update(action);
