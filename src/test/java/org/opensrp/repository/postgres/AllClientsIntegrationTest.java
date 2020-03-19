@@ -1,4 +1,4 @@
-package org.opensrp.repository.it;
+package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.opensrp.common.Gender;
 import org.opensrp.domain.Address;
 import org.opensrp.domain.Client;
-import org.opensrp.repository.couch.AllClients;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.service.ClientService;
@@ -40,7 +39,7 @@ public class AllClientsIntegrationTest {
 	private ClientService clientService;
 	
 	@Autowired
-	private AllClients ac;
+	private ClientsRepositoryImpl ac;
 	
 	@Before
 	public void setUp() throws Exception {

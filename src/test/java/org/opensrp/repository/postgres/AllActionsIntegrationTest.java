@@ -1,4 +1,4 @@
-package org.opensrp.repository.it;
+package org.opensrp.repository.postgres;
 
 import static java.util.Arrays.asList;
 import static junit.framework.Assert.assertEquals;
@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensrp.dto.ActionData;
 import org.opensrp.scheduler.Action;
-import org.opensrp.scheduler.repository.couch.AllActions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -29,7 +28,7 @@ public class AllActionsIntegrationTest {
 	public static final String VISIT_CODE = "ANC 1";
 	
 	@Autowired
-	AllActions allActions;
+	ActionRepositoryImpl allActions;
 	
 	@Before
 	public void setUp() throws Exception {

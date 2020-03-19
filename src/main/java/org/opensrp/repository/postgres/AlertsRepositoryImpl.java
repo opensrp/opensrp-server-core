@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
+import org.opensrp.domain.postgres.AlertExample;
 import org.opensrp.domain.postgres.AlertMetadata;
 import org.opensrp.domain.postgres.AlertMetadataExample;
 import org.opensrp.dto.AlertStatus;
@@ -322,6 +323,17 @@ public class AlertsRepositoryImpl extends BaseRepositoryImpl<Alert> implements A
 		metadata.setIsActive(entity.getIsActive());
 		metadata.setTriggerName(entity.triggerName());
 		return metadata;
+	}
+	
+
+	/**
+	 * Method should be used only during Unit testing
+	 * Deletes all existing records
+	 */
+	protected void removeAll() {
+		alertMetadataMapper.deleteByExample(new AlertMetadataExample());
+		alertMapper.deleteByExample(new AlertExample());
+		
 	}
 	
 }

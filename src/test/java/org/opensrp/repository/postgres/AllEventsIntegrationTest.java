@@ -1,4 +1,4 @@
-package org.opensrp.repository.it;
+package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensrp.domain.Event;
 import org.opensrp.domain.Obs;
-import org.opensrp.repository.couch.AllEvents;
 import org.opensrp.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,7 +23,7 @@ public class AllEventsIntegrationTest {
 	private EventService eventService;
 	
 	@Autowired
-	private AllEvents allEvents;
+	private EventsRepositoryImpl allEvents;
 	
 	@Before
 	public void setUp() throws Exception {

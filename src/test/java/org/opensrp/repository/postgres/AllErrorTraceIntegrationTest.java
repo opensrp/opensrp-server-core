@@ -1,4 +1,4 @@
-package org.opensrp.repository.it;
+package org.opensrp.repository.postgres;
 
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensrp.domain.ErrorTrace;
-import org.opensrp.repository.couch.AllErrorTrace;
+import org.opensrp.repository.ErrorTraceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class AllErrorTraceIntegrationTest {
 	
 	@Autowired
-	private AllErrorTrace allErrorTrace;
+	private ErrorTraceRepository allErrorTrace;
 	
 	@Before
 	public void setUp() throws Exception {

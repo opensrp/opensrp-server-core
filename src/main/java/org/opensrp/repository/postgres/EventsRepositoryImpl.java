@@ -12,6 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Event;
+import org.opensrp.domain.postgres.EventExample;
 import org.opensrp.domain.postgres.EventMetadata;
 import org.opensrp.domain.postgres.EventMetadataExample;
 import org.opensrp.domain.postgres.EventMetadataExample.Criteria;
@@ -515,6 +516,16 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 			logger.error(e.getMessage(), e);
 			return null;
 		}
+	}
+	
+	/**
+	 * Method should be used only during Unit testing
+	 * Deletes all existing records
+	 */
+	protected void removeAll() {
+		eventMetadataMapper.deleteByExample(new EventMetadataExample());
+		eventMapper.deleteByExample(new EventExample());
+		
 	}
 
 }

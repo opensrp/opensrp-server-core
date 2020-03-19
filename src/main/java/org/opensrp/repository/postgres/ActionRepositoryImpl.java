@@ -316,4 +316,14 @@ public class ActionRepositoryImpl extends BaseRepositoryImpl<Action> implements 
 		return t.getId();
 	}
 	
+	/**
+	 * Method should be used only during Unit testing
+	 * Deletes all existing records
+	 */
+	protected void removeAll() {
+		actionMetadataMapper.deleteByExample(new ActionMetadataExample());
+		actionMapper.deleteByExample(new ActionExample());
+		
+	}
+	
 }
