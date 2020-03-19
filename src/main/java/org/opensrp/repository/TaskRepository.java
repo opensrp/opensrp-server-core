@@ -6,7 +6,7 @@ import org.opensrp.domain.Task;
 
 public interface TaskRepository extends BaseRepository<Task> {
 
-	List<Task> getTasksByPlanAndGroup(String campaign, String group, long serverVersion);
+	List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion);
 
 	List<Task> findByEmptyServerVersion();
 
