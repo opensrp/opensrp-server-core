@@ -265,23 +265,6 @@
 			<artifactId>json</artifactId>
 			<version>20190722</version>
 		</dependency>
-		<!-- TODO To remove when removing couchdb -->
-		<!-- https://mvnrepository.com/artifact/org.ektorp/org.ektorp -->
-		<dependency>
-		    <groupId>org.ektorp</groupId>
-		    <artifactId>org.ektorp</artifactId>
-		    <version>1.5.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.ektorp</groupId>
-			<artifactId>org.ektorp.spring</artifactId>
-			<version>1.5.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.github.ldriscoll</groupId>
-			<artifactId>ektorplucene</artifactId>
-			<version>0.2.0</version>
-		</dependency>
 		<dependency>
 			<groupId>javax.annotation</groupId>
 			<artifactId>javax.annotation-api</artifactId>

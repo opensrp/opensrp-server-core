@@ -3,9 +3,7 @@ package org.opensrp.domain;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.ektorp.support.TypeDiscriminator;
 
-@TypeDiscriminator("doc.type == 'Provider'")
 public class Provider extends BaseEntity {
 	
 	private String fullName;

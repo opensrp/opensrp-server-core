@@ -14,7 +14,6 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.junit.Before;
@@ -121,7 +120,7 @@ public class AllClientsIntegrationTest {
 		final long start = System.currentTimeMillis();
 		
 		for (int i = 0; i < 100; i++) {
-			addClient(i, false, null);
+			addClient(i, false);
 		}
 		Logger.getLogger("FileLogger").info(
 		    "10K entries complete at " + new DateTime() + " in " + ((System.currentTimeMillis() - start) / 1000) + " sec");
@@ -150,7 +149,7 @@ public class AllClientsIntegrationTest {
 		Logger.getLogger("FileLogger").info("Completed 2nd search of size " + l.size() + " by Lucene");
 	}
 	
-	void addClient(int i, boolean direct, CouchDbConnector db) {
+	void addClient(int i, boolean direct) {
 		int ageInWeeks = new Random().nextInt(2860);// assuming average age of people is 55 years
 		DateTime birthdate = new DateTime().minusWeeks(ageInWeeks);
 		DateTime deathdate = i % 7 == 0 ? new DateTime() : null;// every 7th person died today
@@ -176,10 +175,7 @@ public class AllClientsIntegrationTest {
 		
 		c.addIdentifier("CNIC", "1234556" + i);
 		c.addIdentifier("NTN", "564300" + i);
-		
-		if (db != null) {
-			db.create(c);
-		} else if (direct) {
+		if (direct) {
 			ac.add(c);
 		} else {
 			clientService.addClient(c);

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,12 +15,6 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.ektorp.CouchDbConnector;
-import org.ektorp.CouchDbInstance;
-import org.ektorp.http.HttpClient;
-import org.ektorp.http.StdHttpClient;
-import org.ektorp.impl.StdCouchDbConnector;
-import org.ektorp.impl.StdCouchDbInstance;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -145,50 +138,6 @@ public class Utils {
 		 * }
 		 */
 		return hc;
-	}
-	
-	/**
-	 * Connect to the database specified by DatabaseConnectionParams
-	 * 
-	 * @param dbParams
-	 * @return
-	 * @throws MalformedURLException
-	 */
-	public static CouchDbConnector connectToDB(DatabaseConnectionParams dbParams) throws MalformedURLException {
-		HttpClient authenticatedHttpClient = null;
-		
-		if (dbParams.userName != null && !dbParams.userName.isEmpty() && dbParams.password != null
-		        && !dbParams.password.isEmpty()) {
-			
-			authenticatedHttpClient = new StdHttpClient.Builder().url(dbParams.url.concat(":").concat(dbParams.portNumber))
-			        .username(dbParams.userName).password(dbParams.password).build();
-		} else {
-			authenticatedHttpClient = new StdHttpClient.Builder().url(dbParams.url.concat(":").concat(dbParams.portNumber))
-			        .build();
-		}
-		
-		CouchDbInstance dbInstance = new StdCouchDbInstance(authenticatedHttpClient);
-		
-		CouchDbConnector db = new StdCouchDbConnector(dbParams.dbName, dbInstance);
-		return db;
-		
-	}
-	
-	public static CouchDbInstance getDbInstance(DatabaseConnectionParams dbParams) throws MalformedURLException {
-		HttpClient authenticatedHttpClient = null;
-		
-		if (dbParams.userName != null && !dbParams.userName.isEmpty() && dbParams.password != null
-		        && !dbParams.password.isEmpty()) {
-			
-			authenticatedHttpClient = new StdHttpClient.Builder().url(dbParams.url.concat(":").concat(dbParams.portNumber))
-			        .username(dbParams.userName).password(dbParams.password).build();
-		} else {
-			authenticatedHttpClient = new StdHttpClient.Builder().url(dbParams.url.concat(":").concat(dbParams.portNumber))
-			        .build();
-		}
-		
-		CouchDbInstance dbInstance = new StdCouchDbInstance(authenticatedHttpClient);
-		return dbInstance;
 	}
 
 	public static boolean isEmptyList(List list) {
