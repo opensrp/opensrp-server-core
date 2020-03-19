@@ -88,12 +88,13 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testSaveMultimediaFile() throws IOException {
+		assertEquals(5, multimediaRepository.getAll().size());
 		String baseEntityId = "040d4f18-8140-479c-aa21-725612073490";
 		String content = "876nsfsdfs-sdfsfsdf";
 
 		byte[] contentBytes = content.getBytes();
 		//MultipartFile multimediaFile = new MockMultipartFile("mockFile", "test1.jpg", "image/jpeg", content.getBytes());
-		MultimediaDTO multimediaDTO = new MultimediaDTO(baseEntityId, "biddemo", "image/jpeg", "",
+		MultimediaDTO multimediaDTO = new MultimediaDTO(baseEntityId, "biddemo2", "image/jpeg", "",
 				"profilepic");
 
 		assertEquals("success", fileManager.saveMultimediaFile(multimediaDTO, contentBytes, "test1.jpg"));
@@ -113,7 +114,7 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 		assertEquals(multimediaDTO.getFileCategory(), savedMultimedia.getFileCategory());
 
 		assertEquals(4, multimediaService.getMultimediaFiles("biddemo").size());
-		assertEquals(5, multimediaRepository.getAll().size());
+		assertEquals(6, multimediaRepository.getAll().size());
 		assertEquals(baseEntityId + ".jpg", client.getAttribute("Patient Image"));
 		assertEquals(0, Minutes.minutesBetween(client.getDateEdited(), DateTime.now()).getMinutes());
 	}
