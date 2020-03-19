@@ -5,7 +5,6 @@ import edu.umd.cs.findbugs.annotations.Nullable;
 import org.opensrp.domain.IdVersionTuple;
 import org.opensrp.domain.postgres.ClientForm;
 import org.opensrp.domain.postgres.ClientFormMetadata;
-import org.opensrp.repository.postgres.mapper.ClientFormMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientFormMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientFormMetadataMapper;
 import org.slf4j.Logger;
