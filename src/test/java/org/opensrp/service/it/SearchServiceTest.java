@@ -13,7 +13,7 @@ import static org.opensrp.util.SampleFullDomainObject.attributes;
 import static org.opensrp.util.SampleFullDomainObject.getAddress;
 import static org.opensrp.util.SampleFullDomainObject.identifier;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+import static org.utils.DbAccessUtils.addObjectToRepository;
 
 import java.util.HashMap;
 import java.util.List;

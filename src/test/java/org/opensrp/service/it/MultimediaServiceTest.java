@@ -15,7 +15,7 @@ import static org.opensrp.util.SampleFullDomainObject.PROVIDER_ID;
 import static org.opensrp.util.SampleFullDomainObject.getMultimedia;
 import static org.opensrp.util.SampleFullDomainObject.getMultimediaDTO;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+import static org.utils.DbAccessUtils.addObjectToRepository;
 
 import java.io.File;
 import java.io.IOException;

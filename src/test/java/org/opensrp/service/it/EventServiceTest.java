@@ -20,8 +20,7 @@ import static org.opensrp.util.SampleFullDomainObject.identifier;
 import static org.utils.AssertionUtil.assertNewObjectCreation;
 import static org.utils.AssertionUtil.assertObjectUpdate;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
-import static org.utils.CouchDbAccessUtils.getCouchDbConnector;
+import static org.utils.DbAccessUtils.addObjectToRepository;
 
 import java.io.IOException;
 import java.util.Collections;

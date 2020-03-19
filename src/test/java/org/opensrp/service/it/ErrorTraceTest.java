@@ -7,7 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.opensrp.util.SampleFullDomainObject.EPOCH_DATE_TIME;
 import static org.opensrp.util.SampleFullDomainObject.getErrorTrace;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+import static org.utils.DbAccessUtils.addObjectToRepository;
 
 import java.util.Collections;
 import java.util.List;

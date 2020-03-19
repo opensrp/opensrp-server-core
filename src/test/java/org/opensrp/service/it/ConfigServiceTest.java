@@ -11,7 +11,7 @@ import static org.opensrp.util.SampleFullDomainObject.VALUE;
 import static org.opensrp.util.SampleFullDomainObject.getAppStateToken;
 import static org.opensrp.util.SampleFullDomainObject.AppStateTokenName.APP_STATE_TOKEN_NAME;
 import static org.opensrp.util.SampleFullDomainObject.AppStateTokenName.DIFFERENT_APP_STATE_TOKEN_NAME;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+import static org.utils.DbAccessUtils.addObjectToRepository;
 
 import java.io.IOException;
 import java.util.Collections;
