@@ -7,8 +7,9 @@ import org.ektorp.CouchDbConnector;
 import org.ektorp.CouchDbInstance;
 import org.ektorp.http.StdHttpClient;
 import org.ektorp.impl.StdCouchDbInstance;
-import org.opensrp.domain.BaseDataObject;import org.opensrp.domain.BaseDataEntity;
-import org.opensrp.repository.couch.BaseRepository;
+import org.opensrp.domain.BaseDataEntity;
+import org.opensrp.domain.BaseDataObject;
+import org.opensrp.repository.BaseRepository;
 
 import com.github.ldriscoll.ektorplucene.LuceneAwareCouchDbConnector;
 

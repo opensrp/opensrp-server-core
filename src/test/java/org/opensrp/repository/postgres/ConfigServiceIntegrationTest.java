@@ -10,10 +10,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.opensrp.common.AllConstants.Config;
-import org.opensrp.domain.postgres.AppStateTokenExample;
-import org.opensrp.repository.AppStateTokensRepository;
-import org.opensrp.repository.couch.AllAppStateTokens;
-import org.opensrp.repository.postgres.mapper.AppStateTokenMapper;
 import org.opensrp.service.ConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -45,26 +41,19 @@ public class ConfigServiceIntegrationTest {
 	}
 	
 	@Autowired
-	private AppStateTokensRepository alltokens;
+	private AppStateTokensRepositoryImpl alltokens;
 	
-	private static AppStateTokensRepository allAppTokens;
+	private static AppStateTokensRepositoryImpl allAppTokens;
 	
 	@Autowired
 	private ConfigService configService;
-	
-	@Autowired
-	private AppStateTokenMapper mapper;
-	
-	
-	private static AppStateTokenMapper appStateTokenMapper;
 	
 	
 	@Before
 	public void setUp() {
 		if (allAppTokens == null) {
-			mapper.deleteByExample(new AppStateTokenExample());
+			alltokens.removeAll();
 			allAppTokens = alltokens;
-			appStateTokenMapper=mapper;
 			
 			for (TestToken tk : TestToken.values()) {
 				configService.registerAppStateToken(tk, tk.value(), tk.name(), false);
@@ -78,7 +67,7 @@ public class ConfigServiceIntegrationTest {
 	
 	@AfterClass
 	public static void cleanup() {
-		appStateTokenMapper.deleteByExample(new AppStateTokenExample());
+		allAppTokens.removeAll();
 	}
 	
 	@Test

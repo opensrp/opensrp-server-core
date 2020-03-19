@@ -325,5 +325,13 @@ public class ActionRepositoryImpl extends BaseRepositoryImpl<Action> implements 
 		actionMapper.deleteByExample(new ActionExample());
 		
 	}
+
+	/**Checks is an action exist matching the id
+	 * @param id to search for
+	 * @return true action existing matching the id, otherwise false
+	 */
+	public boolean contains(String id) {
+		return get(id) != null;
+	}
 	
 }

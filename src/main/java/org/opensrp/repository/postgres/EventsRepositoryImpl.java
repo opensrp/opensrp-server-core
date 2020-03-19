@@ -49,7 +49,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		}
 
 		if (retrievePrimaryKey(entity) != null) { // Event already added
-			return;
+			throw new IllegalArgumentException("Event exists");
 		}
 
 		if (entity.getId() == null)
@@ -522,7 +522,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	 * Method should be used only during Unit testing
 	 * Deletes all existing records
 	 */
-	protected void removeAll() {
+	public void removeAll() {
 		eventMetadataMapper.deleteByExample(new EventMetadataExample());
 		eventMapper.deleteByExample(new EventExample());
 		

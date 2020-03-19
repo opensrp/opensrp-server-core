@@ -17,14 +17,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
 import org.opensrp.domain.ErrorTrace;
-import org.opensrp.repository.couch.AllErrorTrace;
+import org.opensrp.repository.postgres.ErrorTraceRepositoryImpl;
 import org.opensrp.service.ErrorTraceService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ErrorTraceTest extends BaseIntegrationTest {
 	
 	@Autowired
-	public AllErrorTrace allErrorTrace;
+	public ErrorTraceRepositoryImpl allErrorTrace;
 	
 	@Autowired
 	public ErrorTraceService errorTraceService;

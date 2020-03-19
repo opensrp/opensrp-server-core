@@ -24,8 +24,8 @@ import org.opensrp.dto.BeneficiaryType;
 import org.opensrp.dto.MonthSummaryDatum;
 import org.opensrp.scheduler.Action;
 import org.opensrp.scheduler.Alert;
-import org.opensrp.scheduler.repository.couch.AllActions;
-import org.opensrp.scheduler.repository.couch.AllAlerts;
+import org.opensrp.scheduler.repository.ActionsRepository;
+import org.opensrp.scheduler.repository.AlertsRepository;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -49,18 +49,16 @@ public class ActionServiceTest {
 	public static final String SCHDEDULE = "schdedule";
 	
 	@Mock
-	private AllActions allActions;
+	private ActionsRepository allActions;
 	
 	@Mock
-	private AllAlerts allAlerts;
+	private AlertsRepository allAlerts;
 	
 	private ActionService service;
 	
 	@Before
 	public void setUp() throws Exception {
 		initMocks(this);
-		allActions.removeAll();
-		allAlerts.removeAll();
 		service = new ActionService(allActions, allAlerts);
 	}
 	

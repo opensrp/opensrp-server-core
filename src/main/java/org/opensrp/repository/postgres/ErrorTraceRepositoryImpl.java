@@ -191,4 +191,12 @@ public class ErrorTraceRepositoryImpl extends BaseRepositoryImpl<ErrorTrace> imp
 		
 		return errorTraces;
 	}
+
+	/**
+	 * Method should be used only during Unit testing
+	 * Deletes all existing records
+	 */
+	public void removeAll() {
+		errorTraceMapper.deleteByExample(new ErrorTraceExample());
+	}
 }

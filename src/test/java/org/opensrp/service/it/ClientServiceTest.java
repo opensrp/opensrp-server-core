@@ -33,7 +33,7 @@ import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
-import org.opensrp.repository.couch.AllClients;
+import org.opensrp.repository.postgres.ClientsRepositoryImpl;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.service.ClientService;
@@ -43,7 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ClientServiceTest extends BaseIntegrationTest {
 	
 	@Autowired
-	private AllClients allClients;
+	private ClientsRepositoryImpl allClients;
 	
 	@Autowired
 	private ClientService clientService;

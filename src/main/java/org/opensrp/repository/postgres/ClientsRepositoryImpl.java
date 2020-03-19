@@ -540,7 +540,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	 * Method should be used only during Unit testing
 	 * Deletes all existing records
 	 */
-	protected void removeAll() {
+	public void removeAll() {
 		clientMetadataMapper.deleteByExample(new ClientMetadataExample());
 		clientMapper.deleteByExample(new ClientExample());
 		
