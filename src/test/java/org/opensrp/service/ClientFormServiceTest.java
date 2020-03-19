@@ -6,11 +6,9 @@ import org.opensrp.domain.IdVersionTuple;
 import org.opensrp.domain.postgres.ClientForm;
 import org.opensrp.domain.postgres.ClientFormMetadata;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
-import org.opensrp.repository.postgres.mapper.ClientFormMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientFormMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientFormMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.Date;
 import java.util.HashSet;
