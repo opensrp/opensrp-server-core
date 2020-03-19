@@ -14,8 +14,13 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Comparator;
+import java.util.Collections;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ClientFormServiceTest extends BaseRepositoryTest {
 
@@ -57,6 +62,14 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
     @Test
     public void getAvailableClientFormMetadataVersionByIdentifier() {
         List<IdVersionTuple> idVersionTupleList = clientFormService.getAvailableClientFormMetadataVersionByIdentifier("json.form/adverse_event.json");
+
+        Collections.sort(idVersionTupleList, new Comparator<IdVersionTuple>() {
+            @Override
+            public int compare(IdVersionTuple idVersionTuple, IdVersionTuple t1) {
+                return idVersionTuple.getId() - t1.getId();
+            }
+        });
+
         assertEquals(5, idVersionTupleList.size());
         assertEquals("0.0.1", idVersionTupleList.get(0).getVersion());
         assertEquals(1, idVersionTupleList.get(0).getId());
