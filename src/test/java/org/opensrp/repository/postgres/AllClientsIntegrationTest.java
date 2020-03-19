@@ -88,6 +88,7 @@ public class AllClientsIntegrationTest {
 	
 	@Test
 	public void shouldSearchByLastUpdatedDate() throws JSONException {//TODO
+		addClients();
 		DateTime start = DateTime.now();
 		
 		addClients();
@@ -198,16 +199,6 @@ public class AllClientsIntegrationTest {
 		clientSearchBean.setGender("FEMALE");
 		l2 = clientService.findByCriteria(clientSearchBean, new AddressSearchBean(), null, null);
 		assertTrue(l2.size() == 0);
-		
-		clientSearchBean = new ClientSearchBean();
-		clientSearchBean.setGender("FEMALE");
-		clientSearchBean.setNameLike("fn");
-		l2 = clientService.findByCriteria(clientSearchBean, new AddressSearchBean(), null, null);
-		assertTrue(l2.size() == 10);
-		
-		clientSearchBean.setNameLike("fn1");
-		l2 = clientService.findByCriteria(clientSearchBean, new AddressSearchBean(), null, null);
-		assertTrue(l2.size() == 1);
 	}
 	
 	@Test

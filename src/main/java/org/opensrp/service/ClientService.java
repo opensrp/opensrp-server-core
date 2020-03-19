@@ -95,6 +95,8 @@ public class ClientService {
 		Client c = findClient(client);
 		if (c != null) {
 			try {
+				client.setId(c.getId());
+				client.setRevision(c.getRevision());
 				updateClient(client);
 			}
 			catch (JSONException e) {
