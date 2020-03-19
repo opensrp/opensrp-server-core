@@ -34,7 +34,7 @@ public class ClientFormService {
     }
 
     @Nullable
-    public ClientFormMetadata getClientFormMetatdataByIdentifierAndVersion(String formIdentifier, String formVersion) {
+    public ClientFormMetadata getClientFormMetadataByIdentifierAndVersion(String formIdentifier, String formVersion) {
         return clientFormMetadataMapper.selectClientFormMetadataByFormVersionAndIdentifier(formVersion, formIdentifier);
     }
 
