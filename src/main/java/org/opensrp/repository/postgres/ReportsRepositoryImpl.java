@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Report;
+import org.opensrp.domain.postgres.ReportExample;
 import org.opensrp.domain.postgres.ReportMetadata;
 import org.opensrp.domain.postgres.ReportMetadataExample;
 import org.opensrp.domain.postgres.ReportMetadataExample.Criteria;
@@ -308,6 +309,16 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 			reportMetadata.setDateEdited(entity.getDateEdited().toDate());
 		}
 		return reportMetadata;
+	}
+	
+	/**
+	 * Method should be used only during Unit testing
+	 * Deletes all existing records
+	 */
+	public void removeAll() {
+		reportMetadataMapper.deleteByExample(new ReportMetadataExample());
+		reportMapper.deleteByExample(new ReportExample());
+		
 	}
 	
 }

@@ -3,13 +3,11 @@ package org.opensrp.domain;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.ektorp.support.TypeDiscriminator;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Service
-@TypeDiscriminator("doc.type == 'DHIS2Marker'")
 public class DHIS2Marker extends BaseDataEntity {
 	
 	private static final long serialVersionUID = 1L;

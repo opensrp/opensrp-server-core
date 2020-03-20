@@ -2,11 +2,8 @@ package org.opensrp.domain;
 
 import java.util.Date;
 
-import org.ektorp.support.TypeDiscriminator;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@TypeDiscriminator("doc.type == 'Camp'")
 public class Camp extends BaseDataEntity {
 	
 	/**

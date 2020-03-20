@@ -2,8 +2,8 @@ package org.opensrp.repository;
 
 import java.util.List;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
 import org.opensrp.domain.Multimedia;
+import org.springframework.lang.NonNull;
 
 public interface MultimediaRepository extends BaseRepository<Multimedia> {
 	

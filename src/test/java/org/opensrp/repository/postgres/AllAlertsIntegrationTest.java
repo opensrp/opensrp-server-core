@@ -1,4 +1,4 @@
-package org.opensrp.repository.it;
+package org.opensrp.repository.postgres;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
@@ -15,7 +15,6 @@ import org.opensrp.dto.AlertStatus;
 import org.opensrp.scheduler.Alert;
 import org.opensrp.scheduler.Alert.AlertType;
 import org.opensrp.scheduler.Alert.TriggerType;
-import org.opensrp.scheduler.repository.couch.AllAlerts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -25,7 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class AllAlertsIntegrationTest {
 	
 	@Autowired
-	public AllAlerts allAlerts;
+	public AlertsRepositoryImpl allAlerts;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -123,11 +122,6 @@ public class AllAlertsIntegrationTest {
 		
 		assertEquals(asList(alert2, alert4), allAlerts.findActiveByProviderAndTimestamp("ANM 1", 0));
 		assertEquals(asList(alert3), allAlerts.findActiveByProviderAndTimestamp("ANM 2", 0));
-	}
-	
-	@Test
-	public void shouldNotDoAnythingIfNoActionsAreFoundForATarget() {
-		//TODO
 	}
 	
 	@Test

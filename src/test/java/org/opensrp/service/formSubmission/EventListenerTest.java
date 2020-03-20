@@ -1,11 +1,9 @@
 package org.opensrp.service.formSubmission;
 
 import static java.util.Arrays.asList;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -16,18 +14,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.AppStateToken;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Event;
-import org.opensrp.repository.couch.AllClients;
-import org.opensrp.repository.couch.AllEvents;
+import org.opensrp.repository.ClientsRepository;
+import org.opensrp.repository.EventsRepository;
 import org.opensrp.service.ClientService;
 import org.opensrp.service.ConfigService;
 import org.opensrp.service.ErrorTraceService;
@@ -38,14 +38,17 @@ import org.opensrp.service.formSubmission.handler.IHandlerMapper;
 
 public class EventListenerTest {
 	
+	@Rule
+	public MockitoRule rule = MockitoJUnit.rule();
+	
 	@Mock
 	private ConfigService configService;
 	
 	@Mock
-	private AllEvents allEvents;
+	private EventsRepository allEvents;
 	
 	@Mock
-	private AllClients allClients;
+	private ClientsRepository allClients;
 	
 	@Mock
 	private ErrorTraceService errorTraceService;
@@ -53,7 +56,8 @@ public class EventListenerTest {
 	@Mock
 	private ClientService clientService;
 	
-	IHandlerMapper handlerMapper;
+	@Mock
+	private IHandlerMapper handlerMapper;
 	
 	private EventService eventService;
 	
@@ -63,12 +67,6 @@ public class EventListenerTest {
 	
 	@Before
 	public void setUp() {
-		configService = mock(ConfigService.class);
-		allEvents = mock(AllEvents.class);
-		clientService = mock(ClientService.class);
-		allClients = mock(AllClients.class);
-		handlerMapper = mock(IHandlerMapper.class);
-		
 		when(configService.registerAppStateToken(any(AllConstants.Config.class), Matchers.anyObject(), anyString(),
 		    anyBoolean())).thenReturn(new AppStateToken("token", 01l, 02l));
 		eventsRouter = new EventsRouter(handlerMapper, "/schedules/schedule-configs");

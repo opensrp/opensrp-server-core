@@ -7,9 +7,8 @@
                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
 
 	<context:property-placeholder
-		location="classpath:maven.properties,classpath:activemq.properties,classpath:test-opensrp.properties" />
-	<util:properties id="couchdbProperties" location="classpath:couchdb.properties" />
-	<util:properties id="opensrp" location="classpath:/test-opensrp.properties" />
+		location="classpath:maven.properties,classpath:opensrp.properties" />
+	<util:properties id="opensrp" location="classpath:/opensrp.properties" />
 
 
 	<import resource="test-persistence-postgres.xml"/>
@@ -32,31 +31,6 @@
 			expression="org.opensrp.service.formSubmission.handler.EventsRouter" />
 
 	</context:component-scan>
-
-	<bean id="httpClient" class="org.opensrp.util.OpenSRPHttpClientFactoryBean" />
-
-	<bean id="couchDbInstance" class="org.ektorp.impl.StdCouchDbInstance">
-		<constructor-arg ref="httpClient" />
-	</bean>
-
-	<bean id="opensrpDatabaseConnector" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="${couchdb.db.opensrp}" />
-		<constructor-arg ref="couchDbInstance" />
-	</bean>
-	<bean id="opensrpMCTSDatabaseConnector" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="${couchdb.db.mcts}" />
-		<constructor-arg ref="couchDbInstance" />
-	</bean>
-
-	<bean id="opensrpErrorTraceDatabaseConnector" class="org.ektorp.impl.StdCouchDbConnector">
-		<constructor-arg value="${couchdb.db.error}" />
-		<constructor-arg ref="couchDbInstance" />
-	</bean>
-
-	 <bean id="opensrpFormDatabaseConnector" class="org.ektorp.impl.StdCouchDbConnector">
-        <constructor-arg value="${couchdb.db.form}"/>
-        <constructor-arg ref="couchDbInstance"/>
-    </bean>
 
 	<alias name="${multimedia_file_manager}" alias="multimedia_file_manager"/>
 </beans>

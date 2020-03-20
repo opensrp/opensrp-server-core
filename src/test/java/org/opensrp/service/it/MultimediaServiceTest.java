@@ -1,33 +1,13 @@
 package org.opensrp.service.it;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.opensrp.BaseIntegrationTest;
-import org.opensrp.domain.Multimedia;
-import org.opensrp.dto.form.MultimediaDTO;
-import org.opensrp.repository.couch.MultimediaRepositoryImpl;
-import org.opensrp.service.MultimediaService;
-import org.opensrp.service.multimedia.BaseMultimediaFileManager;
-import org.opensrp.service.multimedia.FileSystemMultimediaFileManager;
-import org.opensrp.service.multimedia.MultimediaFileManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.opensrp.service.MultimediaService.IMAGES_DIR;
 import static org.opensrp.util.SampleFullDomainObject.CASE_ID;
 import static org.opensrp.util.SampleFullDomainObject.DIFFERENT_BASE_ENTITY_ID;
@@ -35,7 +15,26 @@ import static org.opensrp.util.SampleFullDomainObject.PROVIDER_ID;
 import static org.opensrp.util.SampleFullDomainObject.getMultimedia;
 import static org.opensrp.util.SampleFullDomainObject.getMultimediaDTO;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+import static org.utils.DbAccessUtils.addObjectToRepository;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.opensrp.BaseIntegrationTest;
+import org.opensrp.domain.Multimedia;
+import org.opensrp.dto.form.MultimediaDTO;
+import org.opensrp.repository.postgres.MultimediaRepositoryImpl;
+import org.opensrp.service.MultimediaService;
+import org.opensrp.service.multimedia.BaseMultimediaFileManager;
+import org.opensrp.service.multimedia.FileSystemMultimediaFileManager;
+import org.opensrp.service.multimedia.MultimediaFileManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * If tests fail check property `'multimedia.directory.name` in `opensrp.properties`.

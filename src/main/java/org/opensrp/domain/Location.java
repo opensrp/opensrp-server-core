@@ -8,11 +8,10 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.ektorp.support.TypeDiscriminator;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@TypeDiscriminator("doc.type == 'Location'")
+
 public class Location extends BaseDataObject {
 	
 	@JsonProperty

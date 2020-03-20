@@ -1,6 +1,7 @@
-package org.opensrp.repository.it;
+package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.joda.time.LocalDate;
 import org.junit.AfterClass;
@@ -10,7 +11,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.opensrp.common.AllConstants.Config;
-import org.opensrp.repository.couch.AllAppStateTokens;
 import org.opensrp.service.ConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -28,7 +28,7 @@ public class ConfigServiceIntegrationTest {
 		token5_datetime(LocalDate.now()),
 		token6_float(Float.valueOf("21212.3323")),
 		token7_double(Double.valueOf(43748384.347384738)),
-		token9_boolean(Boolean.valueOf(true));
+		token9_boolean(true);
 		
 		private Object value;
 		
@@ -42,12 +42,13 @@ public class ConfigServiceIntegrationTest {
 	}
 	
 	@Autowired
-	private AllAppStateTokens alltokens;
+	private AppStateTokensRepositoryImpl alltokens;
 	
-	private static AllAppStateTokens allAppTokens;
+	private static AppStateTokensRepositoryImpl allAppTokens;
 	
 	@Autowired
 	private ConfigService configService;
+	
 	
 	@Before
 	public void setUp() {
@@ -84,6 +85,9 @@ public class ConfigServiceIntegrationTest {
 	@Test
 	public void shouldNotThrowExceptionForRegisteringDuplicateEntryFlaggedAsSuppressException() {
 		configService.registerAppStateToken(TestToken.token1_int, "", "token1_int", true);
+		assertNotNull(configService.getAppStateTokenByName(TestToken.token1_int));
+		assertEquals("token1_int",configService.getAppStateTokenByName(TestToken.token1_int).getDescription());
+		assertEquals(TestToken.token1_int.value,Integer.valueOf(configService.getAppStateTokenByName(TestToken.token1_int).getValue().toString()));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

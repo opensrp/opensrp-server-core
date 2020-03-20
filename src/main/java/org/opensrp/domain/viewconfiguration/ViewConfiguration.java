@@ -3,7 +3,6 @@ package org.opensrp.domain.viewconfiguration;
 import java.util.List;
 import java.util.Map;
 
-import org.ektorp.support.TypeDiscriminator;
 import org.opensrp.domain.BaseDataObject;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @author SGithengi
  */
-@TypeDiscriminator("doc.type == 'ViewConfiguration'")
 public class ViewConfiguration extends BaseDataObject {
 	
 	private static final long serialVersionUID = 1890883609898207737L;

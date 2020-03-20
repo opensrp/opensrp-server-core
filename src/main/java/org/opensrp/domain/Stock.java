@@ -3,13 +3,11 @@ package org.opensrp.domain;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.ektorp.support.TypeDiscriminator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@TypeDiscriminator("doc.type == 'Stock'")
 public class Stock extends BaseDataObject {
 	
 	@JsonProperty

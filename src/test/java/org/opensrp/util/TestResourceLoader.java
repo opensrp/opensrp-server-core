@@ -27,7 +27,7 @@ public class TestResourceLoader {
 	
 	public TestResourceLoader() {
 		try {
-			Resource resource = new ClassPathResource("/opensrp.properties");
+			Resource resource = new ClassPathResource("opensrp.properties");
 			Properties props = PropertiesLoaderUtils.loadProperties(resource);
 			formDirPath = props.getProperty("form.directory.name");
 		}

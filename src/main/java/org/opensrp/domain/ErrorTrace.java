@@ -5,7 +5,6 @@ import java.util.Date;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @author muhammad.ahmed@ihsinformatics.com Created on May 25, 2015
  */
-@TypeDiscriminator("doc.type == 'ErrorTrace'")
 public class ErrorTrace extends BaseDataEntity {
 	
 	/*

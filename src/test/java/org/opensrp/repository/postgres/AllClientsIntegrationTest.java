@@ -1,6 +1,7 @@
-package org.opensrp.repository.it;
+package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -14,7 +15,6 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.junit.Before;
@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.opensrp.common.Gender;
 import org.opensrp.domain.Address;
 import org.opensrp.domain.Client;
-import org.opensrp.repository.couch.AllClients;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.service.ClientService;
@@ -40,7 +39,7 @@ public class AllClientsIntegrationTest {
 	private ClientService clientService;
 	
 	@Autowired
-	private AllClients ac;
+	private ClientsRepositoryImpl ac;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -81,14 +80,22 @@ public class AllClientsIntegrationTest {
 		c = clientService.addClient(c);
 		
 		Client cu = new Client("eid0").withGender("FEMALE").withBirthdate(new DateTime(), false);
-		cu.withAddress(new Address().withAddressType("deathplace").withCityVillage("city").withTown("town"));
+		cu.withAddress(new Address().withAddressType("deathplace").withCityVillage("city1").withTown("town1"));
 		cu.withAttribute("at2", "atval2");
 		
 		clientService.mergeClient(cu);
+		
+		Client updated=clientService.findClient(cu);
+		assertEquals("FEMALE", updated.getGender());
+		assertNotNull( updated.getAddress("deathplace"));
+		assertEquals("town1", updated.getAddress("deathplace").getTown());
+		assertEquals("city1", updated.getAddress("deathplace").getCityVillage());
+		assertEquals("atval2", updated.getAttribute("at2"));
 	}
 	
 	@Test
 	public void shouldSearchByLastUpdatedDate() throws JSONException {//TODO
+		addClients();
 		DateTime start = DateTime.now();
 		
 		addClients();
@@ -111,17 +118,10 @@ public class AllClientsIntegrationTest {
 	@Test
 	public void shouldSearchFullDataClientsIn10Sec() throws MalformedURLException {
 		
-		/*org.ektorp.http.HttpClient httpClient = new StdHttpClient.Builder().url("http://202.141.249.106:6808").build();
-		   CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
-		
-		   CouchDbConnector db = new StdCouchDbConnector("opensrp", dbInstance);
-		
-		Logger.getLogger("FileLogger").info("Starting at "+new DateTime());*/
-		
 		final long start = System.currentTimeMillis();
 		
 		for (int i = 0; i < 100; i++) {
-			addClient(i, false, null);
+			addClient(i, false);
 		}
 		Logger.getLogger("FileLogger").info(
 		    "10K entries complete at " + new DateTime() + " in " + ((System.currentTimeMillis() - start) / 1000) + " sec");
@@ -141,16 +141,21 @@ public class AllClientsIntegrationTest {
 		clientSearchBean.setBirthdateFrom(new DateTime());
 		clientSearchBean.setAttributeType("ethnicity");
 		clientSearchBean.setAttributeValue("eth3");
-		List<Client> l = clientService.findByCriteria(clientSearchBean, null);
-		Logger.getLogger("FileLogger").info("Completed First search of size " + l.size() + " by Lucene");
-		
-		Logger.getLogger("FileLogger").info("Going for 2nd search by Lucene");
-		l = clientService.findByCriteria(clientSearchBean, null);
-		
-		Logger.getLogger("FileLogger").info("Completed 2nd search of size " + l.size() + " by Lucene");
+		List<Client> clientList = clientService.findByCriteria(clientSearchBean, null);
+		assertEquals(7,clientList.size());
+		for(Client client : clientList) {
+			String filter=clientSearchBean.getNameLike().toLowerCase();
+			assertTrue(client.getFirstName().contains(filter)
+				|| client.getMiddleName().toLowerCase().contains(filter)
+				|| client.getLastName().toLowerCase().contains(filter));
+			assertEquals(clientSearchBean.getGender(), client.getGender());
+			assertTrue( client.getBirthdate().equals(clientSearchBean.getDeathdateFrom())
+				|| client.getBirthdate().isBefore(clientSearchBean.getBirthdateFrom()));
+			assertEquals("eth3", client.getAttribute("ethnicity"));
+		}
 	}
 	
-	void addClient(int i, boolean direct, CouchDbConnector db) {
+	private void addClient(int i, boolean direct) {
 		int ageInWeeks = new Random().nextInt(2860);// assuming average age of people is 55 years
 		DateTime birthdate = new DateTime().minusWeeks(ageInWeeks);
 		DateTime deathdate = i % 7 == 0 ? new DateTime() : null;// every 7th person died today
@@ -176,10 +181,7 @@ public class AllClientsIntegrationTest {
 		
 		c.addIdentifier("CNIC", "1234556" + i);
 		c.addIdentifier("NTN", "564300" + i);
-		
-		if (db != null) {
-			db.create(c);
-		} else if (direct) {
+		if (direct) {
 			ac.add(c);
 		} else {
 			clientService.addClient(c);
@@ -199,16 +201,6 @@ public class AllClientsIntegrationTest {
 		clientSearchBean.setGender("FEMALE");
 		l2 = clientService.findByCriteria(clientSearchBean, new AddressSearchBean(), null, null);
 		assertTrue(l2.size() == 0);
-		
-		clientSearchBean = new ClientSearchBean();
-		clientSearchBean.setGender("FEMALE");
-		clientSearchBean.setNameLike("fn");
-		l2 = clientService.findByCriteria(clientSearchBean, new AddressSearchBean(), null, null);
-		assertTrue(l2.size() == 10);
-		
-		clientSearchBean.setNameLike("fn1");
-		l2 = clientService.findByCriteria(clientSearchBean, new AddressSearchBean(), null, null);
-		assertTrue(l2.size() == 1);
 	}
 	
 	@Test
