@@ -7,8 +7,8 @@
                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
 
 	<context:property-placeholder
-		location="classpath:maven.properties,classpath:test-opensrp.properties" />
-	<util:properties id="opensrp" location="classpath:/test-opensrp.properties" />
+		location="classpath:maven.properties,classpath:opensrp.properties" />
+	<util:properties id="opensrp" location="classpath:/opensrp.properties" />
 
 
 	<import resource="test-persistence-postgres.xml"/>

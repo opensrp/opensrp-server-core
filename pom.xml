@@ -320,6 +320,9 @@
 	<build>
 		<resources>
 			<resource>
+				<directory>configs/assets/config</directory>
+			</resource>
+			<resource>
 				<directory>configs/assets/schedules</directory>
 				<targetPath>schedules</targetPath>
 			</resource>
