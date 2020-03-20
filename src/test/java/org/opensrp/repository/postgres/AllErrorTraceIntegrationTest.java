@@ -1,5 +1,6 @@
 package org.opensrp.repository.postgres;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import org.joda.time.DateTime;
@@ -28,6 +29,7 @@ public class AllErrorTraceIntegrationTest {
 	public void shouldAddError() throws Exception {
 		//ErrorTrace error=new ErrorTrace(new Date(), "Error Testing" , "not availalbe","this is an Testing Error", "unsolved");
 		ErrorTrace error = new ErrorTrace();
+		error.setId("1234");
 		error.setErrorType("error loggging test");
 		error.setDate(DateTime.now());
 		error.setStackTrace("Complete Stack Trace :");
@@ -35,6 +37,8 @@ public class AllErrorTraceIntegrationTest {
 		error.setDocumentType("Test Document");
 		//	error.setErrorType("test Error");
 		allErrorTrace.add(error);
+		
+		assertEquals(error, allErrorTrace.get("1234"));
 		
 	}
 	

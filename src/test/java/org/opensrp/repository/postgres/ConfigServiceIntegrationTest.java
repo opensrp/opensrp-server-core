@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.joda.time.LocalDate;
 import org.junit.AfterClass;
@@ -84,6 +85,9 @@ public class ConfigServiceIntegrationTest {
 	@Test
 	public void shouldNotThrowExceptionForRegisteringDuplicateEntryFlaggedAsSuppressException() {
 		configService.registerAppStateToken(TestToken.token1_int, "", "token1_int", true);
+		assertNotNull(configService.getAppStateTokenByName(TestToken.token1_int));
+		assertEquals("token1_int",configService.getAppStateTokenByName(TestToken.token1_int).getDescription());
+		assertEquals(TestToken.token1_int.value,Integer.valueOf(configService.getAppStateTokenByName(TestToken.token1_int).getValue().toString()));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
