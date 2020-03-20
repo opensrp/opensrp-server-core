@@ -6,7 +6,7 @@ import org.opensrp.repository.postgres.mapper.ClientFormMapper;
 
 public interface CustomClientFormMapper extends ClientFormMapper {
 
-    int selectClientFormById(int id);
+    ClientForm selectClientFormById(Long id);
 
     int insertClientForm(@NonNull ClientForm clientForm);
 }

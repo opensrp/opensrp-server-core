@@ -8,7 +8,7 @@
 		<result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
 	</resultMap>
 
-	<select id="selectClientFormById" parameterType="java.lang.Integer"
+	<select id="selectClientFormById" parameterType="java.lang.Long"
 		resultMap="BaseClientFormResultMap">
 		select *
 		from core.client_form
