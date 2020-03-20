@@ -19,4 +19,8 @@
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		insert into core.client_form(json, created_at) values (#{json, jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.JSONBTypeHandler}, #{createdAt, jdbcType=TIMESTAMP})
 	</insert>
+
+	<select id="getAll" parameterType="map" resultMap="BaseClientFormResultMap">
+		SELECT * FROM core.client_form_metadata ORDER BY created_at LIMIT #{batchSize} OFFSET #{offset}
+	</select>
 </mapper>

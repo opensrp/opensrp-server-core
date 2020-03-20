@@ -5,38 +5,28 @@ import org.junit.Test;
 import org.opensrp.domain.IdVersionTuple;
 import org.opensrp.domain.postgres.ClientForm;
 import org.opensrp.domain.postgres.ClientFormMetadata;
+import org.opensrp.repository.ClientFormRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
-import org.opensrp.repository.postgres.mapper.custom.CustomClientFormMapper;
-import org.opensrp.repository.postgres.mapper.custom.CustomClientFormMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Comparator;
-import java.util.Collections;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ClientFormServiceTest extends BaseRepositoryTest {
 
     private ClientFormService clientFormService;
 
     @Autowired
-    private CustomClientFormMapper clientFormMapper;
+    private ClientFormRepository clientFormRepository;
 
-    @Autowired
-    private CustomClientFormMetadataMapper clientFormMetadataMapper;
 
     private Set<String> scripts = new HashSet<String>();
 
     @Before
     public void setUpService() {
-        clientFormService = new ClientFormService(clientFormMapper, clientFormMetadataMapper);
+        clientFormService = new ClientFormService();
+        clientFormService.setClientFormRepository(clientFormRepository);
     }
 
     @Test
@@ -55,7 +45,7 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 
     @Test
     public void getClientFormById() {
-        ClientForm clientForm = clientFormService.getClientFormById(3);
+        ClientForm clientForm = clientFormService.getClientFormById(3L);
         assertNotNull(clientForm.getJson());
     }
 
@@ -66,7 +56,7 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
         Collections.sort(idVersionTupleList, new Comparator<IdVersionTuple>() {
             @Override
             public int compare(IdVersionTuple idVersionTuple, IdVersionTuple t1) {
-                return idVersionTuple.getId() - t1.getId();
+                return (int) (idVersionTuple.getId() - t1.getId());
             }
         });
 
@@ -86,7 +76,7 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void addClientForm() {
+    public void testAddClientForm() {
         ClientForm clientForm = new ClientForm();
         clientForm.setCreatedAt(new Date());
         clientForm.setJson("{'from': 'child'}");
@@ -103,8 +93,8 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
         assertEquals(clientForm, completeClientForm.clientForm);
         assertEquals(clientFormMetadata, completeClientForm.clientFormMetadata);
 
-        assertEquals(6, (int) completeClientForm.clientForm.getId());
-        assertEquals(6, (int) completeClientForm.clientFormMetadata.getId());
+        assertEquals(6, (long) completeClientForm.clientForm.getId());
+        assertEquals(6, (long) completeClientForm.clientFormMetadata.getId());
     }
 
     @Override
