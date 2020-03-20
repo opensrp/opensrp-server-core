@@ -1,12 +1,5 @@
 package org.opensrp.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.domain.Address;
@@ -18,6 +11,8 @@ import org.opensrp.search.ClientSearchBean;
 import org.opensrp.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class ClientService {

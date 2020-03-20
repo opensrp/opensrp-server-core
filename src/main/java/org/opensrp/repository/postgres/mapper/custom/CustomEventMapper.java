@@ -1,11 +1,11 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
-import java.util.Date;
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Event;
 import org.opensrp.repository.postgres.mapper.EventMapper;
+
+import java.util.Date;
+import java.util.List;
 
 public interface CustomEventMapper extends EventMapper {
 	

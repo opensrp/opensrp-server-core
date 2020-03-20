@@ -3,20 +3,6 @@
  */
 package org.opensrp.repository.postgres;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.junit.Test;
@@ -25,6 +11,12 @@ import org.opensrp.domain.Code;
 import org.opensrp.domain.Organization;
 import org.opensrp.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Samuel Githengi created on 09/16/19

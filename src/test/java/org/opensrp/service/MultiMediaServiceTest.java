@@ -1,8 +1,22 @@
 package org.opensrp.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.opensrp.service.MultimediaService.IMAGES_DIR;
+import org.joda.time.DateTime;
+import org.joda.time.Minutes;
+import org.junit.Before;
+import org.junit.Test;
+import org.opensrp.domain.Client;
+import org.opensrp.domain.Multimedia;
+import org.opensrp.dto.form.MultimediaDTO;
+import org.opensrp.repository.ClientsRepository;
+import org.opensrp.repository.MultimediaRepository;
+import org.opensrp.repository.postgres.BaseRepositoryTest;
+import org.opensrp.service.multimedia.BaseMultimediaFileManager;
+import org.powermock.reflect.Whitebox;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,23 +25,9 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.joda.time.DateTime;
-import org.joda.time.Minutes;
-import org.junit.Before;
-import org.junit.Test;
-import org.opensrp.service.multimedia.BaseMultimediaFileManager;
-import org.opensrp.domain.Client;
-import org.opensrp.domain.Multimedia;
-import org.opensrp.dto.form.MultimediaDTO;
-import org.opensrp.repository.ClientsRepository;
-import org.opensrp.repository.MultimediaRepository;
-import org.opensrp.repository.postgres.BaseRepositoryTest;
-import org.powermock.reflect.Whitebox;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.opensrp.service.MultimediaService.IMAGES_DIR;
 
 public class MultiMediaServiceTest extends BaseRepositoryTest {
 	

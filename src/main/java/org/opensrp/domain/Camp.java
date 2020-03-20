@@ -1,10 +1,10 @@
 package org.opensrp.domain;
 
-import java.util.Date;
-
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechBaseDataObject;
+
+import java.util.Date;
 
 @TypeDiscriminator("doc.type == 'Camp'")
 public class Camp extends MotechBaseDataObject {

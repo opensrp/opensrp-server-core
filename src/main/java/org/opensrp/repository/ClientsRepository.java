@@ -1,13 +1,13 @@
 package org.opensrp.repository;
 
-import java.util.Calendar;
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
+
+import java.util.Calendar;
+import java.util.List;
 
 public interface ClientsRepository extends BaseRepository<Client> {
 	

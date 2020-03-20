@@ -1,15 +1,10 @@
 package org.opensrp.repository.postgres.handler;
 
-import java.sql.CallableStatement;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.joda.time.DateTime;
+
+import java.sql.*;
 
 public class DateTimeTypeHandler implements TypeHandler<DateTime> {
 	

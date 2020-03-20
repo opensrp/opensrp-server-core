@@ -1,14 +1,7 @@
 package org.opensrp.service.formSubmission;
 
-import static java.text.MessageFormat.format;
-import static java.util.Collections.sort;
-import static org.apache.commons.lang.exception.ExceptionUtils.getFullStackTrace;
-
-import java.text.MessageFormat;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
-
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.joda.time.DateTime;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.server.event.annotations.MotechListener;
@@ -25,8 +18,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import java.text.MessageFormat;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static java.text.MessageFormat.format;
+import static java.util.Collections.sort;
+import static org.apache.commons.lang.exception.ExceptionUtils.getFullStackTrace;
 
 @Component
 public class FormSubmissionListener {

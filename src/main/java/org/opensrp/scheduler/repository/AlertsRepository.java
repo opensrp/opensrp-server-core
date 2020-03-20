@@ -1,11 +1,11 @@
 package org.opensrp.scheduler.repository;
 
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.opensrp.dto.AlertStatus;
 import org.opensrp.repository.BaseRepository;
 import org.opensrp.scheduler.Alert;
+
+import java.util.List;
 
 public interface AlertsRepository extends BaseRepository<Alert> {
 	

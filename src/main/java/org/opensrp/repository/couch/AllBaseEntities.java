@@ -1,7 +1,5 @@
 package org.opensrp.repository.couch;
 
-import java.util.List;
-
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
@@ -13,6 +11,8 @@ import org.opensrp.repository.BaseEntitiesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public class AllBaseEntities extends MotechBaseRepository<BaseEntity> implements BaseEntitiesRepository {

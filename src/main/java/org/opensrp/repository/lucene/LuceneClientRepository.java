@@ -1,27 +1,11 @@
 package org.opensrp.repository.lucene;
 
-import static org.opensrp.common.AllConstants.BaseEntity.ADDRESS_TYPE;
-import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
-import static org.opensrp.common.AllConstants.BaseEntity.CITY_VILLAGE;
-import static org.opensrp.common.AllConstants.BaseEntity.COUNTRY;
-import static org.opensrp.common.AllConstants.BaseEntity.COUNTY_DISTRICT;
-import static org.opensrp.common.AllConstants.BaseEntity.LAST_UPDATE;
-import static org.opensrp.common.AllConstants.BaseEntity.MOTHERS_INDENTIFIER;
-import static org.opensrp.common.AllConstants.BaseEntity.STATE_PROVINCE;
-import static org.opensrp.common.AllConstants.BaseEntity.SUB_DISTRICT;
-import static org.opensrp.common.AllConstants.BaseEntity.SUB_TOWN;
-import static org.opensrp.common.AllConstants.BaseEntity.TOWN;
-import static org.opensrp.common.AllConstants.Client.BIRTH_DATE;
-import static org.opensrp.common.AllConstants.Client.DEATH_DATE;
-import static org.opensrp.common.AllConstants.Client.FIRST_NAME;
-import static org.opensrp.common.AllConstants.Client.GENDER;
-import static org.opensrp.common.AllConstants.Client.LAST_NAME;
-import static org.opensrp.common.AllConstants.Client.MIDDLE_NAME;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.github.ldriscoll.ektorplucene.CouchDbRepositorySupportWithLucene;
+import com.github.ldriscoll.ektorplucene.LuceneQuery;
+import com.github.ldriscoll.ektorplucene.LuceneResult;
+import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
+import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
+import com.mysql.jdbc.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Client;
 import org.opensrp.search.AddressSearchBean;
@@ -29,12 +13,12 @@ import org.opensrp.search.ClientSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.github.ldriscoll.ektorplucene.CouchDbRepositorySupportWithLucene;
-import com.github.ldriscoll.ektorplucene.LuceneQuery;
-import com.github.ldriscoll.ektorplucene.LuceneResult;
-import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
-import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
-import com.mysql.jdbc.StringUtils;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.opensrp.common.AllConstants.BaseEntity.*;
+import static org.opensrp.common.AllConstants.Client.*;
 
 @FullText({
         @Index(name = "by_all_criteria", analyzer = "perfield:{baseEntityId:\"keyword\",mother:\"keyword\"}", index = "function (doc) {  if(doc.type !== 'Client') return null;  var docl = new Array();  var len = doc.addresses &&  doc.addresses.length >0 ? doc.addresses.length : 1;  for(var al = 0; al < len; al++) {    var arr1 = ['firstName', 'middleName', 'lastName', 'gender'];    var arr2 = ['addressType', 'country', 'stateProvince', 'cityVillage', 'countyDistrict', 'subDistrict', 'town', 'subTown'];    var ret = new Document(); var baseEntityId = doc.baseEntityId;ret.add(baseEntityId, {'field': 'baseEntityId'});    for(var i in arr1) {      ret.add(doc[arr1[i]], {'field' : arr1[i]});    }    for(var key in doc.attributes) {      ret.add(doc.attributes[key], {'field' : key});    } if (doc.relationships) { for (var key in doc.relationships) { ret.add(doc.relationships[key], { 'field': key }); }}    if(doc.addresses) {      var ad = doc.addresses[al];      if(ad){        for(var i in arr2) {          ret.add(ad[arr2[i]], {'field' : arr2[i]});        }      }              }    var bd = doc.birthdate.substring(0, 19);    ret.add(bd, {'field' : 'birthdate','type' : 'date'});        var crd = doc.dateCreated.substring(0, 19);    ret.add(crd, {'field' : 'lastEdited','type' : 'date'});        if(doc.dateEdited){    var led = doc.dateEdited.substring(0, 19);    ret.add(led, {'field' : 'lastEdited','type' : 'date'});        }        docl.push(ret);    }  return docl; }"),

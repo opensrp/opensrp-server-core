@@ -1,7 +1,7 @@
 package org.opensrp.domain;
 
-import static org.junit.Assert.assertEquals;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
@@ -11,8 +11,7 @@ import org.opensrp.domain.Task.TaskStatus;
 import org.opensrp.util.DateTypeConverter;
 import org.opensrp.util.TaskDateTimeTypeConverter;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import static org.junit.Assert.assertEquals;
 
 public class CampaignTest {
 

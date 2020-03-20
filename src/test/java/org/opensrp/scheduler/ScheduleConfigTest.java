@@ -1,25 +1,17 @@
 package org.opensrp.scheduler;
 
-import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import org.hamcrest.Matchers;
+import org.json.JSONException;
+import org.junit.Test;
+import org.opensrp.scheduler.Schedule.ActionType;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hamcrest.Matchers;
-import org.json.JSONException;
-import org.junit.Test;
-import org.opensrp.scheduler.Schedule.ActionType;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 public class ScheduleConfigTest {
 	

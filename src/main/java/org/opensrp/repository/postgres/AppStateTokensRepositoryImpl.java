@@ -1,8 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.AppStateToken;
 import org.opensrp.domain.postgres.AppStateTokenExample;
@@ -10,6 +7,9 @@ import org.opensrp.repository.AppStateTokensRepository;
 import org.opensrp.repository.postgres.mapper.AppStateTokenMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository("appStateTokensRepositoryPostgres")
 public class AppStateTokensRepositoryImpl implements AppStateTokensRepository {

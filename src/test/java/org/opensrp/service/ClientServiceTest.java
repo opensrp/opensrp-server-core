@@ -1,14 +1,5 @@
 package org.opensrp.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.opensrp.common.AllConstants.Client.OPENMRS_UUID_IDENTIFIER_TYPE;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.junit.Before;
@@ -20,6 +11,12 @@ import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.repository.postgres.ClientsRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.junit.Assert.*;
+import static org.opensrp.common.AllConstants.Client.OPENMRS_UUID_IDENTIFIER_TYPE;
 
 public class ClientServiceTest extends BaseRepositoryTest {
 	

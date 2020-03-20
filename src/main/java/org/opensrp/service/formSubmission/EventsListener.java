@@ -1,13 +1,5 @@
 package org.opensrp.service.formSubmission;
 
-import static java.text.MessageFormat.format;
-import static java.util.Collections.sort;
-import static org.apache.commons.lang.exception.ExceptionUtils.getFullStackTrace;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
-
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.AppStateToken;
@@ -25,6 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
+
+import static java.text.MessageFormat.format;
+import static java.util.Collections.sort;
+import static org.apache.commons.lang.exception.ExceptionUtils.getFullStackTrace;
 
 @Component
 public class EventsListener {

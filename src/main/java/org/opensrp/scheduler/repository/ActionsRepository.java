@@ -1,10 +1,10 @@
 package org.opensrp.scheduler.repository;
 
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.opensrp.repository.BaseRepository;
 import org.opensrp.scheduler.Action;
+
+import java.util.List;
 
 public interface ActionsRepository extends BaseRepository<Action> {
 	

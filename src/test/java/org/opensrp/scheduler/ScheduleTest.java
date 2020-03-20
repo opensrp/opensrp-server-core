@@ -1,9 +1,5 @@
 package org.opensrp.scheduler;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +7,10 @@ import org.junit.Test;
 import org.opensrp.util.Utils;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ScheduleTest {
 	

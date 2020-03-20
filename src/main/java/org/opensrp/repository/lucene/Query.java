@@ -1,11 +1,10 @@
 package org.opensrp.repository.lucene;
 
-import java.util.Iterator;
-import java.util.List;
-
+import com.mysql.jdbc.StringUtils;
 import org.joda.time.DateTime;
 
-import com.mysql.jdbc.StringUtils;
+import java.util.Iterator;
+import java.util.List;
 
 public class Query {
 	

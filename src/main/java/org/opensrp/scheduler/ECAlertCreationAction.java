@@ -1,9 +1,5 @@
 package org.opensrp.scheduler;
 
-import static java.text.MessageFormat.format;
-
-import java.util.Map;
-
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.opensrp.domain.Event;
 import org.opensrp.scheduler.HealthSchedulerService.MetadataField;
@@ -13,6 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+import static java.text.MessageFormat.format;
 
 @Component
 @Qualifier("ECAlertCreationAction")

@@ -3,12 +3,12 @@
  */
 package org.opensrp.repository.postgres.mapper.custom;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Organization;
 import org.opensrp.domain.postgres.OrganizationExample;
 import org.opensrp.repository.postgres.mapper.OrganizationMapper;
+
+import java.util.List;
 
 /**
  * @author Samuel Githengi created on 08/30/19

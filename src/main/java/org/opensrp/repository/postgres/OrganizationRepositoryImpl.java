@@ -1,9 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.opensrp.domain.AssignedLocations;
@@ -17,6 +13,10 @@ import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationLocationM
 import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Samuel Githengi on 8/30/19.

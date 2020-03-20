@@ -1,11 +1,11 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadataExample;
 import org.opensrp.repository.postgres.mapper.SettingsMetadataMapper;
+
+import java.util.List;
 
 public interface CustomSettingMetadataMapper extends SettingsMetadataMapper {
 	

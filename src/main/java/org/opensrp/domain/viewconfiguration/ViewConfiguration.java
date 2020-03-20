@@ -1,11 +1,11 @@
 package org.opensrp.domain.viewconfiguration;
 
-import java.util.List;
-import java.util.Map;
-
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.opensrp.domain.BaseDataObject;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author SGithengi

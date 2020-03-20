@@ -1,9 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import org.ektorp.DocumentNotFoundException;
 import org.joda.time.DateTime;
 import org.opensrp.domain.ErrorTrace;
@@ -12,6 +8,10 @@ import org.opensrp.repository.ErrorTraceRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomErrorTraceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Repository("errorRepositoryPostgres")
 public class ErrorTraceRepositoryImpl extends BaseRepositoryImpl<ErrorTrace> implements ErrorTraceRepository {

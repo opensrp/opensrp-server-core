@@ -1,24 +1,9 @@
 package org.opensrp.util;
 
-import static java.lang.String.valueOf;
-import static org.opensrp.common.AllConstants.Form.ANM_ID;
-import static org.opensrp.common.AllConstants.Form.CLIENT_VERSION;
-import static org.opensrp.common.AllConstants.Form.ENTITY_ID;
-import static org.opensrp.common.AllConstants.Form.FORM_NAME;
-import static org.opensrp.common.AllConstants.Form.INSTANCE_ID;
-import static org.opensrp.common.AllConstants.Form.SERVER_VERSION;
-import static org.opensrp.common.util.EasyMap.create;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.mysql.jdbc.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -36,10 +21,19 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.form.domain.FormSubmission;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import com.mysql.jdbc.StringUtils;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import static java.lang.String.valueOf;
+import static org.opensrp.common.AllConstants.Form.*;
+import static org.opensrp.common.util.EasyMap.create;
 
 public class Utils {
 	

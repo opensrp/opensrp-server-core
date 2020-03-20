@@ -1,28 +1,23 @@
 package org.opensrp.repository.lucene;
 
-import static org.opensrp.common.AllConstants.BaseEntity.LAST_UPDATE;
-import static org.opensrp.common.AllConstants.Client.BIRTH_DATE;
-import static org.opensrp.common.AllConstants.Client.FIRST_NAME;
-import static org.opensrp.common.AllConstants.Client.GENDER;
-import static org.opensrp.common.AllConstants.Client.LAST_NAME;
-import static org.opensrp.common.AllConstants.Client.MIDDLE_NAME;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
-import org.opensrp.domain.Client;
-import org.opensrp.domain.Search;
-import org.opensrp.search.ClientSearchBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.github.ldriscoll.ektorplucene.CouchDbRepositorySupportWithLucene;
 import com.github.ldriscoll.ektorplucene.LuceneQuery;
 import com.github.ldriscoll.ektorplucene.LuceneResult;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
 import com.mysql.jdbc.StringUtils;
+import org.opensrp.domain.Client;
+import org.opensrp.domain.Search;
+import org.opensrp.search.ClientSearchBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import static org.opensrp.common.AllConstants.BaseEntity.LAST_UPDATE;
+import static org.opensrp.common.AllConstants.Client.*;
 
 @FullText({
         @Index(name = "by_all_criteria", index = "function(doc){ if(doc.type!=='Client') return null; var arr1=['firstName','middleName','lastName','gender']; var ret=new Document(); for(var i in arr1){ ret.add(doc[arr1[i]],{'field':arr1[i]}) } for (var key in doc.identifiers) { ret.add(doc.identifiers[key], {'field': key}); } for(var key in doc.attributes){ ret.add(doc.attributes[key],{'field':key}) } var bd=doc.birthdate.substring(0,19); ret.add(bd,{'field':'birthdate','type':'date'}); var crd=doc.dateCreated.substring(0,19); ret.add(crd,{'field':'lastEdited','type':'date'}); if(doc.dateEdited){ var led=doc.dateEdited.substring(0,19); ret.add(led,{'field':'lastEdited','type':'date'}) } return ret }") })

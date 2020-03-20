@@ -1,28 +1,20 @@
 package org.opensrp.repository.lucene;
 
-import static org.opensrp.common.AllConstants.Stock.DATE_CREATED;
-import static org.opensrp.common.AllConstants.Stock.DATE_UPDATED;
-import static org.opensrp.common.AllConstants.Stock.IDENTIFIER;
-import static org.opensrp.common.AllConstants.Stock.PROVIDERID;
-import static org.opensrp.common.AllConstants.Stock.TO_FROM;
-import static org.opensrp.common.AllConstants.Stock.TRANSACTION_TYPE;
-import static org.opensrp.common.AllConstants.Stock.VACCINE_TYPE_ID;
-import static org.opensrp.common.AllConstants.Stock.VALUE;
-
-import java.io.IOException;
-import java.util.List;
-
-import org.opensrp.common.AllConstants.BaseEntity;
-import org.opensrp.domain.Stock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.github.ldriscoll.ektorplucene.CouchDbRepositorySupportWithLucene;
 import com.github.ldriscoll.ektorplucene.LuceneQuery;
 import com.github.ldriscoll.ektorplucene.LuceneResult;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
 import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
 import com.mysql.jdbc.StringUtils;
+import org.opensrp.common.AllConstants.BaseEntity;
+import org.opensrp.domain.Stock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.opensrp.common.AllConstants.Stock.*;
 
 @FullText({
         @Index(name = "by_all_criteria", analyzer = "perfield:{identifier:\"keyword\",providerid:\"keyword\"}", index = "function(doc) { if (doc.type !== 'Stock') return null; var arr1 = ['identifier', 'vaccine_type_id', 'transaction_type', 'providerid', 'value', 'to_from', 'sync_status', 'timeStamp']; var ret = new Document(); var serverVersion = doc.serverVersion; ret.add(serverVersion, { 'field': 'serverVersion' }); for (var i in arr1) { ret.add(doc[arr1[i]], { 'field': arr1[i] }); } if (doc.date_created) { var dc = doc.date_updated; ret.add(dc, { 'field': 'dateCreated' }); } if (doc.date_updated) { var da = doc.date_updated; ret.add(da, { 'field': 'dateUpdated' }); } return ret; }"),

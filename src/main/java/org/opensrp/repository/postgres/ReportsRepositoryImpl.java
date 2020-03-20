@@ -1,10 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Report;
@@ -16,6 +11,11 @@ import org.opensrp.repository.postgres.mapper.custom.CustomReportMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomReportMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 @Repository("reportsRepositoryPostgres")
 public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements ReportsRepository {

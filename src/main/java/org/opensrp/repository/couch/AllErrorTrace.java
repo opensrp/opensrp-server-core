@@ -1,8 +1,6 @@
 
 package org.opensrp.repository.couch;
 
-import java.util.List;
-
 import org.ektorp.CouchDbConnector;
 import org.ektorp.DocumentNotFoundException;
 import org.ektorp.support.View;
@@ -14,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author muhammad.ahmed@ihsinformatics.com Created on May 25, 2015

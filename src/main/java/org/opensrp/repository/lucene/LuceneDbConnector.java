@@ -1,10 +1,8 @@
 package org.opensrp.repository.lucene;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
+import com.github.ldriscoll.ektorplucene.LuceneAwareCouchDbConnector;
+import com.github.ldriscoll.ektorplucene.LuceneResult;
+import com.github.ldriscoll.ektorplucene.LuceneResult.Row;
 import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.ektorp.CouchDbConnector;
@@ -15,9 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import com.github.ldriscoll.ektorplucene.LuceneAwareCouchDbConnector;
-import com.github.ldriscoll.ektorplucene.LuceneResult;
-import com.github.ldriscoll.ektorplucene.LuceneResult.Row;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Component
 class LuceneDbConnector extends LuceneAwareCouchDbConnector {

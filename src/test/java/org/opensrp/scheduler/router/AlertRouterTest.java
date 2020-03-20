@@ -1,21 +1,5 @@
 package org.opensrp.scheduler.router;
 
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.ENROLLMENT_ID;
-import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.EXTERNAL_ID;
-import static org.opensrp.scheduler.Matcher.any;
-import static org.opensrp.scheduler.Matcher.eq;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,15 +13,22 @@ import org.motechproject.scheduletracking.api.events.constants.EventDataKeys;
 import org.opensrp.domain.Event;
 import org.opensrp.dto.ActionData;
 import org.opensrp.dto.AlertStatus;
-import org.opensrp.scheduler.Action;
-import org.opensrp.scheduler.AlertRouter;
-import org.opensrp.scheduler.HealthSchedulerService;
-import org.opensrp.scheduler.HookedEvent;
-import org.opensrp.scheduler.MilestoneEvent;
-import org.opensrp.scheduler.NoRoutesMatchException;
+import org.opensrp.scheduler.*;
 import org.opensrp.scheduler.service.ActionService;
 import org.opensrp.scheduler.service.ScheduleService;
 import org.opensrp.service.EventService;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.ENROLLMENT_ID;
+import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.EXTERNAL_ID;
+import static org.opensrp.scheduler.Matcher.any;
+import static org.opensrp.scheduler.Matcher.eq;
 
 public class AlertRouterTest {
 	

@@ -1,13 +1,13 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
-import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.LocationMetadataExample;
 import org.opensrp.repository.postgres.mapper.LocationMetadataMapper;
+
+import java.util.List;
+import java.util.Map;
 
 public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	

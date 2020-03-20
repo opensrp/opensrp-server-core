@@ -1,11 +1,11 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Action;
 import org.opensrp.domain.postgres.ActionMetadataExample;
 import org.opensrp.repository.postgres.mapper.ActionMetadataMapper;
+
+import java.util.List;
 
 public interface CustomActionMetadataMapper extends ActionMetadataMapper {
 	

@@ -1,13 +1,6 @@
 package org.opensrp.scheduler;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import ch.maxant.rules.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,12 +14,8 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Repository;
 
-import ch.maxant.rules.CompileException;
-import ch.maxant.rules.DuplicateNameException;
-import ch.maxant.rules.Engine;
-import ch.maxant.rules.NoMatchingRuleFoundException;
-import ch.maxant.rules.ParseException;
-import ch.maxant.rules.Rule;
+import java.io.IOException;
+import java.util.*;
 
 @Repository
 public class ScheduleConfig {

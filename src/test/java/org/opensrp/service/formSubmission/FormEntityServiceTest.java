@@ -1,15 +1,6 @@
 package org.opensrp.service.formSubmission;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-
-import java.io.IOException;
-
+import com.google.gson.Gson;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -33,7 +24,11 @@ import org.opensrp.service.formSubmission.ziggy.ZiggyService;
 import org.opensrp.util.TestResourceLoader;
 import org.opensrp.util.Utils;
 
-import com.google.gson.Gson;
+import java.io.IOException;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class FormEntityServiceTest extends TestResourceLoader {
 	

@@ -1,7 +1,5 @@
 package org.opensrp.service;
 
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.opensrp.domain.Report;
 import org.opensrp.repository.ReportsRepository;
@@ -9,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ReportService {

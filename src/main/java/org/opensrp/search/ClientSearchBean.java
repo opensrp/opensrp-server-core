@@ -1,9 +1,9 @@
 package org.opensrp.search;
 
+import org.joda.time.DateTime;
+
 import java.util.List;
 import java.util.Map;
-
-import org.joda.time.DateTime;
 
 public class ClientSearchBean {
 	

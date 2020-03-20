@@ -1,9 +1,10 @@
 package org.opensrp.repository.postgres.mapper;
 
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.LocationMetadata;
 import org.opensrp.domain.postgres.LocationMetadataExample;
+
+import java.util.List;
 
 public interface LocationMetadataMapper {
 

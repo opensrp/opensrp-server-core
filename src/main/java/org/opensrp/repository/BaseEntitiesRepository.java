@@ -1,8 +1,8 @@
 package org.opensrp.repository;
 
-import java.util.List;
-
 import org.opensrp.domain.BaseEntity;
+
+import java.util.List;
 
 public interface BaseEntitiesRepository extends BaseRepository<BaseEntity> {
 	

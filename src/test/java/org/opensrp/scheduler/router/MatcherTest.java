@@ -1,10 +1,10 @@
 package org.opensrp.scheduler.router;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.opensrp.scheduler.Matcher;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MatcherTest {
 	

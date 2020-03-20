@@ -1,9 +1,9 @@
 package org.opensrp.repository;
 
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.opensrp.domain.Report;
+
+import java.util.List;
 
 public interface ReportsRepository extends BaseRepository<Report> {
 	

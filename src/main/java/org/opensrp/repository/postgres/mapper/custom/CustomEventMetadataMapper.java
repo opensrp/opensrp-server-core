@@ -1,11 +1,11 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Event;
 import org.opensrp.domain.postgres.EventMetadataExample;
 import org.opensrp.repository.postgres.mapper.EventMetadataMapper;
+
+import java.util.List;
 
 public interface CustomEventMetadataMapper extends EventMetadataMapper {
 	

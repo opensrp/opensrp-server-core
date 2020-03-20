@@ -1,9 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Campaign;
 import org.opensrp.domain.postgres.CampaignMetadata;
@@ -14,6 +10,10 @@ import org.opensrp.repository.postgres.mapper.custom.CustomCampaignMetadataMappe
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Repository
 public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> implements CampaignRepository {

@@ -1,23 +1,16 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.PlanDefinition;
-import org.opensrp.domain.postgres.Jurisdiction;
-import org.opensrp.domain.postgres.Plan;
-import org.opensrp.domain.postgres.PlanExample;
-import org.opensrp.domain.postgres.PlanMetadata;
-import org.opensrp.domain.postgres.PlanMetadataExample;
+import org.opensrp.domain.postgres.*;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.*;
 
 import static org.opensrp.util.Utils.isEmptyList;
 

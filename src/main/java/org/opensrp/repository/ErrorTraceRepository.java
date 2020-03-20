@@ -1,9 +1,9 @@
 package org.opensrp.repository;
 
-import java.util.List;
-
 import org.ektorp.DocumentNotFoundException;
 import org.opensrp.domain.ErrorTrace;
+
+import java.util.List;
 
 public interface ErrorTraceRepository extends BaseRepository<ErrorTrace> {
 	

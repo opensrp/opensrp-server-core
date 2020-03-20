@@ -1,13 +1,13 @@
 package org.opensrp.service;
 
-import java.util.List;
-
 import org.joda.time.DateTime;
 import org.opensrp.domain.Stock;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.search.StockSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class StockService {

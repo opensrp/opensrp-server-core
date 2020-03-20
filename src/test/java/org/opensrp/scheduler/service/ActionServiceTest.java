@@ -1,17 +1,6 @@
 package org.opensrp.scheduler.service;
 
-import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.opensrp.dto.AlertStatus.normal;
-import static org.opensrp.scheduler.service.ActionService.ALL_PROVIDERS;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
-
-import java.util.Arrays;
-import java.util.List;
-
+import com.google.gson.Gson;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
@@ -30,7 +19,17 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.google.gson.Gson;
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.opensrp.dto.AlertStatus.normal;
+import static org.opensrp.scheduler.service.ActionService.ALL_PROVIDERS;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ DateTime.class, org.motechproject.util.DateUtil.class })

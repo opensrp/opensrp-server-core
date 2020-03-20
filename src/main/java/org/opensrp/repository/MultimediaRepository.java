@@ -1,9 +1,9 @@
 package org.opensrp.repository;
 
-import java.util.List;
-
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.opensrp.domain.Multimedia;
+
+import java.util.List;
 
 public interface MultimediaRepository extends BaseRepository<Multimedia> {
 	

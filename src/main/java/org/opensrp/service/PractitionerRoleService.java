@@ -2,8 +2,8 @@ package org.opensrp.service;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.postgres.Practitioner;
 import org.opensrp.domain.PractitionerRole;
+import org.opensrp.domain.postgres.Practitioner;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -13,9 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 
-import static org.opensrp.service.MultimediaService.IMAGES_DIR;
-import static org.opensrp.service.MultimediaService.MULTI_VERSION;
-import static org.opensrp.service.MultimediaService.VIDEOS_DIR;
+import static org.opensrp.service.MultimediaService.*;
 
 /**
  * Created by Vincent Karuri on 24/10/2019

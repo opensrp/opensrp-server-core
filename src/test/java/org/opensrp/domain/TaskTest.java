@@ -1,8 +1,7 @@
 package org.opensrp.domain;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -10,8 +9,8 @@ import org.junit.Test;
 import org.opensrp.domain.Task.TaskStatus;
 import org.opensrp.util.TaskDateTimeTypeConverter;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class TaskTest {
 

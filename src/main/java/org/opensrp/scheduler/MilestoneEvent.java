@@ -1,13 +1,11 @@
 package org.opensrp.scheduler;
 
-import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.MILESTONE_NAME;
-import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.SCHEDULE_NAME;
-import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.WINDOW_NAME;
-
 import org.joda.time.DateTime;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.MilestoneAlert;
 import org.motechproject.scheduletracking.api.events.constants.EventDataKeys;
+
+import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.*;
 
 public class MilestoneEvent {
 	

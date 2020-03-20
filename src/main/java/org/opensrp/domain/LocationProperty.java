@@ -1,10 +1,10 @@
 package org.opensrp.domain;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.gson.annotations.SerializedName;
 
 public class LocationProperty {
 

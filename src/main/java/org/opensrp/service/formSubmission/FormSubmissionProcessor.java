@@ -1,10 +1,7 @@
 package org.opensrp.service.formSubmission;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.mysql.jdbc.StringUtils;
 import org.ektorp.CouchDbConnector;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -29,8 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.mysql.jdbc.StringUtils;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class FormSubmissionProcessor {

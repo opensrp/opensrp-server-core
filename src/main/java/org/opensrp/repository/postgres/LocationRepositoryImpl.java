@@ -1,24 +1,11 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
-import org.opensrp.domain.postgres.Location;
-import org.opensrp.domain.postgres.LocationMetadata;
-import org.opensrp.domain.postgres.LocationMetadataExample;
-import org.opensrp.domain.postgres.Structure;
-import org.opensrp.domain.postgres.StructureFamilyDetails;
-import org.opensrp.domain.postgres.StructureMetadata;
-import org.opensrp.domain.postgres.StructureMetadataExample;
+import org.opensrp.domain.postgres.*;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
@@ -27,6 +14,8 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapp
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 @Repository
 public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation> implements LocationRepository {

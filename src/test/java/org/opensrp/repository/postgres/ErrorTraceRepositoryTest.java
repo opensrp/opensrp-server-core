@@ -1,24 +1,20 @@
 package org.opensrp.repository.postgres;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.opensrp.repository.postgres.ErrorTraceRepositoryImpl.SOLVED;
-import static org.opensrp.repository.postgres.ErrorTraceRepositoryImpl.UNSOLVED;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.domain.ErrorTrace;
 import org.opensrp.repository.ErrorTraceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.*;
+import static org.opensrp.repository.postgres.ErrorTraceRepositoryImpl.SOLVED;
+import static org.opensrp.repository.postgres.ErrorTraceRepositoryImpl.UNSOLVED;
 
 public class ErrorTraceRepositoryTest extends BaseRepositoryTest {
 	

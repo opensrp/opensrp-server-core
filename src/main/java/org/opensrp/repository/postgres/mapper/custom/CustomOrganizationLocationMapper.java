@@ -3,14 +3,14 @@
  */
 package org.opensrp.repository.postgres.mapper.custom;
 
-import java.util.Date;
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.postgres.OrganizationLocation;
 import org.opensrp.domain.postgres.OrganizationLocationExample.Criteria;
 import org.opensrp.repository.postgres.mapper.OrganizationLocationMapper;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Samuel Githengi created on 09/09/19

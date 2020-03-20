@@ -1,11 +1,11 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Task;
 import org.opensrp.domain.postgres.TaskMetadataExample;
 import org.opensrp.repository.postgres.mapper.TaskMetadataMapper;
+
+import java.util.List;
 
 public interface CustomTaskMetadataMapper extends TaskMetadataMapper {
 	

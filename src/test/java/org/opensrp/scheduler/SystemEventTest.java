@@ -1,15 +1,14 @@
 package org.opensrp.scheduler;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import com.google.gson.Gson;
 import org.junit.Test;
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.opensrp.common.FormEntityConstants;
 
-import com.google.gson.Gson;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 
 public class SystemEventTest {
 	

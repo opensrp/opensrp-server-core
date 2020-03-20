@@ -1,11 +1,11 @@
 package org.opensrp.service.formSubmission.ziggy;
 
+import org.opensrp.util.Utils;
+import org.springframework.stereotype.Repository;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.opensrp.util.Utils;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class EntityDataMap {

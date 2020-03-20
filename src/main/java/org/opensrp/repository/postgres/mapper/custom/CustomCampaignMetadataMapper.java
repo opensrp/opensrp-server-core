@@ -1,11 +1,11 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
-import java.util.List;
-
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Campaign;
 import org.opensrp.domain.postgres.CampaignMetadataExample;
 import org.opensrp.repository.postgres.mapper.CampaignMetadataMapper;
+
+import java.util.List;
 
 public interface CustomCampaignMetadataMapper extends CampaignMetadataMapper {
 

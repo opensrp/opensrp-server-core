@@ -1,10 +1,5 @@
 package org.opensrp.services.it;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -14,6 +9,11 @@ import org.junit.Test;
 import org.opensrp.SpringApplicationContextProvider;
 import org.opensrp.service.RapidProService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Ignore
 public class RapidProServiceIntegrationTest extends SpringApplicationContextProvider {

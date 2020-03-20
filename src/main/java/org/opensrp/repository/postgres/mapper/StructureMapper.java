@@ -1,9 +1,10 @@
 package org.opensrp.repository.postgres.mapper;
 
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureExample;
+
+import java.util.List;
 
 public interface StructureMapper {
     /**

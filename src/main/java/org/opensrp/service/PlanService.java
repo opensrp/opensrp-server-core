@@ -1,12 +1,5 @@
 package org.opensrp.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * Created by Vincent Karuri on 06/05/2019
- */
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
@@ -15,6 +8,13 @@ import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Created by Vincent Karuri on 06/05/2019
+ */
 
 @Service
 public class PlanService {

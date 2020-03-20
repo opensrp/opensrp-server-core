@@ -1,30 +1,14 @@
 package org.opensrp.util;
 
-import static java.util.Arrays.asList;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.opensrp.domain.Address;
-import org.opensrp.domain.AppStateToken;
-import org.opensrp.domain.BaseEntity;
-import org.opensrp.domain.Client;
-import org.opensrp.domain.ErrorTrace;
 import org.opensrp.domain.Event;
-import org.opensrp.domain.Hia2Indicator;
-import org.opensrp.domain.Location;
-import org.opensrp.domain.Multimedia;
-import org.opensrp.domain.Obs;
-import org.opensrp.domain.Provider;
-import org.opensrp.domain.Report;
-import org.opensrp.domain.User;
+import org.opensrp.domain.*;
 import org.opensrp.dto.form.MultimediaDTO;
+
+import java.util.*;
+
+import static java.util.Arrays.asList;
 
 public class SampleFullDomainObject {
 	

@@ -1,13 +1,13 @@
 package org.opensrp.service;
 
-import java.util.List;
-
 import org.opensrp.domain.viewconfiguration.ViewConfiguration;
 import org.opensrp.repository.ViewConfigurationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ViewConfigurationService {

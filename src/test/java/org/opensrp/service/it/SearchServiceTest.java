@@ -1,24 +1,5 @@
 package org.opensrp.service.it;
 
-import static java.util.Arrays.asList;
-import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
-import static org.opensrp.util.SampleFullDomainObject.ATTRIBUTES_TYPE;
-import static org.opensrp.util.SampleFullDomainObject.ATTRIBUTES_VALUE;
-import static org.opensrp.util.SampleFullDomainObject.EPOCH_DATE_TIME;
-import static org.opensrp.util.SampleFullDomainObject.FEMALE;
-import static org.opensrp.util.SampleFullDomainObject.FIRST_NAME;
-import static org.opensrp.util.SampleFullDomainObject.LAST_NAME;
-import static org.opensrp.util.SampleFullDomainObject.MIDDLE_NAME;
-import static org.opensrp.util.SampleFullDomainObject.attributes;
-import static org.opensrp.util.SampleFullDomainObject.getAddress;
-import static org.opensrp.util.SampleFullDomainObject.identifier;
-import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.After;
@@ -30,6 +11,16 @@ import org.opensrp.repository.couch.AllClients;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.Arrays.asList;
+import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
+import static org.opensrp.util.SampleFullDomainObject.*;
+import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
+import static org.utils.CouchDbAccessUtils.addObjectToRepository;
 
 public class SearchServiceTest extends BaseIntegrationTest {
 	

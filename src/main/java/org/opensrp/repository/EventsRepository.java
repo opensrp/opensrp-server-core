@@ -1,12 +1,11 @@
 package org.opensrp.repository;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.Event;
 import org.opensrp.search.EventSearchBean;
+
+import java.util.Calendar;
+import java.util.List;
 
 public interface EventsRepository extends BaseRepository<Event> {
 	

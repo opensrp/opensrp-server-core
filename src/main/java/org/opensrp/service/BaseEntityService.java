@@ -1,11 +1,11 @@
 package org.opensrp.service;
 
-import java.util.List;
-
 import org.opensrp.domain.BaseEntity;
 import org.opensrp.repository.BaseEntitiesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class BaseEntityService {

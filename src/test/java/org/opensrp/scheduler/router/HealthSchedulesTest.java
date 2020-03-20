@@ -1,27 +1,6 @@
 package org.opensrp.scheduler.router;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.motechproject.scheduletracking.api.domain.WindowName.due;
-import static org.motechproject.scheduletracking.api.domain.WindowName.earliest;
-import static org.motechproject.scheduletracking.api.domain.WindowName.late;
-import static org.motechproject.scheduletracking.api.domain.WindowName.max;
-import static org.opensrp.dto.AlertStatus.expired;
-import static org.opensrp.dto.AlertStatus.normal;
-import static org.opensrp.dto.AlertStatus.upcoming;
-import static org.opensrp.dto.AlertStatus.urgent;
-
-import java.io.IOException;
-import java.util.List;
-
+import com.google.gson.JsonIOException;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.json.JSONException;
@@ -39,7 +18,17 @@ import org.opensrp.scheduler.service.ActionService;
 import org.opensrp.scheduler.service.ScheduleService;
 import org.opensrp.util.TestResourceLoader;
 
-import com.google.gson.JsonIOException;
+import java.io.IOException;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.motechproject.scheduletracking.api.domain.WindowName.*;
+import static org.opensrp.dto.AlertStatus.*;
 
 public class HealthSchedulesTest extends TestResourceLoader {
 	
