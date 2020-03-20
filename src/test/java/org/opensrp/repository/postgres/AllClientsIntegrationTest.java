@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -79,10 +80,17 @@ public class AllClientsIntegrationTest {
 		c = clientService.addClient(c);
 		
 		Client cu = new Client("eid0").withGender("FEMALE").withBirthdate(new DateTime(), false);
-		cu.withAddress(new Address().withAddressType("deathplace").withCityVillage("city").withTown("town"));
+		cu.withAddress(new Address().withAddressType("deathplace").withCityVillage("city1").withTown("town1"));
 		cu.withAttribute("at2", "atval2");
 		
 		clientService.mergeClient(cu);
+		
+		Client updated=clientService.findClient(cu);
+		assertEquals("FEMALE", updated.getGender());
+		assertNotNull( updated.getAddress("deathplace"));
+		assertEquals("town1", updated.getAddress("deathplace").getTown());
+		assertEquals("city1", updated.getAddress("deathplace").getCityVillage());
+		assertEquals("atval2", updated.getAttribute("at2"));
 	}
 	
 	@Test
@@ -110,13 +118,6 @@ public class AllClientsIntegrationTest {
 	@Test
 	public void shouldSearchFullDataClientsIn10Sec() throws MalformedURLException {
 		
-		/*org.ektorp.http.HttpClient httpClient = new StdHttpClient.Builder().url("http://202.141.249.106:6808").build();
-		   CouchDbInstance dbInstance = new StdCouchDbInstance(httpClient);
-		
-		   CouchDbConnector db = new StdCouchDbConnector("opensrp", dbInstance);
-		
-		Logger.getLogger("FileLogger").info("Starting at "+new DateTime());*/
-		
 		final long start = System.currentTimeMillis();
 		
 		for (int i = 0; i < 100; i++) {
@@ -140,13 +141,18 @@ public class AllClientsIntegrationTest {
 		clientSearchBean.setBirthdateFrom(new DateTime());
 		clientSearchBean.setAttributeType("ethnicity");
 		clientSearchBean.setAttributeValue("eth3");
-		List<Client> l = clientService.findByCriteria(clientSearchBean, null);
-		Logger.getLogger("FileLogger").info("Completed First search of size " + l.size() + " by Lucene");
-		
-		Logger.getLogger("FileLogger").info("Going for 2nd search by Lucene");
-		l = clientService.findByCriteria(clientSearchBean, null);
-		
-		Logger.getLogger("FileLogger").info("Completed 2nd search of size " + l.size() + " by Lucene");
+		List<Client> clientList = clientService.findByCriteria(clientSearchBean, null);
+		assertEquals(7,clientList.size());
+		for(Client client : clientList) {
+			String filter=clientSearchBean.getNameLike().toLowerCase();
+			assertTrue(client.getFirstName().contains(filter)
+				|| client.getMiddleName().toLowerCase().contains(filter)
+				|| client.getLastName().toLowerCase().contains(filter));
+			assertEquals(clientSearchBean.getGender(), client.getGender());
+			assertTrue( client.getBirthdate().equals(clientSearchBean.getDeathdateFrom())
+				|| client.getBirthdate().isBefore(clientSearchBean.getBirthdateFrom()));
+			assertEquals("eth3", client.getAttribute("ethnicity"));
+		}
 	}
 	
 	private void addClient(int i, boolean direct) {

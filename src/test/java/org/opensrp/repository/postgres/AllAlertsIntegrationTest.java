@@ -125,11 +125,6 @@ public class AllAlertsIntegrationTest {
 	}
 	
 	@Test
-	public void shouldNotDoAnythingIfNoActionsAreFoundForATarget() {
-		//TODO
-	}
-	
-	@Test
 	public void shouldReturnActionBasedOnProviderIdEntityIdScheduleName() throws Exception {
 		DateTime dueDate = DateTime.now().minusDays(1);
 		DateTime expiryDate = dueDate.plusWeeks(2);
