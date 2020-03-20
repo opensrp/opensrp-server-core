@@ -27,7 +27,7 @@ public class ConfigServiceIntegrationTest {
 		token5_datetime(LocalDate.now()),
 		token6_float(Float.valueOf("21212.3323")),
 		token7_double(Double.valueOf(43748384.347384738)),
-		token9_boolean(Boolean.valueOf(true));
+		token9_boolean(true);
 		
 		private Object value;
 		

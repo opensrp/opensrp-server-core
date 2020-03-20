@@ -27,7 +27,7 @@ public class AllActionsIntegrationTest {
 	public static final String VISIT_CODE = "ANC 1";
 	
 	@Autowired
-	ActionRepositoryImpl allActions;
+	private ActionRepositoryImpl allActions;
 	
 	@Before
 	public void setUp() throws Exception {

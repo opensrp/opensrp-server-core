@@ -149,7 +149,7 @@ public class AllClientsIntegrationTest {
 		Logger.getLogger("FileLogger").info("Completed 2nd search of size " + l.size() + " by Lucene");
 	}
 	
-	void addClient(int i, boolean direct) {
+	private void addClient(int i, boolean direct) {
 		int ageInWeeks = new Random().nextInt(2860);// assuming average age of people is 55 years
 		DateTime birthdate = new DateTime().minusWeeks(ageInWeeks);
 		DateTime deathdate = i % 7 == 0 ? new DateTime() : null;// every 7th person died today

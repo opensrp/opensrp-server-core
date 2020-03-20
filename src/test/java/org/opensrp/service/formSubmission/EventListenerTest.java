@@ -57,7 +57,7 @@ public class EventListenerTest {
 	private ClientService clientService;
 	
 	@Mock
-	IHandlerMapper handlerMapper;
+	private IHandlerMapper handlerMapper;
 	
 	private EventService eventService;
 	

@@ -70,7 +70,7 @@ public class BaseDataEntity implements Serializable {
 
 	
 	@JsonProperty("_conflicts")
-	void setConflicts(List<String> conflicts) {
+	protected void setConflicts(List<String> conflicts) {
 		this.conflicts = conflicts;
 	}
 	
