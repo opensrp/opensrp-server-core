@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -11,7 +12,10 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensrp.domain.LocationTag;
+import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.postgres.LocationTagExample;
+import org.opensrp.domain.postgres.LocationTagMapExample;
+import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.LocationTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -21,14 +25,20 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 	@Autowired
 	private LocationTagRepository locationTagRepository;
 	
+	@Autowired
+	private LocationRepository locationRepository;
+	
 	@BeforeClass
 	public static void bootStrap() {
 		tableNames.add("core.location_tag");
+		tableNames.add("core.location_tag_map");
+		
 	}
 	
 	@Override
 	protected Set<String> getDatabaseScripts() {
 		Set<String> scripts = new HashSet<>();
+		scripts.add("location.sql");
 		return scripts;
 	}
 	
@@ -43,6 +53,68 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		
 		assertEquals(true, locationTags.get(0).getActive());
 		assertEquals("Country", locationTags.get(0).getName());
+		
+	}
+	
+	@Test
+	public void testAddShouldAddNewLocationTagMap() {
+		
+		LocationTag locationTag1 = initTestLocationTag6();
+		locationTagRepository.add(locationTag1);
+		
+		List<LocationTag> locationTags = locationTagRepository.getAll();
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(1l);
+		locationTagMap.setLocationTagId(locationTags.get(0).getId());
+		
+		int insert = locationTagRepository.addLocationTagMap(locationTagMap);
+		LocationTagMapExample example = new LocationTagMapExample();
+		example.createCriteria().andLocationIdEqualTo(1l).andLocationTagIdEqualTo(locationTags.get(0).getId());
+		List<LocationTagMap> locationTagMaps = locationTagRepository.getLocationTagMapByExample(example);
+		assertNotEquals(0, insert);
+		
+		assertEquals(1, locationTagMaps.get(0).getLocationId().longValue());
+		assertEquals(locationTags.get(0).getId(), locationTagMaps.get(0).getLocationTagId());
+		
+	}
+	
+	@Test
+	public void testDeleteShouldAddNewLocationTagMap() {
+		
+		LocationTag locationTag1 = initTestLocationTag6();
+		locationTagRepository.add(locationTag1);
+		
+		List<LocationTag> locationTags = locationTagRepository.getAll();
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(1l);
+		locationTagMap.setLocationTagId(locationTags.get(0).getId());
+		
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		LocationTagMapExample example = new LocationTagMapExample();
+		example.createCriteria().andLocationIdEqualTo(1l).andLocationTagIdEqualTo(locationTags.get(0).getId());
+		List<LocationTagMap> locationTagMaps = locationTagRepository.getLocationTagMapByExample(example);
+		
+		locationTagRepository
+		        .deleteLocationTagMapByLocationIdAndLocationTagId(1l, locationTagMaps.get(0).getLocationTagId());
+		
+		List<LocationTagMap> getDeletedLocationTagMaps = locationTagRepository.getLocationTagMapByExample(example);
+		
+		assertEquals(0, getDeletedLocationTagMaps.size());
+	}
+	
+	@Test(expected = DuplicateKeyException.class)
+	public void testNotAddShouldAddNewLocationTagMap() {
+		
+		LocationTag locationTag1 = initTestLocationTag6();
+		locationTagRepository.add(locationTag1);
+		
+		List<LocationTag> locationTags = locationTagRepository.getAll();
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(1l);
+		locationTagMap.setLocationTagId(locationTags.get(0).getId());
+		
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		locationTagRepository.addLocationTagMap(locationTagMap);
 		
 	}
 	
@@ -167,6 +239,14 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		return locationTag;
 	}
 	
+	private LocationTag initTestLocationTag6() {
+		LocationTag locationTag = new LocationTag();
+		locationTag.setName("Ward");
+		locationTag.setDescription("first label tag name");
+		locationTag.setActive(true);
+		return locationTag;
+	}
+	
 	private LocationTag initTestLocationTag2() {
 		LocationTag locationTag = new LocationTag();
 		locationTag.setName("Division");
@@ -189,6 +269,13 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		locationTag.setDescription("fourth label tag name");
 		locationTag.setActive(true);
 		return locationTag;
+	}
+	
+	private LocationTagMap initTestLocationTagMap() {
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(1l);
+		locationTagMap.setLocationTagId(2l);
+		return locationTagMap;
 	}
 	
 }
