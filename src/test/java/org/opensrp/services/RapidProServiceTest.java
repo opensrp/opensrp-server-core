@@ -1,7 +1,7 @@
 package org.opensrp.services;
 
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyMapOf;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -75,7 +75,7 @@ public class RapidProServiceTest extends SpringApplicationContextProvider {
 		when(mockRapidProService.addField("anc3", "T")).thenReturn(addFieldResponse);
 		when(mockRapidProService.sendMessage(Matchers.anyListOf(String.class), Matchers.anyListOf(String.class),
 		    Matchers.anyListOf(String.class), anyString(), anyString())).thenReturn(sendMessageResponse);
-		when(mockRapidProService.createContact(anyMap())).thenReturn(createContactResponse);
+		when(mockRapidProService.createContact(anyMapOf(String.class, Object.class))).thenReturn(createContactResponse);
 		
 	}
 	

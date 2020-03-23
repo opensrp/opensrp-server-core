@@ -1,8 +1,10 @@
 package org.opensrp.domain;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_DEFAULT)
+@JsonSerialize
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class FormDefinition {
 	
 	private String form_data_definition_version = "1";

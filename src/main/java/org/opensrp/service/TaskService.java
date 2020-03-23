@@ -159,4 +159,15 @@ public class TaskService {
 	public List<Task> getAllTasks(Long serverVersion, int limit) {
 		return taskRepository.getAllTasks(serverVersion, limit);
 	}
+
+	/**
+	 * This method returns a list of tasks belonging to a particular owner
+	 * @param plan plan identifier for the task
+	 * @param owner the username of the person who initiated the task
+	 * @param serverVersion Version of the server
+	 * @return list of tasks created by the provider username (owner)
+	 */
+	public List<Task> getTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
+		return taskRepository.getTasksByPlanAndOwner(plan, owner, serverVersion);
+	}
 }

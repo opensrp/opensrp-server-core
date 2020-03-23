@@ -9,12 +9,12 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -54,8 +54,8 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
 	 * {@inheritDoc}
 	 */
     @Override
-    protected void persistFileToStorage(String fileName, MultipartFile multipartFile) throws IOException {
-        File multimediaFile = multipartFileToFile(fileName, multipartFile);
+    protected void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException {
+	    File multimediaFile = bytesToFile(fileName, fileBytes);
         byte[] md5 = DigestUtils.md5(new FileInputStream(multimediaFile));
         InputStream inputStream = new FileInputStream(multimediaFile);
         ObjectMetadata metadata = new ObjectMetadata();
@@ -67,14 +67,11 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
     }
 
     private String getS3FilePath(String localFilePath) {
-    	String[] filePathLevels = localFilePath.split("/");
-    	String fileName = filePathLevels.length > 0 ? filePathLevels[filePathLevels.length - 1] : "";
-    	String s3FilePath = "".equals(s3BucketFolderPath) ? fileName : s3BucketFolderPath + File.separator + fileName;
-    	return s3FilePath;
+	    return StringUtils.isBlank(localFilePath) ? "" : s3BucketFolderPath + File.separator + localFilePath.replace(getBaseMultiMediaDir(), "");
     }
 
 	@Override
-	protected String getMultiMediaDir() {
+	protected String getBaseMultiMediaDir() {
 		return File.separator + "tmp" + File.separator;
 	}
 
@@ -94,16 +91,16 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
 
 	/**
 	 *
-	 * Converts {@link MultipartFile} to {@link File}
+	 * Converts {@link File} to {@link File}
 	 *
 	 * @param fileName
-	 * @param multipart
+	 * @param fileBytes
 	 * @return
 	 * @throws IOException
 	 */
-	private File multipartFileToFile(String fileName, MultipartFile multipart) throws IOException {
+	private File bytesToFile(String fileName, byte[] fileBytes) throws IOException {
         File tempFile = new File(fileName);
-        multipart.transferTo(tempFile);
+		copyBytesToFile(tempFile, fileBytes);
         tempFile.deleteOnExit();
         return tempFile;
     }

@@ -2,7 +2,6 @@ package org.opensrp.service;
 
 import java.util.List;
 
-import org.ektorp.DocumentNotFoundException;
 import org.joda.time.DateTime;
 import org.opensrp.domain.ErrorTrace;
 import org.opensrp.repository.ErrorTraceRepository;
@@ -61,7 +60,7 @@ public class ErrorTraceService {
 		//allErrorTrace.update(entity);
 	}
 	
-	public List<ErrorTrace> getAllErrors() throws DocumentNotFoundException {
+	public List<ErrorTrace> getAllErrors()  {
 		
 		List<ErrorTrace> allErrorList = allErrorTrace.findAllErrors();
 		if (null == allErrorList || allErrorList.isEmpty()) {
@@ -73,7 +72,7 @@ public class ErrorTraceService {
 		
 	}
 	
-	public List<ErrorTrace> getAllSolvedErrors() throws DocumentNotFoundException {
+	public List<ErrorTrace> getAllSolvedErrors() {
 		
 		List<ErrorTrace> allErrorList = allErrorTrace.findAllSolvedErrors();
 		if (null == allErrorList || allErrorList.isEmpty()) {
@@ -85,7 +84,7 @@ public class ErrorTraceService {
 		
 	}
 	
-	public List<ErrorTrace> getAllUnsolvedErrors() throws DocumentNotFoundException {
+	public List<ErrorTrace> getAllUnsolvedErrors() {
 		
 		List<ErrorTrace> allErrorList = allErrorTrace.findAllUnSolvedErrors();
 		if (null == allErrorList || allErrorList.isEmpty()) {
@@ -97,7 +96,7 @@ public class ErrorTraceService {
 		
 	}
 	
-	public ErrorTrace getError(String id) throws DocumentNotFoundException {
+	public ErrorTrace getError(String id) {
 		
 		return allErrorTrace.findById(id);
 		

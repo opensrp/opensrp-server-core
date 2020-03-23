@@ -1,10 +1,8 @@
 package org.utils;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.utils.CouchDbAccessUtils.purgeDateCreatedEditedAndVoidedField;
 
 import java.util.List;
 
@@ -26,16 +24,13 @@ public final class AssertionUtil {
 	public static <T extends BaseDataObject> void assertNewObjectCreation(T expectedObject, T actualObject) {
 		assertNotNull(actualObject.getDateCreated());
 		
-		purgeDateCreatedEditedAndVoidedField(asList(expectedObject, actualObject));
-		
 		assertEquals(expectedObject, actualObject);
 		
 	}
 	
 	public static <T extends BaseDataObject> void assertObjectUpdate(T expectedObject, T actualObject) {
 		assertNotNull(actualObject.getDateEdited());
-		
-		purgeDateCreatedEditedAndVoidedField(asList(expectedObject, actualObject));
+
 		assertEquals(expectedObject, actualObject);
 		
 	}

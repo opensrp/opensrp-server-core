@@ -14,7 +14,6 @@ import org.opensrp.domain.AppStateToken;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.ErrorTrace;
 import org.opensrp.domain.Event;
-import org.opensrp.form.domain.FormSubmission;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.service.ConfigService;
@@ -103,7 +102,7 @@ public class EventsListener {
 					e.printStackTrace();
 					errorTraceService
 					        .addError(new ErrorTrace(new DateTime(), "FormSubmissionProcessor", this.getClass().getName(),
-					                e.getStackTrace().toString(), "unsolved", FormSubmission.class.getName()));
+					                e.getStackTrace().toString(), "unsolved ", "FormSubmission"));
 				}
 			}
 		}

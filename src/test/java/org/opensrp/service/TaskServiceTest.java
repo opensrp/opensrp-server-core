@@ -13,6 +13,7 @@ import org.opensrp.domain.Task.TaskStatus;
 import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
 import org.opensrp.util.TaskDateTimeTypeConverter;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*","org.w3c.*"})
 public class TaskServiceTest {
 
 	private static String dateFormat = "yyyy-MM-dd'T'HHmm";
@@ -227,4 +229,15 @@ public class TaskServiceTest {
 		assertEquals(expectedTaskIds.get(1), actualTaskIds.get(1));
 	}
 
+	@Test
+	public void testGetTasksByPlanAndOwner() {
+		Task task = initializeTask();
+		List<Task> expected = new ArrayList<>();
+		expected.add(task);
+		when(taskRepository.getTasksByPlanAndOwner("IRS_2018_S1", "demouser", 15421904649873l))
+				.thenReturn(expected);
+		List<Task> tasks = taskService.getTasksByPlanAndOwner("IRS_2018_S1", "demouser", 15421904649873l);
+		verify(taskRepository).getTasksByPlanAndOwner("IRS_2018_S1", "demouser", 15421904649873l);
+		assertEquals(task, tasks.get(0));
+	}
 }
