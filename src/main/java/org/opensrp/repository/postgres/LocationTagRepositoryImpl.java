@@ -312,7 +312,7 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		return convertLocationTagMap(locationTagMapMapper.selectByExample(example));
 	}
 	
-	private LocationTagMapExample createLocationTagMapExample(LocationTagMap locationTagMap) {
+	public LocationTagMapExample createLocationTagMapExample(LocationTagMap locationTagMap) {
 		LocationTagMapExample example = new LocationTagMapExample();
 		if (locationTagMap.getLocationId() != null) {
 			example.createCriteria().andLocationIdEqualTo(locationTagMap.getLocationId());
