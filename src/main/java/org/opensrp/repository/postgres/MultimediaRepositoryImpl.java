@@ -1,5 +1,7 @@
 package org.opensrp.repository.postgres;
 
+import static org.opensrp.service.MultimediaService.MULTI_VERSION;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -11,8 +13,6 @@ import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomMultiMediaMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import static org.opensrp.service.MultimediaService.MULTI_VERSION;
 
 @Repository("multimediaRepositoryPostgres")
 public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> implements MultimediaRepository {
@@ -182,6 +182,15 @@ public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> imp
 		}
 		
 		return convertedList;
+	}
+	
+	/**
+	 * Method should be used only during Unit testing
+	 * Deletes all existing records
+	 */
+	public void removeAll() {
+		multiMediaMapper.deleteByExample(new MultiMediaExample());
+		
 	}
 	
 }

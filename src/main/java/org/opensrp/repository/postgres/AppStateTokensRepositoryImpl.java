@@ -91,4 +91,13 @@ public class AppStateTokensRepositoryImpl implements AppStateTokensRepository {
 		return token;
 	}
 	
+	/**
+	 * Method should be used only during Unit testing
+	 * Deletes all existing records
+	 */
+	public void removeAll() {
+		mapper.deleteByExample(new AppStateTokenExample());
+		
+	}
+	
 }

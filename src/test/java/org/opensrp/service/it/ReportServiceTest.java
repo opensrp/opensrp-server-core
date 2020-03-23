@@ -14,7 +14,7 @@ import static org.opensrp.util.SampleFullDomainObject.identifier;
 import static org.utils.AssertionUtil.assertNewObjectCreation;
 import static org.utils.AssertionUtil.assertObjectUpdate;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+import static org.utils.DbAccessUtils.addObjectToRepository;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,14 +26,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
 import org.opensrp.domain.Report;
-import org.opensrp.repository.couch.AllReports;
+import org.opensrp.repository.postgres.ReportsRepositoryImpl;
 import org.opensrp.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ReportServiceTest extends BaseIntegrationTest {
 	
 	@Autowired
-	private AllReports allReports;
+	private ReportsRepositoryImpl allReports;
 	
 	@Autowired
 	private ReportService reportService;

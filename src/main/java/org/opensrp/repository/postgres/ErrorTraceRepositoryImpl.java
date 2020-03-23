@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.ektorp.DocumentNotFoundException;
 import org.joda.time.DateTime;
 import org.opensrp.domain.ErrorTrace;
 import org.opensrp.domain.postgres.ErrorTraceExample;
@@ -95,7 +94,7 @@ public class ErrorTraceRepositoryImpl extends BaseRepositoryImpl<ErrorTrace> imp
 	}
 	
 	@Override
-	public ErrorTrace findById(String _id) throws DocumentNotFoundException {
+	public ErrorTrace findById(String _id) {
 		return get(_id);
 	}
 	
@@ -105,12 +104,12 @@ public class ErrorTraceRepositoryImpl extends BaseRepositoryImpl<ErrorTrace> imp
 	}
 	
 	@Override
-	public List<ErrorTrace> findAllErrors() throws DocumentNotFoundException {
+	public List<ErrorTrace> findAllErrors()  {
 		return getAll();
 	}
 	
 	@Override
-	public List<ErrorTrace> findAllUnSolvedErrors() throws DocumentNotFoundException {
+	public List<ErrorTrace> findAllUnSolvedErrors() {
 		ErrorTraceExample example = new ErrorTraceExample();
 		example.createCriteria().andStatusEqualTo(UNSOLVED);
 		example.or(example.createCriteria().andStatusIsNull());
@@ -119,7 +118,7 @@ public class ErrorTraceRepositoryImpl extends BaseRepositoryImpl<ErrorTrace> imp
 	}
 	
 	@Override
-	public List<ErrorTrace> findAllSolvedErrors() throws DocumentNotFoundException {
+	public List<ErrorTrace> findAllSolvedErrors() {
 		ErrorTraceExample example = new ErrorTraceExample();
 		example.createCriteria().andStatusEqualTo(SOLVED);
 		return convert(errorTraceMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE));
@@ -190,5 +189,13 @@ public class ErrorTraceRepositoryImpl extends BaseRepositoryImpl<ErrorTrace> imp
 		}
 		
 		return errorTraces;
+	}
+
+	/**
+	 * Method should be used only during Unit testing
+	 * Deletes all existing records
+	 */
+	public void removeAll() {
+		errorTraceMapper.deleteByExample(new ErrorTraceExample());
 	}
 }

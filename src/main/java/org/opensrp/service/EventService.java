@@ -23,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 @Service
 public class EventService {
 	
@@ -303,7 +305,7 @@ public class EventService {
 			allEvents.update(original);
 			return original;
 		}
-		catch (JSONException e) {
+		catch (JSONException | JsonProcessingException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
 	}

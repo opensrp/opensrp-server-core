@@ -9,13 +9,11 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.reflect.Whitebox;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,15 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.opensrp.service.MultimediaService.MULTI_VERSION;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
 
 /**
  * Created by Vincent Karuri on 30/10/2019
@@ -74,10 +66,11 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
 		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketFolderPath", getTestFileFolder());
 
-		MultipartFile multipartFile = mock(MultipartFile.class);
-		s3MultimediaFileManager.persistFileToStorage(getTestFilePath(), multipartFile);
+		byte[] testBytes = new byte[10];
+		s3MultimediaFileManager = Mockito.spy(s3MultimediaFileManager);
+		s3MultimediaFileManager.persistFileToStorage(getTestFilePath(), testBytes);
 
-		verify(multipartFile).transferTo(fileArgumentCaptor.capture());
+		verify(s3MultimediaFileManager).copyBytesToFile(fileArgumentCaptor.capture(), Mockito.eq(testBytes));
 		verify(s3Client).putObject(putObjectRequestArgumentCaptor.capture());
 
 		PutObjectRequest putObjectRequest = putObjectRequestArgumentCaptor.getValue();
@@ -141,16 +134,4 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 		assertEquals("bucket_folder_path" + File.separator + "path/to/file", truncatedFilePath);
 	}
 
-	@Test
-	public void testUploadShouldUploadFileWithCorrectName() throws Exception {
-		MultipartFile multipartFile = mock(MultipartFile.class);
-		doReturn("originalName").when(multipartFile).getOriginalFilename();
-		MultimediaDTO multimediaDTO = new MultimediaDTO("caseId", "providerId", "image/jpeg", "filePath", MULTI_VERSION);
-		S3MultimediaFileManager s3MultimediaFileManagerSpy = PowerMockito.spy(s3MultimediaFileManager);
-
-		doNothing().when(s3MultimediaFileManagerSpy, "persistFileToStorage", anyString(), any(MultipartFile.class));
-		String multimediaFilePath = Whitebox.invokeMethod(s3MultimediaFileManagerSpy, "getMultimediaFilePath", multimediaDTO, multipartFile);
-		s3MultimediaFileManagerSpy.uploadFile(multimediaDTO, multipartFile);
-		verifyPrivate(s3MultimediaFileManagerSpy).invoke("persistFileToStorage", eq(multimediaFilePath), eq(multipartFile));
-	}
 }

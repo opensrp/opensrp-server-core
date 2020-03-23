@@ -1,9 +1,11 @@
 package org.opensrp.domain.setting;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.annotate.JsonSubTypes.Type;
+
 import org.json.JSONArray;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 @JsonSubTypes({ @Type(value = SettingConfiguration.class, name = "Setting") })
 public class Setting {

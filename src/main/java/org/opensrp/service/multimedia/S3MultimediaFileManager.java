@@ -15,7 +15,6 @@ import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -55,8 +54,8 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
 	 * {@inheritDoc}
 	 */
     @Override
-    protected void persistFileToStorage(String fileName, MultipartFile multipartFile) throws IOException {
-        File multimediaFile = multipartFileToFile(fileName, multipartFile);
+    protected void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException {
+	    File multimediaFile = bytesToFile(fileName, fileBytes);
         byte[] md5 = DigestUtils.md5(new FileInputStream(multimediaFile));
         InputStream inputStream = new FileInputStream(multimediaFile);
         ObjectMetadata metadata = new ObjectMetadata();
@@ -92,16 +91,16 @@ public class S3MultimediaFileManager extends BaseMultimediaFileManager {
 
 	/**
 	 *
-	 * Converts {@link MultipartFile} to {@link File}
+	 * Converts {@link File} to {@link File}
 	 *
 	 * @param fileName
-	 * @param multipart
+	 * @param fileBytes
 	 * @return
 	 * @throws IOException
 	 */
-	private File multipartFileToFile(String fileName, MultipartFile multipart) throws IOException {
+	private File bytesToFile(String fileName, byte[] fileBytes) throws IOException {
         File tempFile = new File(fileName);
-        multipart.transferTo(tempFile);
+		copyBytesToFile(tempFile, fileBytes);
         tempFile.deleteOnExit();
         return tempFile;
     }
