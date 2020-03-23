@@ -118,12 +118,39 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		
 	}
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void testNotAddShouldAddNewLocationTagMapWithoutLocationTagIdandLocationId() {
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		
+	}
+	
 	@Test(expected = DuplicateKeyException.class)
-	public void testAddShouldNotAddDuplicateLocationTag() {
+	public void testAddShouldNotAddDuplicateLocationTagMap() {
 		LocationTag locationTag1 = initTestLocationTag1();
 		locationTagRepository.add(locationTag1);
 		locationTagRepository.add(locationTag1);
 		
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testShouldIllegalArgumentExceptionOnDeleteLocationTagMapWitLocationIdZero() {
+		locationTagRepository.deleteLocationTagMapByLocationIdAndLocationTagId(0l, 1l);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testShouldIllegalArgumentExceptionOnDeleteLocationTagMapWitLocationIdNull() {
+		locationTagRepository.deleteLocationTagMapByLocationIdAndLocationTagId(null, 1l);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testShouldIllegalArgumentExceptionOnDeleteLocationTagMapWitLocationTagIdNull() {
+		locationTagRepository.deleteLocationTagMapByLocationIdAndLocationTagId(1l, null);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testShouldIllegalArgumentExceptionOnDeleteLocationTagMapWitLocationTagIdZero() {
+		locationTagRepository.deleteLocationTagMapByLocationIdAndLocationTagId(1l, 0l);
 	}
 	
 	@Test

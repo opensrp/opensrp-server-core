@@ -271,13 +271,13 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 	public int addLocationTagMap(org.opensrp.domain.LocationTagMap locationTagMap) {
 		org.opensrp.domain.postgres.LocationTagMap pgLocationTagMap = convertLocationTagMap(locationTagMap);
 		if (locationTagMap == null) {
-			return 0;
+			throw new IllegalArgumentException("location tag map not specified");
 		}
 		if (locationTagMap.getLocationId() == null) {
-			return 0;
+			throw new IllegalArgumentException("location id not specified");
 		}
 		if (locationTagMap.getLocationTagId() == null) {
-			return 0;
+			throw new IllegalArgumentException("location tag id not specified");
 		}
 		
 		LocationTagMapExample example = createLocationTagMapExample(locationTagMap);
@@ -292,10 +292,11 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 	
 	@Override
 	public void deleteLocationTagMapByLocationIdAndLocationTagId(Long locationId, Long locationTagId) {
-		if (locationId == null) {
+		
+		if (locationId == null || locationId == 0) {
 			throw new IllegalArgumentException("Location tag id not specified");
 		}
-		if (locationTagId == null) {
+		if (locationTagId == null || locationTagId == 0) {
 			throw new IllegalArgumentException("location id not specified");
 		}
 		LocationTagMapExample example = new LocationTagMapExample();
