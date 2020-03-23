@@ -1,9 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.Task;
@@ -15,6 +11,10 @@ import org.opensrp.repository.postgres.mapper.custom.CustomTaskMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Repository
 public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements TaskRepository {
@@ -161,8 +161,20 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
 		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 
+		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0, limit);
+		return convert(tasks);
+	}
+
+	@Override
+	public List<Task> getTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
+		List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		taskMetadataExample.createCriteria().andPlanIdentifierIn(plans)
+				.andOwnerEqualTo(owner)
+		        .andServerVersionGreaterThanOrEqualTo(serverVersion);
+		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
-				limit);
+				DEFAULT_FETCH_SIZE);
 		return convert(tasks);
 	}
 
@@ -256,6 +268,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		taskMetadata.setGroupIdentifier(entity.getGroupIdentifier());
 		taskMetadata.setForEntity(entity.getForEntity());
 		taskMetadata.setServerVersion(entity.getServerVersion());
+		taskMetadata.setOwner(entity.getOwner());
 		return taskMetadata;
 	}
 }

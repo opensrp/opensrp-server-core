@@ -229,4 +229,15 @@ public class TaskServiceTest {
 		assertEquals(expectedTaskIds.get(1), actualTaskIds.get(1));
 	}
 
+	@Test
+	public void testGetTasksByPlanAndOwner() {
+		Task task = initializeTask();
+		List<Task> expected = new ArrayList<>();
+		expected.add(task);
+		when(taskRepository.getTasksByPlanAndOwner("IRS_2018_S1", "demouser", 15421904649873l))
+				.thenReturn(expected);
+		List<Task> tasks = taskService.getTasksByPlanAndOwner("IRS_2018_S1", "demouser", 15421904649873l);
+		verify(taskRepository).getTasksByPlanAndOwner("IRS_2018_S1", "demouser", 15421904649873l);
+		assertEquals(task, tasks.get(0));
+	}
 }
