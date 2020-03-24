@@ -1,8 +1,8 @@
 package org.opensrp.repository.postgres.handler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.postgresql.util.PGobject;
 
 import java.io.IOException;
