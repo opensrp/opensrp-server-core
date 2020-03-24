@@ -1,45 +1,30 @@
 package org.opensrp.util;
 
-import static java.lang.String.valueOf;
-import static org.opensrp.common.AllConstants.Form.ANM_ID;
-import static org.opensrp.common.AllConstants.Form.CLIENT_VERSION;
-import static org.opensrp.common.AllConstants.Form.ENTITY_ID;
-import static org.opensrp.common.AllConstants.Form.FORM_NAME;
-import static org.opensrp.common.AllConstants.Form.INSTANCE_ID;
-import static org.opensrp.common.AllConstants.Form.SERVER_VERSION;
-import static org.opensrp.common.util.EasyMap.create;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.ektorp.CouchDbConnector;
-import org.ektorp.CouchDbInstance;
-import org.ektorp.http.HttpClient;
-import org.ektorp.http.StdHttpClient;
-import org.ektorp.impl.StdCouchDbConnector;
-import org.ektorp.impl.StdCouchDbInstance;
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.opensrp.form.domain.FormSubmission;
+import org.opensrp.repository.postgres.handler.BaseTypeHandler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.mysql.jdbc.StringUtils;
 
 public class Utils {
 	
@@ -63,12 +48,12 @@ public class Utils {
 	}
 	
 	public static Object getMergedJSON(Object original, Object updated, List<Field> fn, Class<?> clazz)
-	        throws JSONException {
+	        throws JSONException, JsonMappingException, JsonProcessingException {
 		
-		Gson gs = new GsonBuilder().registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
-		JSONObject originalJo = new JSONObject(gs.toJson(original, clazz));
+		ObjectMapper objectMapper= BaseTypeHandler.createObjectMapper();
+		JSONObject originalJo = new JSONObject(objectMapper.writeValueAsString(original));
 		
-		JSONObject updatedJo = new JSONObject(gs.toJson(updated, clazz));
+		JSONObject updatedJo = new JSONObject(objectMapper.writeValueAsString(updated));
 		
 		JSONObject mergedJson = new JSONObject();
 		if (originalJo.length() > 0) {
@@ -83,15 +68,8 @@ public class Utils {
 			}
 		}
 		if (mergedJson.length() > 0)
-			return gs.fromJson(mergedJson.toString(), clazz);
+			return objectMapper.readValue(mergedJson.toString(), clazz);
 		return original;
-	}
-	
-	public static String getZiggyParams(FormSubmission formSubmission) {
-		return new Gson().toJson(create(ANM_ID, formSubmission.anmId()).put(INSTANCE_ID, formSubmission.instanceId())
-		        .put(ENTITY_ID, formSubmission.entityId()).put(FORM_NAME, formSubmission.formName())
-		        .put(CLIENT_VERSION, valueOf(formSubmission.clientVersion()))
-		        .put(SERVER_VERSION, valueOf(formSubmission.serverVersion())).map());
 	}
 	
 	public static JSONArray getXlsToJson(String path) throws JSONException, IOException {
@@ -127,7 +105,7 @@ public class Utils {
 		while (i.hasNext()) {
 			Row r = i.next();
 			for (Cell c : r) {
-				if (!StringUtils.isEmptyOrWhitespaceOnly(c.getStringCellValue())) {
+				if (!StringUtils.isBlank(c.getStringCellValue())) {
 					return r.getRowNum();
 				}
 			}
@@ -137,7 +115,7 @@ public class Utils {
 	
 	private static boolean isRowEmpty(List<String> rcontent) {
 		for (String r : rcontent) {
-			if (!StringUtils.isEmptyOrWhitespaceOnly(r)) {
+			if (!StringUtils.isBlank(r)) {
 				return false;
 			}
 		}
@@ -160,50 +138,6 @@ public class Utils {
 		 * }
 		 */
 		return hc;
-	}
-	
-	/**
-	 * Connect to the database specified by DatabaseConnectionParams
-	 * 
-	 * @param dbParams
-	 * @return
-	 * @throws MalformedURLException
-	 */
-	public static CouchDbConnector connectToDB(DatabaseConnectionParams dbParams) throws MalformedURLException {
-		HttpClient authenticatedHttpClient = null;
-		
-		if (dbParams.userName != null && !dbParams.userName.isEmpty() && dbParams.password != null
-		        && !dbParams.password.isEmpty()) {
-			
-			authenticatedHttpClient = new StdHttpClient.Builder().url(dbParams.url.concat(":").concat(dbParams.portNumber))
-			        .username(dbParams.userName).password(dbParams.password).build();
-		} else {
-			authenticatedHttpClient = new StdHttpClient.Builder().url(dbParams.url.concat(":").concat(dbParams.portNumber))
-			        .build();
-		}
-		
-		CouchDbInstance dbInstance = new StdCouchDbInstance(authenticatedHttpClient);
-		
-		CouchDbConnector db = new StdCouchDbConnector(dbParams.dbName, dbInstance);
-		return db;
-		
-	}
-	
-	public static CouchDbInstance getDbInstance(DatabaseConnectionParams dbParams) throws MalformedURLException {
-		HttpClient authenticatedHttpClient = null;
-		
-		if (dbParams.userName != null && !dbParams.userName.isEmpty() && dbParams.password != null
-		        && !dbParams.password.isEmpty()) {
-			
-			authenticatedHttpClient = new StdHttpClient.Builder().url(dbParams.url.concat(":").concat(dbParams.portNumber))
-			        .username(dbParams.userName).password(dbParams.password).build();
-		} else {
-			authenticatedHttpClient = new StdHttpClient.Builder().url(dbParams.url.concat(":").concat(dbParams.portNumber))
-			        .build();
-		}
-		
-		CouchDbInstance dbInstance = new StdCouchDbInstance(authenticatedHttpClient);
-		return dbInstance;
 	}
 
 	public static boolean isEmptyList(List list) {

@@ -6,19 +6,17 @@ import java.util.Map;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
-import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.util.DateUtil;
+import org.opensrp.domain.BaseDataEntity;
 import org.opensrp.dto.AlertStatus;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The entity which helps in identifying the type of action applicable for the entity or provider
  */
-@TypeDiscriminator("doc.type === 'Alert'")
-public class Alert extends MotechBaseDataObject {
+public class Alert extends BaseDataEntity {
 	
 	public enum AlertType {
 		notification,
@@ -100,7 +98,7 @@ public class Alert extends MotechBaseDataObject {
 		setExpiryDate(expiryDate.toLocalDate().toString());
 		setAlertStatus(alertStatus.name());
 		setIsActive(true);
-		setTimeStamp(DateUtil.now().getMillis());
+		setTimeStamp(DateTime.now().getMillis());
 		setDetails(details);
 	}
 	

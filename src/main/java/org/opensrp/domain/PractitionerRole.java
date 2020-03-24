@@ -1,9 +1,9 @@
 package org.opensrp.domain;
 
-import com.google.gson.annotations.SerializedName;
-import org.codehaus.jackson.annotate.JsonProperty;
-
 import java.io.Serializable;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 public class PractitionerRole implements Serializable {
 

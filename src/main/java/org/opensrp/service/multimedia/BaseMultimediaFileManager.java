@@ -8,9 +8,9 @@ import org.opensrp.service.ClientService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static org.opensrp.service.MultimediaService.IMAGES_DIR;
@@ -43,25 +43,38 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
         this.clientService = clientService;
     }
 
-    /**
-     * Persists a {@link MultipartFile} with the given {@param fileName} to storage
-     * @param fileName
-     * @param multimediaFile
+    /***
+     * Persist the given bytes to disk
+     *
+     * @param destination
+     * @param fileBytes
      * @throws IOException
      */
-    protected abstract void persistFileToStorage(String fileName, MultipartFile multimediaFile) throws IOException;
+    public void copyBytesToFile(File destination, byte[] fileBytes) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(destination)) {
+            fos.write(fileBytes);
+        }
+    }
+
+    /**
+     * Persists a {@link byte[]} with the given {@param fileName} to storage
+     * @param fileName
+     * @param fileBytes
+     * @throws IOException
+     */
+    protected abstract void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String saveFile(MultimediaDTO multimedia, MultipartFile file) {
-        return saveMultimediaFile(multimedia, file);
+    public String saveFile(MultimediaDTO multimedia, byte[] fileBytes, String originalFileName) {
+        return saveMultimediaFile(multimedia, fileBytes, originalFileName);
     }
 
-    public String saveMultimediaFile(MultimediaDTO multimediaDTO, MultipartFile file) {
+    public String saveMultimediaFile(MultimediaDTO multimediaDTO, byte[] fileBytes, String originalFileName) {
 
-        if (uploadFile(multimediaDTO, file)) {
+        if (uploadFile(multimediaDTO, fileBytes, originalFileName)) {
             try {
                 logger.info("Image path : " + multimediaDirPath);
 
@@ -92,68 +105,79 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
      * Saves a multi-part file uploaded to the server
      *
      * @param multimediaDTO {@link MultimediaDTO} object populated with information about the file to be saved
-     * @param multimediaFile {@link MultipartFile} file to save to disk
+     * @param fileBytes {@link byte[]} bytes to save to disk
+     * @param originalFileName {@link String} original name of the file
      *
      * @return true if the file was saved else false
      */
-    public boolean uploadFile(MultimediaDTO multimediaDTO, MultipartFile multimediaFile) {
-        if (!multimediaFile.isEmpty()) {
+    public boolean uploadFile(MultimediaDTO multimediaDTO, byte[] fileBytes, String originalFileName) {
+        boolean wasFileSaved = false;
+        if (fileBytes != null) {
             try {
-                multimediaDirPath = getMultiMediaDir();
-                String fileExt = ".jpg";
-                switch (multimediaDTO.getContentType()) {
-
-                    case "application/octet-stream":
-                        multimediaDirPath += VIDEOS_DIR;
-                        fileExt = ".mp4";
-                        break;
-                    case "image/jpeg":
-                        multimediaDirPath += IMAGES_DIR;
-                        fileExt = ".jpg";
-                        break;
-                    case "image/gif":
-                        multimediaDirPath += IMAGES_DIR;
-                        fileExt = ".gif";
-                        break;
-                    case "image/png":
-                        multimediaDirPath += IMAGES_DIR;
-                        fileExt = ".png";
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
-                }
-
-                String fileName;
-                if (MULTI_VERSION.equals(multimediaDTO.getFileCategory())) {
-                    // allow saving multiple multimedia associated with one client
-                    String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
-                    makeMultimediaDir(dirPath);
-                    fileName = dirPath + File.separator + multimediaFile.getOriginalFilename();
-                } else {
-                    // overwrite previously saved image
-                    makeMultimediaDir(multimediaDirPath);
-                    fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
-                }
-
+                String fileName = getMultimediaFilePath(multimediaDTO, originalFileName);
                 multimediaDTO.withFilePath(fileName);
-                persistFileToStorage(fileName, multimediaFile);
-
-                return true;
+                persistFileToStorage(fileName, fileBytes);
+                wasFileSaved = true;
             } catch (Exception e) {
                 logger.error("", e);
-                return false;
             }
-        } else {
-            return false;
         }
+        return wasFileSaved;
     }
 
-    protected abstract String getMultiMediaDir();
 
-    private void makeMultimediaDir(String dirPath) {
+    private String getMultimediaFilePath(MultimediaDTO multimediaDTO, String originalFileName) {
+
+        multimediaDirPath = getBaseMultiMediaDir();
+        String fileExt = ".jpg";
+        switch (multimediaDTO.getContentType()) {
+
+            case "application/octet-stream":
+                multimediaDirPath += VIDEOS_DIR;
+                fileExt = ".mp4";
+                break;
+            case "image/jpeg":
+                multimediaDirPath += IMAGES_DIR;
+                fileExt = ".jpg";
+                break;
+            case "image/gif":
+                multimediaDirPath += IMAGES_DIR;
+                fileExt = ".gif";
+                break;
+            case "image/png":
+                multimediaDirPath += IMAGES_DIR;
+                fileExt = ".png";
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
+        }
+
+        String fileName;
+        if (MULTI_VERSION.equals(multimediaDTO.getFileCategory())) {
+            // allow saving multiple multimedia associated with one client
+            String dirPath = multimediaDirPath + File.separator + multimediaDTO.getCaseId();
+            createMultimediaDir(dirPath);
+            fileName = dirPath + File.separator + originalFileName;
+        } else {
+            // overwrite previously saved image
+            createMultimediaDir(multimediaDirPath);
+            fileName = multimediaDirPath + File.separator + multimediaDTO.getCaseId() + fileExt;
+        }
+
+        return fileName;
+    }
+
+
+    protected abstract String getBaseMultiMediaDir();
+
+    private void createMultimediaDir(String dirPath) {
         File file = new File(dirPath);
         if (!file.exists()) {
             file.mkdirs();
         }
+    }
+
+    public String getMultimediaDirPath() {
+        return multimediaDirPath;
     }
 }

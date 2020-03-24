@@ -6,7 +6,7 @@ import org.opensrp.domain.Task;
 
 public interface TaskRepository extends BaseRepository<Task> {
 
-	List<Task> getTasksByPlanAndGroup(String campaign, String group, long serverVersion);
+	List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion);
 
 	List<Task> findByEmptyServerVersion();
 
@@ -27,5 +27,13 @@ public interface TaskRepository extends BaseRepository<Task> {
 	 * @return list of plan identifiers
 	 */
 	List<Task> getAllTasks(Long serverVersion, int limit);
+
+	/**
+	 * This method is used to return a list of tasks based on the provided parameters
+	 * @param plan plan identifier for the task
+	 * @param owner the username of the person who initiated the task
+	 * @return returns a list of tasks matching the passed parameters
+	 */
+	List<Task> getTasksByPlanAndOwner(String plan, String owner, long serverVersion);
 
 }

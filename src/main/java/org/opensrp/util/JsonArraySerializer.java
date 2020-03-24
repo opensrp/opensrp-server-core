@@ -1,17 +1,19 @@
 package org.opensrp.util;
 
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.SerializerProvider;
-import org.codehaus.jackson.map.ser.std.SerializerBase;
-import org.json.JSONArray;
-
 import java.io.IOException;
 
-public class JsonArraySerializer extends SerializerBase<JSONArray>  {
+import org.json.JSONArray;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 
-    public JsonArraySerializer() {
+public class JsonArraySerializer extends StdScalarSerializer<JSONArray>  {
+	
+	private static final long serialVersionUID = -7318048190335430630L;
+
+	public JsonArraySerializer() {
         super(JSONArray.class);
     }
 

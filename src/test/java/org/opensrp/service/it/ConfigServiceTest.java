@@ -11,8 +11,7 @@ import static org.opensrp.util.SampleFullDomainObject.VALUE;
 import static org.opensrp.util.SampleFullDomainObject.getAppStateToken;
 import static org.opensrp.util.SampleFullDomainObject.AppStateTokenName.APP_STATE_TOKEN_NAME;
 import static org.opensrp.util.SampleFullDomainObject.AppStateTokenName.DIFFERENT_APP_STATE_TOKEN_NAME;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
-import static org.utils.CouchDbAccessUtils.getCouchDbConnector;
+import static org.utils.DbAccessUtils.addObjectToRepository;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -23,14 +22,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
 import org.opensrp.domain.AppStateToken;
-import org.opensrp.repository.couch.AllAppStateTokens;
+import org.opensrp.repository.postgres.AppStateTokensRepositoryImpl;
 import org.opensrp.service.ConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConfigServiceTest extends BaseIntegrationTest {
 	
 	@Autowired
-	AllAppStateTokens allAppStateTokens;
+	AppStateTokensRepositoryImpl allAppStateTokens;
 	
 	@Autowired
 	ConfigService configService;
@@ -79,8 +78,7 @@ public class ConfigServiceTest extends BaseIntegrationTest {
 		invalidAppStateToken.setName(DIFFERENT_APP_STATE_TOKEN_NAME.name());
 		addObjectToRepository(asList(expectedAppStateToken, invalidAppStateToken), allAppStateTokens);
 		
-		AppStateToken actualAppStateToken = allAppStateTokens.getAppStateTokenByName(getCouchDbConnector("opensrp"),
-		    APP_STATE_TOKEN_NAME);
+		AppStateToken actualAppStateToken = allAppStateTokens.findByName(APP_STATE_TOKEN_NAME.name()).get(0);
 		
 		assertEquals(expectedAppStateToken, actualAppStateToken);
 	}
@@ -123,8 +121,7 @@ public class ConfigServiceTest extends BaseIntegrationTest {
 		
 		expectedAppStateToken.setValue(DIFFERENT_BASE_ENTITY_ID);
 		
-		allAppStateTokens.updateAppStateToken(getCouchDbConnector("opensrp"), APP_STATE_TOKEN_NAME,
-		    DIFFERENT_BASE_ENTITY_ID);
+		allAppStateTokens.update( expectedAppStateToken);
 		
 		List<AppStateToken> allTokens = allAppStateTokens.getAll();
 		assertEquals(1, allTokens.size());
@@ -182,12 +179,11 @@ public class ConfigServiceTest extends BaseIntegrationTest {
 		AppStateToken expectedAppStateToken = getAppStateToken();
 		expectedAppStateToken.setLastEditDate(0L);
 		
-		AppStateToken actualAppStateToken = allAppStateTokens.registerAppStateToken(getCouchDbConnector("opensrp"),
-		    APP_STATE_TOKEN_NAME, VALUE, APP_STATE_TOKEN_DESCRIPTION, true);
+		allAppStateTokens.add(expectedAppStateToken);
 		
 		List<AppStateToken> allTokens = allAppStateTokens.getAll();
 		assertEquals(1, allTokens.size());
 		assertEquals(expectedAppStateToken, allTokens.get(0));
-		assertEquals(expectedAppStateToken, actualAppStateToken);
+		assertEquals(expectedAppStateToken, allTokens.get(0));
 	}
 }

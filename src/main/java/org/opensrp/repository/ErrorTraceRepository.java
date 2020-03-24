@@ -2,19 +2,18 @@ package org.opensrp.repository;
 
 import java.util.List;
 
-import org.ektorp.DocumentNotFoundException;
 import org.opensrp.domain.ErrorTrace;
 
 public interface ErrorTraceRepository extends BaseRepository<ErrorTrace> {
 	
-	ErrorTrace findById(String _id) throws DocumentNotFoundException;
+	ErrorTrace findById(String _id); 
 	
 	boolean exists(String id);
 	
-	List<ErrorTrace> findAllErrors() throws DocumentNotFoundException;
+	List<ErrorTrace> findAllErrors() ;
 	
-	List<ErrorTrace> findAllUnSolvedErrors() throws DocumentNotFoundException;
+	List<ErrorTrace> findAllUnSolvedErrors() ;
 	
-	List<ErrorTrace> findAllSolvedErrors() throws DocumentNotFoundException;
+	List<ErrorTrace> findAllSolvedErrors();
 	
 }

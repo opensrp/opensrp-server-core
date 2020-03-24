@@ -5,11 +5,11 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +17,6 @@ import java.io.IOException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.utils.TestUtils.getBasePackageFilePath;
 
@@ -49,9 +48,10 @@ public class FileSystemMultimediaFileManagerTest extends BaseMultimediaFileManag
 
 	@Test
 	public void testPersistFileToStorageShouldPersistFileToFileSystem() throws IOException {
-		MultipartFile multipartFile = mock(MultipartFile.class);
-		fileSystemMultimediaFileManager.persistFileToStorage("file_name", multipartFile);
-		verify(multipartFile).transferTo(fileArgumentCaptor.capture());
+		byte[] testBytes = new byte[10];
+		fileSystemMultimediaFileManager = Mockito.spy(fileSystemMultimediaFileManager);
+		fileSystemMultimediaFileManager.persistFileToStorage("file_name", testBytes);
+		verify(fileSystemMultimediaFileManager).copyBytesToFile(fileArgumentCaptor.capture(), Mockito.eq(testBytes));
 
 		File file = fileArgumentCaptor.getValue();
 		assertNotNull(file);
@@ -71,6 +71,6 @@ public class FileSystemMultimediaFileManagerTest extends BaseMultimediaFileManag
 
 	@Test
 	public void testGetMultiMediaDirShouldReturnCorrectFilePath() {
-		assertEquals(baseMultimediaDirPath + File.separator, fileSystemMultimediaFileManager.getMultiMediaDir());
+		assertEquals(baseMultimediaDirPath + File.separator, fileSystemMultimediaFileManager.getBaseMultiMediaDir());
 	}
 }

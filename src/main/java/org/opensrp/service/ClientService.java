@@ -19,6 +19,8 @@ import org.opensrp.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 @Service
 public class ClientService {
 	
@@ -93,6 +95,8 @@ public class ClientService {
 		Client c = findClient(client);
 		if (c != null) {
 			try {
+				client.setId(c.getId());
+				client.setRevision(c.getRevision());
 				updateClient(client);
 			}
 			catch (JSONException e) {
@@ -189,9 +193,10 @@ public class ClientService {
 			allClients.update(original);
 			return original;
 		}
-		catch (JSONException e) {
+		catch (JSONException | JsonProcessingException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
+	
 	}
 	
 	public List<Client> findByServerVersion(long serverVersion) {

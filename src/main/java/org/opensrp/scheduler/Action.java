@@ -5,18 +5,17 @@ import java.util.Map;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechBaseDataObject;
-import org.motechproject.util.DateUtil;
+import org.joda.time.DateTime;
+import org.opensrp.domain.BaseDataEntity;
 import org.opensrp.dto.ActionData;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The entity which helps in identifying the type of action applicable for the entity or provider
  */
-@TypeDiscriminator("doc.type === 'Action'")
-public class Action extends MotechBaseDataObject {
+public class Action extends BaseDataEntity {
 	
 	@JsonProperty
 	private String providerId;
@@ -58,7 +57,7 @@ public class Action extends MotechBaseDataObject {
 		this.data = actionData.getData();
 		this.actionTarget = actionData.getTarget();
 		this.actionType = actionData.getType();
-		this.timeStamp = DateUtil.now().getMillis();
+		this.timeStamp = DateTime.now().getMillis();
 		this.details = actionData.getDetails();
 		this.isActionActive = true;
 	}

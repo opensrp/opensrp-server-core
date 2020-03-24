@@ -1,7 +1,7 @@
 package org.opensrp.scheduler.service;
 
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opensrp.dto.AlertStatus.normal;
@@ -24,16 +24,18 @@ import org.opensrp.dto.BeneficiaryType;
 import org.opensrp.dto.MonthSummaryDatum;
 import org.opensrp.scheduler.Action;
 import org.opensrp.scheduler.Alert;
-import org.opensrp.scheduler.repository.couch.AllActions;
-import org.opensrp.scheduler.repository.couch.AllAlerts;
+import org.opensrp.scheduler.repository.ActionsRepository;
+import org.opensrp.scheduler.repository.AlertsRepository;
 import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.gson.Gson;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ DateTime.class, org.motechproject.util.DateUtil.class })
+@PrepareForTest({ DateTime.class })
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*","org.w3c.*"})
 public class ActionServiceTest {
 	
 	public static final String ANM_1 = "ANM 1";
@@ -47,18 +49,16 @@ public class ActionServiceTest {
 	public static final String SCHDEDULE = "schdedule";
 	
 	@Mock
-	private AllActions allActions;
+	private ActionsRepository allActions;
 	
 	@Mock
-	private AllAlerts allAlerts;
+	private AlertsRepository allAlerts;
 	
 	private ActionService service;
 	
 	@Before
 	public void setUp() throws Exception {
 		initMocks(this);
-		allActions.removeAll();
-		allAlerts.removeAll();
 		service = new ActionService(allActions, allAlerts);
 	}
 	
@@ -149,10 +149,10 @@ public class ActionServiceTest {
 	
 	@Test
 	public void shouldCloseBeneficiary() throws Exception {
-		PowerMockito.mockStatic(org.motechproject.util.DateUtil.class);
+		PowerMockito.mockStatic(DateTime.class);
 		DateTime dateTime = mock(DateTime.class);
 		
-		when(org.motechproject.util.DateUtil.now()).thenReturn(new DateTime(0l));
+		when(DateTime.now()).thenReturn(new DateTime(0l));
 		PowerMockito.whenNew(DateTime.class).withNoArguments().thenReturn(dateTime);
 		when(dateTime.toLocalDate()).thenReturn(new LocalDate(0l));
 		

@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.opensrp.domain.Form;
 import org.opensrp.domain.FormDefinition;
 import org.opensrp.domain.FormField;
 import org.opensrp.domain.SubFormDefinition;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class JsonParser {
 	
@@ -50,9 +51,9 @@ public class JsonParser {
 		//StringBuilder fields=new StringBuilder();
 		List<String> fields = new ArrayList<String>();
 		
-		Iterator<JsonNode> elements = jsonNode.getElements();
+		Iterator<JsonNode> elements = jsonNode.elements();
 		while (elements.hasNext()) {
-			Iterator<JsonNode> phones = elements.next().getElements();
+			Iterator<JsonNode> phones = elements.next().elements();
 			while (phones.hasNext()) {
 				JsonNode jsonNode1 = (JsonNode) phones.next();
 				Iterator<JsonNode> ps = jsonNode1.iterator();
@@ -74,13 +75,12 @@ public class JsonParser {
 		List<FormField> list = new ArrayList<FormField>();
 		//String source="/model/instance/"+source+"/";
 		
-		Iterator<JsonNode> elements = node.getElements();
+		Iterator<JsonNode> elements = node.elements();
 		
 		//	System.err.println(node);
 		//System.out.println(phoneNosNode);
 		while (elements.hasNext()) {
 			JsonNode jjNode = elements.next();
-			Iterator<JsonNode> phones = node.getElements();
 			
 			if (!jjNode.get("type").asText().equalsIgnoreCase("group")
 			        && !jjNode.get("type").asText().equalsIgnoreCase("repeat")) {
@@ -104,7 +104,7 @@ public class JsonParser {
 		List<FormField> list = new ArrayList<FormField>();
 		String source = formName + node.get("name").asText() + "/";
 		try {//jjNode.path("children")
-			Iterator<JsonNode> elements = node.path("children").getElements();
+			Iterator<JsonNode> elements = node.path("children").elements();
 			
 			//System.out.println(phoneNosNode);
 			while (elements.hasNext()) {
@@ -181,11 +181,10 @@ public class JsonParser {
 	private List<SubFormDefinition> getSubForms(JsonNode node, String source) {
 		List<SubFormDefinition> list = new ArrayList<SubFormDefinition>();
 		//String source="/model/instance/"+source+"/";
-		Iterator<JsonNode> elements = node.getElements();
+		Iterator<JsonNode> elements = node.elements();
 		//System.out.println(phoneNosNode);
 		while (elements.hasNext()) {
 			JsonNode jjNode = elements.next();
-			Iterator<JsonNode> phones = node.getElements();
 			
 			if (jjNode.get("type").asText().equalsIgnoreCase("repeat")) {
 				
