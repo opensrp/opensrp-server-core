@@ -17,7 +17,7 @@ import java.util.List;
 @Service
 public class ClientFormService {
 
-    ClientFormRepository clientFormRepository;
+    private ClientFormRepository clientFormRepository;
 
     private static Logger logger = LoggerFactory.getLogger(ClientFormService.class.toString());
 
