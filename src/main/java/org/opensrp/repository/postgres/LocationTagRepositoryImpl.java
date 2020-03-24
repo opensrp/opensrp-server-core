@@ -245,7 +245,7 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		return locationTagmap;
 	}
 	
-	private org.opensrp.domain.postgres.LocationTagMap convertLocationTagMap(org.opensrp.domain.LocationTagMap locationTagMap) {
+	private org.opensrp.domain.postgres.LocationTagMap convertLocationTagMap(LocationTagMap locationTagMap) {
 		if (locationTagMap == null) {
 			return null;
 		}
@@ -268,7 +268,7 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 	}
 	
 	@Override
-	public int addLocationTagMap(org.opensrp.domain.LocationTagMap locationTagMap) {
+	public int addLocationTagMap(LocationTagMap locationTagMap) {
 		org.opensrp.domain.postgres.LocationTagMap pgLocationTagMap = convertLocationTagMap(locationTagMap);
 		if (locationTagMap == null) {
 			throw new IllegalArgumentException("location tag map not specified");
