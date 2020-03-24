@@ -2,11 +2,10 @@ package org.opensrp.domain.setting;
 
 import java.util.List;
 
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
 import org.opensrp.domain.BaseDataObject;
 
-@TypeDiscriminator("doc.type == 'SettingConfiguration'")
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SettingConfiguration extends BaseDataObject {
 	
 	private static final long serialVersionUID = 1890883609898207738L;
@@ -93,14 +92,6 @@ public class SettingConfiguration extends BaseDataObject {
 	
 	public void setVersion(String version) {
 		this.version = version;
-	}
-	
-	public String getType() {
-		return type;
-	}
-	
-	public void setType(String type) {
-		this.type = type;
 	}
 	
 	public List<Setting> getSettings() {

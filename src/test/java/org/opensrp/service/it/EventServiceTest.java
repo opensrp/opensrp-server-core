@@ -20,8 +20,7 @@ import static org.opensrp.util.SampleFullDomainObject.identifier;
 import static org.utils.AssertionUtil.assertNewObjectCreation;
 import static org.utils.AssertionUtil.assertObjectUpdate;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
-import static org.utils.CouchDbAccessUtils.getCouchDbConnector;
+import static org.utils.DbAccessUtils.addObjectToRepository;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -35,18 +34,18 @@ import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Event;
-import org.opensrp.repository.couch.AllClients;
-import org.opensrp.repository.couch.AllEvents;
+import org.opensrp.repository.postgres.ClientsRepositoryImpl;
+import org.opensrp.repository.postgres.EventsRepositoryImpl;
 import org.opensrp.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EventServiceTest extends BaseIntegrationTest {
 	
 	@Autowired
-	private AllEvents allEvents;
+	private EventsRepositoryImpl allEvents;
 	
 	@Autowired
-	private AllClients allClients;
+	private ClientsRepositoryImpl allClients;
 	
 	@Autowired
 	private EventService eventService;
@@ -143,8 +142,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		invalidEvent.setBaseEntityId(DIFFERENT_BASE_ENTITY_ID);
 		
 		addObjectToRepository(asList(expectedEvent, invalidEvent), allEvents);
-		
-		Event actualEvent = allEvents.getByBaseEntityAndFormSubmissionId(getCouchDbConnector("opensrp"), BASE_ENTITY_ID,
+		Event actualEvent = allEvents.findByBaseEntityAndFormSubmissionId( BASE_ENTITY_ID,
 		    FORM_SUBMISSION_ID);
 		
 		assertEquals(expectedEvent, actualEvent);
@@ -333,11 +331,11 @@ public class EventServiceTest extends BaseIntegrationTest {
 	public void shouldAddEventWithCouchDbConnector() throws IOException {
 		Event expectedEvent = getEvent();
 		
-		Event actualEvent = allEvents.addEvent(getCouchDbConnector("opensrp"), expectedEvent);
+	    allEvents.add(expectedEvent);
 		
 		List<Event> dbEvents = allEvents.getAll();
 		assertEquals(1, dbEvents.size());
-		assertEquals(expectedEvent, actualEvent);
+		assertEquals(expectedEvent, dbEvents.get(0));
 		assertNewObjectCreation(expectedEvent, dbEvents.get(0));
 	}
 	
@@ -352,7 +350,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		
 		addObjectToRepository(asList(expectedEvent, invalidEvent), allEvents);
 		
-		allEvents.addEvent(getCouchDbConnector("opensrp"), expectedEvent);
+		allEvents.add( expectedEvent);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -366,7 +364,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		addObjectToRepository(asList(expectedEvent, invalidEvent), allEvents);
 		
 		expectedEvent.setFormSubmissionId(null);
-		allEvents.addEvent(getCouchDbConnector("opensrrp"), expectedEvent);
+		allEvents.add(expectedEvent);
 	}
 	
 	@Test

@@ -13,7 +13,7 @@ import static org.opensrp.util.SampleFullDomainObject.attributes;
 import static org.opensrp.util.SampleFullDomainObject.getAddress;
 import static org.opensrp.util.SampleFullDomainObject.identifier;
 import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+import static org.utils.DbAccessUtils.addObjectToRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
 import org.opensrp.domain.Client;
-import org.opensrp.repository.couch.AllClients;
+import org.opensrp.repository.postgres.ClientsRepositoryImpl;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.service.SearchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class SearchServiceTest extends BaseIntegrationTest {
 	
 	@Autowired
-	public AllClients allClients;
+	public ClientsRepositoryImpl allClients;
 	
 	@Autowired
 	public SearchService searchService;

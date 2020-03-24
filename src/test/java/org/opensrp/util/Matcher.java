@@ -1,9 +1,8 @@
 package org.opensrp.util;
 
-import static org.mockito.Matchers.argThat;
+import static org.mockito.ArgumentMatchers.argThat;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
-import org.hamcrest.Description;
 import org.mockito.ArgumentMatcher;
 
 public class Matcher {
@@ -19,11 +18,7 @@ public class Matcher {
 			public boolean matches(Object o) {
 				return EqualsBuilder.reflectionEquals(other, o);
 			}
-			
-			@Override
-			public void describeTo(Description description) {
-				description.appendValue(other);
-			}
+		
 		};
 	}
 }

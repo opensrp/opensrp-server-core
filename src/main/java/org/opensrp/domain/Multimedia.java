@@ -3,12 +3,10 @@ package org.opensrp.domain;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.ektorp.support.TypeDiscriminator;
-import org.motechproject.model.MotechBaseDataObject;
 
-@TypeDiscriminator("doc.type == 'Multimedia'")
-public class Multimedia extends MotechBaseDataObject {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class Multimedia extends BaseDataEntity {
 	
 	@JsonProperty
 	private String caseId;

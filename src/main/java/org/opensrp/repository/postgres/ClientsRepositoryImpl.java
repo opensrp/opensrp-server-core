@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.postgres.ClientExample;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
 import org.opensrp.domain.postgres.CustomClient;
@@ -532,6 +533,16 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		pageSizeAndOffset.put("pageSize", pageSize);
 		pageSizeAndOffset.put("offset", offset);
 		return pageSizeAndOffset;
+		
+	}
+	
+	/**
+	 * Method should be used only during Unit testing
+	 * Deletes all existing records
+	 */
+	public void removeAll() {
+		clientMetadataMapper.deleteByExample(new ClientMetadataExample());
+		clientMapper.deleteByExample(new ClientExample());
 		
 	}
 }

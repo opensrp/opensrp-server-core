@@ -1,6 +1,6 @@
 package org.opensrp.domain.viewconfiguration;
 
-import org.codehaus.jackson.annotate.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LoginConfiguration extends BaseConfiguration {
 	
