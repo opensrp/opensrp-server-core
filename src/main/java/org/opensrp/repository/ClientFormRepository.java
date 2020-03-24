@@ -1,6 +1,6 @@
 package org.opensrp.repository;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.springframework.lang.NonNull;
 import org.opensrp.domain.IdVersionTuple;
 import org.opensrp.domain.postgres.ClientForm;
 import org.opensrp.domain.postgres.ClientFormMetadata;

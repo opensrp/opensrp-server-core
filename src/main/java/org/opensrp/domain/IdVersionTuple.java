@@ -1,6 +1,6 @@
 package org.opensrp.domain;
 
-import edu.umd.cs.findbugs.annotations.NonNull;
+import org.springframework.lang.NonNull;
 
 public class IdVersionTuple {
 
