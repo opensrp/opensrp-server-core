@@ -15,7 +15,6 @@ import org.opensrp.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.postgres.LocationTagExample;
 import org.opensrp.domain.postgres.LocationTagMapExample;
-import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.LocationTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -24,9 +23,6 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 	
 	@Autowired
 	private LocationTagRepository locationTagRepository;
-	
-	@Autowired
-	private LocationRepository locationRepository;
 	
 	@BeforeClass
 	public static void bootStrap() {
