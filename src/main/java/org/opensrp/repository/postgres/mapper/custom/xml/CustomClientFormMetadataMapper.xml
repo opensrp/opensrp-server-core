@@ -1,46 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper
-	namespace="org.opensrp.repository.postgres.mapper.custom.CustomClientFormMetadataMapper">
+        namespace="org.opensrp.repository.postgres.mapper.custom.CustomClientFormMetadataMapper">
 
-	<resultMap id="BaseClientFormMetadataResultMap" type="org.opensrp.domain.postgres.ClientFormMetadata">
-		<id column="id" jdbcType="BIGINT" property="id" />
-		<result column="identifier" jdbcType="VARCHAR" property="identifier"/>
-		<result column="jurisdiction" jdbcType="VARCHAR" property="jurisdiction"/>
-		<result column="version" jdbcType="VARCHAR" property="version"/>
-		<result column="label" jdbcType="VARCHAR" property="label"/>
-		<result column="module" jdbcType="VARCHAR" property="module"/>
-		<result
-			column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
-	</resultMap>
+    <resultMap id="BaseClientFormMetadataResultMap" type="org.opensrp.domain.postgres.ClientFormMetadata">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="identifier" jdbcType="VARCHAR" property="identifier"/>
+        <result column="jurisdiction" jdbcType="VARCHAR" property="jurisdiction"/>
+        <result column="version" jdbcType="VARCHAR" property="version"/>
+        <result column="label" jdbcType="VARCHAR" property="label"/>
+        <result column="module" jdbcType="VARCHAR" property="module"/>
+        <result
+                column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
+    </resultMap>
 
-	<resultMap id="IdVersionTuple" type="org.opensrp.domain.IdVersionTuple">
-		<id column="id" jdbcType="BIGINT" property="id"/>
-		<result column="form_version" jdbcType="VARCHAR" property="version"/>
-	</resultMap>
+    <resultMap id="IdVersionTuple" type="org.opensrp.domain.IdVersionTuple">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="form_version" jdbcType="VARCHAR" property="version"/>
+    </resultMap>
 
-	<select id="countClientFormMetadataByFormIdentifier" parameterType="string" resultType="int">
-		select count(id)
-		from core.client_form_metadata
-		WHERE identifier = #{formIdentifier, jdbcType=VARCHAR}
-	</select>
+    <select id="countClientFormMetadataByFormIdentifier" parameterType="string" resultType="int">
+        select count(id)
+        from core.client_form_metadata
+        WHERE identifier = #{formIdentifier, jdbcType=VARCHAR}
+    </select>
 
 
-	<select id="selectClientFormMetadataByFormVersionAndIdentifier" parameterType="map" resultMap="BaseClientFormMetadataResultMap">
-		select *
-		from core.client_form_metadata
-		WHERE version = #{formVersion, jdbcType=VARCHAR} AND
-		identifier = #{formIdentifier, jdbcType=VARCHAR}
-		ORDER BY created_at DESC LIMIT 1
-	</select>
+    <select id="selectClientFormMetadataByFormVersionAndIdentifier" parameterType="map"
+            resultMap="BaseClientFormMetadataResultMap">
+        select *
+        from core.client_form_metadata
+        WHERE version = #{formVersion, jdbcType=VARCHAR} AND
+        identifier = #{formIdentifier, jdbcType=VARCHAR}
+        ORDER BY created_at DESC LIMIT 1
+    </select>
 
-	<insert id="insertClientFormMetadata" parameterType="org.opensrp.domain.postgres.ClientFormMetadata"
-		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		insert into core.client_form_metadata(id, identifier, jurisdiction, version, label, module, created_at)
-		 values (#{id}, #{identifier}, #{jurisdiction}, #{version}, #{label}, #{module}, #{createdAt})
-	</insert>
+    <insert id="insertClientFormMetadata" parameterType="org.opensrp.domain.postgres.ClientFormMetadata"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into core.client_form_metadata(id, identifier, jurisdiction, version, label, module, created_at)
+        values (#{id}, #{identifier}, #{jurisdiction}, #{version}, #{label}, #{module}, #{createdAt})
+    </insert>
 
-	<select id="getAvailableClientFormVersions" parameterType="string" resultMap="IdVersionTuple">
-		SELECT id, version FROM core.client_form_metadata WHERE identifier = #{formIdentifier}
-	</select>
+    <select id="getAvailableClientFormVersions" parameterType="string" resultMap="IdVersionTuple">
+        SELECT id, version FROM core.client_form_metadata WHERE identifier = #{formIdentifier}
+    </select>
 </mapper>

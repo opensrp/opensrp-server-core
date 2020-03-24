@@ -10,11 +10,12 @@ import java.util.List;
 
 public interface CustomClientFormMetadataMapper extends ClientFormMetadataMapper {
 
-    int countClientFormMetadataByFormIdentifier(String formIdentifier);
+	int countClientFormMetadataByFormIdentifier(String formIdentifier);
 
-    ClientFormMetadata selectClientFormMetadataByFormVersionAndIdentifier(@Param("formVersion")@NonNull String formVersion, @Param("formIdentifier")@NonNull String formIdentifier);
+	ClientFormMetadata selectClientFormMetadataByFormVersionAndIdentifier(@Param("formVersion") @NonNull String formVersion,
+			@Param("formIdentifier") @NonNull String formIdentifier);
 
-    int insertClientFormMetadata(@NonNull ClientFormMetadata clientFormMetadata);
+	int insertClientFormMetadata(@NonNull ClientFormMetadata clientFormMetadata);
 
-    List<IdVersionTuple> getAvailableClientFormVersions(@NonNull String formIdentifier);
+	List<IdVersionTuple> getAvailableClientFormVersions(@NonNull String formIdentifier);
 }

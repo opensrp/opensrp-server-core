@@ -9,8 +9,8 @@ import org.opensrp.service.ClientFormService;
 import javax.transaction.InvalidTransactionException;
 import java.util.List;
 
-public interface ClientFormRepository extends BaseRepository<ClientForm>{
-	
+public interface ClientFormRepository extends BaseRepository<ClientForm> {
+
 	ClientForm get(long id);
 
 	int countClientFormByFormIdentifier(@NonNull String formIdentifier);
@@ -21,8 +21,10 @@ public interface ClientFormRepository extends BaseRepository<ClientForm>{
 
 	ClientFormMetadata getFormMetadata(long id);
 
-	ClientFormService.CompleteClientForm create(@NonNull ClientForm clientForm, @NonNull ClientFormMetadata clientFormMetadata) throws InvalidTransactionException;
+	ClientFormService.CompleteClientForm create(@NonNull ClientForm clientForm,
+			@NonNull ClientFormMetadata clientFormMetadata) throws InvalidTransactionException;
 
-	ClientFormService.CompleteClientForm create(@NonNull ClientFormService.CompleteClientForm completeClientForm) throws InvalidTransactionException;
+	ClientFormService.CompleteClientForm create(@NonNull ClientFormService.CompleteClientForm completeClientForm)
+			throws InvalidTransactionException;
 
 }

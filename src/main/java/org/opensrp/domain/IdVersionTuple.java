@@ -3,27 +3,29 @@ package org.opensrp.domain;
 import edu.umd.cs.findbugs.annotations.NonNull;
 
 public class IdVersionTuple {
-    public long id;
-    public String version;
 
-    public IdVersionTuple(long id, @NonNull String version) {
-        this.id = id;
-        this.version = version;
-    }
+	public long id;
 
-    public long getId() {
-        return id;
-    }
+	public String version;
 
-    public void setId(long id) {
-        this.id = id;
-    }
+	public IdVersionTuple(long id, @NonNull String version) {
+		this.id = id;
+		this.version = version;
+	}
 
-    public String getVersion() {
-        return version;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
+	}
 }

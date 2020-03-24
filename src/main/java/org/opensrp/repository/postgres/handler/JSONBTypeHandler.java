@@ -11,7 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class JSONBTypeHandler extends BaseTypeHandler<Object>{
+public class JSONBTypeHandler extends BaseTypeHandler<Object> {
 
 	private static final PGobject jsonObject = new PGobject();
 
@@ -21,7 +21,8 @@ public class JSONBTypeHandler extends BaseTypeHandler<Object>{
 
 		try {
 			jsonObject.setValue(new ObjectMapper().writeValueAsString(parameter));  //Converting java objects to json strings
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 

@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface CustomClientFormMapper extends ClientFormMapper {
 
-    ClientForm selectClientFormById(Long id);
+	ClientForm selectClientFormById(Long id);
 
-    int insertClientForm(@NonNull ClientForm clientForm);
+	int insertClientForm(@NonNull ClientForm clientForm);
 
-    List<ClientForm> getAll(@Param("offset")int offset, @Param("batchSize") int batchSize);
+	List<ClientForm> getAll(@Param("offset") int offset, @Param("batchSize") int batchSize);
 }
