@@ -1,5 +1,34 @@
 package org.opensrp.service.it;
 
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.opensrp.common.AllConstants.OpenSRPEvent.Client.ZEIR_ID;
+import static org.opensrp.util.SampleFullDomainObject.BASE_ENTITY_ID;
+import static org.opensrp.util.SampleFullDomainObject.DIFFERENT_BASE_ENTITY_ID;
+import static org.opensrp.util.SampleFullDomainObject.EVENT_TYPE;
+import static org.opensrp.util.SampleFullDomainObject.FIELD_CODE;
+import static org.opensrp.util.SampleFullDomainObject.FORM_SUBMISSION_ID;
+import static org.opensrp.util.SampleFullDomainObject.IDENTIFIER_TYPE;
+import static org.opensrp.util.SampleFullDomainObject.IDENTIFIER_VALUE;
+import static org.opensrp.util.SampleFullDomainObject.PROVIDER_ID;
+import static org.opensrp.util.SampleFullDomainObject.VALUE;
+import static org.opensrp.util.SampleFullDomainObject.getClient;
+import static org.opensrp.util.SampleFullDomainObject.getEvent;
+import static org.opensrp.util.SampleFullDomainObject.getObs;
+import static org.opensrp.util.SampleFullDomainObject.identifier;
+import static org.utils.AssertionUtil.assertNewObjectCreation;
+import static org.utils.AssertionUtil.assertObjectUpdate;
+import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
+import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+import static org.utils.CouchDbAccessUtils.getCouchDbConnector;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,21 +39,6 @@ import org.opensrp.repository.couch.AllClients;
 import org.opensrp.repository.couch.AllEvents;
 import org.opensrp.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.opensrp.common.AllConstants.OpenSRPEvent.Client.ZEIR_ID;
-import static org.opensrp.util.SampleFullDomainObject.*;
-import static org.utils.AssertionUtil.*;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
-import static org.utils.CouchDbAccessUtils.getCouchDbConnector;
 
 public class EventServiceTest extends BaseIntegrationTest {
 	

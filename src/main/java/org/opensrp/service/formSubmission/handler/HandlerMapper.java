@@ -1,10 +1,10 @@
 package org.opensrp.service.formSubmission.handler;
 
-import org.springframework.stereotype.Repository;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class HandlerMapper {

@@ -1,16 +1,18 @@
 package org.opensrp.util;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.opensrp.form.domain.FormSubmission;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static junit.framework.Assert.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.junit.Test;
+import org.opensrp.form.domain.FormSubmission;
 
 public class UtilTest extends TestResourceLoader {
 	

@@ -1,5 +1,13 @@
 package org.opensrp.scheduler;
 
+import static org.opensrp.dto.AlertStatus.expired;
+import static org.opensrp.dto.AlertStatus.normal;
+import static org.opensrp.dto.AlertStatus.upcoming;
+import static org.opensrp.dto.AlertStatus.urgent;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
@@ -11,11 +19,6 @@ import org.opensrp.scheduler.service.ActionService;
 import org.opensrp.scheduler.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.opensrp.dto.AlertStatus.*;
 
 @Component
 public class HealthSchedulerService {

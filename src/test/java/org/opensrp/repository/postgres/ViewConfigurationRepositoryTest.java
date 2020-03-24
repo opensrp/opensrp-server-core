@@ -1,5 +1,16 @@
 package org.opensrp.repository.postgres;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Test;
 import org.opensrp.domain.viewconfiguration.LoginConfiguration;
 import org.opensrp.domain.viewconfiguration.View;
@@ -7,13 +18,6 @@ import org.opensrp.domain.viewconfiguration.ViewConfiguration;
 import org.opensrp.repository.ViewConfigurationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.*;
 
 public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 	

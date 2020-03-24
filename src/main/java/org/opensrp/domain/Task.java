@@ -1,9 +1,10 @@
 package org.opensrp.domain;
 
-import com.google.gson.annotations.SerializedName;
+import java.util.List;
+
 import org.joda.time.DateTime;
 
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
 
 public class Task {
 

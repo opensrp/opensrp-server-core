@@ -1,5 +1,15 @@
 package org.opensrp.repository.lucene.it;
 
+import static org.opensrp.util.SampleFullDomainObject.BASE_ENTITY_ID;
+import static org.opensrp.util.SampleFullDomainObject.DIFFERENT_BASE_ENTITY_ID;
+import static org.opensrp.util.SampleFullDomainObject.EPOCH_DATE_TIME;
+import static org.opensrp.util.SampleFullDomainObject.PROVIDER_ID;
+import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
+import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,13 +20,6 @@ import org.opensrp.repository.lucene.LuceneActionRepository;
 import org.opensrp.scheduler.Action;
 import org.opensrp.scheduler.repository.couch.AllActions;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static org.opensrp.util.SampleFullDomainObject.*;
-import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
 
 public class LuceneActionRepositoryTest extends BaseIntegrationTest {
 	

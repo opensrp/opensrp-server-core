@@ -1,16 +1,19 @@
 package org.opensrp.repository.postgres;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.opensrp.domain.Practitioner;
-import org.opensrp.repository.PractitionerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.opensrp.domain.Practitioner;
+import org.opensrp.repository.PractitionerRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class PractitionerRepositoryTest extends BaseRepositoryTest{
 

@@ -1,10 +1,11 @@
 package org.opensrp.scheduler;
 
-import com.google.gson.Gson;
-import org.motechproject.scheduler.domain.MotechEvent;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.motechproject.scheduler.domain.MotechEvent;
+
+import com.google.gson.Gson;
 
 public class SystemEvent<T> {
 	

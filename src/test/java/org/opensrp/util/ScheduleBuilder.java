@@ -1,5 +1,11 @@
 package org.opensrp.util;
 
+import static org.joda.time.LocalDate.parse;
+import static org.mockito.Matchers.argThat;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.mockito.ArgumentMatcher;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
@@ -10,12 +16,6 @@ import org.motechproject.scheduletracking.api.service.EnrollmentRecord;
 import org.motechproject.scheduletracking.api.service.EnrollmentRequest;
 import org.opensrp.scheduler.HealthSchedulerService.MetadataField;
 import org.opensrp.scheduler.MilestoneEvent;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.joda.time.LocalDate.parse;
-import static org.mockito.Matchers.argThat;
 
 public class ScheduleBuilder {
 	

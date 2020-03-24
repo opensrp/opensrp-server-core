@@ -1,5 +1,24 @@
 package org.opensrp.repository.lucene.it;
 
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
+import static org.opensrp.common.AllConstants.BaseEntity.MOTHERS_INDENTIFIER;
+import static org.opensrp.util.SampleFullDomainObject.ATTRIBUTES_TYPE;
+import static org.opensrp.util.SampleFullDomainObject.DIFFERENT_BASE_ENTITY_ID;
+import static org.opensrp.util.SampleFullDomainObject.EPOCH_DATE_TIME;
+import static org.opensrp.util.SampleFullDomainObject.FEMALE;
+import static org.opensrp.util.SampleFullDomainObject.FIRST_NAME;
+import static org.opensrp.util.SampleFullDomainObject.IDENTIFIER_VALUE;
+import static org.opensrp.util.SampleFullDomainObject.attributes;
+import static org.opensrp.util.SampleFullDomainObject.getAddress;
+import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
+import static org.utils.CouchDbAccessUtils.addObjectToRepository;
+
+import java.util.Collections;
+import java.util.List;
+
 import org.ektorp.DbAccessException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -14,18 +33,6 @@ import org.opensrp.repository.lucene.LuceneClientRepository;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.Collections;
-import java.util.List;
-
-import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
-import static org.opensrp.common.AllConstants.BaseEntity.MOTHERS_INDENTIFIER;
-import static org.opensrp.util.SampleFullDomainObject.*;
-import static org.utils.AssertionUtil.assertTwoListAreSameIgnoringOrder;
-import static org.utils.CouchDbAccessUtils.addObjectToRepository;
 
 //TODO: test birthDate range
 public class LuceneClientRepositoryTest extends BaseIntegrationTest {

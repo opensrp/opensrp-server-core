@@ -1,11 +1,11 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.MultiMedia;
 import org.opensrp.domain.postgres.MultiMediaExample;
 import org.opensrp.repository.postgres.mapper.MultiMediaMapper;
-
-import java.util.List;
 
 public interface CustomMultiMediaMapper extends MultiMediaMapper {
 	

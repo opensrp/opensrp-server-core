@@ -1,8 +1,10 @@
 package org.opensrp.util;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonIOException;
-import com.ibm.icu.impl.Assert;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
+
 import org.json.JSONObject;
 import org.opensrp.form.domain.FormSubmission;
 import org.springframework.core.io.ClassPathResource;
@@ -11,10 +13,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Properties;
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.ibm.icu.impl.Assert;
 
 public class TestResourceLoader {
 	

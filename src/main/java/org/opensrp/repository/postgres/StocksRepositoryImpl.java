@@ -1,5 +1,9 @@
 package org.opensrp.repository.postgres;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Stock;
 import org.opensrp.domain.postgres.StockMetadata;
@@ -10,10 +14,6 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStockMetadataMapper;
 import org.opensrp.search.StockSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Repository("stocksRepositoryPostgres")
 public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements StocksRepository {

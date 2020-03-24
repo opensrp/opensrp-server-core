@@ -1,10 +1,9 @@
 package org.opensrp.repository.postgres.mapper;
 
+import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Task;
 import org.opensrp.domain.postgres.TaskExample;
-
-import java.util.List;
 
 public interface TaskMapper {
 

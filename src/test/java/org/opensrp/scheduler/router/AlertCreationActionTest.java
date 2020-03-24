@@ -1,5 +1,13 @@
 package org.opensrp.scheduler.router;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static org.opensrp.util.ScheduleBuilder.enrollment;
+import static org.opensrp.util.ScheduleBuilder.event;
+
+import java.io.IOException;
+
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,14 +19,6 @@ import org.opensrp.form.service.FormSubmissionService;
 import org.opensrp.scheduler.AlertCreationAction;
 import org.opensrp.scheduler.HealthSchedulerService;
 import org.opensrp.util.TestResourceLoader;
-
-import java.io.IOException;
-
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
-import static org.opensrp.util.ScheduleBuilder.enrollment;
-import static org.opensrp.util.ScheduleBuilder.event;
 
 public class AlertCreationActionTest extends TestResourceLoader {
 	

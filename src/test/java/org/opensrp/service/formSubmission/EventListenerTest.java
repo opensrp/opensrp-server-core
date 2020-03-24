@@ -1,5 +1,21 @@
 package org.opensrp.service.formSubmission;
 
+import static java.util.Arrays.asList;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,15 +35,6 @@ import org.opensrp.service.EventService;
 import org.opensrp.service.formSubmission.handler.EventsHandler;
 import org.opensrp.service.formSubmission.handler.EventsRouter;
 import org.opensrp.service.formSubmission.handler.IHandlerMapper;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
 
 public class EventListenerTest {
 	

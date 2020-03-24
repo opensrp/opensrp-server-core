@@ -1,5 +1,7 @@
 package org.opensrp.repository.postgres;
 
+import java.util.List;
+
 import org.opensrp.domain.Client;
 import org.opensrp.repository.SearchRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
@@ -7,8 +9,6 @@ import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository("searchRepositoryPostgres")
 public class SearchRepositoryImpl implements SearchRepository {

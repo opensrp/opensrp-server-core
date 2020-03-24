@@ -1,13 +1,13 @@
 package org.opensrp.service;
 
+import java.util.List;
+
 import org.ektorp.DocumentNotFoundException;
 import org.joda.time.DateTime;
 import org.opensrp.domain.ErrorTrace;
 import org.opensrp.repository.ErrorTraceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * @author muhammad.ahmed@ihsinformatics.com Created on May 25, 2015

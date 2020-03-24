@@ -1,5 +1,14 @@
 package org.opensrp.repository.postgres;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
 import org.opensrp.domain.Stock;
@@ -7,12 +16,6 @@ import org.opensrp.repository.StocksRepository;
 import org.opensrp.search.StockSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.*;
 
 public class StocksRepositoryTest extends BaseRepositoryTest {
 	

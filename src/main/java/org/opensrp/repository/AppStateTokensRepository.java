@@ -1,8 +1,8 @@
 package org.opensrp.repository;
 
-import org.opensrp.domain.AppStateToken;
-
 import java.util.List;
+
+import org.opensrp.domain.AppStateToken;
 
 public interface AppStateTokensRepository extends BaseRepository<AppStateToken> {
 	

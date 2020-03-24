@@ -1,5 +1,8 @@
 package org.opensrp.scheduler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.motechproject.scheduler.domain.MotechEvent;
 import org.motechproject.scheduletracking.api.domain.Enrollment;
 import org.motechproject.scheduletracking.api.domain.WindowName;
@@ -18,9 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The class that maintains the actions against alerts by {@link ScheduleTrackingService}

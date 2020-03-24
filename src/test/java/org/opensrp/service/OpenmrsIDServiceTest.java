@@ -1,5 +1,21 @@
 package org.opensrp.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyInt;
+import static org.opensrp.service.OpenmrsIDService.CHILD_REGISTER_CARD_NUMBER;
+
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -12,14 +28,6 @@ import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyInt;
-import static org.opensrp.service.OpenmrsIDService.CHILD_REGISTER_CARD_NUMBER;
 
 public class OpenmrsIDServiceTest extends SpringApplicationContextProvider {
 	

@@ -1,5 +1,12 @@
 package org.opensrp.repository.postgres;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.domain.Client;
@@ -7,13 +14,6 @@ import org.opensrp.repository.SearchRepository;
 import org.opensrp.search.ClientSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class SearchRepositoryTest extends BaseRepositoryTest {
 	

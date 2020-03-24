@@ -1,8 +1,8 @@
 package org.opensrp.service.formSubmission.handler;
 
-import org.opensrp.form.domain.FormSubmission;
-
 import java.util.List;
+
+import org.opensrp.form.domain.FormSubmission;
 
 public interface FormSubmissionProcessedListener {
 	

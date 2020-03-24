@@ -1,13 +1,13 @@
 package org.opensrp.repository;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 

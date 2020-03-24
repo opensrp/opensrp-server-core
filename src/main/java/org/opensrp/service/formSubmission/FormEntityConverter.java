@@ -1,9 +1,16 @@
 
 package org.opensrp.service.formSubmission;
 
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.mysql.jdbc.StringUtils;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.apache.commons.lang3.math.NumberUtils;
 import org.joda.time.DateTime;
 import org.opensrp.common.FormEntityConstants;
@@ -24,14 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
+import com.mysql.jdbc.StringUtils;
 
 @Service
 public class FormEntityConverter {

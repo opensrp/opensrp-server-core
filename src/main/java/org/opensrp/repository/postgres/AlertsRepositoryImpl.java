@@ -1,5 +1,9 @@
 package org.opensrp.repository.postgres;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.domain.postgres.AlertMetadata;
@@ -13,10 +17,6 @@ import org.opensrp.scheduler.Alert.TriggerType;
 import org.opensrp.scheduler.repository.AlertsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Repository("alertsRepositoryPostgres")
 public class AlertsRepositoryImpl extends BaseRepositoryImpl<Alert> implements AlertsRepository {

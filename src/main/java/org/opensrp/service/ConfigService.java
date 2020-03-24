@@ -1,12 +1,13 @@
 package org.opensrp.service;
 
-import com.mysql.jdbc.StringUtils;
+import java.util.List;
+
 import org.opensrp.domain.AppStateToken;
 import org.opensrp.repository.AppStateTokensRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.mysql.jdbc.StringUtils;
 
 @Service
 public class ConfigService {

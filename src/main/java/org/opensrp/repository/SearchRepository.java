@@ -1,9 +1,9 @@
 package org.opensrp.repository;
 
+import java.util.List;
+
 import org.opensrp.domain.Client;
 import org.opensrp.search.ClientSearchBean;
-
-import java.util.List;
 
 public interface SearchRepository {
 	

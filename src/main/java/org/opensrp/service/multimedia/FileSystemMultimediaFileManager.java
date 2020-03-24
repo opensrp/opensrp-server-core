@@ -2,6 +2,7 @@ package org.opensrp.service.multimedia;
 
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
+import org.opensrp.service.multimedia.BaseMultimediaFileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;

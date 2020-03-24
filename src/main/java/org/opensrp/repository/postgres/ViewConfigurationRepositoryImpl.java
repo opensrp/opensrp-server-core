@@ -1,5 +1,9 @@
 package org.opensrp.repository.postgres;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.opensrp.domain.postgres.ViewConfigurationMetadata;
 import org.opensrp.domain.postgres.ViewConfigurationMetadataExample;
 import org.opensrp.domain.viewconfiguration.ViewConfiguration;
@@ -8,10 +12,6 @@ import org.opensrp.repository.postgres.mapper.custom.CustomViewConfigurationMapp
 import org.opensrp.repository.postgres.mapper.custom.CustomViewConfigurationMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 @Repository("viewConfigurationRepositoryPostgres")
 public class ViewConfigurationRepositoryImpl extends BaseRepositoryImpl<ViewConfiguration> implements ViewConfigurationRepository {

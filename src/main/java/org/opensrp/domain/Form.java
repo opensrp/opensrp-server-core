@@ -1,8 +1,8 @@
 package org.opensrp.domain;
 
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-
 import java.util.List;
+
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_DEFAULT)
 public class Form {

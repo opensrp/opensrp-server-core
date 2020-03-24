@@ -1,10 +1,10 @@
 package org.opensrp.util;
 
+import java.util.Properties;
+
 import org.ektorp.spring.HttpClientFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.util.Properties;
 
 /**
  * OpenSrp Factory Bean The application context must define properties along the line of: <code>

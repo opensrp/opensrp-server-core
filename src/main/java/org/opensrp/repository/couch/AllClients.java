@@ -1,6 +1,9 @@
 package org.opensrp.repository.couch;
 
-import com.mysql.jdbc.StringUtils;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
 import org.ektorp.support.GenerateView;
@@ -21,9 +24,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
+import com.mysql.jdbc.StringUtils;
 
 @Repository("couchClientsRepository")
 @Primary

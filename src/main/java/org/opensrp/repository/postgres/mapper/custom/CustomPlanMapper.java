@@ -1,11 +1,11 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Plan;
 import org.opensrp.domain.postgres.PlanExample;
 import org.opensrp.repository.postgres.mapper.PlanMapper;
-
-import java.util.List;
 
 /**
  * Created by Vincent Karuri on 02/05/2019

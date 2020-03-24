@@ -1,10 +1,10 @@
 package org.opensrp.repository.postgres.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.PlanMetadata;
 import org.opensrp.domain.postgres.PlanMetadataExample;
-
-import java.util.List;
 
 public interface PlanMetadataMapper {
 

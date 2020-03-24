@@ -1,11 +1,11 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
+import java.util.Date;
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Client;
 import org.opensrp.repository.postgres.mapper.ClientMapper;
-
-import java.util.Date;
-import java.util.List;
 
 public interface CustomClientMapper extends ClientMapper {
 	

@@ -1,5 +1,11 @@
 package org.opensrp.service.formSubmission.ziggy;
 
+import static java.util.UUID.randomUUID;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.JsonNodeFactory;
 import org.codehaus.jackson.node.ObjectNode;
@@ -11,12 +17,6 @@ import org.opensrp.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.UUID.randomUUID;
 
 @Repository
 public class ZiggyDataHandler {

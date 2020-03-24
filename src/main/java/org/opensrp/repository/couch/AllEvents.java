@@ -1,5 +1,9 @@
 package org.opensrp.repository.couch;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.ektorp.ComplexKey;
 import org.ektorp.CouchDbConnector;
@@ -19,10 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
 
 @Repository("couchEventsRepository")
 @Primary

@@ -1,11 +1,11 @@
 package org.opensrp.repository.postgres.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.RowBounds;
 import org.opensrp.domain.postgres.AppStateToken;
 import org.opensrp.domain.postgres.AppStateTokenExample;
-
-import java.util.List;
 
 public interface AppStateTokenMapper {
 	

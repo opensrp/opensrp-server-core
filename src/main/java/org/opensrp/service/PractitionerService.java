@@ -1,5 +1,8 @@
 package org.opensrp.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opensrp.domain.Organization;
@@ -8,9 +11,6 @@ import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PractitionerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class PractitionerService {

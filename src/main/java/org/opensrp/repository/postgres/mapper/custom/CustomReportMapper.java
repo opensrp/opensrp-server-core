@@ -1,10 +1,10 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Report;
 import org.opensrp.repository.postgres.mapper.ReportMapper;
-
-import java.util.List;
 
 public interface CustomReportMapper extends ReportMapper {
 	

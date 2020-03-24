@@ -1,5 +1,9 @@
 package org.opensrp.util.it;
 
+import static junit.framework.Assert.assertEquals;
+
+import java.net.MalformedURLException;
+
 import org.ektorp.CouchDbConnector;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,10 +11,6 @@ import org.opensrp.util.Utils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-import java.net.MalformedURLException;
-
-import static junit.framework.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")

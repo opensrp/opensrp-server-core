@@ -1,9 +1,9 @@
 package org.opensrp.repository;
 
+import java.util.List;
+
 import org.opensrp.domain.Stock;
 import org.opensrp.search.StockSearchBean;
-
-import java.util.List;
 
 public interface StocksRepository extends BaseRepository<Stock> {
 	

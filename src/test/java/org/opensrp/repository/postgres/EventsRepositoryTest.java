@@ -1,5 +1,17 @@
 package org.opensrp.repository.postgres;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
@@ -9,10 +21,6 @@ import org.opensrp.repository.EventsRepository;
 import org.opensrp.search.EventSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.util.*;
-
-import static org.junit.Assert.*;
 
 public class EventsRepositoryTest extends BaseRepositoryTest {
 	

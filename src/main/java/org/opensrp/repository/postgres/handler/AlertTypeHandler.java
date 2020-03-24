@@ -1,15 +1,15 @@
 package org.opensrp.repository.postgres.handler;
 
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.opensrp.scheduler.Alert;
 import org.postgresql.util.PGobject;
-
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class AlertTypeHandler extends BaseTypeHandler implements TypeHandler<Alert> {
 	

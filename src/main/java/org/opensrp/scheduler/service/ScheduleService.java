@@ -1,5 +1,16 @@
 package org.opensrp.scheduler.service;
 
+import static java.util.Arrays.asList;
+import static org.joda.time.LocalDate.parse;
+import static org.joda.time.LocalTime.now;
+import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.ACTIVE;
+import static org.opensrp.common.util.DateUtil.today;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.motechproject.model.Time;
@@ -16,17 +27,6 @@ import org.opensrp.scheduler.Schedule.ActionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static java.util.Arrays.asList;
-import static org.joda.time.LocalDate.parse;
-import static org.joda.time.LocalTime.now;
-import static org.motechproject.scheduletracking.api.domain.EnrollmentStatus.ACTIVE;
-import static org.opensrp.common.util.DateUtil.today;
 
 @Service
 public class ScheduleService {

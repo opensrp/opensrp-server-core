@@ -1,11 +1,12 @@
 package org.opensrp.domain;
 
+import org.junit.Test;
+
 import com.openpojo.reflection.impl.PojoClassFactory;
 import com.openpojo.validation.Validator;
 import com.openpojo.validation.ValidatorBuilder;
 import com.openpojo.validation.test.impl.GetterTester;
 import com.openpojo.validation.test.impl.SetterTester;
-import org.junit.Test;
 
 public class PhotoTest {
 	

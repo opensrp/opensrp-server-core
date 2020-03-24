@@ -1,6 +1,13 @@
 package org.opensrp.service.formSubmission;
 
-import com.google.gson.JsonIOException;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.io.IOException;
+
 import org.joda.time.LocalDate;
 import org.json.JSONException;
 import org.junit.Before;
@@ -12,10 +19,7 @@ import org.opensrp.scheduler.ScheduleConfig;
 import org.opensrp.scheduler.service.ScheduleService;
 import org.opensrp.util.TestResourceLoader;
 
-import java.io.IOException;
-
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import com.google.gson.JsonIOException;
 
 public class FormSubmissionProcessorScheduleTest extends TestResourceLoader {
 	

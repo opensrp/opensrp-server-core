@@ -1,5 +1,9 @@
 package org.opensrp.scheduler;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.motechproject.scheduler.MotechSchedulerService;
 import org.motechproject.scheduler.domain.CronSchedulableJob;
@@ -8,10 +12,6 @@ import org.motechproject.scheduler.domain.RepeatingSchedulableJob;
 import org.motechproject.scheduler.gateway.OutboundEventGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class TaskSchedulerService {

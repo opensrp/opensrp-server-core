@@ -1,5 +1,7 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Client;
 import org.opensrp.domain.postgres.ClientMetadataExample;
@@ -8,8 +10,6 @@ import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.postgres.mapper.ClientMetadataMapper;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
-
-import java.util.List;
 
 public interface CustomClientMetadataMapper extends ClientMetadataMapper {
 	

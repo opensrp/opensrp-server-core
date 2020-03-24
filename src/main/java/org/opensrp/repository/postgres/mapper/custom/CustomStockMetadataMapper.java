@@ -1,12 +1,12 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Stock;
 import org.opensrp.domain.postgres.StockMetadataExample;
 import org.opensrp.repository.postgres.mapper.StockMetadataMapper;
 import org.opensrp.search.StockSearchBean;
-
-import java.util.List;
 
 public interface CustomStockMetadataMapper extends StockMetadataMapper {
 	

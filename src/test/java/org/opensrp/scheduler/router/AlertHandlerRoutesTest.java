@@ -1,17 +1,28 @@
 package org.opensrp.scheduler.router;
 
-import org.junit.Test;
-import org.motechproject.scheduler.domain.MotechEvent;
-import org.motechproject.scheduletracking.api.domain.MilestoneAlert;
-import org.motechproject.scheduletracking.api.domain.WindowName;
-import org.opensrp.scheduler.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.motechproject.scheduletracking.api.domain.WindowName.max;
+import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.EXTERNAL_ID;
+import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.MILESTONE_NAME;
+import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.SCHEDULE_NAME;
+import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.WINDOW_NAME;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Mockito.*;
-import static org.motechproject.scheduletracking.api.domain.WindowName.max;
-import static org.motechproject.scheduletracking.api.events.constants.EventDataKeys.*;
+import org.junit.Test;
+import org.motechproject.scheduler.domain.MotechEvent;
+import org.motechproject.scheduletracking.api.domain.MilestoneAlert;
+import org.motechproject.scheduletracking.api.domain.WindowName;
+import org.opensrp.scheduler.AlertHandler;
+import org.opensrp.scheduler.AlertRouter;
+import org.opensrp.scheduler.ECAlertCreationAction;
+import org.opensrp.scheduler.HookedEvent;
+import org.opensrp.scheduler.MilestoneEvent;
+import org.opensrp.scheduler.TaskSchedulerService;
 
 public class AlertHandlerRoutesTest {
 	

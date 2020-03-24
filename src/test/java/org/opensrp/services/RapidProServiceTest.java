@@ -1,5 +1,14 @@
 package org.opensrp.services;
 
+import static org.mockito.Matchers.anyMap;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,15 +19,6 @@ import org.mockito.MockitoAnnotations;
 import org.opensrp.SpringApplicationContextProvider;
 import org.opensrp.service.RapidProService;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
 
 public class RapidProServiceTest extends SpringApplicationContextProvider {
 	

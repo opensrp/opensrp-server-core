@@ -1,5 +1,14 @@
 package org.opensrp.service;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.any;
+
+import java.io.IOException;
+import java.util.List;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.util.EntityUtils;
 import org.junit.Before;
@@ -11,13 +20,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.io.IOException;
-import java.util.List;
-
-import static junit.framework.Assert.*;
-import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(EntityUtils.class)

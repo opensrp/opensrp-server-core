@@ -1,5 +1,9 @@
 package org.opensrp.domain;
 
+import static java.util.Arrays.asList;
+
+import org.junit.Test;
+
 import com.openpojo.reflection.PojoClass;
 import com.openpojo.reflection.construct.InstanceFactory;
 import com.openpojo.reflection.impl.PojoClassFactory;
@@ -8,9 +12,6 @@ import com.openpojo.validation.ValidatorBuilder;
 import com.openpojo.validation.affirm.Affirm;
 import com.openpojo.validation.test.impl.GetterTester;
 import com.openpojo.validation.test.impl.SetterTester;
-import org.junit.Test;
-
-import static java.util.Arrays.asList;
 
 public class FormTest {
 	

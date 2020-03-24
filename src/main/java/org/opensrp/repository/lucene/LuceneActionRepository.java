@@ -1,21 +1,22 @@
 package org.opensrp.repository.lucene;
 
-import com.github.ldriscoll.ektorplucene.CouchDbRepositorySupportWithLucene;
-import com.github.ldriscoll.ektorplucene.LuceneQuery;
-import com.github.ldriscoll.ektorplucene.LuceneResult;
-import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
-import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
-import com.mysql.jdbc.StringUtils;
-import org.opensrp.scheduler.Action;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import static org.opensrp.common.AllConstants.Event.PROVIDER_ID;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.opensrp.common.AllConstants.Event.PROVIDER_ID;
+import org.opensrp.scheduler.Action;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.github.ldriscoll.ektorplucene.CouchDbRepositorySupportWithLucene;
+import com.github.ldriscoll.ektorplucene.LuceneQuery;
+import com.github.ldriscoll.ektorplucene.LuceneResult;
+import com.github.ldriscoll.ektorplucene.designdocument.annotation.FullText;
+import com.github.ldriscoll.ektorplucene.designdocument.annotation.Index;
+import com.mysql.jdbc.StringUtils;
 
 @FullText({ @Index(name = "by_all_criteria", analyzer = "perfield:{baseEntityId:\"keyword\"}", index = "function(doc) {"
         + "if (doc.type !== 'Action') return null;"

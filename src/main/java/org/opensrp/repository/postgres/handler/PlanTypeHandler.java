@@ -1,7 +1,5 @@
 package org.opensrp.repository.postgres.handler;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
@@ -11,6 +9,9 @@ import org.opensrp.domain.PlanDefinition;
 import org.opensrp.util.DateTypeConverter;
 import org.opensrp.util.TaskDateTimeTypeConverter;
 import org.postgresql.util.PGobject;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;

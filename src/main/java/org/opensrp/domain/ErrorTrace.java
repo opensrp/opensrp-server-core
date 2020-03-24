@@ -1,5 +1,7 @@
 package org.opensrp.domain;
 
+import java.util.Date;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -7,8 +9,6 @@ import org.codehaus.jackson.annotate.JsonProperty;
 import org.ektorp.support.TypeDiscriminator;
 import org.joda.time.DateTime;
 import org.motechproject.model.MotechBaseDataObject;
-
-import java.util.Date;
 
 /**
  * @author muhammad.ahmed@ihsinformatics.com Created on May 25, 2015

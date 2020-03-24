@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
-import com.mysql.jdbc.StringUtils;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ektorp.CouchDbConnector;
@@ -17,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.mysql.jdbc.StringUtils;
 
 /**
  * @author onamacuser This service fetches existing form submissions data from couchdb and converts

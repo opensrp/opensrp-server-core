@@ -1,5 +1,14 @@
 package org.opensrp.scheduler.service;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -13,13 +22,6 @@ import org.opensrp.scheduler.HealthSchedulerService;
 import org.opensrp.scheduler.MilestoneEvent;
 import org.opensrp.scheduler.router.AlertHandlerRoutesTest;
 import org.opensrp.service.EventService;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ECAlertCreationTest {
 	

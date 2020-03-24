@@ -1,5 +1,7 @@
 package org.opensrp.scheduler;
 
+import java.util.Map;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -9,8 +11,6 @@ import org.ektorp.support.TypeDiscriminator;
 import org.motechproject.model.MotechBaseDataObject;
 import org.motechproject.util.DateUtil;
 import org.opensrp.dto.ActionData;
-
-import java.util.Map;
 
 /**
  * The entity which helps in identifying the type of action applicable for the entity or provider

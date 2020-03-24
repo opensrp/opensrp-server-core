@@ -1,5 +1,14 @@
 package org.opensrp.repository.postgres;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.opensrp.domain.Campaign;
@@ -7,12 +16,6 @@ import org.opensrp.domain.ExecutionPeriod;
 import org.opensrp.domain.Task;
 import org.opensrp.repository.CampaignRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.*;
 
 public class CampaignRepositoryTest extends BaseRepositoryTest {
 

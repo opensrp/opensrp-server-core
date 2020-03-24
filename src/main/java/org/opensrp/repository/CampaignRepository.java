@@ -1,8 +1,8 @@
 package org.opensrp.repository;
 
-import org.opensrp.domain.Campaign;
-
 import java.util.List;
+
+import org.opensrp.domain.Campaign;
 
 public interface CampaignRepository  extends BaseRepository<Campaign>{
 	

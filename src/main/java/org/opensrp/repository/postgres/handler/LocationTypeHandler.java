@@ -1,7 +1,10 @@
 package org.opensrp.repository.postgres.handler;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
@@ -10,10 +13,8 @@ import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.util.PropertiesConverter;
 import org.postgresql.util.PGobject;
 
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class LocationTypeHandler extends BaseTypeHandler implements TypeHandler<PhysicalLocation> {
 
