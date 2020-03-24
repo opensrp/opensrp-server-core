@@ -298,11 +298,4 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		return locationTag;
 	}
 	
-	private LocationTagMap initTestLocationTagMap() {
-		LocationTagMap locationTagMap = new LocationTagMap();
-		locationTagMap.setLocationId(1l);
-		locationTagMap.setLocationTagId(2l);
-		return locationTagMap;
-	}
-	
 }
