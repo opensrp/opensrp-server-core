@@ -1,8 +1,8 @@
 package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -98,7 +98,8 @@ public class LocationTagServiceTest {
 	@Test
 	public void testAddOrUpdateShouldCallRepostoryAddMethod() {
 		when(locationTagRepository.get(anyString())).thenReturn(null);
-		LocationTag locationTag = initTestLocationTag();
+		LocationTag locationTag = initTestLocationTag1();
+		
 		locationTagService.addOrUpdateLocationTag(locationTag);
 		verify(locationTagRepository).add(eq(locationTag));
 	}
@@ -143,6 +144,15 @@ public class LocationTagServiceTest {
 		locationTag.setDescription("first label tag name");
 		locationTag.setActive(true);
 		locationTag.setId(1l);
+		return locationTag;
+	}
+	
+	private LocationTag initTestLocationTag1() {
+		LocationTag locationTag = new LocationTag();
+		locationTag.setName("Country");
+		locationTag.setDescription("first label tag name");
+		locationTag.setActive(true);
+		
 		return locationTag;
 	}
 	

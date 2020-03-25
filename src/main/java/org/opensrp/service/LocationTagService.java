@@ -34,7 +34,7 @@ public class LocationTagService {
 			throw new IllegalArgumentException("Location tag name not specified");
 		}
 		
-		if (getLocationTagRepository().get(locationTag.getName()) != null) {
+		if (locationTag.getId() != null) {
 			getLocationTagRepository().update(locationTag);
 		} else {
 			getLocationTagRepository().add(locationTag);
