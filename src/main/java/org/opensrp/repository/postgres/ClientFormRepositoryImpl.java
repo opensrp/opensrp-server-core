@@ -52,25 +52,17 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 	}
 
 	@Nullable
-	@Transactional(rollbackFor = { InvalidTransactionException.class })
+	@Transactional
 	@Override
 	public ClientFormService.CompleteClientForm create(@NonNull ClientForm clientForm,
-			@NonNull ClientFormMetadata clientFormMetadata) throws InvalidTransactionException {
+			@NonNull ClientFormMetadata clientFormMetadata) {
 		Long clientFormId = clientForm.getId();
 		Long clientFormMetadataId = clientFormMetadata.getId();
 		if ((clientFormId != null && clientFormId != 0) || (clientFormMetadataId != null && clientFormMetadataId != 0)) {
-			logger.error("ClientForm & ClientFormMetadata Id must be NULL or 0", new Exception());
-			return null;
+			throw new IllegalArgumentException("ClientForm & ClientFormMetadata Id must be NULL or 0");
 		}
 
-		int rowsAffected = clientFormMapper.insertClientForm(clientForm);
-		if (rowsAffected < 1) {
-			throw new InvalidTransactionException(
-					"ClientForm was not created and transaction cannot continue to created ClientFormMetadata");
-		}
-
-		logger.info("Generated id for Client form is " + clientForm.getId());
-
+		clientFormMapper.insertClientForm(clientForm);
 		clientFormMetadata.setId(clientForm.getId());
 		int resultClientFormMetadataId = clientFormMetadataMapper.insertClientFormMetadata(clientFormMetadata);
 		logger.info("Generated id for Client Form Metadata is " + resultClientFormMetadataId);
@@ -110,11 +102,8 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 
 	@Override
 	public void add(@Nullable ClientForm entity) {
-		if (entity == null || (entity.getId() != null && entity.getId() == 0)) {
-			return;
-		}
-
-		clientFormMapper.insertClientForm(entity);
+		throw new UnsupportedOperationException(
+				"This operation is unsupported and will lead to integrity issues with ClientFormMetadata");
 	}
 
 	@Override
@@ -128,15 +117,17 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 
 	@Override
 	public List<ClientForm> getAll() {
-		return clientFormMapper.getAll(0, 10000);
+		return clientFormMapper.getAll(0, DEFAULT_FETCH_SIZE);
 	}
 
+	@Transactional
 	@Override
 	public void safeRemove(@Nullable ClientForm entity) {
 		if (entity == null || entity.getId() == null || entity.getId() == 0L) {
 			return;
 		}
 
+		clientFormMetadataMapper.deleteByPrimaryKey(entity.getId());
 		clientFormMapper.deleteByPrimaryKey(entity.getId());
 	}
 
