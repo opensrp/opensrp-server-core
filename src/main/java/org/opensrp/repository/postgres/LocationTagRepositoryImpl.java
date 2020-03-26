@@ -270,18 +270,9 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 	@Override
 	public int addLocationTagMap(LocationTagMap locationTagMap) {
 		org.opensrp.domain.postgres.LocationTagMap pgLocationTagMap = convertLocationTagMap(locationTagMap);
-		if (locationTagMap == null) {
-			throw new IllegalArgumentException("location tag map not specified");
-		}
-		if (locationTagMap.getLocationId() == null) {
-			throw new IllegalArgumentException("location id not specified");
-		}
-		if (locationTagMap.getLocationTagId() == null) {
-			throw new IllegalArgumentException("location tag id not specified");
-		}
+		validateLocationTagMap(locationTagMap.getLocationId(), locationTagMap.getLocationTagId());
 		
-		LocationTagMapExample example = createLocationTagMapExample(locationTagMap);
-		if (getLocationTagMapByExample(example).size() != 0) {
+		if (getLocationTagMapByExample(locationTagMap.getLocationId(), locationTagMap.getLocationTagId()).size() != 0) {
 			throw new DuplicateKeyException("Location tag map  already exists");
 			
 		}
@@ -293,12 +284,7 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 	@Override
 	public void deleteLocationTagMapByLocationIdAndLocationTagId(Long locationId, Long locationTagId) {
 		
-		if (locationId == null || locationId == 0) {
-			throw new IllegalArgumentException("Location tag id not specified");
-		}
-		if (locationTagId == null || locationTagId == 0) {
-			throw new IllegalArgumentException("location id not specified");
-		}
+		validateLocationTagMap(locationId, locationTagId);
 		LocationTagMapExample example = new LocationTagMapExample();
 		example.createCriteria().andLocationIdEqualTo(locationId).andLocationTagIdEqualTo(locationTagId);
 		
@@ -307,22 +293,31 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 	}
 	
 	@Override
-	public List<LocationTagMap> getLocationTagMapByExample(LocationTagMapExample example) {
-		
+	public List<LocationTagMap> getLocationTagMapByExample(Long locationId, Long locationTagId) {
+		LocationTagMapExample example = createLocationTagMapExample(locationId, locationTagId);
 		return convertLocationTagMap(locationTagMapMapper.selectByExample(example));
 	}
 	
-	public LocationTagMapExample createLocationTagMapExample(LocationTagMap locationTagMap) {
+	private LocationTagMapExample createLocationTagMapExample(Long locationId, Long locationTagId) {
 		LocationTagMapExample example = new LocationTagMapExample();
-		if (locationTagMap.getLocationId() != null) {
-			example.createCriteria().andLocationIdEqualTo(locationTagMap.getLocationId());
+		if (locationId != null) {
+			example.createCriteria().andLocationIdEqualTo(locationId);
 		}
-		if (locationTagMap.getLocationTagId() != null) {
-			example.createCriteria().andLocationTagIdEqualTo(locationTagMap.getLocationTagId());
+		if (locationTagId != null) {
+			example.createCriteria().andLocationTagIdEqualTo(locationTagId);
 			
 		}
 		return example;
 		
+	}
+	
+	private void validateLocationTagMap(Long locationId, Long locationTagId) {
+		if (locationId == null || locationId == 0) {
+			throw new IllegalArgumentException("Location tag id not specified");
+		}
+		if (locationTagId == null || locationTagId == 0) {
+			throw new IllegalArgumentException("location id not specified");
+		}
 	}
 	
 }

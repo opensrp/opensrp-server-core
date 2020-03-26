@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.opensrp.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.postgres.LocationTagExample;
-import org.opensrp.domain.postgres.LocationTagMapExample;
 import org.opensrp.repository.LocationTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -64,9 +63,9 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		locationTagMap.setLocationTagId(locationTags.get(0).getId());
 		
 		int insert = locationTagRepository.addLocationTagMap(locationTagMap);
-		LocationTagMapExample example = new LocationTagMapExample();
-		example.createCriteria().andLocationIdEqualTo(1l).andLocationTagIdEqualTo(locationTags.get(0).getId());
-		List<LocationTagMap> locationTagMaps = locationTagRepository.getLocationTagMapByExample(example);
+		
+		List<LocationTagMap> locationTagMaps = locationTagRepository.getLocationTagMapByExample(1l, locationTags.get(0)
+		        .getId());
 		assertNotEquals(0, insert);
 		
 		assertEquals(1, locationTagMaps.get(0).getLocationId().longValue());
@@ -86,14 +85,14 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		locationTagMap.setLocationTagId(locationTags.get(0).getId());
 		
 		locationTagRepository.addLocationTagMap(locationTagMap);
-		LocationTagMapExample example = new LocationTagMapExample();
-		example.createCriteria().andLocationIdEqualTo(1l).andLocationTagIdEqualTo(locationTags.get(0).getId());
-		List<LocationTagMap> locationTagMaps = locationTagRepository.getLocationTagMapByExample(example);
+		List<LocationTagMap> locationTagMaps = locationTagRepository.getLocationTagMapByExample(1l, locationTags.get(0)
+		        .getId());
 		
 		locationTagRepository
 		        .deleteLocationTagMapByLocationIdAndLocationTagId(1l, locationTagMaps.get(0).getLocationTagId());
 		
-		List<LocationTagMap> getDeletedLocationTagMaps = locationTagRepository.getLocationTagMapByExample(example);
+		List<LocationTagMap> getDeletedLocationTagMaps = locationTagRepository.getLocationTagMapByExample(1l,
+		    locationTagMaps.get(0).getLocationTagId());
 		
 		assertEquals(0, getDeletedLocationTagMaps.size());
 	}

@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.postgres.LocationTagExample;
-import org.opensrp.domain.postgres.LocationTagMapExample;
 import org.opensrp.repository.LocationTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,16 +64,13 @@ public class LocationTagService {
 	}
 	
 	public int addLocationTagMap(LocationTagMap locationTagMap) {
-		if (locationTagMap.getLocationId() == null && locationTagMap.getLocationTagId() == null) {
-			throw new IllegalArgumentException("Location tag id and location id  not specified");
-		}
 		return getLocationTagRepository().addLocationTagMap(locationTagMap);
 		
 	}
 	
-	public List<LocationTagMap> findLocationTagMapByExample(LocationTagMapExample example) {
+	public List<LocationTagMap> findLocationTagMapByCriteria(Long locationId, Long locationTagId) {
 		
-		return getLocationTagRepository().getLocationTagMapByExample(example);
+		return getLocationTagRepository().getLocationTagMapByExample(locationId, locationTagId);
 	}
 	
 	public void deleteLocationTagMapByLocationIdAndLocationTagId(Long locationId, Long locationTagId) {

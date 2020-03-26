@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.opensrp.domain.LocationTag;
 import org.opensrp.domain.postgres.LocationTagExample;
-import org.opensrp.domain.postgres.LocationTagMapExample;
 
 public interface LocationTagRepository extends BaseRepository<LocationTag> {
 	
@@ -22,6 +21,6 @@ public interface LocationTagRepository extends BaseRepository<LocationTag> {
 	
 	void deleteLocationTagMapByLocationIdAndLocationTagId(Long locationId, Long locationTagId);
 	
-	List<org.opensrp.domain.LocationTagMap> getLocationTagMapByExample(LocationTagMapExample example);
+	List<org.opensrp.domain.LocationTagMap> getLocationTagMapByExample(Long locationid, Long locationtagId);
 	
 }
