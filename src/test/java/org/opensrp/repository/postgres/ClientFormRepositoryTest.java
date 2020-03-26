@@ -7,7 +7,6 @@ import org.opensrp.repository.ClientFormRepository;
 import org.opensrp.service.ClientFormService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.transaction.InvalidTransactionException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -60,14 +59,14 @@ public class ClientFormRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCreateShouldReturnNull() throws InvalidTransactionException {
+	public void testCreateShouldReturnNull() {
 		ClientForm clientForm = new ClientForm();
 		clientForm.setId(2L);
 		clientFormRepository.create(clientForm, new ClientFormMetadata());
 	}
 
 	@Test
-	public void testCreateShouldReturnValidObject() throws InvalidTransactionException {
+	public void testCreateShouldReturnValidObject() {
 		ClientForm clientForm = new ClientForm();
 		clientForm.setCreatedAt(new Date());
 		clientForm.setJson("{'from': 'child'}");

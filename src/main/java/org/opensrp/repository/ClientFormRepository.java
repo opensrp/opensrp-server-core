@@ -5,8 +5,6 @@ import org.opensrp.domain.IdVersionTuple;
 import org.opensrp.domain.postgres.ClientForm;
 import org.opensrp.domain.postgres.ClientFormMetadata;
 import org.opensrp.service.ClientFormService;
-
-import javax.transaction.InvalidTransactionException;
 import java.util.List;
 
 public interface ClientFormRepository extends BaseRepository<ClientForm> {
@@ -22,9 +20,8 @@ public interface ClientFormRepository extends BaseRepository<ClientForm> {
 	ClientFormMetadata getFormMetadata(long id);
 
 	ClientFormService.CompleteClientForm create(@NonNull ClientForm clientForm,
-			@NonNull ClientFormMetadata clientFormMetadata) throws InvalidTransactionException;
+			@NonNull ClientFormMetadata clientFormMetadata);
 
-	ClientFormService.CompleteClientForm create(@NonNull ClientFormService.CompleteClientForm completeClientForm)
-			throws InvalidTransactionException;
+	ClientFormService.CompleteClientForm create(@NonNull ClientFormService.CompleteClientForm completeClientForm);
 
 }

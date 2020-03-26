@@ -10,8 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.InvalidTransactionException;
 import java.util.List;
 
 @Service
@@ -58,14 +56,7 @@ public class ClientFormService {
 			return null;
 		}
 
-		try {
-			return clientFormRepository.create(clientForm, clientFormMetadata);
-		}
-		catch (InvalidTransactionException e) {
-			logger.error("An error occurred trying to save the client form", e);
-		}
-
-		return null;
+		return clientFormRepository.create(clientForm, clientFormMetadata);
 	}
 
 	public static class CompleteClientForm {

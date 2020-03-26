@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.InvalidTransactionException;
 import java.util.List;
 
 @Repository
@@ -72,8 +71,7 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 
 	@Nullable
 	@Override
-	public ClientFormService.CompleteClientForm create(@NonNull ClientFormService.CompleteClientForm completeClientForm)
-			throws InvalidTransactionException {
+	public ClientFormService.CompleteClientForm create(@NonNull ClientFormService.CompleteClientForm completeClientForm) {
 		if (completeClientForm.clientForm == null || completeClientForm.clientFormMetadata == null) {
 			return null;
 		}
