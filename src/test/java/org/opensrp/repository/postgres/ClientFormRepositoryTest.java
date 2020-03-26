@@ -14,7 +14,6 @@ import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class ClientFormRepositoryTest extends BaseRepositoryTest {
 
@@ -60,13 +59,11 @@ public class ClientFormRepositoryTest extends BaseRepositoryTest {
 		assertEquals("json.form/adverse_event.json", clientFormMetadata.getIdentifier());
 	}
 
-	@Test
+	@Test(expected = IllegalArgumentException.class)
 	public void testCreateShouldReturnNull() throws InvalidTransactionException {
 		ClientForm clientForm = new ClientForm();
 		clientForm.setId(2L);
-		ClientFormService.CompleteClientForm completeClientForm = clientFormRepository
-				.create(clientForm, new ClientFormMetadata());
-		assertNull(completeClientForm);
+		clientFormRepository.create(clientForm, new ClientFormMetadata());
 	}
 
 	@Test
@@ -94,19 +91,13 @@ public class ClientFormRepositoryTest extends BaseRepositoryTest {
 		assertEquals(5, clientFormRepository.getAll().size());
 	}
 
-	@Test
+	@Test(expected = UnsupportedOperationException.class)
 	public void safeRemove() {
 		ClientForm clientForm = new ClientForm();
 		clientForm.setCreatedAt(new Date());
 		clientForm.setJson("{}");
 
 		clientFormRepository.add(clientForm);
-
-		assertNotNull(clientFormRepository.get(6));
-		clientForm.setId(6L);
-
-		clientFormRepository.safeRemove(clientForm);
-		assertNull(clientFormRepository.get(6));
 	}
 
 }
