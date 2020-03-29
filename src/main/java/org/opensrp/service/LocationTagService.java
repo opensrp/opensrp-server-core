@@ -51,7 +51,7 @@ public class LocationTagService {
 	}
 	
 	public void deleteLocationTag(Long id) {
-		if (id != 0) {
+		if (id == 0) {
 			throw new IllegalArgumentException("Id not specified");
 		}
 		

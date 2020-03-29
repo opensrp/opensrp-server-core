@@ -96,8 +96,8 @@ public class LocationTagServiceTest {
 	
 	@Test
 	public void testAddOrUpdateShouldCallRepostoryAddMethod() {
-		when(locationTagRepository.get(anyString())).thenReturn(null);
 		LocationTag locationTag = initTestLocationTag1();
+		when(locationTag.getId()).thenReturn(null);
 		
 		locationTagService.addOrUpdateLocationTag(locationTag);
 		verify(locationTagRepository).add(eq(locationTag));
@@ -105,8 +105,8 @@ public class LocationTagServiceTest {
 	
 	@Test
 	public void testAddOrUpdateShouldCallRepostoryUpdateMethod() {
-		when(locationTagRepository.get(anyString())).thenReturn(initTestLocationTag());
 		LocationTag locationTag = initTestLocationTag();
+		when(locationTag.getId()).thenReturn(null);
 		locationTagService.addOrUpdateLocationTag(locationTag);
 		verify(locationTagRepository).update(eq(locationTag));
 	}
