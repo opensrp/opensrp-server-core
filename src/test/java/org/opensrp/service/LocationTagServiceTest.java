@@ -148,7 +148,7 @@ public class LocationTagServiceTest {
 		locationTag.setName("Country");
 		locationTag.setDescription("first label tag name");
 		locationTag.setActive(true);
-		
+		locationTag.setId(0l);
 		return locationTag;
 	}
 	
