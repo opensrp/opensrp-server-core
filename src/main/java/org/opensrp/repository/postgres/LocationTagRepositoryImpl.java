@@ -8,8 +8,11 @@ import java.util.List;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.LocationTag;
+import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.postgres.LocationTagExample;
+import org.opensrp.domain.postgres.LocationTagMapExample;
 import org.opensrp.repository.LocationTagRepository;
+import org.opensrp.repository.postgres.mapper.custom.CustomLocationTagMapMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationTagMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -20,6 +23,9 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 	
 	@Autowired
 	private CustomLocationTagMapper locationTagMapper;
+	
+	@Autowired
+	private CustomLocationTagMapMapper locationTagMapMapper;
 	
 	@Override
 	public void add(LocationTag locationTag) {
@@ -41,9 +47,9 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		if (locationTag.getName().isEmpty()) {
 			return;
 		}
-		org.opensrp.domain.postgres.LocationTag pgPractitioner = convert(locationTag);
+		org.opensrp.domain.postgres.LocationTag pgLocationTag = convert(locationTag);
 		
-		locationTagMapper.insertSelective(pgPractitioner);
+		locationTagMapper.insertSelective(pgLocationTag);
 		
 	}
 	
@@ -172,6 +178,7 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		LocationTag locationTag = new LocationTag();
 		
 		locationTag.setName(pgLocationTag.getName());
+		locationTag.setId(pgLocationTag.getId());
 		locationTag.setActive(pgLocationTag.getActive());
 		locationTag.setDescription(pgLocationTag.getDescription());
 		
@@ -184,6 +191,7 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		}
 		org.opensrp.domain.postgres.LocationTag pgLocationTag = new org.opensrp.domain.postgres.LocationTag();
 		pgLocationTag.setName(locationTag.getName());
+		locationTag.setId(pgLocationTag.getId());
 		pgLocationTag.setActive(locationTag.getActive());
 		pgLocationTag.setDescription(locationTag.getDescription());
 		
@@ -223,6 +231,93 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		List<org.opensrp.domain.postgres.LocationTag> pgLocationTagList = locationTagMapper.selectMany(locationTagExample,
 		    offset, limit);
 		return convert(pgLocationTagList);
+	}
+	
+	private LocationTagMap convertLocationTagMap(org.opensrp.domain.postgres.LocationTagMap pgLocationTagMap) {
+		if (pgLocationTagMap == null) {
+			return null;
+		}
+		LocationTagMap locationTagmap = new LocationTagMap();
+		
+		locationTagmap.setLocationId(pgLocationTagMap.getLocationId());
+		locationTagmap.setLocationTagId(pgLocationTagMap.getLocationTagId());
+		
+		return locationTagmap;
+	}
+	
+	private org.opensrp.domain.postgres.LocationTagMap convertLocationTagMap(LocationTagMap locationTagMap) {
+		if (locationTagMap == null) {
+			return null;
+		}
+		org.opensrp.domain.postgres.LocationTagMap pgLocationTagMap = new org.opensrp.domain.postgres.LocationTagMap();
+		pgLocationTagMap.setLocationId(locationTagMap.getLocationId());
+		pgLocationTagMap.setLocationTagId(locationTagMap.getLocationTagId());
+		
+		return pgLocationTagMap;
+	}
+	
+	private List<LocationTagMap> convertLocationTagMap(List<org.opensrp.domain.postgres.LocationTagMap> pgLocationTagMaps) {
+		List<LocationTagMap> locationTagMaps = new ArrayList<>();
+		if (isEmptyList(pgLocationTagMaps)) {
+			return locationTagMaps;
+		}
+		for (org.opensrp.domain.postgres.LocationTagMap pgLocationTagMap : pgLocationTagMaps) {
+			locationTagMaps.add(convertLocationTagMap(pgLocationTagMap));
+		}
+		return locationTagMaps;
+	}
+	
+	@Override
+	public int addLocationTagMap(LocationTagMap locationTagMap) {
+		org.opensrp.domain.postgres.LocationTagMap pgLocationTagMap = convertLocationTagMap(locationTagMap);
+		validateLocationTagMap(locationTagMap.getLocationId(), locationTagMap.getLocationTagId());
+		
+		if (getLocationTagMapByExample(locationTagMap.getLocationId(), locationTagMap.getLocationTagId()).size() != 0) {
+			throw new DuplicateKeyException("Location tag map  already exists");
+			
+		}
+		
+		return locationTagMapMapper.insertSelective(pgLocationTagMap);
+		
+	}
+	
+	@Override
+	public void deleteLocationTagMapByLocationIdAndLocationTagId(Long locationId, Long locationTagId) {
+		
+		validateLocationTagMap(locationId, locationTagId);
+		LocationTagMapExample example = new LocationTagMapExample();
+		example.createCriteria().andLocationIdEqualTo(locationId).andLocationTagIdEqualTo(locationTagId);
+		
+		locationTagMapMapper.deleteByExample(example);
+		
+	}
+	
+	@Override
+	public List<LocationTagMap> getLocationTagMapByExample(Long locationId, Long locationTagId) {
+		LocationTagMapExample example = createLocationTagMapExample(locationId, locationTagId);
+		return convertLocationTagMap(locationTagMapMapper.selectByExample(example));
+	}
+	
+	private LocationTagMapExample createLocationTagMapExample(Long locationId, Long locationTagId) {
+		LocationTagMapExample example = new LocationTagMapExample();
+		if (locationId != null) {
+			example.createCriteria().andLocationIdEqualTo(locationId);
+		}
+		if (locationTagId != null) {
+			example.createCriteria().andLocationTagIdEqualTo(locationTagId);
+			
+		}
+		return example;
+		
+	}
+	
+	private void validateLocationTagMap(Long locationId, Long locationTagId) {
+		if (locationId == null || locationId == 0) {
+			throw new IllegalArgumentException("Location tag id not specified");
+		}
+		if (locationTagId == null || locationTagId == 0) {
+			throw new IllegalArgumentException("location id not specified");
+		}
 	}
 	
 }
