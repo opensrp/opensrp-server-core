@@ -6,6 +6,7 @@ import org.opensrp.domain.postgres.ManifestExample;
 import org.opensrp.repository.ManifestRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomManifestMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,17 +80,19 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         return convert(pgManifestList);
     }
 
+    @Nullable
     @Override
     public Manifest getManifestByAppId(String appId) {
         if (StringUtils.isBlank(appId)) {
             return null;
         }
-        Long myID = Long.parseLong(appId);
-        List<org.opensrp.domain.postgres.Manifest> manifestList = manifestMapper.selectByAppId(myID);
+
+        List<org.opensrp.domain.postgres.Manifest> manifestList = manifestMapper.selectByAppId(appId);
 
         if(manifestList == null ) {
         	return null;
         }
+
      	return convert(manifestList.get(0));
     }
 
@@ -108,6 +111,7 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         manifestMapper.deleteByPrimaryKey(id);
     }
 
+    @Nullable
     @Override
     public org.opensrp.domain.postgres.Manifest getManifest(String id) {
         if (StringUtils.isBlank(id)) {
@@ -163,9 +167,9 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         pgManifest.setAppVersion(manifest.getAppVersion());
 
         if (manifest.getCreatedAt() != null)
-            pgManifest.setCreatedAt(manifest.getCreatedAt().getMillis());
+            pgManifest.setCreatedAt(manifest.getCreatedAt().toDate());
         if (manifest.getUpdatedAt() != null)
-            pgManifest.setUpdatedAt(manifest.getUpdatedAt().getMillis());
+            pgManifest.setUpdatedAt(manifest.getUpdatedAt().toDate());
 
         return pgManifest;
     }

@@ -16,6 +16,6 @@ public interface CustomManifestMapper extends ManifestMapper {
     List<Manifest> selectMany(@Param("example") ManifestExample manifestExample,
                               @Param("offset") int offset, @Param("limit") int limit);
 
-    List<Manifest> selectByAppId(@Param("appId") long appId);
+    List<Manifest> selectByAppId(@Param("appId") String appId);
 
 }

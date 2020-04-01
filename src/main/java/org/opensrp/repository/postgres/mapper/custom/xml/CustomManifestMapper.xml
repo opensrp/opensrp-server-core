@@ -84,10 +84,10 @@
                 #{appId,jdbcType=VARCHAR},
             </if>
             <if test="createdAt != null">
-                #{createdAt,jdbcType=BIGINT},
+                #{createdAt,jdbcType=TIMESTAMP},
             </if>
             <if test="updatedAt != null">
-                #{updatedAt,jdbcType=BIGINT},
+                #{updatedAt,jdbcType=TIMESTAMP},
             </if>
         </trim>
     </insert>
@@ -107,6 +107,14 @@
             order by m.${example.orderByClause}
         </if>
         LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+
+    <select id="selectByAppId" parameterType="string"
+            resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
+        SELECT *
+        FROM core.manifest
+        where app_id = #{appId,jdbcType=VARCHAR}
     </select>
 
 </mapper>
