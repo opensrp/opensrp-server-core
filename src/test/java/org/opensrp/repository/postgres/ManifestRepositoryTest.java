@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.joda.time.DateTime;
 import org.opensrp.domain.Manifest;
 import org.opensrp.repository.ManifestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import java.util.Set;
 import org.junit.Test;
 
 public class ManifestRepositoryTest extends BaseRepositoryTest {
-
 
     @Autowired
     private ManifestRepository manifestRepository;
@@ -30,7 +30,7 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
 
     private static Manifest initTestManifest() {
         Manifest manifest = new Manifest();
-        String identifier = "mani1234";
+        String identifier = "7";
         String appVersion = "1234234";
         String json = "{}";
         String appId = "1234567op";
@@ -39,12 +39,13 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
         manifest.setAppVersion(appVersion);
         manifest.setIdentifier(identifier);
         manifest.setJson(json);
+        manifest.setCreatedAt(new DateTime());
         return manifest;
     }
 
     private static Manifest initTestManifest2() {
         Manifest manifest = new Manifest();
-        String identifier = "mani12341234";
+        String identifier = "6";
         String appVersion = "12334";
         String json = "{}";
         String appId = "12567op";
@@ -53,17 +54,18 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
         manifest.setAppVersion(appVersion);
         manifest.setIdentifier(identifier);
         manifest.setJson(json);
+        manifest.setCreatedAt(new DateTime());
         return manifest;
     }
 
 
     @Test
     public void testGet() {
-        Manifest manifest = manifestRepository.get("manifest12e5632");
-        assertEquals("manifest12346", manifest.getIdentifier());
+        Manifest manifest = manifestRepository.get("1");
+        assertEquals("1", manifest.getIdentifier());
         assertEquals("{}", manifest.getJson());
-        assertEquals("1234567", manifest.getAppId());
-        assertEquals("12345", manifest.getAppVersion());
+        assertEquals("org.smartregister.giz", manifest.getAppId());
+        assertEquals("0.0.1", manifest.getAppVersion());
     }
 
     @Test
@@ -77,15 +79,16 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
     @Test
     public void testAdd() {
         Manifest manifest = new Manifest();
-        manifest.setIdentifier("manifest-12343");
+        manifest.setIdentifier("2");
         manifest.setAppId("12345");
         manifest.setAppVersion("1234567");
         manifest.setJson("{}");
+        manifest.setCreatedAt(new DateTime());
         manifestRepository.add(manifest);
 
-        assertEquals(1, manifestRepository.getAll().size());
+        assertEquals(2, manifestRepository.getAll().size());
 
-        Manifest addedManifest = manifestRepository.get("manifest-12343");
+        Manifest addedManifest = manifestRepository.get("6");
         assertNotNull(addedManifest);
         assertEquals("12345", addedManifest.getAppId());
         assertEquals("1234567", addedManifest.getAppVersion());
@@ -95,13 +98,15 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testEdit() {
-        Manifest manifest = manifestRepository.get("manifest-12343");
+        Manifest manifest = manifestRepository.get("1");
         manifest.setAppVersion("123456789876");
         manifest.setAppId("12345678");
         manifestRepository.update(manifest);
 
-        Manifest updateManifest = manifestRepository.get("manifest-12343");
-        assertNotNull(updateManifest);
+        Manifest updatedManifest = manifestRepository.get("1");
+        assertNotNull(updatedManifest);
+        assertEquals("12345678", updatedManifest.getAppId());
+        assertEquals("123456789876", updatedManifest.getAppVersion());
     }
 
     @Test
@@ -111,7 +116,7 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
 
         Manifest actualManifest = manifestRepository.getManifestByAppId(expectedManifest.getAppId());
         assertNotNull(actualManifest);
-        assertEquals("mani12341234", actualManifest.getIdentifier());
+        assertEquals("6", actualManifest.getIdentifier());
         assertEquals("12334", actualManifest.getAppVersion());
         assertEquals("12567op", actualManifest.getAppId());
         assertEquals("{}", actualManifest.getJson());
@@ -120,15 +125,15 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testGetAllShouldGetAllManifest() {
-        Manifest manifest1 = initTestManifest();
-        manifestRepository.add(manifest1);
-
         Manifest manifest2 = initTestManifest2();
         manifestRepository.add(manifest2);
 
+        Manifest manifest1 = initTestManifest();
+        manifestRepository.add(manifest1);
+
         List<Manifest> manifests = manifestRepository.getAll();
         assertNotNull(manifests);
-        assertEquals(2, manifests.size());
+        assertEquals(3, manifests.size());
 
         Set<String> ids = new HashSet<>();
         ids.add(manifest1.getIdentifier());
