@@ -1,8 +1,8 @@
 package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensrp.domain.LocationTag;
+import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.postgres.LocationTagExample;
 import org.opensrp.repository.LocationTagRepository;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -95,15 +96,13 @@ public class LocationTagServiceTest {
 	
 	@Test
 	public void testAddOrUpdateShouldCallRepostoryAddMethod() {
-		when(locationTagRepository.get(anyString())).thenReturn(null);
-		LocationTag locationTag = initTestLocationTag();
+		LocationTag locationTag = initTestLocationTag1();
 		locationTagService.addOrUpdateLocationTag(locationTag);
 		verify(locationTagRepository).add(eq(locationTag));
 	}
 	
 	@Test
 	public void testAddOrUpdateShouldCallRepostoryUpdateMethod() {
-		when(locationTagRepository.get(anyString())).thenReturn(initTestLocationTag());
 		LocationTag locationTag = initTestLocationTag();
 		locationTagService.addOrUpdateLocationTag(locationTag);
 		verify(locationTagRepository).update(eq(locationTag));
@@ -142,5 +141,51 @@ public class LocationTagServiceTest {
 		locationTag.setActive(true);
 		locationTag.setId(1l);
 		return locationTag;
+	}
+	
+	private LocationTag initTestLocationTag1() {
+		LocationTag locationTag = new LocationTag();
+		locationTag.setName("Country");
+		locationTag.setDescription("first label tag name");
+		locationTag.setActive(true);
+		locationTag.setId(0l);
+		return locationTag;
+	}
+	
+	private LocationTagMap initTestLocationTagMap() {
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(1l);
+		locationTagMap.setLocationTagId(1l);
+		return locationTagMap;
+	}
+	
+	@Test
+	public void testShouldCallRepostoryAddLocationTagMapMethod() {
+		when(locationTagRepository.get(anyString())).thenReturn(null);
+		LocationTagMap locationTagMap = initTestLocationTagMap();
+		
+		locationTagService.addLocationTagMap(locationTagMap);
+		verify(locationTagRepository).addLocationTagMap(eq(locationTagMap));
+	}
+	
+	@Test
+	public void testShouldFindLocationTagMapByExample() {
+		List<LocationTagMap> expectedLocationTagMaps = new ArrayList<>();
+		expectedLocationTagMaps.add(initTestLocationTagMap());
+		
+		when(locationTagRepository.getLocationTagMapByExample(1l, 1l)).thenReturn(expectedLocationTagMaps);
+		
+		List<LocationTagMap> actutalLocationTag = locationTagService.findLocationTagMapByCriteria(1l, 1l);
+		verify(locationTagRepository).getLocationTagMapByExample(1l, 1l);
+		assertEquals(1, actutalLocationTag.size());
+		assertEquals(1, actutalLocationTag.get(0).getLocationId().longValue());
+		assertEquals(1, actutalLocationTag.get(0).getLocationTagId().longValue());
+		
+	}
+	
+	@Test
+	public void testDeleteShouldCallRepostoryDeleteLocationTagMapByLocationIdAndLocationTagId() {
+		locationTagService.deleteLocationTagMapByLocationIdAndLocationTagId(1l, 1l);
+		verify(locationTagRepository).deleteLocationTagMapByLocationIdAndLocationTagId(1l, 1l);
 	}
 }
