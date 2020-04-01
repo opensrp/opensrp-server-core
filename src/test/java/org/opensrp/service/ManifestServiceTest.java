@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.junit.runner.RunWith;
 import org.opensrp.repository.ManifestRepository;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import org.opensrp.domain.Manifest;
 
 
 @RunWith(PowerMockRunner.class)
+@PowerMockIgnore("org.slf4j.*")
 public class ManifestServiceTest {
 
     private ManifestService manifestService;
