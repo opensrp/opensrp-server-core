@@ -2,8 +2,3 @@
 	path = configs
 	url = https://github.com/OpenSRP/opensrp-server-configs
 	branch = master
-
-[submodule "opensrp-server-configs"]
-	path = opensrp-server-configs
-	url = https://github.com/OpenSRP/opensrp-server-configs
-	branch = master

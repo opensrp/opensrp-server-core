@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.opensrp.util.Utils.isEmptyList;
-
 
 @Repository
 public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> implements ManifestRepository {
@@ -109,19 +107,6 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         }
 
         manifestMapper.deleteByPrimaryKey(id);
-    }
-
-    @Nullable
-    @Override
-    public org.opensrp.domain.postgres.Manifest getManifest(String id) {
-        if (StringUtils.isBlank(id)) {
-            return null;
-        }
-        ManifestExample manifestExample = new ManifestExample();
-        List<org.opensrp.domain.postgres.Manifest> manifestList = manifestMapper.selectByExample(manifestExample);
-
-        return isEmptyList(manifestList) ? null : manifestList.get(0);
-
     }
 
     @Override
