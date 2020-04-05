@@ -313,11 +313,23 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 	
 	private void validateLocationTagMap(Long locationId, Long locationTagId) {
 		if (locationId == null || locationId == 0) {
-			throw new IllegalArgumentException("Location tag id not specified");
+			throw new IllegalArgumentException("Location  id not specified");
 		}
 		if (locationTagId == null || locationTagId == 0) {
-			throw new IllegalArgumentException("location id not specified");
+			throw new IllegalArgumentException("location tag id not specified");
 		}
+	}
+	
+	@Override
+	public void deleteLocationTagMapByLocationId(Long locationId) {
+		if (locationId == null || locationId == 0) {
+			throw new IllegalArgumentException("Location id not specified");
+		}
+		LocationTagMapExample example = new LocationTagMapExample();
+		example.createCriteria().andLocationIdEqualTo(locationId);
+		
+		locationTagMapMapper.deleteByExample(example);
+		
 	}
 	
 }

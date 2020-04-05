@@ -21,6 +21,8 @@ public interface LocationTagRepository extends BaseRepository<LocationTag> {
 	
 	void deleteLocationTagMapByLocationIdAndLocationTagId(Long locationId, Long locationTagId);
 	
+	void deleteLocationTagMapByLocationId(Long locationId);
+	
 	List<org.opensrp.domain.LocationTagMap> getLocationTagMapByExample(Long locationid, Long locationtagId);
 	
 }
