@@ -29,7 +29,6 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
 import org.opensrp.service.LocationTagService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,11 +96,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			return;
 		}
 		
-		taggingLocationTagMapToLocation(entity, pgLocation.getId(), false);
 		LocationMetadata locationMetadata = createMetadata(entity, pgLocation.getId());
 		
 		locationMetadataMapper.insertSelective(locationMetadata);
-		
+		taggingLocationTagOnLocation(entity, pgLocation.getId(), false);
 	}
 	
 	private void addStructure(PhysicalLocation entity) {
@@ -152,11 +150,11 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			return;
 		}
 		
-		taggingLocationTagMapToLocation(entity, pgLocation.getId(), true);
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andLocationIdEqualTo(id);
 		locationMetadata.setId(locationMetadataMapper.selectByExample(locationMetadataExample).get(0).getId());
 		locationMetadataMapper.updateByPrimaryKey(locationMetadata);
+		taggingLocationTagOnLocation(entity, pgLocation.getId(), true);
 	}
 	
 	private void updateStructure(PhysicalLocation entity, Long id) {
@@ -614,7 +612,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return structureMetadata;
 	}
 	
-	private void taggingLocationTagMapToLocation(PhysicalLocation physicalLocation, Long locationId, boolean isUpdate) {
+	private void taggingLocationTagOnLocation(PhysicalLocation physicalLocation, Long locationId, boolean isUpdate) {
 		Set<LocationTag> locationTagMaps = physicalLocation.getLocationTags();
 		
 		if (isUpdate) {
@@ -622,15 +620,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		}
 		if (locationTagMaps != null) {
 			for (LocationTag locationTag : locationTagMaps) {
-				try {
-					LocationTagMap locationTagMap = new LocationTagMap();
-					locationTagMap.setLocationId(locationId);
-					locationTagMap.setLocationTagId(locationTag.getId());
-					locationTagService.addLocationTagMap(locationTagMap);
-				}
-				catch (DuplicateKeyException e) {
-					throw new DuplicateKeyException("Location tag map  already exists");
-				}
+				
+				LocationTagMap locationTagMap = new LocationTagMap();
+				locationTagMap.setLocationId(locationId);
+				locationTagMap.setLocationTagId(locationTag.getId());
+				locationTagService.addLocationTagMap(locationTagMap);
+				
 			}
 		}
 	}
