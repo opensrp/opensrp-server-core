@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface CustomManifestMapper extends ManifestMapper {
 
-    Manifest selectByIdentifier(Long identifier);
+    Manifest selectByIdentifier(String identifier);
 
     int insertSelectiveAndSetId(Manifest manifest);
 

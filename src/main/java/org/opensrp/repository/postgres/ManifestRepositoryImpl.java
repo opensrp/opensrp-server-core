@@ -10,6 +10,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityExistsException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +26,8 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         if (StringUtils.isBlank(id)) {
             return null;
         }
-        Long myID = Long.parseLong(id);
-        org.opensrp.domain.postgres.Manifest pgManifest = manifestMapper.selectByIdentifier(myID);
+
+        org.opensrp.domain.postgres.Manifest pgManifest = manifestMapper.selectByIdentifier(id);
         if (pgManifest == null) {
             return null;
         }
@@ -37,15 +38,18 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
     @Transactional
     public void add(Manifest entity) {
         if (getUniqueField(entity) == null) {
-            return;
+            throw new IllegalStateException("Missing identifier property or NULL");
         }
+
         if (retrievePrimaryKey(entity) != null) { // Manifest already added
-            return;
+            throw new EntityExistsException();
         }
+
         org.opensrp.domain.postgres.Manifest pgManifest = convert(entity, null);
         if (pgManifest == null) {
             return;
         }
+
         manifestMapper.insertSelectiveAndSetId(pgManifest);
 
     }
@@ -123,8 +127,7 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
             return null;
         }
 
-        Long identifier = Long.parseLong(uniqueId.toString());
-
+        String identifier = (String) uniqueId;
         org.opensrp.domain.postgres.Manifest pgManifest = manifestMapper.selectByIdentifier(identifier);
         if (pgManifest == null) {
             return null;

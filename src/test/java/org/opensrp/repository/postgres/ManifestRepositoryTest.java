@@ -88,7 +88,7 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
 
         assertEquals(2, manifestRepository.getAll().size());
 
-        Manifest addedManifest = manifestRepository.get("6");
+        Manifest addedManifest = manifestRepository.get("2");
         assertNotNull(addedManifest);
         assertEquals("12345", addedManifest.getAppId());
         assertEquals("1234567", addedManifest.getAppVersion());
@@ -139,6 +139,32 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
         ids.add(manifest1.getIdentifier());
         ids.add(manifest2.getIdentifier());
         assertTrue(testIfAllIdsExists(manifests, ids));
+    }
+
+    @Test
+    public void testSafeRemove() {
+        Manifest manifestToRemove = manifestRepository.get("1");
+        assertNotNull(manifestToRemove);
+
+        manifestRepository.safeRemove(manifestToRemove);
+
+        assertNull(manifestRepository.get("1"));
+    }
+
+    @Test
+    public void testGetByAppIdAndAppVersion() {
+        Manifest manifest = new Manifest();
+        manifest.setIdentifier("0.0.5r34");
+        manifest.setAppId("org.smartregister.zeir");
+        manifest.setAppVersion("0.0.5");
+        manifest.setCreatedAt(new DateTime());
+
+        manifestRepository.add(manifest);
+
+        Manifest resultManifest = manifestRepository.getManifest("org.smartregister.zeir", "0.0.5");
+        assertEquals("0.0.5r34", resultManifest.getIdentifier());
+        assertEquals("org.smartregister.zeir", resultManifest.getAppId());
+        assertEquals("0.0.5", resultManifest.getAppVersion());
     }
 
     private boolean testIfAllIdsExists(List<Manifest> manifests, Set<String> ids) {

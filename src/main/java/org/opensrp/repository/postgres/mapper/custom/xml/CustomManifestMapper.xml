@@ -4,15 +4,15 @@
         namespace="org.opensrp.repository.postgres.mapper.custom.CustomManifestMapper">
 
     <sql id="Base_Column_List">
-        m.id, m.json , m.app_version , m.app_id , m.created_at , m.updated_at
+        id, json ,app_version ,app_id ,created_at ,updated_at
     </sql>
 
-    <select id="selectByIdentifier" parameterType="java.lang.Long"
+    <select id="selectByIdentifier" parameterType="string"
             resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
-        select
+        SELECT
         <include refid="Base_Column_List"/>
-        from core.manifest m
-        where m.id = #{identifier,jdbcType=BIGINT}
+        FROM core.manifest
+        WHERE json ->> 'identifier' = #{identifier,jdbcType=VARCHAR}
     </select>
 
 
