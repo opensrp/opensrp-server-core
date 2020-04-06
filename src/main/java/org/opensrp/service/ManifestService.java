@@ -7,6 +7,7 @@ import org.opensrp.repository.ManifestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -93,5 +94,9 @@ public class ManifestService {
         if (StringUtils.isBlank(appId))
             return null;
         return manifestRepository.getManifestByAppId(appId);
+    }
+
+    public Manifest getManifest(@NonNull String appId, @NonNull String appVersion) {
+        return manifestRepository.getManifest(appId, appVersion);
     }
 }
