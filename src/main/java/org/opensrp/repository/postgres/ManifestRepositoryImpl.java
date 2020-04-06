@@ -94,6 +94,13 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
      	return convert(manifestList.get(0));
     }
 
+    @Nullable
+    @Override
+    public Manifest getManifest(String appId, String appVersion) {
+        org.opensrp.domain.postgres.Manifest manifest = manifestMapper.selectByAppIdAndAppVersion(appId, appVersion);
+        return manifest == null ? null : convert(manifest);
+    }
+
     @Override
     @Transactional
     public void safeRemove(Manifest entity) {

@@ -117,4 +117,12 @@
         where app_id = #{appId,jdbcType=VARCHAR}
     </select>
 
+    <select id="selectByAppIdAndAppVersion"  parameterType="map"
+            resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
+        SELECT *
+        FROM core.manifest
+        where app_id = #{appId,jdbcType=VARCHAR} AND app_version = #{appVersion, jdbcType=VARCHAR}
+        ORDER BY created_at DESC LIMIT 1
+    </select>
+
 </mapper>
