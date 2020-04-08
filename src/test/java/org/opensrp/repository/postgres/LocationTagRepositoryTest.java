@@ -132,13 +132,19 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 	public void testShouldDeleteLocationTagMapByLocationId() {
 		LocationTag locationTag1 = initTestLocationTag6();
 		locationTagRepository.add(locationTag1);
+		LocationTag locationTag2 = initTestLocationTag2();
+		locationTagRepository.add(locationTag2);
 		
 		List<LocationTag> locationTags = locationTagRepository.getAll();
 		LocationTagMap locationTagMap = new LocationTagMap();
 		locationTagMap.setLocationId(1l);
 		locationTagMap.setLocationTagId(locationTags.get(0).getId());
-		
 		locationTagRepository.addLocationTagMap(locationTagMap);
+		
+		LocationTagMap locationTagMap1 = new LocationTagMap();
+		locationTagMap1.setLocationId(1l);
+		locationTagMap1.setLocationTagId(locationTags.get(1).getId());
+		locationTagRepository.addLocationTagMap(locationTagMap1);
 		List<LocationTagMap> locationTagMaps = locationTagRepository.getLocationTagMapByExample(1l, locationTags.get(0)
 		        .getId());
 		
@@ -146,7 +152,7 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		List<LocationTagMap> getDeletedLocationTagMaps = locationTagRepository.getLocationTagMapByExample(1l,
 		    locationTagMaps.get(0).getLocationTagId());
 		
-		assertEquals(0, getDeletedLocationTagMaps.size());
+		assertEquals(1, getDeletedLocationTagMaps.size());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
