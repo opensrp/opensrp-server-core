@@ -141,7 +141,7 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		
 		LocationTagMap locationTagMap1 = new LocationTagMap();
 		locationTagMap1.setLocationId(2l);
-		locationTagMap1.setLocationTagId(locationTags.get(1).getId());
+		locationTagMap1.setLocationTagId(locationTags.get(0).getId());
 		locationTagRepository.addLocationTagMap(locationTagMap1);
 		List<LocationTagMap> locationTagMaps = locationTagRepository.getLocationTagMapByExample(1l, locationTags.get(0)
 		        .getId());
