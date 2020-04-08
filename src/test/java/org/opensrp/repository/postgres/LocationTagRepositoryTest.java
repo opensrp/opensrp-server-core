@@ -143,12 +143,10 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		locationTagMap1.setLocationId(2l);
 		locationTagMap1.setLocationTagId(locationTags.get(0).getId());
 		locationTagRepository.addLocationTagMap(locationTagMap1);
-		List<LocationTagMap> locationTagMaps = locationTagRepository.getLocationTagMapByExample(1l, locationTags.get(0)
-		        .getId());
 		
 		locationTagRepository.deleteLocationTagMapByLocationId(1l);
 		List<LocationTagMap> getNotDeletedLocationTagMaps = locationTagRepository.getLocationTagMapByExample(2l,
-		    locationTagMaps.get(1).getLocationTagId());
+		    locationTags.get(0).getId());
 		
 		assertEquals(1, getNotDeletedLocationTagMaps.size());
 	}
