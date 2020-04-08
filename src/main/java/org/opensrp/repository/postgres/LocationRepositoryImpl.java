@@ -99,7 +99,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		LocationMetadata locationMetadata = createMetadata(entity, pgLocation.getId());
 		
 		locationMetadataMapper.insertSelective(locationMetadata);
-		taggingLocationTagOnLocation(entity, pgLocation.getId(), false);
+		saveLocationTag(entity, pgLocation.getId(), false);
 	}
 	
 	private void addStructure(PhysicalLocation entity) {
@@ -154,7 +154,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		locationMetadataExample.createCriteria().andLocationIdEqualTo(id);
 		locationMetadata.setId(locationMetadataMapper.selectByExample(locationMetadataExample).get(0).getId());
 		locationMetadataMapper.updateByPrimaryKey(locationMetadata);
-		taggingLocationTagOnLocation(entity, pgLocation.getId(), true);
+		saveLocationTag(entity, pgLocation.getId(), true);
 	}
 	
 	private void updateStructure(PhysicalLocation entity, Long id) {
@@ -612,7 +612,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return structureMetadata;
 	}
 	
-	private void taggingLocationTagOnLocation(PhysicalLocation physicalLocation, Long locationId, boolean isUpdate) {
+	private void saveLocationTag(PhysicalLocation physicalLocation, Long locationId, boolean isUpdate) {
 		Set<LocationTag> locationTagMaps = physicalLocation.getLocationTags();
 		
 		if (isUpdate) {
