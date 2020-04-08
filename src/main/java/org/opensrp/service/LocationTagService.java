@@ -77,4 +77,8 @@ public class LocationTagService {
 		getLocationTagRepository().deleteLocationTagMapByLocationIdAndLocationTagId(locationId, locationTagId);
 	}
 	
+	public void deleteLocationTagMapByLocationId(Long locationId) {
+		getLocationTagRepository().deleteLocationTagMapByLocationId(locationId);
+	}
+	
 }
