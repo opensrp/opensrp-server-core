@@ -265,4 +265,8 @@ public class PhysicalLocationService {
 		return locationRepository.findLocationsByTagOrName(name, locationTagId, pageSize, pageNumber);
 	}
 	
+	public int findCountLocationsByTagOrName(String name, Long locationTagId) {
+		return locationRepository.findCountLocationsByTagOrName(name, locationTagId);
+	}
+	
 }

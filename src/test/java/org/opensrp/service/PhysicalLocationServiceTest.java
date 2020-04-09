@@ -565,6 +565,16 @@ public class PhysicalLocationServiceTest {
 		
 	}
 	
+	@Test
+	public void testShouldFindLocationCountByTagOrName() {
+		
+		when(locationRepository.findCountLocationsByTagOrName(anyString(), anyLong())).thenReturn(1);
+		int actutalLocations = locationService.findCountLocationsByTagOrName("a", 2l);
+		verify(locationRepository).findCountLocationsByTagOrName("a", 2l);
+		assertEquals(1, actutalLocations);
+		
+	}
+	
 	private CustomPhysicalLocation createCustomLocation() {
 		CustomPhysicalLocation parentLocation = PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.parentJson,
 		    CustomPhysicalLocation.class);

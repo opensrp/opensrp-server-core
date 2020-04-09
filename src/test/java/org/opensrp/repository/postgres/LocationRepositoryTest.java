@@ -746,4 +746,32 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 	}
 	
+	@Test(expected = NullPointerException.class)
+	public void testShouldReturnNullPointerExceptionForLocationsByTagOrName() {
+		locationRepository.findCountLocationsByTagOrName(null, null);
+	}
+	
+	@Test
+	public void testFindCountLocationsByTagOrName() {
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(2l);
+		locationTagMap.setLocationTagId(2l);
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		int locationsCount = locationRepository.findCountLocationsByTagOrName("a", 2l);
+		assertEquals(1l, locationsCount);
+		
+	}
+	
+	@Test(expected = NullPointerException.class)
+	public void testShouldReturnNullPointerExceptionForLocationCount() {
+		locationRepository.findCountLocationsByTagOrName(null, null);
+		
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testShouldReturnIllegalArgumentExceptionForLocationCount() {
+		locationRepository.findCountLocationsByTagOrName("", 0l);
+		
+	}
+	
 }

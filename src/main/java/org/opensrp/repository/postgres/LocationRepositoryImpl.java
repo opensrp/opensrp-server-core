@@ -635,9 +635,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<CustomPhysicalLocation> findLocationsByTagOrName(String name, Long locationTagId, int pageSize,
 	                                                             int pageNumber) {
-		if (pageNumber == 0) {
-			throw new IllegalArgumentException("pageNumber is not valid, should be atleast 1");
-		}
+		
+		checkParam(name, locationTagId, pageNumber);
 		int offset = pageSize * (pageNumber - 1);
 		List<CustomLocation> ls = locationMetadataMapper.selectLocationsByTagOrName(name, locationTagId, offset, pageSize);
 		
@@ -674,5 +673,23 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		custcomLocation.setType(location.getType());
 		custcomLocation.setCustomProperties(entity.getCustomProperties());
 		return custcomLocation;
+	}
+	
+	@Override
+	public int findCountLocationsByTagOrName(String name, Long locationTagId) {
+		checkParam(name, locationTagId, 1);
+		return locationMetadataMapper.selectCountLocationsByTagOrName(name, locationTagId);
+	}
+	
+	private void checkParam(String name, Long locationTagId, int pageNumber) {
+		if (name == null && locationTagId == null) {
+			throw new NullPointerException();
+		}
+		if (name == "" && locationTagId == 0) {
+			throw new IllegalArgumentException("name or location tag id one of them should be present");
+		}
+		if (pageNumber == 0) {
+			throw new IllegalArgumentException("pageNumber is not valid, should be atleast 1");
+		}
 	}
 }
