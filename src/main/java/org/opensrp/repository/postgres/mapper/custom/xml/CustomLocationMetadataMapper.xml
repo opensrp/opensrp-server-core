@@ -11,6 +11,15 @@
 		l.id, l.json - 'geometry' as json
 	</sql>
 	
+	<resultMap id="locationCustomProperties" type="map">
+        <result column="parent" property="parent"/>
+    </resultMap>
+    
+	<resultMap id="BaseCustomLocationResultMap" type="org.opensrp.domain.postgres.CustomLocation">    
+    	<id column="id" jdbcType="BIGINT" property="id" />
+	    <result column="json" jdbcType="OTHER" property="json" typeHandler="org.opensrp.repository.postgres.handler.LocationTypeHandler" />
+	    <association property="customProperties" resultMap="locationCustomProperties"/>
+   	</resultMap>
 	
 
 	<select id="findById" parameterType="java.lang.String"
@@ -216,6 +225,53 @@
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
 
+	</select>
+	
+	<select id="selectLocationsByTagOrName"	resultMap="BaseCustomLocationResultMap">
+		<if test="locationTagId != 0l">
+		with locationAndTag as(
+			select lm.id,lm.location_id,lm.parent_id,lm."name",ltm.location_tag_id from core.location_metadata as lm 
+			join core.location_tag_map as ltm
+			on lm.location_id = ltm.location_id
+			<where>
+				<trim prefixOverrides="and">							
+					<if test="name != null">					
+					lm.name ilike '%${name}%'
+					</if>
+					and 	
+					<if test="locationTagId != 0l">					
+					ltm.location_tag_id = #{locationTagId}
+					</if>			
+				</trim>
+				
+	    	</where>			
+			),
+		parent_location as (
+			select lt.parent_id,lt.location_id,lt.id,lm."name" parent from 
+			locationAndTag lt left join core.location_metadata lm 
+			on lt.parent_id::bigint = lm.location_id
+			)
+		</if>
+		
+		<if test="locationTagId == 0l">	
+		with parent_location as (
+			select lt.parent_id,lt.location_id,lt.id,lm."name" parent from 
+			core.location_metadata lt left join core.location_metadata lm 
+			on lt.parent_id::bigint = lm.location_id			
+			<where>
+				<trim prefixOverrides="and">							
+					<if test="name != null">										
+					lt.name ilike '%${name}%'
+					</if>				
+				</trim>
+	    	</where>
+			)
+		</if>
+		select l.id,l."json", pl.parent from core."location" as l join parent_location pl
+			on l.id = pl.location_id
+			order by l.id asc 
+		LIMIT #{limit} OFFSET #{offset}
+		
 	</select>
 
 </mapper>
