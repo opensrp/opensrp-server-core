@@ -727,20 +727,23 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindAllLocationsByTagOrName() throws SQLException {
-		/*Map<String, Object> response = new HashMap<String, Object>();
-		JsonArray clientsArray = new JsonArray();*/
+		
 		LocationTagMap locationTagMap = new LocationTagMap();
 		locationTagMap.setLocationId(2l);
 		locationTagMap.setLocationTagId(2l);
 		
 		locationTagRepository.addLocationTagMap(locationTagMap);
 		List<CustomPhysicalLocation> locations = new ArrayList<CustomPhysicalLocation>();
-		locations = locationRepository.findLocationsByTagOrName("a", 2l, 20, 0);
+		locations = locationRepository.findLocationsByTagOrName("a", 2l, 20, 1);
 		assertNotNull(locations);
 		assertEquals(1l, locations.size());
-		/*clientsArray = (JsonArray) gson.toJsonTree(locations, new TypeToken<List<CustomPhysicalLocation>>() {}.getType());
-		response.put("clients", clientsArray);
-		System.err.println(new Gson().toJson(response));*/
+		
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testShouldReturnIllegalArgumentException() {
+		locationRepository.findLocationsByTagOrName("a", 2l, 20, 0);
+		
 	}
 	
 }
