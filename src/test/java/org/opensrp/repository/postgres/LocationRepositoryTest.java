@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,14 +25,17 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.CustomPhysicalLocation;
 import org.opensrp.domain.Geometry;
 import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
+import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.repository.LocationTagRepository;
 import org.opensrp.util.DateTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -54,6 +58,9 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	
 	@Autowired
 	private LocationRepository locationRepository;
+	
+	@Autowired
+	private LocationTagRepository locationTagRepository;
 	
 	@Autowired
 	@Qualifier("clientsRepositoryPostgres")
@@ -716,6 +723,24 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, structureIds.size());
 		assertEquals("90397", structureIds.get(0));
 		assertEquals(1542376382851l, idsModel.getRight().longValue());
+	}
+	
+	@Test
+	public void testFindAllLocationsByTagOrName() throws SQLException {
+		/*Map<String, Object> response = new HashMap<String, Object>();
+		JsonArray clientsArray = new JsonArray();*/
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(2l);
+		locationTagMap.setLocationTagId(2l);
+		
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		List<CustomPhysicalLocation> locations = new ArrayList<CustomPhysicalLocation>();
+		locations = locationRepository.findLocationsByTagOrName("a", 2l, 20, 0);
+		assertNotNull(locations);
+		assertEquals(1l, locations.size());
+		/*clientsArray = (JsonArray) gson.toJsonTree(locations, new TypeToken<List<CustomPhysicalLocation>>() {}.getType());
+		response.put("clients", clientsArray);
+		System.err.println(new Gson().toJson(response));*/
 	}
 	
 }
