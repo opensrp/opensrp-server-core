@@ -683,9 +683,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	
 	private void checkParam(String name, Long locationTagId, int pageNumber) {
 		if (name == null && locationTagId == null) {
-			throw new NullPointerException();
+			return;
 		}
-		if (name == "" && locationTagId == 0) {
+		if (name.equalsIgnoreCase("") && locationTagId == 0) {
 			throw new IllegalArgumentException("name or location tag id one of them should be present");
 		}
 		if (pageNumber == 0) {

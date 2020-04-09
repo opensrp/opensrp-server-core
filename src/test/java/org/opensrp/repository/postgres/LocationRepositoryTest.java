@@ -742,13 +742,8 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testShouldReturnIllegalArgumentException() {
-		locationRepository.findLocationsByTagOrName("a", 2l, 20, 0);
+		locationRepository.findLocationsByTagOrName("", 0l, 20, 0);
 		
-	}
-	
-	@Test(expected = NullPointerException.class)
-	public void testShouldReturnNullPointerExceptionForLocationsByTagOrName() {
-		locationRepository.findCountLocationsByTagOrName(null, null);
 	}
 	
 	@Test
@@ -759,12 +754,6 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationTagRepository.addLocationTagMap(locationTagMap);
 		int locationsCount = locationRepository.findCountLocationsByTagOrName("a", 2l);
 		assertEquals(1l, locationsCount);
-		
-	}
-	
-	@Test(expected = NullPointerException.class)
-	public void testShouldReturnNullPointerExceptionForLocationCount() {
-		locationRepository.findCountLocationsByTagOrName(null, null);
 		
 	}
 	
