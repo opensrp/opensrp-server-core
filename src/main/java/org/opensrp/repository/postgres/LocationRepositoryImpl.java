@@ -669,6 +669,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		custcomLocation.setGeometry(location.getGeometry());
 		custcomLocation.setId(location.getId());
 		custcomLocation.setProperties(location.getProperties());
+		custcomLocation.setLocationTags(location.getLocationTags());
 		custcomLocation.setServerVersion(location.getServerVersion());
 		custcomLocation.setType(location.getType());
 		custcomLocation.setCustomProperties(entity.getCustomProperties());
