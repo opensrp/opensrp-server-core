@@ -740,6 +740,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 	}
 	
+	@Test(expected = IllegalArgumentException.class)
+	public void testReturnIllegalArgumentException() {
+		locationRepository.searchLocations("a", 2l, null, null, 20, 0);
+	}
+	
 	@Test
 	public void testSearchCountLocations() {
 		LocationTagMap locationTagMap = new LocationTagMap();

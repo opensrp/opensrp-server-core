@@ -635,7 +635,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<CustomPhysicalLocation> searchLocations(String name, Long locationTagId, Long parentId, String status,
 	                                                    int pageSize, int pageNumber) {
-		
+		if (pageNumber == 0) {
+			throw new IllegalArgumentException("pageNumber should be grater than 0");
+		}
 		int offset = pageSize * (pageNumber - 1);
 		List<CustomLocation> ls = locationMetadataMapper.selectLocations(name, locationTagId, parentId, status, offset,
 		    pageSize);
