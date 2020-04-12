@@ -13,6 +13,8 @@
 	
 	<resultMap id="locationCustomProperties" type="map">
         <result column="parent" property="parent"/>
+        <result column="tag_name" property="tag_name"/>
+        <result column="name" property="name"/>
     </resultMap>
     
 	<resultMap id="BaseCustomLocationResultMap" type="org.opensrp.domain.postgres.CustomLocation">    
@@ -230,54 +232,69 @@
 	<sql id="TagOrNameCondition">
 		<if test="locationTagId != 0l">
 			with locationAndTag as(
-			select lm.id,lm.location_id,lm.parent_id,lm."name",ltm.location_tag_id from core.location_metadata as lm 
-			join core.location_tag_map as ltm
-			on lm.location_id = ltm.location_id
+			select
+				lm.id,
+				lm.location_id,
+				lm.parent_id,
+				lm."name",
+				ltm.location_tag_id,
+				lt."name" tag_name
+			from
+				core.location_metadata as lm
+			join core.location_tag_map as ltm on
+				lm.location_id = ltm.location_id
+				 left join core.location_tag lt
+				on lt.id = ltm.location_tag_id
 			<where>
 				<trim prefixOverrides="and">							
 					<if test="name != null">					
 					lm.name ilike '%${name}%'
 					</if>
-					and 	
-					<if test="locationTagId != 0l">					
+						
+					<if test="locationTagId != null">	
+					and 				
 					ltm.location_tag_id = #{locationTagId}
-					</if>			
+					</if>
+						
+					<if test="parentId != null">
+					and 					
+					lm.parent_id::bigint = #{parentId}
+					</if>
+					
+					<if test="status != null">
+					and 					
+					lm.status = #{status}
+					</if>		
 				</trim>
 				
-	    	</where>			
+	    	</where>
+				
 			),
 			parent_location as (
-			select lt.parent_id,lt.location_id,lt.id,lm."name" parent from 
+			select lt.parent_id,
+			lt.location_id,
+			lt.id,
+			lt."name", 
+			lm."name" parent,
+			lt.tag_name from 
 			locationAndTag lt left join core.location_metadata lm 
 			on lt.parent_id::bigint = lm.location_id
 			)
 		</if>
 		
-		<if test="locationTagId == 0l">	
-		with parent_location as (
-			select lt.parent_id,lt.location_id,lt.id,lm."name" parent from 
-			core.location_metadata lt left join core.location_metadata lm 
-			on lt.parent_id::bigint = lm.location_id			
-			<where>
-				<trim prefixOverrides="and">							
-					<if test="name != null">										
-					lt.name ilike '%${name}%'
-					</if>				
-				</trim>
-	    	</where>
-			)
-		</if>
+		
 	</sql>
-	<select id="selectLocationsByTagOrName"	resultMap="BaseCustomLocationResultMap">
+	<select id="selectLocations" resultMap="BaseCustomLocationResultMap">
 		<include refid="TagOrNameCondition"/>
-		select l.id,l."json", pl.parent from core."location" as l join parent_location pl
+		select l.id,l.json - 'geometry' as json, pl.parent, pl.name,
+	pl.tag_name from core."location" as l join parent_location pl
 			on l.id = pl.location_id
 			order by l.id asc 
 		LIMIT #{limit} OFFSET #{offset}
 		
 	</select>
 	
-	<select id="selectCountLocationsByTagOrName" resultType="Integer">
+	<select id="selectCountLocations" resultType="Integer">
 		<include refid="TagOrNameCondition"/>
 		select count(l.id) from core."location" as l join parent_location pl
 			on l.id = pl.location_id

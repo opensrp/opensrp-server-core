@@ -260,13 +260,13 @@ public class PhysicalLocationService {
 		return locationRepository.findAllLocationIds(serverVersion, limit);
 	}
 	
-	public List<CustomPhysicalLocation> findLocationsByTagOrName(String name, Long locationTagId, int pageSize,
-	                                                             int pageNumber) {
-		return locationRepository.findLocationsByTagOrName(name, locationTagId, pageSize, pageNumber);
+	public List<CustomPhysicalLocation> searchLocations(String name, Long locationTagId, Long parentId, String status,
+	                                                    int pageSize, int pageNumber) {
+		return locationRepository.searchLocations(name, locationTagId, parentId, status, pageSize, pageNumber);
 	}
 	
-	public int findCountLocationsByTagOrName(String name, Long locationTagId) {
-		return locationRepository.findCountLocationsByTagOrName(name, locationTagId);
+	public int countSearchLocations(String name, Long locationTagId, Long parentId, String status) {
+		return locationRepository.countSearchLocations(name, locationTagId, parentId, status);
 	}
 	
 }

@@ -141,7 +141,8 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 */
 	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit);
 	
-	List<CustomPhysicalLocation> findLocationsByTagOrName(String name, Long locationTagId, int pageSize, int offset);
+	List<CustomPhysicalLocation> searchLocations(String name, Long locationTagId, Long parentId, String status,
+	                                             int pageSize, int offset);
 	
-	int findCountLocationsByTagOrName(String name, Long locationTagId);
+	int countSearchLocations(String name, Long locationTagId, Long parentId, String status);
 }

@@ -551,14 +551,14 @@ public class PhysicalLocationServiceTest {
 	}
 	
 	@Test
-	public void testShouldSearchLocationByTagOrName() {
+	public void testShouldSearchLocations() {
 		List<CustomPhysicalLocation> expectedLocations = new ArrayList<>();
 		expectedLocations.add(createCustomLocation());
-		when(locationRepository.findLocationsByTagOrName(anyString(), anyLong(), anyInt(), anyInt())).thenReturn(
-		    expectedLocations);
+		when(locationRepository.searchLocations(anyString(), anyLong(), anyLong(), anyString(), anyInt(), anyInt()))
+		        .thenReturn(expectedLocations);
 		
-		List<CustomPhysicalLocation> actutalLocations = locationService.findLocationsByTagOrName("a", 2l, 20, 1);
-		verify(locationRepository).findLocationsByTagOrName("a", 2l, 20, 1);
+		List<CustomPhysicalLocation> actutalLocations = locationService.searchLocations("a", 2l, 1l, "", 20, 1);
+		verify(locationRepository).searchLocations("a", 2l, 1l, "", 20, 1);
 		
 		assertEquals(1, actutalLocations.size());
 		assertEquals("Feature", actutalLocations.get(0).getType());
@@ -566,11 +566,11 @@ public class PhysicalLocationServiceTest {
 	}
 	
 	@Test
-	public void testShouldFindLocationCountByTagOrName() {
+	public void testShouldSearchCountLocation() {
 		
-		when(locationRepository.findCountLocationsByTagOrName(anyString(), anyLong())).thenReturn(1);
-		int actutalLocations = locationService.findCountLocationsByTagOrName("a", 2l);
-		verify(locationRepository).findCountLocationsByTagOrName("a", 2l);
+		when(locationRepository.countSearchLocations(anyString(), anyLong(), anyLong(), anyString())).thenReturn(1);
+		int actutalLocations = locationService.countSearchLocations("a", 2l, 1l, "");
+		verify(locationRepository).countSearchLocations("a", 2l, 1l, "");
 		assertEquals(1, actutalLocations);
 		
 	}

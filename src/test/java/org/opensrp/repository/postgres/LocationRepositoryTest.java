@@ -726,7 +726,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	}
 	
 	@Test
-	public void testFindAllLocationsByTagOrName() throws SQLException {
+	public void testSearchlLocations() {
 		
 		LocationTagMap locationTagMap = new LocationTagMap();
 		locationTagMap.setLocationId(2l);
@@ -734,32 +734,20 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		locationTagRepository.addLocationTagMap(locationTagMap);
 		List<CustomPhysicalLocation> locations = new ArrayList<CustomPhysicalLocation>();
-		locations = locationRepository.findLocationsByTagOrName("a", 2l, 20, 1);
+		locations = locationRepository.searchLocations("a", 2l, null, null, 20, 1);
 		assertNotNull(locations);
 		assertEquals(1l, locations.size());
 		
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
-	public void testShouldReturnIllegalArgumentException() {
-		locationRepository.findLocationsByTagOrName("", 0l, 20, 0);
-		
-	}
-	
 	@Test
-	public void testFindCountLocationsByTagOrName() {
+	public void testSearchCountLocations() {
 		LocationTagMap locationTagMap = new LocationTagMap();
 		locationTagMap.setLocationId(2l);
 		locationTagMap.setLocationTagId(2l);
 		locationTagRepository.addLocationTagMap(locationTagMap);
-		int locationsCount = locationRepository.findCountLocationsByTagOrName("a", 2l);
+		int locationsCount = locationRepository.countSearchLocations("a", 2l, null, null);
 		assertEquals(1l, locationsCount);
-		
-	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void testShouldReturnIllegalArgumentExceptionForLocationCount() {
-		locationRepository.findCountLocationsByTagOrName("", 0l);
 		
 	}
 	

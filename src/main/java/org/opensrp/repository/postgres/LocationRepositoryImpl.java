@@ -633,12 +633,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 	
 	@Override
-	public List<CustomPhysicalLocation> findLocationsByTagOrName(String name, Long locationTagId, int pageSize,
-	                                                             int pageNumber) {
+	public List<CustomPhysicalLocation> searchLocations(String name, Long locationTagId, Long parentId, String status,
+	                                                    int pageSize, int pageNumber) {
 		
-		checkParam(name, locationTagId, pageNumber);
 		int offset = pageSize * (pageNumber - 1);
-		List<CustomLocation> ls = locationMetadataMapper.selectLocationsByTagOrName(name, locationTagId, offset, pageSize);
+		List<CustomLocation> ls = locationMetadataMapper.selectLocations(name, locationTagId, parentId, status, offset,
+		    pageSize);
 		
 		return convertCustomLocation(ls);
 	}
@@ -676,20 +676,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 	
 	@Override
-	public int findCountLocationsByTagOrName(String name, Long locationTagId) {
-		checkParam(name, locationTagId, 1);
-		return locationMetadataMapper.selectCountLocationsByTagOrName(name, locationTagId);
+	public int countSearchLocations(String name, Long locationTagId, Long parentId, String status) {
+		
+		return locationMetadataMapper.selectCountLocations(name, locationTagId, parentId, status);
 	}
 	
-	private void checkParam(String name, Long locationTagId, int pageNumber) {
-		if (name == null && locationTagId == null) {
-			return;
-		}
-		if (name.equalsIgnoreCase("") && locationTagId == 0) {
-			throw new IllegalArgumentException("name or location tag id one of them should be present");
-		}
-		if (pageNumber == 0) {
-			throw new IllegalArgumentException("pageNumber is not valid, should be atleast 1");
-		}
-	}
 }

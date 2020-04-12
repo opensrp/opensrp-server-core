@@ -36,8 +36,10 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	List<String> selectManyIds(@Param("example") LocationMetadataExample locationMetadataExample,
 	                           @Param("offset") int offset, @Param("limit") int limit);
 	
-	List<CustomLocation> selectLocationsByTagOrName(@Param("name") String name, @Param("locationTagId") Long locationTagId,
-	                                                @Param("offset") int offset, @Param("limit") int limit);
+	List<CustomLocation> selectLocations(@Param("name") String name, @Param("locationTagId") Long locationTagId,
+	                                     @Param("parentId") Long parentId, @Param("status") String status,
+	                                     @Param("offset") int offset, @Param("limit") int limit);
 	
-	int selectCountLocationsByTagOrName(@Param("name") String name, @Param("locationTagId") Long locationTagId);
+	int selectCountLocations(@Param("name") String name, @Param("locationTagId") Long locationTagId,
+	                         @Param("parentId") Long parentId, @Param("status") String status);
 }
