@@ -29,6 +29,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
+import org.opensrp.search.LocationSearchBean;
 import org.opensrp.service.LocationTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -633,19 +634,17 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 	
 	@Override
-	public List<CustomPhysicalLocation> searchLocations(String name, Long locationTagId, Long parentId, String status,
-	                                                    Integer pageSize, Integer pageNumber) {
-		if (pageSize == null || pageSize == 0) {
-			return convertCustomLocation(locationMetadataMapper.selectLocations(name, locationTagId, parentId, status, null,
-			    null));
+	public List<CustomPhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
+		if (locationSearchBean.getPageSize() == null || locationSearchBean.getPageSize() == 0) {
+			return convertCustomLocation(locationMetadataMapper.selectLocations(locationSearchBean, null, null));
 		}
-		if (pageNumber == 0) {
+		if (locationSearchBean.getPageNumber() == 0) {
 			throw new IllegalArgumentException("pageNumber should be grater than 0");
 		}
-		int offset = pageSize * (pageNumber - 1);
+		int offset = locationSearchBean.getPageSize() * (locationSearchBean.getPageNumber() - 1);
 		
-		return convertCustomLocation(locationMetadataMapper.selectLocations(name, locationTagId, parentId, status, offset,
-		    pageSize));
+		return convertCustomLocation(locationMetadataMapper.selectLocations(locationSearchBean, offset,
+		    locationSearchBean.getPageSize()));
 	}
 	
 	private List<CustomPhysicalLocation> convertCustomLocation(List<CustomLocation> locations) {
@@ -682,9 +681,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 	
 	@Override
-	public int countSearchLocations(String name, Long locationTagId, Long parentId, String status) {
+	public int countSearchLocations(LocationSearchBean locationSearchBean) {
 		
-		return locationMetadataMapper.selectCountLocations(name, locationTagId, parentId, status);
+		return locationMetadataMapper.selectCountLocations(locationSearchBean);
 	}
 	
 }

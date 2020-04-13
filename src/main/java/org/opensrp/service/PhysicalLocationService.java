@@ -13,6 +13,7 @@ import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.search.LocationSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -260,13 +261,12 @@ public class PhysicalLocationService {
 		return locationRepository.findAllLocationIds(serverVersion, limit);
 	}
 	
-	public List<CustomPhysicalLocation> searchLocations(String name, Long locationTagId, Long parentId, String status,
-	                                                    Integer pageSize, Integer pageNumber) {
-		return locationRepository.searchLocations(name, locationTagId, parentId, status, pageSize, pageNumber);
+	public List<CustomPhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
+		return locationRepository.searchLocations(locationSearchBean);
 	}
 	
-	public int countSearchLocations(String name, Long locationTagId, Long parentId, String status) {
-		return locationRepository.countSearchLocations(name, locationTagId, parentId, status);
+	public int countSearchLocations(LocationSearchBean locationSearchBean) {
+		return locationRepository.countSearchLocations(locationSearchBean);
 	}
 	
 }

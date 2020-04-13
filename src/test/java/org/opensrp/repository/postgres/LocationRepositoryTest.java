@@ -36,6 +36,8 @@ import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.LocationTagRepository;
+import org.opensrp.search.LocationSearchBean;
+import org.opensrp.search.LocationSearchBean.orderByType;
 import org.opensrp.util.DateTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -731,10 +733,16 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		LocationTagMap locationTagMap = new LocationTagMap();
 		locationTagMap.setLocationId(2l);
 		locationTagMap.setLocationTagId(2l);
-		
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("a");
+		locationSearchBean.setLocationTagId(2l);
+		locationSearchBean.setPageSize(20);
+		locationSearchBean.setPageNumber(1);
+		locationSearchBean.setOrderByFieldName("id");
+		locationSearchBean.setOrderByType(orderByType.ASC);
 		locationTagRepository.addLocationTagMap(locationTagMap);
 		List<CustomPhysicalLocation> locations = new ArrayList<CustomPhysicalLocation>();
-		locations = locationRepository.searchLocations("a", 2l, null, null, 20, 1);
+		locations = locationRepository.searchLocations(locationSearchBean);
 		assertNotNull(locations);
 		assertEquals(1l, locations.size());
 		
@@ -746,19 +754,25 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		LocationTagMap locationTagMap = new LocationTagMap();
 		locationTagMap.setLocationId(2l);
 		locationTagMap.setLocationTagId(2l);
-		
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
 		locationTagRepository.addLocationTagMap(locationTagMap);
 		List<CustomPhysicalLocation> locations = new ArrayList<CustomPhysicalLocation>();
-		locations = locationRepository.searchLocations(null, null, null, null, null, null);
+		locations = locationRepository.searchLocations(locationSearchBean);
 		assertNotNull(locations);
 		assertEquals(1l, locations.size());
-		locations = locationRepository.searchLocations(null, null, null, null, 0, null);
+		locationSearchBean.setPageSize(0);
+		locations = locationRepository.searchLocations(locationSearchBean);
 		assertEquals(1l, locations.size());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testReturnIllegalArgumentException() {
-		locationRepository.searchLocations("a", 2l, null, null, 20, 0);
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("a");
+		locationSearchBean.setLocationTagId(2l);
+		locationSearchBean.setPageSize(20);
+		locationSearchBean.setPageNumber(0);
+		locationRepository.searchLocations(locationSearchBean);
 	}
 	
 	@Test
@@ -767,7 +781,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationTagMap.setLocationId(2l);
 		locationTagMap.setLocationTagId(2l);
 		locationTagRepository.addLocationTagMap(locationTagMap);
-		int locationsCount = locationRepository.countSearchLocations("a", 2l, null, null);
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("a");
+		locationSearchBean.setLocationTagId(2l);
+		
+		int locationsCount = locationRepository.countSearchLocations(locationSearchBean);
 		assertEquals(1l, locationsCount);
 		
 	}

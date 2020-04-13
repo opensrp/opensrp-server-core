@@ -37,6 +37,7 @@ import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.PhysicalLocationTest;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.search.LocationSearchBean;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -552,13 +553,13 @@ public class PhysicalLocationServiceTest {
 	
 	@Test
 	public void testShouldSearchLocations() {
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
 		List<CustomPhysicalLocation> expectedLocations = new ArrayList<>();
 		expectedLocations.add(createCustomLocation());
-		when(locationRepository.searchLocations(anyString(), anyLong(), anyLong(), anyString(), anyInt(), anyInt()))
-		        .thenReturn(expectedLocations);
-		
-		List<CustomPhysicalLocation> actutalLocations = locationService.searchLocations("a", 2l, 1l, "", 20, 1);
-		verify(locationRepository).searchLocations("a", 2l, 1l, "", 20, 1);
+		when(locationRepository.searchLocations(locationSearchBean)).thenReturn(expectedLocations);
+		//"a", 2l, 1l, "", 20, 1
+		List<CustomPhysicalLocation> actutalLocations = locationService.searchLocations(locationSearchBean);
+		verify(locationRepository).searchLocations(locationSearchBean);
 		
 		assertEquals(1, actutalLocations.size());
 		assertEquals("Feature", actutalLocations.get(0).getType());
@@ -567,10 +568,11 @@ public class PhysicalLocationServiceTest {
 	
 	@Test
 	public void testShouldSearchCountLocation() {
-		
-		when(locationRepository.countSearchLocations(anyString(), anyLong(), anyLong(), anyString())).thenReturn(1);
-		int actutalLocations = locationService.countSearchLocations("a", 2l, 1l, "");
-		verify(locationRepository).countSearchLocations("a", 2l, 1l, "");
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		//"a", 2l, 1l, ""
+		when(locationRepository.countSearchLocations(locationSearchBean)).thenReturn(1);
+		int actutalLocations = locationService.countSearchLocations(locationSearchBean);
+		verify(locationRepository).countSearchLocations(locationSearchBean);
 		assertEquals(1, actutalLocations);
 		
 	}

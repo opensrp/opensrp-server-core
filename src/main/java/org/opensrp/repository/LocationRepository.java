@@ -9,6 +9,7 @@ import org.opensrp.domain.CustomPhysicalLocation;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
+import org.opensrp.search.LocationSearchBean;
 
 public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	
@@ -141,8 +142,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 */
 	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit);
 	
-	List<CustomPhysicalLocation> searchLocations(String name, Long locationTagId, Long parentId, String status,
-	                                             Integer pageSize, Integer offset);
+	List<CustomPhysicalLocation> searchLocations(LocationSearchBean locationSearchBean);
 	
-	int countSearchLocations(String name, Long locationTagId, Long parentId, String status);
+	int countSearchLocations(LocationSearchBean locationSearchBean);
 }

@@ -230,8 +230,8 @@
 	</select>
 	
 	<sql id="TagOrNameCondition">
-		<if test="locationTagId != 0l">
-			with locationAndTag as(
+		
+		with locationAndTag as(
 			select
 				lm.id,
 				lm.location_id,
@@ -247,23 +247,23 @@
 				on lt.id = ltm.location_tag_id
 			<where>
 				<trim prefixOverrides="and">							
-					<if test="name != null">					
-					lm.name ilike '%${name}%'
+					<if test="locationSearchBean.name != null">					
+					lm.name ilike '%${locationSearchBean.name}%'
 					</if>
 						
-					<if test="locationTagId != null">	
+					<if test="locationSearchBean.locationTagId != null">	
 					and 				
-					ltm.location_tag_id = #{locationTagId}
+					ltm.location_tag_id = #{locationSearchBean.locationTagId}
 					</if>
 						
-					<if test="parentId != null">
+					<if test="locationSearchBean.parentId != null">
 					and 					
-					lm.parent_id::bigint = #{parentId}
+					lm.parent_id::bigint = #{locationSearchBean.parentId}
 					</if>
 					
-					<if test="status != null">
+					<if test="locationSearchBean.status != null">
 					and 					
-					lm.status = #{status}
+					lm.status = #{locationSearchBean.status}
 					</if>		
 				</trim>
 				
@@ -279,8 +279,8 @@
 			lt.tag_name from 
 			locationAndTag lt left join core.location_metadata lm 
 			on lt.parent_id::bigint = lm.location_id
-			)
-		</if>
+		)
+		
 		
 		
 	</sql>
@@ -289,7 +289,10 @@
 		select l.id,l.json - 'geometry' as json, pl.parent, pl.name,
 		pl.tag_name from core."location" as l join parent_location pl
 			on l.id = pl.location_id
-			order by l.id asc
+		<if test="locationSearchBean.orderByFieldName != null and locationSearchBean.orderByType != null">
+				 order by ${locationSearchBean.orderByFieldName}  ${locationSearchBean.orderByType}  
+		</if>
+			
 		<if test="limit != null">	 
 			LIMIT #{limit} OFFSET #{offset}
 		</if>
