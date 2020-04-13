@@ -37,7 +37,7 @@ import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.LocationTagRepository;
 import org.opensrp.search.LocationSearchBean;
-import org.opensrp.search.LocationSearchBean.orderByType;
+import org.opensrp.search.LocationSearchBean.OrderByType;
 import org.opensrp.util.DateTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -739,7 +739,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationSearchBean.setPageSize(20);
 		locationSearchBean.setPageNumber(1);
 		locationSearchBean.setOrderByFieldName("id");
-		locationSearchBean.setOrderByType(orderByType.ASC);
+		locationSearchBean.setOrderByType(OrderByType.ASC);
 		locationTagRepository.addLocationTagMap(locationTagMap);
 		List<CustomPhysicalLocation> locations = new ArrayList<CustomPhysicalLocation>();
 		locations = locationRepository.searchLocations(locationSearchBean);

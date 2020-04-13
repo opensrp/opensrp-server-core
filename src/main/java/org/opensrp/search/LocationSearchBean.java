@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class LocationSearchBean {
 	
-	public enum orderByType {
+	public enum OrderByType {
 		@SerializedName("asc")
 		ASC, @SerializedName("desc")
 		DESC
@@ -25,7 +25,7 @@ public class LocationSearchBean {
 	
 	private String orderByFieldName;
 	
-	private orderByType orderByType;
+	private OrderByType orderByType;
 	
 	public String getName() {
 		return name;
@@ -83,11 +83,11 @@ public class LocationSearchBean {
 		this.orderByFieldName = orderByFieldName;
 	}
 	
-	public orderByType getOrderByType() {
+	public OrderByType getOrderByType() {
 		return orderByType;
 	}
 	
-	public void setOrderByType(orderByType orderByType) {
+	public void setOrderByType(OrderByType orderByType) {
 		this.orderByType = orderByType;
 	}
 	
