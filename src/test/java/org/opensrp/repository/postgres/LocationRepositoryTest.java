@@ -740,6 +740,22 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 	}
 	
+	@Test
+	public void testGetAllLocations() {
+		
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(2l);
+		locationTagMap.setLocationTagId(2l);
+		
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		List<CustomPhysicalLocation> locations = new ArrayList<CustomPhysicalLocation>();
+		locations = locationRepository.searchLocations(null, null, null, null, null, null);
+		assertNotNull(locations);
+		assertEquals(1l, locations.size());
+		locations = locationRepository.searchLocations(null, null, null, null, 0, null);
+		assertEquals(1l, locations.size());
+	}
+	
 	@Test(expected = IllegalArgumentException.class)
 	public void testReturnIllegalArgumentException() {
 		locationRepository.searchLocations("a", 2l, null, null, 20, 0);

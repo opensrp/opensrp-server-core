@@ -287,10 +287,12 @@
 	<select id="selectLocations" resultMap="BaseCustomLocationResultMap">
 		<include refid="TagOrNameCondition"/>
 		select l.id,l.json - 'geometry' as json, pl.parent, pl.name,
-	pl.tag_name from core."location" as l join parent_location pl
+		pl.tag_name from core."location" as l join parent_location pl
 			on l.id = pl.location_id
-			order by l.id asc 
-		LIMIT #{limit} OFFSET #{offset}
+			order by l.id asc
+		<if test="limit != null">	 
+			LIMIT #{limit} OFFSET #{offset}
+		</if>
 		
 	</select>
 	

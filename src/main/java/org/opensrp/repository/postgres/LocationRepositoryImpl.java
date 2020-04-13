@@ -634,15 +634,18 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	
 	@Override
 	public List<CustomPhysicalLocation> searchLocations(String name, Long locationTagId, Long parentId, String status,
-	                                                    int pageSize, int pageNumber) {
+	                                                    Integer pageSize, Integer pageNumber) {
+		if (pageSize == null || pageSize == 0) {
+			return convertCustomLocation(locationMetadataMapper.selectLocations(name, locationTagId, parentId, status, null,
+			    null));
+		}
 		if (pageNumber == 0) {
 			throw new IllegalArgumentException("pageNumber should be grater than 0");
 		}
 		int offset = pageSize * (pageNumber - 1);
-		List<CustomLocation> ls = locationMetadataMapper.selectLocations(name, locationTagId, parentId, status, offset,
-		    pageSize);
 		
-		return convertCustomLocation(ls);
+		return convertCustomLocation(locationMetadataMapper.selectLocations(name, locationTagId, parentId, status, offset,
+		    pageSize));
 	}
 	
 	private List<CustomPhysicalLocation> convertCustomLocation(List<CustomLocation> locations) {

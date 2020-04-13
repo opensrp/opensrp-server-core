@@ -261,7 +261,7 @@ public class PhysicalLocationService {
 	}
 	
 	public List<CustomPhysicalLocation> searchLocations(String name, Long locationTagId, Long parentId, String status,
-	                                                    int pageSize, int pageNumber) {
+	                                                    Integer pageSize, Integer pageNumber) {
 		return locationRepository.searchLocations(name, locationTagId, parentId, status, pageSize, pageNumber);
 	}
 	
