@@ -91,14 +91,14 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	public void update(Client entity) {
 		update(entity, false);
 	}
-
+	
 	@Override
 	public void update(Client entity, boolean allowArchived) {
 		if (entity == null || entity.getBaseEntityId() == null) {
 			return;
 		}
 		
-		Long id = retrievePrimaryKey(entity);
+		Long id = retrievePrimaryKey(entity, allowArchived);
 		if (id == null) { // Client not added
 			return;
 		}
@@ -173,7 +173,9 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		if (StringUtils.isBlank(baseEntityId)) {
 			return null;
 		}
-		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(baseEntityId);
+		ClientMetadataExample clientMetadataExample= new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andBaseEntityIdEqualTo(baseEntityId).andDateDeletedIsNull();
+		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(clientMetadataExample);
 		return convert(pgClient);
 	}
 	
@@ -402,8 +404,17 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	protected Long retrievePrimaryKey(Client t) {
-		Object uniqueId = getUniqueField(t);
+	protected Long retrievePrimaryKey(Client entity) {
+		return retrievePrimaryKey(entity, false);
+	}
+	
+	/**
+	 * @param entity
+	 * @param allowArchived
+	 * @return
+	 */
+	private Long retrievePrimaryKey(Client entity, boolean allowArchived) {
+		Object uniqueId = getUniqueField(entity);
 		if (uniqueId == null) {
 			return null;
 		}
@@ -411,9 +422,13 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		String baseEntityId = uniqueId.toString();
 		
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
-		clientMetadataExample.createCriteria().andBaseEntityIdEqualTo(baseEntityId).andDateDeletedIsNull();
+		Criteria criteria = clientMetadataExample.createCriteria();
+		criteria.andBaseEntityIdEqualTo(baseEntityId);
+		if (!allowArchived) {
+			criteria.andDateDeletedIsNull();
+		}
 		
-		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(baseEntityId);
+		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(clientMetadataExample);
 		if (pgClient == null) {
 			return null;
 		}

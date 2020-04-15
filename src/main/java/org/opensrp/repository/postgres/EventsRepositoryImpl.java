@@ -83,7 +83,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 			return;
 		}
 
-		Long id = retrievePrimaryKey(entity);
+		Long id = retrievePrimaryKey(entity,allowArchived);
 		if (id == null) { // Event not added
 			return;
 		}
@@ -431,10 +431,15 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		}
 		return Pair.of(eventIdentifiers, lastServerVersion);
 	}
-
-	@Override
-	protected Long retrievePrimaryKey(Event t) {
-		Object uniqueId = getUniqueField(t);
+	
+	/**
+	 * Get the primary key of an event
+	 * @param event
+	 * @param allowArchived
+	 * @return the promary key
+	 */
+	private Long retrievePrimaryKey(Event event, boolean allowArchived) {
+		Object uniqueId = getUniqueField(event);
 		if (uniqueId == null) {
 			return null;
 		}
@@ -442,13 +447,22 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		String documentId = uniqueId.toString();
 
 		EventMetadataExample eventMetadataExample = new EventMetadataExample();
-		eventMetadataExample.createCriteria().andDocumentIdEqualTo(documentId);
+		Criteria criteria = eventMetadataExample.createCriteria();
+		criteria.andDocumentIdEqualTo(documentId);
+		if (!allowArchived) {
+			criteria.andDateDeletedIsNull();
+		}
 
 		org.opensrp.domain.postgres.Event pgClient = eventMetadataMapper.selectByDocumentId(documentId);
 		if (pgClient == null) {
 			return null;
 		}
 		return pgClient.getId();
+	}
+
+	@Override
+	protected Long retrievePrimaryKey(Event event) {
+		return retrievePrimaryKey(event, false);
 	}
 
 	@Override
