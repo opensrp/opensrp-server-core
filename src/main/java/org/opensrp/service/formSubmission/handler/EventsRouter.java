@@ -123,12 +123,13 @@ public class EventsRouter {
 		scheduleConfigsFolder = new File(scheduleConfigFilesPath);
 		String scheduleConfigMapping = "";
 		File[] scheduleFiles = scheduleConfigsFolder.listFiles();
-		for (int i = 0; i < scheduleFiles.length; i++) {
-			final File fileEntry = scheduleFiles[i];
-			String scheduleConfig = FileUtils.readFileToString(new File(fileEntry.getAbsolutePath()), "UTF-8");
-			scheduleConfigMapping += (i + 1 == scheduleFiles.length) ? scheduleConfig : scheduleConfig.concat(",");
-			
-		}
+		if (scheduleFiles != null)
+			for (int i = 0; i < scheduleFiles.length; i++) {
+				final File fileEntry = scheduleFiles[i];
+				String scheduleConfig = FileUtils.readFileToString(new File(fileEntry.getAbsolutePath()), "UTF-8");
+				scheduleConfigMapping += (i + 1 == scheduleFiles.length) ? scheduleConfig : scheduleConfig.concat(",");
+				
+			}
 		return scheduleConfigMapping;
 	}
 	
