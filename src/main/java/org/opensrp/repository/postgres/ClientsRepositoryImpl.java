@@ -17,6 +17,7 @@ import org.opensrp.domain.Client;
 import org.opensrp.domain.postgres.ClientExample;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
+import org.opensrp.domain.postgres.ClientMetadataExample.Criteria;
 import org.opensrp.domain.postgres.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
@@ -88,6 +89,11 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public void update(Client entity) {
+		update(entity, false);
+	}
+
+	@Override
+	public void update(Client entity, boolean allowArchived) {
 		if (entity == null || entity.getBaseEntityId() == null) {
 			return;
 		}
@@ -115,7 +121,11 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		}
 		
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
-		clientMetadataExample.createCriteria().andClientIdEqualTo(id).andDateDeletedIsNull();
+		Criteria criteria = clientMetadataExample.createCriteria();
+		criteria.andClientIdEqualTo(id);
+		if (!allowArchived) {
+			criteria.andDateDeletedIsNull();
+		}
 		clientMetadata.setId(clientMetadataMapper.selectByExample(clientMetadataExample).get(0).getId());
 		clientMetadataMapper.updateByPrimaryKey(clientMetadata);
 	}
@@ -420,14 +430,15 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
-	                                                                             String clientType) {
+	        String clientType) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		clientMetadataExample.createCriteria().andRelationalIdIn(ids);
 		return clientMetadataMapper.selectMemberCountHouseholdHeadProviderByClients(clientMetadataExample, clientType);
 	}
 	
 	@Override
-	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean,
+	        AddressSearchBean addressSearchBean) {
 		
 		return clientMetadataMapper.selectHouseholdCountBySearchBean(searchBean, addressSearchBean);
 	}
@@ -451,8 +462,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		
 		int offset = searchBean.getPageNumber() * pageSize;
 		
-		List<CustomClient> clients = clientMetadataMapper.selectAllClientsBySearchBean(searchBean, addressSearchBean,
-		    offset, pageSize);
+		List<CustomClient> clients = clientMetadataMapper.selectAllClientsBySearchBean(searchBean, addressSearchBean, offset,
+		    pageSize);
 		return customClientConvert(clients);
 	}
 	
@@ -537,8 +548,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	/**
-	 * Method should be used only during Unit testing
-	 * Deletes all existing records
+	 * Method should be used only during Unit testing Deletes all existing records
 	 */
 	public void removeAll() {
 		clientMetadataMapper.deleteByExample(new ClientMetadataExample());
