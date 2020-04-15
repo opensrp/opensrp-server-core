@@ -557,24 +557,19 @@ public class PhysicalLocationServiceTest {
 		List<CustomPhysicalLocation> expectedLocations = new ArrayList<>();
 		expectedLocations.add(createCustomLocation());
 		when(locationRepository.searchLocations(locationSearchBean)).thenReturn(expectedLocations);
-		//"a", 2l, 1l, "", 20, 1
 		List<CustomPhysicalLocation> actutalLocations = locationService.searchLocations(locationSearchBean);
 		verify(locationRepository).searchLocations(locationSearchBean);
-		
 		assertEquals(1, actutalLocations.size());
 		assertEquals("Feature", actutalLocations.get(0).getType());
-		
 	}
 	
 	@Test
 	public void testShouldSearchCountLocation() {
 		LocationSearchBean locationSearchBean = new LocationSearchBean();
-		//"a", 2l, 1l, ""
 		when(locationRepository.countSearchLocations(locationSearchBean)).thenReturn(1);
 		int actutalLocations = locationService.countSearchLocations(locationSearchBean);
 		verify(locationRepository).countSearchLocations(locationSearchBean);
 		assertEquals(1, actutalLocations);
-		
 	}
 	
 	private CustomPhysicalLocation createCustomLocation() {

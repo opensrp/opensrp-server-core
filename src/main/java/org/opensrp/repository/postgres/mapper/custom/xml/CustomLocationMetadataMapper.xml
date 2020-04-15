@@ -229,80 +229,60 @@
 
 	</select>
 	
-	<sql id="TagOrNameCondition">
-		
-		with locationAndTag as(
-			select
-				lm.id,
-				lm.location_id,
-				lm.parent_id,
-				lm."name",
-				ltm.location_tag_id,
-				lt."name" tag_name
-			from
-				core.location_metadata as lm
-			join core.location_tag_map as ltm on
-				lm.location_id = ltm.location_id
-				 left join core.location_tag lt
-				on lt.id = ltm.location_tag_id
-			<where>
-				<trim prefixOverrides="and">							
-					<if test="locationSearchBean.name != null">					
-					lm.name ilike '%${locationSearchBean.name}%'
-					</if>
-						
-					<if test="locationSearchBean.locationTagId != null">	
-					and 				
-					ltm.location_tag_id = #{locationSearchBean.locationTagId}
-					</if>
-						
-					<if test="locationSearchBean.parentId != null">
-					and 					
-					lm.parent_id::bigint = #{locationSearchBean.parentId}
-					</if>
-					
-					<if test="locationSearchBean.status != null">
-					and 					
-					lm.status = #{locationSearchBean.status}
-					</if>		
-				</trim>
-				
-	    	</where>
-				
-			),
-			parent_location as (
-			select lt.parent_id,
-			lt.location_id,
-			lt.id,
-			lt."name", 
-			lm."name" parent,
-			lt.tag_name from 
-			locationAndTag lt left join core.location_metadata lm 
-			on lt.parent_id::bigint = lm.location_id
-		)
-		
-		
-		
-	</sql>
-	<select id="selectLocations" resultMap="BaseCustomLocationResultMap">
-		<include refid="TagOrNameCondition"/>
-		select l.id,l.json - 'geometry' as json, pl.parent, pl.name,
-		pl.tag_name from core."location" as l join parent_location pl
-			on l.id = pl.location_id
-		<if test="locationSearchBean.orderByFieldName != null and locationSearchBean.orderByType != null">
-				 order by ${locationSearchBean.orderByFieldName}  ${locationSearchBean.orderByType}  
-		</if>
+    <sql id="searchCondition">
+        with locationAndTag as(
+        select
+        lm.id,
+        lm.location_id,
+        lm.parent_id,
+        lm."name",
+        ltm.location_tag_id,
+        lt."name" tag_name
+        from core.location_metadata as lm
+        join core.location_tag_map as ltm on lm.location_id = ltm.location_id 
+        left join core.location_tag lt on lt.id = ltm.location_tag_id
+        <where>
+            <trim prefixOverrides="and">							
+            <if test="locationSearchBean.name != null">					
+                lm.name ilike '%${locationSearchBean.name}%'
+            </if>
+            <if test="locationSearchBean.locationTagId != null">
+                and ltm.location_tag_id = #{locationSearchBean.locationTagId}
+            </if>
+            <if test="locationSearchBean.parentId != null">
+                and lm.parent_id::bigint = #{locationSearchBean.parentId}
+            </if>
+            <if test="locationSearchBean.status != null">
+                and lm.status = #{locationSearchBean.status}
+            </if>		
+            </trim>
+        </where>
+        ),
+        parent_location as (
+            select lt.parent_id,lt.location_id,lt.id,lt."name", lm."name" parent,
+            lt.tag_name from locationAndTag lt left join core.location_metadata lm 
+            on lt.parent_id::bigint = lm.location_id
+        )
+    </sql>
+    <select id="selectLocations" resultMap="BaseCustomLocationResultMap">
+        <include refid="searchCondition"/>
+        select l.id,l.json - 'geometry' as json, pl.parent, pl.name,
+        pl.tag_name from core."location" as l join parent_location pl
+        on l.id = pl.location_id
+        <if test="locationSearchBean.orderByFieldName != null and locationSearchBean.orderByType != null">
+            order by ${locationSearchBean.orderByFieldName}  ${locationSearchBean.orderByType}  
+        </if>
 			
-		<if test="limit != null">	 
-			LIMIT #{limit} OFFSET #{offset}
-		</if>
+        <if test="limit != null">	 
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
 		
-	</select>
+    </select>
 	
-	<select id="selectCountLocations" resultType="Integer">
-		<include refid="TagOrNameCondition"/>
-		select count(l.id) from core."location" as l join parent_location pl
-			on l.id = pl.location_id
-	</select>
+    <select id="selectCountLocations" resultType="Integer">
+        <include refid="searchCondition"/>
+        select count(l.id) from core."location" as l join parent_location pl
+        on l.id = pl.location_id
+    </select>
 
 </mapper>

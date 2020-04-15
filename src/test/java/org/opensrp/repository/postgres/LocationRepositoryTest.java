@@ -745,12 +745,10 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locations = locationRepository.searchLocations(locationSearchBean);
 		assertNotNull(locations);
 		assertEquals(1l, locations.size());
-		
 	}
 	
 	@Test
 	public void testGetAllLocations() {
-		
 		LocationTagMap locationTagMap = new LocationTagMap();
 		locationTagMap.setLocationId(2l);
 		locationTagMap.setLocationTagId(2l);
@@ -784,7 +782,6 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		LocationSearchBean locationSearchBean = new LocationSearchBean();
 		locationSearchBean.setName("a");
 		locationSearchBean.setLocationTagId(2l);
-		
 		int locationsCount = locationRepository.countSearchLocations(locationSearchBean);
 		assertEquals(1l, locationsCount);
 		
