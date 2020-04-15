@@ -250,8 +250,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	public List<Client> findByEmptyServerVersion() {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		clientMetadataExample.createCriteria().andServerVersionIsNull();
+		clientMetadataExample.or(clientMetadataExample.createCriteria().andServerVersionEqualTo(0l));
 		clientMetadataExample.setOrderByClause("client_id ASC");
-		
 		List<org.opensrp.domain.postgres.Client> clients = clientMetadataMapper.selectMany(clientMetadataExample, 0,
 		    DEFAULT_FETCH_SIZE);
 		return convert(clients);
