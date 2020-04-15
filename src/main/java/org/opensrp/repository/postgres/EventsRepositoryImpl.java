@@ -294,7 +294,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	@Override
 	public List<Event> findByEmptyServerVersion() {
 		EventMetadataExample example = new EventMetadataExample();
-		example.createCriteria().andDateDeletedIsNull().andServerVersionIsNull();
+		example.createCriteria().andServerVersionIsNull();
 		example.or(example.createCriteria().andServerVersionEqualTo(0l));
 		return convert(eventMetadataMapper.selectManyWithRowBounds(example, 0, DEFAULT_FETCH_SIZE));
 	}
