@@ -109,6 +109,7 @@ public class EventListenerTest {
 		inOrder.verify(allClients).update(clients.get(0));
 		inOrder.verify(allEvents).update(events.get(0));
 		inOrder.verify(eventHandler, atLeastOnce()).handle(eq(events.get(0)), any(JSONObject.class), eq("BCG"));
+
 		
 	}
 	
