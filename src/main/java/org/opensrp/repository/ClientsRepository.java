@@ -73,5 +73,11 @@ public interface ClientsRepository extends BaseRepository<Client> {
 	List<Client> findChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
 	
 	int findCountChildByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean);
+
+	/**Updates a client
+	 * @param entity the client to be updated
+	 * @param allowArchived a flag that allows update of archived clients
+	 */
+	void update(Client entity, boolean allowArchived);
 	
 }

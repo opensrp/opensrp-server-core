@@ -104,8 +104,8 @@ public class EventListenerTest {
 		InOrder inOrder = inOrder(allClients, allEvents, eventHandler);
 		clients.get(0).setServerVersion(System.currentTimeMillis());
 		events.get(0).setServerVersion(System.currentTimeMillis());
-		inOrder.verify(allClients).update(clients.get(0));
-		inOrder.verify(allEvents).update(events.get(0));
+		inOrder.verify(allClients).update(clients.get(0),true);
+		inOrder.verify(allEvents).update(events.get(0),true);
 		//inOrder.verify(eventHandler, atLeastOnce()).handle(eq(events.get(0)), any(JSONObject.class), eq("BCG"));
 		
 	}

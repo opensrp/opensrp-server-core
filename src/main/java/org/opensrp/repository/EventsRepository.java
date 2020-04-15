@@ -60,5 +60,11 @@ public interface EventsRepository extends BaseRepository<Event> {
 	 * @return a list of event ids and last server version
 	 */
 	Pair<List<String>, Long> findIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit);
+
+	/**Updates an event
+	 * @param entity the event to be updated
+	 * @param allowArchived a flag that allows update of archived events
+	 */
+	void update(Event entity, boolean allowArchived);
 	
 }
