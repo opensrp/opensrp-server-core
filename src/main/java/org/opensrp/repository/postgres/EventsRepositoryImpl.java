@@ -75,6 +75,11 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 
 	@Override
 	public void update(Event entity) {
+		update(entity,false);
+	}
+	
+	@Override
+	public void update(Event entity,boolean allowArchived) {
 		if (entity == null || entity.getBaseEntityId() == null) {
 			return;
 		}
@@ -102,7 +107,11 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		}
 
 		EventMetadataExample eventMetadataExample = new EventMetadataExample();
-		eventMetadataExample.createCriteria().andEventIdEqualTo(id).andDateDeletedIsNull();
+		Criteria criteria = eventMetadataExample.createCriteria();
+		criteria.andEventIdEqualTo(id);
+		if (!allowArchived) {
+			criteria.andDateDeletedIsNull();
+		}
 		eventMetadata.setId(eventMetadataMapper.selectByExample(eventMetadataExample).get(0).getId());
 		eventMetadataMapper.updateByPrimaryKey(eventMetadata);
 
@@ -295,7 +304,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	@Override
 	public List<Event> findByEmptyServerVersion() {
 		EventMetadataExample example = new EventMetadataExample();
-		example.createCriteria().andDateDeletedIsNull().andServerVersionIsNull();
+		example.createCriteria().andServerVersionIsNull();
 		example.or(example.createCriteria().andServerVersionEqualTo(0l));
 		return convert(eventMetadataMapper.selectManyWithRowBounds(example, 0, DEFAULT_FETCH_SIZE));
 	}
