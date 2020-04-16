@@ -14,28 +14,28 @@ import org.opensrp.search.LocationSearchBean;
 public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	
 	Location findById(@Param("id") String id, @Param("geometry") boolean returnGeometry);
-	
-	List<Location> selectMany(@Param("example") LocationMetadataExample locationMetadataExample,
-	                          @Param("offset") int offset, @Param("limit") int limit);
+
+	List<Location> selectMany(@Param("example") LocationMetadataExample locationMetadataExample, @Param("offset") int offset,
+	        @Param("limit") int limit);
 	
 	List<Location> selectManyByProperties(@Param("example") LocationMetadataExample locationMetadataExample,
-	                                      @Param("properties") Map<String, String> properties,
-	                                      @Param("geometry") boolean returnGeometry, @Param("offset") int offset,
-	                                      @Param("limit") int limit);
-	
+	        @Param("properties") Map<String, String> properties, @Param("geometry") boolean returnGeometry,
+	        @Param("offset") int offset, @Param("limit") int limit);
+
 	List<Location> selectManyWithOptionalGeometry(@Param("example") LocationMetadataExample locationMetadataExample,
-	                                              @Param("geometry") boolean returnGeometry, @Param("offset") int offset,
-	                                              @Param("limit") int limit);
-	
+              @Param("geometry") boolean returnGeometry,
+              @Param("offset") int offset, @Param("limit") int limit);
+
 	List<Location> selectWithChildren(@Param("example") LocationMetadataExample locationMetadataExample,
-	                                  @Param("geometry") boolean returnGeometry, @Param("locationId") String locationId,
-	                                  @Param("offset") int offset, @Param("limit") int limit);
-	
+			@Param("geometry") boolean returnGeometry,
+			@Param("locationId") String locationId,
+			@Param("offset") int offset, @Param("limit") int limit);
+
 	List<LocationDetail> selectDetailsByPlanId(@Param("example") LocationMetadataExample locationMetadataExample,
-	                                           @Param("planIdentifier") String planIdentifier);
-	
-	List<String> selectManyIds(@Param("example") LocationMetadataExample locationMetadataExample,
-	                           @Param("offset") int offset, @Param("limit") int limit);
+											   @Param("planIdentifier") String planIdentifier);
+
+	List<String> selectManyIds(@Param("example") LocationMetadataExample locationMetadataExample, @Param("offset") int offset,
+							   @Param("limit") int limit);
 	
 	List<CustomLocation> selectLocations(@Param("locationSearchBean") LocationSearchBean locationSearchBean,
 	                                     @Param("offset") Integer offset, @Param("limit") Integer limit);
