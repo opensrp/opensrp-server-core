@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.domain.CustomPhysicalLocation;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
+import org.opensrp.search.LocationSearchBean;
 
 public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 
@@ -133,5 +135,6 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @return a list of location Ids
 	 */
 	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit);
-
+	List<CustomPhysicalLocation> searchLocations(LocationSearchBean locationSearchBean);
+	int countSearchLocations(LocationSearchBean locationSearchBean);
 }
