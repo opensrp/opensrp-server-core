@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,14 +25,19 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.CustomPhysicalLocation;
 import org.opensrp.domain.Geometry;
 import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
+import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.repository.LocationTagRepository;
+import org.opensrp.search.LocationSearchBean;
+import org.opensrp.search.LocationSearchBean.OrderByType;
 import org.opensrp.util.DateTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -54,6 +60,8 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	
 	@Autowired
 	private LocationRepository locationRepository;
+	@Autowired
+	private LocationTagRepository locationTagRepository;
 	
 	@Autowired
 	@Qualifier("clientsRepositoryPostgres")
@@ -718,4 +726,61 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1542376382851l, idsModel.getRight().longValue());
 	}
 	
+	@Test
+	public void testSearchlLocations() {
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(2l);
+		locationTagMap.setLocationTagId(2l);
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("a");
+		locationSearchBean.setLocationTagId(2l);
+		locationSearchBean.setPageSize(20);
+		locationSearchBean.setPageNumber(1);
+		locationSearchBean.setOrderByFieldName("id");
+		locationSearchBean.setOrderByType(OrderByType.ASC);
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		List<CustomPhysicalLocation> locations = new ArrayList<CustomPhysicalLocation>();
+		locations = locationRepository.searchLocations(locationSearchBean);
+		assertNotNull(locations);
+		assertEquals(1l, locations.size());
+	}
+	
+	@Test
+	public void testGetAllLocations() {
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(2l);
+		locationTagMap.setLocationTagId(2l);
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		List<CustomPhysicalLocation> locations = new ArrayList<CustomPhysicalLocation>();
+		locations = locationRepository.searchLocations(locationSearchBean);
+		assertNotNull(locations);
+		assertEquals(1l, locations.size());
+		locationSearchBean.setPageSize(0);
+		locations = locationRepository.searchLocations(locationSearchBean);
+		assertEquals(1l, locations.size());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testReturnIllegalArgumentException() {
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("a");
+		locationSearchBean.setLocationTagId(2l);
+		locationSearchBean.setPageSize(20);
+		locationSearchBean.setPageNumber(0);
+		locationRepository.searchLocations(locationSearchBean);
+	}
+
+	@Test
+	public void testSearchCountLocations() {
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(2l);
+		locationTagMap.setLocationTagId(2l);
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("a");
+		locationSearchBean.setLocationTagId(2l);
+		int locationsCount = locationRepository.countSearchLocations(locationSearchBean);
+		assertEquals(1l, locationsCount);
+	}
 }
