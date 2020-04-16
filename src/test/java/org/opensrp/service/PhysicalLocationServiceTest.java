@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+import org.opensrp.domain.CustomPhysicalLocation;
 import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
@@ -36,6 +37,7 @@ import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.PhysicalLocationTest;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.search.LocationSearchBean;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -548,5 +550,32 @@ public class PhysicalLocationServiceTest {
 	private PhysicalLocation createStructure() {
 		return PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.structureJson, PhysicalLocation.class);
 	}
-
+	
+	@Test
+	public void testShouldSearchLocations() {
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		List<CustomPhysicalLocation> expectedLocations = new ArrayList<>();
+		expectedLocations.add(createCustomLocation());
+		when(locationRepository.searchLocations(locationSearchBean)).thenReturn(expectedLocations);
+		List<CustomPhysicalLocation> actutalLocations = locationService.searchLocations(locationSearchBean);
+		verify(locationRepository).searchLocations(locationSearchBean);
+		assertEquals(1, actutalLocations.size());
+		assertEquals("Feature", actutalLocations.get(0).getType());
+	}
+	
+	@Test
+	public void testShouldSearchCountLocation() {
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		when(locationRepository.countSearchLocations(locationSearchBean)).thenReturn(1);
+		int actutalLocations = locationService.countSearchLocations(locationSearchBean);
+		verify(locationRepository).countSearchLocations(locationSearchBean);
+		assertEquals(1, actutalLocations);
+	}
+	
+	private CustomPhysicalLocation createCustomLocation() {
+		CustomPhysicalLocation parentLocation = PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.parentJson,
+		    CustomPhysicalLocation.class);
+		parentLocation.setJurisdiction(true);
+		return parentLocation;
+	}
 }

@@ -8,10 +8,12 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.domain.CustomPhysicalLocation;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.search.LocationSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -247,6 +249,14 @@ public class PhysicalLocationService {
 	 */
 	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit) {
 		return locationRepository.findAllLocationIds(serverVersion, limit);
+	}
+
+	public List<CustomPhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
+		return locationRepository.searchLocations(locationSearchBean);
+	}
+	
+	public int countSearchLocations(LocationSearchBean locationSearchBean) {
+		return locationRepository.countSearchLocations(locationSearchBean);
 	}
 
 }
