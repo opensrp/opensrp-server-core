@@ -64,7 +64,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		settingQueryBean.setServerVersion(0L);
 		
 		List<SettingConfiguration> settings = settingRepository.findSettings(settingQueryBean);
-		assertEquals(6, settings.size());
+		assertEquals(0, settings.size());
 		
 		settingQueryBean.setTeamId("7e104eee-ec8a-4733-bcf7-c02c51cf43f4");
 		settingQueryBean.setServerVersion(0L);
