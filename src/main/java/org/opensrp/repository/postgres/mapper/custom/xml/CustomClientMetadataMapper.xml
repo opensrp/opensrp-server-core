@@ -30,6 +30,8 @@
         <result column="family_head" property="family_head"/>
         <result column="member_count" property="member_count"/>
         <result column="phone_number" property="phone_number"/>
+        <result column="family_head_first_name" property="family_head_first_name"/>
+        <result column="family_head_last_name" property="family_head_last_name"/>
         
     </resultMap>
 	<resultMap id="BaseCustomClientResultMap" type="org.opensrp.domain.postgres.CustomClient">    
@@ -339,10 +341,10 @@
 			<bind name="name" value="'%' + clientBean.nameLike + '%'" />
 			and (	family_first_name ilike #{name} or
 					family_head_first_name ilike #{name} or	
-					family_head_last_name ilike #{name} or					
-					phone_number = #{name} or
-					provider_id = #{name} or
-					unique_id = #{name} 
+					family_head_last_name ilike #{name} or									
+					phone_number ilike #{name} or
+					provider_id ilike #{name} or
+					unique_id ilike #{name} 
 				)
 		</if>	
 	</sql>
