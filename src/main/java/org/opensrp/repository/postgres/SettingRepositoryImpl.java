@@ -108,35 +108,33 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
-		
+
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
-		
-		if (StringUtils.isNotEmpty(settingQueryBean.getProviderId())) {
-			criteria.andProviderIdEqualTo(settingQueryBean.getProviderId());
+
+		String providerId = settingQueryBean.getProviderId();
+		String locationId = settingQueryBean.getLocationId();
+		String team = settingQueryBean.getTeam();
+		String teamId = settingQueryBean.getTeamId();
+		if (StringUtils.isBlank(providerId) && StringUtils.isBlank(locationId) && StringUtils.isBlank(team) && StringUtils.isBlank(teamId)) {
+			criteria.andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull().andLocationIdIsNull();
+		} else {
+			if (StringUtils.isNotEmpty(providerId)) {
+				criteria.andProviderIdEqualTo(providerId);
+			}
+			if (StringUtils.isNotEmpty(locationId)) {
+				criteria.andLocationIdEqualTo(locationId);
+			}
+			if (StringUtils.isNotEmpty(team)) {
+				criteria.andTeamEqualTo(team);
+			}
+			if (StringUtils.isNotEmpty(teamId)) {
+				criteria.andTeamIdEqualTo(teamId);
+			}
 		}
-		if (StringUtils.isNotEmpty(settingQueryBean.getLocationId())) {
-			criteria.andLocationIdEqualTo(settingQueryBean.getLocationId());
-		}
-		if (StringUtils.isNotEmpty(settingQueryBean.getTeam())) {
-			criteria.andTeamEqualTo(settingQueryBean.getTeam());
-		}
-		if (StringUtils.isNotEmpty(settingQueryBean.getTeamId())) {
-			criteria.andTeamIdEqualTo(settingQueryBean.getTeamId());
-		}
-		if (settingQueryBean.getServerVersion() != null) {
-			criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
-		}
-		
-		metadataExample.or(metadataExample.createCriteria().andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull()
-		        .andLocationIdIsNull().andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion()));
-		
-		if (!criteria.isValid()) {
-			throw new IllegalArgumentException("Atleast one search filter must be specified");
-		}
-		
+		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
+
 		return convert(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
-		
 	}
 	
 	@Override
