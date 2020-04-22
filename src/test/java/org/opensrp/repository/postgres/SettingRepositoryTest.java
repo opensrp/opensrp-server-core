@@ -33,7 +33,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 	public void testFindAllSettings() {
 		
 		List<SettingConfiguration> settings = settingRepository.findAllSettings();
-		assertEquals(9, settings.size());
+		assertEquals(12, settings.size());
 		
 	}
 	
@@ -107,7 +107,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 	public void testGetAllSettings() {
 		
 		List<SettingConfiguration> settings = settingRepository.getAll();
-		assertEquals(9, settings.size());
+		assertEquals(12, settings.size());
 		
 	}
 	
