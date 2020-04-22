@@ -634,13 +634,17 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 	@Override
 	public List<CustomPhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
+		Integer offset = 0;
 		if (locationSearchBean.getPageSize() == null || locationSearchBean.getPageSize() == 0) {
 			return convertCustomLocation(locationMetadataMapper.selectLocations(locationSearchBean, null, null));
 		}
-		if (locationSearchBean.getPageNumber() == 0) {
+		if (locationSearchBean.getPageNumber() != null && locationSearchBean.getPageNumber() == 0) {
 			throw new IllegalArgumentException("pageNumber should be grater than 0");
 		}
-		int offset = locationSearchBean.getPageSize() * (locationSearchBean.getPageNumber() - 1);
+		if (locationSearchBean.getPageNumber() != null) {
+
+			offset = locationSearchBean.getPageSize() * (locationSearchBean.getPageNumber() - 1);
+		}
 		return convertCustomLocation(locationMetadataMapper.selectLocations(locationSearchBean, offset,
 		    locationSearchBean.getPageSize()));
 	}
