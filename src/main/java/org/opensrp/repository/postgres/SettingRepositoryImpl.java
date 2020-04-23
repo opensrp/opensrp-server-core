@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.postgres.SettingsMetadataExample;
+import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMapper;
@@ -36,9 +37,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		
 		return convert(setting);
 	}
-	
+
 	@Override
-	public void update(SettingConfiguration entity) {
+	public void update(SettingConfiguration entity) {// todo: modify this
 		if (entity == null || entity.getId() == null || entity.getIdentifier() == null) {
 			return;
 		}
@@ -75,12 +76,12 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
-	public List<SettingConfiguration> getAll() {
+	public List<SettingConfiguration> getAll() {// todo: modify this
 		return convert(settingMetadataMapper.selectMany(new SettingsMetadataExample(), 0, DEFAULT_FETCH_SIZE));
 	}
 	
 	@Override
-	public void safeRemove(SettingConfiguration entity) {
+	public void safeRemove(SettingConfiguration entity) {// todo: modify this
 		if (entity == null) {
 			return;
 		}
@@ -108,7 +109,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
-
+		// todo: modify this
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
 
@@ -138,7 +139,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
-	public List<SettingConfiguration> findByEmptyServerVersion() {
+	public List<SettingConfiguration> findByEmptyServerVersion() { // todo:modify this
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		metadataExample.createCriteria().andServerVersionIsNull();
 		metadataExample.or(metadataExample.createCriteria().andServerVersionEqualTo(0l));
@@ -177,7 +178,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (entity == null) {
 			return null;
 		}
-		
+
 		Settings pgSetting = new Settings();
 		pgSetting.setId(id);
 		pgSetting.setJson(entity);
@@ -207,31 +208,32 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return (SettingConfiguration) setting.getJson();
 	}
 	
-	private SettingsMetadata createMetadata(SettingConfiguration entity, Long id) {
-		
+	private List<SettingsMetadata> createMetadata(SettingConfiguration entity, Long id) {
+		List<SettingsMetadata> settingsMetadata = new ArrayList();
+		List<Setting> settings = entity.getSettings();
 		try {
-			
-			SettingsMetadata metadata = new SettingsMetadata();
-			metadata.setSettingsId(id);
-			metadata.setDocumentId(entity.getId() != null ? entity.getId() : UUID.randomUUID().toString());
-			metadata.setIdentifier(entity.getIdentifier());
-			metadata.setProviderId(entity.getProviderId());
-			metadata.setLocationId(entity.getLocationId());
-			metadata.setTeam(entity.getTeam());
-			metadata.setTeamId(entity.getTeamId());
-			metadata.setServerVersion(entity.getServerVersion());
-			
-			return metadata;
-		}
-		catch (Exception e) {
+			for (int i = 0; i < settings.size(); i++) {
+				SettingsMetadata metadata = new SettingsMetadata();
+				metadata.setSettingsId(id);
+				metadata.setDocumentId(entity.getId() != null ? entity.getId() : UUID.randomUUID().toString());
+				metadata.setIdentifier(entity.getIdentifier());
+				metadata.setProviderId(entity.getProviderId());
+				metadata.setLocationId(entity.getLocationId());
+				metadata.setTeam(entity.getTeam());
+				metadata.setTeamId(entity.getTeamId());
+				metadata.setServerVersion(entity.getServerVersion());
+				settingsMetadata.add(metadata);
+			}
+		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
-			return null;
 		}
+
+		return settingsMetadata;
 	}
 	
 	@Override
 	public void add(SettingConfiguration entity) {
-		
+		// todo: modify this
 		if (entity == null || entity.getSettings() == null || entity.getIdentifier() == null) {
 			return;
 		}
@@ -247,26 +249,27 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		
 		setRevision(entity);
-		
-		Settings settings = convert(entity, id);
-		if (settings == null) {
+
+		List<Setting> settings = entity.getSettings();
+		entity.setSettings(null); // strip out the settings block
+		Settings pgSettings = convert(entity, id);
+		if (pgSettings == null) {
+			return;
+		}
+
+		int rowsAffected = settingMapper.insertSelectiveAndSetId(pgSettings);
+		if (rowsAffected < 1 || pgSettings.getId() == null) {
 			return;
 		}
 		
-		int rowsAffected = settingMapper.insertSelectiveAndSetId(settings);
-		if (rowsAffected < 1 || settings.getId() == null) {
-			return;
-		}
-		
-		SettingsMetadata settingsMetadata = createMetadata(entity, settings.getId());
+		List<SettingsMetadata> settingsMetadata = createMetadata(entity, pgSettings.getId());
 		if (settingsMetadata != null) {
-			settingMetadataMapper.insertSelective(settingsMetadata);
+			settingMetadataMapper.insertMany(settingsMetadata);
 		}
-		
 	}
 	
 	@Override
-	public SettingsMetadata getSettingMetadataByDocumentId(String documentId) {
+	public SettingsMetadata getSettingMetadataByDocumentId(String documentId) { // todo: modify this
 		SettingsMetadataExample example = new SettingsMetadataExample();
 		example.createCriteria().andDocumentIdEqualTo(documentId);
 		
@@ -278,7 +281,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	public Settings getSettingById(Long id) {
-		
+		// todo: modify this
 		return settingMapper.selectByPrimaryKey(id);
 		
 	}

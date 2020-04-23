@@ -73,4 +73,28 @@
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
+
+	<insert id="insertMany" parameterType="java.util.List">
+		INSERT INTO core.settings_metadata (
+			id,
+			settings_id,
+			document_id,
+			identifier,
+			server_version,
+			team, team_id,
+			provider_id,
+			location_id
+		) VALUES
+		<foreach collection="settingsMetadata" item="setting" index="index" open="(" separator="),("  close=")">
+			#{setting.id},
+			#{setting.settingsId},
+			#{setting.documentId},
+			#{setting.identifier},
+			#{setting.serverVersion},
+			#{setting.team},
+			#{setting.teamId},
+			#{setting.providerId},
+			#{setting.locationId},
+		</foreach>
+	</insert>
 </mapper>
