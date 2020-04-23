@@ -102,7 +102,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
-	public void safeRemove(SettingConfiguration entity) {// todo: modify this
+	public void safeRemove(SettingConfiguration entity) {
 		if (entity == null) {
 			return;
 		}
@@ -120,7 +120,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		
 		settingMapper.deleteByPrimaryKey(id);
-		
 	}
 	
 	@Override
@@ -160,7 +159,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
-	public List<SettingConfiguration> findByEmptyServerVersion() { // todo:modify this
+	public List<SettingConfiguration> findByEmptyServerVersion() {
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		metadataExample.createCriteria().andServerVersionIsNull();
 		metadataExample.or(metadataExample.createCriteria().andServerVersionEqualTo(0l));
@@ -321,8 +320,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	public Settings getSettingById(Long id) {
-		// todo: modify this
-		return settingMapper.selectByPrimaryKey(id);
-		
+		SettingsMetadataExample example = new SettingsMetadataExample();
+		example.createCriteria().andSettingsIdEqualTo(id);
+		List<SettingsMetadata> settingsMetadata = settingMetadataMapper.selectByExample(example);
+		Settings setting = settingMapper.selectByPrimaryKey(id);
+		((SettingConfiguration) setting.getJson()).setSettings(convertToSettings(settingsMetadata));
+		return setting;
 	}
 }
