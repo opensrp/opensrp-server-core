@@ -10,13 +10,11 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opensrp.domain.CustomPhysicalLocation;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
-import org.opensrp.domain.postgres.CustomLocation;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.LocationMetadata;
 import org.opensrp.domain.postgres.LocationMetadataExample;
@@ -633,49 +631,30 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		}
 	}
 	@Override
-	public List<CustomPhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
+	public List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
 		Integer offset = 0;
 		if (locationSearchBean.getPageSize() == null || locationSearchBean.getPageSize() == 0) {
-			return convertCustomLocation(locationMetadataMapper.selectLocations(locationSearchBean, null, null));
+			return convert(locationMetadataMapper.selectLocations(locationSearchBean, null, null));
+		} else {
+
 		}
+
 		if (locationSearchBean.getPageNumber() != null && locationSearchBean.getPageNumber() == 0) {
-			throw new IllegalArgumentException("pageNumber should be grater than 0");
+			throw new IllegalArgumentException("pageNumber should be greater than 0");
+		} else {
+
 		}
+
 		if (locationSearchBean.getPageNumber() != null) {
 
 			offset = locationSearchBean.getPageSize() * (locationSearchBean.getPageNumber() - 1);
+		} else {
+
 		}
-		return convertCustomLocation(locationMetadataMapper.selectLocations(locationSearchBean, offset,
+		return convert(locationMetadataMapper.selectLocations(locationSearchBean, offset,
 		    locationSearchBean.getPageSize()));
 	}
-	private List<CustomPhysicalLocation> convertCustomLocation(List<CustomLocation> locations) {
-		if (locations == null || locations.isEmpty()) {
-			return new ArrayList<>();
-		}
-		List<CustomPhysicalLocation> convertedLocations = new ArrayList<>();
-		for (CustomLocation location : locations) {
-			CustomPhysicalLocation convertedLocation = convertCustomLocation(location);
-			if (convertedLocation != null) {
-				convertedLocations.add(convertedLocation);
-			}
-		}
-		return convertedLocations;
-	}
-	private CustomPhysicalLocation convertCustomLocation(CustomLocation entity) {
-		if (entity == null || entity.getJson() == null || !(entity.getJson() instanceof PhysicalLocation)) {
-			return null;
-		}
-		PhysicalLocation location = (PhysicalLocation) entity.getJson();
-		CustomPhysicalLocation custcomLocation = new CustomPhysicalLocation();
-		custcomLocation.setGeometry(location.getGeometry());
-		custcomLocation.setId(location.getId());
-		custcomLocation.setProperties(location.getProperties());
-		custcomLocation.setLocationTags(location.getLocationTags());
-		custcomLocation.setServerVersion(location.getServerVersion());
-		custcomLocation.setType(location.getType());
-		custcomLocation.setCustomProperties(entity.getCustomProperties());
-		return custcomLocation;
-	}
+
 	@Override
 	public int countSearchLocations(LocationSearchBean locationSearchBean) {
 		return locationMetadataMapper.selectCountLocations(locationSearchBean);

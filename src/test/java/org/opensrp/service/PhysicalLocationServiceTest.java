@@ -554,10 +554,10 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testShouldSearchLocations() {
 		LocationSearchBean locationSearchBean = new LocationSearchBean();
-		List<CustomPhysicalLocation> expectedLocations = new ArrayList<>();
+		List<PhysicalLocation> expectedLocations = new ArrayList<>();
 		expectedLocations.add(createCustomLocation());
 		when(locationRepository.searchLocations(locationSearchBean)).thenReturn(expectedLocations);
-		List<CustomPhysicalLocation> actutalLocations = locationService.searchLocations(locationSearchBean);
+		List<PhysicalLocation> actutalLocations = locationService.searchLocations(locationSearchBean);
 		verify(locationRepository).searchLocations(locationSearchBean);
 		assertEquals(1, actutalLocations.size());
 		assertEquals("Feature", actutalLocations.get(0).getType());
@@ -572,7 +572,7 @@ public class PhysicalLocationServiceTest {
 		assertEquals(1, actutalLocations);
 	}
 	
-	private CustomPhysicalLocation createCustomLocation() {
+	private PhysicalLocation createCustomLocation() {
 		CustomPhysicalLocation parentLocation = PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.parentJson,
 		    CustomPhysicalLocation.class);
 		parentLocation.setJurisdiction(true);

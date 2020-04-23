@@ -1,12 +1,13 @@
 package org.opensrp.search;
 
-import com.google.gson.annotations.SerializedName;
+
+
 
 public class LocationSearchBean {
 	
 	public enum OrderByType {
-		@SerializedName("asc")
-		ASC, @SerializedName("desc")
+		
+		ASC,
 		DESC
 		
 	};

@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opensrp.domain.CustomPhysicalLocation;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -251,7 +250,7 @@ public class PhysicalLocationService {
 		return locationRepository.findAllLocationIds(serverVersion, limit);
 	}
 
-	public List<CustomPhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
+	public List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
 		return locationRepository.searchLocations(locationSearchBean);
 	}
 	
