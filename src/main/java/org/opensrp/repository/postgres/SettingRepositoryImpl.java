@@ -230,7 +230,23 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 		return settingsMetadata;
 	}
-	
+
+
+	public void add(Setting setting) {
+		List<Setting> settings = new ArrayList<>();
+		settings.add(setting);
+		SettingConfiguration settingConfiguration = new SettingConfiguration();
+		settingConfiguration.setChildLocationId(setting.getChildLocationId());
+		settingConfiguration.setLocationId(setting.getLocationId());
+		settingConfiguration.setProviderId(setting.getProviderId());
+		settingConfiguration.setTeam(setting.getTeam());
+		settingConfiguration.setTeamId(setting.getTeamId());
+		settingConfiguration.setIdentifier(setting.getIdentifier());
+		settingConfiguration.setType(setting.getType());
+		settingConfiguration.setSettings(settings);
+		add(settingConfiguration);
+	}
+
 	@Override
 	public void add(SettingConfiguration entity) {
 		// todo: modify this
@@ -261,7 +277,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (rowsAffected < 1 || pgSettings.getId() == null) {
 			return;
 		}
-		
+
+		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> settingsMetadata = createMetadata(entity, pgSettings.getId());
 		if (settingsMetadata != null) {
 			settingMetadataMapper.insertMany(settingsMetadata);
