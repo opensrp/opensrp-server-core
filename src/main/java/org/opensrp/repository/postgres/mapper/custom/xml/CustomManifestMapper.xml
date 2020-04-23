@@ -114,7 +114,8 @@
             resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
         SELECT *
         FROM core.manifest
-        where app_id = #{appId,jdbcType=VARCHAR}
+        WHERE app_id = #{appId,jdbcType=VARCHAR}
+        ORDER BY app_version DESC, created_at DESC
     </select>
 
     <select id="selectByAppIdAndAppVersion"  parameterType="map"
