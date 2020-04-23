@@ -34,8 +34,32 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return null;
 		}
 		Settings setting = settingMetadataMapper.selectByDocumentId(id);
-		
-		return convert(setting);
+		SettingsMetadataExample settingsMetadataExample = new SettingsMetadataExample();
+		settingsMetadataExample.createCriteria().andDocumentIdEqualTo(id);
+		List<SettingsMetadata> settingsMetadata = settingMetadataMapper.selectByExample(settingsMetadataExample);
+
+		SettingConfiguration settingConfiguration = convert(setting);
+		settingConfiguration.setSettings(convertToSettings(settingsMetadata));
+
+		return settingConfiguration;
+	}
+
+	private List<Setting> convertToSettings(List<SettingsMetadata> settingsMetadata) {
+		List<Setting> settings = new ArrayList<>();
+		for (int i = 0; i < settings.size(); i++) {
+			SettingsMetadata currSettingMetadata = settingsMetadata.get(i);
+			Setting setting = new Setting();
+			//				setting.setKey(currSettingMetadatagetKey()); // todo: uncomment this
+//			setting.setDescription(currSettingMetadata.ge);// todo: uncomment this
+			setting.setIdentifier(currSettingMetadata.getIdentifier());
+			setting.setProviderId(currSettingMetadata.getProviderId());
+			setting.setLocationId(currSettingMetadata.getLocationId());
+			setting.setTeam(currSettingMetadata.getTeam());
+			setting.setTeamId(currSettingMetadata.getTeamId());
+			setting.setServerVersion(currSettingMetadata.getServerVersion());
+			settings.add(setting);
+		}
+		return settings;
 	}
 
 	@Override
