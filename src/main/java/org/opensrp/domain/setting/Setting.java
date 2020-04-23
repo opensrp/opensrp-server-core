@@ -6,9 +6,10 @@ import org.json.JSONArray;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import org.opensrp.search.SettingSearchBean;
 
 @JsonSubTypes({ @Type(value = SettingConfiguration.class, name = "Setting") })
-public class Setting {
+public class Setting extends SettingSearchBean {
 	
 	@JsonProperty
 	private String key;
@@ -64,6 +65,4 @@ public class Setting {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
-
 }
