@@ -75,11 +75,16 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 
 	@Override
 	public void update(Event entity) {
+		update(entity,false);
+	}
+	
+	@Override
+	public void update(Event entity,boolean allowArchived) {
 		if (entity == null || entity.getBaseEntityId() == null) {
 			return;
 		}
 
-		Long id = retrievePrimaryKey(entity);
+		Long id = retrievePrimaryKey(entity,allowArchived);
 		if (id == null) { // Event not added
 			return;
 		}
@@ -102,7 +107,11 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		}
 
 		EventMetadataExample eventMetadataExample = new EventMetadataExample();
-		eventMetadataExample.createCriteria().andEventIdEqualTo(id).andDateDeletedIsNull();
+		Criteria criteria = eventMetadataExample.createCriteria();
+		criteria.andEventIdEqualTo(id);
+		if (!allowArchived) {
+			criteria.andDateDeletedIsNull();
+		}
 		eventMetadata.setId(eventMetadataMapper.selectByExample(eventMetadataExample).get(0).getId());
 		eventMetadataMapper.updateByPrimaryKey(eventMetadata);
 
@@ -295,7 +304,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	@Override
 	public List<Event> findByEmptyServerVersion() {
 		EventMetadataExample example = new EventMetadataExample();
-		example.createCriteria().andDateDeletedIsNull().andServerVersionIsNull();
+		example.createCriteria().andServerVersionIsNull();
 		example.or(example.createCriteria().andServerVersionEqualTo(0l));
 		return convert(eventMetadataMapper.selectManyWithRowBounds(example, 0, DEFAULT_FETCH_SIZE));
 	}
@@ -423,10 +432,15 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		}
 		return Pair.of(eventIdentifiers, lastServerVersion);
 	}
-
-	@Override
-	protected Long retrievePrimaryKey(Event t) {
-		Object uniqueId = getUniqueField(t);
+	
+	/**
+	 * Get the primary key of an event
+	 * @param event
+	 * @param allowArchived
+	 * @return the promary key
+	 */
+	private Long retrievePrimaryKey(Event event, boolean allowArchived) {
+		Object uniqueId = getUniqueField(event);
 		if (uniqueId == null) {
 			return null;
 		}
@@ -434,13 +448,22 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		String documentId = uniqueId.toString();
 
 		EventMetadataExample eventMetadataExample = new EventMetadataExample();
-		eventMetadataExample.createCriteria().andDocumentIdEqualTo(documentId);
+		Criteria criteria = eventMetadataExample.createCriteria();
+		criteria.andDocumentIdEqualTo(documentId);
+		if (!allowArchived) {
+			criteria.andDateDeletedIsNull();
+		}
 
 		org.opensrp.domain.postgres.Event pgClient = eventMetadataMapper.selectByDocumentId(documentId);
 		if (pgClient == null) {
 			return null;
 		}
 		return pgClient.getId();
+	}
+
+	@Override
+	protected Long retrievePrimaryKey(Event event) {
+		return retrievePrimaryKey(event, false);
 	}
 
 	@Override

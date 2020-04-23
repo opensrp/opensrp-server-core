@@ -16,7 +16,7 @@ public interface CustomClientMetadataMapper extends ClientMetadataMapper {
 	List<Client> selectMany(@Param("example") ClientMetadataExample example, @Param("offset") int offset,
 	                        @Param("limit") int limit);
 	
-	Client selectOne(String baseEntityId);
+	Client selectOne(@Param("example") ClientMetadataExample example);
 	
 	Client selectByDocumentId(String documentId);
 	

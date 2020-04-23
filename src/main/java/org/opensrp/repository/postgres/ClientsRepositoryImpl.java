@@ -17,6 +17,7 @@ import org.opensrp.domain.Client;
 import org.opensrp.domain.postgres.ClientExample;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
+import org.opensrp.domain.postgres.ClientMetadataExample.Criteria;
 import org.opensrp.domain.postgres.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
@@ -88,11 +89,16 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public void update(Client entity) {
+		update(entity, false);
+	}
+	
+	@Override
+	public void update(Client entity, boolean allowArchived) {
 		if (entity == null || entity.getBaseEntityId() == null) {
 			return;
 		}
 		
-		Long id = retrievePrimaryKey(entity);
+		Long id = retrievePrimaryKey(entity, allowArchived);
 		if (id == null) { // Client not added
 			return;
 		}
@@ -115,7 +121,11 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		}
 		
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
-		clientMetadataExample.createCriteria().andClientIdEqualTo(id).andDateDeletedIsNull();
+		Criteria criteria = clientMetadataExample.createCriteria();
+		criteria.andClientIdEqualTo(id);
+		if (!allowArchived) {
+			criteria.andDateDeletedIsNull();
+		}
 		clientMetadata.setId(clientMetadataMapper.selectByExample(clientMetadataExample).get(0).getId());
 		clientMetadataMapper.updateByPrimaryKey(clientMetadata);
 	}
@@ -163,7 +173,9 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		if (StringUtils.isBlank(baseEntityId)) {
 			return null;
 		}
-		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(baseEntityId);
+		ClientMetadataExample clientMetadataExample= new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andBaseEntityIdEqualTo(baseEntityId).andDateDeletedIsNull();
+		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(clientMetadataExample);
 		return convert(pgClient);
 	}
 	
@@ -250,8 +262,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	public List<Client> findByEmptyServerVersion() {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		clientMetadataExample.createCriteria().andServerVersionIsNull();
+		clientMetadataExample.or(clientMetadataExample.createCriteria().andServerVersionEqualTo(0l));
 		clientMetadataExample.setOrderByClause("client_id ASC");
-		
 		List<org.opensrp.domain.postgres.Client> clients = clientMetadataMapper.selectMany(clientMetadataExample, 0,
 		    DEFAULT_FETCH_SIZE);
 		return convert(clients);
@@ -392,8 +404,17 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	protected Long retrievePrimaryKey(Client t) {
-		Object uniqueId = getUniqueField(t);
+	protected Long retrievePrimaryKey(Client entity) {
+		return retrievePrimaryKey(entity, false);
+	}
+	
+	/**
+	 * @param entity
+	 * @param allowArchived
+	 * @return
+	 */
+	private Long retrievePrimaryKey(Client entity, boolean allowArchived) {
+		Object uniqueId = getUniqueField(entity);
 		if (uniqueId == null) {
 			return null;
 		}
@@ -401,9 +422,13 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		String baseEntityId = uniqueId.toString();
 		
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
-		clientMetadataExample.createCriteria().andBaseEntityIdEqualTo(baseEntityId).andDateDeletedIsNull();
+		Criteria criteria = clientMetadataExample.createCriteria();
+		criteria.andBaseEntityIdEqualTo(baseEntityId);
+		if (!allowArchived) {
+			criteria.andDateDeletedIsNull();
+		}
 		
-		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(baseEntityId);
+		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(clientMetadataExample);
 		if (pgClient == null) {
 			return null;
 		}
@@ -420,14 +445,15 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<HouseholdClient> selectMemberCountHouseholdHeadProviderByClients(String field, List<String> ids,
-	                                                                             String clientType) {
+	        String clientType) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		clientMetadataExample.createCriteria().andRelationalIdIn(ids);
 		return clientMetadataMapper.selectMemberCountHouseholdHeadProviderByClients(clientMetadataExample, clientType);
 	}
 	
 	@Override
-	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean, AddressSearchBean addressSearchBean) {
+	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean searchBean,
+	        AddressSearchBean addressSearchBean) {
 		
 		return clientMetadataMapper.selectHouseholdCountBySearchBean(searchBean, addressSearchBean);
 	}
@@ -451,8 +477,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		
 		int offset = searchBean.getPageNumber() * pageSize;
 		
-		List<CustomClient> clients = clientMetadataMapper.selectAllClientsBySearchBean(searchBean, addressSearchBean,
-		    offset, pageSize);
+		List<CustomClient> clients = clientMetadataMapper.selectAllClientsBySearchBean(searchBean, addressSearchBean, offset,
+		    pageSize);
 		return customClientConvert(clients);
 	}
 	
@@ -537,8 +563,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	/**
-	 * Method should be used only during Unit testing
-	 * Deletes all existing records
+	 * Method should be used only during Unit testing Deletes all existing records
 	 */
 	public void removeAll() {
 		clientMetadataMapper.deleteByExample(new ClientMetadataExample());
