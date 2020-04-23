@@ -53,26 +53,23 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		setRevision(entity);
 		
 		Settings pgSetting = convert(entity, id);
-		
+		List<Setting> settings = entity.getSettings();
+		entity.setSettings(null); // strip out the settings block
 		if (pgSetting == null) {
 			return;
 		}
-		
-		SettingsMetadata metadata = createMetadata(entity, id);
-		if (metadata == null) {
-			return;
-		}
-		
+
 		int rowsAffected = settingMapper.updateByPrimaryKey(pgSetting);
 		if (rowsAffected < 1) {
 			return;
 		}
-		
-		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
-		metadataExample.createCriteria().andSettingsIdEqualTo(id);
-		metadata.setId(settingMetadataMapper.selectByExample(metadataExample).get(0).getId());
-		settingMetadataMapper.updateByPrimaryKey(metadata);
-		
+
+		entity.setSettings(settings); // re-inject settings block
+		List<SettingsMetadata> metadata = createMetadata(entity, id);
+		if (metadata == null) {
+			return;
+		}
+		settingMetadataMapper.updateMany(metadata);
 	}
 	
 	@Override
@@ -213,7 +210,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<Setting> settings = entity.getSettings();
 		try {
 			for (int i = 0; i < settings.size(); i++) {
+				Setting currSetting = settings.get(i);
 				SettingsMetadata metadata = new SettingsMetadata();
+//				metadata.setKey(currSetting.getKey()); // todo: uncomment this
 				metadata.setSettingsId(id);
 				metadata.setDocumentId(entity.getId() != null ? entity.getId() : UUID.randomUUID().toString());
 				metadata.setIdentifier(entity.getIdentifier());

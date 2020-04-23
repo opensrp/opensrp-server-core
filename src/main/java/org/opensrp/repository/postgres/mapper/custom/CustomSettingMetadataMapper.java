@@ -16,5 +16,7 @@ public interface CustomSettingMetadataMapper extends SettingsMetadataMapper {
 	Settings selectByDocumentId(String documentId);
 
 	int insertMany(List<SettingsMetadata> settingsMetadata);
+
+	int updateMany(List<SettingsMetadata> settingsMetadata);
 }
 

@@ -97,4 +97,18 @@
 			#{setting.locationId},
 		</foreach>
 	</insert>
+
+	<update id="updateMany" parameterType="java.util.List">
+		<foreach collection="settingsMetadata" item="setting" index="index" separator=";">
+			UPDATE core.settings_metadata SET
+				identifier = #{setting.identifier},
+				server_version = #{setting.serverVersion},
+				team = #{setting.team},
+				team_id = #{setting.teamId},
+				provider_id = #{setting.providerId},
+				location_id = #{setting.locationId}
+			WHERE settings_id = #{setting.settingsId}
+			AND setting_key = #{setting.settingKey}
+		</foreach>
+	</update>
 </mapper>
