@@ -308,14 +308,15 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
-	public SettingsMetadata getSettingMetadataByDocumentId(String documentId) { // todo: modify this
+	public SettingsMetadata getSettingMetadataByDocumentId(String documentId) {
+		List<SettingsMetadata> settingsMetadata = getAllSettingMetadataByDocumentId(documentId);
+		return !settingsMetadata.isEmpty() ? settingsMetadata.get(0) : null;
+	}
+
+	public List<SettingsMetadata> getAllSettingMetadataByDocumentId(String documentId) {
 		SettingsMetadataExample example = new SettingsMetadataExample();
 		example.createCriteria().andDocumentIdEqualTo(documentId);
-		
-		List<SettingsMetadata> settingsMetadata = settingMetadataMapper.selectByExample(example);
-		
-		return !settingsMetadata.isEmpty() ? settingsMetadata.get(0) : null;
-		
+		return settingMetadataMapper.selectByExample(example);
 	}
 	
 	@Override
