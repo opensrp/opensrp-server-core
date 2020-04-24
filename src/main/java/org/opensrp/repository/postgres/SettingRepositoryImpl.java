@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.postgres.Settings;
+import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.postgres.SettingsMetadataExample;
 import org.opensrp.domain.setting.Setting;
@@ -63,7 +64,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	@Override
-	public void update(SettingConfiguration entity) {// todo: modify this
+	public void update(SettingConfiguration entity) {
 		if (entity == null || entity.getId() == null || entity.getIdentifier() == null) {
 			return;
 		}
@@ -97,8 +98,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
-	public List<SettingConfiguration> getAll() {// todo: modify this
-		return convert(settingMetadataMapper.selectMany(new SettingsMetadataExample(), 0, DEFAULT_FETCH_SIZE));
+	public List<SettingConfiguration> getAll() {
+		return convertJoinedSettings(settingMetadataMapper.selectMany(new SettingsMetadataExample(), 0, DEFAULT_FETCH_SIZE));
 	}
 	
 	@Override
@@ -129,7 +130,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
-		// todo: modify this
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
 
@@ -155,7 +155,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 
-		return convert(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
+		return convertJoinedSettings(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
 	}
 	
 	@Override
@@ -163,7 +163,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		metadataExample.createCriteria().andServerVersionIsNull();
 		metadataExample.or(metadataExample.createCriteria().andServerVersionEqualTo(0l));
-		return convert(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
+		return convertJoinedSettings(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
 	}
 	
 	@Override
@@ -211,14 +211,30 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return new ArrayList<>();
 		}
 		
-		List<SettingConfiguration> settingValues = new ArrayList<>();
+		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
 		for (Settings setting : settings) {
 			SettingConfiguration convertedSetting = convert(setting);
 			if (convertedSetting != null) {
-				settingValues.add(convertedSetting);
+				settingConfigurations.add(convertedSetting);
 			}
 		}
-		return settingValues;
+		return settingConfigurations;
+	}
+
+	private List<SettingConfiguration> convertJoinedSettings(List<SettingsAndSettingsMetadataJoined> jointSettings) {
+		if (jointSettings == null || jointSettings.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
+		for (SettingsAndSettingsMetadataJoined jointSetting : jointSettings) {
+			SettingConfiguration convertedSetting = convert(jointSetting.getSettings());
+			convertedSetting.setSettings(convertToSettings(jointSetting.getSettingsMetadata()));
+			if (convertedSetting != null) {
+				settingConfigurations.add(convertedSetting);
+			}
+		}
+		return settingConfigurations;
 	}
 	
 	private SettingConfiguration convert(Settings setting) {
@@ -271,7 +287,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	@Override
 	public void add(SettingConfiguration entity) {
-		// todo: modify this
 		if (entity == null || entity.getSettings() == null || entity.getIdentifier() == null) {
 			return;
 		}

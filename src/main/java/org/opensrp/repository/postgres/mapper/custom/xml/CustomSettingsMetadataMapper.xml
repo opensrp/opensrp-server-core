@@ -4,14 +4,14 @@
 	namespace="org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper">
 
 	<sql id="Base_Column_List">
-		s.id, s.json
+		s.id, s.json, array_agg(sm.*) settings
 	</sql>
 
 	<sql id="Base_Table_List">
-		from core.settings_metadata sm
-		join core.settings s on
-		sm.settings_id =
-		s.id
+		FROM core.settings_metadata sm
+		JOIN core.settings s ON
+		sm.settings_id = s.id
+		GROUP BY s.id, s.json, sm.settings_id;
 	</sql>
 
 	<select id="selectByDocumentId" parameterType="java.lang.String"
@@ -57,23 +57,6 @@
 		</where>
 	</sql>
 
-	<select id="selectMany" resultMap="org.opensrp.repository.postgres.mapper.SettingsMapper.BaseResultMap">
-		select
-		<if test="example.distinct">
-			distinct
-		</if>
-		<include refid="Base_Column_List" />
-		<include refid="Base_Table_List" />
-
-		<if test="_parameter != null">
-			<include refid="Example_Where_Clause" />
-		</if>
-		<if test="example.orderByClause != null">
-			order by ${example.orderByClause}
-		</if>
-		LIMIT #{limit} OFFSET #{offset}
-	</select>
-
 	<insert id="insertMany" parameterType="java.util.List">
 		INSERT INTO core.settings_metadata (
 			id,
@@ -111,4 +94,22 @@
 			AND setting_key = #{setting.settingKey}
 		</foreach>
 	</update>
+
+	<select id="selectMany" resultMap="org.opensrp.repository.postgres.mapper.SettingsMapper.BaseResultMap">
+		SELECT
+		<if test="example.distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		<include refid="Base_Table_List" />
+
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="example.orderByClause != null">
+			order by ${example.orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
 </mapper>
