@@ -233,21 +233,24 @@
 			</trim>
 		</where>
 	</sql>
+	<sql id="joinCondition">
+		from
+		core.location as l
+		join core.location_metadata as lm on
+		l.id = lm.location_id
+		left join core.location_metadata as plm on
+		lm.parent_id::bigint = plm.location_id
+		inner join core.location_tag_map as ltm on
+		lm.location_id = ltm.location_id	
+		inner join core.location_tag lt on
+		lt.id = ltm.location_tag_id
+	</sql>
 	
     <select id="selectLocations" resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
 		select
 			l.id,
 			jsonb_set(jsonb_set(l.json-'geometry','{properties,parentName}',coalesce(to_jsonb(plm."name"),'""'),true),'{properties,tagName}',coalesce(to_jsonb(lt."name"),'""'),true) json			
-			from
-			core.location as l
-			join core.location_metadata as lm on
-			l.id = lm.location_id
-			left join core.location_metadata as plm on
-			lm.parent_id::bigint = plm.location_id
-			inner join core.location_tag_map as ltm on
-			lm.location_id = ltm.location_id	
-			inner join core.location_tag lt on
-			lt.id = ltm.location_tag_id
+		<include refid="joinCondition"/>
 		<include refid="whereCondition"/>
         <if test="locationSearchBean.orderByFieldName != null and locationSearchBean.orderByType != null">
             order by ${locationSearchBean.orderByFieldName}  ${locationSearchBean.orderByType}
@@ -259,16 +262,7 @@
 	<select id="selectCountLocations" resultType="Integer">
 		select
 			count(l.id)						
-			from
-			core.location as l
-			join core.location_metadata as lm on
-			l.id = lm.location_id
-			left join core.location_metadata as plm on
-			lm.parent_id::bigint = plm.location_id
-			inner join core.location_tag_map as ltm on
-			lm.location_id = ltm.location_id	
-			inner join core.location_tag lt on
-			lt.id = ltm.location_tag_id
+		<include refid="joinCondition"/>
         <include refid="whereCondition"/>
         
     </select>

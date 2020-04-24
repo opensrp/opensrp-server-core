@@ -792,7 +792,20 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		LocationSearchBean locationSearchBean = new LocationSearchBean();
 		locationSearchBean.setName("a");
 		locationSearchBean.setLocationTagId(2l);
-		int locationsCount = locationRepository.countSearchLocations(locationSearchBean);
-		assertEquals(1l, locationsCount);
+		int totalCount = locationRepository.countSearchLocations(locationSearchBean);
+		assertEquals(1l, totalCount);
+	}
+	
+	@Test
+	public void testCountSearchLocationsWithoutFilters() {
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(2l);
+		locationTagMap.setLocationTagId(2l);
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("Khulna");
+		locationSearchBean.setLocationTagId(2l);
+		int totalCount = locationRepository.countSearchLocations(locationSearchBean);
+		assertEquals("total count should be zero", 0, totalCount);
 	}
 }
