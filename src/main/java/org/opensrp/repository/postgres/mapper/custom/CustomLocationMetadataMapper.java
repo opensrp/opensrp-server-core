@@ -8,6 +8,7 @@ import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.LocationMetadataExample;
 import org.opensrp.repository.postgres.mapper.LocationMetadataMapper;
+import org.opensrp.search.LocationSearchBean;
 
 public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	
@@ -34,4 +35,9 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 
 	List<String> selectManyIds(@Param("example") LocationMetadataExample locationMetadataExample, @Param("offset") int offset,
 							   @Param("limit") int limit);
+	
+	List<Location> selectLocations(@Param("locationSearchBean") LocationSearchBean locationSearchBean,
+	                                     @Param("offset") Integer offset, @Param("limit") Integer limit);
+
+	int selectCountLocations(@Param("locationSearchBean") LocationSearchBean locationSearchBean);
 }

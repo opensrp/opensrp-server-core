@@ -27,6 +27,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
+import org.opensrp.search.LocationSearchBean;
 import org.opensrp.service.LocationTagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -628,5 +629,26 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 				
 			}
 		}
+	}
+	@Override
+	public List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
+		Integer offset = 0;
+		if (locationSearchBean.getPageSize() == null || locationSearchBean.getPageSize() == 0) {
+			return convert(locationMetadataMapper.selectLocations(locationSearchBean, null, null));
+
+		} else if (locationSearchBean.getPageNumber() != null && locationSearchBean.getPageNumber() == 0) {
+			throw new IllegalArgumentException("pageNumber should be greater than 0");
+
+		} else if (locationSearchBean.getPageNumber() != null) {
+
+			offset = locationSearchBean.getPageSize() * (locationSearchBean.getPageNumber() - 1);
+		}
+		return convert(locationMetadataMapper.selectLocations(locationSearchBean, offset,
+		    locationSearchBean.getPageSize()));
+	}
+
+	@Override
+	public int countSearchLocations(LocationSearchBean locationSearchBean) {
+		return locationMetadataMapper.selectCountLocations(locationSearchBean);
 	}
 }

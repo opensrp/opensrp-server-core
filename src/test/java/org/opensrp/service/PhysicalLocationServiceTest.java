@@ -36,6 +36,7 @@ import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.PhysicalLocationTest;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.search.LocationSearchBean;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -548,5 +549,29 @@ public class PhysicalLocationServiceTest {
 	private PhysicalLocation createStructure() {
 		return PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.structureJson, PhysicalLocation.class);
 	}
-
+	
+	@Test
+	public void testSearchlLocationsWithFilters() {
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("a");
+		locationSearchBean.setLocationTagId(2l);
+		locationSearchBean.setPageSize(20);
+		List<PhysicalLocation> expectedLocations = new ArrayList<>();
+		expectedLocations.add(createLocation());
+		when(locationRepository.searchLocations(locationSearchBean)).thenReturn(expectedLocations);
+		List<PhysicalLocation> actutalLocations = locationService.searchLocations(locationSearchBean);
+		verify(locationRepository).searchLocations(locationSearchBean);
+		assertEquals(1, actutalLocations.size());
+		assertEquals("Feature", actutalLocations.get(0).getType());
+	}
+	
+	@Test
+	public void testShouldSearchCountLocation() {
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		when(locationRepository.countSearchLocations(locationSearchBean)).thenReturn(1);
+		int actutalLocations = locationService.countSearchLocations(locationSearchBean);
+		verify(locationRepository).countSearchLocations(locationSearchBean);
+		assertEquals(1, actutalLocations);
+	}
+	
 }
