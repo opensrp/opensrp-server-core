@@ -237,7 +237,7 @@
     <select id="selectLocations" resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
 		select
 			l.id,
-			jsonb_set(l.json-'geometry', '{properties,parentName}', coalesce(to_jsonb(plm."name"),'"" '), true) json			
+			jsonb_set(jsonb_set(l.json-'geometry','{properties,parentName}',coalesce(to_jsonb(plm."name"),'""'),true),'{properties,tagName}',coalesce(to_jsonb(lt."name"),'""'),true) json			
 			from
 			core.location as l
 			join core.location_metadata as lm on

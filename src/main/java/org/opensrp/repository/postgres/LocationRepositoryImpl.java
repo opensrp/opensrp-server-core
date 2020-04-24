@@ -635,21 +635,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		Integer offset = 0;
 		if (locationSearchBean.getPageSize() == null || locationSearchBean.getPageSize() == 0) {
 			return convert(locationMetadataMapper.selectLocations(locationSearchBean, null, null));
-		} else {
 
-		}
-
-		if (locationSearchBean.getPageNumber() != null && locationSearchBean.getPageNumber() == 0) {
+		} else if (locationSearchBean.getPageNumber() != null && locationSearchBean.getPageNumber() == 0) {
 			throw new IllegalArgumentException("pageNumber should be greater than 0");
-		} else {
 
-		}
-
-		if (locationSearchBean.getPageNumber() != null) {
+		} else if (locationSearchBean.getPageNumber() != null) {
 
 			offset = locationSearchBean.getPageSize() * (locationSearchBean.getPageNumber() - 1);
-		} else {
-
 		}
 		return convert(locationMetadataMapper.selectLocations(locationSearchBean, offset,
 		    locationSearchBean.getPageSize()));

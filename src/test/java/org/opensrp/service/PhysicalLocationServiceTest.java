@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.opensrp.domain.CustomPhysicalLocation;
 import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
@@ -552,10 +551,13 @@ public class PhysicalLocationServiceTest {
 	}
 	
 	@Test
-	public void testShouldSearchLocations() {
+	public void testSearchlLocationsWithFilters() {
 		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("a");
+		locationSearchBean.setLocationTagId(2l);
+		locationSearchBean.setPageSize(20);
 		List<PhysicalLocation> expectedLocations = new ArrayList<>();
-		expectedLocations.add(createCustomLocation());
+		expectedLocations.add(createLocation());
 		when(locationRepository.searchLocations(locationSearchBean)).thenReturn(expectedLocations);
 		List<PhysicalLocation> actutalLocations = locationService.searchLocations(locationSearchBean);
 		verify(locationRepository).searchLocations(locationSearchBean);
@@ -572,10 +574,4 @@ public class PhysicalLocationServiceTest {
 		assertEquals(1, actutalLocations);
 	}
 	
-	private PhysicalLocation createCustomLocation() {
-		CustomPhysicalLocation parentLocation = PhysicalLocationTest.gson.fromJson(PhysicalLocationTest.parentJson,
-		    CustomPhysicalLocation.class);
-		parentLocation.setJurisdiction(true);
-		return parentLocation;
-	}
 }

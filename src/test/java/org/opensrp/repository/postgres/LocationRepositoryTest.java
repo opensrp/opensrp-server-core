@@ -725,7 +725,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	}
 	
 	@Test
-	public void testSearchlLocations() {
+	public void testSearchlLocationsWithFilters() {
 		LocationTagMap locationTagMap = new LocationTagMap();
 		locationTagMap.setLocationId(2l);
 		locationTagMap.setLocationTagId(2l);
@@ -744,7 +744,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	}
 	
 	@Test
-	public void testGetAllLocations() {
+	public void testSearchLocationsWithoutFilters() {
 		LocationTagMap locationTagMap = new LocationTagMap();
 		locationTagMap.setLocationId(2l);
 		locationTagMap.setLocationTagId(2l);
@@ -758,9 +758,23 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locations = locationRepository.searchLocations(locationSearchBean);
 		assertEquals(1l, locations.size());
 	}
+	
+	@Test
+	public void testSearchLocationsWithEmptyRecords() {
+		LocationTagMap locationTagMap = new LocationTagMap();
+		locationTagMap.setLocationId(2l);
+		locationTagMap.setLocationTagId(2l);
+		
+		LocationSearchBean locationSearchBean = new LocationSearchBean();
+		locationSearchBean.setName("no location");
+		locationTagRepository.addLocationTagMap(locationTagMap);
+		List<PhysicalLocation> locations = new ArrayList<PhysicalLocation>();
+		locations = locationRepository.searchLocations(locationSearchBean);
+		assertTrue(locations.isEmpty());
+	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testReturnIllegalArgumentException() {
+	public void testSearchLocationsWithoutPageNumber() {
 		LocationSearchBean locationSearchBean = new LocationSearchBean();
 		locationSearchBean.setName("a");
 		locationSearchBean.setLocationTagId(2l);
@@ -770,7 +784,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testSearchCountLocations() {
+	public void testCountSearchLocationsWithFilters() {
 		LocationTagMap locationTagMap = new LocationTagMap();
 		locationTagMap.setLocationId(2l);
 		locationTagMap.setLocationTagId(2l);
