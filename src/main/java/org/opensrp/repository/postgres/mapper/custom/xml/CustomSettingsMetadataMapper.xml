@@ -3,15 +3,34 @@
 <mapper
 	namespace="org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper">
 
+	<resultMap id="SettingsAndSettingsMetadataMap" type="org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined">
+		<result column="sm.settings_id" jdbcType="BIGINT" property="settings.id" />
+		<result column="s.json" jdbcType="OTHER" property="settings.json" typeHandler="org.opensrp.repository.postgres.handler.SettingTypeHandler" />
+		<result column="sm.id" jdbcType="BIGINT" property="settingsMetadata.id" />
+		<result column="sm.document_id" jdbcType="VARCHAR" property="settingsMetadata.documentId" />
+		<result column="sm.identifier" jdbcType="VARCHAR" property="settingsMetadata.identifier" />
+		<result column="sm.server_version" jdbcType="BIGINT" property="settingsMetadata.serverVersion" />
+		<result column="sm.team" jdbcType="VARCHAR" property="settingsMetadata.team" />
+		<result column="sm.team_id" jdbcType="VARCHAR" property="settingsMetadata.teamId" />
+		<result column="sm.provider_id" jdbcType="VARCHAR" property="settingsMetadata.providerId" />
+		<result column="sm.location_id" jdbcType="VARCHAR" property="settingsMetadata.locationId" />
+		<result column="sm.uuid" jdbcType="VARCHAR" property="settingsMetadata.uuid" />
+		<result column="sm.json" jdbcType="OTHER" property="settingsMetadata.json" />
+		<result column="sm.setting_type" jdbcType="VARCHAR" property="settingsMetadata.settingType" />
+		<result column="sm.setting_value" jdbcType="VARCHAR" property="settingsMetadata.settingValue" />
+		<result column="sm.setting_key" jdbcType="VARCHAR" property="settingsMetadata.settingKey" />
+		<result column="sm.setting_description" jdbcType="VARCHAR" property="settingsMetadata.settingDescription" />
+		<result column="sm.inherited_from" jdbcType="VARCHAR" property="settingsMetadata.inheritedFrom" />
+	</resultMap>
+
 	<sql id="Base_Column_List">
-		s.id, s.json, array_agg(sm.*) settings
+		s.json, sm.*
 	</sql>
 
 	<sql id="Base_Table_List">
 		FROM core.settings_metadata sm
 		JOIN core.settings s ON
 		sm.settings_id = s.id
-		GROUP BY s.id, s.json, sm.settings_id;
 	</sql>
 
 	<select id="selectByDocumentId" parameterType="java.lang.String"
@@ -95,20 +114,24 @@
 		</foreach>
 	</update>
 
-	<select id="selectMany" resultMap="org.opensrp.repository.postgres.mapper.SettingsMapper.BaseResultMap">
+	<select id="selectMany" resultMap="SettingsAndSettingsMetadataMap">
 		SELECT
+
 		<if test="example.distinct">
 			distinct
 		</if>
+
 		<include refid="Base_Column_List" />
 		<include refid="Base_Table_List" />
 
 		<if test="_parameter != null">
 			<include refid="Example_Where_Clause" />
 		</if>
+
 		<if test="example.orderByClause != null">
 			order by ${example.orderByClause}
 		</if>
+
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 

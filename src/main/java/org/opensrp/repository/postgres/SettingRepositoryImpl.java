@@ -2,7 +2,9 @@
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,18 +51,23 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<Setting> settings = new ArrayList<>();
 		for (int i = 0; i < settings.size(); i++) {
 			SettingsMetadata currSettingMetadata = settingsMetadata.get(i);
-			Setting setting = new Setting();
-			//				setting.setKey(currSettingMetadatagetKey()); // todo: uncomment this
-//			setting.setDescription(currSettingMetadata.ge);// todo: uncomment this
-			setting.setIdentifier(currSettingMetadata.getIdentifier());
-			setting.setProviderId(currSettingMetadata.getProviderId());
-			setting.setLocationId(currSettingMetadata.getLocationId());
-			setting.setTeam(currSettingMetadata.getTeam());
-			setting.setTeamId(currSettingMetadata.getTeamId());
-			setting.setServerVersion(currSettingMetadata.getServerVersion());
-			settings.add(setting);
+			settings.add(convertToSetting(currSettingMetadata));
 		}
 		return settings;
+	}
+
+
+	private Setting convertToSetting(SettingsMetadata settingsMetadata) {
+		Setting setting = new Setting();
+		//				setting.setKey(currSettingMetadatagetKey()); // todo: uncomment this
+		//			setting.setDescription(currSettingMetadata.ge);// todo: uncomment this
+		setting.setIdentifier(settingsMetadata.getIdentifier());
+		setting.setProviderId(settingsMetadata.getProviderId());
+		setting.setLocationId(settingsMetadata.getLocationId());
+		setting.setTeam(settingsMetadata.getTeam());
+		setting.setTeamId(settingsMetadata.getTeamId());
+		setting.setServerVersion(settingsMetadata.getServerVersion());
+		return setting;
 	}
 
 	@Override
@@ -99,7 +106,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	public List<SettingConfiguration> getAll() {
-		return convertJoinedSettings(settingMetadataMapper.selectMany(new SettingsMetadataExample(), 0, DEFAULT_FETCH_SIZE));
+		return convertToSettingConfigurations(settingMetadataMapper.selectMany(new SettingsMetadataExample(), 0, DEFAULT_FETCH_SIZE));
 	}
 	
 	@Override
@@ -155,7 +162,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 
-		return convertJoinedSettings(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
+		return convertToSettingConfigurations(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
 	}
 	
 	@Override
@@ -163,7 +170,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		metadataExample.createCriteria().andServerVersionIsNull();
 		metadataExample.or(metadataExample.createCriteria().andServerVersionEqualTo(0l));
-		return convertJoinedSettings(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
+		return convertToSettingConfigurations(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
 	}
 	
 	@Override
@@ -221,22 +228,26 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settingConfigurations;
 	}
 
-	private List<SettingConfiguration> convertJoinedSettings(List<SettingsAndSettingsMetadataJoined> jointSettings) {
+	private List<SettingConfiguration> convertToSettingConfigurations(List<SettingsAndSettingsMetadataJoined> jointSettings) {
 		if (jointSettings == null || jointSettings.isEmpty()) {
 			return new ArrayList<>();
 		}
 
 		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
+		Map<Long, SettingConfiguration> settingConfigurationMap  = new HashMap<>();
 		for (SettingsAndSettingsMetadataJoined jointSetting : jointSettings) {
-			SettingConfiguration convertedSetting = convert(jointSetting.getSettings());
-			convertedSetting.setSettings(convertToSettings(jointSetting.getSettingsMetadata()));
-			if (convertedSetting != null) {
-				settingConfigurations.add(convertedSetting);
+			SettingConfiguration settingConfiguration = settingConfigurationMap.get(jointSetting.getSettings().getId());
+			if (settingConfiguration == null) {
+				settingConfiguration = convert(jointSetting.getSettings());
+				settingConfigurationMap.put(Long.valueOf(settingConfiguration.getId()), settingConfiguration);
 			}
+			settingConfiguration.getSettings().add(convertToSetting(jointSetting.getSettingsMetadata()));
 		}
+		settingConfigurations.addAll(settingConfigurationMap.values());
+
 		return settingConfigurations;
 	}
-	
+
 	private SettingConfiguration convert(Settings setting) {
 		if (setting == null || setting.getJson() == null) {
 			return null;
