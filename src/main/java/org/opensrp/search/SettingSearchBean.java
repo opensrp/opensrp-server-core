@@ -24,6 +24,8 @@ public class SettingSearchBean extends BaseDataObject {
 	@JsonProperty
 	private String childLocationId;
 
+	private String documentId;
+
 	private Long serverVersion;
 	
 	public String getProviderId() {
@@ -80,5 +82,13 @@ public class SettingSearchBean extends BaseDataObject {
 
 	public void setChildLocationId(String childLocationId) {
 		this.childLocationId = childLocationId;
+	}
+
+	public String getDocumentId() {
+		return documentId;
+	}
+
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
 	}
 }

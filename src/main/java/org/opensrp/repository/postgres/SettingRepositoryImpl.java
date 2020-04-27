@@ -32,19 +32,15 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	public SettingConfiguration get(String id) {
-		
 		if (StringUtils.isBlank(id)) {
 			return null;
 		}
-		Settings setting = settingMetadataMapper.selectByDocumentId(id);
-		SettingsMetadataExample settingsMetadataExample = new SettingsMetadataExample();
-		settingsMetadataExample.createCriteria().andDocumentIdEqualTo(id);
-		List<SettingsMetadata> settingsMetadata = settingMetadataMapper.selectByExample(settingsMetadataExample);
+		SettingSearchBean settingQueryBean = new SettingSearchBean();
+		settingQueryBean.setServerVersion(0L);
+		settingQueryBean.setDocumentId(id);
 
-		SettingConfiguration settingConfiguration = convert(setting);
-		settingConfiguration.setSettings(convertToSettings(settingsMetadata));
-
-		return settingConfiguration;
+		List<SettingConfiguration> settingConfigurations = findSettings(settingQueryBean);
+		return settingConfigurations.isEmpty() ? null : settingConfigurations.get(0);
 	}
 
 	private List<Setting> convertToSettings(List<SettingsMetadata> settingsMetadata) {
@@ -144,8 +140,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		String locationId = settingQueryBean.getLocationId();
 		String team = settingQueryBean.getTeam();
 		String teamId = settingQueryBean.getTeamId();
-		if (StringUtils.isBlank(providerId) && StringUtils.isBlank(locationId) && StringUtils.isBlank(team) && StringUtils.isBlank(teamId)) {
-			criteria.andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull().andLocationIdIsNull();
+		String documentId = settingQueryBean.getDocumentId();
+		if (StringUtils.isBlank(providerId) && StringUtils.isBlank(locationId) && StringUtils.isBlank(team)
+				&& StringUtils.isBlank(teamId) && StringUtils.isBlank(documentId)) {
+			criteria.andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull().andLocationIdIsNull().andDocumentIdIsNull();
 		} else {
 			if (StringUtils.isNotEmpty(providerId)) {
 				criteria.andProviderIdEqualTo(providerId);
@@ -158,6 +156,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			}
 			if (StringUtils.isNotEmpty(teamId)) {
 				criteria.andTeamIdEqualTo(teamId);
+			}
+			if (StringUtils.isNotEmpty(documentId)) {
+				criteria.andDocumentIdEqualTo(documentId);
 			}
 		}
 		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
@@ -185,7 +186,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		metadataExample.createCriteria().andDocumentIdEqualTo(documentId);
 		
-		Settings pgSetting = settingMetadataMapper.selectByDocumentId(documentId);
+		Settings pgSetting = settingMetadataMapper.selectByDocumentId(documentId).getSettings();
 		
 		if (pgSetting == null) {
 			return null;
@@ -229,23 +230,16 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	private List<SettingConfiguration> convertToSettingConfigurations(List<SettingsAndSettingsMetadataJoined> jointSettings) {
-		if (jointSettings == null || jointSettings.isEmpty()) {
-			return new ArrayList<>();
-		}
-
+		// todo: fix this conversion logic
 		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
-		Map<Long, SettingConfiguration> settingConfigurationMap  = new HashMap<>();
-		for (SettingsAndSettingsMetadataJoined jointSetting : jointSettings) {
-			SettingConfiguration settingConfiguration = settingConfigurationMap.get(jointSetting.getSettings().getId());
-			if (settingConfiguration == null) {
-				settingConfiguration = convert(jointSetting.getSettings());
-				settingConfigurationMap.put(Long.valueOf(settingConfiguration.getId()), settingConfiguration);
-			}
-//			settingConfiguration.getSettings().add(convertToSetting(jointSetting.getSettingsMetadata())); // todo: look at this
-			settingConfiguration.setSettings(convertToSettings(jointSetting.getSettingsMetadata()));
+		if (jointSettings == null || jointSettings.isEmpty()) {
+			return settingConfigurations;
 		}
-		settingConfigurations.addAll(settingConfigurationMap.values());
-
+		for (SettingsAndSettingsMetadataJoined jointSetting : jointSettings) {
+			SettingConfiguration settingConfiguration = new SettingConfiguration();
+			settingConfiguration.setSettings(convertToSettings(jointSetting.getSettingsMetadata()));
+			settingConfigurations.add(settingConfiguration);
+		}
 		return settingConfigurations;
 	}
 
