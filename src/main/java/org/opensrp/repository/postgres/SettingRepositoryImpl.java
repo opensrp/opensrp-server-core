@@ -241,7 +241,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				settingConfiguration = convert(jointSetting.getSettings());
 				settingConfigurationMap.put(Long.valueOf(settingConfiguration.getId()), settingConfiguration);
 			}
-			settingConfiguration.getSettings().add(convertToSetting(jointSetting.getSettingsMetadata()));
+//			settingConfiguration.getSettings().add(convertToSetting(jointSetting.getSettingsMetadata())); // todo: look at this
+			settingConfiguration.setSettings(convertToSettings(jointSetting.getSettingsMetadata()));
 		}
 		settingConfigurations.addAll(settingConfigurationMap.values());
 

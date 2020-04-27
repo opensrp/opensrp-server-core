@@ -4,27 +4,30 @@
 	namespace="org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper">
 
 	<resultMap id="SettingsAndSettingsMetadataMap" type="org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined">
-		<result column="sm.settings_id" jdbcType="BIGINT" property="settings.id" />
-		<result column="s.json" jdbcType="OTHER" property="settings.json" typeHandler="org.opensrp.repository.postgres.handler.SettingTypeHandler" />
-		<result column="sm.id" jdbcType="BIGINT" property="settingsMetadata.id" />
-		<result column="sm.document_id" jdbcType="VARCHAR" property="settingsMetadata.documentId" />
-		<result column="sm.identifier" jdbcType="VARCHAR" property="settingsMetadata.identifier" />
-		<result column="sm.server_version" jdbcType="BIGINT" property="settingsMetadata.serverVersion" />
-		<result column="sm.team" jdbcType="VARCHAR" property="settingsMetadata.team" />
-		<result column="sm.team_id" jdbcType="VARCHAR" property="settingsMetadata.teamId" />
-		<result column="sm.provider_id" jdbcType="VARCHAR" property="settingsMetadata.providerId" />
-		<result column="sm.location_id" jdbcType="VARCHAR" property="settingsMetadata.locationId" />
-		<result column="sm.uuid" jdbcType="VARCHAR" property="settingsMetadata.uuid" />
-		<result column="sm.json" jdbcType="OTHER" property="settingsMetadata.json" />
-		<result column="sm.setting_type" jdbcType="VARCHAR" property="settingsMetadata.settingType" />
-		<result column="sm.setting_value" jdbcType="VARCHAR" property="settingsMetadata.settingValue" />
-		<result column="sm.setting_key" jdbcType="VARCHAR" property="settingsMetadata.settingKey" />
-		<result column="sm.setting_description" jdbcType="VARCHAR" property="settingsMetadata.settingDescription" />
-		<result column="sm.inherited_from" jdbcType="VARCHAR" property="settingsMetadata.inheritedFrom" />
+		<result column="settings_id" jdbcType="BIGINT" property="settings.id" />
+		<result column="settings_configuration_json" jdbcType="OTHER" property="settings.json" />
+		<collection column="settings_id" javaType="ArrayList" ofType="org.opensrp.domain.postgres.SettingsMetadata" property="settingsMetadata">
+			<result column="settings_metadata_id" jdbcType="BIGINT" property="id" />
+			<result column="settings_id" jdbcType="BIGINT" property="settingsId" />
+			<result column="document_id" jdbcType="VARCHAR" property="documentId" />
+			<result column="identifier" jdbcType="VARCHAR" property="identifier" />
+			<result column="server_version" jdbcType="BIGINT" property="serverVersion" />
+			<result column="team" jdbcType="VARCHAR" property="team" />
+			<result column="team_id" jdbcType="VARCHAR" property="teamId" />
+			<result column="provider_id" jdbcType="VARCHAR" property="providerId" />
+			<result column="location_id" jdbcType="VARCHAR" property="locationId" />
+			<result column="uuid" jdbcType="VARCHAR" property="uuid" />
+			<result column="settings_metadata_configuration_json" jdbcType="OTHER" property="json" typeHandler="org.opensrp.repository.postgres.handler.SettingMetadataTypeHandler" />
+			<result column="setting_type" jdbcType="VARCHAR" property="settingType" />
+			<result column="setting_value" jdbcType="VARCHAR" property="settingValue" />
+			<result column="setting_key" jdbcType="VARCHAR" property="settingKey" />
+			<result column="setting_description" jdbcType="VARCHAR" property="settingDescription" />
+			<result column="inherited_from" jdbcType="VARCHAR" property="inheritedFrom" />
+		</collection>
 	</resultMap>
 
 	<sql id="Base_Column_List">
-		s.json, sm.*
+		s.json as settings_configuration_json, sm.id as settings_metadata_id, sm.json as settings_metadata_configuration_json, sm.*
 	</sql>
 
 	<sql id="Base_Table_List">
