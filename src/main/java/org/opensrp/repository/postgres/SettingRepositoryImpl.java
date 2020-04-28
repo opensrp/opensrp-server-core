@@ -236,7 +236,18 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return settingConfigurations;
 		}
 		for (SettingsAndSettingsMetadataJoined jointSetting : jointSettings) {
+			SettingsMetadata settingsMetadata = jointSetting.getSettingsMetadata().get(0);
 			SettingConfiguration settingConfiguration = new SettingConfiguration();
+			settingConfiguration.setIdentifier(settingsMetadata.getIdentifier());
+			settingConfiguration.setId(String.valueOf(settingsMetadata.getSettingsId()));
+			settingConfiguration.setType(settingsMetadata.getSettingType());
+			settingConfiguration.setTeamId(settingsMetadata.getTeamId());
+			settingConfiguration.setTeam(settingsMetadata.getTeam());
+			settingConfiguration.setProviderId(settingsMetadata.getProviderId());
+			settingConfiguration.setLocationId(settingsMetadata.getLocationId());
+			settingConfiguration.setChildLocationId(settingsMetadata.getLocationId());
+			settingConfiguration.setDocumentId(settingsMetadata.getDocumentId());
+			settingConfiguration.setServerVersion(settingsMetadata.getServerVersion());
 			settingConfiguration.setSettings(convertToSettings(jointSetting.getSettingsMetadata()));
 			settingConfigurations.add(settingConfiguration);
 		}

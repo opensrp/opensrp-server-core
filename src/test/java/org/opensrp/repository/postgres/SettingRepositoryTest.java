@@ -47,15 +47,13 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testGetSettingById() {
-		
 		Settings setting = settingRepository.getSettingById(1L);
 		assertNotNull(setting);
 		assertNotNull(setting.getJson());
 		
-		SettingConfiguration settingConfiguration = settingRepository.get("settings-document-id-2");
+		SettingConfiguration settingConfiguration = settingRepository.get("1512");
 		assertNotNull(settingConfiguration);
-		assertEquals("population_characteristics", settingConfiguration.getIdentifier());
-		
+		assertEquals("global_configs12", settingConfiguration.getIdentifier());
 	}
 	
 	@Test
