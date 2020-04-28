@@ -1,12 +1,6 @@
 
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
@@ -20,6 +14,10 @@ import org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper
 import org.opensrp.search.SettingSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Repository("settingRepositoryPostgres")
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
@@ -55,8 +53,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	private Setting convertToSetting(SettingsMetadata settingsMetadata) {
 		Setting setting = new Setting();
-		//				setting.setKey(currSettingMetadatagetKey()); // todo: uncomment this
-		//			setting.setDescription(currSettingMetadata.ge);// todo: uncomment this
+		setting.setKey(settingsMetadata.getSettingKey());
+		setting.setDescription(settingsMetadata.getSettingDescription());
 		setting.setIdentifier(settingsMetadata.getIdentifier());
 		setting.setProviderId(settingsMetadata.getProviderId());
 		setting.setLocationId(settingsMetadata.getLocationId());
@@ -230,7 +228,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	private List<SettingConfiguration> convertToSettingConfigurations(List<SettingsAndSettingsMetadataJoined> jointSettings) {
-		// todo: fix this conversion logic
 		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
 		if (jointSettings == null || jointSettings.isEmpty()) {
 			return settingConfigurations;
@@ -268,7 +265,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			for (int i = 0; i < settings.size(); i++) {
 				Setting currSetting = settings.get(i);
 				SettingsMetadata metadata = new SettingsMetadata();
-//				metadata.setKey(currSetting.getKey()); // todo: uncomment this
+				metadata.setSettingKey(currSetting.getKey());
 				metadata.setSettingsId(id);
 				metadata.setDocumentId(entity.getId() != null ? entity.getId() : UUID.randomUUID().toString());
 				metadata.setIdentifier(entity.getIdentifier());
