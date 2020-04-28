@@ -143,7 +143,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		String documentId = settingQueryBean.getDocumentId();
 		if (StringUtils.isBlank(providerId) && StringUtils.isBlank(locationId) && StringUtils.isBlank(team)
 				&& StringUtils.isBlank(teamId) && StringUtils.isBlank(documentId)) {
-			criteria.andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull().andLocationIdIsNull().andDocumentIdIsNull();
+			criteria.andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull().andLocationIdIsNull();
 		} else {
 			if (StringUtils.isNotEmpty(providerId)) {
 				criteria.andProviderIdEqualTo(providerId);
