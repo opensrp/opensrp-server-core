@@ -50,18 +50,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settings;
 	}
 
-
 	private Setting convertToSetting(SettingsMetadata settingsMetadata) {
-		Setting setting = new Setting();
-		setting.setKey(settingsMetadata.getSettingKey());
-		setting.setDescription(settingsMetadata.getSettingDescription());
-		setting.setIdentifier(settingsMetadata.getIdentifier());
-		setting.setProviderId(settingsMetadata.getProviderId());
-		setting.setLocationId(settingsMetadata.getLocationId());
-		setting.setTeam(settingsMetadata.getTeam());
-		setting.setTeamId(settingsMetadata.getTeamId());
-		setting.setServerVersion(settingsMetadata.getServerVersion());
-		return setting;
+		return (Setting) settingsMetadata.getJson();
 	}
 
 	@Override
@@ -239,21 +229,26 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		for (SettingsAndSettingsMetadataJoined jointSetting : jointSettings) {
 			SettingsMetadata settingsMetadata = jointSetting.getSettingsMetadata().get(0);
-			SettingConfiguration settingConfiguration = new SettingConfiguration();
-			settingConfiguration.setIdentifier(settingsMetadata.getIdentifier());
-			settingConfiguration.setId(String.valueOf(settingsMetadata.getSettingsId()));
-			settingConfiguration.setType(settingsMetadata.getSettingType());
-			settingConfiguration.setTeamId(settingsMetadata.getTeamId());
-			settingConfiguration.setTeam(settingsMetadata.getTeam());
-			settingConfiguration.setProviderId(settingsMetadata.getProviderId());
-			settingConfiguration.setLocationId(settingsMetadata.getLocationId());
-			settingConfiguration.setChildLocationId(settingsMetadata.getLocationId());
-			settingConfiguration.setDocumentId(settingsMetadata.getDocumentId());
-			settingConfiguration.setServerVersion(settingsMetadata.getServerVersion());
+			SettingConfiguration settingConfiguration = convert(settingsMetadata);
 			settingConfiguration.setSettings(convertToSettings(jointSetting.getSettingsMetadata()));
 			settingConfigurations.add(settingConfiguration);
 		}
 		return settingConfigurations;
+	}
+
+	private SettingConfiguration convert(SettingsMetadata settingsMetadata) {
+		SettingConfiguration settingConfiguration = new SettingConfiguration();
+		settingConfiguration.setIdentifier(settingsMetadata.getIdentifier());
+		settingConfiguration.setId(String.valueOf(settingsMetadata.getSettingsId()));
+		settingConfiguration.setType(settingsMetadata.getSettingType());
+		settingConfiguration.setTeamId(settingsMetadata.getTeamId());
+		settingConfiguration.setTeam(settingsMetadata.getTeam());
+		settingConfiguration.setProviderId(settingsMetadata.getProviderId());
+		settingConfiguration.setLocationId(settingsMetadata.getLocationId());
+		settingConfiguration.setChildLocationId(settingsMetadata.getLocationId());
+		settingConfiguration.setDocumentId(settingsMetadata.getDocumentId());
+		settingConfiguration.setServerVersion(settingsMetadata.getServerVersion());
+		return settingConfiguration;
 	}
 
 	private SettingConfiguration convert(Settings setting) {
@@ -271,6 +266,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				Setting currSetting = settings.get(i);
 				SettingsMetadata metadata = new SettingsMetadata();
 				metadata.setSettingKey(currSetting.getKey());
+				metadata.setSettingValue(currSetting.getValue());
+				metadata.setSettingDescription(currSetting.getDescription());
 				metadata.setSettingsId(id);
 				metadata.setDocumentId(entity.getId() != null ? entity.getId() : UUID.randomUUID().toString());
 				metadata.setIdentifier(entity.getIdentifier());
