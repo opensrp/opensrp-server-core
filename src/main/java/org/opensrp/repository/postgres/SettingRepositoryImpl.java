@@ -37,7 +37,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setDocumentId(id);
 
-		List<SettingConfiguration> settingConfigurations = findSettings(settingQueryBean);
+		List<SettingConfiguration> settingConfigurations = findSettings(settingQueryBean, 1);
 		return settingConfigurations.isEmpty() ? null : settingConfigurations.get(0);
 	}
 
@@ -128,9 +128,14 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	public List<SettingConfiguration> findAllSettings() {
 		return getAll();
 	}
-	
+
+
 	@Override
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
+		return findSettings(settingQueryBean, DEFAULT_FETCH_SIZE);
+	}
+
+	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean, int limit) {
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
 
@@ -161,7 +166,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 
-		return convertToSettingConfigurations(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
+		return convertToSettingConfigurations(settingMetadataMapper.selectMany(metadataExample, 0, limit));
 	}
 	
 	@Override
