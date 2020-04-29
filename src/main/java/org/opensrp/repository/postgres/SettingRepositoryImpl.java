@@ -37,8 +37,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setDocumentId(id);
 
-		List<SettingConfiguration> settingConfigurations = findSettings(settingQueryBean, 1);
-		return settingConfigurations.isEmpty() ? null : settingConfigurations.get(0);
+		return findSetting(settingQueryBean);
 	}
 
 	private List<Setting> convertToSettings(List<SettingsMetadata> settingsMetadata) {
@@ -125,6 +124,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return findSettings(settingQueryBean, DEFAULT_FETCH_SIZE);
 	}
 
+	public SettingConfiguration findSetting(SettingSearchBean settingQueryBean) {
+		List<SettingConfiguration> settingConfigurations = findSettings(settingQueryBean, 1);
+		return settingConfigurations.isEmpty() ? null : settingConfigurations.get(0);
+	}
+
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean, int limit) {
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
@@ -134,6 +138,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		String team = settingQueryBean.getTeam();
 		String teamId = settingQueryBean.getTeamId();
 		String documentId = settingQueryBean.getDocumentId();
+		Long primaryKey = settingQueryBean.getPrimaryKey();
 		if (StringUtils.isBlank(providerId) && StringUtils.isBlank(locationId) && StringUtils.isBlank(team)
 				&& StringUtils.isBlank(teamId) && StringUtils.isBlank(documentId)) {
 			criteria.andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull().andLocationIdIsNull();
@@ -153,6 +158,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			if (StringUtils.isNotEmpty(documentId)) {
 				criteria.andDocumentIdEqualTo(documentId);
 			}
+		}
+
+		if (primaryKey != null) {
+			metadataExample.or(metadataExample.createCriteria().andSettingsIdEqualTo(primaryKey));
 		}
 		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 
@@ -228,27 +237,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return settingConfigurations;
 		}
 		for (SettingsAndSettingsMetadataJoined jointSetting : jointSettings) {
-			SettingsMetadata settingsMetadata = jointSetting.getSettingsMetadata().get(0);
-			SettingConfiguration settingConfiguration = convert(settingsMetadata);
+			SettingConfiguration settingConfiguration = (SettingConfiguration) jointSetting.getSettings().getJson();
 			settingConfiguration.setSettings(convertToSettings(jointSetting.getSettingsMetadata()));
 			settingConfigurations.add(settingConfiguration);
 		}
 		return settingConfigurations;
-	}
-
-	private SettingConfiguration convert(SettingsMetadata settingsMetadata) {
-		SettingConfiguration settingConfiguration = new SettingConfiguration();
-		settingConfiguration.setIdentifier(settingsMetadata.getIdentifier());
-		settingConfiguration.setId(String.valueOf(settingsMetadata.getSettingsId()));
-		settingConfiguration.setType(settingsMetadata.getSettingType());
-		settingConfiguration.setTeamId(settingsMetadata.getTeamId());
-		settingConfiguration.setTeam(settingsMetadata.getTeam());
-		settingConfiguration.setProviderId(settingsMetadata.getProviderId());
-		settingConfiguration.setLocationId(settingsMetadata.getLocationId());
-		settingConfiguration.setChildLocationId(settingsMetadata.getLocationId());
-		settingConfiguration.setDocumentId(settingsMetadata.getDocumentId());
-		settingConfiguration.setServerVersion(settingsMetadata.getServerVersion());
-		return settingConfiguration;
 	}
 
 	private SettingConfiguration convert(Settings setting) {
@@ -352,11 +345,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	public Settings getSettingById(Long id) {
-		SettingsMetadataExample example = new SettingsMetadataExample();
-		example.createCriteria().andSettingsIdEqualTo(id);
-		List<SettingsMetadata> settingsMetadata = settingMetadataMapper.selectByExample(example);
-		Settings setting = settingMapper.selectByPrimaryKey(id);
-		((SettingConfiguration) setting.getJson()).setSettings(convertToSettings(settingsMetadata));
-		return setting;
+		SettingSearchBean settingQueryBean = new SettingSearchBean();
+		settingQueryBean.setServerVersion(0L);
+		settingQueryBean.setPrimaryKey(id);
+
+		SettingConfiguration settingConfiguration = findSetting(settingQueryBean);
+		return settingConfiguration == null ? null : convert(settingConfiguration, id);
 	}
 }
