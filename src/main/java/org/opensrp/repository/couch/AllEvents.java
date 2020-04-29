@@ -264,5 +264,11 @@ public class AllEvents extends MotechBaseRepository<Event> implements EventsRepo
 			return null;
 		}
 	}
+
+	@Override
+	public void update(Event entity, boolean allowArchived) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

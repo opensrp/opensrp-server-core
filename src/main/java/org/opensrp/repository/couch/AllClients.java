@@ -262,5 +262,11 @@ public class AllClients extends MotechBaseRepository<Client> implements ClientsR
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public void update(Client entity, boolean allowArchived) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
