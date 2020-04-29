@@ -187,9 +187,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		metadataExample.createCriteria().andDocumentIdEqualTo(documentId);
-		
-		Settings pgSetting = settingMetadataMapper.selectByDocumentId(documentId).getSettings();
-		
+
+		SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined = settingMetadataMapper.selectByDocumentId(documentId);
+		Settings pgSetting = settingsAndSettingsMetadataJoined == null ? null : settingsAndSettingsMetadataJoined.getSettings();
 		if (pgSetting == null) {
 			return null;
 		}
@@ -215,21 +215,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		
 		return pgSetting;
 	}
-	
-	private List<SettingConfiguration> convert(List<Settings> settings) {
-		if (settings == null || settings.isEmpty()) {
-			return new ArrayList<>();
-		}
-		
-		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
-		for (Settings setting : settings) {
-			SettingConfiguration convertedSetting = convert(setting);
-			if (convertedSetting != null) {
-				settingConfigurations.add(convertedSetting);
-			}
-		}
-		return settingConfigurations;
-	}
 
 	private List<SettingConfiguration> convertToSettingConfigurations(List<SettingsAndSettingsMetadataJoined> jointSettings) {
 		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
@@ -242,13 +227,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			settingConfigurations.add(settingConfiguration);
 		}
 		return settingConfigurations;
-	}
-
-	private SettingConfiguration convert(Settings setting) {
-		if (setting == null || setting.getJson() == null) {
-			return null;
-		}
-		return (SettingConfiguration) setting.getJson();
 	}
 	
 	private List<SettingsMetadata> createMetadata(SettingConfiguration entity, Long id) {
@@ -332,6 +310,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
+	@Deprecated
 	public SettingsMetadata getSettingMetadataByDocumentId(String documentId) {
 		List<SettingsMetadata> settingsMetadata = getAllSettingMetadataByDocumentId(documentId);
 		return !settingsMetadata.isEmpty() ? settingsMetadata.get(0) : null;
