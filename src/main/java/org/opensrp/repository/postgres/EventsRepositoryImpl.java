@@ -454,11 +454,8 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 			criteria.andDateDeletedIsNull();
 		}
 
-		org.opensrp.domain.postgres.Event pgClient = eventMetadataMapper.selectByDocumentId(documentId);
-		if (pgClient == null) {
-			return null;
-		}
-		return pgClient.getId();
+		return eventMetadataMapper.selectPrimaryKey(eventMetadataExample);
+		
 	}
 
 	@Override

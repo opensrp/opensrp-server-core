@@ -24,4 +24,10 @@ public interface CustomEventMetadataMapper extends EventMetadataMapper {
 
 	List<String> selectManyIds(@Param("example") EventMetadataExample example, @Param("offset") long offset,
 			@Param("limit") int limit);
+	
+	/** Gets primary Key
+	 * @param eventMetadataExample
+	 * @return the primary key
+	 */
+	Long selectPrimaryKey(EventMetadataExample eventMetadataExample);
 }
