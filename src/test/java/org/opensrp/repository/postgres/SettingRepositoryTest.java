@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -129,18 +131,29 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		expectedSettingConfiguration.setServerVersion(0l);
 
 		List<Setting> settings = new ArrayList<>();
+		Map<String, Setting> settingMap = new HashMap<>();
+
+		// add
 		Setting setting = new Setting();
 		setting.setKey("key1");
 		setting.setValue("value1");
+		setting.setDescription("description1");
 		settings.add(setting);
+		settingMap.put("key1", setting);
 
+		setting = new Setting();
 		setting.setKey("key2");
 		setting.setValue("value2");
+		setting.setDescription("description2");
 		settings.add(setting);
+		settingMap.put("key2", setting);
 
+		setting = new Setting();
 		setting.setKey("key3");
 		setting.setValue("value3");
+		setting.setDescription("description3");
 		settings.add(setting);
+		settingMap.put("key3", setting);
 
 		expectedSettingConfiguration.setSettings(settings);
 		settingRepository.add(expectedSettingConfiguration);
@@ -148,5 +161,56 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		SettingConfiguration actualSettingConfiguration = settingRepository.get("test_id");
 		assertNotNull(actualSettingConfiguration);
 		assertEquals(3, actualSettingConfiguration.getSettings().size());
+		assertEquals(expectedSettingConfiguration.getTeam(), actualSettingConfiguration.getTeam());
+		assertEquals(expectedSettingConfiguration.getId(), actualSettingConfiguration.getId());
+		assertEquals(expectedSettingConfiguration.getIdentifier(), actualSettingConfiguration.getIdentifier());
+		verifySettingsAreSame(settingMap, actualSettingConfiguration.getSettings());
+
+		// update
+		settings.clear();
+		expectedSettingConfiguration = new SettingConfiguration();
+		expectedSettingConfiguration.setTeamId("test_team_40");
+		expectedSettingConfiguration.setId("test_id");
+		expectedSettingConfiguration.setIdentifier("test_identifier_40");
+		expectedSettingConfiguration.setServerVersion(0l);
+
+		setting.setKey("key1");
+		setting.setValue("value10");
+		setting.setDescription("description10");
+		settings.add(setting);
+		settingMap.put("key1", setting);
+
+		setting = new Setting();
+		setting.setKey("key2");
+		setting.setValue("value20");
+		setting.setDescription("description20");
+		settings.add(setting);
+		settingMap.put("key2", setting);
+
+		setting = new Setting();
+		setting.setKey("key3");
+		setting.setValue("value30");
+		setting.setDescription("description30");
+		settings.add(setting);
+		settingMap.put("key3", setting);
+		expectedSettingConfiguration.setSettings(settings);
+
+		settingRepository.update(expectedSettingConfiguration);
+		actualSettingConfiguration = settingRepository.get("test_id");
+		assertNotNull(actualSettingConfiguration);
+		assertEquals(3, actualSettingConfiguration.getSettings().size());
+		assertEquals(expectedSettingConfiguration.getTeam(), actualSettingConfiguration.getTeam());
+		assertEquals(expectedSettingConfiguration.getId(), actualSettingConfiguration.getId());
+		assertEquals(expectedSettingConfiguration.getIdentifier(), actualSettingConfiguration.getIdentifier());
+		verifySettingsAreSame(settingMap, actualSettingConfiguration.getSettings());
+	}
+
+	private void verifySettingsAreSame(Map<String, Setting> settingMap, List<Setting> settings) {
+		for (Setting actualSetting : settings) {
+			Setting expectedSetting = settingMap.get(actualSetting.getKey());
+			assertEquals(expectedSetting.getKey(), actualSetting.getKey());
+			assertEquals(expectedSetting.getDescription(), actualSetting.getDescription());
+			assertEquals(expectedSetting.getValue(), actualSetting.getValue());
+		}
 	}
 }

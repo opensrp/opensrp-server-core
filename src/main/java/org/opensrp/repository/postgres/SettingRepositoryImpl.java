@@ -16,10 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static org.opensrp.util.Utils.isEmptyList;
 
 @Repository("settingRepositoryPostgres")
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
@@ -144,6 +147,15 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean, int limit) {
+		return convertToSettingConfigurations(findSettingsAndSettingsMetadata(settingQueryBean, limit));
+	}
+
+	public SettingsAndSettingsMetadataJoined findSettingsAndSettingsMetadata(SettingSearchBean settingQueryBean) {
+		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined = findSettingsAndSettingsMetadata(settingQueryBean, 1);
+		return isEmptyList(settingsAndSettingsMetadataJoined) ? null : settingsAndSettingsMetadataJoined.get(0);
+	}
+
+	public List<SettingsAndSettingsMetadataJoined> findSettingsAndSettingsMetadata(SettingSearchBean settingQueryBean, int limit) {
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
 
@@ -179,7 +191,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 
-		return convertToSettingConfigurations(settingMetadataMapper.selectMany(metadataExample, 0, limit));
+		return settingMetadataMapper.selectMany(metadataExample, 0, limit);
 	}
 	
 	@Override
@@ -198,11 +210,12 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		
 		String documentId = uniqueId.toString();
-		
-		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
-		metadataExample.createCriteria().andDocumentIdEqualTo(documentId);
 
-		SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined = settingMetadataMapper.selectByDocumentId(documentId);
+		SettingSearchBean settingSearchBean = new SettingSearchBean();
+		settingSearchBean.setDocumentId(documentId);
+		settingSearchBean.setServerVersion(0l);
+
+		SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined = findSettingsAndSettingsMetadata(settingSearchBean);
 		Settings pgSetting = settingsAndSettingsMetadataJoined == null ? null : settingsAndSettingsMetadataJoined.getSettings();
 		if (pgSetting == null) {
 			return null;
@@ -295,6 +308,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingConfiguration.setIdentifier(setting.getIdentifier());
 		settingConfiguration.setType(setting.getType());
 		settingConfiguration.setSettings(settings);
+		settingConfiguration.setServerVersion(setting.getServerVersion());
 		add(settingConfiguration);
 	}
 

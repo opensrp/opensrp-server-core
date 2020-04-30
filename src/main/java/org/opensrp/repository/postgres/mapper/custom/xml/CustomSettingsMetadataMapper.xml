@@ -34,8 +34,7 @@
 		sm.settings_id = s.id
 	</sql>
 
-	<select id="selectByDocumentId" parameterType="java.lang.String"
-			resultType="org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined">
+	<select id="selectByDocumentId" resultMap="SettingsAndSettingsMetadataMap">
 		select
 		<include refid="Base_Column_List" />
 		<include refid="Base_Table_List" />
@@ -117,12 +116,21 @@
 	<update id="updateMany" parameterType="java.util.List">
 		<foreach collection="settingsMetadata" item="setting" index="index" separator=";">
 			UPDATE core.settings_metadata SET
+				settings_id = #{setting.settingsId},
+				document_id = #{setting.documentId},
 				identifier = #{setting.identifier},
 				server_version = #{setting.serverVersion},
 				team = #{setting.team},
 				team_id = #{setting.teamId},
 				provider_id = #{setting.providerId},
-				location_id = #{setting.locationId}
+				location_id = #{setting.locationId},
+				uuid = #{setting.uuid},
+				json = #{setting.json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.SettingMetadataTypeHandler},
+				setting_type = #{setting.settingType},
+				setting_value = #{setting.settingValue},
+				setting_key = #{setting.settingKey},
+				setting_description = #{setting.settingDescription},
+				inherited_from = #{setting.inheritedFrom}
 			WHERE settings_id = #{setting.settingsId}
 			AND setting_key = #{setting.settingKey}
 		</foreach>
