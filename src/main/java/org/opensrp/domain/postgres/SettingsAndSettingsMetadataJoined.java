@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class SettingsAndSettingsMetadataJoined {
 	private Settings settings;
-	private List<SettingsMetadata> settingsMetadata;
+	private SettingsMetadata settingsMetadata;
 
 	public Settings getSettings() {
 		return settings;
@@ -17,11 +17,11 @@ public class SettingsAndSettingsMetadataJoined {
 		this.settings = settings;
 	}
 
-	public List<SettingsMetadata> getSettingsMetadata() {
+	public SettingsMetadata getSettingsMetadata() {
 		return settingsMetadata;
 	}
 
-	public void setSettingsMetadata(List<SettingsMetadata> settingsMetadata) {
+	public void setSettingsMetadata(SettingsMetadata settingsMetadata) {
 		this.settingsMetadata = settingsMetadata;
 	}
 }

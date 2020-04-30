@@ -3,6 +3,7 @@ package org.opensrp.repository.postgres;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,6 +11,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadata;
+import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.search.SettingSearchBean;
@@ -116,6 +118,35 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(settingMetadata);
 		assertEquals(documentId, settingMetadata.getDocumentId());
 		assertEquals("lion_king_cast_2", settingMetadata.getIdentifier());
-		
+	}
+
+	@Test
+	public void testAddAndUpdateShouldAddOrUpdate() {
+		SettingConfiguration expectedSettingConfiguration = new SettingConfiguration();
+		expectedSettingConfiguration.setTeamId("test_team");
+		expectedSettingConfiguration.setId("test_id");
+		expectedSettingConfiguration.setIdentifier("test_identifier");
+		expectedSettingConfiguration.setServerVersion(0l);
+
+		List<Setting> settings = new ArrayList<>();
+		Setting setting = new Setting();
+		setting.setKey("key1");
+		setting.setValue("value1");
+		settings.add(setting);
+
+		setting.setKey("key2");
+		setting.setValue("value2");
+		settings.add(setting);
+
+		setting.setKey("key3");
+		setting.setValue("value3");
+		settings.add(setting);
+
+		expectedSettingConfiguration.setSettings(settings);
+		settingRepository.add(expectedSettingConfiguration);
+
+		SettingConfiguration actualSettingConfiguration = settingRepository.get("test_id");
+		assertNotNull(actualSettingConfiguration);
+		assertEquals(3, actualSettingConfiguration.getSettings().size());
 	}
 }

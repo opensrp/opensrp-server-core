@@ -8,7 +8,7 @@ import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.search.SettingSearchBean;
 
 public interface SettingRepository extends BaseRepository<SettingConfiguration> {
-	
+
 	List<SettingConfiguration> findAllSettings();
 	
 	List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean);
@@ -18,5 +18,8 @@ public interface SettingRepository extends BaseRepository<SettingConfiguration> 
 	SettingsMetadata getSettingMetadataByDocumentId(String documentId);
 	
 	Settings getSettingById(Long id);
-	
+
+	SettingConfiguration findSetting(SettingSearchBean settingQueryBean);
+
+	public List<SettingsMetadata> getAllSettingMetadataByDocumentId(String documentId);
 }

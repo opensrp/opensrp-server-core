@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Repository("settingRepositoryPostgres")
@@ -42,7 +44,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	private List<Setting> convertToSettings(List<SettingsMetadata> settingsMetadata) {
 		List<Setting> settings = new ArrayList<>();
-		for (int i = 0; i < settings.size(); i++) {
+		for (int i = 0; i < settingsMetadata.size(); i++) {
 			SettingsMetadata currSettingMetadata = settingsMetadata.get(i);
 			settings.add(convertToSetting(currSettingMetadata));
 		}
@@ -50,7 +52,20 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	private Setting convertToSetting(SettingsMetadata settingsMetadata) {
-		return (Setting) settingsMetadata.getJson();
+		if (settingsMetadata.getJson() != null) {
+			return (Setting) settingsMetadata.getJson();
+		}
+		Setting setting = new Setting();
+		setting.setValue(settingsMetadata.getSettingValue());
+		setting.setKey(settingsMetadata.getSettingKey());
+		setting.setServerVersion(settingsMetadata.getServerVersion());
+		setting.setDocumentId(settingsMetadata.getDocumentId());
+		setting.setDescription(settingsMetadata.getSettingDescription());
+		setting.setProviderId(settingsMetadata.getProviderId());
+		setting.setTeamId(settingsMetadata.getTeamId());
+		setting.setTeam(settingsMetadata.getTeam());
+		setting.setLocationId(settingsMetadata.getLocationId());
+		return setting;
 	}
 
 	@Override
@@ -118,14 +133,13 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return getAll();
 	}
 
-
 	@Override
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
 		return findSettings(settingQueryBean, DEFAULT_FETCH_SIZE);
 	}
 
 	public SettingConfiguration findSetting(SettingSearchBean settingQueryBean) {
-		List<SettingConfiguration> settingConfigurations = findSettings(settingQueryBean, 1);
+		List<SettingConfiguration> settingConfigurations = findSettings(settingQueryBean);
 		return settingConfigurations.isEmpty() ? null : settingConfigurations.get(0);
 	}
 
@@ -216,16 +230,27 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return pgSetting;
 	}
 
+	private SettingConfiguration convert(Settings settings) {
+		return (SettingConfiguration) settings.getJson();
+	}
+
 	private List<SettingConfiguration> convertToSettingConfigurations(List<SettingsAndSettingsMetadataJoined> jointSettings) {
 		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
 		if (jointSettings == null || jointSettings.isEmpty()) {
 			return settingConfigurations;
 		}
+
+		Map<Long, SettingConfiguration> settingConfigurationMap  = new HashMap<>();
 		for (SettingsAndSettingsMetadataJoined jointSetting : jointSettings) {
-			SettingConfiguration settingConfiguration = (SettingConfiguration) jointSetting.getSettings().getJson();
-			settingConfiguration.setSettings(convertToSettings(jointSetting.getSettingsMetadata()));
-			settingConfigurations.add(settingConfiguration);
+			SettingConfiguration settingConfiguration = settingConfigurationMap.get(jointSetting.getSettings().getId());
+			if (settingConfiguration == null) {
+				settingConfiguration = convert(jointSetting.getSettings());
+				settingConfigurationMap.put(jointSetting.getSettings().getId(), settingConfiguration);
+				settingConfiguration.setSettings(new ArrayList<>());
+			}
+			settingConfiguration.getSettings().add(convertToSetting(jointSetting.getSettingsMetadata()));
 		}
+		settingConfigurations.addAll(settingConfigurationMap.values());
 		return settingConfigurations;
 	}
 	
@@ -247,6 +272,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				metadata.setTeam(entity.getTeam());
 				metadata.setTeamId(entity.getTeamId());
 				metadata.setServerVersion(entity.getServerVersion());
+				metadata.setJson(convertToSetting(metadata));
 				settingsMetadata.add(metadata);
 			}
 		} catch (Exception e) {

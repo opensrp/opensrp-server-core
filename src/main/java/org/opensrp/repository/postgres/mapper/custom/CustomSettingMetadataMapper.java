@@ -14,10 +14,10 @@ public interface CustomSettingMetadataMapper extends SettingsMetadataMapper {
 	List<SettingsAndSettingsMetadataJoined> selectMany(@Param("example") SettingsMetadataExample settingsExample, @Param("offset") int offset,
 	                          @Param("limit") int limit);
 
-	SettingsAndSettingsMetadataJoined selectByDocumentId(String documentId);
+	SettingsAndSettingsMetadataJoined selectByDocumentId(@Param("documentId") String documentId);
 
-	int insertMany(List<SettingsMetadata> settingsMetadata);
+	int insertMany(@Param("settingsMetadata") List<SettingsMetadata> settingsMetadata);
 
-	int updateMany(List<SettingsMetadata> settingsMetadata);
+	int updateMany(@Param("settingsMetadata") List<SettingsMetadata> settingsMetadata);
 }
 
