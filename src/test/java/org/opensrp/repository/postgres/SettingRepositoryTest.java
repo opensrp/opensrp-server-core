@@ -2,6 +2,7 @@ package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,9 +56,9 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(setting);
 		assertNotNull(setting.getJson());
 		
-		SettingConfiguration settingConfiguration = settingRepository.get("1512");
+		SettingConfiguration settingConfiguration = settingRepository.get("151");
 		assertNotNull(settingConfiguration);
-		assertEquals("global_configs12", settingConfiguration.getIdentifier());
+		assertEquals("global_configs1", settingConfiguration.getIdentifier());
 	}
 	
 	@Test
@@ -203,6 +204,19 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		assertEquals(expectedSettingConfiguration.getId(), actualSettingConfiguration.getId());
 		assertEquals(expectedSettingConfiguration.getIdentifier(), actualSettingConfiguration.getIdentifier());
 		verifySettingsAreSame(settingMap, actualSettingConfiguration.getSettings());
+	}
+
+	@Test
+	public void testGetAllSettingMetadataByDocumentIdShouldGetAllMetadata() {
+		List<SettingsMetadata> settingsMetadataList = settingRepository.getAllSettingMetadataByDocumentId("151");
+		assertEquals(3, settingsMetadataList.size());
+		Set<String> identifiers = new HashSet<>();
+		identifiers.add("global_configs1");
+		identifiers.add("global_configs12");
+		identifiers.add("global_configs13");
+		for (SettingsMetadata settingsMetadata : settingsMetadataList) {
+			assertTrue(identifiers.contains(settingsMetadata.getIdentifier()));
+		}
 	}
 
 	private void verifySettingsAreSame(Map<String, Setting> settingMap, List<Setting> settings) {

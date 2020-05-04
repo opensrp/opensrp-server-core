@@ -14,6 +14,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper
 import org.opensrp.search.SettingSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,6 +72,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return setting;
 	}
 
+	@Transactional
 	@Override
 	public void update(SettingConfiguration entity) {
 		if (entity == null || entity.getId() == null || entity.getIdentifier() == null) {
@@ -294,7 +296,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 		return settingsMetadata;
 	}
-
 
 	public void add(Setting setting) {
 		List<Setting> settings = new ArrayList<>();
