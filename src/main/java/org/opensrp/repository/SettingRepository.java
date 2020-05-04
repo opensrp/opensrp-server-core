@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadata;
+import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.search.SettingSearchBean;
 
@@ -21,5 +22,7 @@ public interface SettingRepository extends BaseRepository<SettingConfiguration> 
 
 	SettingConfiguration findSetting(SettingSearchBean settingQueryBean);
 
-	public List<SettingsMetadata> getAllSettingMetadataByDocumentId(String documentId);
+	List<SettingsMetadata> getAllSettingMetadataByDocumentId(String documentId);
+
+	void add(Setting entity);
 }

@@ -219,6 +219,29 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		}
 	}
 
+	@Test
+	public void testAddSettingShouldAddSetting() {
+		Setting setting = new Setting();
+		setting.setDescription("description");
+		setting.setLocationId("location_id");
+		setting.setTeam("team");
+		setting.setTeamId("team_id");
+		setting.setProviderId("provider_id");
+		setting.setDocumentId("document_id_32932");
+		setting.setKey("key_32932");
+		setting.setValue("value");
+		setting.setIdentifier("setting_identifier_32932");
+		setting.setId("setting_id_32932");
+		setting.setServerVersion(0l);
+		settingRepository.add(setting);
+
+		Map<String, Setting> expectedSettings = new HashMap<>();
+		expectedSettings.put("key_32932", setting);
+		List<Setting> actualSettings = settingRepository.get("setting_id_32932").getSettings();
+		assertNotNull(actualSettings);
+		verifySettingsAreSame(expectedSettings, actualSettings);
+	}
+
 	private void verifySettingsAreSame(Map<String, Setting> settingMap, List<Setting> settings) {
 		for (Setting actualSetting : settings) {
 			Setting expectedSetting = settingMap.get(actualSetting.getKey());

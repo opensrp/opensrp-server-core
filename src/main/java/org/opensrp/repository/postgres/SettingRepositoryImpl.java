@@ -297,6 +297,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settingsMetadata;
 	}
 
+	@Override
 	public void add(Setting setting) {
 		List<Setting> settings = new ArrayList<>();
 		settings.add(setting);
@@ -310,6 +311,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingConfiguration.setType(setting.getType());
 		settingConfiguration.setSettings(settings);
 		settingConfiguration.setServerVersion(setting.getServerVersion());
+		settingConfiguration.setIdentifier(setting.getIdentifier());
+		settingConfiguration.setDocumentId(setting.getDocumentId());
+		settingConfiguration.setId(setting.getId());
 		add(settingConfiguration);
 	}
 
