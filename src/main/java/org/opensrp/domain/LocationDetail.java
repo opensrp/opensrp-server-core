@@ -12,9 +12,19 @@ public class LocationDetail implements Serializable {
 	
 	private String name;
 	
+	private String parentId;
+	
 	private boolean voided;
 	
 	private String tags;
+	
+	public Long getId() {
+		return id;
+	}
+	
+	public void setId(Long id) {
+		this.id = id;
+	}
 	
 	public String getIdentifier() {
 		return identifier;
@@ -32,12 +42,12 @@ public class LocationDetail implements Serializable {
 		this.name = name;
 	}
 	
-	public Long getId() {
-		return id;
+	public String getParentId() {
+		return parentId;
 	}
 	
-	public void setId(Long id) {
-		this.id = id;
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
 	}
 	
 	public boolean isVoided() {

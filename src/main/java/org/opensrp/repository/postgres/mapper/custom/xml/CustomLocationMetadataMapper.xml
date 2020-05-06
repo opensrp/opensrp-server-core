@@ -205,6 +205,7 @@
 		<result column="name" jdbcType="VARCHAR" property="name" />
 		<result column="voided" jdbcType="BOOLEAN" property="voided" />
 	    <result column="location_id" jdbcType="VARCHAR" property="id" />
+	    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
 	    <result column="tags" jdbcType="VARCHAR" property="tags" />
 	</resultMap>
 

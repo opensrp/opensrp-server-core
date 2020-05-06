@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -282,20 +283,26 @@ public class PhysicalLocationService {
 	 */
 	public LocationTree findLocationHierachy(Set<String> identifiers) {
 		LocationTree locationTree = new LocationTree();
-		List<Location> locations = locationRepository.findLocationHierachy(identifiers)
-				.stream()
-		        .map(location -> getLocationFromDetail(location))
+		List<LocationDetail> locationDetails = locationRepository.findLocationHierachy(identifiers);
+		Map<String, LocationDetail> locationMap = locationDetails.stream()
+		        .collect(Collectors.toMap(LocationDetail::getIdentifier, (entry) -> entry));
+		locationDetails.stream().forEach(location -> locationMap.put(location.getIdentifier(), location));
+		List<Location> locations = locationDetails.stream().map(location -> getLocationFromDetail(location, locationMap))
 		        .collect(Collectors.toList());
 		locationTree.buildTreeFromList(locations);
 		return locationTree;
 	}
 	
-	private Location getLocationFromDetail(LocationDetail locationDetail) {
+	private Location getLocationFromDetail(LocationDetail locationDetail, Map<String, LocationDetail> locationMap) {
 		Location location = new Location();
 		location.setLocationId(locationDetail.getIdentifier());
 		location.setName(locationDetail.getName());
 		location.setVoided(locationDetail.isVoided());
 		location.setTags(new HashSet<>(Arrays.asList(locationDetail.getTags().split(","))));
+		LocationDetail parent = locationMap.get(locationDetail.getParentId());
+		if (parent != null) {
+			location.setParentLocation(new Location().withLocationId(parent.getIdentifier()));
+		}
 		return location;
 	}
 	
