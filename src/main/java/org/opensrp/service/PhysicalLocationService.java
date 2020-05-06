@@ -2,7 +2,6 @@ package org.opensrp.service;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -284,11 +283,15 @@ public class PhysicalLocationService {
 	public LocationTree findLocationHierachy(Set<String> identifiers) {
 		LocationTree locationTree = new LocationTree();
 		List<LocationDetail> locationDetails = locationRepository.findLocationHierachy(identifiers);
-		Map<String, LocationDetail> locationMap = locationDetails.stream()
+		/* @formatter:off */
+		Map<String, LocationDetail> locationMap = locationDetails
+				.stream()
 		        .collect(Collectors.toMap(LocationDetail::getIdentifier, (entry) -> entry));
-		locationDetails.stream().forEach(location -> locationMap.put(location.getIdentifier(), location));
-		List<Location> locations = locationDetails.stream().map(location -> getLocationFromDetail(location, locationMap))
+		List<Location> locations = locationDetails
+				.stream()
+				.map(location -> getLocationFromDetail(location, locationMap))
 		        .collect(Collectors.toList());
+		/* @formatter:on */
 		locationTree.buildTreeFromList(locations);
 		return locationTree;
 	}
