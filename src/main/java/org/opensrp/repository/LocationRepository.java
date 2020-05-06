@@ -138,4 +138,11 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean);
 
 	int countSearchLocations(LocationSearchBean locationSearchBean);
+
+	/**
+	 * Gets the locations hierarchy of location identifiers. This returns the details of ancestors including the identifiers
+	 * @param identifiers the id of locations to get location hierarchy
+	 * @return the location hierarchy of the identifiers 
+	 */
+	List<LocationDetail> findLocationHierachy(List<String> identifiers);
 }

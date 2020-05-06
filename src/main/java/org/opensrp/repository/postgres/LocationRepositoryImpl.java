@@ -468,6 +468,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return Pair.of(locationIdentifiers, lastServerVersion);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<LocationDetail> findLocationHierachy(List<String> identifiers) {
+		return locationMetadataMapper.selectLocationHierachy(identifiers);
+	}
+	
 	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);
