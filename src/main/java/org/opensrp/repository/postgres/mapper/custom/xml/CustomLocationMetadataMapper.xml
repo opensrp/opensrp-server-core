@@ -175,17 +175,9 @@
 
 	</select>
 	
-	<resultMap id="HierarchyResultMap" type="org.opensrp.domain.LocationBean"
-	    <id column="geojson_id" jdbcType="VARCHAR" property="identifier" />
-	    <id column="name" jdbcType="VARCHAR" property="name" />
-	    <id column="voided" jdbcType="BOOLEAN" property="voided" />
-	    <id column="location_id" jdbcType="VARCHAR" property="id" />
-	    <id column="tags" jdbcType="VARCHAR" property="tags" />
-  	</resultMap>
-	
 	<select id="selectLocationHierachy"
-			resultMap="HierarchyResultMap">
-		select lm.geojson_id ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,string_agg(lt."name",',') tags
+			resultMap="DetailsResultMap">
+		select lm.geojson_id identifier ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,string_agg(lt."name",',') tags
 		from core.location_metadata lm
 		left join core.location_tag_map ltm on ltm.location_id =lm.location_id 
 		left join core.location_tag lt on lt.id =ltm.location_tag_id 
@@ -214,6 +206,9 @@
 	<resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetail">
 		<result column="identifier" jdbcType="VARCHAR" property="identifier" />
 		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="voided" jdbcType="BOOLEAN" property="voided" />
+	    <result column="location_id" jdbcType="VARCHAR" property="id" />
+	    <result column="tags" jdbcType="VARCHAR" property="tags" />
 	</resultMap>
 
 	<select id="selectDetailsByPlanId"
