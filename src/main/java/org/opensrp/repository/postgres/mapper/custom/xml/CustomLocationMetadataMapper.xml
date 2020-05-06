@@ -187,8 +187,8 @@
 			AS
 			( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
 				FROM core.location_metadata lm1 WHERE geojson_id  IN
-			 	<foreach collection="identifiers" index="key" item="value"  open="(" separator="," close=")">
-	       			#{item}
+			 	<foreach collection="identifiers" item="value"  open="(" separator="," close=")">
+	       			#{value}
 	   			</foreach>
 				UNION
 				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
@@ -198,10 +198,6 @@
 			SELECT location_id FROM locations
 		)
 		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id
-
-		<if test="example.orderByClause != null">
-			order by lm.${example.orderByClause}
-		</if>
 	</select>
 
 	<resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetail">
