@@ -40,4 +40,6 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	                                     @Param("offset") Integer offset, @Param("limit") Integer limit);
 
 	int selectCountLocations(@Param("locationSearchBean") LocationSearchBean locationSearchBean);
+	
+	List<LocationDetail> selectLocationHierachy( @Param("identifiers") List<String> identifiers);
 }
