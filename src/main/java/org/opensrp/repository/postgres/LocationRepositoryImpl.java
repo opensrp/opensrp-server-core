@@ -472,7 +472,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<LocationDetail> findLocationHierachy(List<String> identifiers) {
+	public List<LocationDetail> findLocationHierachy(Set<String> identifiers) {
 		return locationMetadataMapper.selectLocationHierachy(identifiers);
 	}
 	

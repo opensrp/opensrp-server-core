@@ -3,6 +3,7 @@ package org.opensrp.repository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
@@ -144,5 +145,5 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @param identifiers the id of locations to get location hierarchy
 	 * @return the location hierarchy of the identifiers 
 	 */
-	List<LocationDetail> findLocationHierachy(List<String> identifiers);
+	List<LocationDetail> findLocationHierachy(Set<String> identifiers);
 }
