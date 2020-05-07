@@ -301,7 +301,9 @@ public class PhysicalLocationService {
 		location.setLocationId(locationDetail.getIdentifier());
 		location.setName(locationDetail.getName());
 		location.setVoided(locationDetail.isVoided());
-		location.setTags(new HashSet<>(Arrays.asList(locationDetail.getTags().split(","))));
+		if (locationDetail.getTags() != null) {
+			location.setTags(new HashSet<>(Arrays.asList(locationDetail.getTags().split(","))));
+		}
 		LocationDetail parent = locationMap.get(locationDetail.getParentId());
 		if (parent != null) {
 			location.setParentLocation(new Location().withLocationId(parent.getIdentifier()));

@@ -826,8 +826,8 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		Set<String> identifiers = Collections.singleton("3735");
 		List<LocationDetail> locations = locationRepository.findParentLocationsInclusive(identifiers);
 		assertEquals(2, locations.size());
-		assertEquals("3735", locations.get(0).getIdentifier());
-		assertEquals("3734", locations.get(1).getIdentifier());
+		assertEquals("3734", locations.get(0).getIdentifier());
+		assertEquals("3735", locations.get(1).getIdentifier());
 		
 		assertEquals(2, locationRepository.findParentLocationsInclusive(new HashSet<>(Arrays.asList("3735","21"))).size());
 		
