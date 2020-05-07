@@ -280,7 +280,7 @@ public class PhysicalLocationService {
 	 * @param identifiers the id of locations to get location hierarchy
 	 * @return the location hierarchy/tree of the identifiers
 	 */
-	public LocationTree findLocationHierachy(Set<String> identifiers) {
+	public LocationTree buildLocationHierachy(Set<String> identifiers) {
 		LocationTree locationTree = new LocationTree();
 		List<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers);
 		/* @formatter:off */
