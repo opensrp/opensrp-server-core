@@ -282,7 +282,7 @@ public class PhysicalLocationService {
 	 */
 	public LocationTree findLocationHierachy(Set<String> identifiers) {
 		LocationTree locationTree = new LocationTree();
-		List<LocationDetail> locationDetails = locationRepository.findLocationHierachy(identifiers);
+		List<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers);
 		/* @formatter:off */
 		Map<String, LocationDetail> locationMap = locationDetails
 				.stream()

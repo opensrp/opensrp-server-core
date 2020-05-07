@@ -815,7 +815,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	}
 	
 	@Test
-	public void testFindLocationHierachy() {
+	public void testfindParentLocationsInclusive() {
 		
 		PhysicalLocation location= locationRepository.get("3734");
 		List<LocationTag> expectedTags=locationTagRepository.getAll();
@@ -824,15 +824,15 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		
 		Set<String> identifiers = Collections.singleton("3735");
-		List<LocationDetail> locations = locationRepository.findLocationHierachy(identifiers);
+		List<LocationDetail> locations = locationRepository.findParentLocationsInclusive(identifiers);
 		assertEquals(2, locations.size());
 		assertEquals("3735", locations.get(0).getIdentifier());
 		assertEquals("3734", locations.get(1).getIdentifier());
 		
-		assertEquals(2, locationRepository.findLocationHierachy(new HashSet<>(Arrays.asList("3735","21"))).size());
+		assertEquals(2, locationRepository.findParentLocationsInclusive(new HashSet<>(Arrays.asList("3735","21"))).size());
 		
 		//Location without a parent
-		locations=locationRepository.findLocationHierachy(Collections.singleton("3734"));
+		locations=locationRepository.findParentLocationsInclusive(Collections.singleton("3734"));
 		assertEquals(1, locations.size());
 		assertEquals("3734", locations.get(0).getIdentifier());
 		assertEquals("Bangladesh", locations.get(0).getName());
@@ -844,6 +844,6 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertTrue(tags.contains(expectedTags.get(1).getName()));
 		
 		//Non existent location
-		assertEquals(0, locationRepository.findLocationHierachy(Collections.singleton("21")).size());
+		assertEquals(0, locationRepository.findParentLocationsInclusive(Collections.singleton("21")).size());
 	}
 }
