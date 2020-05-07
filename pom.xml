@@ -26,6 +26,7 @@
 		<opensrp.interface.version>2.0.0-SNAPSHOT</opensrp.interface.version>
 		<jackson.version>2.10.2</jackson.version>
 		<powermock.version>2.0.5</powermock.version>
+		<lombok.version>1.18.12</lombok.version>
 
 	</properties>
 
@@ -279,7 +280,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.12</version>
+			<version>${lombok.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -367,7 +368,7 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.12</version>
+							<version>${lombok.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
