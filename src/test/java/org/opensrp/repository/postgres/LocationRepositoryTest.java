@@ -1,5 +1,7 @@
 package org.opensrp.repository.postgres;
 
+import static org.hamcrest.CoreMatchers.either;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -24,6 +26,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.Geometry;
@@ -817,28 +820,28 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testfindParentLocationsInclusive() {
 		
-		PhysicalLocation location= locationRepository.get("3734");
-		List<LocationTag> expectedTags=locationTagRepository.getAll();
+		PhysicalLocation location = locationRepository.get("3734");
+		List<LocationTag> expectedTags = locationTagRepository.getAll();
 		location.setLocationTags(new HashSet<>(expectedTags));
 		locationRepository.update(location);
-		
 		
 		Set<String> identifiers = Collections.singleton("3735");
 		List<LocationDetail> locations = locationRepository.findParentLocationsInclusive(identifiers);
 		assertEquals(2, locations.size());
-		assertEquals("3734", locations.get(0).getIdentifier());
-		assertEquals("3735", locations.get(1).getIdentifier());
+		for (LocationDetail l : locations) {
+			MatcherAssert.assertThat(l.getIdentifier(), either(is("3734")).or(is("3735")));
+		}
 		
-		assertEquals(2, locationRepository.findParentLocationsInclusive(new HashSet<>(Arrays.asList("3735","21"))).size());
+		assertEquals(2, locationRepository.findParentLocationsInclusive(new HashSet<>(Arrays.asList("3735", "21"))).size());
 		
 		//Location without a parent
-		locations=locationRepository.findParentLocationsInclusive(Collections.singleton("3734"));
+		locations = locationRepository.findParentLocationsInclusive(Collections.singleton("3734"));
 		assertEquals(1, locations.size());
 		assertEquals("3734", locations.get(0).getIdentifier());
 		assertEquals("Bangladesh", locations.get(0).getName());
 		assertEquals("21", locations.get(0).getParentId());
 		assertEquals(1l, locations.get(0).getId().longValue());
-		List<String> tags=Arrays.asList(locations.get(0).getTags().split(","));
+		List<String> tags = Arrays.asList(locations.get(0).getTags().split(","));
 		assertEquals(expectedTags.size(), tags.size());
 		assertTrue(tags.contains(expectedTags.get(0).getName()));
 		assertTrue(tags.contains(expectedTags.get(1).getName()));
