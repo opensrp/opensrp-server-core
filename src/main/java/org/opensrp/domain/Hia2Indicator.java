@@ -25,6 +25,9 @@ public class Hia2Indicator {
 	
 	@JsonProperty
 	private String value;
+
+	@JsonProperty
+	private String categoryOptionCombo;
 	
 	@JsonProperty
 	private String providerId;
@@ -35,9 +38,21 @@ public class Hia2Indicator {
 	public Hia2Indicator() {
 		
 	}
-	
+
+	public Hia2Indicator(String indicatorCode, String label, String dhisId, String description, String category, String value, String categoryOptionCombo, String providerId, String updatedAt) {
+		this.indicatorCode = indicatorCode;
+		this.label = label;
+		this.dhisId = dhisId;
+		this.description = description;
+		this.category = category;
+		this.value = value;
+		this.categoryOptionCombo = categoryOptionCombo;
+		this.providerId = providerId;
+		this.updatedAt = updatedAt;
+	}
+
 	public Hia2Indicator(String indicatorCode, String label, String dhisId, String description, String category,
-	    String value, String providerId, String updatedAt) {
+						 String value, String providerId, String updatedAt) {
 		this.indicatorCode = indicatorCode;
 		this.label = label;
 		this.dhisId = dhisId;
@@ -46,9 +61,9 @@ public class Hia2Indicator {
 		this.value = value;
 		this.providerId = providerId;
 		this.updatedAt = updatedAt;
-		
+
 	}
-	
+
 	public Hia2Indicator(String indicatorCode, String dhisId, String value) {
 		this.indicatorCode = indicatorCode;
 		this.dhisId = dhisId;
@@ -118,7 +133,15 @@ public class Hia2Indicator {
 	public void setUpdatedAt(String updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-	
+
+	public String getCategoryOptionCombo() {
+		return categoryOptionCombo;
+	}
+
+	public void setCategoryOptionCombo(String categoryOptionCombo) {
+		this.categoryOptionCombo = categoryOptionCombo;
+	}
+
 	@Override
 	public final boolean equals(Object o) {
 		return EqualsBuilder.reflectionEquals(this, o, "id", "revision");
