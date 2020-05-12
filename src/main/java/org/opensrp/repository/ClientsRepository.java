@@ -3,6 +3,7 @@ package org.opensrp.repository;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
@@ -79,5 +80,15 @@ public interface ClientsRepository extends BaseRepository<Client> {
 	 * @param allowArchived a flag that allows update of archived clients
 	 */
 	void update(Client entity, boolean allowArchived);
+
+	/**
+	 * This method searches for client ids paginated by server version
+	 *
+	 * @param serverVersion server version for last client that was fetched
+	 * @param limit upper limit on number of client ids to fetch
+	 * @param isArchived whether to return archived events
+	 * @return a list of client ids and last server version
+	 */
+	Pair<List<String>, Long>  findAllIds(long serverVersion, int limit, boolean isArchived);
 	
 }
