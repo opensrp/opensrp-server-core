@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.domain.Client;
@@ -658,6 +659,43 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		List<Client> clients = clientsRepository.findChildByCriteria(searchBean, addressSearchBean);
 		assertNotNull(clients);
 		assertEquals(1, clients.size());
+	}
+
+	@Test
+	public void testGetAllIdsShouldGetAllClientIds() {
+		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 1000, false);
+		List<String> clientIds = idsModel.getLeft();
+		assertEquals(21, clientIds.size());
+		assertEquals(1573733953502l, idsModel.getRight().longValue());
+	}
+
+	@Test
+	public void testGetAllIdsShouldLimitByGiventAmount() {
+		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 1, false);
+		List<String> clientIds = idsModel.getLeft();
+		assertEquals(1, clientIds.size());
+		assertEquals("05934ae338431f28bf6793b24159ce5d", clientIds.get(0));
+		assertEquals(1520891339766l, idsModel.getRight().longValue());
+	}
+
+	@Test
+	public void testGetAllIdsShouldOrderByServerVersionAsc() {
+		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 3, false);
+		List<String> clientIds = idsModel.getLeft();
+		assertEquals(3, clientIds.size());
+		assertEquals("05934ae338431f28bf6793b24159ce5d", clientIds.get(0));
+		assertEquals("05934ae338431f28bf6793b24159dea7", clientIds.get(1));
+		assertEquals("05934ae338431f28bf6793b24159ebc2", clientIds.get(2));
+		assertEquals(1520891682846l, idsModel.getRight().longValue());
+	}
+
+	@Test
+	public void testGetAllIdsShouldGetAllArchivedClientIds() {
+		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 1000, true);
+		List<String> clientIds = idsModel.getLeft();
+		assertEquals(1, clientIds.size());
+		assertEquals("5bd3e1eb-5cd4-4e8d-9180", clientIds.get(0));
+		assertEquals(1573733955111l, idsModel.getRight().longValue());
 	}
 	
 }

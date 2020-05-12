@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.domain.Address;
@@ -333,5 +334,17 @@ public class ClientService {
 	
 	public int findCountChildByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
 		return allClients.findCountChildByCriteria(clientSearchBean, addressSearchBean);
+	}
+
+	/**
+	 * This method searches for client ids paginated by server version
+	 *
+	 * @param serverVersion server version for last client that was fetched
+	 * @param limit upper limit on number of client ids to fetch
+	 * @param isArchived whether to return archived events
+	 * @return a list of client ids
+	 */
+	public Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived) {
+		return allClients.findAllIds(serverVersion, limit, isArchived);
 	}
 }
