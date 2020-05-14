@@ -5,6 +5,7 @@ import org.opensrp.domain.IdentifierSource;
 import org.opensrp.domain.postgres.IdentifierSourceExample;
 import org.opensrp.repository.IdentifierSourceRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomIdentifierSourceMapper;
+import org.opensrp.util.IdentifierValidatorAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -133,7 +134,7 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 		convertedIdentifierSource.setId(identifierSource.getId());
 		convertedIdentifierSource.setIdentifier(identifierSource.getIdentifier());
 		convertedIdentifierSource.setDescription(identifierSource.getDescription());
-		convertedIdentifierSource.setIdentifierValidatorAlgorithm(identifierSource.getIdentifierValidatorAlgorithm());
+		convertedIdentifierSource.setIdentifierValidatorAlgorithm(IdentifierValidatorAlgorithm.get(identifierSource.getIdentifierValidatorAlgorithm()));
 		convertedIdentifierSource.setBaseCharacterSet(identifierSource.getBaseCharacterSet());
 		convertedIdentifierSource.setFirstIdentifierBase(identifierSource.getFirstIdentifierBase());
 		convertedIdentifierSource.setPrefix(identifierSource.getPrefix());
@@ -154,7 +155,7 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 		pgIdentifierSource.setId(primaryKey);
 		pgIdentifierSource.setIdentifier(identifierSource.getIdentifier());
 		pgIdentifierSource.setDescription(identifierSource.getDescription());
-		pgIdentifierSource.setIdentifierValidatorAlgorithm(identifierSource.getIdentifierValidatorAlgorithm());
+		pgIdentifierSource.setIdentifierValidatorAlgorithm(identifierSource.getIdentifierValidatorAlgorithm().getAlgorithm());
 		pgIdentifierSource.setBaseCharacterSet(identifierSource.getBaseCharacterSet());
 		pgIdentifierSource.setFirstIdentifierBase(identifierSource.getFirstIdentifierBase());
 		pgIdentifierSource.setPrefix(identifierSource.getPrefix());

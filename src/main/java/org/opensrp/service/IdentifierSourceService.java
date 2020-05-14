@@ -25,16 +25,17 @@ public class IdentifierSourceService {
 	public IdentifierSource findByIdentifier(String identifier) {
 		return identifierSourceRepository.findByIdentifier(identifier);
 	}
-
-	//	public void add(IdentifierSource identifierSource) {
-	//		identifierSourceRepository.add(identifierSource);
-	//	}
-	//
-	//	public void update(IdentifierSource updatedIdentifierSource) throws JSONException {
-	//		identifierSourceRepository.update(updatedIdentifierSource);
-	//	}
-
+	
 	public void addOrUpdate(IdentifierSource identifierSource) {
+		validateFields(identifierSource);
+		if (identifierSource.getId() != null && identifierSource.getId() != 0) {
+			identifierSourceRepository.update(identifierSource);
+		} else {
+			identifierSourceRepository.add(identifierSource);
+		}
+	}
+	
+	private void validateFields(IdentifierSource identifierSource) {
 		if (StringUtils.isBlank(identifierSource.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier value was not specified");
 		}
@@ -50,11 +51,13 @@ public class IdentifierSourceService {
 		if (identifierSource.getMaxLength() == null || identifierSource.getMaxLength() == 0) {
 			throw new IllegalArgumentException("Maximum length was not specified");
 		}
+		
+		if(!(identifierSource.getMinLength() >= 4  && identifierSource.getMinLength() <=16)) {
+			throw new IllegalArgumentException("Minimum length was invalid");
+		}
 
-		if (identifierSource.getId() != null && identifierSource.getId() != 0) {
-			identifierSourceRepository.update(identifierSource);
-		} else {
-			identifierSourceRepository.add(identifierSource);
+		if(!(identifierSource.getMaxLength() >= 4  && identifierSource.getMaxLength() <=16 && identifierSource.getMaxLength() >= identifierSource.getMinLength())) {
+			throw new IllegalArgumentException("Maximum length was invalid");
 		}
 	}
 }

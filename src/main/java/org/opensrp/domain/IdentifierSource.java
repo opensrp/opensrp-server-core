@@ -1,6 +1,10 @@
 package org.opensrp.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.opensrp.util.IdentifierValidatorAlgorithm;
+
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 
 public class IdentifierSource {
 
@@ -13,8 +17,9 @@ public class IdentifierSource {
 	@JsonProperty
 	private String description;
 
+	@Enumerated(EnumType.STRING)
 	@JsonProperty
-	private String identifierValidatorAlgorithm;
+	private IdentifierValidatorAlgorithm identifierValidatorAlgorithm;
 
 	@JsonProperty
 	private String baseCharacterSet;
@@ -41,7 +46,7 @@ public class IdentifierSource {
 
 	}
 
-	public IdentifierSource(String identifier, String description, String identifierValidatorAlgorithm,
+	public IdentifierSource(String identifier, String description, IdentifierValidatorAlgorithm identifierValidatorAlgorithm,
 			String baseCharacterSet, String firstIdentifierBase, String prefix, String suffix, Integer minLength,
 			Integer maxLength, String blacklisted) {
 		this.identifier = identifier;
@@ -79,12 +84,12 @@ public class IdentifierSource {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
-	public String getIdentifierValidatorAlgorithm() {
+	
+	public IdentifierValidatorAlgorithm getIdentifierValidatorAlgorithm() {
 		return identifierValidatorAlgorithm;
 	}
 
-	public void setIdentifierValidatorAlgorithm(String identifierValidatorAlgorithm) {
+	public void setIdentifierValidatorAlgorithm(IdentifierValidatorAlgorithm identifierValidatorAlgorithm) {
 		this.identifierValidatorAlgorithm = identifierValidatorAlgorithm;
 	}
 
