@@ -1,5 +1,6 @@
 package org.opensrp.repository.postgres;
 
+import org.junit.Test;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.repository.IdentifierSourceRepository;
 import org.opensrp.util.IdentifierValidatorAlgorithm;
@@ -24,6 +25,7 @@ public class IdentifierSourceRepositoryTest extends BaseRepositoryTest  {
 		return scripts;
 	}
 	
+	@Test
 	public void testFindByIdentifier() {
 		IdentifierSource identifierSource = identifierSourceRepository.findByIdentifier("Test Identifier");
 		assertEquals(identifierSource.getIdentifierValidatorAlgorithm(), IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM);

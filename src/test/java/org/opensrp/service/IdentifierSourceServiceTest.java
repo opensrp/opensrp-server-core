@@ -49,9 +49,9 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindByIdentifier() {
-		IdentifierSource savedIdentifierSource = identifierSourceService.findByIdentifier("Test Identifier 1");
+		IdentifierSource savedIdentifierSource = identifierSourceService.findByIdentifier("Test Identifier");
 		assertNotNull(savedIdentifierSource.getId());
-		assertEquals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM.name(), savedIdentifierSource.getIdentifierValidatorAlgorithm());
+		assertEquals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM, savedIdentifierSource.getIdentifierValidatorAlgorithm());
 	}
 
 	@Test
