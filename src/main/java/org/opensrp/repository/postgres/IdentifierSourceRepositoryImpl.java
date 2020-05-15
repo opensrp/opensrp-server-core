@@ -18,8 +18,6 @@ import java.util.List;
 public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<IdentifierSource>
 		implements IdentifierSourceRepository {
 
-	private static Logger logger = LoggerFactory.getLogger(IdentifierSourceRepository.class.toString());
-
 	@Autowired
 	private CustomIdentifierSourceMapper customIdentifierSourceMapper;
 
@@ -82,7 +80,7 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 
 	@Override
 	public void safeRemove(IdentifierSource entity) {
-
+		throw new NotImplementedException();
 	}
 
 	@Override

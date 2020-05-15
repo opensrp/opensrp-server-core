@@ -1,7 +1,8 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
 import org.apache.ibatis.annotations.Param;
-import org.opensrp.domain.postgres.*;
+import org.opensrp.domain.postgres.IdentifierSource;
+import org.opensrp.domain.postgres.IdentifierSourceExample;
 import org.opensrp.repository.postgres.mapper.IdentifierSourceMapper;
 
 import java.util.List;
