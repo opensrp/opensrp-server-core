@@ -2,6 +2,7 @@ package org.opensrp.repository.postgres.mapper.custom;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.LocationDetail;
@@ -40,4 +41,6 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	                                     @Param("offset") Integer offset, @Param("limit") Integer limit);
 
 	int selectCountLocations(@Param("locationSearchBean") LocationSearchBean locationSearchBean);
+	
+	List<LocationDetail> selectLocationHierachy( @Param("identifiers") Set<String> identifiers);
 }

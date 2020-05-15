@@ -947,6 +947,21 @@
 			</trim>
 	    </where>
 	</select>
-	
-	
+
+	<select id="selectManyIds" resultType="java.lang.String">
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+		document_id
+		from core.client_metadata cm
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="example.orderByClause != null">
+			order by cm.${example.orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
 </mapper>

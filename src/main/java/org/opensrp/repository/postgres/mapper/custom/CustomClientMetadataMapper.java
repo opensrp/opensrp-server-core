@@ -58,4 +58,7 @@ public interface CustomClientMetadataMapper extends ClientMetadataMapper {
 	
 	int selectCountChildBySearchBean(@Param("clientBean") ClientSearchBean searchBean,
 	                                 @Param("addressBean") AddressSearchBean addressSearchBean);
+
+	List<String> selectManyIds(@Param("example") ClientMetadataExample example, @Param("offset") int offset,
+			@Param("limit") int limit);
 }

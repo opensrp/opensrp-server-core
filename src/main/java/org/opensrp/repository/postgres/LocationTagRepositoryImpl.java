@@ -11,6 +11,7 @@ import org.opensrp.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.postgres.LocationTagExample;
 import org.opensrp.domain.postgres.LocationTagMapExample;
+import org.opensrp.domain.postgres.LocationTagMapExample.Criteria;
 import org.opensrp.repository.LocationTagRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationTagMapMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationTagMapper;
@@ -300,11 +301,12 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 	
 	private LocationTagMapExample createLocationTagMapExample(Long locationId, Long locationTagId) {
 		LocationTagMapExample example = new LocationTagMapExample();
+		Criteria criteria = example.createCriteria();
 		if (locationId != null) {
-			example.createCriteria().andLocationIdEqualTo(locationId);
+			criteria.andLocationIdEqualTo(locationId);
 		}
 		if (locationTagId != null) {
-			example.createCriteria().andLocationTagIdEqualTo(locationTagId);
+			criteria.andLocationTagIdEqualTo(locationTagId);
 			
 		}
 		return example;
