@@ -230,6 +230,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		setting.setDocumentId("document_id_32932");
 		setting.setKey("key_32932");
 		setting.setValue("value");
+		setting.setInheritedFrom("location_id_2");
 		setting.setIdentifier("setting_identifier_32932");
 		setting.setId("setting_id_32932");
 		setting.setServerVersion(0l);

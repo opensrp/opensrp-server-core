@@ -26,6 +26,9 @@ public class Setting extends SettingSearchBean {
 	@JsonProperty
 	private String description;
 	
+	@JsonProperty
+	private String inheritedFrom;
+	
 	public String getKey() {
 		return key;
 	}
@@ -64,5 +67,13 @@ public class Setting extends SettingSearchBean {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public String getInheritedFrom() {
+		return inheritedFrom;
+	}
+	
+	public void setInheritedFrom(String inheritedFrom) {
+		this.inheritedFrom = inheritedFrom;
 	}
 }

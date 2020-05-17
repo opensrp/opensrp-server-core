@@ -273,13 +273,13 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> settingsMetadata = new ArrayList();
 		List<Setting> settings = entity.getSettings();
 		try {
-			for (int i = 0; i < settings.size(); i++) {
-				Setting currSetting = settings.get(i);
+			for (Setting currSetting : settings) {
 				SettingsMetadata metadata = new SettingsMetadata();
 				metadata.setSettingKey(currSetting.getKey());
 				metadata.setSettingValue(currSetting.getValue());
 				metadata.setSettingDescription(currSetting.getDescription());
 				metadata.setSettingsId(id);
+				metadata.setInheritedFrom(currSetting.getInheritedFrom());
 				metadata.setDocumentId(entity.getId() != null ? entity.getId() : UUID.randomUUID().toString());
 				metadata.setIdentifier(entity.getIdentifier());
 				metadata.setProviderId(entity.getProviderId());

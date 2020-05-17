@@ -2,9 +2,14 @@ package org.opensrp.service;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.opensrp.domain.Task;
+import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.repository.postgres.handler.SettingTypeHandler;
@@ -26,7 +31,7 @@ public class SettingService {
 	private SettingRepository settingRepository;
 	
 	Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-	        .registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
+			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
 	
 	@Autowired
 	public void setSettingRepository(SettingRepository settingRepository) {
@@ -48,13 +53,11 @@ public class SettingService {
 					settingConfiguration.setServerVersion(currentTimeMillis);
 					settingRepository.update(settingConfiguration);
 					currentTimeMillis += 1;
-				}
-				catch (InterruptedException e) {
+				} catch (InterruptedException e) {
 					logger.error(e.getMessage());
 				}
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 	}
@@ -67,7 +70,7 @@ public class SettingService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
 		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		
 		if (settingConfigurations.getId() != null && settingRepository.get(settingConfigurations.getId()) != null) {
@@ -82,5 +85,4 @@ public class SettingService {
 		return settingConfigurations.getIdentifier();
 		
 	}
-	
 }

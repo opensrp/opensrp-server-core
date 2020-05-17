@@ -1,12 +1,12 @@
 package org.opensrp.repository;
 
-import java.util.List;
-
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.search.SettingSearchBean;
+
+import java.util.List;
 
 public interface SettingRepository extends BaseRepository<SettingConfiguration> {
 
@@ -17,12 +17,12 @@ public interface SettingRepository extends BaseRepository<SettingConfiguration> 
 	List<SettingConfiguration> findByEmptyServerVersion();
 	
 	SettingsMetadata getSettingMetadataByDocumentId(String documentId);
-	
-	Settings getSettingById(Long id);
 
 	SettingConfiguration findSetting(SettingSearchBean settingQueryBean);
 
 	List<SettingsMetadata> getAllSettingMetadataByDocumentId(String documentId);
+	
+	Settings getSettingById(Long id);
 
 	void add(Setting entity);
 }
