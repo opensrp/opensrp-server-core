@@ -88,6 +88,15 @@
 		join core.event e on em.event_id = e.id
 		where em.document_id = #{documentId,jdbcType=VARCHAR} and em.date_deleted is null
 	</select>
+	
+	<select id="selectPrimaryKey" parameterType="org.opensrp.domain.postgres.EventMetadataExample"
+		resultType="java.lang.Long">
+		select event_id
+		from core.event_metadata em
+		<if test="_parameter != null">
+			<include refid="Event_Example_Where_Clause" />
+		</if>
+	</select>
 
 	<select id="selectMany" parameterType="org.opensrp.domain.postgres.EventMetadataExample"
 		resultMap="BaseEventResultMap">

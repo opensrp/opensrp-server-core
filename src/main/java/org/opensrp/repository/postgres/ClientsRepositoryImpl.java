@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.Client;
@@ -129,7 +130,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		clientMetadata.setId(clientMetadataMapper.selectByExample(clientMetadataExample).get(0).getId());
 		clientMetadataMapper.updateByPrimaryKey(clientMetadata);
 	}
-	
+
 	@Override
 	public List<Client> getAll() {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
@@ -569,5 +570,37 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		clientMetadataMapper.deleteByExample(new ClientMetadataExample());
 		clientMapper.deleteByExample(new ClientExample());
 		
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived) {
+		Long lastServerVersion = null;
+		ClientMetadataExample example = new ClientMetadataExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
+
+		if (isArchived) {
+			criteria.andDateDeletedIsNotNull();
+		} else {
+			criteria.andDateDeletedIsNull();
+		}
+
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+
+		List<String> clientIdentifiers = clientMetadataMapper.selectManyIds(example, 0,
+				fetchLimit);
+
+		if (clientIdentifiers != null && !clientIdentifiers.isEmpty()) {
+			example = new ClientMetadataExample();
+			example.createCriteria().andDocumentIdEqualTo(clientIdentifiers.get(clientIdentifiers.size() -1));
+			List<ClientMetadata> clientMetaDataList = clientMetadataMapper.selectByExample(example);
+
+			lastServerVersion = clientMetaDataList != null && !clientMetaDataList.isEmpty() ?
+					clientMetaDataList.get(0).getServerVersion() : 0;
+		}
+		return Pair.of(clientIdentifiers, lastServerVersion);
 	}
 }
