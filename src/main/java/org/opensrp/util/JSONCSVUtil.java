@@ -20,14 +20,15 @@ public class JSONCSVUtil {
      */
     public static JSONObject toJSON(Map<String, String> csvValues, Map<String, CSVRowConfig> configs) {
         JSONObject jsonObject = new JSONObject();
-        for (Map.Entry<String,String> value:
-             csvValues.entrySet()) {
+        for (Map.Entry<String, String> value :
+                csvValues.entrySet()) {
             CSVRowConfig config = configs.get(value.getKey());
-            if(config == null)
+            if (config == null)
                 throw new IllegalStateException("Column" + value.getKey() + " is missing a config");
 
-            if(config.validate(value.getValue())){
-                addNodeToJson(config.getFieldMapping(), value.getValue(), jsonObject);
+            if (config.validate(value.getValue())) {
+                if (StringUtils.isNotBlank(value.getValue()))
+                    addNodeToJson(config.getFieldMapping(), value.getValue(), jsonObject);
             }
         }
         return jsonObject;
@@ -35,6 +36,7 @@ public class JSONCSVUtil {
 
     /**
      * inserts a node to the path of the variable
+     *
      * @param nodePath
      * @param value
      * @param jsonObject
