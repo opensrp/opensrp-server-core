@@ -3,20 +3,22 @@ package org.opensrp.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opensrp.domain.CSVRowConfig;
 import org.opensrp.domain.Client;
+import org.opensrp.domain.Event;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.search.SettingSearchBean;
 import org.opensrp.util.DateTimeTypeConverter;
+import org.opensrp.util.JSONCSVUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -31,6 +33,9 @@ public class UploadService {
     private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
             .registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
 
+    public static final String CLIENT = "client";
+    public static final String EVENT = "event";
+
     private static Logger logger = LoggerFactory.getLogger(UploadService.class.toString());
     public static String CSV_UPLOAD_SETTING = "csv_upload_config";
 
@@ -44,44 +49,34 @@ public class UploadService {
     /**
      * Generates a list of clients by processing byte content
      *
-     * @param bytes
+     * @param csvClients
      * @param eventName
      * @return
      */
-    public List<Client> getClientFromCSVBytes(byte[] bytes, String eventName) {
-        String[] header;
-        final List<String[]> totalRows = new ArrayList<>();
+    public List<Pair<Client, Event>> getClientFromCSVBytes(List<Map<String, String>> csvClients, String eventName) {
 
-        String completeData = new String(bytes);
-        String[] rows = completeData.split("\n");
+        List<Pair<Client, Event>> totalRows = new ArrayList<>();
+        Map<String, CSVRowConfig> configs = getCSVConfig(eventName)
+                .stream()
+                .collect(Collectors.toMap(CSVRowConfig::getColumnName,
+                        Function.identity()));
 
-        int i = 0;
-        while (i < rows.length) {
-            if (i == 0) {
-                header = rows[i].split(",");
-            } else {
-                totalRows.add(rows[i].split(","));
-            }
-            i++;
+        for (Map<String, String> csvValue : csvClients) {
+            JSONObject jsonObject = JSONCSVUtil.toJSON(csvValue, configs);
+
+            Client client = null;
+            Event event = null;
+
+            if (jsonObject.has(CLIENT))
+                client = gson.fromJson(jsonObject.get(CLIENT).toString(), Client.class);
+
+            if (jsonObject.has(EVENT))
+                event = gson.fromJson(jsonObject.toString(), Event.class);
+
+            totalRows.add(Pair.of(client, event));
         }
 
-        return null;
-    }
-
-    /***
-     * Given an event name, the upload data reads any settings from the system
-     *
-     * @param eventName
-     * @return
-     */
-    public @Nullable
-    Map<String, CSVRowConfig> getCSVConfigMap(String eventName) {
-        List<CSVRowConfig> configs = getCSVConfig(eventName);
-        if (configs != null) {
-            return configs.stream().collect(Collectors.toMap(CSVRowConfig::getColumnName,
-                    Function.identity()));
-        }
-        return null;
+        return totalRows;
     }
 
     public List<CSVRowConfig> getCSVConfig(String eventName) {
