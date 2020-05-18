@@ -2,6 +2,8 @@
 package org.opensrp.search;
 
 public class SettingSearchBean {
+
+	private String identifier;
 	
 	private String providerId;
 	
@@ -12,7 +14,15 @@ public class SettingSearchBean {
 	private String teamId;
 	
 	private Long serverVersion;
-	
+
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
+
 	public String getProviderId() {
 		return providerId;
 	}
