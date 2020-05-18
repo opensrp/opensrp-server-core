@@ -2,9 +2,7 @@ package org.opensrp.repository.postgres;
 
 import static org.opensrp.service.MultimediaService.MULTI_VERSION;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.opensrp.domain.Multimedia;
 import org.opensrp.domain.postgres.MultiMedia;
@@ -151,6 +149,9 @@ public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> imp
 		multimedia.setContentType(pgMultiMedia.getContentType());
 		multimedia.setFilePath(pgMultiMedia.getFilePath());
 		multimedia.setFileCategory(pgMultiMedia.getFileCategory());
+		multimedia.setOriginalFileName(pgMultiMedia.getOriginalFileName());
+		multimedia.setDateUploaded(pgMultiMedia.getDateUploaded());
+		multimedia.setSummary(pgMultiMedia.getSummary());
 		return multimedia;
 	}
 	
@@ -166,6 +167,9 @@ public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> imp
 		pgMultiMedia.setContentType(entity.getContentType());
 		pgMultiMedia.setFilePath(entity.getFilePath());
 		pgMultiMedia.setFileCategory(entity.getFileCategory());
+		pgMultiMedia.setOriginalFileName(entity.getOriginalFileName());
+		pgMultiMedia.setDateUploaded(entity.getDateUploaded());
+		pgMultiMedia.setSummary(entity.getSummary());
 		return pgMultiMedia;
 	}
 	

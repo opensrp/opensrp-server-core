@@ -80,7 +80,9 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
 
                 Multimedia multimediaFile = new Multimedia().withCaseId(multimediaDTO.getCaseId())
                         .withProviderId(multimediaDTO.getProviderId()).withContentType(multimediaDTO.getContentType())
-                        .withFilePath(multimediaDTO.getFilePath()).withFileCategory(multimediaDTO.getFileCategory());
+                        .withFilePath(multimediaDTO.getFilePath()).withFileCategory(multimediaDTO.getFileCategory())
+                        .withSummary(multimediaDTO.getSummary()).withOriginalFileName(multimediaDTO.getOriginalFileName())
+                        .withDateUploaded(multimediaDTO.getDateUploaded());
 
                 multimediaRepository.add(multimediaFile);
                 Client client = clientService.getByBaseEntityId(multimediaDTO.getCaseId());
