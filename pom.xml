@@ -23,7 +23,7 @@
 
 		<opensrp.common.version>2.0.0-SNAPSHOT</opensrp.common.version>
 		<opensrp.api.version>1.0.1</opensrp.api.version>
-		<opensrp.interface.version>2.0.0-SNAPSHOT</opensrp.interface.version>
+		<opensrp.interface.version>2.0.1-SNAPSHOT</opensrp.interface.version>
 		<jackson.version>2.10.2</jackson.version>
 		<powermock.version>2.0.5</powermock.version>
 
