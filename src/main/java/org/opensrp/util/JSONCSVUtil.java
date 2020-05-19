@@ -84,7 +84,7 @@ public class JSONCSVUtil {
             } else if (pos == (nodeAddress.length - 1)) {
                 // add a string if its the very last element
                 if (currentNode.has(node))
-                    return currentNode.getString(node);
+                    return currentNode.get(node).toString();
 
             } else {
                 // add the object as a json node
