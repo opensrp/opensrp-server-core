@@ -27,8 +27,6 @@ public class SettingSearchBean extends BaseDataObject {
 	private Long primaryKey;
 
 	private String documentId;
-
-	private Long serverVersion;
 	
 	public String getProviderId() {
 		return providerId;
@@ -60,14 +58,6 @@ public class SettingSearchBean extends BaseDataObject {
 	
 	public void setTeamId(String teamId) {
 		this.teamId = teamId;
-	}
-	
-	public Long getServerVersion() {
-		return serverVersion;
-	}
-	
-	public void setServerVersion(Long serverVersion) {
-		this.serverVersion = serverVersion;
 	}
 
 	public String getIdentifier() {
