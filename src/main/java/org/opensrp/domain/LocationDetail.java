@@ -2,26 +2,31 @@ package org.opensrp.domain;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
 public class LocationDetail implements Serializable {
-    private static final long serialVersionUID = 7360003982578282029L;
-
-    private String identifier;
-
-    private String name;
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+	
+	private static final long serialVersionUID = 7360003982578282029L;
+	
+	private Long id;
+	
+	private String identifier;
+	
+	private String name;
+	
+	private String parentId;
+	
+	private boolean voided;
+	
+	private String tags;
+	
 }
