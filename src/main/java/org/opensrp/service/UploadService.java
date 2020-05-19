@@ -92,7 +92,7 @@ public class UploadService {
                 }
 
                 if (jsonObject.has(EVENT)) {
-                    event = gson.fromJson(jsonObject.toString(), Event.class);
+                    event = gson.fromJson(jsonObject.get(EVENT).toString(), Event.class);
                     event.setBaseEntityId(baseEntityID);
                 }
 
@@ -138,22 +138,28 @@ public class UploadService {
         settingSearchBean.setIdentifier(CSV_UPLOAD_SETTING);
         settingSearchBean.setServerVersion(0L);
         List<SettingConfiguration> configurations = settingRepository.findSettings(settingSearchBean);
-        if (configurations.size() == 1) {
-            SettingConfiguration configuration = configurations.get(0);
-            Setting settings = configuration.getSettings().get(0);
-            JSONArray values = settings.getValues();
-            int forms = 0;
-            while (forms < values.length()) {
-                JSONObject jsObject = values.getJSONObject(forms);
-                if (jsObject.has(eventName)) {
-                    return gson.fromJson(jsObject.get(eventName).toString(),
-                            new TypeToken<ArrayList<CSVRowConfig>>() {
-                            }.getType());
+
+        int count = 0;
+        while (count < configurations.size()) {
+            SettingConfiguration configuration = configurations.get(count);
+            if (CSV_UPLOAD_SETTING.equals(configuration.getIdentifier())) {
+                Setting settings = configuration.getSettings().get(0);
+                JSONArray values = settings.getValues();
+                int forms = 0;
+                while (forms < values.length()) {
+                    JSONObject jsObject = values.getJSONObject(forms);
+                    if (jsObject.has(eventName)) {
+                        return gson.fromJson(jsObject.get(eventName).toString(),
+                                new TypeToken<ArrayList<CSVRowConfig>>() {
+                                }.getType());
+                    }
+                    forms++;
                 }
-                forms++;
             }
+
+            count++;
         }
 
-        return null;
+        return new ArrayList<>();
     }
 }

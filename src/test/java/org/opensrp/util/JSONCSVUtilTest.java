@@ -48,7 +48,7 @@ public class JSONCSVUtilTest {
         List<Pair<String, String>> result = new ArrayList<>();
 
         result.add(Pair.of("client.attributes.reveal_id", "12345"));
-        result.add(Pair.of("client.attributes.age_category", ""));
+        result.add(Pair.of("client.attributes.age_category", "6-10"));
         result.add(Pair.of("client.attributes.grade", "Grade 2"));
         result.add(Pair.of("client.attributes.grade_class", "1"));
         result.add(Pair.of("client.attributes.school_enrolled", "Yes"));
@@ -66,82 +66,4 @@ public class JSONCSVUtilTest {
         return result;
     }
 
-    private String settings = "{\n" +
-            "  \"_id\": \"a7472f90-b3d8-4a78-b3e8-94bc170f6db7\",\n" +
-            "  \"_rev\": \"v1\",\n" +
-            "  \"team\": \"testOrg\",\n" +
-            "  \"type\": \"SettingConfiguration\",\n" +
-            "  \"teamId\": \"0f38856a-6e0f-5e31-bf3c-a2ad8a53210d\",\n" +
-            "  \"settings\": [{\n" +
-            "    \"key\": \"csv_upload_config\",\n" +
-            "    \"label\": \"CSV upload configuration\",\n" +
-            "    \"values\": [{\n" +
-            "      \"Child Registration\": [{\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"opensrp_id\",\n" +
-            "        \"field_mapping\": \"client.identifiers.opensrp_id\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"last_name\",\n" +
-            "        \"field_mapping\": \"client.lastName\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"first_name\",\n" +
-            "        \"field_mapping\": \"client.firstName\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"middle_name\",\n" +
-            "        \"field_mapping\": \"client.middleName\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"gender\",\n" +
-            "        \"field_mapping\": \"client.gender\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"reveal_id\",\n" +
-            "        \"field_mapping\": \"client.identifiers.reveal_id\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"grade\",\n" +
-            "        \"field_mapping\": \"client.attributes.grade\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"grade_class\",\n" +
-            "        \"field_mapping\": \"client.attributes.grade_class\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"school_enrolled\",\n" +
-            "        \"field_mapping\": \"client.attributes.school_enrolled\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"school_name\",\n" +
-            "        \"field_mapping\": \"client.attributes.school_name\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"birthdate\",\n" +
-            "        \"field_mapping\": \"client.birthdate\"\n" +
-            "      }, {\n" +
-            "        \"regex\": \"\",\n" +
-            "        \"required\": false,\n" +
-            "        \"column_name\": \"birthday_approximated\",\n" +
-            "        \"field_mapping\": \"client.birthdateApprox\"\n" +
-            "      }]\n" +
-            "    }],\n" +
-            "    \"description\": \"CSV upload configuration\"\n" +
-            "  }],\n" +
-            "  \"identifier\": \"csv_upload_config\",\n" +
-            "  \"providerId\": \"onatest\",\n" +
-            "  \"serverVersion\": 1589789034971\n" +
-            "}";
 }
