@@ -7,8 +7,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Multimedia extends BaseDataEntity {
 	

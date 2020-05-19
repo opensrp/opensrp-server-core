@@ -31,6 +31,8 @@ public class JSONCSVUtil {
             if (config.validate(value.getValue())) {
                 if (StringUtils.isNotBlank(value.getValue()))
                     addNodeToJson(config.getFieldMapping(), value.getValue(), jsonObject);
+            }else{
+                throw new IllegalStateException("CSV has an invalid value for field " + config.getColumnName() + " mapping " + config.getFieldMapping());
             }
         }
         return jsonObject;
