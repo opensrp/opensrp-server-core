@@ -151,7 +151,7 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 		pgIdentifierSource.setId(primaryKey);
 		pgIdentifierSource.setIdentifier(identifierSource.getIdentifier());
 		pgIdentifierSource.setDescription(identifierSource.getDescription());
-		pgIdentifierSource.setIdentifierValidatorAlgorithm(identifierSource.getIdentifierValidatorAlgorithm().getAlgorithm());
+		pgIdentifierSource.setIdentifierValidatorAlgorithm(identifierSource.getIdentifierValidatorAlgorithm().name());
 		pgIdentifierSource.setBaseCharacterSet(identifierSource.getBaseCharacterSet());
 		pgIdentifierSource.setFirstIdentifierBase(identifierSource.getFirstIdentifierBase());
 		pgIdentifierSource.setPrefix(identifierSource.getPrefix());
