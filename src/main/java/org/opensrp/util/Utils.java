@@ -1,5 +1,6 @@
 package org.opensrp.util;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,8 +26,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.opensrp.service.multimedia.OSSMultimediaFileManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Utils {
+
+	private static Logger logger = LoggerFactory.getLogger(Utils.class.toString());
 	
 	private Utils() {
 		
@@ -142,6 +148,16 @@ public class Utils {
 
 	public static boolean isEmptyList(List list) {
 		return list == null || list.size() == 0;
+	}
+
+	public static void closeCloseable(Closeable closeable) {
+		try {
+			if (closeable != null) {
+				closeable.close();
+			}
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 
 	public static class DatabaseConnectionParams {
