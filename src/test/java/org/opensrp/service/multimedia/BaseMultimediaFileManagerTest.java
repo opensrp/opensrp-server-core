@@ -16,6 +16,7 @@ import static org.utils.TestUtils.getBasePackageFilePath;
 public abstract class BaseMultimediaFileManagerTest {
 
 	public void setUp() throws IOException {
+		deleteTestFile();
 		createTestFile();
 	}
 
@@ -35,7 +36,18 @@ public abstract class BaseMultimediaFileManagerTest {
 		return getTestFileFolder() + File.separator + "test_file";
 	}
 
+	protected String getDataFilePath() {
+		return getTestFileFolder() + File.separator + "data_file";
+	}
+
 	protected String getTestFileFolder() {
 		return getBasePackageFilePath() + "/src/test/java/org/opensrp/service/multimedia";
+	}
+
+	protected void deleteTestFile() {
+		File testFile = new File(getTestFilePath());
+		if (testFile.exists()) {
+			testFile.delete();
+		}
 	}
 }
