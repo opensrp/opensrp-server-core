@@ -31,12 +31,18 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 		super(multimediaRepository, clientService);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void persistFileToStorage(String fileName, byte[] fileBytes) {
 		ossClient.putObject(objectStorageBucketName, getObjectStorageFilePath(fileName), new ByteArrayInputStream(fileBytes));
 		ossClient.shutdown();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public File retrieveFile(String filePath) {
 		File file = null;

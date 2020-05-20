@@ -21,10 +21,10 @@ public abstract class ObjectStorageMultimediaFileManager extends BaseMultimediaF
 	@Value("#{opensrp['object.storage.region'] ?: ''}")
 	protected String objectStorageRegion;
 
-	@Value("#{opensrp['object.storage.bucket'] ?: ''}")
+	@Value("#{opensrp['object.storage.bucket.name'] ?: ''}")
 	protected String objectStorageBucketName;
 
-	@Value("#{opensrp['object.storage.key.folder'] ?: ''}")
+	@Value("#{opensrp['object.storage.bucket.folder.path'] ?: ''}")
 	protected String objectStorageBucketFolderPath;
 
 	public ObjectStorageMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
