@@ -40,7 +40,7 @@ public class IdentifierSource {
 	private Integer maxLength;
 
 	@JsonProperty
-	private String blacklisted;
+	private String regexFormat;
 
 	public IdentifierSource() {
 
@@ -48,7 +48,7 @@ public class IdentifierSource {
 
 	public IdentifierSource(String identifier, String description, IdentifierValidatorAlgorithm identifierValidatorAlgorithm,
 			String baseCharacterSet, String firstIdentifierBase, String prefix, String suffix, Integer minLength,
-			Integer maxLength, String blacklisted) {
+			Integer maxLength, String regexFormat) {
 		this.identifier = identifier;
 		this.description = description;
 		this.identifierValidatorAlgorithm = identifierValidatorAlgorithm;
@@ -58,7 +58,7 @@ public class IdentifierSource {
 		this.suffix = suffix;
 		this.minLength = minLength;
 		this.maxLength = maxLength;
-		this.blacklisted = blacklisted;
+		this.regexFormat = regexFormat;
 	}
 
 	public Long getId() {
@@ -141,11 +141,11 @@ public class IdentifierSource {
 		this.maxLength = maxLength;
 	}
 
-	public String getBlacklisted() {
-		return blacklisted;
+	public String getRegexFormat() {
+		return regexFormat;
 	}
 
-	public void setBlacklisted(String blacklisted) {
-		this.blacklisted = blacklisted;
+	public void setRegexFormat(String regexFormat) {
+		this.regexFormat = regexFormat;
 	}
 }

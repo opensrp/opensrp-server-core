@@ -17,7 +17,7 @@
     <result column="suffix" jdbcType="VARCHAR" property="suffix" />
     <result column="min_length" jdbcType="INTEGER" property="minLength" />
     <result column="max_length" jdbcType="INTEGER" property="maxLength" />
-    <result column="blacklisted" jdbcType="VARCHAR" property="blacklisted" />
+    <result column="regex_format" jdbcType="VARCHAR" property="regexFormat" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -94,7 +94,7 @@
       This element was generated on Fri May 08 15:20:02 PKT 2020.
     -->
     id, identifier, description, identifier_validator_algorithm, base_character_set, 
-    first_identifier_base, prefix, suffix, min_length, max_length, blacklisted
+    first_identifier_base, prefix, suffix, min_length, max_length, regex_format
   </sql>
   <select id="selectByExample" parameterType="org.opensrp.domain.postgres.IdentifierSourceExample" resultMap="BaseResultMap">
     <!--
@@ -155,12 +155,12 @@
     insert into core.identifier_source (id, identifier, description, 
       identifier_validator_algorithm, base_character_set, 
       first_identifier_base, prefix, suffix, 
-      min_length, max_length, blacklisted
+      min_length, max_length, regex_format
       )
     values (#{id,jdbcType=BIGINT}, #{identifier,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{identifierValidatorAlgorithm,jdbcType=VARCHAR}, #{baseCharacterSet,jdbcType=VARCHAR}, 
       #{firstIdentifierBase,jdbcType=VARCHAR}, #{prefix,jdbcType=VARCHAR}, #{suffix,jdbcType=VARCHAR}, 
-      #{minLength,jdbcType=INTEGER}, #{maxLength,jdbcType=INTEGER}, #{blacklisted,jdbcType=VARCHAR}
+      #{minLength,jdbcType=INTEGER}, #{maxLength,jdbcType=INTEGER}, #{regexFormat,jdbcType=VARCHAR}
       )
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.IdentifierSource">
@@ -201,8 +201,8 @@
       <if test="maxLength != null">
         max_length,
       </if>
-      <if test="blacklisted != null">
-        blacklisted,
+      <if test="regexFormat != null">
+        regex_format,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -236,8 +236,8 @@
       <if test="maxLength != null">
         #{maxLength,jdbcType=INTEGER},
       </if>
-      <if test="blacklisted != null">
-        #{blacklisted,jdbcType=VARCHAR},
+      <if test="regexFormat != null">
+        #{regexFormat,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -290,8 +290,8 @@
       <if test="record.maxLength != null">
         max_length = #{record.maxLength,jdbcType=INTEGER},
       </if>
-      <if test="record.blacklisted != null">
-        blacklisted = #{record.blacklisted,jdbcType=VARCHAR},
+      <if test="record.regexFormat != null">
+        regex_format = #{record.regexFormat,jdbcType=VARCHAR},
       </if>
     </set>
     <if test="_parameter != null">
@@ -315,7 +315,7 @@
       suffix = #{record.suffix,jdbcType=VARCHAR},
       min_length = #{record.minLength,jdbcType=INTEGER},
       max_length = #{record.maxLength,jdbcType=INTEGER},
-      blacklisted = #{record.blacklisted,jdbcType=VARCHAR}
+      regex_format = #{record.regexFormat,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -355,8 +355,8 @@
       <if test="maxLength != null">
         max_length = #{maxLength,jdbcType=INTEGER},
       </if>
-      <if test="blacklisted != null">
-        blacklisted = #{blacklisted,jdbcType=VARCHAR},
+      <if test="regexFormat != null">
+        regex_format = #{regexFormat,jdbcType=VARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -377,7 +377,7 @@
       suffix = #{suffix,jdbcType=VARCHAR},
       min_length = #{minLength,jdbcType=INTEGER},
       max_length = #{maxLength,jdbcType=INTEGER},
-      blacklisted = #{blacklisted,jdbcType=VARCHAR}
+      regex_format = #{regexFormat,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
