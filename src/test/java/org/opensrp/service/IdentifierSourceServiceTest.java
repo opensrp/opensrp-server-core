@@ -39,7 +39,7 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testAddIdentifierSource() {
 		IdentifierSource identifierSource = new IdentifierSource("Test Identifier 1", "Test", IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM, "baseCharacterSet",
-			"firstIdentifierBase","1","A",5,10,"blacklistedRegex");
+			"firstIdentifierBase","1","A",5,10,"regexFormat");
 		
 		identifierSourceService.addOrUpdate(identifierSource);
 		assertEquals(2,identifierSourceService.findAllIdentifierSources().size());  // 1 added through script 
@@ -57,7 +57,7 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testUpdate() {
 		IdentifierSource identifierSource = new IdentifierSource("Test Identifier 1", "Test Updated", IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM, "baseCharacterSet",
-				"firstIdentifierBase","1","A",5,10,"blacklistedRegex");
+				"firstIdentifierBase","1","A",5,10,"regexFormat");
         
 		identifierSource.setId(1l);
 		identifierSourceService.addOrUpdate(identifierSource);

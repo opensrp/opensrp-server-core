@@ -5,7 +5,7 @@
 
 	<sql id="Base_Column_List">
 		i.id, i.identifier, i.description, i.identifier_validator_algorithm, i.base_character_set, 
-    i.first_identifier_base, i.prefix, i.suffix, i.min_length, i.max_length, i.blacklisted
+    i.first_identifier_base, i.prefix, i.suffix, i.min_length, i.max_length, i.regex_format
 	</sql>
 
 	<sql id="Base_Table_List">
@@ -114,8 +114,8 @@
 			<if test="maxLength != null">
 				max_length,
 			</if>
-			<if test="blacklisted != null">
-				blacklisted,
+			<if test="regex_format != null">
+				regex_format,
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -149,8 +149,8 @@
 			<if test="maxLength != null">
 				#{maxLength,jdbcType=INTEGER},
 			</if>
-			<if test="blacklisted != null">
-				#{blacklisted,jdbcType=VARCHAR},
+			<if test="regex_format != null">
+				#{regex_format,jdbcType=VARCHAR},
 			</if>
 		</trim>
 	</insert>
