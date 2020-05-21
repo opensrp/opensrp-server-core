@@ -2,13 +2,9 @@ package org.opensrp.service;
 
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.opensrp.domain.Task;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
@@ -85,4 +81,25 @@ public class SettingService {
 		return settingConfigurations.getIdentifier();
 		
 	}
+	
+	/**
+	 * Gets a single setting object from the v2 endpoint to save
+	 * @param setting {@link Setting}
+	 */
+	public void addOrUpdateSettings(Setting setting){
+		if (setting != null) {
+			settingRepository.addOrUpdate(setting);
+		}
+	}
+	
+	/**
+	 * Performs a settings delete using the v2 endpoint
+	 * @param id {@link Long} -- settings id
+	 */
+	public void deleteSetting(Long id){
+		if (id != null) {
+			settingRepository.delete(id);
+		}
+	}
+	
 }

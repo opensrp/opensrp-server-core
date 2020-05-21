@@ -1,7 +1,10 @@
-
 package org.opensrp.repository.postgres;
 
+import com.google.gson.Gson;
+
 import org.apache.commons.lang3.StringUtils;
+import org.opensrp.api.util.LocationTree;
+import org.opensrp.connector.openmrs.service.OpenmrsLocationService;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.domain.postgres.SettingsMetadata;
@@ -17,15 +20,15 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.opensrp.util.Utils.isEmptyList;
 
-@Repository("settingRepositoryPostgres")
+@Repository ("settingRepositoryPostgres")
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
 	
 	@Autowired
@@ -33,6 +36,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Autowired
 	private CustomSettingMetadataMapper settingMetadataMapper;
+	
+	@Autowired
+	private OpenmrsLocationService openmrsLocationService;
 	
 	@Override
 	public SettingConfiguration get(String id) {
@@ -42,36 +48,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		SettingSearchBean settingQueryBean = new SettingSearchBean();
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setDocumentId(id);
-
+		
 		return findSetting(settingQueryBean);
 	}
-
-	private List<Setting> convertToSettings(List<SettingsMetadata> settingsMetadata) {
-		List<Setting> settings = new ArrayList<>();
-		for (int i = 0; i < settingsMetadata.size(); i++) {
-			SettingsMetadata currSettingMetadata = settingsMetadata.get(i);
-			settings.add(convertToSetting(currSettingMetadata));
-		}
-		return settings;
-	}
-
-	private Setting convertToSetting(SettingsMetadata settingsMetadata) {
-		if (settingsMetadata.getJson() != null) {
-			return (Setting) settingsMetadata.getJson();
-		}
-		Setting setting = new Setting();
-		setting.setValue(settingsMetadata.getSettingValue());
-		setting.setKey(settingsMetadata.getSettingKey());
-		setting.setServerVersion(settingsMetadata.getServerVersion());
-		setting.setDocumentId(settingsMetadata.getDocumentId());
-		setting.setDescription(settingsMetadata.getSettingDescription());
-		setting.setProviderId(settingsMetadata.getProviderId());
-		setting.setTeamId(settingsMetadata.getTeamId());
-		setting.setTeam(settingsMetadata.getTeam());
-		setting.setLocationId(settingsMetadata.getLocationId());
-		return setting;
-	}
-
+	
 	@Transactional
 	@Override
 	public void update(SettingConfiguration entity) {
@@ -93,12 +73,12 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (pgSetting == null) {
 			return;
 		}
-
+		
 		int rowsAffected = settingMapper.updateByPrimaryKey(pgSetting);
 		if (rowsAffected < 1) {
 			return;
 		}
-
+		
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
 		if (metadata == null) {
@@ -137,45 +117,43 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	public List<SettingConfiguration> findAllSettings() {
 		return getAll();
 	}
-
+	
 	@Override
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
 		return findSettings(settingQueryBean, DEFAULT_FETCH_SIZE);
 	}
-
+	
 	public SettingConfiguration findSetting(SettingSearchBean settingQueryBean) {
 		List<SettingConfiguration> settingConfigurations = findSettings(settingQueryBean);
 		return settingConfigurations.isEmpty() ? null : settingConfigurations.get(0);
 	}
-
+	
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean, int limit) {
 		return convertToSettingConfigurations(findSettingsAndSettingsMetadata(settingQueryBean, limit));
 	}
-
+	
 	public SettingsAndSettingsMetadataJoined findSettingsAndSettingsMetadata(SettingSearchBean settingQueryBean) {
 		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined = findSettingsAndSettingsMetadata(settingQueryBean, 1);
 		return isEmptyList(settingsAndSettingsMetadataJoined) ? null : settingsAndSettingsMetadataJoined.get(0);
 	}
-
+	
 	public List<SettingsAndSettingsMetadataJoined> findSettingsAndSettingsMetadata(SettingSearchBean settingQueryBean, int limit) {
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
-
+		
 		String providerId = settingQueryBean.getProviderId();
 		String locationId = settingQueryBean.getLocationId();
 		String team = settingQueryBean.getTeam();
 		String teamId = settingQueryBean.getTeamId();
 		String documentId = settingQueryBean.getDocumentId();
 		Long primaryKey = settingQueryBean.getPrimaryKey();
+		
 		if (StringUtils.isBlank(providerId) && StringUtils.isBlank(locationId) && StringUtils.isBlank(team)
 				&& StringUtils.isBlank(teamId) && StringUtils.isBlank(documentId)) {
 			criteria.andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull().andLocationIdIsNull();
 		} else {
 			if (StringUtils.isNotEmpty(providerId)) {
 				criteria.andProviderIdEqualTo(providerId);
-			}
-			if (StringUtils.isNotEmpty(locationId)) {
-				criteria.andLocationIdEqualTo(locationId);
 			}
 			if (StringUtils.isNotEmpty(team)) {
 				criteria.andTeamEqualTo(team);
@@ -187,13 +165,70 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				criteria.andDocumentIdEqualTo(documentId);
 			}
 		}
-
+		
 		if (primaryKey != null) {
 			metadataExample.or(metadataExample.createCriteria().andSettingsIdEqualTo(primaryKey));
 		}
 		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
-
-		return settingMetadataMapper.selectMany(metadataExample, 0, limit);
+		
+		if (settingQueryBean.isResolveSettings()) {
+			return resolveSettingsPerLocation(settingQueryBean, criteria, metadataExample, limit);
+		} else {
+			if (StringUtils.isNotEmpty(locationId)) {
+				criteria.andLocationIdEqualTo(locationId);
+			}
+			return settingMetadataMapper.selectMany(metadataExample, 0, limit);
+		}
+	}
+	
+	private List<SettingsAndSettingsMetadataJoined> resolveSettingsPerLocation(SettingSearchBean settingSearchBean,
+	                                                                           SettingsMetadataExample.Criteria criteria,
+	                                                                           SettingsMetadataExample metadataExample,
+	                                                                           int limit) {
+		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = new ArrayList<>();
+		String locationId = settingSearchBean.getLocationId();
+		LocationTree locationTree = new LocationTree();
+		
+		Map<String, Set<String>> childParent = getChildParentLocationTree(locationId);
+		List<String> reformattedLocationHierarchy = new ArrayList<>();
+		if (childParent != null && childParent.size() > 0) {
+			reformattedLocationHierarchy(childParent, locationId, reformattedLocationHierarchy);
+		}
+		
+		if (reformattedLocationHierarchy.size() > 0) {
+			for (String locationUuid : reformattedLocationHierarchy) {
+				criteria.andLocationIdEqualTo(locationUuid);
+				List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined = settingMetadataMapper.selectMany(metadataExample, 0, limit);
+			}
+		}
+		
+		return settingsAndSettingsMetadataJoinedList;
+	}
+	
+	private Map<String, Set<String>> getChildParentLocationTree(String locationId) {
+		String locationTreeString = new Gson().toJson(openmrsLocationService.getLocationTreeOf(locationId));
+		LocationTree locationTree = new Gson().fromJson(locationTreeString, LocationTree.class);
+		Map<String, Set<String>> childParent = new HashMap<>();
+		if (locationTree != null) {
+			childParent = locationTree.getChildParent();
+		}
+		
+		return childParent;
+	}
+	
+	
+	private void reformattedLocationHierarchy(Map<String, Set<String>> childParent, String locationId, List<String> locationHierarchy) {
+		for (Map.Entry<String, Set<String>> stringSetEntry : childParent.entrySet()) {
+			String location = (String) ((Map.Entry) stringSetEntry).getValue();
+			String locationKey = (String) ((Map.Entry) stringSetEntry).getKey();
+			if (StringUtils.contains(location, locationId)) {
+				locationHierarchy.add(location);
+				locationId = locationKey;
+			}
+			
+			if (locationHierarchy.size() <= (childParent.size() + 1))
+				reformattedLocationHierarchy(childParent, locationId, locationHierarchy);
+		}
 	}
 	
 	@Override
@@ -212,11 +247,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		
 		String documentId = uniqueId.toString();
-
+		
 		SettingSearchBean settingSearchBean = new SettingSearchBean();
 		settingSearchBean.setDocumentId(documentId);
 		settingSearchBean.setServerVersion(0l);
-
+		
 		SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined = findSettingsAndSettingsMetadata(settingSearchBean);
 		Settings pgSetting = settingsAndSettingsMetadataJoined == null ? null : settingsAndSettingsMetadataJoined.getSettings();
 		if (pgSetting == null) {
@@ -237,25 +272,25 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (entity == null) {
 			return null;
 		}
-
+		
 		Settings pgSetting = new Settings();
 		pgSetting.setId(id);
 		pgSetting.setJson(entity);
 		
 		return pgSetting;
 	}
-
+	
 	private SettingConfiguration convert(Settings settings) {
 		return (SettingConfiguration) settings.getJson();
 	}
-
+	
 	private List<SettingConfiguration> convertToSettingConfigurations(List<SettingsAndSettingsMetadataJoined> jointSettings) {
 		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
 		if (jointSettings == null || jointSettings.isEmpty()) {
 			return settingConfigurations;
 		}
-
-		Map<Long, SettingConfiguration> settingConfigurationMap  = new HashMap<>();
+		
+		Map<Long, SettingConfiguration> settingConfigurationMap = new HashMap<>();
 		for (SettingsAndSettingsMetadataJoined jointSetting : jointSettings) {
 			SettingConfiguration settingConfiguration = settingConfigurationMap.get(jointSetting.getSettings().getId());
 			if (settingConfiguration == null) {
@@ -269,36 +304,38 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settingConfigurations;
 	}
 	
-	private List<SettingsMetadata> createMetadata(SettingConfiguration entity, Long id) {
-		List<SettingsMetadata> settingsMetadata = new ArrayList();
-		List<Setting> settings = entity.getSettings();
-		try {
-			for (Setting currSetting : settings) {
-				SettingsMetadata metadata = new SettingsMetadata();
-				metadata.setSettingKey(currSetting.getKey());
-				metadata.setSettingValue(currSetting.getValue());
-				metadata.setSettingDescription(currSetting.getDescription());
-				metadata.setSettingsId(id);
-				metadata.setInheritedFrom(currSetting.getInheritedFrom());
-				metadata.setDocumentId(entity.getId() != null ? entity.getId() : UUID.randomUUID().toString());
-				metadata.setIdentifier(entity.getIdentifier());
-				metadata.setProviderId(entity.getProviderId());
-				metadata.setLocationId(entity.getLocationId());
-				metadata.setTeam(entity.getTeam());
-				metadata.setTeamId(entity.getTeamId());
-				metadata.setServerVersion(entity.getServerVersion());
-				metadata.setJson(convertToSetting(metadata));
-				settingsMetadata.add(metadata);
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
+	private Setting convertToSetting(SettingsMetadata settingsMetadata) {
+		if (settingsMetadata.getJson() != null) {
+			return (Setting) settingsMetadata.getJson();
 		}
-
-		return settingsMetadata;
+		Setting setting = new Setting();
+		setting.setValue(settingsMetadata.getSettingValue());
+		setting.setKey(settingsMetadata.getSettingKey());
+		setting.setId(String.valueOf(settingsMetadata.getId()));
+		setting.setType(settingsMetadata.getSettingType());
+		setting.setUuid(settingsMetadata.getUuid());
+		setting.setInheritedFrom(settingsMetadata.getInheritedFrom());
+		setting.setServerVersion(settingsMetadata.getServerVersion());
+		setting.setDocumentId(settingsMetadata.getDocumentId());
+		setting.setDescription(settingsMetadata.getSettingDescription());
+		setting.setProviderId(settingsMetadata.getProviderId());
+		setting.setTeamId(settingsMetadata.getTeamId());
+		setting.setTeam(settingsMetadata.getTeam());
+		setting.setLocationId(settingsMetadata.getLocationId());
+		return setting;
 	}
-
+	
+	private List<Setting> convertToSettings(List<SettingsMetadata> settingsMetadata) {
+		List<Setting> settings = new ArrayList<>();
+		for (int i = 0; i < settingsMetadata.size(); i++) {
+			SettingsMetadata currSettingMetadata = settingsMetadata.get(i);
+			settings.add(convertToSetting(currSettingMetadata));
+		}
+		return settings;
+	}
+	
 	@Override
-	public void add(Setting setting) {
+	public void addOrUpdate(Setting setting) {
 		List<Setting> settings = new ArrayList<>();
 		settings.add(setting);
 		SettingConfiguration settingConfiguration = new SettingConfiguration();
@@ -314,9 +351,19 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingConfiguration.setIdentifier(setting.getIdentifier());
 		settingConfiguration.setDocumentId(setting.getDocumentId());
 		settingConfiguration.setId(setting.getId());
-		add(settingConfiguration);
+		
+		if (StringUtils.isNotBlank(setting.getId())) {
+			update(settingConfiguration);
+		} else {
+			add(settingConfiguration);
+		}
 	}
-
+	
+	@Override
+	public void delete(Long settingId) {
+		settingMetadataMapper.deleteByPrimaryKey(settingId);
+	}
+	
 	@Override
 	public void add(SettingConfiguration entity) {
 		if (entity == null || entity.getSettings() == null || entity.getIdentifier() == null) {
@@ -334,24 +381,52 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		
 		setRevision(entity);
-
+		
 		List<Setting> settings = entity.getSettings();
 		entity.setSettings(null); // strip out the settings block
 		Settings pgSettings = convert(entity, id);
 		if (pgSettings == null) {
 			return;
 		}
-
+		
 		int rowsAffected = settingMapper.insertSelectiveAndSetId(pgSettings);
 		if (rowsAffected < 1 || pgSettings.getId() == null) {
 			return;
 		}
-
+		
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> settingsMetadata = createMetadata(entity, pgSettings.getId());
-		if (settingsMetadata != null) {
-			settingMetadataMapper.insertMany(settingsMetadata);
+		settingMetadataMapper.insertMany(settingsMetadata);
+	}
+	
+	private List<SettingsMetadata> createMetadata(SettingConfiguration entity, Long id) {
+		List<SettingsMetadata> settingsMetadata = new ArrayList();
+		List<Setting> settings = entity.getSettings();
+		try {
+			for (Setting currSetting : settings) {
+				SettingsMetadata metadata = new SettingsMetadata();
+				metadata.setSettingKey(currSetting.getKey());
+				metadata.setSettingValue(currSetting.getValue());
+				metadata.setSettingDescription(currSetting.getDescription());
+				metadata.setSettingsId(id);
+				metadata.setSettingType(currSetting.getType());
+				metadata.setUuid(currSetting.getUuid() != null ? currSetting.getUuid() : UUID.randomUUID().toString());
+				metadata.setInheritedFrom(currSetting.getInheritedFrom());
+				metadata.setDocumentId(entity.getId() != null ? entity.getId() : UUID.randomUUID().toString());
+				metadata.setIdentifier(entity.getIdentifier());
+				metadata.setProviderId(entity.getProviderId());
+				metadata.setLocationId(entity.getLocationId());
+				metadata.setTeam(entity.getTeam());
+				metadata.setTeamId(entity.getTeamId());
+				metadata.setServerVersion(entity.getServerVersion());
+				metadata.setJson(convertToSetting(metadata));
+				settingsMetadata.add(metadata);
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
 		}
+		
+		return settingsMetadata;
 	}
 	
 	@Override
@@ -360,7 +435,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> settingsMetadata = getAllSettingMetadataByDocumentId(documentId);
 		return !settingsMetadata.isEmpty() ? settingsMetadata.get(0) : null;
 	}
-
+	
 	public List<SettingsMetadata> getAllSettingMetadataByDocumentId(String documentId) {
 		SettingsMetadataExample example = new SettingsMetadataExample();
 		example.createCriteria().andDocumentIdEqualTo(documentId);
@@ -372,7 +447,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		SettingSearchBean settingQueryBean = new SettingSearchBean();
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setPrimaryKey(id);
-
+		
 		SettingConfiguration settingConfiguration = findSetting(settingQueryBean);
 		return settingConfiguration == null ? null : convert(settingConfiguration, id);
 	}

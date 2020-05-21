@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+import org.opensrp.connector.openmrs.service.OpenmrsLocationService;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.setting.Setting;
@@ -26,6 +27,9 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 	@Autowired
 	@Qualifier("settingRepositoryPostgres")
 	private SettingRepository settingRepository;
+	
+	@Autowired
+	private OpenmrsLocationService openmrsLocationService;
 	
 	@Override
 	protected Set<String> getDatabaseScripts() {
@@ -104,6 +108,15 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		
 		assertEquals(1, settings.size());
 		
+	}
+	
+	@Test
+	public void tesFindByCriteriaAndResolveSettings(){
+		SettingSearchBean settingQueryBean = new SettingSearchBean();
+		settingQueryBean.setServerVersion(0L);
+		
+		List<SettingConfiguration> settings = settingRepository.findSettings(settingQueryBean);
+		assertEquals(3, settings.size());
 	}
 	
 	@Test
@@ -234,7 +247,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		setting.setIdentifier("setting_identifier_32932");
 		setting.setId("setting_id_32932");
 		setting.setServerVersion(0l);
-		settingRepository.add(setting);
+		settingRepository.addOrUpdate(setting);
 
 		Map<String, Setting> expectedSettings = new HashMap<>();
 		expectedSettings.put("key_32932", setting);
