@@ -76,6 +76,9 @@ public class UploadService {
                 .collect(Collectors.toMap(CSVRowConfig::getColumnName,
                         Function.identity()));
 
+        if(csvClients.size() > 0 && csvClients.get(0).size() != configs.size())
+            throw new IllegalArgumentException("The number of rows must be equal to the mappings size");
+
         int rowNumber = 1;
         for (Map<String, String> csvValue : csvClients) {
             try {
