@@ -24,7 +24,6 @@ import static org.opensrp.util.Utils.closeCloseable;
 public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager {
 
 	private Logger logger = LoggerFactory.getLogger(OSSMultimediaFileManager.class.toString());
-	private OSSClient ossClient;
 	
 	@Autowired
 	public OSSMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
@@ -36,7 +35,9 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 	 */
 	@Override
 	protected void persistFileToStorage(String fileName, byte[] fileBytes) {
+		OSSClient ossClient = getOssClient();
 		ossClient.putObject(objectStorageBucketName, getOSSObjectStorageFilePath(fileName), new ByteArrayInputStream(fileBytes));
+		ossClient.shutdown();
 	}
 
 	private String getOSSObjectStorageFilePath(String fileName) {
@@ -51,7 +52,7 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 	@Override
 	public File retrieveFile(String filePath) {
 		File file = null;
-
+		OSSClient ossClient = getOssClient();
 		if (!ossClient.doesObjectExist(objectStorageBucketName, filePath)) { return file; }
 
 		InputStream content = ossClient.getObject(objectStorageBucketName, filePath).getObjectContent();
@@ -62,16 +63,12 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 			logger.error(e.getMessage(), e);
 		} finally {
 			closeCloseable(content);
+			ossClient.shutdown();
 		}
 		return file;
 	}
 
-	@PostConstruct
-	@SuppressWarnings("unused")
 	private OSSClient getOssClient () {
-		if (ossClient  == null) {
-			ossClient = new OSSClient(objectStorageRegion, objectStorageAccessKeyId, objectStorageSecretAccessKey);
-		}
-		return ossClient ;
+		return new OSSClient(objectStorageRegion, objectStorageAccessKeyId, objectStorageSecretAccessKey);
 	}
 }
