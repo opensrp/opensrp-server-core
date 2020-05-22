@@ -125,8 +125,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
         return wasFileSaved;
     }
 
-
-    private String getMultimediaFilePath(MultimediaDTO multimediaDTO, String originalFileName) {
+    public String getMultimediaFilePath(MultimediaDTO multimediaDTO, String originalFileName) {
 
         multimediaDirPath = getBaseMultiMediaDir();
         String fileExt = ".jpg";

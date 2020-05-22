@@ -53,7 +53,7 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 	public File retrieveFile(String filePath) {
 		File file = null;
 		OSSClient ossClient = getOssClient();
-		if (!ossClient.doesObjectExist(objectStorageBucketName, filePath)) { return file; }
+		if (!ossClient.doesObjectExist(objectStorageBucketName, getOSSObjectStorageFilePath(filePath))) { return file; }
 
 		InputStream content = ossClient.getObject(objectStorageBucketName, filePath).getObjectContent();
 		try {

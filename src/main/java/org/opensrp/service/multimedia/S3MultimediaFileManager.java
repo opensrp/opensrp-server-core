@@ -56,7 +56,7 @@ public class S3MultimediaFileManager extends ObjectStorageMultimediaFileManager 
     @Override
     public File retrieveFile(String filePath) {
         File file = null;
-        if (s3Client.doesObjectExist(objectStorageBucketName, filePath)) {
+        if (s3Client.doesObjectExist(objectStorageBucketName, getObjectStorageFilePath(filePath))) {
             // make sure tomcat has permissions to save to filePath
             file = new File(filePath);
             s3Client.getObject(new GetObjectRequest(objectStorageBucketName, filePath), file);
