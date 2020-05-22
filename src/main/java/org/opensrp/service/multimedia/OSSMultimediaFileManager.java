@@ -37,7 +37,6 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 	@Override
 	protected void persistFileToStorage(String fileName, byte[] fileBytes) {
 		ossClient.putObject(objectStorageBucketName, getOSSObjectStorageFilePath(fileName), new ByteArrayInputStream(fileBytes));
-		ossClient.shutdown();
 	}
 
 	private String getOSSObjectStorageFilePath(String fileName) {
@@ -63,7 +62,6 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 			logger.error(e.getMessage(), e);
 		} finally {
 			closeCloseable(content);
-			ossClient.shutdown();
 		}
 		return file;
 	}
