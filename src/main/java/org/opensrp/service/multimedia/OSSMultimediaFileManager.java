@@ -1,6 +1,8 @@
 package org.opensrp.service.multimedia;
 
+import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.OSSException;
 import org.apache.commons.io.FileUtils;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
@@ -55,11 +57,16 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 		OSSClient ossClient = getOssClient();
 		if (!ossClient.doesObjectExist(objectStorageBucketName, getOSSObjectStorageFilePath(filePath))) { return file; }
 
-		InputStream content = ossClient.getObject(objectStorageBucketName, filePath).getObjectContent();
+		InputStream content = null;
 		try {
+			content = ossClient.getObject(objectStorageBucketName, filePath).getObjectContent();
 			file = new File(filePath);
 			FileUtils.copyInputStreamToFile(content, file);
 		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		} catch (ClientException e) {
+			logger.error(e.getMessage(), e);
+		} catch (OSSException e) {
 			logger.error(e.getMessage(), e);
 		} finally {
 			closeCloseable(content);
