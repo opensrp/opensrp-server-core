@@ -5,7 +5,7 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>2.2.1-ANC-ALPHA1-SNAPSHOT</version>
+	<version>2.2.2-ANC-ALPHA1-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>http://github.com/OpenSRP/opensrp-server-core</url>
@@ -21,9 +21,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
 
-		<opensrp.common.version>2.0.1-ANC-ALPHA-SNAPSHOT</opensrp.common.version>
-		<opensrp.connector.version>2.0.1-ANC-ALPHA-SNAPSHOT</opensrp.connector.version>
-		<opensrp.api.version>1.0.1-ANC-ALPHA-SNAPSHOT</opensrp.api.version>
+		<opensrp.common.version>2.0.2-ANC-ALPHA-SNAPSHOT</opensrp.common.version>
+		<opensrp.connector.version>2.0.2-ANC-ALPHA-SNAPSHOT</opensrp.connector.version>
+		<opensrp.api.version>1.0.2-ANC-ALPHA-SNAPSHOT</opensrp.api.version>
 		<opensrp.interface.version>2.0.0-SNAPSHOT</opensrp.interface.version>
 		<jackson.version>2.10.2</jackson.version>
 		<powermock.version>2.0.5</powermock.version>

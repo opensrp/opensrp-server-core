@@ -10,8 +10,6 @@ import org.opensrp.search.SettingSearchBean;
 public class SettingConfiguration extends SettingSearchBean {
 	
 	private static final long serialVersionUID = 1890883609898207738L;
-	 
-	private String documentId;
 	
 	@JsonProperty
 	private String version; 
@@ -33,13 +31,5 @@ public class SettingConfiguration extends SettingSearchBean {
 	
 	public void setSettings(List<Setting> settings) {
 		this.settings = settings;
-	}
-
-	public String getDocumentId() {
-		return documentId;
-	}
-
-	public void setDocumentId(String documentId) {
-		this.documentId = documentId;
 	}
 }
