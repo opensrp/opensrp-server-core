@@ -55,11 +55,12 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 	public File retrieveFile(String filePath) {
 		File file = null;
 		OSSClient ossClient = getOssClient();
-		if (!ossClient.doesObjectExist(objectStorageBucketName, getOSSObjectStorageFilePath(filePath))) { return file; }
+		String filePathInBucket = getOSSObjectStorageFilePath(filePath);
+		if (!ossClient.doesObjectExist(objectStorageBucketName, filePathInBucket)) { return file; }
 
 		InputStream content = null;
 		try {
-			content = ossClient.getObject(objectStorageBucketName, filePath).getObjectContent();
+			content = ossClient.getObject(objectStorageBucketName, filePathInBucket).getObjectContent();
 			file = new File(filePath);
 			FileUtils.copyInputStreamToFile(content, file);
 		} catch (IOException e) {
