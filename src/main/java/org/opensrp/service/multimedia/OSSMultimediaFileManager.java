@@ -36,8 +36,14 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 	 */
 	@Override
 	protected void persistFileToStorage(String fileName, byte[] fileBytes) {
-		ossClient.putObject(objectStorageBucketName, getObjectStorageFilePath(fileName), new ByteArrayInputStream(fileBytes));
+		ossClient.putObject(objectStorageBucketName, getOSSObjectStorageFilePath(fileName), new ByteArrayInputStream(fileBytes));
 		ossClient.shutdown();
+	}
+
+	private String getOSSObjectStorageFilePath(String fileName) {
+		String objectStorageFilePath = getObjectStorageFilePath(fileName);
+		return objectStorageFilePath.charAt(0) == File.separatorChar
+				? objectStorageFilePath.substring(1) : objectStorageFilePath;
 	}
 
 	/**
