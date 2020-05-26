@@ -120,6 +120,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
+		logger.debug(settingQueryBean.toString() + " ------------------------------- find settings from the endpoint");
 		return findSettings(settingQueryBean, DEFAULT_FETCH_SIZE);
 	}
 	
@@ -131,6 +132,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean, int limit) {
 		boolean isV1Settings = settingQueryBean.isV1Settings();
 		List<SettingsAndSettingsMetadataJoined> joinedList = findSettingsAndSettingsMetadata(settingQueryBean, limit);
+		logger.debug(joinedList.toString()+ "------------------------ find setting after the settings are fetched");
 		return convertToSettingConfigurations(joinedList, isV1Settings);
 	}
 	
@@ -312,6 +314,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	private Setting convertToSetting(SettingsMetadata settingsMetadata, boolean isV1Settings) {
+		logger.debug(isV1Settings + "--------------------------------------------- the convert string " +
+				"method");
 		if (settingsMetadata.getJson() != null) {
 			return (Setting) settingsMetadata.getJson();
 		}

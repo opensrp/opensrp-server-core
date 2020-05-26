@@ -1,6 +1,7 @@
 
 package org.opensrp.search;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.opensrp.domain.BaseDataObject;
 
@@ -24,8 +25,10 @@ public class SettingSearchBean extends BaseDataObject {
 	@JsonProperty
 	private String childLocationId;
 	
+	@JsonIgnoreProperties
 	private boolean v1Settings;
 	
+	@JsonIgnoreProperties
 	private boolean resolveSettings;
 
 	private Long primaryKey;
