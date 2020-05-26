@@ -24,7 +24,8 @@ public class SettingSearchBean extends BaseDataObject {
 	@JsonProperty
 	private String childLocationId;
 	
-	@JsonProperty
+	private boolean v1Settings;
+	
 	private boolean resolveSettings;
 
 	private Long primaryKey;
@@ -101,5 +102,13 @@ public class SettingSearchBean extends BaseDataObject {
 	
 	public void setResolveSettings(boolean resolveSettings) {
 		this.resolveSettings = resolveSettings;
+	}
+	
+	public boolean isV1Settings() {
+		return v1Settings;
+	}
+	
+	public void setV1Settings(boolean v1Settings) {
+		this.v1Settings = v1Settings;
 	}
 }
