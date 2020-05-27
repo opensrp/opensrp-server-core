@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.reflect.Whitebox;
 
 import java.io.BufferedReader;
@@ -87,7 +86,7 @@ public class OSSMultimediaFileManagerTest extends BaseMultimediaFileManagerTest 
 	public void testRetrieveFileShouldRetrieveFileFromOSS() throws Exception {
 		String testFilePath = getTestFilePath();
 		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageBucketName", "oss-bucket");
-		doReturn(true).when(ossClient).doesObjectExist(anyString(), anyString());
+		doReturn(true).when(ossClient).doesObjectExist(eq("oss-bucket"), eq(ossMultimediaFileManager.getOSSObjectStorageFilePath(testFilePath)));
 
 		OSSObject ossObject = mock(OSSObject.class);
 		InputStream inputStream = new FileInputStream(new File(getDataFilePath()));

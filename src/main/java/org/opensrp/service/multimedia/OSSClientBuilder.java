@@ -1,7 +1,6 @@
 package org.opensrp.service.multimedia;
 
 import com.aliyun.oss.OSSClient;
-import org.springframework.beans.factory.annotation.Value;
 
 /**
  * Created by Vincent Karuri on 26/05/2020
