@@ -32,7 +32,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
     @Value("#{opensrp['multimedia.directory.name']}")
     protected String baseMultimediaDirPath;
 
-    private static Logger logger = LoggerFactory.getLogger(FileSystemMultimediaFileManager.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(BaseMultimediaFileManager.class.getName());
 
     private static final String SUCCESS = "success";
 
