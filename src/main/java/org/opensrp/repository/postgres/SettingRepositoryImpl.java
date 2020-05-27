@@ -181,7 +181,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 		
 		if (settingQueryBean.isResolveSettings()) {
-			return fetchSettingsPerLocation(settingQueryBean, metadataExample, limit);
+			return fetchSettingsPerLocation(settingQueryBean, metadataExample, criteria, limit);
 		} else {
 			if (StringUtils.isNotEmpty(locationId)) {
 				criteria.andLocationIdEqualTo(locationId);
@@ -192,11 +192,13 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	private List<SettingsAndSettingsMetadataJoined> fetchSettingsPerLocation(SettingSearchBean settingSearchBean,
 	                                                                         SettingsMetadataExample metadataExample,
+	                                                                         SettingsMetadataExample.Criteria criteria,
 	                                                                         int limit) {
 		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = new ArrayList<>();
 		locationUuid = settingSearchBean.getLocationId();
 		
-		Map<String, TreeNode<String, Location>> parentLocationTree = getChildParentLocationTree(locationUuid);
+		Map<String, TreeNode<String, Location>> parentLocationTree = getChildParentLocationTree(locationUuid,
+				settingSearchBean, criteria);
 		if (parentLocationTree != null && parentLocationTree.size() > 0) {
 			reformattedLocationHierarchy(parentLocationTree);
 		}
@@ -234,32 +236,33 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
 		for (Map.Entry configElement : stringConfigurationMap.entrySet()) {
 			List<Setting> settingList = new ArrayList<>();
-				SettingConfiguration configuration = (SettingConfiguration) configElement.getValue();
-				configuration.setSettings(new ArrayList<>());
-				
-				for (Map.Entry settingsElement : stringSettingsMap.entrySet()) {
-					if (((String) settingsElement.getKey()).contains(configuration.getIdentifier())) {
-						settingList.add((Setting) settingsElement.getValue());
-					}
+			SettingConfiguration configuration = (SettingConfiguration) configElement.getValue();
+			configuration.setSettings(new ArrayList<>());
+			
+			for (Map.Entry settingsElement : stringSettingsMap.entrySet()) {
+				if (((String) settingsElement.getKey()).contains(configuration.getIdentifier())) {
+					settingList.add((Setting) settingsElement.getValue());
 				}
-				
-				configuration.setSettings(settingList);
-				settingConfigurations.add(configuration);
+			}
+			
+			configuration.setSettings(settingList);
+			settingConfigurations.add(configuration);
 		}
 		
 		return settingConfigurations;
 	}
 	
 	
-	private Map<String, TreeNode<String, Location>> getChildParentLocationTree(String locationId) {
+	private Map<String, TreeNode<String, Location>> getChildParentLocationTree(String locationId,
+	                                                                           SettingSearchBean settingSearchBean, SettingsMetadataExample.Criteria criteria) {
 		String locationTreeString = new Gson().toJson(openmrsLocationService.getLocationTreeOf(locationId));
 		LocationTree locationTree = new Gson().fromJson(locationTreeString, LocationTree.class);
 		Map<String, TreeNode<String, Location>> treeNodeHashMap = new HashMap<>();
 		if (locationTree != null) {
 			treeNodeHashMap = locationTree.getLocationsHierarchy();
 		}
-		if(settingQueryBean.getIdentifier() != null){
-			criteria.andIdentifierEqualTo(settingQueryBean.getIdentifier());
+		if (settingSearchBean.getIdentifier() != null) {
+			criteria.andIdentifierEqualTo(settingSearchBean.getIdentifier());
 		}
 		
 		
