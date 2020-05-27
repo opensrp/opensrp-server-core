@@ -3,6 +3,7 @@ package org.opensrp.repository;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
@@ -138,4 +139,12 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean);
 
 	int countSearchLocations(LocationSearchBean locationSearchBean);
+
+	/**
+	 * Gets the parent locations inclusive of the location of the identifiers. 
+	 * This returns the details of ancestors including locations the identifiers
+	 * @param identifiers the identifiers of locations to get the parent locations
+	 * @return the parent locations inclusive of the location of the identifiers 
+	 */
+	List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers);
 }

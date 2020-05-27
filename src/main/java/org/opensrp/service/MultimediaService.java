@@ -18,6 +18,8 @@ public class MultimediaService {
 
 	public static final String IMAGES_DIR = "patient_images";
 
+	public static final String CSV_DIR = "csv";
+
 	public static final String MULTI_VERSION = "multi_version";
 
 	private final MultimediaRepository multimediaRepository;

@@ -127,6 +127,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (settingQueryBean.getServerVersion() != null) {
 			criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 		}
+		if(settingQueryBean.getIdentifier() != null){
+			criteria.andIdentifierEqualTo(settingQueryBean.getIdentifier());
+		}
 		
 		metadataExample.or(metadataExample.createCriteria().andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull()
 		        .andLocationIdIsNull().andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion()));
