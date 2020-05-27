@@ -21,6 +21,7 @@
 		<result column="setting_value" jdbcType="VARCHAR" property="settingsMetadata.settingValue" />
 		<result column="setting_key" jdbcType="VARCHAR" property="settingsMetadata.settingKey" />
 		<result column="setting_description" jdbcType="VARCHAR" property="settingsMetadata.settingDescription" />
+		<result column="setting_label" jdbcType="VARCHAR" property="settingsMetadata.settingLabel" />
 		<result column="inherited_from" jdbcType="VARCHAR" property="settingsMetadata.inheritedFrom" />
 	</resultMap>
 
@@ -92,6 +93,7 @@
 			setting_value,
 			setting_key,
 			setting_description,
+		    setting_label,
 			inherited_from
 		) VALUES
 		<foreach collection="settingsMetadata" item="setting" index="index" open="(" separator="),("  close=")">
@@ -109,6 +111,7 @@
 			#{setting.settingValue,jdbcType=VARCHAR},
 			#{setting.settingKey,jdbcType=VARCHAR},
 			#{setting.settingDescription,jdbcType=VARCHAR},
+			#{setting.settingLabel,jdbcType=VARCHAR},
 			#{setting.inheritedFrom,jdbcType=VARCHAR}
 		</foreach>
 	</insert>
@@ -130,8 +133,9 @@
 				setting_value = #{setting.settingValue},
 				setting_key = #{setting.settingKey},
 				setting_description = #{setting.settingDescription},
+                setting_label = #{setting.settingLabel},
 				inherited_from = #{setting.inheritedFrom}
-			WHERE settings_id = #{setting.settingsId}
+			WHERE uuid = #{setting.uuid}
 			AND setting_key = #{setting.settingKey}
 		</foreach>
 	</update>

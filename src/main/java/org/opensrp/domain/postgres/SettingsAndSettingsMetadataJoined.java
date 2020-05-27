@@ -1,7 +1,5 @@
 package org.opensrp.domain.postgres;
 
-import java.util.List;
-
 /**
  * Created by Vincent Karuri on 24/04/2020
  */
@@ -12,15 +10,15 @@ public class SettingsAndSettingsMetadataJoined {
 	public Settings getSettings() {
 		return settings;
 	}
-
+	
 	public void setSettings(Settings settings) {
 		this.settings = settings;
 	}
-
+	
 	public SettingsMetadata getSettingsMetadata() {
 		return settingsMetadata;
 	}
-
+	
 	public void setSettingsMetadata(SettingsMetadata settingsMetadata) {
 		this.settingsMetadata = settingsMetadata;
 	}

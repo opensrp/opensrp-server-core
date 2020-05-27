@@ -1203,6 +1203,76 @@ public class SettingsMetadataExample {
             addCriterion("setting_description not between", value1, value2, "settingDescription");
             return (Criteria) this;
         }
+    
+        public Criteria andsettingLabelIsNull() {
+            addCriterion("setting_label is null");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelIsNotNull() {
+            addCriterion("setting_label is not null");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelEqualTo(String value) {
+            addCriterion("setting_label =", value, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelNotEqualTo(String value) {
+            addCriterion("setting_label <>", value, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelGreaterThan(String value) {
+            addCriterion("setting_label >", value, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelGreaterThanOrEqualTo(String value) {
+            addCriterion("setting_label >=", value, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelLessThan(String value) {
+            addCriterion("setting_label <", value, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelLessThanOrEqualTo(String value) {
+            addCriterion("setting_label <=", value, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelLike(String value) {
+            addCriterion("setting_label like", value, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelNotLike(String value) {
+            addCriterion("setting_label not like", value, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelIn(List<String> values) {
+            addCriterion("setting_label in", values, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelNotIn(List<String> values) {
+            addCriterion("setting_label not in", values, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelBetween(String value1, String value2) {
+            addCriterion("setting_label between", value1, value2, "settingLabel");
+            return (Criteria) this;
+        }
+    
+        public Criteria andsettingLabelNotBetween(String value1, String value2) {
+            addCriterion("setting_label not between", value1, value2, "settingLabel");
+            return (Criteria) this;
+        }
 
         public Criteria andInheritedFromIsNull() {
             addCriterion("inherited_from is null");

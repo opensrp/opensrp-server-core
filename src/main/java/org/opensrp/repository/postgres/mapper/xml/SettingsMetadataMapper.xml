@@ -22,6 +22,7 @@
     <result column="setting_value" jdbcType="VARCHAR" property="settingValue" />
     <result column="setting_key" jdbcType="VARCHAR" property="settingKey" />
     <result column="setting_description" jdbcType="VARCHAR" property="settingDescription" />
+    <result column="setting_label" jdbcType="VARCHAR" property="settingLabel" />
     <result column="inherited_from" jdbcType="VARCHAR" property="inheritedFrom" />
   </resultMap>
   <sql id="Example_Where_Clause">
@@ -162,14 +163,14 @@
       identifier, server_version, team, 
       team_id, provider_id, location_id, 
       uuid, json, setting_type, 
-      setting_value, setting_key, setting_description, 
+      setting_value, setting_key, setting_description, setting_label,
       inherited_from)
     values (#{id,jdbcType=BIGINT}, #{settingsId,jdbcType=BIGINT}, #{documentId,jdbcType=VARCHAR}, 
       #{identifier,jdbcType=VARCHAR}, #{serverVersion,jdbcType=BIGINT}, #{team,jdbcType=VARCHAR}, 
       #{teamId,jdbcType=VARCHAR}, #{providerId,jdbcType=VARCHAR}, #{locationId,jdbcType=VARCHAR}, 
       #{uuid,jdbcType=VARCHAR}, #{json,jdbcType=OTHER}, #{settingType,jdbcType=VARCHAR}, 
-      #{settingValue,jdbcType=VARCHAR}, #{settingKey,jdbcType=VARCHAR}, #{settingDescription,jdbcType=VARCHAR}, 
-      #{inheritedFrom,jdbcType=VARCHAR})
+      #{settingValue,jdbcType=VARCHAR}, #{settingKey,jdbcType=VARCHAR}, #{settingDescription,jdbcType=VARCHAR},
+      #{settingLabel,jdbcType=VARCHAR},#{inheritedFrom,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.SettingsMetadata">
     <!--
@@ -224,6 +225,9 @@
       <if test="settingDescription != null">
         setting_description,
       </if>
+      <if test="settingLabel != null">
+        setting_label,
+      </if>
       <if test="inheritedFrom != null">
         inherited_from,
       </if>
@@ -273,6 +277,9 @@
       </if>
       <if test="settingDescription != null">
         #{settingDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="settingLabel != null">
+        #{settinglabel,jdbcType=VARCHAR},
       </if>
       <if test="inheritedFrom != null">
         #{inheritedFrom,jdbcType=VARCHAR},
@@ -343,6 +350,9 @@
       <if test="record.settingDescription != null">
         setting_description = #{record.settingDescription,jdbcType=VARCHAR},
       </if>
+      <if test="record.settingLabel != null">
+        setting_label = #{record.settingLabel,jdbcType=VARCHAR},
+      </if>
       <if test="record.inheritedFrom != null">
         inherited_from = #{record.inheritedFrom,jdbcType=VARCHAR},
       </if>
@@ -373,6 +383,7 @@
       setting_value = #{record.settingValue,jdbcType=VARCHAR},
       setting_key = #{record.settingKey,jdbcType=VARCHAR},
       setting_description = #{record.settingDescription,jdbcType=VARCHAR},
+      setting_label = #{record.settingLabel,jdbcType=VARCHAR},
       inherited_from = #{record.inheritedFrom,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -428,6 +439,9 @@
       <if test="settingDescription != null">
         setting_description = #{settingDescription,jdbcType=VARCHAR},
       </if>
+      <if test="settingLabel != null">
+        setting_label = #{settingLabel,jdbcType=VARCHAR},
+      </if>
       <if test="inheritedFrom != null">
         inherited_from = #{inheritedFrom,jdbcType=VARCHAR},
       </if>
@@ -455,6 +469,7 @@
       setting_value = #{settingValue,jdbcType=VARCHAR},
       setting_key = #{settingKey,jdbcType=VARCHAR},
       setting_description = #{settingDescription,jdbcType=VARCHAR},
+      setting_label = #{settingLabel,jdbcType=VARCHAR},
       inherited_from = #{inheritedFrom,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>

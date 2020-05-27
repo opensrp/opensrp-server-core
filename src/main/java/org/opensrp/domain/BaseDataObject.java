@@ -1,14 +1,14 @@
 package org.opensrp.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public abstract class BaseDataObject extends BaseDataEntity {
-
+	
 	private static final long serialVersionUID = 1L;
-	 
+	
 	@JsonProperty
 	private User creator;
 	

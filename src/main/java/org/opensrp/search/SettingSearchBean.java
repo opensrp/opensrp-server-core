@@ -1,38 +1,39 @@
 
 package org.opensrp.search;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.opensrp.domain.BaseDataObject;
 
 public class SettingSearchBean extends BaseDataObject {
-
+	
 	@JsonProperty
 	private String identifier;
-
+	
 	@JsonProperty
 	private String teamId;
-
+	
 	@JsonProperty
 	private String team;
-
+	
 	@JsonProperty
 	private String providerId;
-
+	
 	@JsonProperty
 	private String locationId;
-
+	
 	@JsonProperty
 	private String childLocationId;
 	
-	@JsonIgnoreProperties
+	@JsonIgnore
 	private boolean v1Settings;
 	
-	@JsonIgnoreProperties
+	@JsonIgnore
 	private boolean resolveSettings;
-
+	
 	private Long primaryKey;
-
+	
 	private String documentId;
 	
 	public String getProviderId() {
@@ -66,35 +67,35 @@ public class SettingSearchBean extends BaseDataObject {
 	public void setTeamId(String teamId) {
 		this.teamId = teamId;
 	}
-
+	
 	public String getIdentifier() {
 		return identifier;
 	}
-
+	
 	public void setIdentifier(String identifier) {
 		this.identifier = identifier;
 	}
-
+	
 	public String getChildLocationId() {
 		return childLocationId;
 	}
-
+	
 	public void setChildLocationId(String childLocationId) {
 		this.childLocationId = childLocationId;
 	}
-
+	
 	public String getDocumentId() {
 		return documentId;
 	}
-
+	
 	public void setDocumentId(String documentId) {
 		this.documentId = documentId;
 	}
-
+	
 	public Long getPrimaryKey() {
 		return primaryKey;
 	}
-
+	
 	public void setPrimaryKey(Long primaryKey) {
 		this.primaryKey = primaryKey;
 	}

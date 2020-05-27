@@ -3,7 +3,9 @@ package org.opensrp.repository.postgres;
 import com.google.gson.Gson;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
+import org.opensrp.api.util.TreeNode;
 import org.opensrp.connector.openmrs.service.OpenmrsLocationService;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
@@ -15,6 +17,8 @@ import org.opensrp.repository.SettingRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper;
 import org.opensrp.search.SettingSearchBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,22 +27,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.opensrp.util.Utils.isEmptyList;
 
 @Repository ("settingRepositoryPostgres")
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
-	
+	private static final Logger logger = LoggerFactory.getLogger(SettingRepositoryImpl.class);
+	private final List<String> reformattedLocationHierarchy = new ArrayList<>();
 	@Autowired
 	private CustomSettingMapper settingMapper;
-	
 	@Autowired
 	private CustomSettingMetadataMapper settingMetadataMapper;
-	
 	@Autowired
 	private OpenmrsLocationService openmrsLocationService;
+	private String locationUuid;
 	
 	@Override
 	public SettingConfiguration get(String id) {
@@ -120,7 +124,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Override
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
-		logger.debug(settingQueryBean.toString() + " ------------------------------- find settings from the endpoint");
 		return findSettings(settingQueryBean, DEFAULT_FETCH_SIZE);
 	}
 	
@@ -130,10 +133,12 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean, int limit) {
-		boolean isV1Settings = settingQueryBean.isV1Settings();
-		List<SettingsAndSettingsMetadataJoined> joinedList = findSettingsAndSettingsMetadata(settingQueryBean, limit);
-		logger.debug(joinedList.toString()+ "------------------------ find setting after the settings are fetched");
-		return convertToSettingConfigurations(joinedList, isV1Settings);
+		if (settingQueryBean.isResolveSettings()) {
+			return resolveSettings(findSettingsAndSettingsMetadata(settingQueryBean, limit),
+					settingQueryBean.isV1Settings());
+		} else {
+			return convertToSettingConfigurations(findSettingsAndSettingsMetadata(settingQueryBean, limit), settingQueryBean.isV1Settings());
+		}
 	}
 	
 	public SettingsAndSettingsMetadataJoined findSettingsAndSettingsMetadata(SettingSearchBean settingQueryBean) {
@@ -176,7 +181,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 		
 		if (settingQueryBean.isResolveSettings()) {
-			return resolveSettingsPerLocation(settingQueryBean, criteria, metadataExample, limit);
+			return fetchSettingsPerLocation(settingQueryBean, metadataExample, limit);
 		} else {
 			if (StringUtils.isNotEmpty(locationId)) {
 				criteria.andLocationIdEqualTo(locationId);
@@ -185,53 +190,92 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 	}
 	
-	private List<SettingsAndSettingsMetadataJoined> resolveSettingsPerLocation(SettingSearchBean settingSearchBean,
-	                                                                           SettingsMetadataExample.Criteria criteria,
-	                                                                           SettingsMetadataExample metadataExample,
-	                                                                           int limit) {
+	private List<SettingsAndSettingsMetadataJoined> fetchSettingsPerLocation(SettingSearchBean settingSearchBean,
+	                                                                         SettingsMetadataExample metadataExample,
+	                                                                         int limit) {
 		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = new ArrayList<>();
-		String locationId = settingSearchBean.getLocationId();
-		LocationTree locationTree = new LocationTree();
+		locationUuid = settingSearchBean.getLocationId();
 		
-		Map<String, Set<String>> childParent = getChildParentLocationTree(locationId);
-		List<String> reformattedLocationHierarchy = new ArrayList<>();
-		if (childParent != null && childParent.size() > 0) {
-			reformattedLocationHierarchy(childParent, locationId, reformattedLocationHierarchy);
+		Map<String, TreeNode<String, Location>> parentLocationTree = getChildParentLocationTree(locationUuid);
+		if (parentLocationTree != null && parentLocationTree.size() > 0) {
+			reformattedLocationHierarchy(parentLocationTree);
 		}
 		
 		if (reformattedLocationHierarchy.size() > 0) {
-			for (String locationUuid : reformattedLocationHierarchy) {
-				criteria.andLocationIdEqualTo(locationUuid);
-				List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined = settingMetadataMapper.selectMany(metadataExample, 0, limit);
-			}
+			metadataExample.or(metadataExample.createCriteria().andLocationIdIn(reformattedLocationHierarchy));
+			settingsAndSettingsMetadataJoinedList = settingMetadataMapper.selectMany(metadataExample, 0, limit);
 		}
 		
 		return settingsAndSettingsMetadataJoinedList;
 	}
 	
-	private Map<String, Set<String>> getChildParentLocationTree(String locationId) {
-		String locationTreeString = new Gson().toJson(openmrsLocationService.getLocationTreeOf(locationId));
-		LocationTree locationTree = new Gson().fromJson(locationTreeString, LocationTree.class);
-		Map<String, Set<String>> childParent = new HashMap<>();
-		if (locationTree != null) {
-			childParent = locationTree.getChildParent();
+	private List<SettingConfiguration> resolveSettings(List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined, boolean isV1Settings) {
+		Map<String, SettingConfiguration> stringConfigurationMap = new HashMap<>();
+		Map<String, Setting> stringSettingsMap = new HashMap<>();
+		
+		List<SettingConfiguration> configurations = convertToSettingConfigurations(settingsAndSettingsMetadataJoined, isV1Settings);
+		
+		for (SettingConfiguration configuration : configurations) {
+			String configKey = configuration.getId() + "_" + configuration.getLocationId() + "_" + configuration.getIdentifier();
+			stringConfigurationMap.put(configKey, configuration);
+			
+			List<Setting> settingsList = configuration.getSettings();
+			for (Setting setting : settingsList) {
+				String settingKey = setting.getKey() + "_" + configuration.getIdentifier();
+				stringSettingsMap.put(settingKey, setting);
+			}
 		}
 		
-		return childParent;
+		
+		return reconcileConfigurations(stringConfigurationMap, stringSettingsMap);
+	}
+	
+	private List<SettingConfiguration> reconcileConfigurations(Map<String, SettingConfiguration> stringConfigurationMap, Map<String, Setting> stringSettingsMap) {
+		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
+		for (Map.Entry configElement : stringConfigurationMap.entrySet()) {
+			List<Setting> settingList = new ArrayList<>();
+				SettingConfiguration configuration = (SettingConfiguration) configElement.getValue();
+				configuration.setSettings(new ArrayList<>());
+				
+				for (Map.Entry settingsElement : stringSettingsMap.entrySet()) {
+					if (((String) settingsElement.getKey()).contains(configuration.getIdentifier())) {
+						settingList.add((Setting) settingsElement.getValue());
+					}
+				}
+				
+				configuration.setSettings(settingList);
+				settingConfigurations.add(configuration);
+		}
+		
+		return settingConfigurations;
 	}
 	
 	
-	private void reformattedLocationHierarchy(Map<String, Set<String>> childParent, String locationId, List<String> locationHierarchy) {
-		for (Map.Entry<String, Set<String>> stringSetEntry : childParent.entrySet()) {
-			String location = (String) ((Map.Entry) stringSetEntry).getValue();
-			String locationKey = (String) ((Map.Entry) stringSetEntry).getKey();
-			if (StringUtils.contains(location, locationId)) {
-				locationHierarchy.add(location);
-				locationId = locationKey;
-			}
-			
-			if (locationHierarchy.size() <= (childParent.size() + 1))
-				reformattedLocationHierarchy(childParent, locationId, locationHierarchy);
+	private Map<String, TreeNode<String, Location>> getChildParentLocationTree(String locationId) {
+		String locationTreeString = new Gson().toJson(openmrsLocationService.getLocationTreeOf(locationId));
+		LocationTree locationTree = new Gson().fromJson(locationTreeString, LocationTree.class);
+		Map<String, TreeNode<String, Location>> treeNodeHashMap = new HashMap<>();
+		if (locationTree != null) {
+			treeNodeHashMap = locationTree.getLocationsHierarchy();
+		}
+		
+		
+		return treeNodeHashMap;
+	}
+	
+	
+	private void reformattedLocationHierarchy(Map<String, TreeNode<String, Location>> parentLocation) {
+		Map.Entry<String, TreeNode<String, Location>> stringMapEntry = parentLocation.entrySet().iterator().next();
+		String locationKey = stringMapEntry.getKey();
+		if (StringUtils.isNotBlank(locationKey)) {
+			reformattedLocationHierarchy.add(locationKey);
+		}
+		
+		TreeNode<String, Location> childLocation = stringMapEntry.getValue();
+		Map<String, TreeNode<String, Location>> newLocation = childLocation.getChildren();
+		
+		if (!Objects.equals(locationUuid, locationKey)) {
+			reformattedLocationHierarchy(newLocation);
 		}
 	}
 	
@@ -239,7 +283,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	public List<SettingConfiguration> findByEmptyServerVersion() {
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		metadataExample.createCriteria().andServerVersionIsNull();
-		metadataExample.or(metadataExample.createCriteria().andServerVersionEqualTo(0l));
+		metadataExample.or(metadataExample.createCriteria().andServerVersionEqualTo(0L));
 		return convertToSettingConfigurations(settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE));
 	}
 	
@@ -254,7 +298,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		
 		SettingSearchBean settingSearchBean = new SettingSearchBean();
 		settingSearchBean.setDocumentId(documentId);
-		settingSearchBean.setServerVersion(0l);
+		settingSearchBean.setServerVersion(0L);
 		
 		SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined = findSettingsAndSettingsMetadata(settingSearchBean);
 		Settings pgSetting = settingsAndSettingsMetadataJoined == null ? null : settingsAndSettingsMetadataJoined.getSettings();
@@ -288,6 +332,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return (SettingConfiguration) settings.getJson();
 	}
 	
+	private List<SettingConfiguration> convertToSettingConfigurations(List<SettingsAndSettingsMetadataJoined> jointSettings) {
+		return convertToSettingConfigurations(jointSettings, false);
+	}
+	
 	private List<SettingConfiguration> convertToSettingConfigurations(List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined, boolean isV1Settings) {
 		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
 		if (settingsAndSettingsMetadataJoined == null || settingsAndSettingsMetadataJoined.isEmpty()) {
@@ -304,30 +352,25 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			}
 			settingConfiguration.getSettings().add(convertToSetting(jointSetting.getSettingsMetadata(), isV1Settings));
 			settingConfiguration.setDocumentId(settingConfiguration.getSettings().get(0).getDocumentId());
+			settingConfiguration.setIdentifier(settingConfiguration.getSettings().get(0).getSettingIdentifier());
 		}
 		settingConfigurations.addAll(settingConfigurationMap.values());
 		return settingConfigurations;
 	}
 	
-	private List<SettingConfiguration> convertToSettingConfigurations(List<SettingsAndSettingsMetadataJoined> jointSettings) {
-		return convertToSettingConfigurations(jointSettings, false);
-	}
-	
 	private Setting convertToSetting(SettingsMetadata settingsMetadata, boolean isV1Settings) {
-		logger.debug(isV1Settings + "--------------------------------------------- the convert string " +
-				"method");
-		if (settingsMetadata.getJson() != null) {
-			return (Setting) settingsMetadata.getJson();
-		}
 		Setting setting = new Setting();
 		setting.setValue(settingsMetadata.getSettingValue());
 		setting.setKey(settingsMetadata.getSettingKey());
-		setting.setId(String.valueOf(settingsMetadata.getId()));
+		setting.setSettingMetadataId(String.valueOf(settingsMetadata.getId()));
 		setting.setUuid(settingsMetadata.getUuid());
 		setting.setInheritedFrom(settingsMetadata.getInheritedFrom());
 		setting.setDescription(settingsMetadata.getSettingDescription());
+		setting.setLabel(settingsMetadata.getSettingLabel());
+		setting.setSettingIdentifier(settingsMetadata.getIdentifier());
 		if (!isV1Settings) {
 			setting.setProviderId(settingsMetadata.getProviderId());
+			setting.setSettingsId(String.valueOf(settingsMetadata.getSettingsId()));
 			setting.setTeamId(settingsMetadata.getTeamId());
 			setting.setTeam(settingsMetadata.getTeam());
 			setting.setLocationId(settingsMetadata.getLocationId());
@@ -361,10 +404,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingConfiguration.setType(setting.getType());
 		settingConfiguration.setSettings(settings);
 		settingConfiguration.setServerVersion(setting.getServerVersion());
-		settingConfiguration.setIdentifier(setting.getIdentifier());
 		settingConfiguration.setDocumentId(setting.getDocumentId());
-		settingConfiguration.setId(setting.getId());
-		settingConfiguration.setV1Settings(true);
+		if (StringUtils.isNotBlank(setting.getSettingsId())) {
+			settingConfiguration.setId(setting.getSettingsId());
+		}
+		settingConfiguration.setV1Settings(false);
 		
 		if (StringUtils.isNotBlank(setting.getId())) {
 			update(settingConfiguration);
@@ -385,51 +429,75 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		
 		Long id = retrievePrimaryKey(entity);
+		List<Setting> settings;
+		Settings pgSettings;
 		
-		if (id != null) { // Setting already exists
-			return;
+		if (id == null) {
+			if (entity.getId() == null) {
+				entity.setId(UUID.randomUUID().toString());
+			}
+			
+			setRevision(entity);
+			
+			settings = entity.getSettings();
+			entity.setSettings(null); // strip out the settings block
+			pgSettings = convert(entity, id);
+			if (pgSettings == null) {
+				return;
+			}
+			
+			int rowsAffected = settingMapper.insertSelectiveAndSetId(pgSettings);
+			if (rowsAffected < 1 || pgSettings.getId() == null) {
+				return;
+			}
+		} else {
+			settings = entity.getSettings();
+			pgSettings = convert(entity, id);
 		}
 		
-		if (entity.getId() == null) {
-			entity.setId(UUID.randomUUID().toString());
-		}
-		
-		setRevision(entity);
-		
-		List<Setting> settings = entity.getSettings();
-		entity.setSettings(null); // strip out the settings block
-		Settings pgSettings = convert(entity, id);
-		if (pgSettings == null) {
-			return;
-		}
-		
-		int rowsAffected = settingMapper.insertSelectiveAndSetId(pgSettings);
-		if (rowsAffected < 1 || pgSettings.getId() == null) {
-			return;
-		}
-		
+		checkWhetherMetadataExistsBeforeSave(entity, settings, pgSettings);
+	}
+	
+	private void checkWhetherMetadataExistsBeforeSave(SettingConfiguration entity, List<Setting> settings, Settings pgSettings) {
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> settingsMetadata = createMetadata(entity, pgSettings.getId());
-		settingMetadataMapper.insertMany(settingsMetadata);
+		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
+		
+		for (SettingsMetadata metadata : settingsMetadata) {
+			if (!checkIfMetadataExists(metadata)) {
+				settingsMetadataList.add(metadata);
+			}
+		}
+		
+		settingMetadataMapper.insertMany(settingsMetadataList);
+	}
+	
+	private boolean checkIfMetadataExists(SettingsMetadata settingsMetadata) {
+		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
+		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
+		criteria.andLocationIdEqualTo(settingsMetadata.getLocationId());
+		criteria.andTeamIdEqualTo(settingsMetadata.getTeamId());
+		criteria.andSettingsIdEqualTo(settingsMetadata.getSettingsId());
+		criteria.andSettingKeyEqualTo(settingsMetadata.getSettingKey());
+		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE);
+		return settingsAndSettingsMetadataJoinedList.size() > 0;
 	}
 	
 	private List<SettingsMetadata> createMetadata(SettingConfiguration settingConfiguration, Long id) {
-		List<SettingsMetadata> settingsMetadata = new ArrayList();
+		List<SettingsMetadata> settingsMetadata = new ArrayList<>();
 		List<Setting> settings = settingConfiguration.getSettings();
+		
 		try {
-			for (Setting currSetting : settings) {
+			for (Setting setting : settings) {
 				SettingsMetadata metadata = new SettingsMetadata();
-				metadata.setSettingKey(currSetting.getKey());
-				metadata.setSettingValue(currSetting.getValue());
-				metadata.setSettingDescription(currSetting.getDescription());
+				metadata.setSettingKey(setting.getKey());
+				metadata.setSettingValue(setting.getValue());
+				metadata.setSettingDescription(setting.getDescription());
+				metadata.setSettingLabel(setting.getLabel());
 				metadata.setSettingsId(id);
-				if (settingConfiguration.isV1Settings()) {
-					metadata.setSettingType(currSetting.getType());
-				} else {
-					metadata.setSettingType(settingConfiguration.getType());
-				}
-				metadata.setUuid(currSetting.getUuid() != null ? currSetting.getUuid() : UUID.randomUUID().toString());
-				metadata.setInheritedFrom(currSetting.getInheritedFrom());
+				metadata.setSettingType(setting.getType());
+				metadata.setUuid(setting.getUuid() != null ? setting.getUuid() : UUID.randomUUID().toString());
+				metadata.setInheritedFrom(setting.getInheritedFrom());
 				metadata.setDocumentId(settingConfiguration.getId() != null ? settingConfiguration.getId() : UUID.randomUUID().toString());
 				metadata.setIdentifier(settingConfiguration.getIdentifier());
 				metadata.setProviderId(settingConfiguration.getProviderId());
@@ -439,6 +507,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				metadata.setServerVersion(settingConfiguration.getServerVersion());
 				metadata.setJson(convertToSetting(metadata, false)); //always want to create the json on the settings
 				// creation
+				
 				settingsMetadata.add(metadata);
 			}
 		} catch (Exception e) {

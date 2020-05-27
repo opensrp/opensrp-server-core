@@ -1,14 +1,13 @@
 package org.opensrp.domain.setting;
 
 
-import org.json.JSONArray;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+
+import org.json.JSONArray;
 import org.opensrp.search.SettingSearchBean;
 
-@JsonSubTypes({ @Type(value = SettingConfiguration.class, name = "Setting") })
 public class Setting extends SettingSearchBean {
 	
 	@JsonProperty
@@ -16,7 +15,7 @@ public class Setting extends SettingSearchBean {
 	
 	@JsonProperty
 	private String value;
-
+	
 	@JsonProperty
 	private JSONArray values;
 	
@@ -30,7 +29,16 @@ public class Setting extends SettingSearchBean {
 	private String inheritedFrom;
 	
 	@JsonProperty
-	private  String uuid;
+	private String uuid;
+	
+	@JsonProperty
+	private String settingsId;
+	
+	@JsonProperty
+	private String settingIdentifier;
+	
+	@JsonProperty()
+	private String settingMetadataId;
 	
 	public String getKey() {
 		return key;
@@ -47,7 +55,7 @@ public class Setting extends SettingSearchBean {
 	public void setValue(String value) {
 		this.value = value;
 	}
-
+	
 	public String getLabel() {
 		return label;
 	}
@@ -59,15 +67,15 @@ public class Setting extends SettingSearchBean {
 	public String getDescription() {
 		return description;
 	}
-
+	
 	public JSONArray getValues() {
 		return values;
 	}
-
+	
 	public void setValues(JSONArray values) {
 		this.values = values;
 	}
-
+	
 	public void setDescription(String description) {
 		this.description = description;
 	}
@@ -86,5 +94,29 @@ public class Setting extends SettingSearchBean {
 	
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+	
+	public String getSettingsId() {
+		return settingsId;
+	}
+	
+	public void setSettingsId(String settingsId) {
+		this.settingsId = settingsId;
+	}
+	
+	public String getSettingIdentifier() {
+		return settingIdentifier;
+	}
+	
+	public void setSettingIdentifier(String settingIdentifier) {
+		this.settingIdentifier = settingIdentifier;
+	}
+	
+	public String getSettingMetadataId() {
+		return settingMetadataId;
+	}
+	
+	public void setSettingMetadataId(String settingMetadataId) {
+		this.settingMetadataId = settingMetadataId;
 	}
 }
