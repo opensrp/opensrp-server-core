@@ -258,6 +258,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (locationTree != null) {
 			treeNodeHashMap = locationTree.getLocationsHierarchy();
 		}
+		if(settingQueryBean.getIdentifier() != null){
+			criteria.andIdentifierEqualTo(settingQueryBean.getIdentifier());
+		}
 		
 		
 		return treeNodeHashMap;

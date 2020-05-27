@@ -35,7 +35,6 @@ public class SettingSearchBean extends BaseDataObject {
 	private Long primaryKey;
 	
 	private String documentId;
-	
 	public String getProviderId() {
 		return providerId;
 	}

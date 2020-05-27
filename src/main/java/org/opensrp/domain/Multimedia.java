@@ -6,6 +6,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
+
 public class Multimedia extends BaseDataEntity {
 	
 	@JsonProperty
@@ -22,6 +24,15 @@ public class Multimedia extends BaseDataEntity {
 	
 	@JsonProperty
 	private String fileCategory;
+
+	@JsonProperty
+	private Date dateUploaded = new Date();
+
+	@JsonProperty
+	private String summary;
+
+	@JsonProperty
+	private String originalFileName;
 	
 	public Multimedia() {
 		
@@ -54,9 +65,24 @@ public class Multimedia extends BaseDataEntity {
 		this.filePath = filePath;
 		return this;
 	}
-	
+
 	public Multimedia withFileCategory(String fileCategory) {
 		this.fileCategory = fileCategory;
+		return this;
+	}
+
+	public Multimedia withDateUploaded(Date dateUploaded) {
+		this.dateUploaded = dateUploaded;
+		return this;
+	}
+
+	public Multimedia withSummary(String summary) {
+		this.summary = summary;
+		return this;
+	}
+
+	public Multimedia withOriginalFileName(String originalFileName) {
+		this.originalFileName = originalFileName;
 		return this;
 	}
 	
@@ -99,7 +125,31 @@ public class Multimedia extends BaseDataEntity {
 	public void setFileCategory(String fileCategory) {
 		this.fileCategory = fileCategory;
 	}
-	
+
+	public Date getDateUploaded() {
+		return dateUploaded;
+	}
+
+	public void setDateUploaded(Date dateUploaded) {
+		this.dateUploaded = dateUploaded;
+	}
+
+	public String getSummary() {
+		return summary;
+	}
+
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+
+	public String getOriginalFileName() {
+		return originalFileName;
+	}
+
+	public void setOriginalFileName(String originalFileName) {
+		this.originalFileName = originalFileName;
+	}
+
 	@Override
 	public final boolean equals(Object o) {
 		return EqualsBuilder.reflectionEquals(this, o, "id", "revision");
