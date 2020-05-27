@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
+import org.powermock.api.mockito.PowerMockito;
 import org.powermock.reflect.Whitebox;
 
 import java.io.BufferedReader;
@@ -20,12 +21,14 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -55,23 +58,27 @@ public class OSSMultimediaFileManagerTest extends BaseMultimediaFileManagerTest 
 	private OSSClient ossClient;
 
 	@Before
-	public void setUp() throws IOException {
+	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		super.setUp();
 		ossMultimediaFileManager = new OSSMultimediaFileManager(multimediaRepository, clientService);
-		Whitebox.setInternalState(ossMultimediaFileManager, "ossClient", ossClient);
+		OSSClientBuilder ossClientBuilder = mock(OSSClientBuilder.class);
+		doReturn(new URI("http://region")).when(ossClient).getEndpoint();
+		doReturn(ossClient).when(ossClientBuilder).getOssClient();
+		Whitebox.setInternalState(ossMultimediaFileManager, "ossClientBuilder", ossClientBuilder);
 	}
 
 	@Test
 	public void testPersistFileToStorageShouldPersistFileToOSS() throws IOException {
 		Whitebox.setInternalState(ossMultimediaFileManager, "multimediaDirPath", "multimedia/directory/path");
 
-		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageBucketName", "ossBucket");
+		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageBucketName", "oss-bucket");
 		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageBucketFolderPath", getTestFileFolder());
 
 		byte[] data = "data".getBytes();
-		ossMultimediaFileManager.persistFileToStorage("file_name", data);
-		verify(ossClient).putObject(eq("ossBucket"), eq(getTestFileFolder() + File.separator + "file_name"), byteStreamArgumentCaptor.capture());
+		ossMultimediaFileManager.persistFileToStorage("path/to/file", data);
+		verify(ossClient).putObject(eq("oss-bucket"), stringArgumentCaptor.capture(), byteStreamArgumentCaptor.capture());
+		assertEquals(ossMultimediaFileManager.getOSSObjectStorageFilePath("path/to/file"), stringArgumentCaptor.getValue());
 		assertEquals(new String(data, "UTF-8"), IOUtils.toString(byteStreamArgumentCaptor.getValue(), StandardCharsets.UTF_8));
 		verify(ossClient).shutdown();
 	}
@@ -79,8 +86,8 @@ public class OSSMultimediaFileManagerTest extends BaseMultimediaFileManagerTest 
 	@Test
 	public void testRetrieveFileShouldRetrieveFileFromOSS() throws Exception {
 		String testFilePath = getTestFilePath();
-		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageBucketName", "ossBucket");
-		doReturn(true).when(ossClient).doesObjectExist("ossBucket", testFilePath);
+		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageBucketName", "oss-bucket");
+		doReturn(true).when(ossClient).doesObjectExist(anyString(), anyString());
 
 		OSSObject ossObject = mock(OSSObject.class);
 		InputStream inputStream = new FileInputStream(new File(getDataFilePath()));
@@ -88,8 +95,8 @@ public class OSSMultimediaFileManagerTest extends BaseMultimediaFileManagerTest 
 		doReturn(ossObject).when(ossClient).getObject(stringArgumentCaptor.capture(), stringArgumentCaptor.capture());
 
 		assertNotNull(ossMultimediaFileManager.retrieveFile(testFilePath));
-		assertEquals(stringArgumentCaptor.getAllValues().get(0), "ossBucket");
-		assertEquals(stringArgumentCaptor.getAllValues().get(1), testFilePath);
+		assertEquals(stringArgumentCaptor.getAllValues().get(0), "oss-bucket");
+		assertEquals(stringArgumentCaptor.getAllValues().get(1), ossMultimediaFileManager.getOSSObjectStorageFilePath(testFilePath));
 		assertFalse(isFileEmpty(testFilePath));
 	}
 
@@ -100,8 +107,8 @@ public class OSSMultimediaFileManagerTest extends BaseMultimediaFileManagerTest 
 	
 	@Test
 	public void testRetrieveFileShouldReturnNullForNonExistentOSSFile() {
-		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageBucketName", "ossBucket");
-		doReturn(false).when(ossClient).doesObjectExist("ossBucket", "non_existent_file");
+		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageBucketName", "oss-bucket");
+		doReturn(false).when(ossClient).doesObjectExist("oss-bucket", "non_existent_file");
 		assertNull(ossMultimediaFileManager.retrieveFile("non_existent_file"));
 	}
 
@@ -110,7 +117,6 @@ public class OSSMultimediaFileManagerTest extends BaseMultimediaFileManagerTest 
 		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageRegion", "region");
 		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageAccessKeyId", "region");
 		Whitebox.setInternalState(ossMultimediaFileManager, "objectStorageSecretAccessKey", "awsSecretAccessKey");
-		Whitebox.setInternalState(ossMultimediaFileManager, "ossClient", (Object[]) null);
 		OSSClient ossClient = Whitebox.invokeMethod(ossMultimediaFileManager, "getOssClient");
 		assertNotNull(ossClient);
 		assertEquals("http://region", ossClient.getEndpoint().toString());

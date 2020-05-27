@@ -52,7 +52,7 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 	private AmazonS3Client s3Client;
 
 	@Before
-	public void setUp() throws IOException {
+	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		super.setUp();
 		s3MultimediaFileManager = new S3MultimediaFileManager(multimediaRepository, clientService);

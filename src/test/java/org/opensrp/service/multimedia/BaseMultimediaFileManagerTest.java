@@ -15,7 +15,7 @@ import static org.utils.TestUtils.getBasePackageFilePath;
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
 public abstract class BaseMultimediaFileManagerTest {
 
-	public void setUp() throws IOException {
+	public void setUp() throws Exception {
 		deleteTestFile();
 		createTestFile();
 	}

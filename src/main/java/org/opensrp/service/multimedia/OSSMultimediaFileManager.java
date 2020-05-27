@@ -26,6 +26,7 @@ import static org.opensrp.util.Utils.closeCloseable;
 public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager {
 
 	private Logger logger = LoggerFactory.getLogger(OSSMultimediaFileManager.class.toString());
+	private OSSClientBuilder ossClientBuilder = new OSSClientBuilder();
 	
 	@Autowired
 	public OSSMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
@@ -42,7 +43,7 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 		ossClient.shutdown();
 	}
 
-	private String getOSSObjectStorageFilePath(String fileName) {
+	public String getOSSObjectStorageFilePath(String fileName) {
 		String objectStorageFilePath = getObjectStorageFilePath(fileName);
 		return objectStorageFilePath.charAt(0) == File.separatorChar
 				? objectStorageFilePath.substring(1) : objectStorageFilePath;
@@ -56,7 +57,9 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 		File file = null;
 		OSSClient ossClient = getOssClient();
 		String filePathInBucket = getOSSObjectStorageFilePath(filePath);
-		if (!ossClient.doesObjectExist(objectStorageBucketName, filePathInBucket)) { return file; }
+		if (!ossClient.doesObjectExist(objectStorageBucketName, filePathInBucket)) {
+			return file;
+		}
 
 		InputStream content = null;
 		try {
@@ -76,7 +79,19 @@ public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager
 		return file;
 	}
 
-	private OSSClient getOssClient () {
-		return new OSSClient(objectStorageRegion, objectStorageAccessKeyId, objectStorageSecretAccessKey);
+	private OSSClient getOssClient() {
+		return getOSSClientBuilder().getOssClient();
+	}
+
+	@PostConstruct
+	@SuppressWarnings("unused")
+	private OSSClientBuilder getOSSClientBuilder() {
+		if (ossClientBuilder == null) {
+			ossClientBuilder = new OSSClientBuilder();
+			ossClientBuilder.withObjectStorageAccessKeyId(objectStorageAccessKeyId)
+					.withObjectStorageSecretAccessKey(objectStorageSecretAccessKey)
+					.withObjectStorageRegion(objectStorageRegion);
+		}
+		return ossClientBuilder;
 	}
 }
