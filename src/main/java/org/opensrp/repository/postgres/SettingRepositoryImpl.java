@@ -85,10 +85,31 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
+		
+		//We update the metadata data block with the new metadata so that the server version is updated.
+		if (!entity.isV1Settings()) {
+			metadata.addAll(getAvailableMetadataUsingSettingsId(id));
+		}
+		
 		if (metadata == null) {
 			return;
 		}
 		settingMetadataMapper.updateMany(metadata);
+	}
+	
+	private List<SettingsMetadata> getAvailableMetadataUsingSettingsId(Long id) {
+		List<SettingsMetadata> settingsMetadata = new ArrayList<>();
+		
+		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
+		metadataExample.createCriteria().andSettingsIdEqualTo(id);
+		List<SettingConfiguration> settingConfiguration =
+				convertToSettingConfigurations(settingMetadataMapper.selectMany(new SettingsMetadataExample(), 0,
+						DEFAULT_FETCH_SIZE));
+		if (settingConfiguration.size() > 0) {
+			settingsMetadata = createMetadata(settingConfiguration.get(0), id);
+		}
+		
+		return settingsMetadata;
 	}
 	
 	@Override
@@ -473,6 +494,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			if (!checkIfMetadataExists(metadata)) {
 				settingsMetadataList.add(metadata);
 			}
+		}
+		
+		//We update the metadata data block with the new metadata so that the server version is updated.
+		if (!entity.isV1Settings()) {
+			settingsMetadataList.addAll(getAvailableMetadataUsingSettingsId(pgSettings.getId()));
 		}
 		
 		settingMetadataMapper.insertMany(settingsMetadataList);
