@@ -1,7 +1,10 @@
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.domain.postgres.UniqueIdExample;
@@ -76,6 +79,21 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         List<org.opensrp.domain.postgres.UniqueId> uniqueIds = uniqueIdMapper.selectByExample(example);
 
         return (uniqueIds != null && !uniqueIds.isEmpty());
+    }
+
+    @Override
+    public UniqueId findByIdentifierSourceOrderByIdDesc(String identifierSource) {
+        return null;
+    }
+
+    @Override
+    public Set<String> findReservedIdentifiers() {
+        UniqueIdExample example = new UniqueIdExample();
+        example.createCriteria().andIsReservedEqualTo(Boolean.TRUE).andIdentifierIsNotNull();
+
+        List<org.opensrp.domain.postgres.UniqueId> uniqueIds = uniqueIdMapper.selectByExample(example);
+       return getReservedIdentifiers(convert(uniqueIds));
+        
     }
 
     @Override
@@ -171,21 +189,43 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         uniqueId.setOpenmrsId(pgUniqueId.getOpenmrsId());
         uniqueId.setStatus(pgUniqueId.getStatus());
         uniqueId.setUsedBy(pgUniqueId.getUsedBy());
+        uniqueId.setIdentifier(pgUniqueId.getIdentifier());
+        uniqueId.setIdSource(pgUniqueId.getIdSource());
+        uniqueId.setReserved(pgUniqueId.getIsReserved());
         return  uniqueId;
     }
 
     @Override
     protected Long retrievePrimaryKey(UniqueId uniqueId) {
-        Object uniqueIdentifier = getUniqueField(uniqueId);
-        if (uniqueIdentifier == null) {
+        Object uniqueOpenMrsIdentifier = getUniqueField(uniqueId);
+        Object uniqueIdentifier = null;
+        Boolean fromOpenMrs = true;
+        if (uniqueOpenMrsIdentifier == null || uniqueOpenMrsIdentifier.equals("")) {
+            uniqueIdentifier = getUniqueIdentifierField(uniqueId);
+            fromOpenMrs = false;
+        }
+        
+        if (uniqueOpenMrsIdentifier == null || uniqueIdentifier == null) {
             return null;
         }
-        String identifier = uniqueIdentifier.toString();
-        
-        UniqueIdExample example = new UniqueIdExample();
-        example.createCriteria().andOpenmrsIdEqualTo(identifier);
-        List<org.opensrp.domain.postgres.UniqueId> pgEntities = uniqueIdMapper.selectByExample(example);
 
+        String identifier;
+        UniqueIdExample example;
+        List<org.opensrp.domain.postgres.UniqueId> pgEntities;
+        
+        if(fromOpenMrs == Boolean.TRUE) {
+            identifier = uniqueOpenMrsIdentifier.toString();
+             example = new UniqueIdExample();
+            example.createCriteria().andOpenmrsIdEqualTo(identifier);
+            pgEntities = uniqueIdMapper.selectByExample(example);
+        }
+        else {
+            identifier = uniqueIdentifier.toString();
+            example = new UniqueIdExample();
+            example.createCriteria().andIdentifierEqualTo(identifier);
+            pgEntities = uniqueIdMapper.selectByExample(example);
+        }
+        
         return pgEntities.isEmpty() ? null : pgEntities.get(0).getId();
     }
 
@@ -195,6 +235,13 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
             return null;
         }
         return uniqueId.getOpenmrsId();
+    }
+    
+    protected  Object getUniqueIdentifierField(UniqueId uniqueId) {
+        if (uniqueId == null) {
+            return null;
+        }
+        return uniqueId.getIdentifier();
     }
 
     private org.opensrp.domain.postgres.UniqueId convert(UniqueId uniqueId, Long primaryKey) {
@@ -209,6 +256,18 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         pgUniqueId.setOpenmrsId(uniqueId.getOpenmrsId());
         pgUniqueId.setStatus(uniqueId.getStatus());
         pgUniqueId.setUsedBy(uniqueId.getUsedBy());
+        pgUniqueId.setIdentifier(uniqueId.getIdentifier());
+        pgUniqueId.setIdSource(uniqueId.getIdSource());
+        pgUniqueId.setIsReserved(uniqueId.isReserved());
+        
         return  pgUniqueId;
+    }
+    
+    private Set<String> getReservedIdentifiers(List<UniqueId> uniqueIds) {
+        Set<String> reservedIdentifiers = new HashSet<>();
+        for(UniqueId uniqueId : uniqueIds) {
+            reservedIdentifiers.add(uniqueId.getIdentifier());
+        }
+        return reservedIdentifiers;
     }
 }

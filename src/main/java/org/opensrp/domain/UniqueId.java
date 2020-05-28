@@ -28,6 +28,12 @@ public class UniqueId {
 	
 	public static final String COL_UPDATED_AT = "updated_at";
 	
+	public static final String COL_IDENTIFIER = "identifier";
+	
+	public static final String COL_IDENTIFIER_SOURCE_ID = "id_source";
+	
+	public static final String COL_IS_RESERVED = "is_reserved";
+	
 	public static String STATUS_USED = "used";
 	
 	public static String STATUS_NOT_USED = "not_used";
@@ -56,7 +62,33 @@ public class UniqueId {
 	@Column(name = COL_UPDATED_AT, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
+
+	@Column(name = COL_IDENTIFIER)
+	private String identifier;
+
+	@Column(name = COL_IDENTIFIER_SOURCE_ID)
+	private Long idSource;
+
+	@Column(name = COL_IS_RESERVED)
+	private boolean isReserved;
+
+	public UniqueId() {
+		
+	}
 	
+	public UniqueId(String openmrsId, String status, String usedBy, String location, Date createdAt, Date updatedAt,
+			String identifier, Long idSource, boolean isReserved) {
+		this.openmrsId = openmrsId;
+		this.status = status;
+		this.usedBy = usedBy;
+		this.location = location;
+		this.createdAt = createdAt;
+		this.updatedAt = updatedAt;
+		this.identifier = identifier;
+		this.idSource = idSource;
+		this.isReserved = isReserved;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -112,5 +144,28 @@ public class UniqueId {
 	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
 	}
-	
+
+	public String getIdentifier() {
+		return identifier;
+	}
+
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
+
+	public Long getIdSource() {
+		return idSource;
+	}
+
+	public void setIdSource(Long idSource) {
+		this.idSource = idSource;
+	}
+
+	public boolean isReserved() {
+		return isReserved;
+	}
+
+	public void setReserved(boolean reserved) {
+		isReserved = reserved;
+	}
 }
