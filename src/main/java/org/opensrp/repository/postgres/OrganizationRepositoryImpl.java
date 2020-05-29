@@ -15,6 +15,7 @@ import org.opensrp.domain.postgres.OrganizationLocationExample;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper;
+import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -23,18 +24,18 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization> implements OrganizationRepository {
-
+	
 	@Autowired
 	private CustomOrganizationMapper organizationMapper;
-
+	
 	@Autowired
 	private CustomOrganizationLocationMapper organizationLocationMapper;
-
+	
 	@Override
 	public Organization get(String id) {
 		return convert(findOrganizationByIdentifier(id));
 	}
-
+	
 	@Override
 	public Organization getByPrimaryKey(Long id) {
 		if (id == null) {
@@ -45,78 +46,78 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectByExample(example);
 		return organizations.isEmpty() ? null : convert(organizations.get(0));
 	}
-
+	
 	@Override
 	public void add(Organization entity) {
 		if (getUniqueField(entity) == null) {
 			return;
 		}
-
+		
 		if (retrievePrimaryKey(entity) != null) { // Organization already added
 			return;
 		}
-
+		
 		org.opensrp.domain.postgres.Organization pgOrganization = convert(entity, null);
 		if (pgOrganization == null) {
 			return;
 		}
-
+		
 		organizationMapper.insertSelective(pgOrganization);
 	}
-
+	
 	@Override
 	public void update(Organization entity) {
 		if (getUniqueField(entity) == null) {
 			return;
 		}
-
+		
 		Long id = retrievePrimaryKey(entity);
 		if (id == null) { // Organization does not exist
 			return;
 		}
-
+		
 		org.opensrp.domain.postgres.Organization pgOrganization = convert(entity, id);
 		if (pgOrganization == null) {
 			return;
 		}
-
+		
 		organizationMapper.updateByPrimaryKeySelective(pgOrganization);
-
+		
 	}
-
+	
 	@Override
 	public List<Organization> getAll() {
 		OrganizationExample example = new OrganizationExample();
 		example.createCriteria().andDateDeletedIsNull();
 		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectMany(example, 0,
-				DEFAULT_FETCH_SIZE);
+		    DEFAULT_FETCH_SIZE);
 		return convert(organizations);
 	}
-
+	
 	@Override
 	public void safeRemove(Organization entity) {
 		if (getUniqueField(entity) == null) {
 			return;
 		}
-
+		
 		Long id = retrievePrimaryKey(entity);
 		if (id == null) { // Organization does not exist
 			return;
 		}
-
+		
 		org.opensrp.domain.postgres.Organization pgOrganization = convert(entity, id);
 		if (pgOrganization == null) {
 			return;
 		}
 		pgOrganization.setDateDeleted(new Date());
-
+		
 		organizationMapper.updateByPrimaryKeySelective(pgOrganization);
-
+		
 	}
-
+	
 	@Override
 	public void assignLocationAndPlan(Long organizationId, String jurisdictionIdentifier, Long jurisdictionId,
-			String planIdentifier, Long planId, Date fromDate, Date toDate) {
+	                                  String planIdentifier, Long planId, Date fromDate, Date toDate) {
 		List<OrganizationLocation> assignedLocations = getAssignedLocations(organizationId);
 		for (OrganizationLocation organizationLocation : assignedLocations) {
 			if (isExistingAssignment(jurisdictionId, planId, organizationLocation)) {
@@ -129,33 +130,31 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			}
 		}
 		insertOrganizationLocation(organizationId, jurisdictionId, planId, fromDate, toDate);
-
+		
 	}
-
+	
 	private List<OrganizationLocation> getAssignedLocations(Long organizationId) {
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		Date currentDate = new LocalDate().toDate();
 		example.createCriteria().andOrganizationIdEqualTo(organizationId).andFromDateLessThanOrEqualTo(currentDate);
-		return organizationLocationMapper.selectByExampleAndDateTo(example.getOredCriteria(),
-				example.getOrderByClause(), currentDate);
+		return organizationLocationMapper.selectByExampleAndDateTo(example.getOredCriteria(), example.getOrderByClause(),
+		    currentDate);
 	}
-
+	
 	private boolean isExistingAssignment(Long jurisdictionId, Long planId, OrganizationLocation organizationLocation) {
 		if (jurisdictionId != null && planId != null) {
 			return jurisdictionId.equals(organizationLocation.getLocationId())
-					&& planId.equals(organizationLocation.getPlanId());
+			        && planId.equals(organizationLocation.getPlanId());
 		} else if (jurisdictionId == null && planId != null) {
 			return planId.equals(organizationLocation.getPlanId()) && organizationLocation.getLocationId() == null;
 		} else if (jurisdictionId != null && planId == null) {
-			return jurisdictionId.equals(organizationLocation.getLocationId())
-					&& organizationLocation.getPlanId() == null;
+			return jurisdictionId.equals(organizationLocation.getLocationId()) && organizationLocation.getPlanId() == null;
 		} else {
 			return false;
 		}
 	}
-
-	private void insertOrganizationLocation(Long organizationId, Long jurisdictionId, Long planId, Date fromDate,
-			Date toDate) {
+	
+	private void insertOrganizationLocation(Long organizationId, Long jurisdictionId, Long planId, Date fromDate, Date toDate) {
 		OrganizationLocation organizationLocation = new OrganizationLocation();
 		organizationLocation.setOrganizationId(organizationId);
 		organizationLocation.setLocationId(jurisdictionId);
@@ -164,53 +163,53 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		organizationLocation.setToDate(toDate);
 		organizationLocationMapper.insertSelective(organizationLocation);
 	}
-
+	
 	@Override
 	public List<AssignedLocations> findAssignedLocations(Long organizationId) {
 		Date currentDate = new LocalDate().toDate();
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		example.createCriteria().andOrganizationIdEqualTo(organizationId).andFromDateLessThanOrEqualTo(currentDate);
 		return organizationLocationMapper.findAssignedlocationsAndPlans(example.getOredCriteria(),
-				example.getOrderByClause(), currentDate);
+		    example.getOrderByClause(), currentDate);
 	}
-
+	
 	@Override
 	public List<AssignedLocations> findAssignedLocations(List<Long> organizationIds) {
 		Date currentDate = new LocalDate().toDate();
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		example.createCriteria().andOrganizationIdIn(organizationIds).andFromDateLessThanOrEqualTo(currentDate);
 		return organizationLocationMapper.findAssignedlocationsAndPlans(example.getOredCriteria(),
-				example.getOrderByClause(), currentDate);
+		    example.getOrderByClause(), currentDate);
 	}
-
+	
 	@Override
 	public List<AssignedLocations> findAssignedLocationsByPlanId(Long planId) {
 		Date currentDate = new LocalDate().toDate();
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		example.createCriteria().andPlanIdEqualTo(planId).andFromDateLessThanOrEqualTo(currentDate);
 		return organizationLocationMapper.findAssignedlocationsAndPlans(example.getOredCriteria(),
-				example.getOrderByClause(), currentDate);
+		    example.getOrderByClause(), currentDate);
 	}
-
+	
 	@Override
 	protected Long retrievePrimaryKey(Organization organization) {
 		String identifier = getUniqueField(organization);
 		if (identifier == null) {
 			return null;
 		}
-
+		
 		org.opensrp.domain.postgres.Organization pgEntity = findOrganizationByIdentifier(identifier);
 		if (pgEntity == null) {
 			return null;
 		}
 		return pgEntity.getId();
 	}
-
+	
 	@Override
 	protected String getUniqueField(Organization organization) {
 		return organization.getIdentifier();
 	}
-
+	
 	/**
 	 * Get an Organization using an organization identifier
 	 * 
@@ -226,7 +225,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectByExample(example);
 		return organizations.isEmpty() ? null : organizations.get(0);
 	}
-
+	
 	private Organization convert(org.opensrp.domain.postgres.Organization pgEntity) {
 		if (pgEntity == null) {
 			return null;
@@ -240,10 +239,10 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		if (pgEntity.getType() instanceof CodeSystem) {
 			organization.setType((CodeSystem) pgEntity.getType());
 		}
-
+		
 		return organization;
 	}
-
+	
 	private List<Organization> convert(List<org.opensrp.domain.postgres.Organization> pgEntities) {
 		List<Organization> organizations = new ArrayList<>();
 		for (org.opensrp.domain.postgres.Organization pgEntity : pgEntities) {
@@ -251,7 +250,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		}
 		return organizations;
 	}
-
+	
 	private org.opensrp.domain.postgres.Organization convert(Organization organization, Long id) {
 		if (organization == null) {
 			return null;
@@ -265,5 +264,11 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		pgOrganization.setParentId(organization.getPartOf());
 		return pgOrganization;
 	}
-
+	
+	@Override
+	public List<Organization> findOrganizations(OrganizationSearchBean organizationSearchBean) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

@@ -9,12 +9,13 @@ import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Organization;
 import org.opensrp.domain.postgres.OrganizationExample;
 import org.opensrp.repository.postgres.mapper.OrganizationMapper;
+import org.opensrp.search.OrganizationSearchBean;
 
 /**
  * @author Samuel Githengi created on 08/30/19
  */
 public interface CustomOrganizationMapper extends OrganizationMapper {
-
+	
 	/**
 	 * Return list of Organization filtered by example with offset and limit
 	 * 
@@ -24,6 +25,8 @@ public interface CustomOrganizationMapper extends OrganizationMapper {
 	 * @return the list of organizations
 	 */
 	List<Organization> selectMany(@Param("example") OrganizationExample example, @Param("offset") int offset,
-			@Param("limit") int limit);
-
+	                              @Param("limit") int limit);
+	
+	List<org.opensrp.domain.Organization> selectOrganizations(@Param("searchBean") OrganizationSearchBean searchBean);
+	
 }
