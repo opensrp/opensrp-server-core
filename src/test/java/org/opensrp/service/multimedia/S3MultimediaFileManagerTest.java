@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -52,7 +53,7 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 	private AmazonS3Client s3Client;
 
 	@Before
-	public void setUp() throws IOException {
+	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		super.setUp();
 		s3MultimediaFileManager = new S3MultimediaFileManager(multimediaRepository, clientService);
@@ -63,8 +64,8 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 	public void testPersistFileToStorageShouldPersistFileToS3() throws IOException {
 		Whitebox.setInternalState(s3MultimediaFileManager, "multimediaDirPath", "multimedia/directory/path");
 
-		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
-		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketFolderPath", getTestFileFolder());
+		Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageBucketName", "s3Bucket");
+		Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageBucketFolderPath", getTestFileFolder());
 
 		byte[] testBytes = new byte[10];
 		s3MultimediaFileManager = Mockito.spy(s3MultimediaFileManager);
@@ -88,8 +89,8 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 	@Test
 	public void testRetrieveFileShouldRetrieveFileFromS3() {
 		String testFilePath = getTestFilePath();
-		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
-		doReturn(true).when(s3Client).doesObjectExist("s3Bucket", testFilePath);
+		Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageBucketName", "s3Bucket");
+		doReturn(true).when(s3Client).doesObjectExist(eq("s3Bucket"), eq(s3MultimediaFileManager.getObjectStorageFilePath(testFilePath)));
 		doReturn(mock(ObjectMetadata.class)).when(s3Client).getObject(getObjectRequestArgumentCaptor.capture(), fileArgumentCaptor.capture());
 		assertNotNull(s3MultimediaFileManager.retrieveFile(testFilePath));
 
@@ -105,16 +106,16 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 	@Test
 	public void testRetrieveFileShouldReturnNullForNonExistentS3File() {
-		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketName", "s3Bucket");
+		Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageBucketName", "s3Bucket");
 		doReturn(false).when(s3Client).doesObjectExist("s3Bucket", "non_existent_file");
 		assertNull(s3MultimediaFileManager.retrieveFile("non_existent_file"));
 	}
 
 	@Test
 	public void testGetS3ClientShouldReturnNonNullS3Client() throws Exception {
-		Whitebox.setInternalState(s3MultimediaFileManager, "awsRegion", "region");
-		Whitebox.setInternalState(s3MultimediaFileManager, "awsAccessKeyId", "region");
-		Whitebox.setInternalState(s3MultimediaFileManager, "awsSecretAccessKey", "awsSecretAccessKey");
+		Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageRegion", "region");
+		Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageAccessKeyId", "region");
+		Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageSecretAccessKey", "awsSecretAccessKey");
 		Whitebox.setInternalState(s3MultimediaFileManager, "s3Client", (Object[]) null);
 		AmazonS3Client s3Client = Whitebox.invokeMethod(s3MultimediaFileManager, "getS3Client");
 		assertNotNull(s3Client);
@@ -128,10 +129,9 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 	@Test
 	public void testGetS3FilePathShouldReturnCorrectFilePath() throws Exception {
-		Whitebox.setInternalState(s3MultimediaFileManager, "s3BucketFolderPath", "bucket_folder_path");
+		Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageBucketFolderPath", "bucket_folder_path");
 		Whitebox.setInternalState(s3MultimediaFileManager, "baseMultimediaDirPath", "base/directory/path");
-		String truncatedFilePath = Whitebox.invokeMethod(s3MultimediaFileManager, "getS3FilePath", s3MultimediaFileManager.getBaseMultiMediaDir() + "path/to/file");
+		String truncatedFilePath = Whitebox.invokeMethod(s3MultimediaFileManager, "getObjectStorageFilePath", s3MultimediaFileManager.getBaseMultiMediaDir() + "path/to/file");
 		assertEquals("bucket_folder_path" + File.separator + "path/to/file", truncatedFilePath);
 	}
-
 }

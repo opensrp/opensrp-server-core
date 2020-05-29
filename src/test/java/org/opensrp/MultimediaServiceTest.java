@@ -38,7 +38,7 @@ public class MultimediaServiceTest {
 	private ClientService clientService;
 
 	@Autowired
-	@Qualifier("multimedia_file_manager")
+	@Qualifier("multimedia.file.manager")
 	private BaseMultimediaFileManager fileManager;
 	
 	@Before
