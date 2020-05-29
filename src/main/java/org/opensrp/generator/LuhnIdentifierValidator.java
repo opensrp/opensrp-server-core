@@ -86,6 +86,9 @@ public class LuhnIdentifierValidator {
 	}
 
 	public String getAllowedCharacters(IdentifierSource identifierSource) {
-		return identifierSource.getBaseCharacterSet();
+		String prefix = identifierSource.getPrefix()!=null ? identifierSource.getPrefix() : "";
+		String suffix = identifierSource.getSuffix()!=null ? identifierSource.getSuffix() : "";
+		String baseCharacterSet = identifierSource.getSuffix()!=null ? identifierSource.getSuffix() : "";
+		return prefix + baseCharacterSet + suffix;
 	}
 }
