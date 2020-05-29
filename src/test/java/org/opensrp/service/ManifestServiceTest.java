@@ -2,13 +2,12 @@ package org.opensrp.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 import org.junit.runner.RunWith;
 import org.opensrp.repository.ManifestRepository;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -34,7 +33,7 @@ public class ManifestServiceTest {
         manifestService = new ManifestService();
         manifestService.setManifestRepository(manifestRepository);
     }
-    
+
 
     private static Manifest initTestManifest(){
         Manifest manifest = new Manifest();
@@ -81,7 +80,7 @@ public class ManifestServiceTest {
         manifestService.addOrUpdateManifest(manifest);
    	    verify(manifestRepository).add(eq(manifest));
     }
-    
+
     @Test
     public void testAddManifest() {
     	 when(manifestRepository.get(anyString())).thenReturn(null);
@@ -90,7 +89,7 @@ public class ManifestServiceTest {
          manifestService.addManifest(manifest);
          verify(manifestRepository).add(eq(manifest));
     }
-    
+
     @Test
     public void testUpdateManifest() {
     	 when(manifestRepository.get(anyString())).thenReturn(null);
@@ -99,18 +98,18 @@ public class ManifestServiceTest {
          manifestService.updateManifest(manifest);
          verify(manifestRepository).update(eq(manifest));
     }
-       
+
     @Test
     public void testSaveManifest() {
-    	 when(manifestRepository.get(anyString())).thenReturn(null); 
+    	 when(manifestRepository.get(anyString())).thenReturn(null);
     	 List<Manifest> manifestList = new ArrayList<>();
     	 Manifest manifest = initTestManifest();
     	 assertNotNull(manifest);
     	 manifestList.add(manifest);
          manifestService.saveManifests(manifestList);
-         verify(manifestRepository).add(eq(manifest));  
-         }
-    
+         verify(manifestRepository).add(eq(manifest));
+    }
+
     @Test
     public void testGetManifestByAppId() {
         Manifest expectedManifest = initTestManifest();
@@ -120,9 +119,24 @@ public class ManifestServiceTest {
         verify(manifestRepository).getManifestByAppId(anyString());
         assertNotNull(actutalManifest);
         assertEquals("1234567op", actutalManifest.getAppId());
-   
-    }   
-    
+
+    }
+
+    @Test
+    public void testGetManifestsByAppId() {
+        String appId = "org.smartregister.giz";
+        when(manifestRepository.getManifestsByAppId(anyString())).thenReturn(new ArrayList<Manifest>());
+        assertNotNull(manifestService.getManifestsByAppId(appId));
+        verify(manifestRepository).getManifestsByAppId(anyString());
+    }
+
+    @Test
+    public void testGetManifestsByAppIdShouldReturnNullWhenAppIdIsNull() {
+        when(manifestRepository.getManifestsByAppId(anyString())).thenReturn(new ArrayList<Manifest>());
+        assertNull(manifestService.getManifestsByAppId(null));
+        verify(manifestRepository, times(0)).getManifestsByAppId(anyString());
+    }
+
     @Test
     public void testDeleteShouldCallRepostorySafeRemoveMethod() {
         when(manifestRepository.get(anyString())).thenReturn(initTestManifest());
