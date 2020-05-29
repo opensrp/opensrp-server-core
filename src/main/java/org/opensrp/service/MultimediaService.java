@@ -81,7 +81,7 @@ public class MultimediaService {
 	}
 
 	@Autowired
-	@Qualifier("multimedia_file_manager")
+	@Qualifier("multimedia.file.manager")
 	public void setFileManager(MultimediaFileManager fileManager) {
 		this.fileManager = fileManager;
 	}
