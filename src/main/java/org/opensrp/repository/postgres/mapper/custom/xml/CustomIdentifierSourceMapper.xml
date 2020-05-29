@@ -5,7 +5,7 @@
 
 	<sql id="Base_Column_List">
 		i.id, i.identifier, i.description, i.identifier_validator_algorithm, i.base_character_set, 
-    i.first_identifier_base, i.prefix, i.suffix, i.min_length, i.max_length, i.regex_format
+    i.first_identifier_base, i.prefix, i.suffix, i.min_length, i.max_length, i.skip_regex_format
 	</sql>
 
 	<sql id="Base_Table_List">
