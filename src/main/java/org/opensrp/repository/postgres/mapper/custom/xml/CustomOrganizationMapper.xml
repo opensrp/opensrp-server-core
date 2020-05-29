@@ -2,7 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper
 	namespace="org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper">
-
+	
+	<resultMap id="resultMap" type="org.opensrp.domain.Organization">    
+	    <id column="id" jdbcType="BIGINT" property="id" />
+	    <result column="identifier" jdbcType="VARCHAR" property="identifier" />
+	    <result column="active" jdbcType="BIT" property="active" />
+	    <result column="name" jdbcType="VARCHAR" property="name" />    
+	    <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted" />
+	    <result column="parent_id" jdbcType="BIGINT" property="partOf" />
+	    <result column="member_count" jdbcType="BIGINT" property="memberCount" />
+	    
+  	</resultMap>
+  
 	<select id="selectMany"
 		resultMap="org.opensrp.repository.postgres.mapper.OrganizationMapper.BaseResultMap">
 		select
@@ -69,6 +80,24 @@
       </foreach>
     </where>
   </sql>
-
+<select id="selectOrganizations"
+		resultMap="resultMap">
+	select o.id,o.identifier,o.date_deleted,o."name",o."type",o.parent_id,count(distinct(pr.id))as member_count from team.organization as o
+ 	left join team.practitioner_role as pr on o.id = pr.organization_id
+ 	left join team.organization_location  ol on ol.organization_id =o.id
+ 	<where> 	
+	 	<if test="searchBean.name != null">
+			o."name" = #{searchBean.name,jdbcType=VARCHAR} 
+		</if>
+		<if test="searchBean.locations != null">
+	 	 	and ol.location_id in
+	       	<foreach close=")" collection="searchBean.locations" item="listItem" open="(" separator=",">
+	       		#{listItem}
+			</foreach>
+		</if>
+ 	</where>
+	group by o.id,o.identifier,o.date_deleted,o."name",o."type",o.parent_id
+	LIMIT #{limit} OFFSET #{offset}	
+</select>
 
 </mapper>

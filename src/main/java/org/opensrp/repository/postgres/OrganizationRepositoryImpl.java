@@ -2,7 +2,9 @@ package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
@@ -266,9 +268,24 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 	
 	@Override
-	public List<Organization> findOrganizations(OrganizationSearchBean organizationSearchBean) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Organization> searchOrganizations(OrganizationSearchBean organizationSearchBean) {
+		Map<String, Integer> pageSizeAndOffset = getPageSizeAndOffset(organizationSearchBean);
+		return organizationMapper.selectOrganizations(organizationSearchBean, pageSizeAndOffset.get("offset"),
+		    pageSizeAndOffset.get("pageSize"));
+	}
+	
+	private Map<String, Integer> getPageSizeAndOffset(OrganizationSearchBean organizationSearchBean) {
+		Map<String, Integer> pageSizeAndOffset = new HashMap<>();
+		int pageSize = organizationSearchBean.getPageSize();
+		if (pageSize == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		}
+		
+		int offset = organizationSearchBean.getPageNumber() * pageSize;
+		pageSizeAndOffset.put("pageSize", pageSize);
+		pageSizeAndOffset.put("offset", offset);
+		return pageSizeAndOffset;
+		
 	}
 	
 }

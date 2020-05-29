@@ -27,6 +27,7 @@ public interface CustomOrganizationMapper extends OrganizationMapper {
 	List<Organization> selectMany(@Param("example") OrganizationExample example, @Param("offset") int offset,
 	                              @Param("limit") int limit);
 	
-	List<org.opensrp.domain.Organization> selectOrganizations(@Param("searchBean") OrganizationSearchBean searchBean);
+	List<org.opensrp.domain.Organization> selectOrganizations(@Param("searchBean") OrganizationSearchBean searchBean,
+	                                                          @Param("offset") int offset, @Param("limit") int limit);
 	
 }

@@ -55,6 +55,6 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 */
 	List<AssignedLocations> findAssignedLocationsByPlanId(Long planId);
 	
-	List<Organization> findOrganizations(OrganizationSearchBean organizationSearchBean);
+	List<Organization> searchOrganizations(OrganizationSearchBean organizationSearchBean);
 	
 }

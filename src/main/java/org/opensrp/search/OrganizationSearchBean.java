@@ -14,7 +14,7 @@ public class OrganizationSearchBean {
 	
 	private String orderByType;
 	
-	private List<String> locations;
+	private List<Integer> locations;
 	
 	public String getName() {
 		return name;
@@ -56,11 +56,11 @@ public class OrganizationSearchBean {
 		this.orderByType = orderByType;
 	}
 	
-	public List<String> getLocations() {
+	public List<Integer> getLocations() {
 		return locations;
 	}
 	
-	public void setLocations(List<String> locations) {
+	public void setLocations(List<Integer> locations) {
 		this.locations = locations;
 	}
 	
