@@ -135,6 +135,28 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
         assertEquals("{}", actualManifest.getJson());
     }
 
+    @Test
+    public void testGetManifestsByAppId() {
+        Manifest expectedManifest = initTestManifest2();
+        Manifest lowerVersionManifest2 = initTestManifest2();
+        Manifest lowerVersionManifest1 = initTestManifest2();
+
+        lowerVersionManifest1.setAppVersion("10001");
+        lowerVersionManifest1.setIdentifier("6");
+
+        expectedManifest.setIdentifier("7");
+
+        lowerVersionManifest2.setAppVersion("10000");
+        lowerVersionManifest2.setIdentifier("8");
+
+        manifestRepository.add(lowerVersionManifest1);
+        manifestRepository.add(expectedManifest);
+        manifestRepository.add(lowerVersionManifest2);
+
+        List<Manifest> manifestList = manifestRepository.getManifestsByAppId(expectedManifest.getAppId());
+        assertEquals(3, manifestList.size());
+    }
+
 
     @Test
     public void testGetAllShouldGetAllManifest() {
