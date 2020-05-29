@@ -40,7 +40,7 @@ public class UniqueIdGeneratorProcessor {
 		String suffix = identifierSource.getSuffix() != null ? identifierSource.getSuffix() : "";
 		String firstIdentifierBase = identifierSource.getFirstIdentifierBase()!= null ? identifierSource.getFirstIdentifierBase() : "";
 
-		if (identifierSource.getFirstIdentifierBase() != null || !identifierSource.getFirstIdentifierBase().equals("")) {
+		if (identifierSource.getFirstIdentifierBase() != null) {
 			numbersToGenerate = batchSize - 1;
 			identifiers.add(luhnIdentifierValidator
 					.getValidIdentifier(prefix + firstIdentifierBase + suffix, identifierSource));
