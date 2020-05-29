@@ -114,8 +114,8 @@
 			<if test="maxLength != null">
 				max_length,
 			</if>
-			<if test="regexFormat != null">
-				regex_format,
+			<if test="skipRegexFormat != null">
+				skip_regex_format,
 			</if>
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -149,8 +149,8 @@
 			<if test="maxLength != null">
 				#{maxLength,jdbcType=INTEGER},
 			</if>
-			<if test="regexFormat != null">
-				#{regex_format,jdbcType=VARCHAR},
+			<if test="skipRegexFormat != null">
+				#{skip_regex_format,jdbcType=VARCHAR},
 			</if>
 		</trim>
 	</insert>
