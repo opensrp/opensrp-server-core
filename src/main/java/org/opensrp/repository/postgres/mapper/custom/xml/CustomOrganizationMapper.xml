@@ -97,6 +97,9 @@
 		</if>
  	</where>
 	group by o.id,o.identifier,o.date_deleted,o."name",o."type",o.parent_id
+	<if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
+		order by ${searchBean.orderByFieldName}  ${searchBean.orderByType}  
+	</if>
 	LIMIT #{limit} OFFSET #{offset}	
 </select>
 

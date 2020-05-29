@@ -30,6 +30,8 @@ import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.opensrp.search.OrganizationSearchBean;
+import org.opensrp.search.OrganizationSearchBean.FieldName;
+import org.opensrp.search.OrganizationSearchBean.OrderByType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -249,6 +251,8 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
 		organizationSearchBean.setPageNumber(0);
 		organizationSearchBean.setPageSize(10);
+		organizationSearchBean.setOrderByFieldName(FieldName.valueOf("name"));
+		organizationSearchBean.setOrderByType(OrderByType.valueOf("ASC"));
 		List<Organization> organizations = organizationRepository.searchOrganizations(organizationSearchBean);
 		assertEquals(3, organizations.size());
 	}
@@ -267,6 +271,17 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		organizationSearchBean.setLocations(locations);
 		List<Organization> organizations = organizationRepository.searchOrganizations(organizationSearchBean);
 		assertTrue(organizations.isEmpty());
+		
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testFindOrganizationsByOrderByFieldNameNotExists() {
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		organizationSearchBean.setPageNumber(0);
+		organizationSearchBean.setPageSize(10);
+		organizationSearchBean.setOrderByFieldName(FieldName.valueOf("names"));
+		organizationSearchBean.setOrderByType(OrderByType.valueOf("ASC"));
+		organizationRepository.searchOrganizations(organizationSearchBean);
 		
 	}
 	

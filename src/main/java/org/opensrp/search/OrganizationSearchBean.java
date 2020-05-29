@@ -4,15 +4,23 @@ import java.util.List;
 
 public class OrganizationSearchBean {
 	
+	public enum OrderByType {
+		ASC, DESC
+	};
+	
+	public enum FieldName {
+		id, identifier, name, parent_id, member_count
+	};
+	
 	private String name;
 	
 	private int pageNumber = 0;
 	
 	private int pageSize = 0;
 	
-	private String orderByFieldName;
+	private FieldName orderByFieldName;
 	
-	private String orderByType;
+	private OrderByType orderByType;
 	
 	private List<Integer> locations;
 	
@@ -40,19 +48,19 @@ public class OrganizationSearchBean {
 		this.pageSize = pageSize;
 	}
 	
-	public String getOrderByFieldName() {
+	public FieldName getOrderByFieldName() {
 		return orderByFieldName;
 	}
 	
-	public void setOrderByFieldName(String orderByFieldName) {
+	public void setOrderByFieldName(FieldName orderByFieldName) {
 		this.orderByFieldName = orderByFieldName;
 	}
 	
-	public String getOrderByType() {
+	public OrderByType getOrderByType() {
 		return orderByType;
 	}
 	
-	public void setOrderByType(String orderByType) {
+	public void setOrderByType(OrderByType orderByType) {
 		this.orderByType = orderByType;
 	}
 	
