@@ -96,6 +96,12 @@ public class ManifestService {
         return manifestRepository.getManifestByAppId(appId);
     }
 
+    public List<Manifest> getManifestsByAppId(String appId) {
+        if (StringUtils.isBlank(appId))
+            return null;
+        return manifestRepository.getManifestsByAppId(appId);
+    }
+
     public Manifest getManifest(@NonNull String appId, @NonNull String appVersion) {
         return manifestRepository.getManifest(appId, appVersion);
     }
