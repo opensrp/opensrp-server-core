@@ -3,8 +3,8 @@ package org.opensrp.generator;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
-import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.util.IdGeneratorUtil;
+import org.opensrp.util.IdentifierValidatorAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +12,7 @@ import java.util.*;
 
 @Component
 public class UniqueIdGeneratorProcessor {
-
-	@Autowired
-	private IdentifierSourceService identifierSourceService;
-
+	
 	@Autowired
 	private UniqueIdRepository uniqueIdRepository;
 
@@ -36,11 +33,27 @@ public class UniqueIdGeneratorProcessor {
 		Set<String> reservedIdentifiers = uniqueIdRepository.findReservedIdentifiers();
 
 		List<String> identifiers = new ArrayList<String>();
+		int numbersToGenerate = batchSize;
+		String identifier = "";
+		LuhnIdentifierValidator luhnIdentifierValidator = new LuhnIdentifierValidator();
+		String prefix = identifierSource.getPrefix() != null ? identifierSource.getPrefix() : "";
+		String suffix = identifierSource.getSuffix() != null ? identifierSource.getSuffix() : "";
+		String firstIdentifierBase = identifierSource.getFirstIdentifierBase()!= null ? identifierSource.getFirstIdentifierBase() : "";
 
-		for (int i = 0; i < batchSize; ) {
-			String val = getIdentifierForSeed(sequenceValue, identifierSource);
-			if (!reservedIdentifiers.contains(val)) {
-				identifiers.add(val);
+		if (identifierSource.getFirstIdentifierBase() != null || !identifierSource.getFirstIdentifierBase().equals("")) {
+			numbersToGenerate = batchSize - 1;
+			identifiers.add(luhnIdentifierValidator
+					.getValidIdentifier(prefix + firstIdentifierBase + suffix, identifierSource));
+		}
+
+		for (int i = 0; i < numbersToGenerate; ) {
+			identifier = getIdentifierForSeed(sequenceValue, identifierSource);
+			if (!reservedIdentifiers.contains(identifier)) {
+				if (identifierSource.getIdentifierValidatorAlgorithm()
+						.equals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM)) {
+					identifier = luhnIdentifierValidator.getValidIdentifier(identifier, identifierSource);
+				}
+				identifiers.add(identifier);
 				i++;
 			}
 			sequenceValue++;
@@ -80,7 +93,11 @@ public class UniqueIdGeneratorProcessor {
 								.getMaxLength() + " but generated " + identifier);
 			}
 		}
-
+		if (identifierSource.getSkipRegexFormat() != null) {
+			return identifier.matches(identifierSource.getSkipRegexFormat()) ?
+					identifier :
+					getIdentifierForSeed(seed + 1, identifierSource);
+		}
 		return identifier;
 	}
 

@@ -150,7 +150,7 @@
 				#{maxLength,jdbcType=INTEGER},
 			</if>
 			<if test="skipRegexFormat != null">
-				#{skip_regex_format,jdbcType=VARCHAR},
+				#{skipRegexFormat,jdbcType=VARCHAR},
 			</if>
 		</trim>
 	</insert>
