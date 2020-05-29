@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static org.opensrp.service.MultimediaService.IMAGES_DIR;
+import static org.opensrp.service.MultimediaService.CSV_DIR;
 import static org.opensrp.service.MultimediaService.MULTI_VERSION;
 import static org.opensrp.service.MultimediaService.VIDEOS_DIR;
 
@@ -80,7 +81,9 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
 
                 Multimedia multimediaFile = new Multimedia().withCaseId(multimediaDTO.getCaseId())
                         .withProviderId(multimediaDTO.getProviderId()).withContentType(multimediaDTO.getContentType())
-                        .withFilePath(multimediaDTO.getFilePath()).withFileCategory(multimediaDTO.getFileCategory());
+                        .withFilePath(multimediaDTO.getFilePath()).withFileCategory(multimediaDTO.getFileCategory())
+                        .withSummary(multimediaDTO.getSummary()).withOriginalFileName(multimediaDTO.getOriginalFileName())
+                        .withDateUploaded(multimediaDTO.getDateUploaded());
 
                 multimediaRepository.add(multimediaFile);
                 Client client = clientService.getByBaseEntityId(multimediaDTO.getCaseId());
@@ -147,6 +150,10 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
             case "image/png":
                 multimediaDirPath += IMAGES_DIR;
                 fileExt = ".png";
+                break;
+            case "text/csv":
+                multimediaDirPath += CSV_DIR;
+                fileExt = ".csv";
                 break;
             default:
                 throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());

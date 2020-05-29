@@ -25,4 +25,4 @@ INSERT INTO core.settings_metadata (id, settings_id, document_id, identifier, se
 (6,	5,	'settings-document-id-5',	'site_characteristics',	1,	null,	'131869c5-d67c-4060-8fe1-2dee6041da22',	null,	null),
 (7,	6,	'settings-document-id-6',	'site_characteristics',	null,	null,	'73f7cf54-42b5-4cb6-b601-be151d34a9d8',	null,	null),
 (8,	7,	'0811b1df-ccaf-476f-8b36-5a489d0391d6',	'global_configs',	1,	'my-team',	'7e104eee-ec8a-4733-bcf7-c02c51cf43f4',	'demo',	null),
-(9,	3,	'settings-document-id-3',	'site_characteristics',	1,	null,	'f4d3be2c-c663-43e1-a670-462ca8c7a96c',	null,	null); 
+(9,	3,	'settings-document-id-3',	'site_characteristics',	1,	null,	'f4d3be2c-c663-43e1-a670-462ca8c7a96c',	null,	null);
