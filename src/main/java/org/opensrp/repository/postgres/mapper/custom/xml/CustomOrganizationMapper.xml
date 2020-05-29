@@ -21,6 +21,32 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
+    <select id="selectOrganizationsEncompassLocations"
+            resultMap="org.opensrp.repository.postgres.mapper.OrganizationMapper.BaseResultMap">
+        select
+        <include
+                refid="org.opensrp.repository.postgres.mapper.OrganizationMapper.Base_Column_List" />
+        from team.organization o
+        where o.id  in (
+            WITH RECURSIVE locations
+            AS
+            (
+                SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+                FROM core.location_metadata lm1 where geojson_id  = #{identifier,jdbcType=VARCHAR} or
+                geojson_id  in (
+                    select parent_id from core.structure_metadata sm
+                    where geojson_id  = #{identifier,jdbcType=VARCHAR}
+                )
+                UNION
+                SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+                FROM locations lm1
+                INNER JOIN core.location_metadata lm2 on lm2.geojson_id = lm1.parent_id
+            )
+            SELECT ol.organization_id  FROM locations l
+            inner join team.organization_location ol on ol.location_id = l.location_id
+        )
+    </select>
+
 <sql id="Example_Where_Clause">
     <where>
       <foreach collection="example.oredCriteria" item="criteria" separator="or">

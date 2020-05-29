@@ -1,11 +1,16 @@
 /**
- * 
+ *
  */
 package org.opensrp.repository.postgres;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import org.junit.Test;
+import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.Code;
+import org.opensrp.domain.Organization;
+import org.opensrp.repository.OrganizationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -17,15 +22,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.Test;
-import org.opensrp.domain.AssignedLocations;
-import org.opensrp.domain.Code;
-import org.opensrp.domain.Organization;
-import org.opensrp.repository.OrganizationRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Samuel Githengi created on 09/16/19
@@ -128,6 +128,29 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 
 		assertEquals(2, organizationRepository.getAll().size());
 
+	}
+
+	@Test
+	public void testSelectOrganizationsEncompassLocations() {
+		String identifier = UUID.randomUUID().toString();
+		Organization organization = new Organization();
+		organization.setIdentifier(identifier);
+		organization.setName("ATeam");
+		organizationRepository.add(organization);
+
+		organization = organizationRepository.get(identifier);
+		Calendar calendar = Calendar.getInstance();
+		Date fromDate = calendar.getTime();
+		calendar.add(Calendar.YEAR, 2);
+		Date toDate = calendar.getTime();
+
+		String jurisdiction = "04cbcd4-0850-404a-a8b1-486b02f7b84d";
+		// add ognanization location
+		organizationRepository.assignLocationAndPlan(organization.getId(), jurisdiction, 2243l,
+				"7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, toDate);
+
+		List<Organization> organizations = organizationRepository.selectOrganizationsEncompassLocations(jurisdiction);
+		assertTrue(organizations.size() > 0);
 	}
 
 	@Test

@@ -26,4 +26,5 @@ public interface CustomOrganizationMapper extends OrganizationMapper {
 	List<Organization> selectMany(@Param("example") OrganizationExample example, @Param("offset") int offset,
 			@Param("limit") int limit);
 
+	List<Organization> selectOrganizationsEncompassLocations(@Param("identifier") String identifier);
 }
