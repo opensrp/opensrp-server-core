@@ -243,7 +243,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 	}
 	
 	@Test
-	public void testFindOrganizations() {
+	public void testFindOrganizationsWithoutSearchParam() {
 		practitionerRepository.add(initTestPractitioner());
 		practitionerRoleRepository.add(initTestPractitionerRole());
 		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
