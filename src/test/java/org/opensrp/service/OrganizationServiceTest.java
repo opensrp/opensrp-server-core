@@ -76,6 +76,13 @@ public class OrganizationServiceTest {
 	}
 
 	@Test
+	public void testSelectOrganizationsEncompassLocations(){
+		String locationID = "12345_location";
+		organizationService.selectOrganizationsEncompassLocations(locationID);
+		verify(organizationRepository).selectOrganizationsEncompassLocations(locationID);
+	}
+
+	@Test
 	public void testGetOrganization() {
 		when(organizationRepository.get(identifier)).thenReturn(organization);
 		Organization actual = organizationService.getOrganization(identifier);

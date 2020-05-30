@@ -132,25 +132,9 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testSelectOrganizationsEncompassLocations() {
-		String identifier = UUID.randomUUID().toString();
-		Organization organization = new Organization();
-		organization.setIdentifier(identifier);
-		organization.setName("ATeam");
-		organizationRepository.add(organization);
-
-		organization = organizationRepository.get(identifier);
-		Calendar calendar = Calendar.getInstance();
-		Date fromDate = calendar.getTime();
-		calendar.add(Calendar.YEAR, 2);
-		Date toDate = calendar.getTime();
-
-		String jurisdiction = "04cbcd4-0850-404a-a8b1-486b02f7b84d";
-		// add ognanization location
-		organizationRepository.assignLocationAndPlan(organization.getId(), jurisdiction, 2243l,
-				"7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, toDate);
-
+		String jurisdiction = "304cbcd4-0850-404a-a8b1-486b02f7b84d";
 		List<Organization> organizations = organizationRepository.selectOrganizationsEncompassLocations(jurisdiction);
-		assertTrue(organizations.size() > 0);
+		assertEquals(organizations.size() , 2);
 	}
 
 	@Test
