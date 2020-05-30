@@ -32,5 +32,5 @@
 
 	</context:component-scan>
 
-	<alias name="${multimedia_file_manager}" alias="multimedia_file_manager"/>
+	<alias name="${multimedia.file.manager}" alias="multimedia.file.manager"/>
 </beans>
