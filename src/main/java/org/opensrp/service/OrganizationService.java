@@ -211,7 +211,7 @@ public class OrganizationService {
 		return organizationRepository.findSearchOrganizations(organizationSearchBean);
 	}
 	
-	public List<Organization> getTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
+	public Integer getTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findTotalSearchOrganizations(organizationSearchBean);
 	}
 }

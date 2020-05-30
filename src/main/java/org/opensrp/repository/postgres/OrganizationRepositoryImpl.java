@@ -289,9 +289,9 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 	
 	@Override
-	public List<Organization> findTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
+	public Integer findTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
 		// TODO Auto-generated method stub
-		return organizationMapper.selectTotalSearchOrganizations(organizationSearchBean);
+		return organizationMapper.selectTotalSearchOrganizations(organizationSearchBean).size();
 	}
 	
 }

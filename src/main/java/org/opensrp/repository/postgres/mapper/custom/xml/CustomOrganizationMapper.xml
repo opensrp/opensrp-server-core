@@ -80,7 +80,7 @@
       </foreach>
     </where>
   </sql>
-<sql id="joinCondition">
+<sql id="query">
 	select o.id,o.identifier,o.date_deleted,o."name",o."type",o.parent_id,count(distinct(pr.id))as member_count 
 	from team.organization as o
 	left join team.practitioner_role as pr on o.id = pr.organization_id
@@ -100,14 +100,14 @@
 </sql>
 <select id="selectSearchOrganizations" resultMap="resultMap">
 	
-	<include refid="joinCondition"/>	
+	<include refid="query"/>	
 	<if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
 		order by ${searchBean.orderByFieldName}  ${searchBean.orderByType}  
 	</if>
 	LIMIT #{limit} OFFSET #{offset}	
 </select>
 <select id="selectTotalSearchOrganizations" resultMap="resultMap">	
-	<include refid="joinCondition"/>
+	<include refid="query"/>
 </select>
 
 </mapper>

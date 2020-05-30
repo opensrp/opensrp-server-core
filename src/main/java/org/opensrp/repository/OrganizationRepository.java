@@ -57,6 +57,6 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	
 	List<Organization> findSearchOrganizations(OrganizationSearchBean organizationSearchBean);
 	
-	List<Organization> findTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean);
+	Integer findTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean);
 	
 }
