@@ -276,16 +276,19 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	
 	private Map<String, Integer> getPageSizeAndOffset(OrganizationSearchBean organizationSearchBean) {
 		Map<String, Integer> pageSizeAndOffset = new HashMap<>();
-		int pageSize = organizationSearchBean.getPageSize();
-		if (pageSize == 0) {
+		Integer pageSize = 0;
+		Integer offset = 0;
+		if (organizationSearchBean.getPageSize() == null || organizationSearchBean.getPageSize() == 0) {
 			pageSize = DEFAULT_FETCH_SIZE;
 		}
 		
-		int offset = organizationSearchBean.getPageNumber() * pageSize;
+		if (organizationSearchBean.getPageNumber() != null && organizationSearchBean.getPageNumber() != 0) {
+			offset = organizationSearchBean.getPageNumber() * pageSize;
+		}
+		
 		pageSizeAndOffset.put("pageSize", pageSize);
 		pageSizeAndOffset.put("offset", offset);
 		return pageSizeAndOffset;
-		
 	}
 	
 	@Override

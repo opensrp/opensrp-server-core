@@ -14,9 +14,9 @@ public class OrganizationSearchBean {
 	
 	private String name;
 	
-	private int pageNumber = 0;
+	private Integer pageNumber = 0;
 	
-	private int pageSize = 0;
+	private Integer pageSize = 0;
 	
 	private FieldName orderByFieldName;
 	
@@ -32,19 +32,19 @@ public class OrganizationSearchBean {
 		this.name = name;
 	}
 	
-	public int getPageNumber() {
+	public Integer getPageNumber() {
 		return pageNumber;
 	}
 	
-	public void setPageNumber(int pageNumber) {
+	public void setPageNumber(Integer pageNumber) {
 		this.pageNumber = pageNumber;
 	}
 	
-	public int getPageSize() {
+	public Integer getPageSize() {
 		return pageSize;
 	}
 	
-	public void setPageSize(int pageSize) {
+	public void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
 	}
 	
