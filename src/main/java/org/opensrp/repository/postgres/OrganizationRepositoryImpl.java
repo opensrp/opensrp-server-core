@@ -280,10 +280,12 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		Integer offset = 0;
 		if (organizationSearchBean.getPageSize() == null || organizationSearchBean.getPageSize() == 0) {
 			pageSize = DEFAULT_FETCH_SIZE;
+		} else {
+			pageSize = organizationSearchBean.getPageSize();
 		}
 		
 		if (organizationSearchBean.getPageNumber() != null && organizationSearchBean.getPageNumber() != 0) {
-			offset = organizationSearchBean.getPageNumber() * pageSize;
+			offset = (organizationSearchBean.getPageNumber() - 1) * pageSize;
 		}
 		
 		pageSizeAndOffset.put("pageSize", pageSize);
