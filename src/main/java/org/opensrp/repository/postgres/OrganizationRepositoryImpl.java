@@ -268,9 +268,9 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 	
 	@Override
-	public List<Organization> searchOrganizations(OrganizationSearchBean organizationSearchBean) {
+	public List<Organization> findSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
 		Map<String, Integer> pageSizeAndOffset = getPageSizeAndOffset(organizationSearchBean);
-		return organizationMapper.selectOrganizations(organizationSearchBean, pageSizeAndOffset.get("offset"),
+		return organizationMapper.selectSearchOrganizations(organizationSearchBean, pageSizeAndOffset.get("offset"),
 		    pageSizeAndOffset.get("pageSize"));
 	}
 	
@@ -286,6 +286,12 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		pageSizeAndOffset.put("offset", offset);
 		return pageSizeAndOffset;
 		
+	}
+	
+	@Override
+	public List<Organization> findTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
+		// TODO Auto-generated method stub
+		return organizationMapper.selectTotalSearchOrganizations(organizationSearchBean);
 	}
 	
 }

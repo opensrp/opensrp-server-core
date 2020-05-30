@@ -240,7 +240,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		locations.add(2243);
 		locations.add(1);
 		organizationSearchBean.setLocations(locations);
-		List<Organization> organizations = organizationRepository.searchOrganizations(organizationSearchBean);
+		List<Organization> organizations = organizationRepository.findSearchOrganizations(organizationSearchBean);
 		assertEquals(1, organizations.size());
 	}
 	
@@ -253,7 +253,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		organizationSearchBean.setPageSize(10);
 		organizationSearchBean.setOrderByFieldName(FieldName.valueOf("name"));
 		organizationSearchBean.setOrderByType(OrderByType.valueOf("ASC"));
-		List<Organization> organizations = organizationRepository.searchOrganizations(organizationSearchBean);
+		List<Organization> organizations = organizationRepository.findSearchOrganizations(organizationSearchBean);
 		assertEquals(3, organizations.size());
 	}
 	
@@ -269,7 +269,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		locations.add(22435);
 		locations.add(1);
 		organizationSearchBean.setLocations(locations);
-		List<Organization> organizations = organizationRepository.searchOrganizations(organizationSearchBean);
+		List<Organization> organizations = organizationRepository.findSearchOrganizations(organizationSearchBean);
 		assertTrue(organizations.isEmpty());
 		
 	}
@@ -281,7 +281,35 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		organizationSearchBean.setPageSize(10);
 		organizationSearchBean.setOrderByFieldName(FieldName.valueOf("names"));
 		organizationSearchBean.setOrderByType(OrderByType.valueOf("ASC"));
-		organizationRepository.searchOrganizations(organizationSearchBean);
+		organizationRepository.findSearchOrganizations(organizationSearchBean);
+		
+	}
+	
+	@Test
+	public void testFindTotalSearchOrganizationsByNameAndLcations() {
+		practitionerRepository.add(initTestPractitioner());
+		practitionerRoleRepository.add(initTestPractitionerRole());
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		organizationSearchBean.setPageNumber(0);
+		organizationSearchBean.setPageSize(10);
+		organizationSearchBean.setName("The Luang");
+		List<Integer> locations = new ArrayList<>();
+		locations.add(2243);
+		locations.add(1);
+		organizationSearchBean.setLocations(locations);
+		List<Organization> organizations = organizationRepository.findTotalSearchOrganizations(organizationSearchBean);
+		assertEquals(1, organizations.size());
+		
+	}
+	
+	@Test
+	public void testFindTotalSearchOrganizationsWithoutSearchParam() {
+		practitionerRepository.add(initTestPractitioner());
+		practitionerRoleRepository.add(initTestPractitionerRole());
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		
+		List<Organization> organizations = organizationRepository.findTotalSearchOrganizations(organizationSearchBean);
+		assertEquals(3, organizations.size());
 		
 	}
 	

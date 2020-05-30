@@ -207,8 +207,11 @@ public class OrganizationService {
 		this.planRepository = planRepository;
 	}
 	
-	public List<Organization> searchOrganizations(OrganizationSearchBean organizationSearchBean) {
-		return organizationRepository.searchOrganizations(organizationSearchBean);
+	public List<Organization> getSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
+		return organizationRepository.findSearchOrganizations(organizationSearchBean);
 	}
 	
+	public List<Organization> getTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
+		return organizationRepository.findTotalSearchOrganizations(organizationSearchBean);
+	}
 }

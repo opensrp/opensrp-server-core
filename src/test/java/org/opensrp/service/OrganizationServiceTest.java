@@ -287,9 +287,9 @@ public class OrganizationServiceTest {
 		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
 		organizationSearchBean.setPageNumber(0);
 		organizationSearchBean.setPageSize(10);
-		when(organizationRepository.searchOrganizations(organizationSearchBean)).thenReturn(expected);
-		List<Organization> organizations = organizationService.searchOrganizations(organizationSearchBean);
-		verify(organizationRepository).searchOrganizations(organizationSearchBean);
+		when(organizationRepository.findSearchOrganizations(organizationSearchBean)).thenReturn(expected);
+		List<Organization> organizations = organizationService.getSearchOrganizations(organizationSearchBean);
+		verify(organizationRepository).findSearchOrganizations(organizationSearchBean);
 		assertEquals(expected, organizations);
 	}
 	
