@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
+import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
@@ -226,7 +227,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andStatusEqualTo(
+				LocationProperty.PropertyStatus.ACTIVE.name());
 		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
@@ -237,7 +239,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria()
 		        .andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames, ",")))
-		        .andServerVersionGreaterThanOrEqualTo(serverVersion);
+		        .andServerVersionGreaterThanOrEqualTo(serverVersion).andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
 		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
