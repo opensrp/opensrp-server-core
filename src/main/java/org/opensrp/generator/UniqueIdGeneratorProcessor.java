@@ -5,6 +5,8 @@ import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
 import org.opensrp.util.IdGeneratorUtil;
 import org.opensrp.util.IdentifierValidatorAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +14,34 @@ import java.util.*;
 
 @Component
 public class UniqueIdGeneratorProcessor {
-	
+
+	private static Logger logger = LoggerFactory.getLogger(UniqueIdGeneratorProcessor.class.toString());
+
 	@Autowired
 	private UniqueIdRepository uniqueIdRepository;
 
 	public synchronized List<String> getIdentifiers(IdentifierSource identifierSource, int batchSize, String usedBy) {
+
+		int lengthBaseCharacterSet = identifierSource.getBaseCharacterSet().toCharArray().length;
+		if(identifierSource.getMinLength().equals(identifierSource.getMaxLength())) {
+			if(batchSize > Math.pow(lengthBaseCharacterSet,identifierSource.getMinLength())){
+				throw new IllegalArgumentException("Param numberToGenerate is out of bound");
+			}
+		}
+		else {
+			int minLength = identifierSource.getMinLength();
+			int maxLength = identifierSource.getMaxLength();
+			double possibleCombinations = 0;
+			while (minLength <= maxLength) {
+				possibleCombinations += Math.pow(lengthBaseCharacterSet,minLength);
+				minLength++;
+			}
+
+			if(batchSize > possibleCombinations) {
+				throw new IllegalArgumentException("Param numberToGenerate is out of bound");
+			}
+		}
+
 
 		UniqueId lastUniqueId = uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(identifierSource.getIdentifier());
 
@@ -48,6 +73,7 @@ public class UniqueIdGeneratorProcessor {
 
 		for (int i = 0; i < numbersToGenerate; ) {
 			identifier = getIdentifierForSeed(sequenceValue, identifierSource);
+			logger.info("Identifier from processor is " +  identifier);
 			if (!reservedIdentifiers.contains(identifier)) {
 				if (identifierSource.getIdentifierValidatorAlgorithm()
 						.equals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM)) {
@@ -70,6 +96,10 @@ public class UniqueIdGeneratorProcessor {
 		// Convert the next sequence integer into a String with the appropriate Base characters
 		int seqLength =
 				identifierSource.getFirstIdentifierBase() == null ? 1 : identifierSource.getFirstIdentifierBase().length();
+
+		if(seqLength == 1) {
+			seqLength = identifierSource.getMinLength();
+		}
 
 		String identifier = IdGeneratorUtil
 				.convertToBase(seed, identifierSource.getBaseCharacterSet().toCharArray(), seqLength,

@@ -38,17 +38,10 @@ public class IdGeneratorUtil {
 			base.insert(0, baseCharacters[index]);
 			n = (long)(n / numInBase);
 		}
-		
-		if(padToLength == 1) {
-			while (base.length() <= minLength) {
-				base.insert(0, baseCharacters[0]);
-			}
+		while (base.length() < padToLength) {
+			base.insert(0, baseCharacters[0]);
 		}
-		else {
-			while (base.length() <= padToLength) {
-				base.insert(0, baseCharacters[0]);
-			}
-		}
+
 		return base.toString();
 	}
 	

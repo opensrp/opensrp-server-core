@@ -34,9 +34,9 @@ public class UniqueIdentifierService {
 			return identifiers;
 		}
 		catch (Exception ex) {
-			return null;
+			throw new IllegalArgumentException(
+					"Param numberToGenerate is out of bound");
 		}
-
 	}
 
 	private void saveIds(List<String> ids, String location, String status, Date updatedAt, String usedBy,
