@@ -3,6 +3,7 @@ package org.opensrp.service.multimedia;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -11,8 +12,9 @@ import java.io.IOException;
 /**
  * Created by Vincent Karuri on 24/10/2019
  */
-
-@Component("FileSystemMultimediaFileManager")
+@Profile("FileSystem")
+//@Component("FileSystemMultimediaFileManager")
+@Component
 public class FileSystemMultimediaFileManager extends BaseMultimediaFileManager {
 
     @Autowired

@@ -601,6 +601,42 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>FileSystem</id>
+			<activation>
+				<property>
+					<name>opensrp.file.manager.type</name>
+					<value>FileSystem</value>
+				</property>
+			</activation>
+			<properties>
+				<opensrp.file.manager.profile>FileSystem</opensrp.file.manager.profile>
+			</properties>
+		</profile>
+		<profile>
+			<id>AWS_S3</id>
+			<activation>
+				<property>
+					<name>opensrp.file.manager.type</name>
+					<value>AWS_S3</value>
+				</property>
+			</activation>
+			<properties>
+				<opensrp.file.manager.profile>AWS_S3</opensrp.file.manager.profile>
+			</properties>
+		</profile>
+		<profile>
+			<id>AliCloud_OSS</id>
+			<activation>
+				<property>
+					<name>opensrp.file.manager.type</name>
+					<value>AliCloud_OSS</value>
+				</property>
+			</activation>
+			<properties>
+				<opensrp.file.manager.profile>AliCloud_OSS</opensrp.file.manager.profile>
+			</properties>
+		</profile>
+		<profile>
 			<id>release</id>
 			<build>
 				<plugins>
