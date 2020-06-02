@@ -26,8 +26,7 @@ import java.io.InputStream;
  * Created by Vincent Karuri on 24/10/2019
  */
 @Profile("AWS_S3")
-//@Component("S3MultimediaFileManager")
-@Component
+@Component("S3MultimediaFileManager")
 public class S3MultimediaFileManager extends ObjectStorageMultimediaFileManager {
 
 	private AmazonS3 s3Client;

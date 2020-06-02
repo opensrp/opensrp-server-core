@@ -24,8 +24,7 @@ import static org.opensrp.util.Utils.closeCloseable;
  * Created by Vincent Karuri on 20/05/2020
  */
 @Profile("AliCloud_OSS")
-//@Component("OSSMultimediaFileManager")
-@Component
+@Component("OSSMultimediaFileManager")
 public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager {
 
 	private Logger logger = LoggerFactory.getLogger(OSSMultimediaFileManager.class.toString());

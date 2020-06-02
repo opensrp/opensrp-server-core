@@ -5,7 +5,6 @@ import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.multimedia.MultimediaFileManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -81,7 +80,6 @@ public class MultimediaService {
 	}
 
 	@Autowired
-	@Qualifier("multimedia.file.manager")
 	public void setFileManager(MultimediaFileManager fileManager) {
 		this.fileManager = fileManager;
 	}
