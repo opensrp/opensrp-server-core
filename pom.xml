@@ -640,8 +640,10 @@
 							<excludes>
 								<exclude>**/OSSMultimediaFileManager.*</exclude>
 								<exclude>**/OSSClientBuilder.*</exclude>
-								<exclude>**/OSSMultimediaFileManagerTest.*</exclude>
 							</excludes>
+							<testExcludes>
+								<testExclude>**/OSSMultimediaFileManagerTest.*</testExclude>
+							</testExcludes>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -674,8 +676,10 @@
 						<configuration>
 							<excludes>
 								<exclude>**/S3MultimediaFileManager.*</exclude>
-								<exclude>**/S3MultimediaFileManagerTest.*</exclude>
 							</excludes>
+							<testExcludes>
+								<testExclude>**/S3MultimediaFileManagerTest.*</testExclude>
+							</testExcludes>
 						</configuration>
 					</plugin>
 				</plugins>
