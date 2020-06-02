@@ -610,9 +610,11 @@
 								<exclude>**/OSSMultimediaFileManager.*</exclude>
 								<exclude>**/OSSClientBuilder.*</exclude>
 								<exclude>**/S3MultimediaFileManager.*</exclude>
-								<exclude>**/OSSMultimediaFileManagerTest.*</exclude>
-								<exclude>**/S3MultimediaFileManagerTest.*</exclude>
 							</excludes>
+							<testExcludes>
+								<testExclude>**/OSSMultimediaFileManagerTest.*</testExclude>
+								<testExclude>**/S3MultimediaFileManagerTest.*</testExclude>
+							</testExcludes>
 						</configuration>
 					</plugin>
 				</plugins>
