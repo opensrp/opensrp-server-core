@@ -1,23 +1,18 @@
 package org.opensrp.service;
 
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.List;
-
-import org.joda.time.DateTime;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.repository.postgres.handler.SettingTypeHandler;
 import org.opensrp.search.SettingSearchBean;
-import org.opensrp.util.DateTimeTypeConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import java.io.IOException;
+import java.util.Calendar;
+import java.util.List;
 
 @Service
 public class SettingService {
@@ -26,18 +21,24 @@ public class SettingService {
 	
 	private SettingRepository settingRepository;
 	
-	Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
-	
 	@Autowired
 	public void setSettingRepository(SettingRepository settingRepository) {
 		this.settingRepository = settingRepository;
 	}
 	
+	/**
+	 * Initiates the find settings functionality
+	 *
+	 * @param settingQueryBean {@link SettingSearchBean} -- has the required parameters for the search
+	 * @return
+	 */
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
 		return settingRepository.findSettings(settingQueryBean);
 	}
 	
+	/**
+	 * Used to add the server version to payloads
+	 */
 	public void addServerVersion() {
 		try {
 			List<SettingConfiguration> settingConfigurations = settingRepository.findByEmptyServerVersion();
@@ -58,6 +59,12 @@ public class SettingService {
 		}
 	}
 	
+	/**
+	 * Used by the v1 setting endpoint to create the settings configuration {@link SettingConfiguration} & save the settings
+	 *
+	 * @param jsonSettingConfiguration {@link String} -- the string representation of the settings configuration
+	 * @return
+	 */
 	public synchronized String saveSetting(String jsonSettingConfiguration) {
 		SettingTypeHandler settingTypeHandler = new SettingTypeHandler();
 		SettingConfiguration settingConfigurations = null;
@@ -68,6 +75,7 @@ public class SettingService {
 		}
 		
 		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		settingConfigurations.setV1Settings(true);
 		
 		if (settingConfigurations.getId() != null && settingRepository.get(settingConfigurations.getId()) != null) {
 			settingRepository.update(settingConfigurations);
@@ -82,9 +90,10 @@ public class SettingService {
 	
 	/**
 	 * Gets a single setting object from the v2 endpoint to save
+	 *
 	 * @param setting {@link Setting}
 	 */
-	public void addOrUpdateSettings(Setting setting){
+	public void addOrUpdateSettings(Setting setting) {
 		if (setting != null) {
 			settingRepository.addOrUpdate(setting);
 		}
@@ -92,9 +101,10 @@ public class SettingService {
 	
 	/**
 	 * Performs a settings delete using the v2 endpoint
+	 *
 	 * @param id {@link Long} -- settings id
 	 */
-	public void deleteSetting(Long id){
+	public void deleteSetting(Long id) {
 		if (id != null) {
 			settingRepository.delete(id);
 		}
