@@ -320,5 +320,24 @@ public class PhysicalLocationService {
 	Long countStructuresByParentAndServerVersion(String parentId, long serverVersion) {
 		return locationRepository.countStructuresByParentAndServerVersion(parentId, serverVersion);
 	}
+
+	/**
+	 * This method is used to return a count of locations based on the provided parameters
+	 * @param serverVersion
+	 * @return returns a count of locations matching the passed parameters
+	 */
+	Long countLocationsByServerVersion(long serverVersion){
+		return locationRepository.countLocationsByServerVersion(serverVersion);
+	};
+
+	/**
+	 * This method is used to return a count of locations based on the provided parameters
+	 * @param locationNames A string of comma separated location names
+	 * @param serverVersion
+	 * @return returns a count of locations matching the passed parameters
+	 */
+	Long countLocationsByNames(String locationNames, long serverVersion){
+		return locationRepository.countStructuresByParentAndServerVersion(locationNames,serverVersion);
+	};
 	
 }

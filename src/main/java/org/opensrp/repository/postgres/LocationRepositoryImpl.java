@@ -488,6 +488,28 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return structureMetadataMapper.countByExample(structureMetadataExample);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countLocationsByServerVersion(long serverVersion) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		return locationMetadataMapper.countByExample(locationMetadataExample);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countLocationsByNames(String locationNames, long serverVersion) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria()
+				.andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames, ",")))
+				.andServerVersionGreaterThanOrEqualTo(serverVersion);
+		return locationMetadataMapper.countByExample(locationMetadataExample);
+	}
+
 	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);
