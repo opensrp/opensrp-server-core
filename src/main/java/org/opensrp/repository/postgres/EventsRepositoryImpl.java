@@ -312,6 +312,14 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	@Override
 	public List<Event> findEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit) {
 		EventMetadataExample example = new EventMetadataExample();
+		Criteria criteria = populateEventSearchCriteria(eventSearchBean, example);
+
+		criteria.andDateDeletedIsNull();
+		example.setOrderByClause(getOrderByClause(sortBy, sortOrder));
+		return convert(eventMetadataMapper.selectManyWithRowBounds(example, 0, limit));
+	}
+
+	private Criteria populateEventSearchCriteria(EventSearchBean eventSearchBean, EventMetadataExample example){
 		Criteria criteria = example.createCriteria();
 
 		if (StringUtils.isNotEmpty(eventSearchBean.getTeam())) {
@@ -366,10 +374,18 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 
 		if (!criteria.isValid())
 			throw new IllegalArgumentException("Atleast one search filter must be specified");
+		return criteria;
+	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countEvents(EventSearchBean eventSearchBean) {
+		EventMetadataExample example = new EventMetadataExample();
+		Criteria criteria = populateEventSearchCriteria(eventSearchBean, example);
 		criteria.andDateDeletedIsNull();
-		example.setOrderByClause(getOrderByClause(sortBy, sortOrder));
-		return convert(eventMetadataMapper.selectManyWithRowBounds(example, 0, limit));
+		return eventMetadataMapper.countByExample(example);
 	}
 
 	/**
