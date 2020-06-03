@@ -147,4 +147,12 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @return the parent locations inclusive of the location of the identifiers 
 	 */
 	List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers);
+
+	/**
+	 * This method is used to return a count of structure based on the provided parameters
+	 * @param parentId id for the parent location
+	 * @param serverVersion
+	 * @return returns a count of structures matching the passed parameters
+	 */
+	Long countStructuresByParentAndServerVersion(String parentId, long serverVersion);
 }

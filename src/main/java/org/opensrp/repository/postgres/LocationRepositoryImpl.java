@@ -475,7 +475,19 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers) {
 		return locationMetadataMapper.selectLocationHierachy(identifiers);
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countStructuresByParentAndServerVersion(String parentIds, long serverVersion) {
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		structureMetadataExample.createCriteria()
+				.andParentIdIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(parentIds, ",")))
+				.andServerVersionGreaterThanOrEqualTo(serverVersion);
+		return structureMetadataMapper.countByExample(structureMetadataExample);
+	}
+
 	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);
