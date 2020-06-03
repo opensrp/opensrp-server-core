@@ -179,20 +179,21 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public Long countTasksByPlanAndGroup(String plan, String group) {
+	public Long countTasksByPlanAndGroup(String plan, String group, long serverVersion) {
 		List<String> campaigns = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
 		List<String> groups = Arrays.asList(org.apache.commons.lang.StringUtils.split(group, ","));
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andPlanIdentifierIn(campaigns).andGroupIdentifierIn(groups);
+		taskMetadataExample.createCriteria().andPlanIdentifierIn(campaigns).andGroupIdentifierIn(groups)
+				.andServerVersionGreaterThanOrEqualTo(serverVersion);
 		return taskMetadataMapper.countByExample(taskMetadataExample);
 	}
 
 	@Override
-	public Long countTasksByPlanAndOwner(String plan, String owner) {
+	public Long countTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
 		List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
 		taskMetadataExample.createCriteria().andPlanIdentifierIn(plans)
-				.andOwnerEqualTo(owner);
+				.andOwnerEqualTo(owner).andServerVersionGreaterThanOrEqualTo(serverVersion);
 		return taskMetadataMapper.countByExample(taskMetadataExample);
 	}
 

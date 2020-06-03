@@ -171,11 +171,25 @@ public class TaskService {
 		return taskRepository.getTasksByPlanAndOwner(plan, owner, serverVersion);
 	}
 
-	public Long countTasksByPlanAndGroup(String plan, String group) {
-		return taskRepository.countTasksByPlanAndGroup(plan, group);
+	/**
+	 * This method returns a count of tasks belonging to a particular owner
+	 * @param plan plan identifier for the task
+	 * @param group the team who initiated the task
+	 * @param serverVersion Version of the server
+	 * @return count of tasks created by the provider username (owner)
+	 */
+	public Long countTasksByPlanAndGroup(String plan, String group, long serverVersion) {
+		return taskRepository.countTasksByPlanAndGroup(plan, group, serverVersion);
 	}
 
-	public Long countTasksByPlanAndOwner(String plan, String owner) {
-		return taskRepository.countTasksByPlanAndOwner(plan, owner);
+	/**
+	 * This method returns a count of tasks belonging to a particular owner
+	 * @param plan plan identifier for the task
+	 * @param owner the username of the person who initiated the task
+	 * @param serverVersion Version of the server
+	 * @return count of tasks created by the provider username (owner)
+	 */
+	public Long countTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
+		return taskRepository.countTasksByPlanAndOwner(plan, owner,serverVersion);
 	}
 }

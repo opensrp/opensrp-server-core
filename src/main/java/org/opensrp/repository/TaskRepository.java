@@ -36,8 +36,22 @@ public interface TaskRepository extends BaseRepository<Task> {
 	 */
 	List<Task> getTasksByPlanAndOwner(String plan, String owner, long serverVersion);
 
-	Long countTasksByPlanAndGroup(String plan, String group);
+	/**
+	 * This method returns a count of tasks belonging to a particular owner
+	 * @param plan plan identifier for the task
+	 * @param group the team who initiated the task
+	 * @param serverVersion Version of the server
+	 * @return count of tasks created by the provider username (owner)
+	 */
+	Long countTasksByPlanAndGroup(String plan, String group, long serverVersion);
 
-	Long countTasksByPlanAndOwner(String plan, String owner);
+	/**
+	 * This method returns a count of tasks belonging to a particular owner
+	 * @param plan plan identifier for the task
+	 * @param owner the username of the person who initiated the task
+	 * @param serverVersion Version of the server
+	 * @return count of tasks created by the provider username (owner)
+	 */
+	Long countTasksByPlanAndOwner(String plan, String owner, long serverVersion);
 
 }
