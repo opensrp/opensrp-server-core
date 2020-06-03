@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import org.opensrp.domain.Campaign;
 import org.opensrp.repository.CampaignRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,22 +20,25 @@ public class CampaignService {
 		this.campaignRepository = campaignRepository;
 	}
 
+	@PreAuthorize("hasRole('CAMPAIGN_VIEW')")
 	public List<Campaign> getAllCampaigns() {
 		return campaignRepository.getAll();
 	}
 
+	
 	public void addOrUpdateCampaign(Campaign campaign) {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
 		campaign.setServerVersion(System.currentTimeMillis());
-		if (campaignRepository.get(campaign.getIdentifier()) != null) {
-			campaignRepository.update(campaign);
+		if (getCampaign(campaign.getIdentifier()) != null) {
+			updateCampaign(campaign);
 		} else {
 			campaign.setAuthoredOn(new DateTime());
-			campaignRepository.add(campaign);
+			addCampaign(campaign);
 		}
 	}
-
+	
+	@PreAuthorize("hasRole('CAMPAIGN_CREATE')")
 	public Campaign addCampaign(Campaign campaign) {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
@@ -43,6 +47,7 @@ public class CampaignService {
 		return campaign;
 	}
 
+	@PreAuthorize("hasRole('CAMPAIGN_UPDATE')")
 	public Campaign updateCampaign(Campaign campaign) {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
@@ -51,17 +56,21 @@ public class CampaignService {
 		return campaign;
 	}
 
+	@PreAuthorize("hasRole('CAMPAIGN_VIEW')")
 	public Campaign getCampaign(String identifier) {
 		if (StringUtils.isBlank(identifier))
 			return null;
 		return campaignRepository.get(identifier);
 	}
+	
+	@PreAuthorize("hasRole('CAMPAIGN_VIEW')")
 	public List<Campaign> getCampaignsByIdentifiers(String identifiers) {
 		if (StringUtils.isBlank(identifiers))
 			return null;
 		return campaignRepository.getCampaignsByIdentifiers(identifiers);
 	}
 
+	@PreAuthorize("hasRole('CAMPAIGN_SYNC')")
 	public List<Campaign> getCampaignsByServerVersion(long serverVersion) {
 		return campaignRepository.getCampaignsByServerVersion(serverVersion);
 	}
