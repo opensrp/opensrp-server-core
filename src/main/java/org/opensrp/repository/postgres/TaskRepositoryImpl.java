@@ -179,6 +179,24 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
+	public Long countTasksByPlanAndGroup(String plan, String group) {
+		List<String> campaigns = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
+		List<String> groups = Arrays.asList(org.apache.commons.lang.StringUtils.split(group, ","));
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		taskMetadataExample.createCriteria().andPlanIdentifierIn(campaigns).andGroupIdentifierIn(groups);
+		return taskMetadataMapper.countByExample(taskMetadataExample);
+	}
+
+	@Override
+	public Long countTasksByPlanAndOwner(String plan, String owner) {
+		List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		taskMetadataExample.createCriteria().andPlanIdentifierIn(plans)
+				.andOwnerEqualTo(owner);
+		return taskMetadataMapper.countByExample(taskMetadataExample);
+	}
+
+	@Override
 	@Transactional
 	public void safeRemove(Task entity) {
 		if (entity == null) {

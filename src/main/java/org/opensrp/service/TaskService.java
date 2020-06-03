@@ -170,4 +170,12 @@ public class TaskService {
 	public List<Task> getTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
 		return taskRepository.getTasksByPlanAndOwner(plan, owner, serverVersion);
 	}
+
+	public Long countTasksByPlanAndGroup(String plan, String group) {
+		return taskRepository.countTasksByPlanAndGroup(plan, group);
+	}
+
+	public Long countTasksByPlanAndOwner(String plan, String owner) {
+		return taskRepository.countTasksByPlanAndOwner(plan, owner);
+	}
 }

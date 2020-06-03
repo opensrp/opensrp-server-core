@@ -36,4 +36,8 @@ public interface TaskRepository extends BaseRepository<Task> {
 	 */
 	List<Task> getTasksByPlanAndOwner(String plan, String owner, long serverVersion);
 
+	Long countTasksByPlanAndGroup(String plan, String group);
+
+	Long countTasksByPlanAndOwner(String plan, String owner);
+
 }
