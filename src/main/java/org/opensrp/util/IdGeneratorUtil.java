@@ -18,7 +18,7 @@ public class IdGeneratorUtil {
 				}
 			}
 			if (index == -1) {
-				throw new IllegalArgumentException("Invalid character " + inputChars[i] + " found in " + s);
+				throw new IllegalArgumentException("Invalid character " + inputChars[i] + " found in " + s + " - First Identifier Base");
 			}
 			ret = ret + multiplier * index;
 			multiplier *= baseCharacters.length;
@@ -36,7 +36,7 @@ public class IdGeneratorUtil {
 		while (n > 0) {
 			int index = (int)(n % numInBase);
 			base.insert(0, baseCharacters[index]);
-			n = (long)(n / numInBase);
+			n = n / numInBase;
 		}
 		while (base.length() < padToLength) {
 			base.insert(0, baseCharacters[0]);

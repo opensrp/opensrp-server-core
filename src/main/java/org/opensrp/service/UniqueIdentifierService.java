@@ -17,10 +17,7 @@ import java.util.List;
 public class UniqueIdentifierService {
 
 	@Autowired
-	UniqueIdRepository uniqueIdRepository;
-
-	@Autowired
-	SettingRepository settingRepository;
+	private UniqueIdRepository uniqueIdRepository;
 
 	@Autowired
 	private UniqueIdGeneratorProcessor uniqueIdGeneratorProcessor;
@@ -35,16 +32,7 @@ public class UniqueIdentifierService {
 		}
 		catch (Exception ex) {
 			throw new IllegalArgumentException(
-					"Param numberToGenerate is out of bound");
-		}
-	}
-
-	private void saveIds(List<String> ids, String location, String status, Date updatedAt, String usedBy,
-			Date createdAt, Long idSource) {
-		for (int i = 0; i < ids.size(); i++) {
-			UniqueId uniqueId = new UniqueId("", status, usedBy, location, createdAt, updatedAt, ids.get(i), idSource,
-					Boolean.FALSE);
-			uniqueIdRepository.add(uniqueId);
+					ex.getMessage());
 		}
 	}
 }
