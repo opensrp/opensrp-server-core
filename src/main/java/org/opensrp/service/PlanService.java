@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.PlanDefinition;
-import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostFilter;
@@ -23,19 +22,16 @@ public class PlanService {
 	
 	private PlanRepository planRepository;
 	
-	private PractitionerService practitionerService;
-	
-	private PractitionerRoleService practitionerRoleService;
-	
 	private OrganizationService organizationService;
 	
+	private PractitionerService practitionerService;
+	
 	@Autowired
-	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
-	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService) {
+	public PlanService(PlanRepository planRepository, OrganizationService organizationService,
+	    PractitionerService practitionerService) {
 		this.planRepository = planRepository;
-		this.practitionerService = practitionerService;
-		this.practitionerRoleService = practitionerRoleService;
 		this.organizationService = organizationService;
+		this.practitionerService = practitionerService;
 	}
 	
 	public PlanRepository getPlanRepository() {
@@ -164,7 +160,7 @@ public class PlanService {
 	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#username,'User', 'GET')")
 	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion) {
 		
-		List<Long> organizationIds = getOrganizationIdsByUserName(username);
+		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
 			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
 		}
@@ -179,33 +175,10 @@ public class PlanService {
 	 */
 	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#username,'User', 'GET')")
 	public List<String> getPlanIdentifiersByUsername(String username) {
-		List<Long> organizationIds = getOrganizationIdsByUserName(username);
+		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
 			return getPlanIdentifiersByOrganizations(organizationIds);
 		}
-		return null;
-	}
-	
-	/**
-	 * Gets the organization ids that a user is assigned to according to the plan location
-	 * assignment
-	 *
-	 * @param username the username of user
-	 * @return the organization ids a user is assigned to
-	 */
-	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#username,'User', 'GET')")
-	public List<Long> getOrganizationIdsByUserName(String username) {
-		org.opensrp.domain.Practitioner practitioner = practitionerService.getPractionerByUsername(username);
-		if (practitioner != null) {
-			List<PractitionerRole> roles = practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier());
-			if (roles.isEmpty())
-				return null;
-			List<Long> organizationIds = new ArrayList<>();
-			for (PractitionerRole role : roles)
-				organizationIds.add(role.getOrganizationId());
-			return organizationIds;
-		}
-		
 		return null;
 	}
 	
