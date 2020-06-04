@@ -632,5 +632,35 @@ public class PhysicalLocationServiceTest {
 		verifyNoMoreInteractions(locationRepository);
 		assertEquals(15, locations.longValue());
 	}
+
+	@Test
+	public void testCountFindLocationsByServerVersion() {
+		when(locationRepository.countLocationsByServerVersion(123l)).thenReturn(4l);
+
+		Long locations = locationService.countLocationsByServerVersion(123l);
+		verify(locationRepository).countLocationsByServerVersion(123l);
+		verifyNoMoreInteractions(locationRepository);
+
+		assertEquals(4, locations.longValue());
+
+	}
+
+	@Test
+	public void testCountLocationsByNames() {
+		String locationNames = "01_5";
+		Long locations = locationService.countLocationsByNames(locationNames, 0l);
+		assertEquals(0, locations.longValue());
+
+		when(locationService.countLocationsByNames(locationNames, 0l)).thenReturn(3l);
+		locations = locationService.countLocationsByNames(locationNames, 0l);
+		assertEquals(3, locations.longValue());
+
+		//		search with more than one name
+		locationNames = "01_5,other_location_name";
+		when(locationService.countLocationsByNames(locationNames, 0l)).thenReturn(2l);
+		locations = locationService.countLocationsByNames(locationNames, 0l);
+		assertEquals(2, locations.longValue());
+
+	}
 	
 }

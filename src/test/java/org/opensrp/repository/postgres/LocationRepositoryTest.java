@@ -863,4 +863,33 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, locations.longValue());
 
 	}
+
+	@Test
+	public void testcountLocationsByServerVersion() {
+
+		Long locations = locationRepository.countLocationsByServerVersion(1542378347106l);
+		assertEquals(0, locations.longValue());
+
+		locations = locationRepository.countLocationsByServerVersion(1l);
+		assertEquals(1, locations.longValue());
+
+	}
+
+	@Test
+	public void testCountLocationsByNames() {
+
+		Long locations = locationRepository.countLocationsByNames("MKB_5", 0l);
+		assertEquals(0, locations.longValue());
+
+		PhysicalLocation parentLocation = gson.fromJson(parentJson, PhysicalLocation.class);
+		parentLocation.setJurisdiction(true);
+		locationRepository.add(parentLocation);
+
+		locations = locationRepository.countLocationsByNames("MKB_5", 0l);
+		assertEquals(1, locations.longValue());
+
+		locations = locationRepository.countLocationsByNames("MKB_5,other_location_name", 0l);
+		assertEquals(1, locations.floatValue());
+
+	}
 }
