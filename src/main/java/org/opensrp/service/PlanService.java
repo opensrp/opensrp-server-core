@@ -57,7 +57,7 @@ public class PlanService {
 	}
 	
 	/* @formatter:off */
-	@PreAuthorize("hasRole('PLAN_GET') and "
+	@PreAuthorize("hasRole('PLAN_CREATE') and "
 			+ "(hasPermission(#plan.getIdentifier(),'PlanDefinition', 'GET') or "
 	        + "hasPermission(#plan.getJurisdiction(),'Jurisdiction', 'GET'))")
 	/* @formatter:on */
@@ -72,7 +72,7 @@ public class PlanService {
 	}
 	
 	/* @formatter:off */
-	@PreAuthorize("hasRole('PLAN_GET') and "
+	@PreAuthorize("hasRole('PLAN_UPDATE') and "
 			+ "(hasPermission(#plan.getIdentifier(),'PlanDefinition', 'GET') or "
 	        + "hasPermission(#plan.getJurisdiction(),'Jurisdiction', 'GET'))")
 	/* @formatter:on */
