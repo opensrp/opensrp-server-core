@@ -1,50 +1,49 @@
 package org.opensrp.service;
 
-import java.util.Collections;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opensrp.domain.Organization;
-import org.opensrp.domain.PractitionerRole;
-import org.opensrp.domain.PractitionerRoleCode;
-import org.opensrp.repository.PractitionerRoleRepository;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.opensrp.domain.Organization;
+import org.opensrp.domain.PractitionerRole;
+import org.opensrp.domain.PractitionerRoleCode;
+import org.opensrp.repository.PractitionerRepository;
+import org.opensrp.repository.PractitionerRoleRepository;
+import org.powermock.modules.junit4.PowerMockRunner;
+
 @RunWith(PowerMockRunner.class)
 public class PractitionerRoleServiceTest {
 
+	@Mock
     private PractitionerRoleService practitionerRoleService;
 
+	@Mock
     private PractitionerRoleRepository practitionerRoleRepository;
 
+	@Mock
     private OrganizationService organizationService;
 
-    private PractitionerService practitionerService;
+	@Mock
+    private PractitionerRepository practitionerRepository;
 
     @Before
     public void setUp() {
-        practitionerRoleRepository = mock(PractitionerRoleRepository.class);
-        practitionerRoleService = new PractitionerRoleService();
-        practitionerRoleService.setPractitionerRoleRepository(practitionerRoleRepository);
-        organizationService = mock(OrganizationService.class);
-        practitionerRoleService.setOrganizationService(organizationService);
-        practitionerService = mock(PractitionerService.class);
-        practitionerRoleService.setPractitionerService(practitionerService);
+        practitionerRoleService = new PractitionerRoleService(practitionerRoleRepository,practitionerRepository,organizationService);
     }
 
     @Test
@@ -144,7 +143,7 @@ public class PractitionerRoleServiceTest {
         org.opensrp.domain.postgres.Practitioner pgPractitioner = new org.opensrp.domain.postgres.Practitioner();
         pgPractitioner.setId(2l);
 
-        when(practitionerService.getPgPractitioner(anyString())).thenReturn(pgPractitioner);
+        when(practitionerRepository.getPractitioner(anyString())).thenReturn(pgPractitioner);
 
         PractitionerRole practitionerRole = initTestPractitionerRole();
         practitionerRoleService.deletePractitionerRole(practitionerRole.getIdentifier(), practitionerRole.getOrganizationIdentifier());

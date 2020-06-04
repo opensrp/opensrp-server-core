@@ -1,47 +1,44 @@
 package org.opensrp.service;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
-import org.opensrp.repository.PractitionerRepository;
-import org.powermock.modules.junit4.PowerMockRunner;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.opensrp.domain.Organization;
+import org.opensrp.domain.Practitioner;
+import org.opensrp.repository.PractitionerRepository;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 public class PractitionerServiceTest {
 
     private PractitionerService practitionerService;
 
+    @Mock
     private PractitionerRepository practitionerRepository;
 
+    @Mock
     private PractitionerRoleService practitionerRoleService;
 
+    @Mock
     private OrganizationService organizationService;
 
     @Before
     public void setUp() {
-        practitionerRepository = mock(PractitionerRepository.class);
-        practitionerService = new PractitionerService();
-        practitionerService.setPractitionerRepository(practitionerRepository);
-        practitionerRoleService = mock(PractitionerRoleService.class);
-        practitionerService.setPractitionerRoleService(practitionerRoleService);
-        organizationService = mock(OrganizationService.class);
-        practitionerService.setOrganizationService(organizationService);
+        practitionerService = new PractitionerService(practitionerRepository,practitionerRoleService,organizationService);
     }
 
     @Test

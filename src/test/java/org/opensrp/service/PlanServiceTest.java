@@ -1,12 +1,12 @@
 package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +51,7 @@ public class PlanServiceTest {
 	
 	@Before
 	public void setUp() {
-		planService = new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService);
+		planService = new PlanService(planRepository, organizationService,practitionerService);
 	}
 	
 	@Test
@@ -105,7 +105,7 @@ public class PlanServiceTest {
 	
 	@Test
 	public void testGetPlansByServerVersionAndOperationalAreaShouldCallRepositoryGetPlansByServerVersionAndOperationalAreaMethod() {
-		when(planRepository.getPlansByServerVersionAndOperationalAreas(anyLong(), any(List.class)))
+		when(planRepository.getPlansByServerVersionAndOperationalAreas(anyLong(), any()))
 		        .thenReturn(new ArrayList<PlanDefinition>());
 		List<String> operationalAreaIds = new ArrayList<>();
 		operationalAreaIds.add("operation_area_1");
