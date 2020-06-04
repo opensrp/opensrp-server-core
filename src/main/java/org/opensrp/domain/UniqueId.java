@@ -39,12 +39,6 @@ public class UniqueId {
 	
 	public static final String COL_UPDATED_AT = "updated_at";
 	
-	public static final String COL_IDENTIFIER = "identifier";
-	
-	public static final String COL_IDENTIFIER_SOURCE_ID = "id_source";
-	
-	public static final String COL_IS_RESERVED = "is_reserved";
-	
 	public static String STATUS_USED = "used";
 	
 	public static String STATUS_NOT_USED = "not_used";
