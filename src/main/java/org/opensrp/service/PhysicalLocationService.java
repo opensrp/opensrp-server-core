@@ -317,7 +317,7 @@ public class PhysicalLocationService {
 	 * @param serverVersion
 	 * @return returns a count of structures matching the passed parameters
 	 */
-	Long countStructuresByParentAndServerVersion(String parentId, long serverVersion) {
+	public Long countStructuresByParentAndServerVersion(String parentId, long serverVersion) {
 		return locationRepository.countStructuresByParentAndServerVersion(parentId, serverVersion);
 	}
 
@@ -326,7 +326,7 @@ public class PhysicalLocationService {
 	 * @param serverVersion
 	 * @return returns a count of locations matching the passed parameters
 	 */
-	Long countLocationsByServerVersion(long serverVersion){
+	public Long countLocationsByServerVersion(long serverVersion){
 		return locationRepository.countLocationsByServerVersion(serverVersion);
 	};
 
@@ -336,8 +336,8 @@ public class PhysicalLocationService {
 	 * @param serverVersion
 	 * @return returns a count of locations matching the passed parameters
 	 */
-	Long countLocationsByNames(String locationNames, long serverVersion){
-		return locationRepository.countStructuresByParentAndServerVersion(locationNames,serverVersion);
+	public Long countLocationsByNames(String locationNames, long serverVersion){
+		return locationRepository.countLocationsByNames(locationNames,serverVersion);
 	};
 	
 }

@@ -377,7 +377,7 @@ public class EventService {
 	 * @param eventSearchBean object containing params to search by
 	 * @return returns a count of events matching the passed parameters
 	 */
-	Long countEvents(EventSearchBean eventSearchBean){
+	public Long countEvents(EventSearchBean eventSearchBean){
 		return allEvents.countEvents(eventSearchBean);
 	};
 }
