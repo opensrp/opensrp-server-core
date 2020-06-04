@@ -173,6 +173,7 @@ public class PlanServiceTest {
 		}
 		
 		List<PlanDefinition> expected = Collections.singletonList(new PlanDefinition());
+		when(practitionerService.getOrganizationIdsByUserName("janedoe")).thenReturn(organizationIds);
 		when(organizationService.findAssignedLocationsAndPlans(organizationIds))
 		        .thenReturn(assignedLocations);
 		when(planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion))
