@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class IdentifierSourceRepositoryTest extends BaseRepositoryTest  {
 
@@ -32,6 +33,40 @@ public class IdentifierSourceRepositoryTest extends BaseRepositoryTest  {
 		assertEquals(identifierSource.getBaseCharacterSet(),"baseCharacterSet");
 		assertEquals(identifierSource.getMinLength(),new Integer(5));
 		assertEquals(identifierSource.getMaxLength(),new Integer(10));
+	}
+
+	@Test
+	public void testAdd() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setIdentifier("Test-1");
+		identifierSource.setBaseCharacterSet("AB12");
+		identifierSource.setMinLength(4);
+		identifierSource.setMaxLength(4);
+
+		identifierSourceRepository.add(identifierSource);
+		assertEquals(2, identifierSourceRepository.getAll().size());
+		IdentifierSource addedIdentifierSource = identifierSourceRepository.findByIdentifier("Test-1");
+		assertNotNull(addedIdentifierSource);
+		assertEquals("AB12", addedIdentifierSource.getBaseCharacterSet());
+	}
+
+	@Test
+	public void testUpdate() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setIdentifier("Test-1");
+		identifierSource.setBaseCharacterSet("AB12");
+		identifierSource.setMinLength(4);
+		identifierSource.setMaxLength(4);
+
+		identifierSourceRepository.add(identifierSource);
+		assertEquals(2, identifierSourceRepository.getAll().size());
+		IdentifierSource addedIdentifierSource = identifierSourceRepository.findByIdentifier("Test-1");
+		addedIdentifierSource.setIdentifier("UpdatedTest-1");
+
+		identifierSourceRepository.update(addedIdentifierSource);
+		IdentifierSource updatedIdentifierSource = identifierSourceRepository.findByIdentifier("UpdatedTest-1");
+		assertNotNull(updatedIdentifierSource);
+		assertEquals(updatedIdentifierSource.getIdentifier(), "UpdatedTest-1");
 	}
 	
 }
