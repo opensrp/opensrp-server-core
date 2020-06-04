@@ -1,5 +1,7 @@
 package org.opensrp.domain;
 
+import lombok.*;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -12,6 +14,11 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "unique_ids")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class UniqueId {
 	
 	public static final String tbName = "unique_ids";
@@ -63,19 +70,12 @@ public class UniqueId {
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
 
-	@Column(name = COL_IDENTIFIER)
 	private String identifier;
 
-	@Column(name = COL_IDENTIFIER_SOURCE_ID)
 	private Long idSource;
 
-	@Column(name = COL_IS_RESERVED)
 	private boolean isReserved;
 
-	public UniqueId() {
-		
-	}
-	
 	public UniqueId(String openmrsId, String status, String usedBy, String location, Date createdAt, Date updatedAt,
 			String identifier, Long idSource, boolean isReserved) {
 		this.openmrsId = openmrsId;
@@ -87,85 +87,5 @@ public class UniqueId {
 		this.identifier = identifier;
 		this.idSource = idSource;
 		this.isReserved = isReserved;
-	}
-
-	public Long getId() {
-		return id;
-	}
-	
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public String getOpenmrsId() {
-		return openmrsId;
-	}
-	
-	public void setOpenmrsId(String openmrsId) {
-		this.openmrsId = openmrsId;
-	}
-	
-	public String getStatus() {
-		return status;
-	}
-	
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
-	public String getUsedBy() {
-		return usedBy;
-	}
-	
-	public void setUsedBy(String usedBy) {
-		this.usedBy = usedBy;
-	}
-	
-	public String getLocation() {
-		return location;
-	}
-	
-	public void setLocation(String location) {
-		this.location = location;
-	}
-	
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-	
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
-	
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-	
-	public void setUpdatedAt(Date updatedAt) {
-		this.updatedAt = updatedAt;
-	}
-
-	public String getIdentifier() {
-		return identifier;
-	}
-
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
-
-	public Long getIdSource() {
-		return idSource;
-	}
-
-	public void setIdSource(Long idSource) {
-		this.idSource = idSource;
-	}
-
-	public boolean isReserved() {
-		return isReserved;
-	}
-
-	public void setReserved(boolean reserved) {
-		isReserved = reserved;
 	}
 }

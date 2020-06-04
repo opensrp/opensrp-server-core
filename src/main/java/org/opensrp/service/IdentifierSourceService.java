@@ -3,6 +3,8 @@ package org.opensrp.service;
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.repository.IdentifierSourceRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +14,8 @@ import java.util.List;
 public class IdentifierSourceService {
 
 	private IdentifierSourceRepository identifierSourceRepository;
+
+	private static Logger logger = LoggerFactory.getLogger(IdentifierSourceService.class.toString());
 
 	@Autowired
 	public IdentifierSourceService(IdentifierSourceRepository identifierSourceRepository) {
@@ -34,30 +38,23 @@ public class IdentifierSourceService {
 			identifierSourceRepository.add(identifierSource);
 		}
 	}
-	
+
 	private void validateFields(IdentifierSource identifierSource) {
 		if (StringUtils.isBlank(identifierSource.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier value was not specified");
-		}
-
-		if (StringUtils.isBlank(identifierSource.getBaseCharacterSet())) {
+		} else if (StringUtils.isBlank(identifierSource.getBaseCharacterSet())) {
 			throw new IllegalArgumentException("Base character set was not specified");
-		}
-
-		if (identifierSource.getMinLength() == null || identifierSource.getMinLength() == 0) {
+		} else if (identifierSource.getMinLength() == null || identifierSource.getMinLength() == 0) {
 			throw new IllegalArgumentException("Minimum length was not specified");
-		}
-
-		if (identifierSource.getMaxLength() == null || identifierSource.getMaxLength() == 0) {
+		} else if (identifierSource.getMaxLength() == null || identifierSource.getMaxLength() == 0) {
 			throw new IllegalArgumentException("Maximum length was not specified");
-		}
-		
-		if(!(identifierSource.getMinLength() >= 4  && identifierSource.getMinLength() <=16)) {
+		} else if (!(identifierSource.getMinLength() >= 4 && identifierSource.getMinLength() <= 16)) {
 			throw new IllegalArgumentException("Minimum length was invalid");
-		}
-
-		if(!(identifierSource.getMaxLength() >= 4  && identifierSource.getMaxLength() <=16 && identifierSource.getMaxLength() >= identifierSource.getMinLength())) {
+		} else if (!(identifierSource.getMaxLength() >= 4 && identifierSource.getMaxLength() <= 16
+				&& identifierSource.getMaxLength() >= identifierSource.getMinLength())) {
 			throw new IllegalArgumentException("Maximum length was invalid");
+		} else {
+			logger.info("All validations on fields passed");
 		}
 	}
 }

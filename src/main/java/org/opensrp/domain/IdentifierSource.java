@@ -23,7 +23,6 @@ public class IdentifierSource {
 	@JsonProperty
 	private String description;
 
-	@Enumerated(EnumType.STRING)
 	@JsonProperty
 	private IdentifierValidatorAlgorithm identifierValidatorAlgorithm;
 
@@ -46,20 +45,6 @@ public class IdentifierSource {
 	private Integer maxLength;
 
 	@JsonProperty
-	private String skipRegexFormat;
-	
-	public IdentifierSource(String identifier, String description, IdentifierValidatorAlgorithm identifierValidatorAlgorithm,
-			String baseCharacterSet, String firstIdentifierBase, String prefix, String suffix, Integer minLength,
-			Integer maxLength, String skipRegexFormat) {
-		this.identifier = identifier;
-		this.description = description;
-		this.identifierValidatorAlgorithm = identifierValidatorAlgorithm;
-		this.baseCharacterSet = baseCharacterSet;
-		this.firstIdentifierBase = firstIdentifierBase;
-		this.prefix = prefix;
-		this.suffix = suffix;
-		this.minLength = minLength;
-		this.maxLength = maxLength;
-		this.skipRegexFormat = skipRegexFormat;
-	}
+	private String regexFormat;
+
 }

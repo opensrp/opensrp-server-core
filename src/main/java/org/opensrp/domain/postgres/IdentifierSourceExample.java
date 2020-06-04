@@ -862,73 +862,73 @@ public class IdentifierSourceExample {
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatIsNull() {
-			addCriterion("skip_regex_format is null");
+		public Criteria andRegexFormatIsNull() {
+			addCriterion("regex_format is null");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatIsNotNull() {
-			addCriterion("skip_regex_format is not null");
+		public Criteria andRegexFormatIsNotNull() {
+			addCriterion("regex_format is not null");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatEqualTo(String value) {
-			addCriterion("skip_regex_format =", value, "skipRegexFormat");
+		public Criteria andRegexFormatEqualTo(String value) {
+			addCriterion("regex_format =", value, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatNotEqualTo(String value) {
-			addCriterion("skip_regex_format <>", value, "skipRegexFormat");
+		public Criteria andRegexFormatNotEqualTo(String value) {
+			addCriterion("regex_format <>", value, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatGreaterThan(String value) {
-			addCriterion("skip_regex_format >", value, "skipRegexFormat");
+		public Criteria andRegexFormatGreaterThan(String value) {
+			addCriterion("regex_format >", value, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatGreaterThanOrEqualTo(String value) {
-			addCriterion("skip_regex_format >=", value, "skipRegexFormat");
+		public Criteria andRegexFormatGreaterThanOrEqualTo(String value) {
+			addCriterion("regex_format >=", value, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatLessThan(String value) {
-			addCriterion("skip_regex_format <", value, "skipRegexFormat");
+		public Criteria andRegexFormatLessThan(String value) {
+			addCriterion("regex_format <", value, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatLessThanOrEqualTo(String value) {
-			addCriterion("skip_regex_format <=", value, "skipRegexFormat");
+		public Criteria andRegexFormatLessThanOrEqualTo(String value) {
+			addCriterion("regex_format <=", value, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatLike(String value) {
-			addCriterion("skip_regex_format like", value, "skipRegexFormat");
+		public Criteria andRegexFormatLike(String value) {
+			addCriterion("regex_format like", value, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatNotLike(String value) {
-			addCriterion("skip_regex_format not like", value, "skipRegexFormat");
+		public Criteria andRegexFormatNotLike(String value) {
+			addCriterion("regex_format not like", value, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatIn(List<String> values) {
-			addCriterion("skip_regex_format in", values, "skipRegexFormat");
+		public Criteria andRegexFormatIn(List<String> values) {
+			addCriterion("regex_format in", values, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatNotIn(List<String> values) {
-			addCriterion("skip_regex_format not in", values, "skipRegexFormat");
+		public Criteria andRegexFormatNotIn(List<String> values) {
+			addCriterion("regex_format not in", values, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatBetween(String value1, String value2) {
-			addCriterion("skip_regex_format between", value1, value2, "skipRegexFormat");
+		public Criteria andRegexFormatBetween(String value1, String value2) {
+			addCriterion("regex_format between", value1, value2, "regexFormat");
 			return (Criteria) this;
 		}
 
-		public Criteria andSkipRegexFormatNotBetween(String value1, String value2) {
-			addCriterion("skip_regex_format not between", value1, value2, "skipRegexFormat");
+		public Criteria andRegexFormatNotBetween(String value1, String value2) {
+			addCriterion("regex_format not between", value1, value2, "regexFormat");
 			return (Criteria) this;
 		}
 	}

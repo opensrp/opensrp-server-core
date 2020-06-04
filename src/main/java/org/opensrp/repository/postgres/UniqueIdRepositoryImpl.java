@@ -200,11 +200,11 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         Object uniqueOpenMrsIdentifier = getUniqueField(uniqueId);
         Object uniqueIdentifier = null;
         Boolean fromOpenMrs = true;
-        if (uniqueOpenMrsIdentifier == null || uniqueOpenMrsIdentifier.equals("")) {
+        if (uniqueOpenMrsIdentifier == null || StringUtils.isEmpty(uniqueOpenMrsIdentifier.toString())) {
             uniqueIdentifier = getUniqueIdentifierField(uniqueId);
             fromOpenMrs = false;
         }
-        
+
         if (uniqueOpenMrsIdentifier == null || uniqueIdentifier == null) {
             return null;
         }
@@ -212,20 +212,19 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         String identifier;
         UniqueIdExample example;
         List<org.opensrp.domain.postgres.UniqueId> pgEntities;
-        
-        if(fromOpenMrs == Boolean.TRUE) {
+
+        if (fromOpenMrs == Boolean.TRUE) {
             identifier = uniqueOpenMrsIdentifier.toString();
-             example = new UniqueIdExample();
+            example = new UniqueIdExample();
             example.createCriteria().andOpenmrsIdEqualTo(identifier);
             pgEntities = uniqueIdMapper.selectByExample(example);
-        }
-        else {
+        } else {
             identifier = uniqueIdentifier.toString();
             example = new UniqueIdExample();
             example.createCriteria().andIdentifierEqualTo(identifier);
             pgEntities = uniqueIdMapper.selectByExample(example);
         }
-        
+
         return pgEntities.isEmpty() ? null : pgEntities.get(0).getId();
     }
 

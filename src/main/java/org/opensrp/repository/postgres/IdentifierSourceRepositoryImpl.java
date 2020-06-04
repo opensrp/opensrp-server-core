@@ -137,7 +137,7 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 		convertedIdentifierSource.setSuffix(identifierSource.getSuffix());
 		convertedIdentifierSource.setMinLength(identifierSource.getMinLength());
 		convertedIdentifierSource.setMaxLength(identifierSource.getMaxLength());
-		convertedIdentifierSource.setSkipRegexFormat(identifierSource.getSkipRegexFormat());
+		convertedIdentifierSource.setRegexFormat(identifierSource.getRegexFormat());
 
 		return convertedIdentifierSource;
 	}
@@ -158,7 +158,7 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 		pgIdentifierSource.setSuffix(identifierSource.getSuffix());
 		pgIdentifierSource.setMinLength(identifierSource.getMinLength());
 		pgIdentifierSource.setMaxLength(identifierSource.getMaxLength());
-		pgIdentifierSource.setSkipRegexFormat(identifierSource.getSkipRegexFormat());
+		pgIdentifierSource.setRegexFormat(identifierSource.getRegexFormat());
 
 		return pgIdentifierSource;
 	}

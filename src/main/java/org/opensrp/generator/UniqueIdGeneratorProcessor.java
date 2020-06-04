@@ -99,8 +99,8 @@ public class UniqueIdGeneratorProcessor {
 				return null;
 			}
 		}
-		if (identifierSource.getSkipRegexFormat() != null) {
-			return identifier.matches(identifierSource.getSkipRegexFormat()) ?
+		if (identifierSource.getRegexFormat() != null) {
+			return identifier.matches(identifierSource.getRegexFormat()) ?
 					identifier :
 					getIdentifierForSeed(seed + 1, identifierSource);
 		}

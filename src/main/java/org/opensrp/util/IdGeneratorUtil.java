@@ -18,7 +18,7 @@ public class IdGeneratorUtil {
 				}
 			}
 			if (index == -1) {
-				throw new RuntimeException("Invalid character " + inputChars[i] + " found in " + s);
+				throw new IllegalArgumentException("Invalid character " + inputChars[i] + " found in " + s);
 			}
 			ret = ret + multiplier * index;
 			multiplier *= baseCharacters.length;
