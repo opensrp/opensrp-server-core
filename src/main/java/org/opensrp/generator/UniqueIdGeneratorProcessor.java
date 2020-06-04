@@ -22,27 +22,6 @@ public class UniqueIdGeneratorProcessor {
 
 	public synchronized List<String> getIdentifiers(IdentifierSource identifierSource, int batchSize, String usedBy) {
 
-		int lengthBaseCharacterSet = identifierSource.getBaseCharacterSet().toCharArray().length;
-		if(identifierSource.getMinLength().equals(identifierSource.getMaxLength())) {
-			if(batchSize > Math.pow(lengthBaseCharacterSet,identifierSource.getMinLength())){
-				throw new IllegalArgumentException("Param numberToGenerate is out of bound");
-			}
-		}
-		else {
-			int minLength = identifierSource.getMinLength();
-			int maxLength = identifierSource.getMaxLength();
-			double possibleCombinations = 0;
-			while (minLength <= maxLength) {
-				possibleCombinations += Math.pow(lengthBaseCharacterSet,minLength);
-				minLength++;
-			}
-
-			if(batchSize > possibleCombinations) {
-				throw new IllegalArgumentException("Param numberToGenerate is out of bound");
-			}
-		}
-
-
 		UniqueId lastUniqueId = uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(identifierSource.getIdentifier());
 
 		Long sequenceValue = lastUniqueId != null ? lastUniqueId.getId() : null;
@@ -74,6 +53,9 @@ public class UniqueIdGeneratorProcessor {
 		for (int i = 0; i < numbersToGenerate; ) {
 			identifier = getIdentifierForSeed(sequenceValue, identifierSource);
 			logger.info("Identifier from processor is " +  identifier);
+			if(identifier == null) {
+				break;
+			}
 			if (!reservedIdentifiers.contains(identifier)) {
 				if (identifierSource.getIdentifierValidatorAlgorithm()
 						.equals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM)) {
@@ -85,9 +67,7 @@ public class UniqueIdGeneratorProcessor {
 			sequenceValue++;
 		}
 
-		if (identifiers.size() == batchSize) {
-			saveIds(identifiers, null, "not_used", new Date(), usedBy, new Date(), identifierSource.getId());
-		}
+		saveIds(identifiers, null, "not_used", new Date(), usedBy, new Date(), identifierSource.getId());
 
 		return identifiers;
 	}
@@ -110,17 +90,13 @@ public class UniqueIdGeneratorProcessor {
 
 		if (identifierSource.getMinLength() != null && identifierSource.getMinLength() > 0) {
 			if (identifier.length() < identifierSource.getMinLength()) {
-				throw new RuntimeException(
-						"Invalid configuration for IdentifierSource. Length minimum set to " + identifierSource
-								.getMinLength() + " but generated " + identifier);
+				return null;
 			}
 		}
 
 		if (identifierSource.getMaxLength() != null && identifierSource.getMaxLength() > 0) {
 			if (identifier.length() > identifierSource.getMaxLength()) {
-				throw new RuntimeException(
-						"Invalid configuration for IdentifierSource. Length maximum set to " + identifierSource
-								.getMaxLength() + " but generated " + identifier);
+				return null;
 			}
 		}
 		if (identifierSource.getSkipRegexFormat() != null) {
