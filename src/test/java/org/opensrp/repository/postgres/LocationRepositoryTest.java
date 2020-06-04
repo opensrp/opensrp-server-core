@@ -889,7 +889,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, locations.longValue());
 
 		locations = locationRepository.countLocationsByNames("MKB_5,other_location_name", 0l);
-		assertEquals(1, locations.floatValue());
+		assertEquals(1, locations.longValue());
 
 	}
 }
