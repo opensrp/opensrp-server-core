@@ -3,6 +3,7 @@ package org.opensrp.service;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.MultimediaRepository;
+import org.opensrp.service.multimedia.BaseMultimediaFileManager;
 import org.opensrp.service.multimedia.MultimediaFileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,8 @@ public class MultimediaService {
 
 	private final MultimediaRepository multimediaRepository;
 
-	private MultimediaFileManager fileManager;
+	@Autowired
+	private BaseMultimediaFileManager fileManager;
 
 	private ClientService clientService;
 
@@ -79,8 +81,7 @@ public class MultimediaService {
 		return fileManager.retrieveFile(filePath);
 	}
 
-	@Autowired
-	public void setFileManager(MultimediaFileManager fileManager) {
+	public void setFileManager(BaseMultimediaFileManager fileManager) {
 		this.fileManager = fileManager;
 	}
 
