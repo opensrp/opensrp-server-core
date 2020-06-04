@@ -45,7 +45,7 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 		identifierSource.setIdentifier("Test-Id-Source");
 		identifierSourceService.addOrUpdate(identifierSource);
 		assertEquals(2,identifierSourceService.findAllIdentifierSources().size());  // 1 added through script
-		IdentifierSource savedIdentifierSource = identifierSourceService.findByIdentifier("Test Identifier 1");
+		IdentifierSource savedIdentifierSource = identifierSourceService.findByIdentifier("Test-Id-Source");
 		assertNotNull(savedIdentifierSource.getId());
 	}
 	
@@ -58,15 +58,13 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 
 	@Test
 	public void testUpdate() {
-		IdentifierSource identifierSource = new IdentifierSource();
-		identifierSource.setId(1l);
-		identifierSource.setDescription("Test Updated");
-		identifierSourceService.addOrUpdate(identifierSource);
-		IdentifierSource updatedIdentifierSource = identifierSourceService.findByIdentifier("Test Identifier 1");
-		assertNotNull(updatedIdentifierSource.getId());
-		assertEquals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM.name(), updatedIdentifierSource.getIdentifierValidatorAlgorithm().name());
-		assertEquals("Test Updated", updatedIdentifierSource.getDescription());
-		assertTrue(updatedIdentifierSource.getMaxLength() >= updatedIdentifierSource.getMaxLength());
+		IdentifierSource updatedIdentifierSource = identifierSourceService.findByIdentifier("Test Identifier");
+		updatedIdentifierSource.setDescription("Test Updated");
+		identifierSourceService.addOrUpdate(updatedIdentifierSource);
+		IdentifierSource idSource = identifierSourceService.findByIdentifier("Test Identifier");
+		assertNotNull(idSource.getId());
+		assertEquals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM.name(), idSource.getIdentifierValidatorAlgorithm().name());
+		assertEquals("Test Updated", idSource.getDescription());
 	}
 	
 }
