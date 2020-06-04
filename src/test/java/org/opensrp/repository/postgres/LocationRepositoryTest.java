@@ -849,4 +849,18 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		//Non existent location
 		assertEquals(0, locationRepository.findParentLocationsInclusive(Collections.singleton("21")).size());
 	}
+
+	@Test
+	public void testCountStructuresByParentAndServerVersion() {
+
+		Long locations = locationRepository.countStructuresByParentAndServerVersion("3734", 1542376382859l);
+		assertEquals(0, locations.longValue());
+
+		locations = locationRepository.countStructuresByParentAndServerVersion("3734", 1542376382851l);
+		assertEquals(1, locations.longValue());
+
+		locations = locationRepository.countStructuresByParentAndServerVersion("3734,001", 1542376382851l);
+		assertEquals(1, locations.longValue());
+
+	}
 }

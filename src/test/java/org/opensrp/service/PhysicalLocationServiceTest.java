@@ -614,5 +614,23 @@ public class PhysicalLocationServiceTest {
 		assertTrue(tags.contains("Zone"));
 		
 	}
+
+	@Test
+	public void testCountStructuresByParentAndServerVersion() {
+
+		when(locationRepository.countStructuresByParentAndServerVersion("3734", 15622112121L)).thenReturn(12l);
+
+		Long locations = locationService.countStructuresByParentAndServerVersion("3734", 15622112121L);
+		verify(locationRepository).countStructuresByParentAndServerVersion("3734", 15622112121L);
+		verifyNoMoreInteractions(locationRepository);
+
+		assertEquals(12, locations.longValue());
+
+		when(locationRepository.countStructuresByParentAndServerVersion("3734,001", 15622112121L)).thenReturn(15l);
+		locations = locationService.countStructuresByParentAndServerVersion("3734,001", 15622112121L);
+		verify(locationRepository).countStructuresByParentAndServerVersion("3734,001", 15622112121L);
+		verifyNoMoreInteractions(locationRepository);
+		assertEquals(15, locations.longValue());
+	}
 	
 }
