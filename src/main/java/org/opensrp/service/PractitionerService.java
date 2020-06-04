@@ -2,6 +2,8 @@ package org.opensrp.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -128,13 +130,26 @@ public class PractitionerService {
 	public List<Long> getOrganizationIdsByUserName(String username) {
 		org.opensrp.domain.Practitioner practitioner = getPractionerByUsername(username);
 		if (practitioner != null) {
-			List<PractitionerRole> roles = practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier());
-			if (roles.isEmpty())
-				return null;
-			List<Long> organizationIds = new ArrayList<>();
-			for (PractitionerRole role : roles)
-				organizationIds.add(role.getOrganizationId());
-			return organizationIds;
+			return practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier()).stream()
+			        .map(role -> role.getOrganizationId()).collect(Collectors.toList());
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Gets the organization ids that a user is assigned to according to the plan location
+	 * assignment
+	 *
+	 * @param username the username of user
+	 * @return the organization ids a user is assigned to
+	 */
+	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#identifier,'User', 'GET')")
+	public Set<Long> getOrganizationIdsByUserIdentier(String identifier) {
+		org.opensrp.domain.Practitioner practitioner = getPractitionerRepository().getPractitionerByUserId(identifier);
+		if (practitioner != null) {
+			return practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier()).stream()
+			        .map(role -> role.getOrganizationId()).collect(Collectors.toSet());
 		}
 		
 		return null;
