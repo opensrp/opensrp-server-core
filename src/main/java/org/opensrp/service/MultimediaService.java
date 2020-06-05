@@ -18,6 +18,8 @@ public class MultimediaService {
 
 	public static final String IMAGES_DIR = "patient_images";
 
+	public static final String CSV_DIR = "csv";
+
 	public static final String MULTI_VERSION = "multi_version";
 
 	private final MultimediaRepository multimediaRepository;
@@ -79,7 +81,7 @@ public class MultimediaService {
 	}
 
 	@Autowired
-	@Qualifier("multimedia_file_manager")
+	@Qualifier("multimedia.file.manager")
 	public void setFileManager(MultimediaFileManager fileManager) {
 		this.fileManager = fileManager;
 	}

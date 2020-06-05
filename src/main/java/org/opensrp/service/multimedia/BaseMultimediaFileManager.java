@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static org.opensrp.service.MultimediaService.IMAGES_DIR;
+import static org.opensrp.service.MultimediaService.CSV_DIR;
 import static org.opensrp.service.MultimediaService.MULTI_VERSION;
 import static org.opensrp.service.MultimediaService.VIDEOS_DIR;
 
@@ -32,7 +33,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
     @Value("#{opensrp['multimedia.directory.name']}")
     protected String baseMultimediaDirPath;
 
-    private static Logger logger = LoggerFactory.getLogger(FileSystemMultimediaFileManager.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(BaseMultimediaFileManager.class.getName());
 
     private static final String SUCCESS = "success";
 
@@ -80,7 +81,9 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
 
                 Multimedia multimediaFile = new Multimedia().withCaseId(multimediaDTO.getCaseId())
                         .withProviderId(multimediaDTO.getProviderId()).withContentType(multimediaDTO.getContentType())
-                        .withFilePath(multimediaDTO.getFilePath()).withFileCategory(multimediaDTO.getFileCategory());
+                        .withFilePath(multimediaDTO.getFilePath()).withFileCategory(multimediaDTO.getFileCategory())
+                        .withSummary(multimediaDTO.getSummary()).withOriginalFileName(multimediaDTO.getOriginalFileName())
+                        .withDateUploaded(multimediaDTO.getDateUploaded());
 
                 multimediaRepository.add(multimediaFile);
                 Client client = clientService.getByBaseEntityId(multimediaDTO.getCaseId());
@@ -125,8 +128,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
         return wasFileSaved;
     }
 
-
-    private String getMultimediaFilePath(MultimediaDTO multimediaDTO, String originalFileName) {
+    public String getMultimediaFilePath(MultimediaDTO multimediaDTO, String originalFileName) {
 
         multimediaDirPath = getBaseMultiMediaDir();
         String fileExt = ".jpg";
@@ -147,6 +149,10 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
             case "image/png":
                 multimediaDirPath += IMAGES_DIR;
                 fileExt = ".png";
+                break;
+            case "text/csv":
+                multimediaDirPath += CSV_DIR;
+                fileExt = ".csv";
                 break;
             default:
                 throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
