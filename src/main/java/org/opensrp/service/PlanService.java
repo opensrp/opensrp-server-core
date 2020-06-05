@@ -38,8 +38,8 @@ public class PlanService {
 		return planRepository;
 	}
 	
-	@PreAuthorize("hasRole('PLAN_GET')")
-	@PostFilter("hasPermission(filterObject, 'GET')")
+	@PreAuthorize("hasRole('PLAN_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'PLAN_VIEW')")
 	public List<PlanDefinition> getAllPlans() {
 		return getPlanRepository().getAll();
 	}
@@ -57,9 +57,8 @@ public class PlanService {
 	}
 	
 	/* @formatter:off */
-	@PreAuthorize("hasRole('PLAN_CREATE') and "
-			+ "(hasPermission(#plan.getIdentifier(),'PlanDefinition', 'GET') or "
-	        + "hasPermission(#plan.getJurisdiction(),'Jurisdiction', 'GET'))")
+	@PreAuthorize("hasPermission(#plan.getIdentifier(),'PlanDefinition', 'PLAN_CREATE') or "
+	        + "hasPermission(#plan.getJurisdiction(),'Jurisdiction', 'PLAN_CREATE')")
 	/* @formatter:on */
 	public PlanDefinition addPlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
@@ -72,9 +71,8 @@ public class PlanService {
 	}
 	
 	/* @formatter:off */
-	@PreAuthorize("hasRole('PLAN_UPDATE') and "
-			+ "(hasPermission(#plan.getIdentifier(),'PlanDefinition', 'GET') or "
-	        + "hasPermission(#plan.getJurisdiction(),'Jurisdiction', 'GET'))")
+	@PreAuthorize("hasPermission(#plan.getIdentifier(),'PlanDefinition', 'PLAN_UPDATE') or "
+	        + "hasPermission(#plan.getJurisdiction(),'Jurisdiction', 'PLAN_UPDATE')")
 	/* @formatter:on */
 	public PlanDefinition updatePlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
@@ -86,12 +84,12 @@ public class PlanService {
 		return plan;
 	}
 	
-	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#identifier,'PlanDefinition', 'GET')")
+	@PreAuthorize("hasPermission(#identifier,'PlanDefinition', 'PLAN_VIEW')")
 	public PlanDefinition getPlan(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
 	}
 	
-	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#operationalAreaIds,'Jurisdiction', 'GET')")
+	@PreAuthorize("hasPermission(#operationalAreaIds,'Jurisdiction', 'PLAN_VIEW')")
 	public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion,
 	        List<String> operationalAreaIds) {
 		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds);
@@ -107,7 +105,7 @@ public class PlanService {
 	 * @param fields list of fields to return
 	 * @return plan definitions whose identifiers match the provided params
 	 */
-	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#ids,'PlanDefinition', 'GET')")
+	@PreAuthorize("hasPermission(#ids,'PlanDefinition', 'PLAN_VIEW')")
 	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields) {
 		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields);
 	}
@@ -119,7 +117,7 @@ public class PlanService {
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans matching the above
 	 */
-	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#organizationIds,'Organization', 'GET')")
+	@PreAuthorize("hasPermission(#organizationIds,'Organization', 'PLAN_VIEW')")
 	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
 		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
@@ -137,7 +135,7 @@ public class PlanService {
 	 * @param organizationIds the list of organization Ids
 	 * @return the plan identifiers matching the above
 	 */
-	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#organizationIds,'Organization', 'GET')")
+	@PreAuthorize("hasPermission(#organizationIds,'Organization', 'PLAN_VIEW')")
 	public List<String> getPlanIdentifiersByOrganizations(List<Long> organizationIds) {
 		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
@@ -157,7 +155,7 @@ public class PlanService {
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans a user has access to
 	 */
-	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#username,'User', 'GET')")
+	@PreAuthorize("hasPermission(#username,'User', 'PLAN_VIEW')")
 	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion) {
 		
 		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
@@ -173,7 +171,7 @@ public class PlanService {
 	 * @param username the username of user
 	 * @return the plans a user has access to
 	 */
-	@PreAuthorize("hasRole('PLAN_GET') and hasPermission(#username,'User', 'GET')")
+	@PreAuthorize("hasPermission(#username,'User', 'PLAN_VIEW')")
 	public List<String> getPlanIdentifiersByUsername(String username) {
 		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {

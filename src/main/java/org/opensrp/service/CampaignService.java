@@ -70,7 +70,7 @@ public class CampaignService {
 		return campaignRepository.getCampaignsByIdentifiers(identifiers);
 	}
 
-	@PreAuthorize("hasRole('CAMPAIGN_SYNC')")
+	@PreAuthorize("hasRole('CAMPAIGN_VIEW')")
 	public List<Campaign> getCampaignsByServerVersion(long serverVersion) {
 		return campaignRepository.getCampaignsByServerVersion(serverVersion);
 	}
