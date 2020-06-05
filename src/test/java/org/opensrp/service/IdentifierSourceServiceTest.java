@@ -8,11 +8,13 @@ import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.util.IdentifierValidatorAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+
 
 public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 	
