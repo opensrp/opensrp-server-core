@@ -15,6 +15,10 @@ public class UniqueIdentifierService {
 	@Autowired
 	private UniqueIdGeneratorProcessor uniqueIdGeneratorProcessor;
 
+	public UniqueIdentifierService(UniqueIdGeneratorProcessor uniqueIdGeneratorProcessor) {
+		this.uniqueIdGeneratorProcessor = uniqueIdGeneratorProcessor;
+	}
+
 	@Transactional
 	public List<String> generateIdentifiers(IdentifierSource identifierSource, int numberOfIdsToGenerate, String usedBy) {
 
