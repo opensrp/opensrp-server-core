@@ -30,7 +30,7 @@ public class IdentifierSourceRepositoryTest extends BaseRepositoryTest  {
 	public void testFindByIdentifier() {
 		IdentifierSource identifierSource = identifierSourceRepository.findByIdentifier("Test Identifier");
 		assertEquals(identifierSource.getIdentifierValidatorAlgorithm(), IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM);
-		assertEquals(identifierSource.getBaseCharacterSet(),"baseCharacterSet");
+		assertEquals(identifierSource.getBaseCharacterSet(),"AB12");
 		assertEquals(identifierSource.getMinLength(),new Integer(5));
 		assertEquals(identifierSource.getMaxLength(),new Integer(10));
 	}
