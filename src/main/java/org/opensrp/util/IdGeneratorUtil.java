@@ -33,10 +33,11 @@ public class IdGeneratorUtil {
 	public static String convertToBase(long n, char[] baseCharacters, int padToLength,int minLength) {
 		StringBuilder base = new StringBuilder();
 		long numInBase = (long)baseCharacters.length;
-		while (n > 0) {
+		long i = n;
+		while (i > 0) {
 			int index = (int)(n % numInBase);
 			base.insert(0, baseCharacters[index]);
-			n = n / numInBase;
+			i = i / numInBase;
 		}
 		while (base.length() < padToLength) {
 			base.insert(0, baseCharacters[0]);
