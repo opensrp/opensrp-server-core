@@ -13,6 +13,7 @@ import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,8 @@ public class PlanService {
 		return getPlanRepository().getAll();
 	}
 	
+	@PreAuthorize("(hasPermission(#plan,'PlanDefinition', 'PLAN_CREATE') and "
+	        + "hasPermission(#plan,'PlanDefinition', 'PLAN_UPDATE'))")
 	public void addOrUpdatePlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -57,8 +60,7 @@ public class PlanService {
 	}
 	
 	/* @formatter:off */
-	@PreAuthorize("hasPermission(#plan.getIdentifier(),'PlanDefinition', 'PLAN_CREATE') or "
-	        + "hasPermission(#plan.getJurisdiction(),'Jurisdiction', 'PLAN_CREATE')")
+	@PreAuthorize("hasPermission(#plan,'PlanDefinition', 'PLAN_CREATE')")
 	/* @formatter:on */
 	public PlanDefinition addPlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
@@ -71,8 +73,7 @@ public class PlanService {
 	}
 	
 	/* @formatter:off */
-	@PreAuthorize("hasPermission(#plan.getIdentifier(),'PlanDefinition', 'PLAN_UPDATE') or "
-	        + "hasPermission(#plan.getJurisdiction(),'Jurisdiction', 'PLAN_UPDATE')")
+	@PreAuthorize("hasPermission(#plan,'PlanDefinition', 'PLAN_UPDATE') ")
 	/* @formatter:on */
 	public PlanDefinition updatePlan(PlanDefinition plan) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
@@ -84,7 +85,8 @@ public class PlanService {
 		return plan;
 	}
 	
-	@PreAuthorize("hasPermission(#identifier,'PlanDefinition', 'PLAN_VIEW')")
+	@PreAuthorize("hasRole('PLAN_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'PlanDefinition', 'PLAN_VIEW')")
 	public PlanDefinition getPlan(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
 	}
@@ -105,7 +107,8 @@ public class PlanService {
 	 * @param fields list of fields to return
 	 * @return plan definitions whose identifiers match the provided params
 	 */
-	@PreAuthorize("hasPermission(#ids,'PlanDefinition', 'PLAN_VIEW')")
+	@PreAuthorize("hasRole('PLAN_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'PlanDefinition', 'PLAN_VIEW')")
 	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields) {
 		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields);
 	}
@@ -171,7 +174,7 @@ public class PlanService {
 	 * @param username the username of user
 	 * @return the plans a user has access to
 	 */
-	@PreAuthorize("hasPermission(#username,'User', 'PLAN_VIEW')")
+	@PreAuthorize("hasRole('PLAN_ADMIN') or hasPermission(#username,'User', 'PLAN_VIEW')")
 	public List<String> getPlanIdentifiersByUsername(String username) {
 		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
