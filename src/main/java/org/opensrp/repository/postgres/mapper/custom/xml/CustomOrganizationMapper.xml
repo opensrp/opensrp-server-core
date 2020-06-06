@@ -69,6 +69,46 @@
       </foreach>
     </where>
   </sql>
-
+	<resultMap id="resultMap" type="org.opensrp.domain.Organization">    
+	    <id column="id" jdbcType="BIGINT" property="id" />
+	    <result column="identifier" jdbcType="VARCHAR" property="identifier" />
+	    <result column="active" jdbcType="BIT" property="active" />
+	    <result column="name" jdbcType="VARCHAR" property="name" />    
+	    <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted" />
+	    <result column="parent_id" jdbcType="BIGINT" property="partOf" />
+	    <result column="member_count" jdbcType="BIGINT" property="memberCount" />
+	    
+  	</resultMap>
+  	<sql id="query">
+		select o.id,o.identifier,o.date_deleted,o."name",o."type",o.parent_id,count(distinct(pr.id))as member_count 
+		from team.organization as o
+		left join team.practitioner_role as pr on o.id = pr.organization_id
+		left join team.organization_location  ol on ol.organization_id =o.id
+		<where> 	
+			<if test="searchBean.name != null">
+				o."name" = #{searchBean.name,jdbcType=VARCHAR} 
+			</if>
+			<if test="searchBean.locations != null">
+				and ol.location_id in
+				<foreach close=")" collection="searchBean.locations" item="listItem" open="(" separator=",">
+					#{listItem}
+				</foreach>
+			</if>
+		</where>
+		group by o.id,o.identifier,o.date_deleted,o."name",o."type",o.parent_id
+	</sql>
+	<select id="selectSearchOrganizations" resultType="Integer">
+	
+		<include refid="query"/>	
+		<if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
+			order by ${searchBean.orderByFieldName}  ${searchBean.orderByType}  
+		</if>
+		LIMIT #{limit} OFFSET #{offset}	
+	</select>
+	<select id="selectTotalSearchOrganizations" resultMap="resultMap">	
+		select count(id)from (
+		<include refid="query"/>
+		) as total
+	</select>
 
 </mapper>

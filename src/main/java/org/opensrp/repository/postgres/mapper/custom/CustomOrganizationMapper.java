@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Organization;
 import org.opensrp.domain.postgres.OrganizationExample;
 import org.opensrp.repository.postgres.mapper.OrganizationMapper;
+import org.opensrp.search.OrganizationSearchBean;
 
 /**
  * @author Samuel Githengi created on 08/30/19
@@ -25,5 +26,9 @@ public interface CustomOrganizationMapper extends OrganizationMapper {
 	 */
 	List<Organization> selectMany(@Param("example") OrganizationExample example, @Param("offset") int offset,
 			@Param("limit") int limit);
+	
+	List<org.opensrp.domain.Organization> selectSearchOrganizations(@Param("searchBean") OrganizationSearchBean searchBean,
+	                                                                @Param("offset") int offset, @Param("limit") int limit);
 
+	int selectTotalSearchOrganizations(@Param("searchBean") OrganizationSearchBean searchBean);
 }

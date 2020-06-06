@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
+import org.opensrp.search.OrganizationSearchBean;
 
 /**
  * Created by Samuel Githengi on 8/30/19.
@@ -56,5 +57,8 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 * @return list of assigned locations and plans
 	 */
 	List<AssignedLocations> findAssignedLocationsByPlanId(Long planId);
-
+	
+	List<Organization> findSearchOrganizations(OrganizationSearchBean organizationSearchBean);
+	
+	int findTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean);
 }
