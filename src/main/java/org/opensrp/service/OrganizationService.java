@@ -12,6 +12,7 @@ import org.opensrp.domain.Organization;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
+import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -209,5 +210,12 @@ public class OrganizationService {
 	public void setPlanRepository(PlanRepository planRepository) {
 		this.planRepository = planRepository;
 	}
-
+	
+	public List<Organization> getSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
+		return organizationRepository.findSearchOrganizations(organizationSearchBean);
+	}
+	
+	public Integer getTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
+		return organizationRepository.findTotalSearchOrganizations(organizationSearchBean);
+	}
 }

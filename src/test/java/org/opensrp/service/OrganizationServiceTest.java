@@ -30,6 +30,7 @@ import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
+import org.opensrp.search.OrganizationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
@@ -279,5 +280,18 @@ public class OrganizationServiceTest {
 		organizationService.findAssignedLocationsAndPlansByPlanIdentifier("plan-id-1");
 		verify(organizationRepository, never()).findAssignedLocations(anyLong());
 	}
-
+	
+	@Test
+	public void testSearchOrganizationsBySearchParam() {
+		organization.setActive(true);
+		organization.setMemberCount(1);
+		List<Organization> expected = Collections.singletonList(organization);
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		organizationSearchBean.setPageNumber(0);
+		organizationSearchBean.setPageSize(10);
+		when(organizationRepository.findSearchOrganizations(organizationSearchBean)).thenReturn(expected);
+		List<Organization> organizations = organizationService.getSearchOrganizations(organizationSearchBean);
+		verify(organizationRepository).findSearchOrganizations(organizationSearchBean);
+		assertEquals(expected, organizations);
+	}
 }
