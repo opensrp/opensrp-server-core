@@ -6,9 +6,11 @@ package org.opensrp.repository.postgres;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -21,7 +23,15 @@ import org.junit.Test;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Code;
 import org.opensrp.domain.Organization;
+import org.opensrp.domain.Practitioner;
+import org.opensrp.domain.PractitionerRole;
+import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.repository.OrganizationRepository;
+import org.opensrp.repository.PractitionerRepository;
+import org.opensrp.repository.PractitionerRoleRepository;
+import org.opensrp.search.OrganizationSearchBean;
+import org.opensrp.search.OrganizationSearchBean.FieldName;
+import org.opensrp.search.OrganizationSearchBean.OrderByType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -36,7 +46,12 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 
 	@Autowired
 	private OrganizationRepository organizationRepository;
-
+	
+	@Autowired
+	private PractitionerRepository practitionerRepository;
+	
+	@Autowired
+	private PractitionerRoleRepository practitionerRoleRepository;
 	@Override
 	protected Set<String> getDatabaseScripts() {
 		return Collections.singleton("organization.sql");
@@ -211,5 +226,111 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assignedLocations = organizationRepository.findAssignedLocations(Arrays.asList(1l, 2l));
 		assertEquals(3, assignedLocations.size());
 	}
-
+	
+	@Test
+	public void testFindOrganizationsByNameAndLcations() {
+		practitionerRepository.add(initTestPractitioner());
+		practitionerRoleRepository.add(initTestPractitionerRole());
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		organizationSearchBean.setPageNumber(0);
+		organizationSearchBean.setPageSize(10);
+		organizationSearchBean.setName("The Luang");
+		List<Integer> locations = new ArrayList<>();
+		locations.add(2243);
+		locations.add(1);
+		organizationSearchBean.setLocations(locations);
+		List<Organization> organizations = organizationRepository.findSearchOrganizations(organizationSearchBean);
+		assertEquals(1, organizations.size());
+	}
+	
+	@Test
+	public void testFindOrganizationsWithoutSearchParam() {
+		practitionerRepository.add(initTestPractitioner());
+		practitionerRoleRepository.add(initTestPractitionerRole());
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		organizationSearchBean.setPageNumber(0);
+		organizationSearchBean.setPageSize(10);
+		organizationSearchBean.setOrderByFieldName(FieldName.valueOf("name"));
+		organizationSearchBean.setOrderByType(OrderByType.valueOf("ASC"));
+		List<Organization> organizations = organizationRepository.findSearchOrganizations(organizationSearchBean);
+		assertEquals(3, organizations.size());
+	}
+	
+	@Test
+	public void testFindEmptyOrganizationsByNameAndLcations() {
+		practitionerRepository.add(initTestPractitioner());
+		practitionerRoleRepository.add(initTestPractitionerRole());
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		organizationSearchBean.setPageNumber(0);
+		organizationSearchBean.setPageSize(10);
+		organizationSearchBean.setName("The Luang Bell");
+		List<Integer> locations = new ArrayList<>();
+		locations.add(22435);
+		locations.add(1);
+		organizationSearchBean.setLocations(locations);
+		List<Organization> organizations = organizationRepository.findSearchOrganizations(organizationSearchBean);
+		assertTrue(organizations.isEmpty());
+		
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testFindOrganizationsByOrderByFieldNameNotExists() {
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		organizationSearchBean.setPageNumber(0);
+		organizationSearchBean.setPageSize(10);
+		organizationSearchBean.setOrderByFieldName(FieldName.valueOf("names"));
+		organizationSearchBean.setOrderByType(OrderByType.valueOf("ASC"));
+		organizationRepository.findSearchOrganizations(organizationSearchBean);
+		
+	}
+	
+	@Test
+	public void testFindTotalSearchOrganizationsByNameAndLcations() {
+		practitionerRepository.add(initTestPractitioner());
+		practitionerRoleRepository.add(initTestPractitionerRole());
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		organizationSearchBean.setPageNumber(0);
+		organizationSearchBean.setPageSize(10);
+		organizationSearchBean.setName("The Luang");
+		List<Integer> locations = new ArrayList<>();
+		locations.add(2243);
+		locations.add(1);
+		organizationSearchBean.setLocations(locations);
+		int totalCount = organizationRepository.findTotalSearchOrganizations(organizationSearchBean);
+		assertEquals(1, totalCount);
+		
+	}
+	
+	@Test
+	public void testFindTotalSearchOrganizationsWithoutSearchParam() {
+		practitionerRepository.add(initTestPractitioner());
+		practitionerRoleRepository.add(initTestPractitionerRole());
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		
+		int totalCount = organizationRepository.findTotalSearchOrganizations(organizationSearchBean);
+		assertEquals(3, totalCount);
+		
+	}
+	
+	private static PractitionerRole initTestPractitionerRole() {
+		PractitionerRole practitionerRole = new PractitionerRole();
+		practitionerRole.setIdentifier("pr3-identifier");
+		practitionerRole.setActive(true);
+		practitionerRole.setOrganizationIdentifier("fcc19470-d599-11e9-bb65-2a2ae2dbcce4");
+		practitionerRole.setPractitionerIdentifier("practitoner-3-identifier");
+		PractitionerRoleCode code = new PractitionerRoleCode();
+		code.setText("pr3Code");
+		practitionerRole.setCode(code);
+		return practitionerRole;
+	}
+	
+	private Practitioner initTestPractitioner() {
+		Practitioner practitioner = new Practitioner();
+		practitioner.setIdentifier("practitoner-3-identifier");
+		practitioner.setActive(false);
+		practitioner.setName("Third Practitioner");
+		practitioner.setUsername("Practioner3");
+		practitioner.setUserId("user3");
+		return practitioner;
+	}
 }

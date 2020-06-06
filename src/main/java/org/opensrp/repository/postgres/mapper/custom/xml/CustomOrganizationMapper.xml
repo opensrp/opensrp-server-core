@@ -97,7 +97,7 @@
 		</where>
 		group by o.id,o.identifier,o.date_deleted,o."name",o."type",o.parent_id
 	</sql>
-	<select id="selectSearchOrganizations" resultType="Integer">
+	<select id="selectSearchOrganizations" resultMap="resultMap">
 	
 		<include refid="query"/>	
 		<if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
@@ -105,7 +105,7 @@
 		</if>
 		LIMIT #{limit} OFFSET #{offset}	
 	</select>
-	<select id="selectTotalSearchOrganizations" resultMap="resultMap">	
+	<select id="selectTotalSearchOrganizations" resultType="Integer">	
 		select count(id)from (
 		<include refid="query"/>
 		) as total
