@@ -25,9 +25,9 @@ public class LuhnIdentifierValidatorTest {
 	}
 
 	@Test(expected = UnallowedIdentifierException.class)
-	public void testGetCheckDigitWithIncorrectFirstIdentifierBase() {
+	public void testGetCheckDigitWithIncorrectId() {
 		LuhnIdentifierValidator luhnIdentifierValidator = new LuhnIdentifierValidator();
-		luhnIdentifierValidator.getValidIdentifier("A B12",createIdentifierSource());
+		luhnIdentifierValidator.getValidIdentifier("aB12",createIdentifierSource());
 	}
 
 	private IdentifierSource createIdentifierSource() {
