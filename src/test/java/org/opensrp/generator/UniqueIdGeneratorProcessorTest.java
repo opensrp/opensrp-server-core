@@ -42,6 +42,17 @@ public class UniqueIdGeneratorProcessorTest {
 		assertTrue(ids.get(0).contains("-")); //Ensure check digit implementation
 	}
 
+	@Test
+	public void testGetIdentifiersWithFirstIdentifierBase() {
+		Set<String> reservedIds = new HashSet<>();
+		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
+		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
+		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceV2(),5,"");
+		assertTrue(ids.get(0).contains("-")); //Ensure check digit implementation
+		assertTrue(ids.get(0).contains("AA11")); //Ensure first identifier base is returned as it is
+	}
+
 	private UniqueId createUniqueId() {
 		UniqueId uniqueId = new UniqueId();
 		uniqueId.setId(120l);
@@ -58,4 +69,17 @@ public class UniqueIdGeneratorProcessorTest {
 		identifierSource.setIdentifierValidatorAlgorithm(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM);
 		return identifierSource;
 	}
+
+	private IdentifierSource createIdentifierSourceV2() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setId(1l);
+		identifierSource.setIdentifier("Test-1");
+		identifierSource.setBaseCharacterSet("AB12");
+		identifierSource.setMinLength(4);
+		identifierSource.setMaxLength(4);
+		identifierSource.setIdentifierValidatorAlgorithm(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM);
+		identifierSource.setFirstIdentifierBase("AA11");
+		return identifierSource;
+	}
+
 }
