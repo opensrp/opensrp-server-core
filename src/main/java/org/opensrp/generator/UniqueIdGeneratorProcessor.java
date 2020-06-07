@@ -20,6 +20,10 @@ public class UniqueIdGeneratorProcessor {
 	@Autowired
 	private UniqueIdRepository uniqueIdRepository;
 
+	public UniqueIdGeneratorProcessor(UniqueIdRepository uniqueIdRepository) {
+		this.uniqueIdRepository = uniqueIdRepository;
+	}
+
 	public synchronized List<String> getIdentifiers(IdentifierSource identifierSource, int batchSize, String usedBy) {
 
 		UniqueId lastUniqueId = uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(identifierSource.getId());

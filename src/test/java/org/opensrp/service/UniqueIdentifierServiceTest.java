@@ -56,6 +56,18 @@ public class UniqueIdentifierServiceTest {
 		assertEquals(actualIds.get(0),expectedIds.get(0));
 	}
 
+	@Test(expected = Exception.class)
+	public void testGenerateIdentifiersThrowsException() {
+		List<String> expectedIds = new ArrayList<>();
+		expectedIds.add("B2A1-4");
+		Set<String> reservedIds = new HashSet<>();
+		IdentifierSource identifierSource = createIdentifierSource();
+		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
+		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		when(uniqueIdGeneratorProcessor.getIdentifiers(any(IdentifierSource.class),anyInt(),anyString())).thenThrow(new Exception("Exception"));
+		List<String> actualIds = uniqueIdentifierService.generateIdentifiers(identifierSource,1,"test");
+	}
+
 	private IdentifierSource createIdentifierSource() {
 		IdentifierSource identifierSource = new IdentifierSource();
 		identifierSource.setId(1l);
