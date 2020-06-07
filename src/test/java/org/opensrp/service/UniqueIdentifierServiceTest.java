@@ -10,6 +10,7 @@ import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
 import org.opensrp.generator.UniqueIdGeneratorProcessor;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -47,7 +48,7 @@ public class UniqueIdentifierServiceTest {
 		expectedIds.add("B2A1-4");
 		Set<String> reservedIds = new HashSet<>();
 		IdentifierSource identifierSource = createIdentifierSource();
-		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyString())).thenReturn(createUniqueId());
+		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
 		when(uniqueIdGeneratorProcessor.getIdentifiers(any(IdentifierSource.class),anyInt(),anyString())).thenReturn(expectedIds);
 		List<String> actualIds = uniqueIdentifierService.generateIdentifiers(identifierSource,1,"test");

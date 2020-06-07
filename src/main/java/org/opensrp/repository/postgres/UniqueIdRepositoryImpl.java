@@ -82,8 +82,14 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
     }
 
     @Override
-    public UniqueId findByIdentifierSourceOrderByIdDesc(String identifierSource) {
-        return null;
+    public UniqueId findByIdentifierSourceOrderByIdDesc(Long idSource) {
+        UniqueIdExample example = new UniqueIdExample();
+        example.createCriteria().andIdSourceEqualTo(idSource);
+        example.setOrderByClause("id DESC");
+
+        List<org.opensrp.domain.postgres.UniqueId> uniqueIds = uniqueIdMapper.selectByExample(example);
+        List<UniqueId> convertedUniqueIds = convert(uniqueIds);
+        return convertedUniqueIds != null && convertedUniqueIds.size() >= 1 ? convertedUniqueIds.get(0) : null;
     }
 
     @Override
@@ -184,6 +190,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
 
     private UniqueId convert(org.opensrp.domain.postgres.UniqueId pgUniqueId) {
         UniqueId uniqueId = new UniqueId();
+        uniqueId.setId(pgUniqueId.getId());
         uniqueId.setCreatedAt(pgUniqueId.getCreatedAt());
         uniqueId.setLocation(pgUniqueId.getLocation());
         uniqueId.setOpenmrsId(pgUniqueId.getOpenmrsId());

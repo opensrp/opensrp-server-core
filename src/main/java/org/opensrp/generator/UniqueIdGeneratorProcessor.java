@@ -22,7 +22,7 @@ public class UniqueIdGeneratorProcessor {
 
 	public synchronized List<String> getIdentifiers(IdentifierSource identifierSource, int batchSize, String usedBy) {
 
-		UniqueId lastUniqueId = uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(identifierSource.getIdentifier());
+		UniqueId lastUniqueId = uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(identifierSource.getId());
 
 		Long sequenceValue = lastUniqueId != null ? lastUniqueId.getId() : null;
 		if (sequenceValue == null || sequenceValue < 0) {
@@ -88,12 +88,11 @@ public class UniqueIdGeneratorProcessor {
 		identifier = identifierSource.getPrefix() == null ? identifier : identifierSource.getPrefix() + identifier;
 		identifier = (identifierSource.getSuffix() == null ? identifier : identifier + identifierSource.getSuffix());
 
-		if ((identifierSource.getMinLength() != null && identifierSource.getMinLength() > 0)
-				|| (identifierSource.getMaxLength() != null && identifierSource.getMaxLength() > 0)) {
-			if ((identifier.length() < identifierSource.getMinLength()) || (identifier.length() > identifierSource
-					.getMaxLength())) {
-				return null;
-			}
+		if (((identifierSource.getMinLength() != null && identifierSource.getMinLength() > 0)
+				|| (identifierSource.getMaxLength() != null && identifierSource.getMaxLength() > 0))
+				&& ((identifier.length() < identifierSource.getMinLength()) || (identifier.length() > identifierSource
+				.getMaxLength()))) {
+			return null;
 		}
 
 		if (identifierSource.getRegexFormat() != null) {
