@@ -89,15 +89,16 @@ public class UniqueIdGeneratorProcessor {
 				.convertToBase(seed, identifierSource.getBaseCharacterSet().toCharArray(), seqLength,
 						identifierSource.getMinLength());
 
-		identifier = identifierSource.getPrefix() == null ? identifier : identifierSource.getPrefix() + identifier;
-		identifier = (identifierSource.getSuffix() == null ? identifier : identifier + identifierSource.getSuffix());
-
 		if (((identifierSource.getMinLength() != null && identifierSource.getMinLength() > 0)
 				|| (identifierSource.getMaxLength() != null && identifierSource.getMaxLength() > 0))
 				&& ((identifier.length() < identifierSource.getMinLength()) || (identifier.length() > identifierSource
 				.getMaxLength()))) {
 			return null;
 		}
+
+		identifier = identifierSource.getPrefix() == null ? identifier : identifierSource.getPrefix() + identifier;
+		identifier = (identifierSource.getSuffix() == null ? identifier : identifier + identifierSource.getSuffix());
+
 
 		if (identifierSource.getRegexFormat() != null) {
 			return identifier.matches(identifierSource.getRegexFormat()) ?

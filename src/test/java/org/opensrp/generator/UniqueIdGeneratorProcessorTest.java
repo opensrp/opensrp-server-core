@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.repository.UniqueIdRepository;
-import org.opensrp.service.UniqueIdentifierService;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.util.IdentifierValidatorAlgorithm;

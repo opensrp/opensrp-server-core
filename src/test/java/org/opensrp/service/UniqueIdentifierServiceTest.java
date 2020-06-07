@@ -65,7 +65,7 @@ public class UniqueIdentifierServiceTest {
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
 		when(uniqueIdGeneratorProcessor.getIdentifiers(any(IdentifierSource.class),anyInt(),anyString())).thenThrow(new Exception("Exception"));
-		List<String> actualIds = uniqueIdentifierService.generateIdentifiers(identifierSource,1,"test");
+		uniqueIdentifierService.generateIdentifiers(identifierSource,1,"test");
 	}
 
 	private IdentifierSource createIdentifierSource() {
