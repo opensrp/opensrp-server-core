@@ -35,7 +35,7 @@ public class IdGeneratorUtil {
 		long numInBase = (long)baseCharacters.length;
 		long i = n;
 		while (i > 0) {
-			int index = (int)(n % numInBase);
+			int index = (int)(i % numInBase);
 			base.insert(0, baseCharacters[index]);
 			i = i / numInBase;
 		}
