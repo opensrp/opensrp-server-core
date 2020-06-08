@@ -81,6 +81,23 @@ public class PhysicalLocationService {
 			//make existing location inactive
 			physicalLocation.getProperties().setStatus(LocationProperty.PropertyStatus.INACTIVE);
 			locationRepository.update(physicalLocation);
+
+			// create new location
+			PhysicalLocation newPhysicalLocation = new PhysicalLocation();
+			newPhysicalLocation.setGeometry(physicalLocation.getGeometry());
+			newPhysicalLocation.setId(physicalLocation.getId());
+			newPhysicalLocation.setJurisdiction(physicalLocation.isJurisdiction());
+			newPhysicalLocation.setLocationTags(physicalLocation.getLocationTags());
+			newPhysicalLocation.setType(physicalLocation.getType());
+			newPhysicalLocation.setServerVersion(null);
+			LocationProperty newLocationProperty = physicalLocation.getProperties();
+			//increment location version
+			int newVersion = physicalLocation.getProperties().getVersion() + 1;
+			newLocationProperty.setVersion(newVersion);
+			newLocationProperty.setStatus(LocationProperty.PropertyStatus.ACTIVE);
+			newPhysicalLocation.setProperties(newLocationProperty);
+
+			locationRepository.add(newPhysicalLocation);
 		}
 
 	}
