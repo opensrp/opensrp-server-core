@@ -45,12 +45,21 @@ public class UniqueIdGeneratorProcessorTest {
 	@Test
 	public void testGetIdentifiersWithFirstIdentifierBase() {
 		Set<String> reservedIds = new HashSet<>();
-		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
+		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(null);
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
 		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceV2(),5,"");
 		assertTrue(ids.get(0).contains("-")); //Ensure check digit implementation
 		assertTrue(ids.get(0).contains("AA11")); //Ensure first identifier base is returned as it is
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetIdentifiersWithInvalidFirstIdentifierBase() {
+		Set<String> reservedIds = new HashSet<>();
+		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(null);
+		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
+		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceV3(),5,"");
 	}
 
 	private UniqueId createUniqueId() {
@@ -79,6 +88,18 @@ public class UniqueIdGeneratorProcessorTest {
 		identifierSource.setMaxLength(4);
 		identifierSource.setIdentifierValidatorAlgorithm(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM);
 		identifierSource.setFirstIdentifierBase("AA11");
+		return identifierSource;
+	}
+
+	private IdentifierSource createIdentifierSourceV3() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setId(1l);
+		identifierSource.setIdentifier("Test-1");
+		identifierSource.setBaseCharacterSet("AB12");
+		identifierSource.setMinLength(4);
+		identifierSource.setMaxLength(4);
+		identifierSource.setIdentifierValidatorAlgorithm(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM);
+		identifierSource.setFirstIdentifierBase("Aa11");
 		return identifierSource;
 	}
 
