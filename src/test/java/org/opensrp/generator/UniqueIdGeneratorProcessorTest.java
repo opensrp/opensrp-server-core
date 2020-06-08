@@ -59,7 +59,7 @@ public class UniqueIdGeneratorProcessorTest {
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(null);
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
-		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceV3(),5,"");
+		uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceV3(),5,"");
 	}
 
 	private UniqueId createUniqueId() {
