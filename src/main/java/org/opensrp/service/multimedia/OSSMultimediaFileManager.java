@@ -28,7 +28,7 @@ import static org.opensrp.util.Utils.closeCloseable;
 public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager {
 
 	private Logger logger = LoggerFactory.getLogger(OSSMultimediaFileManager.class.toString());
-	private OSSClientBuilder ossClientBuilder = new OSSClientBuilder();
+	private OSSClientBuilder ossClientBuilder;
 	
 	@Autowired
 	public OSSMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
