@@ -32,4 +32,14 @@ public class UniqueIdRepositoryTest extends BaseRepositoryTest{
 		Set<String> reservedIdentifiers = uniqueIdRepository.findReservedIdentifiers();
 		assertEquals(1,reservedIdentifiers.size());
 	}
+
+	@Test(expected = Test.None.class)
+	public void testUpdate() {
+    UniqueId uniqueId = new UniqueId();
+    uniqueId.setId(2l);
+    uniqueId.setIdentifier("AAAA-1");
+    uniqueId.setReserved(Boolean.TRUE);
+    uniqueIdRepository.update(uniqueId);
+
+	}
 }
