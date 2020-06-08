@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.LocationDetail;
+import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
@@ -71,7 +72,15 @@ public class PhysicalLocationService {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
 		physicalLocation.setServerVersion(null);
-		locationRepository.update(physicalLocation);
+		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndStatus(physicalLocation.getId(),
+				LocationProperty.PropertyStatus.ACTIVE.name());
+		boolean locationHasUpdates = locationRepository.isGeometryCoordsEqual(physicalLocation, existingEntity);
+		if (!locationHasUpdates){
+			locationRepository.update(physicalLocation);
+		} else {
+			//handle location with updates
+		}
+
 	}
 	
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {

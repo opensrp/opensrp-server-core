@@ -482,9 +482,20 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 	@Override
 	public boolean isGeometryCoordsEqual(PhysicalLocation newEntity, PhysicalLocation existingEntity) {
+		if (newEntity == null || existingEntity == null) {
+			return false;
+		}
 		JsonElement newGeometryCoordsElement = JsonParser.parseString(newEntity.getGeometry().getCoordinates().toString());
 		JsonElement existingGeometryCoordsElement = JsonParser.parseString(existingEntity.getGeometry().getCoordinates().toString());
 		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
+	}
+
+	@Override
+	public PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status) {
+		Location location = locationMetadataMapper.findByIdAndStatus(identifier, true,
+				LocationProperty.PropertyStatus.ACTIVE.name());
+		PhysicalLocation locationEntity  = convert(location);
+		return locationEntity;
 	}
 
 	@Override
