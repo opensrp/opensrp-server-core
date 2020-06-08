@@ -29,14 +29,15 @@ public class IdentifierSourceService {
 	public IdentifierSource findByIdentifier(String identifier) {
 		return identifierSourceRepository.findByIdentifier(identifier);
 	}
-	
-	public void addOrUpdate(IdentifierSource identifierSource) {
+
+	public void add(IdentifierSource identifierSource) {
 		validateFields(identifierSource);
-		if (identifierSource.getId() != null && identifierSource.getId() != 0) {
-			identifierSourceRepository.update(identifierSource);
-		} else {
-			identifierSourceRepository.add(identifierSource);
-		}
+		identifierSourceRepository.add(identifierSource);
+	}
+
+	public void update(IdentifierSource identifierSource) {
+		validateFields(identifierSource);
+		identifierSourceRepository.update(identifierSource);
 	}
 
 	private void validateFields(IdentifierSource identifierSource) {

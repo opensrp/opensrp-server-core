@@ -262,6 +262,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         pgUniqueId.setOpenmrsId(uniqueId.getOpenmrsId());
         pgUniqueId.setStatus(uniqueId.getStatus());
         pgUniqueId.setUsedBy(uniqueId.getUsedBy());
+        pgUniqueId.setUpdatedAt(uniqueId.getUpdatedAt());
         pgUniqueId.setIdentifier(uniqueId.getIdentifier());
         pgUniqueId.setIdSource(uniqueId.getIdSource());
         pgUniqueId.setIsReserved(uniqueId.isReserved());

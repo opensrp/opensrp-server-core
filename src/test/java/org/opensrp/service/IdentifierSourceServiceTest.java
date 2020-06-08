@@ -45,7 +45,7 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 		identifierSource.setMinLength(4);
 		identifierSource.setMaxLength(5);
 		identifierSource.setIdentifier("Test-Id-Source");
-		identifierSourceService.addOrUpdate(identifierSource);
+		identifierSourceService.add(identifierSource);
 		assertEquals(2,identifierSourceService.findAllIdentifierSources().size());  // 1 added through script
 		IdentifierSource savedIdentifierSource = identifierSourceService.findByIdentifier("Test-Id-Source");
 		assertNotNull(savedIdentifierSource.getId());
@@ -62,7 +62,7 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 	public void testUpdate() {
 		IdentifierSource updatedIdentifierSource = identifierSourceService.findByIdentifier("Test Identifier");
 		updatedIdentifierSource.setDescription("Test Updated");
-		identifierSourceService.addOrUpdate(updatedIdentifierSource);
+		identifierSourceService.update(updatedIdentifierSource);
 		IdentifierSource idSource = identifierSourceService.findByIdentifier("Test Identifier");
 		assertNotNull(idSource.getId());
 		assertEquals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM.name(), idSource.getIdentifierValidatorAlgorithm().name());
@@ -76,7 +76,7 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 		identifierSource.setMinLength(4);
 		identifierSource.setMaxLength(5);
 		identifierSource.setIdentifier("");
-		identifierSourceService.addOrUpdate(identifierSource);
+		identifierSourceService.add(identifierSource);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -86,7 +86,7 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 		identifierSource.setMinLength(4);
 		identifierSource.setMaxLength(5);
 		identifierSource.setIdentifier("Test-1");
-		identifierSourceService.addOrUpdate(identifierSource);
+		identifierSourceService.add(identifierSource);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -95,7 +95,7 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 		identifierSource.setBaseCharacterSet("AB12");
 		identifierSource.setMaxLength(5);
 		identifierSource.setIdentifier("Test-1");
-		identifierSourceService.addOrUpdate(identifierSource);
+		identifierSourceService.add(identifierSource);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -104,7 +104,7 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 		identifierSource.setBaseCharacterSet("AB12");
 		identifierSource.setMinLength(4);
 		identifierSource.setIdentifier("Test-1");
-		identifierSourceService.addOrUpdate(identifierSource);
+		identifierSourceService.add(identifierSource);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -114,7 +114,7 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 		identifierSource.setMinLength(17);
 		identifierSource.setMaxLength(10);
 		identifierSource.setIdentifier("Test-1");
-		identifierSourceService.addOrUpdate(identifierSource);
+		identifierSourceService.add(identifierSource);
 	}
 
 
