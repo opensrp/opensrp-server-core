@@ -37,7 +37,7 @@ public class UniqueIdRepositoryTest extends BaseRepositoryTest{
 	public void testUpdate() {
     UniqueId uniqueId = new UniqueId();
     uniqueId.setId(2l);
-    uniqueId.setOpenmrsId("krdai");
+    uniqueId.setOpenmrsId("");
     uniqueId.setIdentifier("AAAA-1");
     uniqueId.setReserved(Boolean.TRUE);
     uniqueIdRepository.update(uniqueId);
