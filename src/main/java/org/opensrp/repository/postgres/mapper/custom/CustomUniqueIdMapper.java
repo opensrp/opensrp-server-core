@@ -13,4 +13,6 @@ public interface CustomUniqueIdMapper extends UniqueIdMapper {
 
     List<String> selectManyIds(@Param("example") UniqueIdExample uniqueIdExample,
                                  @Param("offset") int offset, @Param("limit") int limit);
+
+    int insertSelectiveAndSetId(UniqueId record);
 }
