@@ -86,12 +86,11 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 
 		IdentifierSourceExample identifierSourceExample = new IdentifierSourceExample();
 		IdentifierSourceExample.Criteria criteria = identifierSourceExample.createCriteria();
-        if(entity.getId() != null && entity.getId() != 0) {
-	        criteria.andIdEqualTo(entity.getId());
-        }
-		else {
+		if (entity.getId() != null && entity.getId() != 0) {
+			criteria.andIdEqualTo(entity.getId());
+		} else {
 			criteria.andIdentifierEqualTo(entity.getIdentifier());
-        }
+		}
 
 		org.opensrp.domain.postgres.IdentifierSource identifierSource = customIdentifierSourceMapper
 				.selectOne(identifierSourceExample);
