@@ -494,7 +494,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction) {
 		
 		if (isJurisdiction) {
-			Location pgEntity = locationMetadataMapper.findById(identifier, true);
+			Location pgEntity = locationMetadataMapper.findByIdAndStatus(identifier, true, LocationProperty.PropertyStatus.ACTIVE.name());
 			if (pgEntity == null) {
 				return null;
 			}
