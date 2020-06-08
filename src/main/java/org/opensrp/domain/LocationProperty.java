@@ -36,7 +36,7 @@ public class LocationProperty {
 
 	private Date effectiveEndDate;
 
-	private int version;
+	private int version = 1;
 
 	private transient Map<String, String> customProperties = new HashMap<>();
 

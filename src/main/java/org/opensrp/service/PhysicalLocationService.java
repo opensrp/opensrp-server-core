@@ -78,7 +78,9 @@ public class PhysicalLocationService {
 		if (!locationHasUpdates){
 			locationRepository.update(physicalLocation);
 		} else {
-			//handle location with updates
+			//make existing location inactive
+			physicalLocation.getProperties().setStatus(LocationProperty.PropertyStatus.INACTIVE);
+			locationRepository.update(physicalLocation);
 		}
 
 	}
