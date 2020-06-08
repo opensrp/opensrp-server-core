@@ -68,5 +68,55 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 		assertEquals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM.name(), idSource.getIdentifierValidatorAlgorithm().name());
 		assertEquals("Test Updated", idSource.getDescription());
 	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddIdentifierSourceWithBlankIdentifier() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setBaseCharacterSet("AB12");
+		identifierSource.setMinLength(4);
+		identifierSource.setMaxLength(5);
+		identifierSource.setIdentifier("");
+		identifierSourceService.addOrUpdate(identifierSource);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddIdentifierSourceWithEmptyBaseCharacterSet() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setBaseCharacterSet("");
+		identifierSource.setMinLength(4);
+		identifierSource.setMaxLength(5);
+		identifierSource.setIdentifier("Test-1");
+		identifierSourceService.addOrUpdate(identifierSource);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddIdentifierSourceWithEmptyMinLength() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setBaseCharacterSet("AB12");
+		identifierSource.setMaxLength(5);
+		identifierSource.setIdentifier("Test-1");
+		identifierSourceService.addOrUpdate(identifierSource);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddIdentifierSourceWithEmptyMaxLength() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setBaseCharacterSet("AB12");
+		identifierSource.setMinLength(4);
+		identifierSource.setIdentifier("Test-1");
+		identifierSourceService.addOrUpdate(identifierSource);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddIdentifierSourceWithInvalidMinLength() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setBaseCharacterSet("AB12");
+		identifierSource.setMinLength(17);
+		identifierSource.setMaxLength(10);
+		identifierSource.setIdentifier("Test-1");
+		identifierSourceService.addOrUpdate(identifierSource);
+	}
+
+
 	
 }
