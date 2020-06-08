@@ -115,7 +115,7 @@
         SELECT *
         FROM core.manifest
         WHERE app_id = #{appId,jdbcType=VARCHAR}
-        ORDER BY app_version DESC, created_at DESC
+        ORDER BY app_version DESC, created_at DESC LIMIT 10
     </select>
 
     <select id="selectByAppIdAndAppVersion"  parameterType="map"
