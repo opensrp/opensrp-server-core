@@ -54,6 +54,8 @@ public class UniqueIdGeneratorProcessor {
 					.getValidIdentifier(prefix + firstIdentifierBase + suffix, identifierSource));
 		}
 
+		String previousId = "";
+
 		for (int i = 0; i < numbersToGenerate; ) {
 			identifier = getIdentifierForSeed(sequenceValue, identifierSource);
 			logger.info("Identifier from processor is " +  identifier);
@@ -65,7 +67,10 @@ public class UniqueIdGeneratorProcessor {
 						.equals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM)) {
 					identifier = luhnIdentifierValidator.getValidIdentifier(identifier, identifierSource);
 				}
-				identifiers.add(identifier);
+				if (!identifier.equals(previousId)) {
+					identifiers.add(identifier);
+					previousId = identifier;
+				}
 				i++;
 			}
 			sequenceValue++;
