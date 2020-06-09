@@ -621,6 +621,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			if (entity.getProperties().getStatus() != null) {
 				locationMetadata.setStatus(entity.getProperties().getStatus().name());
 			}
+			locationMetadata.setVersion(entity.getProperties().getVersion());
 		}
 		locationMetadata.setServerVersion(entity.getServerVersion());
 		return locationMetadata;
