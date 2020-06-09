@@ -150,5 +150,17 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 
 	boolean isGeometryCoordsEqual(PhysicalLocation newEntity, PhysicalLocation existingEntity);
 
-	PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status);
+	PhysicalLocation findLocationByIdentifierAndVersion(String identifier, int version);
+
+	/**
+	 * Gets the location primary key
+	 * @param identifier of of the location
+	 * @param isJurisdiction whether the to search for jurisdiction or structure
+	 * @param version version of the location
+	 * @return the numerical primary key of a jurisdiction
+	 */
+	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction, int version);
+
+
+	PhysicalLocation get(String id, boolean returnGeometry, int version);
 }

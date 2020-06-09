@@ -38,7 +38,7 @@ public class PhysicalLocationService {
 	}
 	
 	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
-		return locationRepository.get(id, returnGeometry);
+		return locationRepository.get(id, returnGeometry, 0);
 	}
 	
 	public PhysicalLocation getStructure(String id, boolean returnGeometry) {
@@ -72,8 +72,7 @@ public class PhysicalLocationService {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
 		physicalLocation.setServerVersion(null);
-		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndStatus(physicalLocation.getId(),
-				LocationProperty.PropertyStatus.ACTIVE.name());
+		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndVersion(physicalLocation.getId(), physicalLocation.getProperties().getVersion());
 		boolean locationHasNoUpdates = locationRepository.isGeometryCoordsEqual(physicalLocation, existingEntity);
 		if (locationHasNoUpdates){
 			locationRepository.update(physicalLocation);

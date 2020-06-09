@@ -296,7 +296,7 @@
         
     </select>
 
-	<select id="findByIdAndStatus" parameterType="java.lang.String"
+	<select id="findByIdAndVersion" parameterType="java.lang.String"
 			resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
 		select
 		<if test="geometry">
@@ -309,7 +309,7 @@
 		from core.location_metadata lm
 		join core.location l on lm.location_id = l.id
 		where lm.geojson_id = #{id,jdbcType=VARCHAR}
-		and lm.status = #{status,jdbcType=VARCHAR}
+		and lm.version = #{version,jdbcType=INTEGER}
 	</select>
 
 </mapper>

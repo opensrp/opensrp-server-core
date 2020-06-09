@@ -416,7 +416,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		    limit);
 		return convert(locations);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -491,9 +491,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status) {
-		Location location = locationMetadataMapper.findByIdAndStatus(identifier, true,
-				LocationProperty.PropertyStatus.ACTIVE.name());
+	public PhysicalLocation findLocationByIdentifierAndVersion(String identifier, int version) {
+		Location location = locationMetadataMapper.findByIdAndVersion(identifier, true, version);
 		PhysicalLocation locationEntity  = convert(location);
 		return locationEntity;
 	}
@@ -507,14 +506,20 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		String identifier = uniqueId.toString();
 		
-		return retrievePrimaryKey(identifier, entity.isJurisdiction());
+		return retrievePrimaryKey(identifier, entity.isJurisdiction(), entity.getProperties().getVersion());
+	}
+
+	@Override
+	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction) {
+
+		return null;
 	}
 	
 	@Override
-	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction) {
+	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction, int version) {
 		
 		if (isJurisdiction) {
-			Location pgEntity = locationMetadataMapper.findByIdAndStatus(identifier, true, LocationProperty.PropertyStatus.ACTIVE.name());
+			Location pgEntity = locationMetadataMapper.findByIdAndVersion(identifier, true, version);
 			if (pgEntity == null) {
 				return null;
 			}
@@ -527,7 +532,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			return pgEntity.getId();
 		}
 	}
-	
+
+	@Override
+	public PhysicalLocation get(String id, boolean returnGeometry, int version) {
+		return convert(locationMetadataMapper.findByIdAndVersion(id, true, version));
+	}
+
 	@Override
 	protected Object getUniqueField(PhysicalLocation entity) {
 		if (entity == null) {
