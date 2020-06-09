@@ -63,4 +63,73 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
+    <insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.UniqueId"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+    insert into core.unique_id
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="id != null">
+            id,
+        </if>
+        <if test="location != null">
+            location,
+        </if>
+        <if test="openmrsId != null">
+            openmrs_id,
+        </if>
+        <if test="status != null">
+            status,
+        </if>
+        <if test="usedBy != null">
+            used_by,
+        </if>
+        <if test="updatedAt != null">
+            updated_at,
+        </if>
+        <if test="createdAt != null">
+            created_at,
+        </if>
+        <if test="identifier != null">
+            identifier,
+        </if>
+        <if test="idSource != null">
+            id_source,
+        </if>
+        <if test="isReserved != null">
+            is_reserved,
+        </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+        <if test="id != null">
+            #{id,jdbcType=BIGINT},
+        </if>
+        <if test="location != null">
+            #{location,jdbcType=VARCHAR},
+        </if>
+        <if test="openmrsId != null">
+            #{openmrsId,jdbcType=VARCHAR},
+        </if>
+        <if test="status != null">
+            #{status,jdbcType=VARCHAR},
+        </if>
+        <if test="usedBy != null">
+            #{usedBy,jdbcType=VARCHAR},
+        </if>
+        <if test="updatedAt != null">
+            #{updatedAt,jdbcType=TIMESTAMP},
+        </if>
+        <if test="createdAt != null">
+            #{createdAt,jdbcType=TIMESTAMP},
+        </if>
+        <if test="identifier != null">
+            #{identifier,jdbcType=VARCHAR},
+        </if>
+        <if test="idSource != null">
+            #{idSource,jdbcType=BIGINT},
+        </if>
+        <if test="isReserved != null">
+            #{isReserved,jdbcType=BIT},
+        </if>
+    </trim>
+    </insert>
+
 </mapper>
