@@ -510,12 +510,6 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction) {
-
-		return null;
-	}
-	
-	@Override
 	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction, int version) {
 		
 		if (isJurisdiction) {
