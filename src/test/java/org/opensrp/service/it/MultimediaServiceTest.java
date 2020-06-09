@@ -214,7 +214,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 
 	@Test
 	public void testRetrieveFileShouldCallFileManager() {
-		BaseMultimediaFileManager fileManager = mock(FileSystemMultimediaFileManager.class);
+		MultimediaFileManager fileManager = mock(FileSystemMultimediaFileManager.class);
 		multimediaService.setFileManager(fileManager);
 		multimediaService.retrieveFile("file_path");
 		verify(fileManager).retrieveFile(eq("file_path"));
@@ -222,7 +222,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 
 	@Test
 	public void testSaveFileShouldCallFileManager() {
-		BaseMultimediaFileManager fileManager = mock(FileSystemMultimediaFileManager.class);
+		MultimediaFileManager fileManager = mock(FileSystemMultimediaFileManager.class);
 		multimediaService.setFileManager(fileManager);
 
 		byte[] testBytes = new byte[10];
