@@ -441,7 +441,9 @@
 					<excludes>
 						<exclude>**/it/**</exclude>
 					</excludes>
-
+					<systemPropertyVariables>
+						<spring.profiles.active>FileSystem</spring.profiles.active>
+					</systemPropertyVariables>
 				</configuration>
 			</plugin>
 			<plugin>
