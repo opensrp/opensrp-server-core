@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -69,5 +70,12 @@ public class UtilTest extends TestResourceLoader {
 		String path = getFullPath("sampleXLS/invalidXLS.xls");
 		Utils.getXlsToJson(path);
 	}
-	
+
+    @Test(expected = Test.None.class)
+    public void testCloseCloseable() {
+        final Closeable closeable = () -> {
+
+		};
+        Utils.closeCloseable(closeable);
+    }
 }
