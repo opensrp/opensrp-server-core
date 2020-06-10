@@ -44,6 +44,7 @@
             )
             SELECT ol.organization_id  FROM locations l
             inner join team.organization_location ol on ol.location_id = l.location_id
+            where current_date >= ol.from_date and (to_date is null or to_date  > current_date)
         )
     </select>
 
