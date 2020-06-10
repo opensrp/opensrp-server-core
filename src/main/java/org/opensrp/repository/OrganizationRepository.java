@@ -17,7 +17,7 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 *
 	 * @return
 	 */
-	List<Organization> selectOrganizationsEncompassLocations(String location_id);
+	List<Organization> selectOrganizationsEncompassLocations(String location_id, Date activeDate);
 
 	/**
 	 * Assign jurisdiction and or plan to a organization

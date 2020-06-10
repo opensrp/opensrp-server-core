@@ -115,8 +115,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 
 	@Override
-	public List<Organization> selectOrganizationsEncompassLocations(String location_id) {
-		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectOrganizationsEncompassLocations(location_id);
+	public List<Organization> selectOrganizationsEncompassLocations(String location_id, Date activeDate) {
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectOrganizationsEncompassLocations(location_id, activeDate);
 		return convert(organizations);
 	}
 

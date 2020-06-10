@@ -13,12 +13,15 @@ import org.opensrp.repository.OrganizationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -130,10 +133,12 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testSelectOrganizationsEncompassLocations() {
+	public void testSelectOrganizationsEncompassLocations() throws ParseException {
 		String jurisdiction = "304cbcd4-0850-404a-a8b1-486b02f7b84d";
-		List<Organization> organizations = organizationRepository.selectOrganizationsEncompassLocations(jurisdiction);
-		assertEquals(organizations.size() , 0);
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+		Date date = format.parse("2019-12-10 20:20:20");
+		List<Organization> organizations = organizationRepository.selectOrganizationsEncompassLocations(jurisdiction, date);
+		assertEquals(organizations.size() , 2);
 	}
 
 	@Test

@@ -42,7 +42,7 @@ public class OrganizationService {
 	 * @return all organizations
 	 */
 	public List<Organization> selectOrganizationsEncompassLocations(String location_id) {
-		return organizationRepository.selectOrganizationsEncompassLocations(location_id);
+		return organizationRepository.selectOrganizationsEncompassLocations(location_id, new Date());
 	}
 
 	/**
