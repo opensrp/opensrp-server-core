@@ -133,7 +133,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 	public void testSelectOrganizationsEncompassLocations() {
 		String jurisdiction = "304cbcd4-0850-404a-a8b1-486b02f7b84d";
 		List<Organization> organizations = organizationRepository.selectOrganizationsEncompassLocations(jurisdiction);
-		assertEquals(organizations.size() , 2);
+		assertEquals(organizations.size() , 0);
 	}
 
 	@Test
