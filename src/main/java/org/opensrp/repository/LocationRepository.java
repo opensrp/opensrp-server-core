@@ -170,4 +170,20 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @return returns a count of locations matching the passed parameters
 	 */
 	Long countLocationsByNames(String locationNames, long serverVersion);
+
+	boolean isGeometryCoordsEqual(PhysicalLocation newEntity, PhysicalLocation existingEntity);
+
+	PhysicalLocation findLocationByIdentifierAndVersion(String identifier, int version);
+
+	/**
+	 * Gets the location primary key
+	 * @param identifier of of the location
+	 * @param isJurisdiction whether the to search for jurisdiction or structure
+	 * @param version version of the location
+	 * @return the numerical primary key of a jurisdiction
+	 */
+	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction, int version);
+
+
+	PhysicalLocation get(String id, boolean returnGeometry, int version);
 }

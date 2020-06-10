@@ -13,6 +13,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.LocationDetail;
+import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
@@ -37,7 +38,7 @@ public class PhysicalLocationService {
 	}
 	
 	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
-		return locationRepository.get(id, returnGeometry);
+		return locationRepository.get(id, returnGeometry, 0);
 	}
 	
 	public PhysicalLocation getStructure(String id, boolean returnGeometry) {
@@ -71,7 +72,33 @@ public class PhysicalLocationService {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
 		physicalLocation.setServerVersion(null);
-		locationRepository.update(physicalLocation);
+		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndVersion(physicalLocation.getId(), physicalLocation.getProperties().getVersion());
+		boolean locationHasNoUpdates = locationRepository.isGeometryCoordsEqual(physicalLocation, existingEntity);
+		if (locationHasNoUpdates){
+			locationRepository.update(physicalLocation);
+		} else {
+			//make existing location inactive
+			physicalLocation.getProperties().setStatus(LocationProperty.PropertyStatus.INACTIVE);
+			locationRepository.update(physicalLocation);
+
+			// create new location
+			PhysicalLocation newPhysicalLocation = new PhysicalLocation();
+			newPhysicalLocation.setGeometry(physicalLocation.getGeometry());
+			newPhysicalLocation.setId(physicalLocation.getId());
+			newPhysicalLocation.setJurisdiction(physicalLocation.isJurisdiction());
+			newPhysicalLocation.setLocationTags(physicalLocation.getLocationTags());
+			newPhysicalLocation.setType(physicalLocation.getType());
+			newPhysicalLocation.setServerVersion(null);
+			LocationProperty newLocationProperty = physicalLocation.getProperties();
+			//increment location version
+			int newVersion = physicalLocation.getProperties().getVersion() + 1;
+			newLocationProperty.setVersion(newVersion);
+			newLocationProperty.setStatus(LocationProperty.PropertyStatus.ACTIVE);
+			newPhysicalLocation.setProperties(newLocationProperty);
+
+			locationRepository.add(newPhysicalLocation);
+		}
+
 	}
 	
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {

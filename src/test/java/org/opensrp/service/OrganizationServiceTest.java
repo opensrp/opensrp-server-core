@@ -146,7 +146,7 @@ public class OrganizationServiceTest {
 		Long locationId = 123l;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
-		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
+		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, null, null);
 		Date date = new Date();
@@ -175,7 +175,7 @@ public class OrganizationServiceTest {
 		Long planId = null;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
-		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
+		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
 		Date dateFrom = new Date();
 		Date dateTo = null;
@@ -194,7 +194,7 @@ public class OrganizationServiceTest {
 		Long planId = 19871l;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
-		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
+		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
 		Date dateFrom = new Date();
 		Date dateTo = null;

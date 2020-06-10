@@ -8,11 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
+import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
@@ -226,7 +229,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andStatusEqualTo(
+				LocationProperty.PropertyStatus.ACTIVE.name());
 		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
@@ -237,7 +241,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria()
 		        .andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames, ",")))
-		        .andServerVersionGreaterThanOrEqualTo(serverVersion);
+		        .andServerVersionGreaterThanOrEqualTo(serverVersion).andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
 		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
@@ -412,7 +416,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		    limit);
 		return convert(locations);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -510,6 +514,24 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return locationMetadataMapper.countByExample(locationMetadataExample);
 	}
 
+
+	@Override
+	public boolean isGeometryCoordsEqual(PhysicalLocation newEntity, PhysicalLocation existingEntity) {
+		if (newEntity == null || existingEntity == null) {
+			return false;
+		}
+		JsonElement newGeometryCoordsElement = JsonParser.parseString(newEntity.getGeometry().getCoordinates().toString());
+		JsonElement existingGeometryCoordsElement = JsonParser.parseString(existingEntity.getGeometry().getCoordinates().toString());
+		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
+	}
+
+	@Override
+	public PhysicalLocation findLocationByIdentifierAndVersion(String identifier, int version) {
+		Location location = locationMetadataMapper.findByIdAndVersion(identifier, true, version);
+		PhysicalLocation locationEntity  = convert(location);
+		return locationEntity;
+	}
+
 	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);
@@ -519,14 +541,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		String identifier = uniqueId.toString();
 		
-		return retrievePrimaryKey(identifier, entity.isJurisdiction());
+		return retrievePrimaryKey(identifier, entity.isJurisdiction(), entity.getProperties().getVersion());
 	}
-	
+
 	@Override
-	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction) {
+	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction, int version) {
 		
 		if (isJurisdiction) {
-			Location pgEntity = locationMetadataMapper.findById(identifier, true);
+			Location pgEntity = locationMetadataMapper.findByIdAndVersion(identifier, true, version);
 			if (pgEntity == null) {
 				return null;
 			}
@@ -539,7 +561,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			return pgEntity.getId();
 		}
 	}
-	
+
+	@Override
+	public PhysicalLocation get(String id, boolean returnGeometry, int version) {
+		return convert(locationMetadataMapper.findByIdAndVersion(id, true, version));
+	}
+
 	@Override
 	protected Object getUniqueField(PhysicalLocation entity) {
 		if (entity == null) {
@@ -633,6 +660,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			if (entity.getProperties().getStatus() != null) {
 				locationMetadata.setStatus(entity.getProperties().getStatus().name());
 			}
+			locationMetadata.setVersion(entity.getProperties().getVersion());
 		}
 		locationMetadata.setServerVersion(entity.getServerVersion());
 		return locationMetadata;
