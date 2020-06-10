@@ -37,7 +37,7 @@ public class ObjectStorageMultimediaFileManagerTest extends BaseMultimediaFileMa
 
 			@Override
 			protected void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException {
-
+               // do nothing
 			}
 
 			@Override
