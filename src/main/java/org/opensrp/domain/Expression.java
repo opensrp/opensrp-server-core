@@ -11,8 +11,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class Trigger {
-    private String type;
+public class Expression {
     private String name;
-    private Expression expression;
+    private String language;
+    private String expression;
 }

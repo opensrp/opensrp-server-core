@@ -14,5 +14,5 @@ import lombok.ToString;
 public class Condition {
 
     private String kind;
-    private String expression;
+    private Expression expression;
 }
