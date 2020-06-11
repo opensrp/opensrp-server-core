@@ -300,4 +300,14 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             }
         }
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Long countPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion) {
+        PlanExample planExample = new PlanExample();
+        planExample.createCriteria().andIdentifierIn(planIdentifiers).andServerVersionGreaterThanOrEqualTo(serverVersion);
+        return planMapper.countByExample(planExample);
+    }
 }
