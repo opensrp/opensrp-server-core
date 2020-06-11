@@ -322,50 +322,16 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	private Criteria populateEventSearchCriteria(EventSearchBean eventSearchBean, EventMetadataExample example){
 		Criteria criteria = example.createCriteria();
 
-		if (StringUtils.isNotEmpty(eventSearchBean.getTeam())) {
-			if (eventSearchBean.getTeam().contains(",")) {
-				String[] teamsArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getTeam(), ",");
-				criteria.andTeamIn(Arrays.asList(teamsArray));
-			} else {
-				criteria.andTeamEqualTo(eventSearchBean.getTeam());
-			}
-		}
+		addTeamCriteria(criteria, eventSearchBean);
 
-		if (StringUtils.isNotEmpty(eventSearchBean.getTeamId())) {
-			if (eventSearchBean.getTeamId().contains(",")) {
-				String[] teamsArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getTeamId(), ",");
-				criteria.andTeamIdIn(Arrays.asList(teamsArray));
-			} else {
-				criteria.andTeamIdEqualTo(eventSearchBean.getTeamId());
-			}
-		}
+		addTeamIdCriteria(criteria, eventSearchBean);
 
-		if (StringUtils.isNotEmpty(eventSearchBean.getProviderId())) {
-			if (eventSearchBean.getProviderId().contains(",")) {
-				String[] providersArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getProviderId(),
-						",");
-				criteria.andProviderIdIn(Arrays.asList(providersArray));
-			} else {
-				criteria.andProviderIdEqualTo(eventSearchBean.getProviderId());
-			}
-		}
-		if (StringUtils.isNotEmpty(eventSearchBean.getLocationId())) {
-			if (eventSearchBean.getLocationId().contains(",")) {
-				String[] locationArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getLocationId(),
-						",");
-				criteria.andLocationIdIn(Arrays.asList(locationArray));
-			} else {
-				criteria.andLocationIdEqualTo(eventSearchBean.getLocationId());
-			}
-		}
-		if (StringUtils.isNotEmpty(eventSearchBean.getBaseEntityId())) {
-			if (eventSearchBean.getBaseEntityId().contains(",")) {
-				String[] idsArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getBaseEntityId(), ",");
-				criteria.andBaseEntityIdIn(Arrays.asList(idsArray));
-			} else {
-				criteria.andBaseEntityIdEqualTo(eventSearchBean.getBaseEntityId());
-			}
-		}
+		addProviderIdCriteria(criteria, eventSearchBean);
+
+		addLocationIdCriteria(criteria, eventSearchBean);
+
+		addBaseEntityCriteria(criteria, eventSearchBean);
+
 		if (eventSearchBean.getServerVersion() != null)
 			criteria.andServerVersionGreaterThanOrEqualTo(eventSearchBean.getServerVersion());
 
@@ -375,6 +341,63 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		if (!criteria.isValid())
 			throw new IllegalArgumentException("Atleast one search filter must be specified");
 		return criteria;
+	}
+
+	private void addTeamCriteria(Criteria criteria, EventSearchBean eventSearchBean) {
+		if (StringUtils.isNotEmpty(eventSearchBean.getTeam())) {
+			if (eventSearchBean.getTeam().contains(",")) {
+				String[] teamsArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getTeam(), ",");
+				criteria.andTeamIn(Arrays.asList(teamsArray));
+			} else {
+				criteria.andTeamEqualTo(eventSearchBean.getTeam());
+			}
+		}
+	}
+
+	private void addTeamIdCriteria(Criteria criteria, EventSearchBean eventSearchBean) {
+		if (StringUtils.isNotEmpty(eventSearchBean.getTeamId())) {
+			if (eventSearchBean.getTeamId().contains(",")) {
+				String[] teamsArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getTeamId(), ",");
+				criteria.andTeamIdIn(Arrays.asList(teamsArray));
+			} else {
+				criteria.andTeamIdEqualTo(eventSearchBean.getTeamId());
+			}
+		}
+	}
+
+	private void addProviderIdCriteria(Criteria criteria, EventSearchBean eventSearchBean) {
+		if (StringUtils.isNotEmpty(eventSearchBean.getProviderId())) {
+			if (eventSearchBean.getProviderId().contains(",")) {
+				String[] providersArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getProviderId(),
+						",");
+				criteria.andProviderIdIn(Arrays.asList(providersArray));
+			} else {
+				criteria.andProviderIdEqualTo(eventSearchBean.getProviderId());
+			}
+		}
+	}
+
+	private void addLocationIdCriteria(Criteria criteria, EventSearchBean eventSearchBean) {
+		if (StringUtils.isNotEmpty(eventSearchBean.getLocationId())) {
+			if (eventSearchBean.getLocationId().contains(",")) {
+				String[] locationArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getLocationId(),
+						",");
+				criteria.andLocationIdIn(Arrays.asList(locationArray));
+			} else {
+				criteria.andLocationIdEqualTo(eventSearchBean.getLocationId());
+			}
+		}
+	}
+
+	private void addBaseEntityCriteria(Criteria criteria, EventSearchBean eventSearchBean) {
+		if (StringUtils.isNotEmpty(eventSearchBean.getBaseEntityId())) {
+			if (eventSearchBean.getBaseEntityId().contains(",")) {
+				String[] idsArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getBaseEntityId(), ",");
+				criteria.andBaseEntityIdIn(Arrays.asList(idsArray));
+			} else {
+				criteria.andBaseEntityIdEqualTo(eventSearchBean.getBaseEntityId());
+			}
+		}
 	}
 
 	/**
