@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Matchers.any;
@@ -62,6 +63,16 @@ public class UniqueIdGeneratorProcessorTest {
 		uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceV3(),5,"");
 	}
 
+	@Test
+	public void testGetIdentifiersWithIdSourceA() {
+		Set<String> reservedIds = new HashSet<>();
+		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
+		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
+		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceA(),5,"");
+		assertEquals(ids.size(),5);
+	}
+
 	private UniqueId createUniqueId() {
 		UniqueId uniqueId = new UniqueId();
 		uniqueId.setId(120l);
@@ -100,6 +111,19 @@ public class UniqueIdGeneratorProcessorTest {
 		identifierSource.setMaxLength(4);
 		identifierSource.setIdentifierValidatorAlgorithm(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM);
 		identifierSource.setFirstIdentifierBase("Aa11");
+		return identifierSource;
+	}
+
+	private IdentifierSource createIdentifierSourceA() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setId(1l);
+		identifierSource.setIdentifier("SOURCE-TEST-A");
+		identifierSource.setBaseCharacterSet("0123456789");
+		identifierSource.setMinLength(8);
+		identifierSource.setMaxLength(10);
+		identifierSource.setIdentifierValidatorAlgorithm(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM);
+		identifierSource.setPrefix("");
+		identifierSource.setRegexFormat("");
 		return identifierSource;
 	}
 

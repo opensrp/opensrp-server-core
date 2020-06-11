@@ -1,5 +1,6 @@
 package org.opensrp.generator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
@@ -105,7 +106,7 @@ public class UniqueIdGeneratorProcessor {
 		identifier = (identifierSource.getSuffix() == null ? identifier : identifier + identifierSource.getSuffix());
 
 
-		if (identifierSource.getRegexFormat() != null) {
+		if (identifierSource.getRegexFormat() != null && StringUtils.isNotEmpty(identifierSource.getRegexFormat())) {
 			return identifier.matches(identifierSource.getRegexFormat()) ?
 					identifier :
 					getIdentifierForSeed(seed + 1, identifierSource);
