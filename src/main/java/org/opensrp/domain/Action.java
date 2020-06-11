@@ -1,5 +1,7 @@
 package org.opensrp.domain;
 
+import java.util.Set;
+
 /**
  * Created by samuelgithengi on 4/29/19.
  */
@@ -24,6 +26,12 @@ public class Action {
     private SubjectConcept subjectCodableConcept;
 
     private String taskTemplate;
+
+    private Set<Trigger> triggers;
+
+    private Set<Condition> conditions;
+
+    private String definitionUri;
 
     public String getIdentifier() {
         return identifier;
@@ -103,6 +111,30 @@ public class Action {
 
     public void setTaskTemplate(String taskTemplate) {
         this.taskTemplate = taskTemplate;
+    }
+
+    public Set<Trigger> getTriggers() {
+        return triggers;
+    }
+
+    public void setTriggers(Set<Trigger> triggers) {
+        this.triggers = triggers;
+    }
+
+    public Set<Condition> getConditions() {
+        return conditions;
+    }
+
+    public void setConditions(Set<Condition> conditions) {
+        this.conditions = conditions;
+    }
+
+    public String getDefinitionUri() {
+        return definitionUri;
+    }
+
+    public void setDefinitionUri(String definitionUri) {
+        this.definitionUri = definitionUri;
     }
 
     static class SubjectConcept {
