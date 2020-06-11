@@ -493,8 +493,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public PhysicalLocation findLocationByIdentifierAndVersion(String identifier, int version) {
 		Location location = locationMetadataMapper.findByIdAndVersion(identifier, true, version);
-		PhysicalLocation locationEntity  = convert(location);
+		PhysicalLocation locationEntity = convert(location);
 		return locationEntity;
+	}
 
 	/**
 	 * {@inheritDoc}
