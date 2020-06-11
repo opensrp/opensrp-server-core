@@ -80,7 +80,7 @@ public class OrganizationServiceTest {
 	public void testSelectOrganizationsEncompassLocations(){
 		String locationID = "12345_location";
 		organizationService.selectOrganizationsEncompassLocations(locationID);
-		verify(organizationRepository).selectOrganizationsEncompassLocations(locationID, Mockito.any(Date.class));
+		verify(organizationRepository).selectOrganizationsEncompassLocations(Mockito.eq(locationID), Mockito.any(Date.class));
 	}
 
 	@Test
