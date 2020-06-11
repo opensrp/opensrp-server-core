@@ -495,6 +495,39 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		Location location = locationMetadataMapper.findByIdAndVersion(identifier, true, version);
 		PhysicalLocation locationEntity  = convert(location);
 		return locationEntity;
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countStructuresByParentAndServerVersion(String parentIds, long serverVersion) {
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		structureMetadataExample.createCriteria()
+				.andParentIdIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(parentIds, ",")))
+				.andServerVersionGreaterThanOrEqualTo(serverVersion);
+		return structureMetadataMapper.countByExample(structureMetadataExample);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countLocationsByServerVersion(long serverVersion) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		return locationMetadataMapper.countByExample(locationMetadataExample);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countLocationsByNames(String locationNames, long serverVersion) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria()
+				.andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames, ",")))
+				.andServerVersionGreaterThanOrEqualTo(serverVersion);
+		return locationMetadataMapper.countByExample(locationMetadataExample);
 	}
 
 	@Override
