@@ -233,19 +233,6 @@ public class UniqueIdGeneratorProcessorTest {
 		return identifierSource;
 	}
 
-	private IdentifierSource createIdentifierSourceG() {
-		IdentifierSource identifierSource = new IdentifierSource();
-		identifierSource.setId(1l);
-		identifierSource.setIdentifier("SOURCE-TEST-G");
-		identifierSource.setBaseCharacterSet("0123459789abcdefghij");
-		identifierSource.setMinLength(8);
-		identifierSource.setMaxLength(10);
-		identifierSource.setIdentifierValidatorAlgorithm(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM);
-		identifierSource.setPrefix("");
-		identifierSource.setRegexFormat("^K[a-z0-9]*L$");
-		return identifierSource;
-	}
-
 	private IdentifierSource createIdentifierSourceI() {
 		IdentifierSource identifierSource = new IdentifierSource();
 		identifierSource.setId(1l);
