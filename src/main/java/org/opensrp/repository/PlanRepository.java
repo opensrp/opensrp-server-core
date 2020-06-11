@@ -56,4 +56,11 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @return a list of plan Ids  and the last server version
 	 */
 	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted);
+
+	/** Gets the plans using the plan identifiers and whose server version is greater than or equal to server version
+	 * @param planIdentifiers the plan identifiers
+	 * @param serverVersion
+	 * @return plans with the identifiers and server version greater than or equal to server version param
+	 */
+	Long countPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion);
 }

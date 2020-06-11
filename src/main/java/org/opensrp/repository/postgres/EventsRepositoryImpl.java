@@ -312,8 +312,38 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	@Override
 	public List<Event> findEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit) {
 		EventMetadataExample example = new EventMetadataExample();
+		Criteria criteria = populateEventSearchCriteria(eventSearchBean, example);
+
+		criteria.andDateDeletedIsNull();
+		example.setOrderByClause(getOrderByClause(sortBy, sortOrder));
+		return convert(eventMetadataMapper.selectManyWithRowBounds(example, 0, limit));
+	}
+
+	private Criteria populateEventSearchCriteria(EventSearchBean eventSearchBean, EventMetadataExample example){
 		Criteria criteria = example.createCriteria();
 
+		addTeamCriteria(criteria, eventSearchBean);
+
+		addTeamIdCriteria(criteria, eventSearchBean);
+
+		addProviderIdCriteria(criteria, eventSearchBean);
+
+		addLocationIdCriteria(criteria, eventSearchBean);
+
+		addBaseEntityCriteria(criteria, eventSearchBean);
+
+		if (eventSearchBean.getServerVersion() != null)
+			criteria.andServerVersionGreaterThanOrEqualTo(eventSearchBean.getServerVersion());
+
+		if (StringUtils.isNotEmpty(eventSearchBean.getEventType()))
+			criteria.andEventTypeEqualTo(eventSearchBean.getEventType());
+
+		if (!criteria.isValid())
+			throw new IllegalArgumentException("Atleast one search filter must be specified");
+		return criteria;
+	}
+
+	private void addTeamCriteria(Criteria criteria, EventSearchBean eventSearchBean) {
 		if (StringUtils.isNotEmpty(eventSearchBean.getTeam())) {
 			if (eventSearchBean.getTeam().contains(",")) {
 				String[] teamsArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getTeam(), ",");
@@ -322,7 +352,9 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 				criteria.andTeamEqualTo(eventSearchBean.getTeam());
 			}
 		}
+	}
 
+	private void addTeamIdCriteria(Criteria criteria, EventSearchBean eventSearchBean) {
 		if (StringUtils.isNotEmpty(eventSearchBean.getTeamId())) {
 			if (eventSearchBean.getTeamId().contains(",")) {
 				String[] teamsArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getTeamId(), ",");
@@ -331,7 +363,9 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 				criteria.andTeamIdEqualTo(eventSearchBean.getTeamId());
 			}
 		}
+	}
 
+	private void addProviderIdCriteria(Criteria criteria, EventSearchBean eventSearchBean) {
 		if (StringUtils.isNotEmpty(eventSearchBean.getProviderId())) {
 			if (eventSearchBean.getProviderId().contains(",")) {
 				String[] providersArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getProviderId(),
@@ -341,6 +375,9 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 				criteria.andProviderIdEqualTo(eventSearchBean.getProviderId());
 			}
 		}
+	}
+
+	private void addLocationIdCriteria(Criteria criteria, EventSearchBean eventSearchBean) {
 		if (StringUtils.isNotEmpty(eventSearchBean.getLocationId())) {
 			if (eventSearchBean.getLocationId().contains(",")) {
 				String[] locationArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getLocationId(),
@@ -350,6 +387,9 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 				criteria.andLocationIdEqualTo(eventSearchBean.getLocationId());
 			}
 		}
+	}
+
+	private void addBaseEntityCriteria(Criteria criteria, EventSearchBean eventSearchBean) {
 		if (StringUtils.isNotEmpty(eventSearchBean.getBaseEntityId())) {
 			if (eventSearchBean.getBaseEntityId().contains(",")) {
 				String[] idsArray = org.apache.commons.lang.StringUtils.split(eventSearchBean.getBaseEntityId(), ",");
@@ -358,18 +398,17 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 				criteria.andBaseEntityIdEqualTo(eventSearchBean.getBaseEntityId());
 			}
 		}
-		if (eventSearchBean.getServerVersion() != null)
-			criteria.andServerVersionGreaterThanOrEqualTo(eventSearchBean.getServerVersion());
+	}
 
-		if (StringUtils.isNotEmpty(eventSearchBean.getEventType()))
-			criteria.andEventTypeEqualTo(eventSearchBean.getEventType());
-
-		if (!criteria.isValid())
-			throw new IllegalArgumentException("Atleast one search filter must be specified");
-
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countEvents(EventSearchBean eventSearchBean) {
+		EventMetadataExample example = new EventMetadataExample();
+		Criteria criteria = populateEventSearchCriteria(eventSearchBean, example);
 		criteria.andDateDeletedIsNull();
-		example.setOrderByClause(getOrderByClause(sortBy, sortOrder));
-		return convert(eventMetadataMapper.selectManyWithRowBounds(example, 0, limit));
+		return eventMetadataMapper.countByExample(example);
 	}
 
 	/**
