@@ -10,15 +10,19 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.domain.Action;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
+import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PlanService {
+	
+	private static final String ACTIVE = "Active";
 	
 	private PlanRepository planRepository;
 	
@@ -28,6 +32,8 @@ public class PlanService {
 	
 	private OrganizationService organizationService;
 	
+	private PlanEvaluator planEvaluator;
+	
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
 	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService) {
@@ -35,6 +41,7 @@ public class PlanService {
 		this.practitionerService = practitionerService;
 		this.practitionerRoleService = practitionerRoleService;
 		this.organizationService = organizationService;
+		planEvaluator = new PlanEvaluator();
 	}
 	
 	public PlanRepository getPlanRepository() {
@@ -50,10 +57,10 @@ public class PlanService {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
-		if (getPlanRepository().get(plan.getIdentifier()) != null) {
-			getPlanRepository().update(plan);
+		if (getPlan(plan.getIdentifier()) != null) {
+			updatePlan(plan);
 		} else {
-			getPlanRepository().add(plan);
+			addPlan(plan);
 		}
 	}
 	
@@ -210,39 +217,51 @@ public class PlanService {
 	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted) {
 		return planRepository.findAllIds(serverVersion, limit, isDeleted);
 	}
-
+	
 	/**
-	 * Gets the count of plans using organization Ids that have server version >= the server version param
+	 * Gets the count of plans using organization Ids that have server version >= the server version
+	 * param
 	 *
 	 * @param organizationIds the list of organization Ids
 	 * @param serverVersion the server version to filter plans with
 	 * @return the count plans matching the above
 	 */
 	public Long countPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
-
+		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
-				.findAssignedLocationsAndPlans(organizationIds);
-		List<String> planIdentifiers = assignedPlansAndLocations
-				.stream()
-				.map(a-> a.getPlanId())
-				.collect(Collectors.toList());
+		        .findAssignedLocationsAndPlans(organizationIds);
+		List<String> planIdentifiers = assignedPlansAndLocations.stream().map(a -> a.getPlanId())
+		        .collect(Collectors.toList());
 		return planRepository.countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
-
+	
 	/**
-	 * Gets the count of plans that a user has access to according to the plan location assignment that have
-	 * server version >= the server version param
+	 * Gets the count of plans that a user has access to according to the plan location assignment
+	 * that have server version >= the server version param
 	 *
 	 * @param username the username of user
 	 * @param serverVersion the server version to filter plans with
 	 * @return the count of plans a user has access to
 	 */
 	public Long countPlansByUsernameAndServerVersion(String username, long serverVersion) {
-
+		
 		List<Long> organizationIds = getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
 			return countPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
 		}
 		return 0l;
+	}
+	
+	private String evaluatePlanState(PlanDefinition planDefinition, PlanDefinition exixtingPlanDefinition) {
+		
+	}
+	
+	private boolean isPlanJurisdictionModified(PlanDefinition planDefinition, PlanDefinition exixtingPlanDefinition) {
+		
+	}
+	
+
+	private boolean isPlanJurisdictionActionsModified() {
+		
 	}
 }
