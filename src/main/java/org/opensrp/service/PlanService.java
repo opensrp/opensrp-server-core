@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Vincent Karuri on 06/05/2019
@@ -221,10 +222,10 @@ public class PlanService {
 
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 				.findAssignedLocationsAndPlans(organizationIds);
-		List<String> planIdentifiers = new ArrayList<>();
-		for (AssignedLocations assignedLocation : assignedPlansAndLocations) {
-			planIdentifiers.add(assignedLocation.getPlanId());
-		}
+		List<String> planIdentifiers = assignedPlansAndLocations
+				.stream()
+				.map(a-> a.getPlanId())
+				.collect(Collectors.toList());
 		return planRepository.countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
 
