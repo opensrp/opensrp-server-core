@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.powermock.reflect.Whitebox;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Created by Vincent Karuri on 20/05/2020
  */
+@ActiveProfiles(profiles = { "AliCloud_OSS" })
 public class OSSMultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 	
 	private OSSMultimediaFileManager ossMultimediaFileManager;

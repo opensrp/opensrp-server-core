@@ -3,6 +3,8 @@ package org.opensrp.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -71,11 +73,10 @@ public class UtilTest extends TestResourceLoader {
 		Utils.getXlsToJson(path);
 	}
 
-    @Test(expected = Test.None.class)
-    public void testCloseCloseable() {
-        final Closeable closeable = () -> {
-
-		};
+    @Test
+    public void testCloseCloseable() throws IOException {
+        Closeable closeable = mock(Closeable.class);
         Utils.closeCloseable(closeable);
+        verify(closeable).close();
     }
 }

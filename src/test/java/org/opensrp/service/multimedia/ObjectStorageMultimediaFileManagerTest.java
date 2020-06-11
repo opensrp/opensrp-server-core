@@ -8,12 +8,14 @@ import org.mockito.MockitoAnnotations;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 
+@ActiveProfiles(profiles = { "AWS_S3" })
 public class ObjectStorageMultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
 	@Value("#{opensrp['object.storage.bucket.folder.path'] ?: ''}")
