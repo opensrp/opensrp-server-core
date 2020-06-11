@@ -16,6 +16,6 @@ public class ConditionTest {
         Validator validator = ValidatorBuilder.create().with(new SetterTester()).with(new GetterTester()).build();
 
         validator.validate(PojoClassFactory.getPojoClass(Condition.class));
-        assertEquals(11,PojoClassFactory.getPojoClass(Condition.class).getPojoFields().size());
+        assertEquals(2,PojoClassFactory.getPojoClass(Condition.class).getPojoFields().size());
     }
 }
