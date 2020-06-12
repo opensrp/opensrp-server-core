@@ -310,5 +310,34 @@ public class PhysicalLocationService {
 		}
 		return location;
 	}
+
+	/**
+	 * This method is used to return a count of structure based on the provided parameters
+	 * @param parentId id for the parent location
+	 * @param serverVersion
+	 * @return returns a count of structures matching the passed parameters
+	 */
+	public Long countStructuresByParentAndServerVersion(String parentId, long serverVersion) {
+		return locationRepository.countStructuresByParentAndServerVersion(parentId, serverVersion);
+	}
+
+	/**
+	 * This method is used to return a count of locations based on the provided parameters
+	 * @param serverVersion
+	 * @return returns a count of locations matching the passed parameters
+	 */
+	public Long countLocationsByServerVersion(long serverVersion){
+		return locationRepository.countLocationsByServerVersion(serverVersion);
+	};
+
+	/**
+	 * This method is used to return a count of locations based on the provided parameters
+	 * @param locationNames A string of comma separated location names
+	 * @param serverVersion
+	 * @return returns a count of locations matching the passed parameters
+	 */
+	public Long countLocationsByNames(String locationNames, long serverVersion){
+		return locationRepository.countLocationsByNames(locationNames,serverVersion);
+	};
 	
 }

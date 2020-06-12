@@ -53,7 +53,7 @@ public class MultimediaServiceTest extends BaseIntegrationTest {
 	private String BASE_IMAGE_PATH = baseMultimediaDirPath + File.separator + IMAGES_DIR+ File.separator;
 
 	@Autowired
-	@Qualifier("multimedia_file_manager")
+	@Qualifier("multimedia.file.manager")
 	private BaseMultimediaFileManager fileManager;
 
 	@Before

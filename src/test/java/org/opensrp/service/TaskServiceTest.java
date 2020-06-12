@@ -240,4 +240,22 @@ public class TaskServiceTest {
 		verify(taskRepository).getTasksByPlanAndOwner("IRS_2018_S1", "demouser", 15421904649873l);
 		assertEquals(task, tasks.get(0));
 	}
+
+	@Test
+	public void testCountTasksByPlanAndOwner() {
+		when(taskRepository.countTasksByPlanAndOwner("IRS_2018_S1", "demouser", 15421904649873l))
+				.thenReturn(4l);
+		Long tasks = taskService.countTasksByPlanAndOwner("IRS_2018_S1", "demouser", 15421904649873l);
+		verify(taskRepository).countTasksByPlanAndOwner("IRS_2018_S1", "demouser", 15421904649873l);
+		assertEquals(4, tasks.longValue());
+	}
+
+	@Test
+	public void testCountTasksByPlanAndGroup() {
+		when(taskRepository.countTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 15421904649873l))
+				.thenReturn(7l);
+		Long tasks = taskService.countTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 15421904649873l);
+		verify(taskRepository).countTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 15421904649873l);
+		assertEquals(7, tasks.longValue());
+	}
 }

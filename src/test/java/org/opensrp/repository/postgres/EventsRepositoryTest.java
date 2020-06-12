@@ -609,5 +609,41 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		}
 		assertTrue(eventsRepository.findByProvider("biddemo9").isEmpty());
 	}
+
+	@Test
+	public void testCountEvents() {
+
+		EventSearchBean eventSearchBean = new EventSearchBean();
+		eventSearchBean.setBaseEntityId("58b33379-dab2-4f5c-8f09-6d2bd63023d8");
+		Long events = eventsRepository.countEvents(eventSearchBean);
+		assertEquals(7, events.longValue());
+
+		eventSearchBean.setEventType("Vaccination");
+		events = eventsRepository.countEvents(eventSearchBean);
+		assertEquals(6, events.longValue());
+
+		eventSearchBean.setProviderId("biddemo");
+		eventSearchBean.setLocationId("42abc582-6658-488b-922e-7be500c070f3");
+		events = eventsRepository.countEvents(eventSearchBean);
+		assertEquals(6, events.longValue());
+
+		eventSearchBean.setTeam("ATeam");
+		eventSearchBean.setTeamId("3453hgb454-4j345n-llk345");
+		events = eventsRepository.countEvents(eventSearchBean);
+		assertEquals(2, events.longValue());
+
+		DateTime editFrom = new DateTime("2018-03-16T10:03:01.537+03:00");
+		DateTime editTo = new DateTime("2018-03-19T17:17:15.929+03:00");
+		eventSearchBean.setLastEditFrom(editFrom);
+		eventSearchBean.setLastEditTo(editTo);
+		events = eventsRepository.countEvents(eventSearchBean);
+		assertEquals(2, events.longValue());
+
+		//test with deleted event
+		List<Event> eventObjects = eventsRepository.findEvents(eventSearchBean);
+		for (Event event : eventObjects)
+			eventsRepository.safeRemove(event);
+		assertEquals(0, eventsRepository.countEvents(eventSearchBean).longValue());
+	}
 	
 }

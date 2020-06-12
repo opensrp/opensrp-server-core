@@ -100,6 +100,17 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
 
     @Nullable
     @Override
+    public List<Manifest> getManifestsByAppId(String appId) {
+        if (StringUtils.isBlank(appId)) {
+            return null;
+        }
+
+        List<org.opensrp.domain.postgres.Manifest> manifestList = manifestMapper.selectByAppId(appId);
+        return manifestList == null ? null : convert(manifestList);
+    }
+
+    @Nullable
+    @Override
     public Manifest getManifest(String appId, String appVersion) {
         org.opensrp.domain.postgres.Manifest manifest = manifestMapper.selectByAppIdAndAppVersion(appId, appVersion);
         return manifest == null ? null : convert(manifest);

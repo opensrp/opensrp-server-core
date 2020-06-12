@@ -29,4 +29,21 @@ public interface MultimediaFileManager {
      * @return
      */
     File retrieveFile(String filePath);
+
+    /**
+     *
+     * Gets the path to the local (filesystem) multimedia file directory
+     *
+     * @return
+     */
+    String getMultimediaDirPath();
+
+
+    /**
+     *
+     * Gets the the local (filesystem) path where a file should be saved
+     *
+     * @return
+     */
+    String getMultimediaFilePath(MultimediaDTO multimediaDTO, String originalFileName);
 }

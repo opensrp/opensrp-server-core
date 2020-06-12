@@ -40,7 +40,7 @@ public class FileSystemMultimediaFileManagerTest extends BaseMultimediaFileManag
 	private MultimediaRepository multimediaRepository;
 
 	@Before
-	public void setUp() throws IOException {
+	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		super.setUp();
 		fileSystemMultimediaFileManager = new FileSystemMultimediaFileManager(multimediaRepository, clientService);

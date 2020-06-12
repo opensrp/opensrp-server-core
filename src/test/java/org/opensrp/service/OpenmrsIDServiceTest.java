@@ -187,8 +187,10 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 	
 	private List<UniqueId> createNotUsedUniqIdEntries(int size) throws Exception {
 		List<UniqueId> notUsedUniqueIds = new ArrayList<>();
+		long id = 6;
 		for (int i = 0; i < size; i++) {
 			UniqueId uniqueId = new UniqueId();
+			uniqueId.setId(Long.valueOf(id));
 			uniqueId.setOpenmrsId(String.valueOf(i));
 			uniqueId.setStatus(UniqueId.STATUS_NOT_USED);
 			uniqueId.setUsedBy("test" + i);
@@ -196,6 +198,7 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 			uniqueId.setLocation("test");
 			notUsedUniqueIds.add(uniqueId);
 			uniqueIdRepository.add(uniqueId);
+			id++;
 		}
 		return notUsedUniqueIds;
 	}
