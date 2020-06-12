@@ -82,8 +82,6 @@ public class PlanService {
 		return plan;
 	}
 	
-	private
-	
 	public PlanDefinition getPlan(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
 	}
@@ -230,8 +228,12 @@ public class PlanService {
 		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 		        .findAssignedLocationsAndPlans(organizationIds);
-		List<String> planIdentifiers = assignedPlansAndLocations.stream().map(a -> a.getPlanId())
+		/* @formatter:off */
+		List<String> planIdentifiers = assignedPlansAndLocations
+				.stream()
+				.map(a -> a.getPlanId())
 		        .collect(Collectors.toList());
+		/* @formatter:on */
 		return planRepository.countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
 	
