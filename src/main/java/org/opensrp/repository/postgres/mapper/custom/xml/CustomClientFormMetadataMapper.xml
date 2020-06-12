@@ -10,8 +10,9 @@
         <result column="version" jdbcType="VARCHAR" property="version"/>
         <result column="label" jdbcType="VARCHAR" property="label"/>
         <result column="module" jdbcType="VARCHAR" property="module"/>
-        <result
-                column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
+        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
+        <result column="is_draft" jdbcType="BIT" property="isDraft"/>
+        <result column="is_json_validator" jdbcType="BIT" property="isJsonValidator"/>
     </resultMap>
 
     <resultMap id="IdVersionTuple" type="org.opensrp.domain.IdVersionTuple">
@@ -19,10 +20,11 @@
         <result column="form_version" jdbcType="VARCHAR" property="version"/>
     </resultMap>
 
-    <select id="countClientFormMetadataByFormIdentifier" parameterType="string" resultType="int">
+    <select id="countClientFormMetadataByFormIdentifier" parameterType="map" resultType="int">
         select count(id)
         from core.client_form_metadata
-        WHERE identifier = #{formIdentifier, jdbcType=VARCHAR}
+        WHERE identifier = #{formIdentifier, jdbcType=VARCHAR} AND
+        is_json_validator = #{isJsonValidator, jdbcType=BIT}
     </select>
 
 
@@ -31,17 +33,19 @@
         select *
         from core.client_form_metadata
         WHERE version = #{formVersion, jdbcType=VARCHAR} AND
-        identifier = #{formIdentifier, jdbcType=VARCHAR}
+        identifier = #{formIdentifier, jdbcType=VARCHAR} AND
+        is_json_validator = #{isJsonValidator, jdbcType=BIT}
         ORDER BY created_at DESC LIMIT 1
     </select>
 
     <insert id="insertClientFormMetadata" parameterType="org.opensrp.domain.postgres.ClientFormMetadata"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        insert into core.client_form_metadata(id, identifier, jurisdiction, version, label, module, created_at)
-        values (#{id}, #{identifier}, #{jurisdiction}, #{version}, #{label}, #{module}, #{createdAt})
+        insert into core.client_form_metadata(id, identifier, jurisdiction, version, label, module, is_draft, is_json_validator, created_at)
+        values (#{id}, #{identifier}, #{jurisdiction}, #{version}, #{label}, #{module}, #{isDraft}, #{isJsonValidator}, #{createdAt})
     </insert>
 
-    <select id="getAvailableClientFormVersions" parameterType="string" resultMap="IdVersionTuple">
-        SELECT id, version FROM core.client_form_metadata WHERE identifier = #{formIdentifier}
+    <select id="getAvailableClientFormVersions" parameterType="map" resultMap="IdVersionTuple">
+        SELECT id, version FROM core.client_form_metadata WHERE identifier = #{formIdentifier} AND
+        is_json_validator = #{isJsonValidator, jdbcType=BIT}
     </select>
 </mapper>

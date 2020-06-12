@@ -31,18 +31,33 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 	}
 
 	@Override
-	public int countClientFormByFormIdentifier(@NonNull String formIdentifier) {
-		return clientFormMetadataMapper.countClientFormMetadataByFormIdentifier(formIdentifier);
+	public int countClientFormByFormIdentifier(String formIdentifier) {
+		return countClientFormByFormIdentifier(formIdentifier, false);
 	}
 
 	@Override
-	public ClientFormMetadata getClientFormMetadata(@NonNull String formVersion, @NonNull String formIdentifier) {
-		return clientFormMetadataMapper.selectClientFormMetadataByFormVersionAndIdentifier(formVersion, formIdentifier);
+	public int countClientFormByFormIdentifier(@NonNull String formIdentifier, boolean isJsonValidator) {
+		return clientFormMetadataMapper.countClientFormMetadataByFormIdentifier(formIdentifier, isJsonValidator);
 	}
 
 	@Override
-	public List<IdVersionTuple> getAvailableClientFormVersions(@NonNull String formIdentifier) {
-		return clientFormMetadataMapper.getAvailableClientFormVersions(formIdentifier);
+	public ClientFormMetadata getClientFormMetadata(String formVersion, String formIdentifier) {
+		return getClientFormMetadata(formVersion, formIdentifier, false);
+	}
+
+	@Override
+	public ClientFormMetadata getClientFormMetadata(@NonNull String formVersion, @NonNull String formIdentifier, boolean isJsonValidator) {
+		return clientFormMetadataMapper.selectClientFormMetadataByFormVersionAndIdentifier(formVersion, formIdentifier, isJsonValidator);
+	}
+
+	@Override
+	public List<IdVersionTuple> getAvailableClientFormVersions(String formIdentifier) {
+		return getAvailableClientFormVersions(formIdentifier, false);
+	}
+
+	@Override
+	public List<IdVersionTuple> getAvailableClientFormVersions(@NonNull String formIdentifier, boolean isJsonValidator) {
+		return clientFormMetadataMapper.getAvailableClientFormVersions(formIdentifier, isJsonValidator);
 	}
 
 	@Override
