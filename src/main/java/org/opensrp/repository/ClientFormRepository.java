@@ -34,4 +34,7 @@ public interface ClientFormRepository extends BaseRepository<ClientForm> {
 
 	@Nullable
 	List<ClientFormMetadata> getAllClientFormMetadata(boolean isDraft);
+
+	@Nullable
+	List<ClientFormMetadata> getAllClientFormMetadata();
 }

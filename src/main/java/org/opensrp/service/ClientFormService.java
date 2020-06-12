@@ -80,6 +80,12 @@ public class ClientFormService {
 		return clientFormMetadataList == null ? new ArrayList<ClientFormMetadata>() : clientFormMetadataList;
 	}
 
+	@NonNull
+	public List<ClientFormMetadata> getAllClientFormMetadata() {
+		List<ClientFormMetadata> clientFormMetadataList = clientFormRepository.getAllClientFormMetadata();
+		return clientFormMetadataList == null ? new ArrayList<ClientFormMetadata>() : clientFormMetadataList;
+	}
+
 	public static class CompleteClientForm {
 
 		public ClientForm clientForm;

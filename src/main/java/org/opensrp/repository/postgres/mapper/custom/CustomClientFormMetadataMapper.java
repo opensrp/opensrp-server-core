@@ -19,5 +19,7 @@ public interface CustomClientFormMetadataMapper extends ClientFormMetadataMapper
 
 	List<IdVersionTuple> getAvailableClientFormVersions(@Param("formIdentifier") @NonNull String formIdentifier, @Param("isJsonValidator") boolean isJsonValidator);
 
-	List<ClientFormMetadata> getAllClientFormMetadata(boolean isDraft);
+	List<ClientFormMetadata> getClientFormMetadata(boolean isDraft);
+
+	List<ClientFormMetadata> getAllClientFormMetadata();
 }

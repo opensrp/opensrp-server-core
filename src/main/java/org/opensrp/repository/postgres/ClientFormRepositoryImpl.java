@@ -97,7 +97,12 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 	@Nullable
 	@Override
 	public List<ClientFormMetadata> getAllClientFormMetadata(boolean isDraft) {
-		return clientFormMetadataMapper.getAllClientFormMetadata(isDraft);
+		return clientFormMetadataMapper.getClientFormMetadata(isDraft);
+	}
+
+	@Override
+	public List<ClientFormMetadata> getAllClientFormMetadata() {
+		return clientFormMetadataMapper.getAllClientFormMetadata();
 	}
 
 	@Nullable

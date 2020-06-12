@@ -2,7 +2,6 @@ package org.opensrp.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.opensrp.domain.IdVersionTuple;
 import org.opensrp.domain.postgres.ClientForm;
 import org.opensrp.domain.postgres.ClientFormMetadata;
@@ -12,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class ClientFormServiceTest extends BaseRepositoryTest {
 
@@ -105,7 +101,7 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testGetAllClientFormMetadataShouldReturnOnlyDraftForms() {
+	public void testGetAllClientFormMetadataShouldReturnOnlyDraftFormsMetadata() {
 		int count = 10;
 
 		for (int i = 0; i < count; i++) {
@@ -130,9 +126,34 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 
 
 	@Test
-	public void testGetAllClientFormMetadataShouldReturnNonDraftForms() {
+	public void testGetAllClientFormMetadataShouldReturnNonDraftFormsMetadata() {
 		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getClientFormMetadata(false);
 		assertEquals(5, clientFormMetadataList.size());
+	}
+
+
+	@Test
+	public void testGetAllClientFormMetadataShouldReturnAllFormMetadata() {
+		int count = 10;
+
+		for (int i = 0; i < count; i++) {
+			ClientForm clientForm = new ClientForm();
+			clientForm.setCreatedAt(new Date());
+			clientForm.setJson("{'from': 'child'}");
+
+			ClientFormMetadata clientFormMetadata = new ClientFormMetadata();
+			clientFormMetadata.setModule("child");
+			clientFormMetadata.setVersion("1.0." + i);
+			clientFormMetadata.setIdentifier("json.form/child/sample.json");
+			clientFormMetadata.setLabel("SAMPLE FORM");
+			clientFormMetadata.setIsDraft(true);
+			clientFormMetadata.setCreatedAt(new Date());
+
+			clientFormService.addClientForm(clientForm, clientFormMetadata);
+		}
+
+		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getAllClientFormMetadata();
+		assertEquals(count + 5, clientFormMetadataList.size());
 	}
 
 	@Override
