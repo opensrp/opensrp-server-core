@@ -82,6 +82,8 @@ public class PlanService {
 		return plan;
 	}
 	
+	private
+	
 	public PlanDefinition getPlan(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
 	}
