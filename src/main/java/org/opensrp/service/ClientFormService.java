@@ -25,12 +25,21 @@ public class ClientFormService {
 	}
 
 	public boolean isClientFormExists(String formIdentifier) {
-		return clientFormRepository.countClientFormByFormIdentifier(formIdentifier) > 0;
+		return isClientFormExists(formIdentifier, false);
+	}
+
+	public boolean isClientFormExists(String formIdentifier, boolean isJsonValidator) {
+		return clientFormRepository.countClientFormByFormIdentifier(formIdentifier, isJsonValidator) > 0;
 	}
 
 	@Nullable
 	public ClientFormMetadata getClientFormMetadataByIdentifierAndVersion(String formIdentifier, String formVersion) {
-		return clientFormRepository.getClientFormMetadata(formVersion, formIdentifier);
+		return getClientFormMetadataByIdentifierAndVersion(formIdentifier, formVersion, false);
+	}
+
+	@Nullable
+	public ClientFormMetadata getClientFormMetadataByIdentifierAndVersion(String formIdentifier, String formVersion, boolean isJsonValidator) {
+		return clientFormRepository.getClientFormMetadata(formVersion, formIdentifier, isJsonValidator);
 	}
 
 	public ClientForm getClientFormById(Long id) {
@@ -38,7 +47,11 @@ public class ClientFormService {
 	}
 
 	public List<IdVersionTuple> getAvailableClientFormMetadataVersionByIdentifier(String formIdentifier) {
-		return clientFormRepository.getAvailableClientFormVersions(formIdentifier);
+		return getAvailableClientFormMetadataVersionByIdentifier(formIdentifier, false);
+	}
+
+	public List<IdVersionTuple> getAvailableClientFormMetadataVersionByIdentifier(String formIdentifier, boolean isJsonValidator) {
+		return clientFormRepository.getAvailableClientFormVersions(formIdentifier, isJsonValidator);
 	}
 
 	public ClientFormMetadata getClientFormMetadataById(long formId) {
@@ -49,7 +62,7 @@ public class ClientFormService {
 	public CompleteClientForm addClientForm(@NonNull ClientForm clientForm, @NonNull ClientFormMetadata clientFormMetadata) {
 		// Check if the same client form with that version & identifier exists
 		ClientFormMetadata clientFormMetadataResult = clientFormRepository
-				.getClientFormMetadata(clientFormMetadata.getVersion(), clientFormMetadata.getIdentifier());
+				.getClientFormMetadata(clientFormMetadata.getVersion(), clientFormMetadata.getIdentifier(), clientFormMetadata.getIsJsonValidator() == null ? false : clientFormMetadata.getIsJsonValidator());
 		if (clientFormMetadataResult != null) {
 			logger.error("ClientFormMetadata with version " + clientFormMetadata.getVersion() + " and Identifier "
 					+ clientFormMetadata.getIdentifier() + " Already exists", new Exception());
