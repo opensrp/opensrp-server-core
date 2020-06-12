@@ -10,19 +10,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opensrp.domain.Action;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
-import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PlanService {
-	
-	private static final String ACTIVE = "Active";
 	
 	private PlanRepository planRepository;
 	
@@ -32,16 +28,17 @@ public class PlanService {
 	
 	private OrganizationService organizationService;
 	
-	private PlanEvaluator planEvaluator;
+	private TaskGenerator taskGenerator;
 	
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
-	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService) {
+	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService,
+	    TaskGenerator taskGenerator) {
 		this.planRepository = planRepository;
 		this.practitionerService = practitionerService;
 		this.practitionerRoleService = practitionerRoleService;
 		this.organizationService = organizationService;
-		planEvaluator = new PlanEvaluator();
+		this.taskGenerator = taskGenerator;
 	}
 	
 	public PlanRepository getPlanRepository() {
@@ -70,7 +67,7 @@ public class PlanService {
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().add(plan);
-		
+		taskGenerator.processPlanEvaluation(plan, null);
 		return plan;
 	}
 	
@@ -78,9 +75,10 @@ public class PlanService {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
+		PlanDefinition existing = getPlan(plan.getIdentifier());
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().update(plan);
-		
+		taskGenerator.processPlanEvaluation(plan, existing);
 		return plan;
 	}
 	
@@ -252,16 +250,4 @@ public class PlanService {
 		return 0l;
 	}
 	
-	private String evaluatePlanState(PlanDefinition planDefinition, PlanDefinition exixtingPlanDefinition) {
-		
-	}
-	
-	private boolean isPlanJurisdictionModified(PlanDefinition planDefinition, PlanDefinition exixtingPlanDefinition) {
-		
-	}
-	
-
-	private boolean isPlanJurisdictionActionsModified() {
-		
-	}
 }
