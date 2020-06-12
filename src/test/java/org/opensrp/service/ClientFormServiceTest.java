@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opensrp.domain.IdVersionTuple;
 import org.opensrp.domain.postgres.ClientForm;
 import org.opensrp.domain.postgres.ClientFormMetadata;
@@ -101,6 +102,37 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 
 		assertEquals(6, (long) completeClientForm.clientForm.getId());
 		assertEquals(6, (long) completeClientForm.clientFormMetadata.getId());
+	}
+
+	@Test
+	public void testGetAllClientFormMetadataShouldReturnOnlyDraftForms() {
+		int count = 10;
+
+		for (int i = 0; i < count; i++) {
+			ClientForm clientForm = new ClientForm();
+			clientForm.setCreatedAt(new Date());
+			clientForm.setJson("{'from': 'child'}");
+
+			ClientFormMetadata clientFormMetadata = new ClientFormMetadata();
+			clientFormMetadata.setModule("child");
+			clientFormMetadata.setVersion("1.0." + i);
+			clientFormMetadata.setIdentifier("json.form/child/sample.json");
+			clientFormMetadata.setLabel("SAMPLE FORM");
+			clientFormMetadata.setIsDraft(true);
+			clientFormMetadata.setCreatedAt(new Date());
+
+			clientFormService.addClientForm(clientForm, clientFormMetadata);
+		}
+
+		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getClientFormMetadata(true);
+		assertEquals(count, clientFormMetadataList.size());
+	}
+
+
+	@Test
+	public void testGetAllClientFormMetadataShouldReturnNonDraftForms() {
+		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getClientFormMetadata(false);
+		assertEquals(5, clientFormMetadataList.size());
 	}
 
 	@Override

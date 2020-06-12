@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -70,6 +72,12 @@ public class ClientFormService {
 		}
 
 		return clientFormRepository.create(clientForm, clientFormMetadata);
+	}
+
+	@NonNull
+	public List<ClientFormMetadata> getClientFormMetadata(boolean isDraft) {
+		List<ClientFormMetadata> clientFormMetadataList = clientFormRepository.getAllClientFormMetadata(isDraft);
+		return clientFormMetadataList == null ? new ArrayList<ClientFormMetadata>() : clientFormMetadataList;
 	}
 
 	public static class CompleteClientForm {
