@@ -11,7 +11,9 @@ import org.opensrp.util.PropertiesConverter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class PhysicalLocationTest {
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(LocationProperty.class, new PropertiesConverter())
