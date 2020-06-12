@@ -3,7 +3,7 @@
  */
 package org.opensrp.service;
 
-import org.opensrp.domain.PlanDefinition;
+import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
