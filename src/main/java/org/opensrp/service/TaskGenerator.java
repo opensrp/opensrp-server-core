@@ -4,6 +4,7 @@
 package org.opensrp.service;
 
 import org.opensrp.domain.PlanDefinition;
+import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +18,8 @@ public class TaskGenerator {
 	@Async
 	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
 		//TODO consider moving PlanEvaluator to container managed bean
+		PlanEvaluator planEvaluator = new PlanEvaluator();
 		//TODO uncomment after domains are moved to plan evaluator lib
-		/*PlanEvaluator planEvaluator = new PlanEvaluator();
-		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);*/
+		//planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
 	}
 }
