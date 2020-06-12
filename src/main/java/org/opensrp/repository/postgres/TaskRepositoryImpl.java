@@ -2,7 +2,7 @@ package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opensrp.domain.Task;
+import org.smartregister.domain.Task;
 import org.opensrp.domain.postgres.TaskMetadata;
 import org.opensrp.domain.postgres.TaskMetadataExample;
 import org.opensrp.repository.TaskRepository;

@@ -2,7 +2,7 @@ package org.opensrp.repository;
 
 import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opensrp.domain.Task;
+import org.smartregister.domain.Task;
 
 public interface TaskRepository extends BaseRepository<Task> {
 
