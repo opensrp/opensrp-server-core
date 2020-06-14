@@ -246,7 +246,6 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		Date effectiveEndDate = dateFormat.parse("2020-07-15");
 		physicalLocation.getProperties().setEffectiveStartDate(effectiveStartDate);
 		physicalLocation.getProperties().setEffectiveEndDate(effectiveEndDate);
-		physicalLocation.getProperties().setVersion(2);
 		physicalLocation.setJurisdiction(true);
 		locationRepository.update(physicalLocation);
 		PhysicalLocation updatedLocation = locationRepository.get("3734");
@@ -257,7 +256,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(3, updatedLocation.getProperties().getGeographicLevel());
 		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
 		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
-		assertEquals(2, updatedLocation.getProperties().getVersion());
+		assertEquals(0, updatedLocation.getProperties().getVersion());
 		
 		assertNull(locationRepository.getStructure("3734", true));
 		
