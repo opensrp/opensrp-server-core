@@ -168,9 +168,30 @@ public class ClientFormMetadataExampleTest {
 				.andVersionEqualTo("0.0.1")
 				.andVersionNotEqualTo("0.0.2")
 				.andVersionGreaterThan("0.0.3")
-				.andVersionGreaterThanOrEqualTo("0.0.3");
+				.andVersionGreaterThanOrEqualTo("0.0.3")
+				.andIsDraftIsNull()
+				.andIsDraftIsNotNull()
+				.andIsDraftEqualTo(true)
+				.andIsDraftGreaterThan(false)
+				.andIsDraftGreaterThanOrEqualTo(false)
+				.andIsDraftLessThan(true)
+				.andIsDraftLessThan(true)
+				.andIsDraftLessThanOrEqualTo(true)
+				.andIsDraftIn(new ArrayList<>())
+				.andIsDraftBetween(true, false)
+				.andIsDraftNotBetween(true, false)
+				.andIsJsonValidatorIsNull()
+				.andIsJsonValidatorIsNotNull()
+				.andIsJsonValidatorEqualTo(true)
+				.andIsJsonValidatorNotEqualTo(true)
+				.andIsJsonValidatorGreaterThan(false)
+				.andIsJsonValidatorGreaterThanOrEqualTo(false)
+				.andIsJsonValidatorLessThan(true)
+				.andIsJsonValidatorLessThanOrEqualTo(true)
+				.andIsJsonValidatorIn(new ArrayList<>())
+				.andIsJsonValidatorNotIn(new ArrayList<>());
 
-		assertEquals(35, criteria.getAllCriteria().size());
+		assertEquals(56, criteria.getAllCriteria().size());
 	}
 
 

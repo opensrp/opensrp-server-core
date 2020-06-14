@@ -13,9 +13,15 @@ public interface ClientFormRepository extends BaseRepository<ClientForm> {
 
 	int countClientFormByFormIdentifier(@NonNull String formIdentifier);
 
+	int countClientFormByFormIdentifier(@NonNull String formIdentifier, boolean isJsonValidator);
+
 	ClientFormMetadata getClientFormMetadata(@NonNull String formVersion, @NonNull String formIdentifier);
 
+	ClientFormMetadata getClientFormMetadata(@NonNull String formVersion, @NonNull String formIdentifier, boolean isJsonValidator);
+
 	List<IdVersionTuple> getAvailableClientFormVersions(@NonNull String formIdentifier);
+
+	List<IdVersionTuple> getAvailableClientFormVersions(@NonNull String formIdentifier, boolean isJsonValidator);
 
 	ClientFormMetadata getFormMetadata(long id);
 
