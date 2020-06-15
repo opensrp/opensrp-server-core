@@ -6,6 +6,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -62,6 +63,18 @@ public class ManifestServiceTest {
 
         List<Manifest> actutalmanifest = manifestService.getAllManifest();
         verify(manifestRepository).getAll();
+        assertEquals(1, actutalmanifest.size());
+        assertEquals("mani1234", actutalmanifest.get(0).getIdentifier());
+    }
+    
+    @Test
+    public void testGetManifestWithLimit() {
+        List<Manifest> expectedManifest = new ArrayList<>();
+        expectedManifest.add(initTestManifest());
+        when(manifestRepository.getAll(anyInt())).thenReturn(expectedManifest);
+        
+        List<Manifest> actutalmanifest = manifestService.getAllManifest(anyInt());
+        verify(manifestRepository).getAll(anyInt());
         assertEquals(1, actutalmanifest.size());
         assertEquals("mani1234", actutalmanifest.get(0).getIdentifier());
     }
