@@ -48,4 +48,12 @@
         SELECT id, version FROM core.client_form_metadata WHERE identifier = #{formIdentifier} AND
         is_json_validator = #{isJsonValidator, jdbcType=BIT}
     </select>
+
+    <select id="getClientFormMetadata" parameterType="boolean" resultMap="BaseClientFormMetadataResultMap">
+        SELECT * FROM core.client_form_metadata WHERE is_draft = #{isDraft, jdbcType=BIT}
+    </select>
+
+    <select id="getAllClientFormMetadata" resultMap="BaseClientFormMetadataResultMap">
+        SELECT * FROM core.client_form_metadata
+    </select>
 </mapper>
