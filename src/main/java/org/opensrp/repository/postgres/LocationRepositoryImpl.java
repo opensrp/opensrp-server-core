@@ -539,8 +539,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		}
 		
 		String identifier = uniqueId.toString();
-		
-		return retrievePrimaryKey(identifier, entity.isJurisdiction(), entity.getProperties().getVersion());
+		int version = entity.getProperties() != null ? entity.getProperties().getVersion() : 0;
+		return retrievePrimaryKey(identifier, entity.isJurisdiction(), version);
 	}
 
 	@Override
