@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.smartregister.domain.LocationProperty;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.smartregister.utils.PropertiesConverter;
 
 import java.util.HashMap;
 import java.util.Map;

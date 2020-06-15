@@ -35,6 +35,7 @@ import org.smartregister.domain.LocationProperty.PropertyStatus;
 import org.smartregister.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
 import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.Geometry.GeometryType;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.LocationRepository;
