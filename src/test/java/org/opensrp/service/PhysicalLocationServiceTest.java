@@ -166,7 +166,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testAddOrUpdateShouldUpdateLocation() {
 		PhysicalLocation physicalLocation = createLocation();
-		when(locationRepository.get("3734", true)).thenReturn(physicalLocation);
+		when(locationRepository.get("3734", true, 0)).thenReturn(physicalLocation);
 		locationService.addOrUpdate(createLocation());
 		verify(locationRepository).update(argumentCaptor.capture());
 		

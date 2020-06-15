@@ -74,7 +74,7 @@ public class PhysicalLocationService {
 		physicalLocation.setServerVersion(null);
 		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndVersion(physicalLocation.getId(), physicalLocation.getProperties().getVersion());
 		boolean locationHasNoUpdates = locationRepository.isGeometryCoordsEqual(physicalLocation, existingEntity);
-		if (locationHasNoUpdates){
+		if (locationHasNoUpdates || !physicalLocation.isJurisdiction()){
 			locationRepository.update(physicalLocation);
 		} else {
 			//make existing location inactive
