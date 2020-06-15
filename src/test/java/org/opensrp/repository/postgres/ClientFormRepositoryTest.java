@@ -90,6 +90,33 @@ public class ClientFormRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void testFormRelationshipIsNullByDefault() {
+		ClientFormMetadata clientFormMetadata = clientFormRepository.getFormMetadata(3);
+		assertNull(clientFormMetadata.getRelation());
+	}
+
+	@Test
+	public void canCreateMetadataWithFormRelationship() {
+		ClientForm clientForm = new ClientForm();
+		clientForm.setCreatedAt(new Date());
+		clientForm.setJson("calculation =  helper.getDuration(step1_date_died , step1_dob)");
+
+		ClientFormMetadata clientFormMetadata = new ClientFormMetadata();
+		clientFormMetadata.setModule("anc");
+		clientFormMetadata.setVersion("1.0.0");
+		clientFormMetadata.setIdentifier("rule/sample_calc.yml");
+		clientFormMetadata.setRelation("json.form/anc/sample.json");
+		clientFormMetadata.setLabel("SAMPLE CALC FORM");
+		clientFormMetadata.setCreatedAt(new Date());
+
+		ClientFormService.CompleteClientForm completeClientForm = clientFormRepository
+				.create(clientForm, clientFormMetadata);
+
+		assertEquals(6, (long) completeClientForm.clientForm.getId());
+		assertEquals("json.form/anc/sample.json", completeClientForm.clientFormMetadata.getRelation());
+	}
+
+	@Test
 	public void testGetAll() {
 		assertEquals(5, clientFormRepository.getAll().size());
 	}
