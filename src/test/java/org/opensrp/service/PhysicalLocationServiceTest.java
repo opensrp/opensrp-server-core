@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -68,9 +69,9 @@ public class PhysicalLocationServiceTest {
 	
 	@Test
 	public void testGetLocation() {
-		when(locationRepository.get("3734", true)).thenReturn(createLocation());
+		when(locationRepository.get("3734", true,0)).thenReturn(createLocation());
 		PhysicalLocation parentLocation = locationService.getLocation("3734", true);
-		verify(locationRepository).get("3734", true);
+		verify(locationRepository).get("3734", true, 0);
 		verifyNoMoreInteractions(locationRepository);
 		
 		assertEquals("3734", parentLocation.getId());
@@ -418,7 +419,8 @@ public class PhysicalLocationServiceTest {
 		expectedLocations.add(createStructure());
 		expectedLocations.add(createStructure());
 		
-		when(locationRepository.get("12323", true)).thenReturn(physicalLocation);
+		when(locationRepository.get("12323", true,0)).thenReturn(physicalLocation);
+		when(locationRepository.isGeometryCoordsEqual(any(), any())).thenReturn(true);
 		locationService.saveLocations(expectedLocations, true);
 		
 		verify(locationRepository, times(2)).add(argumentCaptor.capture());
