@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.joda.time.DateTime;
-import org.opensrp.domain.Task;
+import org.smartregister.domain.Task;
 import org.opensrp.util.DateTimeTypeConverter;
 import org.postgresql.util.PGobject;
 

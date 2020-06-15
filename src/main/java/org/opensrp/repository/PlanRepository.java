@@ -1,7 +1,7 @@
 package org.opensrp.repository;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.opensrp.domain.PlanDefinition;
+import org.smartregister.domain.PlanDefinition;
 
 import java.util.List;
 

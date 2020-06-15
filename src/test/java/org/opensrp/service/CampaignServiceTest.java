@@ -16,8 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensrp.domain.Campaign;
-import org.opensrp.domain.ExecutionPeriod;
-import org.opensrp.domain.Task.TaskStatus;
+import org.smartregister.domain.ExecutionPeriod;
+import org.smartregister.domain.Task.TaskStatus;
 import org.opensrp.repository.CampaignRepository;
 import org.powermock.modules.junit4.PowerMockRunner;
 

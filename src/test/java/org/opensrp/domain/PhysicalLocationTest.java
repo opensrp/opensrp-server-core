@@ -1,20 +1,19 @@
 package org.opensrp.domain;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import org.junit.Test;
 import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationProperty.PropertyStatus;
 import org.opensrp.util.PropertiesConverter;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class PhysicalLocationTest {
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(LocationProperty.class, new PropertiesConverter())

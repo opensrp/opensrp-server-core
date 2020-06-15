@@ -23,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.domain.AssignedLocations;
-import org.opensrp.domain.PlanDefinition;
+import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 

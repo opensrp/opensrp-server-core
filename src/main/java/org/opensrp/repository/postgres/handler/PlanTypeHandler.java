@@ -5,7 +5,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.opensrp.domain.PlanDefinition;
+import org.smartregister.domain.PlanDefinition;
 import org.opensrp.util.DateTypeConverter;
 import org.opensrp.util.TaskDateTimeTypeConverter;
 import org.postgresql.util.PGobject;
