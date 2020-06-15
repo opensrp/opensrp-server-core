@@ -21,7 +21,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.opensrp.domain.Address;
+import org.smartregister.domain.Address;
 import org.smartregister.domain.Client;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
