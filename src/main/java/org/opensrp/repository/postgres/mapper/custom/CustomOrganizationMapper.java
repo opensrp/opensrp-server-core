@@ -3,6 +3,7 @@
  */
 package org.opensrp.repository.postgres.mapper.custom;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -30,5 +31,8 @@ public interface CustomOrganizationMapper extends OrganizationMapper {
 	List<org.opensrp.domain.Organization> selectSearchOrganizations(@Param("searchBean") OrganizationSearchBean searchBean,
 	                                                                @Param("offset") int offset, @Param("limit") int limit);
 
+
 	int selectTotalSearchOrganizations(@Param("searchBean") OrganizationSearchBean searchBean);
+
+	List<Organization> selectOrganizationsEncompassLocations(@Param("identifier") String identifier, @Param("activeDate") Date activeDate);
 }

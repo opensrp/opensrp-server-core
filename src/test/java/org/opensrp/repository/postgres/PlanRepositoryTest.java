@@ -541,4 +541,46 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         return ids.size() == 0;
     }
 
+    @Test
+    public void testCountPlansByIdentifiersAndServerVersion() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("identifier_7");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1l);
+        planRepository.add(plan);
+
+        Set<String> ids = new HashSet<>();
+
+        plan = new PlanDefinition();
+        plan.setIdentifier("identifier_8");
+        ids.add("identifier_8");
+        jurisdictions = new ArrayList<>();
+        jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(2l);
+        planRepository.add(plan);
+
+        List<String> operationalAreaIds = new ArrayList<>();
+        operationalAreaIds.add("operation_area_1");
+        Long plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7","identifier_8"), 0l);
+        assertEquals(2,plans.longValue());
+
+        plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7","identifier_8"), 2l);
+        assertEquals(1,plans.longValue());
+
+        plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7","identifier_8"), 3l);
+        assertEquals(0,plans.longValue());
+
+        plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_70"), 0l);
+        assertEquals(0,plans.longValue());
+
+    }
+
 }

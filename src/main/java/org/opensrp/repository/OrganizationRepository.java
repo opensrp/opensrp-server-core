@@ -1,16 +1,24 @@
 package org.opensrp.repository;
 
-import java.util.Date;
-import java.util.List;
-
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
 import org.opensrp.search.OrganizationSearchBean;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Samuel Githengi on 8/30/19.
  */
 public interface OrganizationRepository extends BaseRepository<Organization> {
+
+	/**
+	 * Returns all organizations that encompass the given location
+	 * Organizations can be fetched by child locations
+	 *
+	 * @return
+	 */
+	List<Organization> selectOrganizationsEncompassLocations(String location_id, Date activeDate);
 
 	/**
 	 * Assign jurisdiction and or plan to a organization

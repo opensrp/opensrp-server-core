@@ -1,10 +1,12 @@
 package org.opensrp.repository.postgres;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
@@ -20,6 +22,10 @@ import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper;
 import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Samuel Githengi on 8/30/19.
@@ -115,6 +121,12 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 
 		organizationMapper.updateByPrimaryKeySelective(pgOrganization);
 
+	}
+
+	@Override
+	public List<Organization> selectOrganizationsEncompassLocations(String location_id, Date activeDate) {
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectOrganizationsEncompassLocations(location_id, activeDate);
+		return convert(organizations);
 	}
 
 	@Override

@@ -371,4 +371,13 @@ public class EventService {
 	public Pair<List<String>, Long> findAllIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit) {
 		return allEvents.findIdsByEventType(eventType, isDeleted, serverVersion, limit);
 	}
+
+	/**
+	 * This method is used to return a count of locations based on the provided parameters
+	 * @param eventSearchBean object containing params to search by
+	 * @return returns a count of events matching the passed parameters
+	 */
+	public Long countEvents(EventSearchBean eventSearchBean){
+		return allEvents.countEvents(eventSearchBean);
+	};
 }

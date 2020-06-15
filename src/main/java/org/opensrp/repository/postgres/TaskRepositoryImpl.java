@@ -104,10 +104,10 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 
 	@Override
 	public List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion) {
-		List<String> campaigns = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
+		List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
 		List<String> groups = Arrays.asList(org.apache.commons.lang.StringUtils.split(group, ","));
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andPlanIdentifierIn(campaigns).andGroupIdentifierIn(groups)
+		taskMetadataExample.createCriteria().andPlanIdentifierIn(plans).andGroupIdentifierIn(groups)
 				.andServerVersionGreaterThanOrEqualTo(serverVersion);
 		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
@@ -176,6 +176,25 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
 				DEFAULT_FETCH_SIZE);
 		return convert(tasks);
+	}
+
+	@Override
+	public Long countTasksByPlanAndGroup(String plan, String group, long serverVersion) {
+		List<String> campaigns = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
+		List<String> groups = Arrays.asList(org.apache.commons.lang.StringUtils.split(group, ","));
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		taskMetadataExample.createCriteria().andPlanIdentifierIn(campaigns).andGroupIdentifierIn(groups)
+				.andServerVersionGreaterThanOrEqualTo(serverVersion);
+		return taskMetadataMapper.countByExample(taskMetadataExample);
+	}
+
+	@Override
+	public Long countTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
+		List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		taskMetadataExample.createCriteria().andPlanIdentifierIn(plans)
+				.andOwnerEqualTo(owner).andServerVersionGreaterThanOrEqualTo(serverVersion);
+		return taskMetadataMapper.countByExample(taskMetadataExample);
 	}
 
 	@Override

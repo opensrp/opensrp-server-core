@@ -1,14 +1,26 @@
 /**
- * 
+ *
  */
 package org.opensrp.repository.postgres;
+
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import org.junit.Test;
+import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.Code;
+import org.opensrp.domain.Organization;
+import org.opensrp.repository.OrganizationRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,26 +28,22 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.Test;
-import org.opensrp.domain.AssignedLocations;
-import org.opensrp.domain.Code;
-import org.opensrp.domain.Organization;
+
+
 import org.opensrp.domain.Practitioner;
 import org.opensrp.domain.PractitionerRole;
 import org.opensrp.domain.PractitionerRoleCode;
-import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.opensrp.search.OrganizationSearchBean;
 import org.opensrp.search.OrganizationSearchBean.FieldName;
 import org.opensrp.search.OrganizationSearchBean.OrderByType;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+
 
 /**
  * @author Samuel Githengi created on 09/16/19
@@ -143,6 +151,15 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 
 		assertEquals(2, organizationRepository.getAll().size());
 
+	}
+
+	@Test
+	public void testSelectOrganizationsEncompassLocations() throws ParseException {
+		String jurisdiction = "304cbcd4-0850-404a-a8b1-486b02f7b84d";
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+		Date date = format.parse("2019-12-10 20:20:20");
+		List<Organization> organizations = organizationRepository.selectOrganizationsEncompassLocations(jurisdiction, date);
+		assertEquals(organizations.size() , 2);
 	}
 
 	@Test
