@@ -7,16 +7,16 @@ import org.springframework.lang.Nullable;
 import java.util.List;
 
 public interface ManifestRepository extends BaseRepository<Manifest> {
-    
+
     @Nullable
     Manifest getManifestByAppId(String appId);
-    
+
     @Nullable
     List<Manifest> getManifestsByAppId(String appId);
-    
+
     @Nullable
     Manifest getManifest(@NonNull String appId, @NonNull String appVersion);
-    
+
     /**
      * Gets all the manifests
      *

@@ -39,8 +39,7 @@ public class ManifestServiceTest {
         manifestService = new ManifestService();
         manifestService.setManifestRepository(manifestRepository);
     }
-
-
+    
     private static Manifest initTestManifest(){
         Manifest manifest = new Manifest();
         String identifier = "mani1234";
@@ -66,13 +65,13 @@ public class ManifestServiceTest {
         assertEquals(1, actutalmanifest.size());
         assertEquals("mani1234", actutalmanifest.get(0).getIdentifier());
     }
-    
+
     @Test
     public void testGetManifestWithLimit() {
         List<Manifest> expectedManifest = new ArrayList<>();
         expectedManifest.add(initTestManifest());
         when(manifestRepository.getAll(anyInt())).thenReturn(expectedManifest);
-        
+
         List<Manifest> actutalmanifest = manifestService.getAllManifest(anyInt());
         verify(manifestRepository).getAll(anyInt());
         assertEquals(1, actutalmanifest.size());
