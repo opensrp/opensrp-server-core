@@ -38,7 +38,7 @@ public class ErrorTraceRepositoryTest extends BaseRepositoryTest {
 		ErrorTrace error = errorTraceRepository.get("85ed95b2-8436-4a93-9ae7-ab104d65edd7");
 		assertEquals(new DateTime("2018-03-14T07:53:11.152"), error.getDateOccurred());
 		assertEquals("OPENMRS FAILED CLIENT PUSH", error.getErrorType());
-		assertEquals("org.opensrp.domain.Client", error.getDocumentType());
+		assertEquals("org.smartregister.domain.Client", error.getDocumentType());
 		assertNull(errorTraceRepository.get("07271855-4018-497a-b180-6af"));
 	}
 	

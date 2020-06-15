@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opensrp.domain.LocationProperty;
+import org.smartregister.domain.LocationProperty;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.HashMap;

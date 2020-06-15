@@ -10,7 +10,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.joda.time.DateTime;
 import org.smartregister.domain.Task;
-import org.opensrp.util.DateTimeTypeConverter;
+import org.smartregister.utils.DateTimeTypeConverter;
 import org.postgresql.util.PGobject;
 
 import com.google.gson.Gson;

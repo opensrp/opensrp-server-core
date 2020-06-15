@@ -2,7 +2,7 @@ package org.utils;
 
 import java.util.List;
 
-import org.opensrp.domain.BaseDataEntity;
+import org.smartregister.domain.BaseDataEntity;
 import org.opensrp.repository.BaseRepository;
 
 public final class DbAccessUtils {

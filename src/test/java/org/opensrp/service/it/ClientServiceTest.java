@@ -31,7 +31,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.postgres.ClientsRepositoryImpl;
 import org.opensrp.search.AddressSearchBean;

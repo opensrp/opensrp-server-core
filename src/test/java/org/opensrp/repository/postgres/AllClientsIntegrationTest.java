@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensrp.common.Gender;
 import org.opensrp.domain.Address;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.service.ClientService;

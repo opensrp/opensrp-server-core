@@ -2,7 +2,7 @@ package org.opensrp.service;
 
 import java.util.List;
 
-import org.opensrp.domain.BaseEntity;
+import org.smartregister.domain.BaseEntity;
 import org.opensrp.repository.ClientsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

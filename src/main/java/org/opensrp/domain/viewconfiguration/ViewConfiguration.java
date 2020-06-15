@@ -3,8 +3,7 @@ package org.opensrp.domain.viewconfiguration;
 import java.util.List;
 import java.util.Map;
 
-import org.opensrp.domain.BaseDataObject;
-
+import org.smartregister.domain.BaseDataObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**

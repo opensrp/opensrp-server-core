@@ -1,6 +1,6 @@
 package org.opensrp.service.multimedia;
 
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.MultimediaRepository;

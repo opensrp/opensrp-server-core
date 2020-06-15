@@ -22,7 +22,7 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opensrp.domain.Address;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;

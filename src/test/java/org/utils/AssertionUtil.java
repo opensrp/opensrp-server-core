@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.opensrp.domain.BaseDataObject;
 import org.opensrp.domain.Location;
 
 public final class AssertionUtil {

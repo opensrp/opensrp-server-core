@@ -11,19 +11,18 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.opensrp.domain.Address;
+import org.smartregister.domain.Address;
 import org.opensrp.domain.AppStateToken;
-import org.opensrp.domain.BaseEntity;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.ErrorTrace;
-import org.opensrp.domain.Event;
+import org.smartregister.domain.Event;
 import org.opensrp.domain.Hia2Indicator;
 import org.opensrp.domain.Location;
 import org.opensrp.domain.Multimedia;
-import org.opensrp.domain.Obs;
+import org.smartregister.domain.Obs;
 import org.opensrp.domain.Provider;
 import org.opensrp.domain.Report;
-import org.opensrp.domain.User;
+import org.smartregister.domain.User;
 import org.opensrp.dto.form.MultimediaDTO;
 
 public class SampleFullDomainObject {
