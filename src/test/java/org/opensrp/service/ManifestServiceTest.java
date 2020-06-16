@@ -39,7 +39,7 @@ public class ManifestServiceTest {
         manifestService = new ManifestService();
         manifestService.setManifestRepository(manifestRepository);
     }
-    
+
     private static Manifest initTestManifest(){
         Manifest manifest = new Manifest();
         String identifier = "mani1234";
