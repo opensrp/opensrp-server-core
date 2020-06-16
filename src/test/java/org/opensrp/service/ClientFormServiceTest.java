@@ -127,13 +127,11 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 		assertEquals(count, clientFormMetadataList.size());
 	}
 
-
 	@Test
 	public void testGetAllClientFormMetadataShouldReturnNonDraftFormsMetadata() {
 		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getClientFormMetadata(false);
 		assertEquals(5, clientFormMetadataList.size());
 	}
-
 
 	@Test
 	public void testGetAllClientFormMetadataShouldReturnAllFormMetadata() {
@@ -157,6 +155,34 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 
 		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getAllClientFormMetadata();
 		assertEquals(count + 5, clientFormMetadataList.size());
+	}
+
+	@Test
+	public void testGetMostRecentFormValidator() {
+		int count = 5;
+		String formIdentifier = "json.form/child/sample.json";
+
+		for (int i = 0; i < count; i++) {
+			ClientFormMetadata clientFormMetadata = new ClientFormMetadata();
+			clientFormMetadata.setModule("child");
+			clientFormMetadata.setVersion("1.0." + i);
+			clientFormMetadata.setIdentifier(formIdentifier);
+			clientFormMetadata.setLabel("SAMPLE FORM");
+			clientFormMetadata.setIsJsonValidator(true);
+			clientFormMetadata.setCreatedAt(new Date());
+
+			ClientForm clientForm = new ClientForm();
+			clientForm.setCreatedAt(new Date());
+			clientForm.setJson(
+					clientFormMetadata.getVersion() + "{\"cannot_remove\":{\"title\":\"Fields you cannot remove\",\"fields\":[\"anc_ga\",\"anc_lmp_ga\"]}}");
+
+			clientFormService.addClientForm(clientForm, clientFormMetadata);
+		}
+
+		ClientForm clientForm = clientFormService.getMostRecentFormValidator(formIdentifier);
+		System.out.println(clientForm.getJson());
+		assertTrue(((String) clientForm.getJson()).startsWith("\"1.0.4"));
+		assertEquals((Long) 10L, clientForm.getId());
 	}
 
 	@Override

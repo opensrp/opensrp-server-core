@@ -14,4 +14,6 @@ public interface CustomClientFormMapper extends ClientFormMapper {
 	int insertClientForm(@NonNull ClientForm clientForm);
 
 	List<ClientForm> getAll(@Param("offset") int offset, @Param("batchSize") int batchSize);
+
+	ClientForm getMostRecentFormValidator(@NonNull String formIdentifier);
 }

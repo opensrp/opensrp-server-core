@@ -107,6 +107,12 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 
 	@Nullable
 	@Override
+	public ClientForm getMostRecentFormValidator(@NonNull String formIdentifier) {
+		return clientFormMapper.getMostRecentFormValidator(formIdentifier);
+	}
+
+	@Nullable
+	@Override
 	public ClientForm get(String id) {
 		if (TextUtils.isEmpty(id)) {
 			return null;
