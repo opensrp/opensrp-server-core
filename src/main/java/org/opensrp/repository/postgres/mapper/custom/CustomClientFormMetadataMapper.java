@@ -10,14 +10,16 @@ import java.util.List;
 
 public interface CustomClientFormMetadataMapper extends ClientFormMetadataMapper {
 
-	int countClientFormMetadataByFormIdentifier(@Param("formIdentifier") String formIdentifier, @Param("isJsonValidator") boolean isJsonValidator);
+	int countClientFormMetadataByFormIdentifier(@Param("formIdentifier") String formIdentifier,
+			@Param("isJsonValidator") boolean isJsonValidator);
 
 	ClientFormMetadata selectClientFormMetadataByFormVersionAndIdentifier(@Param("formVersion") @NonNull String formVersion,
 			@Param("formIdentifier") @NonNull String formIdentifier, @Param("isJsonValidator") boolean isJsonValidator);
 
 	int insertClientFormMetadata(@NonNull ClientFormMetadata clientFormMetadata);
 
-	List<IdVersionTuple> getAvailableClientFormVersions(@Param("formIdentifier") @NonNull String formIdentifier, @Param("isJsonValidator") boolean isJsonValidator);
+	List<IdVersionTuple> getAvailableClientFormVersions(@Param("formIdentifier") @NonNull String formIdentifier,
+			@Param("isJsonValidator") boolean isJsonValidator);
 
 	List<ClientFormMetadata> getClientFormMetadata(boolean isDraft);
 

@@ -26,7 +26,6 @@ public class ClientFormMetadataExampleTest {
 
 		clientFormMetadataExample.clear();
 
-
 		assertEquals(0, clientFormMetadataExample.getOredCriteria().size());
 		assertFalse(clientFormMetadataExample.isDistinct());
 		assertNull(clientFormMetadataExample.getOrderByClause());
@@ -189,12 +188,22 @@ public class ClientFormMetadataExampleTest {
 				.andIsJsonValidatorLessThan(true)
 				.andIsJsonValidatorLessThanOrEqualTo(true)
 				.andIsJsonValidatorIn(new ArrayList<>())
-				.andIsJsonValidatorNotIn(new ArrayList<>());
+				.andIsJsonValidatorNotIn(new ArrayList<>())
+				.andRelationIsNull()
+				.andRelationIsNotNull()
+				.andRelationEqualTo(null)
+				.andRelationLike("%a%")
+				.andRelationNotLike("%a%")
+				.andRelationIn(new ArrayList<>())
+				.andRelationNotIn(new ArrayList<>())
+				.andRelationBetween("child", "registration")
+				.andRelationNotBetween("child", "registration")
+				.andRelationLessThan("child")
+				.andRelationLessThanOrEqualTo("child")
+				.andRelationGreaterThan("child")
+				.andRelationGreaterThanOrEqualTo("child");
 
 		assertEquals(56, criteria.getAllCriteria().size());
 	}
-
-
-
 
 }
