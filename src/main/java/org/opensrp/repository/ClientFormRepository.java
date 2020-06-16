@@ -37,4 +37,7 @@ public interface ClientFormRepository extends BaseRepository<ClientForm> {
 
 	@Nullable
 	List<ClientFormMetadata> getAllClientFormMetadata();
+
+	@Nullable
+	ClientForm getMostRecentFormValidator(@NonNull String formIdentifier);
 }
