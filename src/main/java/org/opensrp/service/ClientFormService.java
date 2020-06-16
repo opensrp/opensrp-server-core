@@ -86,6 +86,11 @@ public class ClientFormService {
 		return clientFormMetadataList == null ? new ArrayList<ClientFormMetadata>() : clientFormMetadataList;
 	}
 
+	@Nullable
+	public ClientForm getMostRecentFormValidator(@NonNull String formIdentifier) {
+		return clientFormRepository.getMostRecentFormValidator(formIdentifier);
+	}
+
 	public static class CompleteClientForm {
 
 		public ClientForm clientForm;
