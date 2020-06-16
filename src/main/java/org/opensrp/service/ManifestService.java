@@ -25,6 +25,7 @@ public class ManifestService {
     public void setManifestRepository(ManifestRepository manifestRepository) {
         this.manifestRepository = manifestRepository;
     }
+
     public ManifestRepository getManifestRepository() {
         return manifestRepository;
     }
@@ -32,6 +33,8 @@ public class ManifestService {
     public List<Manifest> getAllManifest() {
         return manifestRepository.getAll();
     }
+
+    public List<Manifest> getAllManifest(int limit) { return manifestRepository.getAll(limit);}
 
     public void addOrUpdateManifest(Manifest manifest) {
         if (StringUtils.isBlank(manifest.getIdentifier()))
@@ -52,7 +55,7 @@ public class ManifestService {
         manifest.setUpdatedAt(new DateTime());
         manifestRepository.add(manifest);
         return manifest;
-
+        
     }
 
     public Manifest updateManifest(Manifest manifest) {
@@ -82,7 +85,6 @@ public class ManifestService {
         return manifestWithErrors;
     }
 
-
     public void deleteManifest(Manifest manifest) {
         if (StringUtils.isBlank(manifest.getIdentifier())) {
             throw new IllegalArgumentException("Identifier not specified");
@@ -106,3 +108,4 @@ public class ManifestService {
         return manifestRepository.getManifest(appId, appVersion);
     }
 }
+
