@@ -10,10 +10,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityExistsException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.EntityExistsException;
 
 @Repository
 public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> implements ManifestRepository {
@@ -90,12 +90,12 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         }
 
         List<org.opensrp.domain.postgres.Manifest> manifestList = manifestMapper.selectByAppId(appId);
-
-        if(manifestList == null ) {
-        	return null;
+        
+        if (manifestList == null) {
+            return null;
         }
 
-     	return convert(manifestList.get(0));
+        return convert(manifestList.get(0));
     }
 
     @Nullable
@@ -114,6 +114,13 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
     public Manifest getManifest(String appId, String appVersion) {
         org.opensrp.domain.postgres.Manifest manifest = manifestMapper.selectByAppIdAndAppVersion(appId, appVersion);
         return manifest == null ? null : convert(manifest);
+    }
+
+    @Override
+    public List<Manifest> getAll(int limit) {
+        ManifestExample manifestExample = new ManifestExample();
+        List<org.opensrp.domain.postgres.Manifest> pgManifestList = manifestMapper.selectMany(manifestExample, 0, limit);
+        return convert(pgManifestList);
     }
 
     @Override
@@ -196,3 +203,4 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         return convertedManifests;
     }
 }
+
