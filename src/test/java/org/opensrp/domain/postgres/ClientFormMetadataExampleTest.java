@@ -191,7 +191,7 @@ public class ClientFormMetadataExampleTest {
 				.andIsJsonValidatorNotIn(new ArrayList<>())
 				.andRelationIsNull()
 				.andRelationIsNotNull()
-				.andRelationEqualTo(null)
+				.andRelationEqualTo("anc/child.json")
 				.andRelationLike("%a%")
 				.andRelationNotLike("%a%")
 				.andRelationIn(new ArrayList<>())
@@ -203,7 +203,7 @@ public class ClientFormMetadataExampleTest {
 				.andRelationGreaterThan("child")
 				.andRelationGreaterThanOrEqualTo("child");
 
-		assertEquals(56, criteria.getAllCriteria().size());
+		assertEquals(69, criteria.getAllCriteria().size());
 	}
 
 }
