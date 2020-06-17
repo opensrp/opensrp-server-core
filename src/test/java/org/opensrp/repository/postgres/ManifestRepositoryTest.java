@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.joda.time.DateTime;
-import org.junit.Assert;
 import org.opensrp.domain.Manifest;
 import org.opensrp.repository.ManifestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
