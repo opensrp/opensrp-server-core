@@ -216,6 +216,7 @@ public class PlanService {
 	 * @param serverVersion the server version to filter plans with
 	 * @return the count plans matching the above
 	 */
+	@PreAuthorize("hasPermission(#organizationIds,'Organization', 'PLAN_VIEW')")
 	public Long countPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
 
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
@@ -235,9 +236,10 @@ public class PlanService {
 	 * @param serverVersion the server version to filter plans with
 	 * @return the count of plans a user has access to
 	 */
+	@PreAuthorize("hasPermission(#username,'User', 'PLAN_VIEW')")
 	public Long countPlansByUsernameAndServerVersion(String username, long serverVersion) {
 
-		List<Long> organizationIds = getOrganizationIdsByUserName(username);
+		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
 			return countPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
 		}
