@@ -1,5 +1,11 @@
 package org.opensrp.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -12,6 +18,11 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "unique_ids")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class UniqueId {
 	
 	public static final String tbName = "unique_ids";
@@ -56,61 +67,23 @@ public class UniqueId {
 	@Column(name = COL_UPDATED_AT, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date updatedAt;
-	
-	public Long getId() {
-		return id;
-	}
-	
-	public void setId(Long id) {
-		this.id = id;
-	}
-	
-	public String getOpenmrsId() {
-		return openmrsId;
-	}
-	
-	public void setOpenmrsId(String openmrsId) {
+
+	private String identifier;
+
+	private Long idSource;
+
+	private boolean isReserved;
+
+	public UniqueId(String openmrsId, String status, String usedBy, String location, Date createdAt, Date updatedAt,
+			String identifier, Long idSource, boolean isReserved) {
 		this.openmrsId = openmrsId;
-	}
-	
-	public String getStatus() {
-		return status;
-	}
-	
-	public void setStatus(String status) {
 		this.status = status;
-	}
-	
-	public String getUsedBy() {
-		return usedBy;
-	}
-	
-	public void setUsedBy(String usedBy) {
 		this.usedBy = usedBy;
-	}
-	
-	public String getLocation() {
-		return location;
-	}
-	
-	public void setLocation(String location) {
 		this.location = location;
-	}
-	
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-	
-	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
-	}
-	
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
-	
-	public void setUpdatedAt(Date updatedAt) {
 		this.updatedAt = updatedAt;
+		this.identifier = identifier;
+		this.idSource = idSource;
+		this.isReserved = isReserved;
 	}
-	
 }

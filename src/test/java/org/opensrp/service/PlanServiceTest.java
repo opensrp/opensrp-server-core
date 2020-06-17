@@ -254,5 +254,61 @@ public class PlanServiceTest {
 		assertEquals(planIdentifiers, actualPlanIdentifiers);
 	}
 
+	@Test
+	public void testCountPlansByOrganizationsAndServerVersion() {
+
+		List<String> planIdentifiers = Arrays.asList("plan1", "plan2");
+		List<AssignedLocations> assignedLocations = new ArrayList<AssignedLocations>();
+		for (String id : planIdentifiers) {
+			AssignedLocations assignedLocation = new AssignedLocations();
+			assignedLocation.setPlanId(id);
+			assignedLocations.add(assignedLocation);
+		}
+		List<Long> organizationIds = Arrays.asList(1l, 40l);
+		long serverVersion = 1234l;
+		when(organizationService.findAssignedLocationsAndPlans(organizationIds))
+				.thenReturn(assignedLocations);
+		when(planRepository.countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion))
+				.thenReturn(1l);
+		Long plans = planService.countPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
+		verify(planRepository).countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
+		verify(organizationService).findAssignedLocationsAndPlans(organizationIds);
+		assertEquals(1, plans.longValue());
+	}
+
+	@Test
+	public void testCountPlansByUsernameAndServerVersion() {
+
+		List<String> planIdentifiers = Arrays.asList("plan1", "plan2");
+		List<AssignedLocations> assignedLocations = new ArrayList<AssignedLocations>();
+		for (String id : planIdentifiers) {
+			AssignedLocations assignedLocation = new AssignedLocations();
+			assignedLocation.setPlanId(id);
+			assignedLocations.add(assignedLocation);
+		}
+		List<Long> organizationIds = Arrays.asList(11l, 40l,7667l);
+		long serverVersion = 1234l;
+
+		org.opensrp.domain.Practitioner practitioner = new org.opensrp.domain.Practitioner();
+		practitioner.setIdentifier("practioner-1");
+
+		List<PractitionerRole> roles = new ArrayList<>();
+		for(long id:organizationIds) {
+			PractitionerRole role = new PractitionerRole();
+			role.setOrganizationId(id);
+			roles.add(role);
+		}
+
+		when(organizationService.findAssignedLocationsAndPlans(organizationIds))
+				.thenReturn(assignedLocations);
+		when(planRepository.countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion))
+				.thenReturn(2l);
+		when(practitionerService.getPractionerByUsername("janedoe")).thenReturn(practitioner);
+		when(practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier())).thenReturn(roles);
+		Long plans = planService.countPlansByUsernameAndServerVersion("janedoe", serverVersion);
+		verify(planRepository).countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
+		verify(organizationService).findAssignedLocationsAndPlans(organizationIds);
+		assertEquals(2, plans.longValue());
+	}
 
 }

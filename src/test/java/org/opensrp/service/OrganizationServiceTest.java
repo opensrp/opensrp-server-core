@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.PhysicalLocation;
@@ -72,6 +73,13 @@ public class OrganizationServiceTest {
 		assertEquals(expected, organizations);
 	}
 	
+	@Test
+	public void testSelectOrganizationsEncompassLocations(){
+		String locationID = "12345_location";
+		organizationService.selectOrganizationsEncompassLocations(locationID);
+		verify(organizationRepository).selectOrganizationsEncompassLocations(Mockito.eq(locationID), Mockito.any(Date.class));
+	}
+
 	@Test
 	public void testGetOrganization() {
 		when(organizationRepository.get(identifier)).thenReturn(organization);

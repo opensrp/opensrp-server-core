@@ -255,4 +255,41 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 				.isEmpty());
 	}
 
+	@Test
+	public void testCountTasksByPlanAndGroup() {
+		Long tasks = taskRepository.countTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 0);
+		assertEquals(1l, tasks.longValue());
+
+		Task task = new Task();
+		task.setIdentifier("tsk-2332-j");
+		task.setPlanIdentifier("IRS_2018_S1");
+		task.setGroupIdentifier("2018_IRS-3734");
+		task.setBusinessStatus("Not Visited");
+		task.setStatus(TaskStatus.DRAFT);
+		task.setServerVersion(System.currentTimeMillis());
+		taskRepository.add(task);
+
+		assertEquals(2, taskRepository.countTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 0).longValue());
+
+	}
+
+	@Test
+	public void countGetTasksByOwnerAndPlan() {
+		Long tasks = taskRepository.countTasksByPlanAndOwner("IRS_2018_S1", "demouser", 0);
+		assertEquals(1, tasks.longValue());
+
+		Task task = new Task();
+		task.setIdentifier("tsk-2332-j");
+		task.setPlanIdentifier("IRS_2018_S1");
+		task.setGroupIdentifier("2018_IRS-3734");
+		task.setBusinessStatus("Not Visited");
+		task.setStatus(TaskStatus.DRAFT);
+		task.setOwner("demouser");
+		task.setServerVersion(System.currentTimeMillis());
+		taskRepository.add(task);
+
+		assertEquals(2, taskRepository.countTasksByPlanAndOwner("IRS_2018_S1", "demouser", 0).longValue());
+
+	}
+
 }

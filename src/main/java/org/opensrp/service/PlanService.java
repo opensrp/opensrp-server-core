@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Vincent Karuri on 06/05/2019
@@ -206,5 +207,40 @@ public class PlanService {
 	@PreAuthorize("hasRole('PLAN_ADMIN')")
 	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted) {
 		return planRepository.findAllIds(serverVersion, limit, isDeleted);
+	}
+
+	/**
+	 * Gets the count of plans using organization Ids that have server version >= the server version param
+	 *
+	 * @param organizationIds the list of organization Ids
+	 * @param serverVersion the server version to filter plans with
+	 * @return the count plans matching the above
+	 */
+	public Long countPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
+
+		List<AssignedLocations> assignedPlansAndLocations = organizationService
+				.findAssignedLocationsAndPlans(organizationIds);
+		List<String> planIdentifiers = assignedPlansAndLocations
+				.stream()
+				.map(a-> a.getPlanId())
+				.collect(Collectors.toList());
+		return planRepository.countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
+	}
+
+	/**
+	 * Gets the count of plans that a user has access to according to the plan location assignment that have
+	 * server version >= the server version param
+	 *
+	 * @param username the username of user
+	 * @param serverVersion the server version to filter plans with
+	 * @return the count of plans a user has access to
+	 */
+	public Long countPlansByUsernameAndServerVersion(String username, long serverVersion) {
+
+		List<Long> organizationIds = getOrganizationIdsByUserName(username);
+		if (organizationIds != null) {
+			return countPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
+		}
+		return 0l;
 	}
 }

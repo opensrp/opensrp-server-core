@@ -45,6 +45,15 @@ public class OrganizationService {
 	}
 	
 	/**
+	 * Returns all organizations filtered by locations
+	 *
+	 * @return all organizations
+	 */
+	public List<Organization> selectOrganizationsEncompassLocations(String location_id) {
+		return organizationRepository.selectOrganizationsEncompassLocations(location_id, new Date());
+	}
+
+	/**
 	 * Get the organization that has the identifier
 	 * 
 	 * @param identifier
