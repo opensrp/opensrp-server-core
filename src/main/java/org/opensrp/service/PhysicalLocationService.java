@@ -87,7 +87,7 @@ public class PhysicalLocationService {
 
 			// create new location
 			//increment location version
-			int newVersion = physicalLocation.getProperties().getVersion() + 1;
+			int newVersion = existingEntity.getProperties().getVersion() + 1;
 			physicalLocation.getProperties().setVersion(newVersion);
 			physicalLocation.getProperties().setStatus(LocationProperty.PropertyStatus.ACTIVE);
 
