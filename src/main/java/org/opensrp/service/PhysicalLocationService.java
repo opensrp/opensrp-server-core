@@ -72,7 +72,8 @@ public class PhysicalLocationService {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
 		physicalLocation.setServerVersion(null);
-		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndVersion(physicalLocation.getId(), physicalLocation.getProperties().getVersion());
+		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndStatus(physicalLocation.getId(),
+				LocationProperty.PropertyStatus.ACTIVE.name(), true);
 		boolean locationHasNoUpdates = locationRepository.isGeometryCoordsEqual(physicalLocation, existingEntity);
 		if (locationHasNoUpdates || !physicalLocation.isJurisdiction()){
 			locationRepository.update(physicalLocation);

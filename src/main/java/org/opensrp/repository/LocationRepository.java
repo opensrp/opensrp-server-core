@@ -141,7 +141,13 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 
 	boolean isGeometryCoordsEqual(PhysicalLocation newEntity, PhysicalLocation existingEntity);
 
-	PhysicalLocation findLocationByIdentifierAndVersion(String identifier, int version);
+	/**
+	 * This method is used to return a location based on the provided parameters
+	 * @param identifier identifier of the location
+	 * @param status status of the location
+	 * @return returns a location matching the passed parameters
+	 */
+	PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status, boolean returnGeometry);
 
 	/**
 	 * Gets the location primary key
