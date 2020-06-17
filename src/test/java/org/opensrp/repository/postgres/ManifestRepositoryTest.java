@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import org.joda.time.DateTime;
+import org.junit.Assert;
 import org.opensrp.domain.Manifest;
 import org.opensrp.repository.ManifestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,6 +173,24 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
 
         Set<String> ids = new HashSet<>();
         ids.add(manifest1.getIdentifier());
+        ids.add(manifest2.getIdentifier());
+        assertTrue(testIfAllIdsExists(manifests, ids));
+    }
+
+    @Test
+    public void testGetAllShouldGetAllManifestsWithOrdering() {
+        Manifest manifest = initTestManifest();
+        manifestRepository.add(manifest);
+
+        Manifest manifest2 = initTestManifest2();
+        manifestRepository.add(manifest2);
+
+        List<Manifest> manifests = manifestRepository.getAll(1);
+        assertNotNull(manifests);
+        assertEquals(1, manifests.size());
+
+        Set<String> ids = new HashSet<>();
+        Assert.assertEquals("6", manifests.get(0).getIdentifier());
         ids.add(manifest2.getIdentifier());
         assertTrue(testIfAllIdsExists(manifests, ids));
     }
