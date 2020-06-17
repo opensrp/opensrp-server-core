@@ -220,7 +220,10 @@
 		pm.operational_area_id as identifier,  lm.name
 		FROM core.plan_metadata pm
 		JOIN core.location_metadata lm ON pm.operational_area_id = lm.geojson_id
-		WHERE pm.identifier = #{planIdentifier,jdbcType=VARCHAR}
+		AND pm.identifier = #{planIdentifier,jdbcType=VARCHAR}
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
 
 		<if test="example.orderByClause != null">
 			order by lm.${example.orderByClause}
