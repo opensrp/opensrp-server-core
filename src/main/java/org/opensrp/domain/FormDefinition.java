@@ -2,7 +2,7 @@ package org.opensrp.domain;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.smartregister.domain.Form;
+import org.opensrp.domain.Form;
 
 @JsonSerialize
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)

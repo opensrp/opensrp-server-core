@@ -12,7 +12,7 @@ import com.openpojo.validation.ValidatorBuilder;
 import com.openpojo.validation.affirm.Affirm;
 import com.openpojo.validation.test.impl.GetterTester;
 import com.openpojo.validation.test.impl.SetterTester;
-import org.smartregister.domain.SubFormDefinition;
+import org.opensrp.domain.SubFormDefinition;
 
 public class SubFormDefinitionTest {
 	

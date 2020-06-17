@@ -9,9 +9,6 @@ import com.openpojo.validation.affirm.Affirm;
 import com.openpojo.validation.test.impl.GetterTester;
 import com.openpojo.validation.test.impl.SetterTester;
 import org.junit.Test;
-import org.smartregister.domain.Form;
-import org.smartregister.domain.FormField;
-import org.smartregister.domain.SubFormDefinition;
 
 import static java.util.Arrays.asList;
 

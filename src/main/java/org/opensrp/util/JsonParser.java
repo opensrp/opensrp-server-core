@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.smartregister.domain.Form;
+import org.opensrp.domain.Form;
 import org.opensrp.domain.FormDefinition;
-import org.smartregister.domain.FormField;
-import org.smartregister.domain.SubFormDefinition;
+import org.opensrp.domain.FormField;
+import org.opensrp.domain.SubFormDefinition;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
