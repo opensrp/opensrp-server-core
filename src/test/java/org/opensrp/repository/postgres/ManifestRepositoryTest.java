@@ -190,7 +190,7 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
         assertEquals(1, manifests.size());
 
         Set<String> ids = new HashSet<>();
-        Assert.assertEquals("6", manifests.get(0).getIdentifier());
+        assertEquals("6", manifests.get(0).getIdentifier());
         ids.add(manifest2.getIdentifier());
         assertTrue(testIfAllIdsExists(manifests, ids));
     }
