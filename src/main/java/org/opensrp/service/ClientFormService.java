@@ -77,13 +77,13 @@ public class ClientFormService {
 	@NonNull
 	public List<ClientFormMetadata> getClientFormMetadata(boolean isDraft) {
 		List<ClientFormMetadata> clientFormMetadataList = clientFormRepository.getAllClientFormMetadata(isDraft);
-		return clientFormMetadataList == null ? new ArrayList<ClientFormMetadata>() : clientFormMetadataList;
+		return clientFormMetadataList == null ? new ArrayList<>() : clientFormMetadataList;
 	}
 
 	@NonNull
 	public List<ClientFormMetadata> getAllClientFormMetadata() {
 		List<ClientFormMetadata> clientFormMetadataList = clientFormRepository.getAllClientFormMetadata();
-		return clientFormMetadataList == null ? new ArrayList<ClientFormMetadata>() : clientFormMetadataList;
+		return clientFormMetadataList == null ? new ArrayList<>() : clientFormMetadataList;
 	}
 
 	public static class CompleteClientForm {
