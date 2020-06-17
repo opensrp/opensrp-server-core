@@ -897,7 +897,8 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	public void testSelectDetailsByPlanId() {
 
 		String planIdentifier = "a8b3010c-1ba5-556d-8b16-71266397b8b9";
-		List<LocationDetail> locations = locationRepository.findLocationDetailsByPlanId(planIdentifier);
-		assertFalse(locations.isEmpty());
+		List<LocationDetail> locationDetails = locationRepository.findLocationDetailsByPlanId(planIdentifier);
+		assertFalse(locationDetails.isEmpty());
+		assertEquals(1, locationDetails.size());
 	}
 }
