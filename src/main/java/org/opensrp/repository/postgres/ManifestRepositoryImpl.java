@@ -119,7 +119,7 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
     @Override
     public List<Manifest> getAll(int limit) {
         ManifestExample manifestExample = new ManifestExample();
-        List<org.opensrp.domain.postgres.Manifest> pgManifestList = manifestMapper.selectMany(manifestExample, 0, limit);
+        List<org.opensrp.domain.postgres.Manifest> pgManifestList = manifestMapper.selectManyWithOrdering(manifestExample, 0, limit);
         return convert(pgManifestList);
     }
 
