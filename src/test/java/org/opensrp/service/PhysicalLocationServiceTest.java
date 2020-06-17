@@ -9,11 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -269,6 +265,7 @@ public class PhysicalLocationServiceTest {
 	public void testUpdate() {
 		
 		PhysicalLocation expected = createLocation();
+		locationService = spy(locationService);
 		locationService.update(expected);
 		verify(locationRepository).update(argumentCaptor.capture());
 		assertNull(argumentCaptor.getValue().getServerVersion());
@@ -420,7 +417,7 @@ public class PhysicalLocationServiceTest {
 		expectedLocations.add(createStructure());
 		
 		when(locationRepository.get("12323", true,0)).thenReturn(physicalLocation);
-		when(locationRepository.isGeometryCoordsEqual(any(), any())).thenReturn(true);
+		//when(locationService.isGeometryCoordsEqual(any(), any())).thenReturn(true);
 		locationService.saveLocations(expectedLocations, true);
 		
 		verify(locationRepository, times(2)).add(argumentCaptor.capture());
