@@ -139,8 +139,6 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 */
 	List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers);
 
-	boolean isGeometryCoordsEqual(PhysicalLocation newEntity, PhysicalLocation existingEntity);
-
 	/**
 	 * This method is used to return a location based on the provided parameters
 	 * @param identifier identifier of the location

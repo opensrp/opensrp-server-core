@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
@@ -74,30 +76,22 @@ public class PhysicalLocationService {
 		physicalLocation.setServerVersion(null);
 		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndStatus(physicalLocation.getId(),
 				LocationProperty.PropertyStatus.ACTIVE.name(), true);
-		boolean locationHasNoUpdates = locationRepository.isGeometryCoordsEqual(physicalLocation, existingEntity);
-		if (locationHasNoUpdates || !physicalLocation.isJurisdiction()){
+		boolean locationHasNoUpdates = isGeometryCoordsEqual(physicalLocation, existingEntity);
+		if (locationHasNoUpdates || !physicalLocation.isJurisdiction() || existingEntity == null){
 			locationRepository.update(physicalLocation);
 		} else {
 			//make existing location inactive
-			physicalLocation.getProperties().setStatus(LocationProperty.PropertyStatus.INACTIVE);
-			locationRepository.update(physicalLocation);
+			existingEntity.getProperties().setStatus(LocationProperty.PropertyStatus.INACTIVE);
+			existingEntity.setServerVersion(null);
+			locationRepository.update(existingEntity);
 
 			// create new location
-			PhysicalLocation newPhysicalLocation = new PhysicalLocation();
-			newPhysicalLocation.setGeometry(physicalLocation.getGeometry());
-			newPhysicalLocation.setId(physicalLocation.getId());
-			newPhysicalLocation.setJurisdiction(physicalLocation.isJurisdiction());
-			newPhysicalLocation.setLocationTags(physicalLocation.getLocationTags());
-			newPhysicalLocation.setType(physicalLocation.getType());
-			newPhysicalLocation.setServerVersion(null);
-			LocationProperty newLocationProperty = physicalLocation.getProperties();
 			//increment location version
 			int newVersion = physicalLocation.getProperties().getVersion() + 1;
-			newLocationProperty.setVersion(newVersion);
-			newLocationProperty.setStatus(LocationProperty.PropertyStatus.ACTIVE);
-			newPhysicalLocation.setProperties(newLocationProperty);
+			physicalLocation.getProperties().setVersion(newVersion);
+			physicalLocation.getProperties().setStatus(LocationProperty.PropertyStatus.ACTIVE);
 
-			locationRepository.add(newPhysicalLocation);
+			locationRepository.add(physicalLocation);
 		}
 
 	}
@@ -367,5 +361,20 @@ public class PhysicalLocationService {
 	public Long countLocationsByNames(String locationNames, long serverVersion){
 		return locationRepository.countLocationsByNames(locationNames,serverVersion);
 	};
+
+	/**
+	 * This method checks whether the coordinates contained in the locations Geometry are equal
+	 * @param newEntity location entity
+	 * @param existingEntity location entity
+	 * @return
+	 */
+	public boolean isGeometryCoordsEqual(PhysicalLocation newEntity, PhysicalLocation existingEntity) {
+		if (newEntity == null || existingEntity == null) {
+			return false;
+		}
+		JsonElement newGeometryCoordsElement = JsonParser.parseString(newEntity.getGeometry().getCoordinates().toString());
+		JsonElement existingGeometryCoordsElement = JsonParser.parseString(existingEntity.getGeometry().getCoordinates().toString());
+		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
+	}
 	
 }
