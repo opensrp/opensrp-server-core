@@ -444,7 +444,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce",
 		    "ade884f8-2685-45fd-93f8-122045b2635e", "2e14b66f-206c-4314-a0f7-c5d2c4d9860f",
 		    "b0cb057b-c396-4ec9-bfab-388117a9a5f6", "28ea8f0a-fa53-447d-b8f9-ad07263b382c",
-		    "5bd3e1eb-5cd4-4e8d-9180-4293b7ea3b78", "f5934ae338431f28bf6793b24159ce5a");
+		    "05934ae338431f28bf6793b24159ce5d", "f5934ae338431f28bf6793b24159ce5a");
 		assertEquals(8, clients.size());
 		for (Client client : clients) {
 			assertTrue(client.getServerVersion() >= 1521003136406l);
@@ -674,7 +674,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 1, false);
 		List<String> clientIds = idsModel.getLeft();
 		assertEquals(1, clientIds.size());
-		assertEquals("5bd3e1eb-5cd4-4e8d-9180-4293b7ea3b78", clientIds.get(0));
+		assertEquals("05934ae338431f28bf6793b24159ce5d", clientIds.get(0));
 		assertEquals(1520891339766l, idsModel.getRight().longValue());
 	}
 
@@ -683,7 +683,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 3, false);
 		List<String> clientIds = idsModel.getLeft();
 		assertEquals(3, clientIds.size());
-		assertEquals("5bd3e1eb-5cd4-4e8d-9180-4293b7ea3b78", clientIds.get(0));
+		assertEquals("05934ae338431f28bf6793b24159ce5d", clientIds.get(0));
 		assertEquals("05934ae338431f28bf6793b24159dea7", clientIds.get(1));
 		assertEquals("05934ae338431f28bf6793b24159ebc2", clientIds.get(2));
 		assertEquals(1520891682846l, idsModel.getRight().longValue());
