@@ -78,6 +78,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		scripts.add("location.sql");
 		scripts.add("structure.sql");
 		scripts.add("location_tag.sql");
+		scripts.add("plan.sql");
 		return scripts;
 	}
 	
@@ -890,5 +891,13 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locations = locationRepository.countLocationsByNames("MKB_5,other_location_name", 0l);
 		assertEquals(1, locations.longValue());
 
+	}
+
+	@Test
+	public void testSelectDetailsByPlanId() {
+
+		String planIdentifier = "a8b3010c-1ba5-556d-8b16-71266397b8b9";
+		List<LocationDetail> locations = locationRepository.findLocationDetailsByPlanId(planIdentifier);
+		assertFalse(locations.isEmpty());
 	}
 }
