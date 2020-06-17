@@ -28,8 +28,13 @@ import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartregister.pathevaluator.ResourceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.ibm.fhir.model.resource.Patient;
+import com.ibm.fhir.model.resource.RelatedPerson;
+import com.ibm.fhir.model.resource.Resource;
 
 @Repository("clientsRepositoryPostgres")
 public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements ClientsRepository {
@@ -602,5 +607,29 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 					clientMetaDataList.get(0).getServerVersion() : 0;
 		}
 		return Pair.of(clientIdentifiers, lastServerVersion);
+	}
+
+	@Override
+	public List<RelatedPerson> getFamilies(String jurisdiction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Patient> getFamilyMembers(String jurisdiction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<RelatedPerson> getFamilies(Resource resource, ResourceType fromResourceType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Patient> getFamilyMembers(Resource resource, ResourceType fromResourceType) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

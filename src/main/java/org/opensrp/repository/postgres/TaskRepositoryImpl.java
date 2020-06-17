@@ -3,6 +3,7 @@ package org.opensrp.repository.postgres;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.smartregister.domain.Task;
+import org.smartregister.pathevaluator.ResourceType;
 import org.opensrp.domain.postgres.TaskMetadata;
 import org.opensrp.domain.postgres.TaskMetadataExample;
 import org.opensrp.repository.TaskRepository;
@@ -11,6 +12,11 @@ import org.opensrp.repository.postgres.mapper.custom.CustomTaskMetadataMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.ibm.fhir.model.resource.Resource;
+
+import jdk.javadoc.internal.doclets.toolkit.taglets.ReturnTaglet;
+import net.bytebuddy.asm.Advice.Return;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -289,5 +295,12 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		taskMetadata.setServerVersion(entity.getServerVersion());
 		taskMetadata.setOwner(entity.getOwner());
 		return taskMetadata;
+	}
+
+	@Override
+	public List<com.ibm.fhir.model.resource.Task> getTasks(Resource resource,String planIdentifier, ResourceType fromResourceType) {
+		List<Task> tasks = getTasksByPlanAndOwner(planIdentifier, resource.getId(), 0) ;
+		//TODO convert to fhir tasks and return
+		return null;
 	}
 }

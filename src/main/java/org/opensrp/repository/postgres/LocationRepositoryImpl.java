@@ -29,9 +29,12 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
 import org.opensrp.search.LocationSearchBean;
 import org.opensrp.service.LocationTagService;
+import org.smartregister.pathevaluator.ResourceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.ibm.fhir.model.resource.Resource;
 
 @Repository
 public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation> implements LocationRepository {
@@ -692,5 +695,29 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public int countSearchLocations(LocationSearchBean locationSearchBean) {
 		return locationMetadataMapper.selectCountLocations(locationSearchBean);
+	}
+
+	@Override
+	public List<com.ibm.fhir.model.resource.Location> getLocations(String jurisdiction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<com.ibm.fhir.model.resource.Location> getJurisdictions(String jurisdiction) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<com.ibm.fhir.model.resource.Location> getJurisdictions(Resource resource, ResourceType fromResourceType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<com.ibm.fhir.model.resource.Location> getLocations(Resource resource, ResourceType fromResourceType) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
