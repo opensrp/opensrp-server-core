@@ -25,5 +25,5 @@ public interface CustomClientFormMetadataMapper extends ClientFormMetadataMapper
 
 	List<ClientFormMetadata> getAllClientFormMetadata();
 
-	List<ClientFormMetadata> getAllClientFormMetadataByVersion(String version);
+	void updateClientMetadataIsDraftByVersion(@Param("isDraft") boolean isDraft, @Param("version")  String version);
 }

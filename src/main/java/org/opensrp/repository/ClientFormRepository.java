@@ -35,10 +35,7 @@ public interface ClientFormRepository extends BaseRepository<ClientForm> {
 	@Nullable
 	List<ClientFormMetadata> getAllClientFormMetadata(boolean isDraft);
 
-	@Nullable
-	List<ClientFormMetadata> getAllClientFormMetadataByVersion(String formVersion);
-
-	void update(ClientFormMetadata record);
+	void updateClientMetadataIsDraftByVersion(boolean isDraft, String formVersion);
 
 	@Nullable
 	List<ClientFormMetadata> getAllClientFormMetadata();

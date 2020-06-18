@@ -92,13 +92,7 @@ public class ClientFormService {
 	}
 
 	public void updateClientFormMetadataIsDraftValue(boolean isDraft, @NonNull String formVersion) {
-		List<ClientFormMetadata> metadataList = clientFormRepository.getAllClientFormMetadataByVersion(formVersion);
-		if (metadataList != null) {
-			for (ClientFormMetadata formMetadata: metadataList) {
-				formMetadata.setIsDraft(isDraft);
-				clientFormRepository.update(formMetadata);
-			}
-		}
+		clientFormRepository.updateClientMetadataIsDraftByVersion(isDraft, formVersion);
 	}
 
 	public static class CompleteClientForm {

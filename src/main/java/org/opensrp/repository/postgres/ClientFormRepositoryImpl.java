@@ -100,12 +100,6 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 		return clientFormMetadataMapper.getClientFormMetadata(isDraft);
 	}
 
-	@Nullable
-	@Override
-	public List<ClientFormMetadata> getAllClientFormMetadataByVersion(String formVersion) {
-		return clientFormMetadataMapper.getAllClientFormMetadataByVersion(formVersion);
-	}
-
 	@Override
 	public List<ClientFormMetadata> getAllClientFormMetadata() {
 		return clientFormMetadataMapper.getAllClientFormMetadata();
@@ -151,11 +145,11 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 		clientFormMapper.updateByPrimaryKeySelective(entity);
 	}
 
-	public void update(@Nullable ClientFormMetadata record) {
-		if (record == null || record.getId() == null || record.getId() == 0) {
+	public void updateClientMetadataIsDraftByVersion(boolean isDraft, String formVersion) {
+		if (TextUtils.isBlank(formVersion)) {
 			return;
 		}
-		clientFormMetadataMapper.updateByPrimaryKeySelective(record);
+		clientFormMetadataMapper.updateClientMetadataIsDraftByVersion(isDraft, formVersion);
 	}
 
 	@Override

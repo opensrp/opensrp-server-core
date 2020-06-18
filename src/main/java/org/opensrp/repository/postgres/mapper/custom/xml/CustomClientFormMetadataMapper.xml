@@ -55,9 +55,11 @@
         SELECT * FROM core.client_form_metadata WHERE is_draft = #{isDraft, jdbcType=BIT}
     </select>
 
-    <select id="getAllClientFormMetadataByVersion" parameterType="java.lang.String"
+    <select id="updateClientMetadataIsDraftByVersion" parameterType="map"
             resultMap="BaseClientFormMetadataResultMap">
-        SELECT * FROM core.client_form_metadata WHERE version = #{version, jdbcType=VARCHAR}
+        UPDATE core.client_form_metadata
+        SET isDraft = #{isDraft,jdbcType=BIGINT}
+        WHERE version = #{version, jdbcType=VARCHAR}
     </select>
 
     <select id="getAllClientFormMetadata" resultMap="BaseClientFormMetadataResultMap">
