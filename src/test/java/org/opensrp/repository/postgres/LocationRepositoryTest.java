@@ -78,6 +78,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		scripts.add("location.sql");
 		scripts.add("structure.sql");
 		scripts.add("location_tag.sql");
+		scripts.add("plan.sql");
 		return scripts;
 	}
 	
@@ -246,7 +247,6 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		Date effectiveEndDate = dateFormat.parse("2020-07-15");
 		physicalLocation.getProperties().setEffectiveStartDate(effectiveStartDate);
 		physicalLocation.getProperties().setEffectiveEndDate(effectiveEndDate);
-		physicalLocation.getProperties().setVersion(2);
 		physicalLocation.setJurisdiction(true);
 		locationRepository.update(physicalLocation);
 		PhysicalLocation updatedLocation = locationRepository.get("3734");
@@ -257,7 +257,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(3, updatedLocation.getProperties().getGeographicLevel());
 		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
 		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
-		assertEquals(2, updatedLocation.getProperties().getVersion());
+		assertEquals(0, updatedLocation.getProperties().getVersion());
 		
 		assertNull(locationRepository.getStructure("3734", true));
 		
@@ -684,8 +684,9 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		List<PhysicalLocation> locations = locationRepository.findLocationByIdWithChildren(true, "3734", 10);
 		assertEquals(2, locations.size());
-		assertEquals("3734", locations.get(0).getId());
-		assertEquals("3735", locations.get(1).getId());
+		for (PhysicalLocation location : locations) {
+			MatcherAssert.assertThat(location.getId(), either(is("3734")).or(is("3735")));
+		}
 	}
 	
 	@Test
@@ -891,5 +892,14 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locations = locationRepository.countLocationsByNames("MKB_5,other_location_name", 0l);
 		assertEquals(1, locations.longValue());
 
+	}
+
+	@Test
+	public void testSelectDetailsByPlanId() {
+
+		String planIdentifier = "a8b3010c-1ba5-556d-8b16-71266397b8b9";
+		List<LocationDetail> locationDetails = locationRepository.findLocationDetailsByPlanId(planIdentifier);
+		assertFalse(locationDetails.isEmpty());
+		assertEquals(1, locationDetails.size());
 	}
 }

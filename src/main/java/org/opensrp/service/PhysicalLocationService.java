@@ -8,11 +8,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.LocationDetail;
+import org.opensrp.domain.LocationProperty;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
@@ -37,7 +40,7 @@ public class PhysicalLocationService {
 	}
 	
 	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
-		return locationRepository.get(id, returnGeometry);
+		return locationRepository.get(id, returnGeometry, 0);
 	}
 	
 	public PhysicalLocation getStructure(String id, boolean returnGeometry) {
@@ -71,7 +74,26 @@ public class PhysicalLocationService {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
 		physicalLocation.setServerVersion(null);
-		locationRepository.update(physicalLocation);
+		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndStatus(physicalLocation.getId(),
+				LocationProperty.PropertyStatus.ACTIVE.name(), true);
+		boolean locationHasNoUpdates = isGeometryCoordsEqual(physicalLocation, existingEntity);
+		if (locationHasNoUpdates || !physicalLocation.isJurisdiction() || existingEntity == null){
+			locationRepository.update(physicalLocation);
+		} else {
+			//make existing location inactive
+			existingEntity.getProperties().setStatus(LocationProperty.PropertyStatus.INACTIVE);
+			existingEntity.setServerVersion(null);
+			locationRepository.update(existingEntity);
+
+			// create new location
+			//increment location version
+			int newVersion = existingEntity.getProperties().getVersion() + 1;
+			physicalLocation.getProperties().setVersion(newVersion);
+			physicalLocation.getProperties().setStatus(LocationProperty.PropertyStatus.ACTIVE);
+
+			locationRepository.add(physicalLocation);
+		}
+
 	}
 	
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {
@@ -339,5 +361,20 @@ public class PhysicalLocationService {
 	public Long countLocationsByNames(String locationNames, long serverVersion){
 		return locationRepository.countLocationsByNames(locationNames,serverVersion);
 	};
+
+	/**
+	 * This method checks whether the coordinates contained in the locations Geometry are equal
+	 * @param newEntity location entity
+	 * @param existingEntity location entity
+	 * @return
+	 */
+	public boolean isGeometryCoordsEqual(PhysicalLocation newEntity, PhysicalLocation existingEntity) {
+		if (newEntity == null || existingEntity == null) {
+			return false;
+		}
+		JsonElement newGeometryCoordsElement = JsonParser.parseString(newEntity.getGeometry().getCoordinates().toString());
+		JsonElement existingGeometryCoordsElement = JsonParser.parseString(existingEntity.getGeometry().getCoordinates().toString());
+		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
+	}
 	
 }
