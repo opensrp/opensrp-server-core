@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,15 +29,9 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
 import org.opensrp.search.LocationSearchBean;
 import org.opensrp.service.LocationTagService;
-import org.smartregister.pathevaluator.ResourceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.ibm.fhir.model.resource.Patient;
-import com.ibm.fhir.model.resource.Resource;
-import com.ibm.fhir.model.resource.Task;
-import com.ibm.fhir.model.type.Identifier;
 
 @Repository
 public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation> implements LocationRepository {
@@ -704,41 +697,18 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 	
 	@Override
-	public List<com.ibm.fhir.model.resource.Location> getLocations(String jurisdiction) {
-		return convertToFHIRLocation(findStructuresByParentAndServerVersion(jurisdiction, 0));
+	public List<com.ibm.fhir.model.resource.Location> findJurisdictionsById(String id) {
+		return convertToFHIRLocation(get(id, false));
 	}
 	
 	@Override
-	public List<com.ibm.fhir.model.resource.Location> getJurisdictions(String jurisdiction) {
-		return convertToFHIRLocation(findLocationByIdWithChildren(false, jurisdiction, 20));
+	public List<com.ibm.fhir.model.resource.Location> findLocationsById(String id) {
+		return convertToFHIRLocation(getStructure(id, false));
 	}
 	
 	@Override
-	public List<com.ibm.fhir.model.resource.Location> getJurisdictions(Resource resource, ResourceType fromResourceType) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	@Override
-	public List<com.ibm.fhir.model.resource.Location> getLocations(Resource resource, ResourceType fromResourceType) {
-		switch (fromResourceType) {
-			case JURISDICTION:
-				return getLocations(resource.getId());
-			case FAMILY:
-			case FAMILY_MEMBER:
-				Patient patient=(Patient) resource;
-				Optional<Identifier> locationIdentifier=patient.getIdentifier()
-						.stream()
-						.filter(identifier-> identifier.getId().equals("residence"))
-						.findFirst();
-				return locationIdentifier.isEmpty()? null:convertToFHIRLocation(getStructure(locationIdentifier.get().getValue().getValue(), false));
-			case TASK:
-				Task task=(Task) resource;
-				String locationId=task.getFor().getId();
-				return convertToFHIRLocation(getStructure(locationId, false));
-			default:
-				return null;
-		}
+	public List<com.ibm.fhir.model.resource.Location> findLocationByJurisdiction(String jurisdiction) {
+		return convertToFHIRLocation(findStructuresByProperties(false, jurisdiction, null));
 	}
 	
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
