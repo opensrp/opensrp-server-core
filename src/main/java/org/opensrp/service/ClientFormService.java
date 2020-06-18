@@ -97,7 +97,7 @@ public class ClientFormService {
 		return clientFormRepository.getMostRecentFormValidator(formIdentifier);
 	}
 
-	public void updateClientFormMetadataIsDraftValue(boolean isDraft, @NonNull String formVersion) {
+	public void updateClientFormMetadataIsDraftValueByVersion(boolean isDraft, @NonNull String formVersion) {
 		clientFormRepository.updateClientMetadataIsDraftByVersion(isDraft, formVersion);
 	}
 

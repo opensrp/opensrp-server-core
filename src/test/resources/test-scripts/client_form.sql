@@ -2,7 +2,7 @@
 TRUNCATE TABLE core.client_form CASCADE;
 TRUNCATE TABLE core.client_form_metadata CASCADE;
 
-ALTER SEQUENCE core.client_form_id_seq RESTART WITH 6;
+ALTER SEQUENCE core.client_form_id_seq RESTART WITH 7;
 
 --insert data
 INSERT INTO core.client_form (id, created_at, json) VALUES

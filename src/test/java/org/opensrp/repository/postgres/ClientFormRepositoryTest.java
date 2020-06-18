@@ -85,8 +85,8 @@ public class ClientFormRepositoryTest extends BaseRepositoryTest {
 		ClientFormService.CompleteClientForm completeClientForm = clientFormRepository
 				.create(clientForm, clientFormMetadata);
 
-		assertEquals(6, (long) completeClientForm.clientForm.getId());
-		assertEquals(6, (long) completeClientForm.clientFormMetadata.getId());
+		assertEquals(7, (long) completeClientForm.clientForm.getId());
+		assertEquals(7, (long) completeClientForm.clientFormMetadata.getId());
 	}
 
 	@Test
@@ -112,13 +112,13 @@ public class ClientFormRepositoryTest extends BaseRepositoryTest {
 		ClientFormService.CompleteClientForm completeClientForm = clientFormRepository
 				.create(clientForm, clientFormMetadata);
 
-		assertEquals(6, (long) completeClientForm.clientForm.getId());
+		assertEquals(7, (long) completeClientForm.clientForm.getId());
 		assertEquals("json.form/anc/sample.json", completeClientForm.clientFormMetadata.getRelation());
 	}
 
 	@Test
 	public void testGetAll() {
-		assertEquals(5, clientFormRepository.getAll().size());
+		assertEquals(6, clientFormRepository.getAll().size());
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
