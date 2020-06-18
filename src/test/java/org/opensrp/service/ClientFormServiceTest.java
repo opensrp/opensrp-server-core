@@ -215,11 +215,13 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 
 	@Test
 	public void testUpdateIsDraftByFormVersion() {
-		ClientFormMetadata clientFormMetadata = clientFormService.getClientFormMetadataById(5);
-		assertFalse(clientFormMetadata.getIsDraft());
-		clientFormService.updateClientFormMetadataIsDraftValue(true, clientFormMetadata.getVersion());
-		clientFormMetadata = clientFormService.getClientFormMetadataById(5);
-		assertTrue(clientFormMetadata.getIsDraft());
+		ClientFormMetadata metadata1 = clientFormService.getClientFormMetadataById(5);
+		assertFalse(metadata1.getIsDraft());
+		clientFormService.updateClientFormMetadataIsDraftValue(true, metadata1.getVersion());
+		metadata1 = clientFormService.getClientFormMetadataById(5);
+		ClientFormMetadata metadata2 = clientFormService.getClientFormMetadataById(6);
+		assertTrue(metadata1.getIsDraft());
+		assertTrue(metadata2.getIsDraft());
 	}
 
 	@Override
