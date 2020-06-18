@@ -75,8 +75,14 @@ public class ClientFormService {
 	}
 
 	@NonNull
-	public List<ClientFormMetadata> getClientFormMetadata(boolean isDraft) {
-		List<ClientFormMetadata> clientFormMetadataList = clientFormRepository.getAllClientFormMetadata(isDraft);
+	public List<ClientFormMetadata> getDraftsClientFormMetadata(boolean isDraft) {
+		List<ClientFormMetadata> clientFormMetadataList = clientFormRepository.getAllDraftsClientFormMetadata(isDraft);
+		return clientFormMetadataList == null ? new ArrayList<>() : clientFormMetadataList;
+	}
+
+	@NonNull
+	public List<ClientFormMetadata> getJsonWidgetValidatorClientFormMetadata(boolean isJsonValidator) {
+		List<ClientFormMetadata> clientFormMetadataList = clientFormRepository.getAllJsonWidgetValidatorClientFormMetadata(isJsonValidator);
 		return clientFormMetadataList == null ? new ArrayList<>() : clientFormMetadataList;
 	}
 

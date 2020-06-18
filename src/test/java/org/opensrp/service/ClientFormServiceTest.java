@@ -120,13 +120,44 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 			clientFormService.addClientForm(clientForm, clientFormMetadata);
 		}
 
-		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getClientFormMetadata(true);
+		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getDraftsClientFormMetadata(true);
 		assertEquals(count, clientFormMetadataList.size());
 	}
 
 	@Test
 	public void testGetAllClientFormMetadataShouldReturnNonDraftFormsMetadata() {
-		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getClientFormMetadata(false);
+		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getDraftsClientFormMetadata(false);
+		assertEquals(5, clientFormMetadataList.size());
+	}
+
+	@Test
+	public void testGetAllClientFormMetadataShouldReturnOnlyJsonValidatorFormsMetadata() {
+		int count = 10;
+
+		for (int i = 0; i < count; i++) {
+			ClientForm clientForm = new ClientForm();
+			clientForm.setCreatedAt(new Date());
+			clientForm.setJson("{'from': 'child'}");
+
+			ClientFormMetadata clientFormMetadata = new ClientFormMetadata();
+			clientFormMetadata.setModule("child");
+			clientFormMetadata.setVersion("1.0." + i);
+			clientFormMetadata.setIdentifier("json.form/child/sample.json");
+			clientFormMetadata.setLabel("SAMPLE FORM");
+			clientFormMetadata.setIsDraft(true);
+			clientFormMetadata.setIsJsonValidator(true);
+			clientFormMetadata.setCreatedAt(new Date());
+
+			clientFormService.addClientForm(clientForm, clientFormMetadata);
+		}
+
+		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getJsonWidgetValidatorClientFormMetadata(true);
+		assertEquals(count, clientFormMetadataList.size());
+	}
+
+	@Test
+	public void testGetAllClientFormMetadataShouldReturnNonJsonValidatorFormsMetadata() {
+		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getJsonWidgetValidatorClientFormMetadata(false);
 		assertEquals(5, clientFormMetadataList.size());
 	}
 
