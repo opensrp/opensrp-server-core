@@ -5,6 +5,8 @@ import org.opensrp.domain.IdVersionTuple;
 import org.opensrp.domain.postgres.ClientForm;
 import org.opensrp.domain.postgres.ClientFormMetadata;
 import org.opensrp.service.ClientFormService;
+import org.springframework.lang.Nullable;
+
 import java.util.List;
 
 public interface ClientFormRepository extends BaseRepository<ClientForm> {
@@ -30,4 +32,12 @@ public interface ClientFormRepository extends BaseRepository<ClientForm> {
 
 	ClientFormService.CompleteClientForm create(@NonNull ClientFormService.CompleteClientForm completeClientForm);
 
+	@Nullable
+	List<ClientFormMetadata> getAllClientFormMetadata(boolean isDraft);
+
+	@Nullable
+	List<ClientFormMetadata> getAllClientFormMetadata();
+
+	@Nullable
+	ClientForm getMostRecentFormValidator(@NonNull String formIdentifier);
 }

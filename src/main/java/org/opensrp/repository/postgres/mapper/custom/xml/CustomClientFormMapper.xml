@@ -24,6 +24,10 @@
     </insert>
 
     <select id="getAll" parameterType="map" resultMap="BaseClientFormResultMap">
-        SELECT * FROM core.client_form_metadata ORDER BY created_at LIMIT #{batchSize} OFFSET #{offset}
+        SELECT * FROM core.client_form ORDER BY created_at LIMIT #{batchSize} OFFSET #{offset}
+    </select>
+
+    <select id="getMostRecentFormValidator" parameterType="java.lang.String" resultMap="BaseClientFormResultMap">
+        SELECT * FROM core.client_form WHERE id = (SELECT id FROM core.client_form_metadata WHERE identifier = #{formIdentifier, jdbcType=VARCHAR} AND is_json_validator = true ORDER BY created_at DESC LIMIT 1)
     </select>
 </mapper>

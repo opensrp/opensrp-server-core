@@ -1,5 +1,6 @@
 package org.opensrp.generator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
@@ -54,6 +55,8 @@ public class UniqueIdGeneratorProcessor {
 					.getValidIdentifier(prefix + firstIdentifierBase + suffix, identifierSource));
 		}
 
+		String previousId = "";
+
 		for (int i = 0; i < numbersToGenerate; ) {
 			identifier = getIdentifierForSeed(sequenceValue, identifierSource);
 			logger.info("Identifier from processor is " +  identifier);
@@ -65,7 +68,10 @@ public class UniqueIdGeneratorProcessor {
 						.equals(IdentifierValidatorAlgorithm.LUHN_CHECK_DIGIT_ALGORITHM)) {
 					identifier = luhnIdentifierValidator.getValidIdentifier(identifier, identifierSource);
 				}
-				identifiers.add(identifier);
+				if (!identifier.equals(previousId)) {
+					identifiers.add(identifier);
+					previousId = identifier;
+				}
 				i++;
 			}
 			sequenceValue++;
@@ -100,7 +106,7 @@ public class UniqueIdGeneratorProcessor {
 		identifier = (identifierSource.getSuffix() == null ? identifier : identifier + identifierSource.getSuffix());
 
 
-		if (identifierSource.getRegexFormat() != null) {
+		if (identifierSource.getRegexFormat() != null && StringUtils.isNotEmpty(identifierSource.getRegexFormat())) {
 			return identifier.matches(identifierSource.getRegexFormat()) ?
 					identifier :
 					getIdentifierForSeed(seed + 1, identifierSource);
