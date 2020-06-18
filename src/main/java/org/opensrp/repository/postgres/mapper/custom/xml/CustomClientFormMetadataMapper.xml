@@ -63,7 +63,7 @@
     <select id="updateClientMetadataIsDraftByVersion" parameterType="map"
             resultMap="BaseClientFormMetadataResultMap">
         UPDATE core.client_form_metadata
-        SET isDraft = #{isDraft,jdbcType=BIGINT}
+        SET is_draft = #{isDraft,jdbcType=BIGINT}
         WHERE version = #{version, jdbcType=VARCHAR}
     </select>
 
