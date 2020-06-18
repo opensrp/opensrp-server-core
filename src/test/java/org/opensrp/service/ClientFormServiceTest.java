@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class ClientFormServiceTest extends BaseRepositoryTest {
 
@@ -183,6 +180,15 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 		System.out.println(clientForm.getJson());
 		assertTrue(((String) clientForm.getJson()).startsWith("\"1.0.4"));
 		assertEquals((Long) 10L, clientForm.getId());
+	}
+
+	@Test
+	public void testUpdateIsDraftByFormVersion() {
+		ClientFormMetadata clientFormMetadata = clientFormService.getClientFormMetadataById(5);
+		assertFalse(clientFormMetadata.getIsDraft());
+		clientFormService.updateClientFormMetadataIsDraftValue(true, clientFormMetadata.getVersion());
+		clientFormMetadata = clientFormService.getClientFormMetadataById(5);
+		assertTrue(clientFormMetadata.getIsDraft());
 	}
 
 	@Override
