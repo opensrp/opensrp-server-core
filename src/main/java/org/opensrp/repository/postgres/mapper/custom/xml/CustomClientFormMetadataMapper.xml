@@ -40,8 +40,10 @@
 
     <insert id="insertClientFormMetadata" parameterType="org.opensrp.domain.postgres.ClientFormMetadata"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        insert into core.client_form_metadata(id, identifier, jurisdiction, version, label, module, is_draft, is_json_validator, created_at)
-        values (#{id}, #{identifier}, #{jurisdiction}, #{version}, #{label}, #{module}, #{isDraft}, #{isJsonValidator}, #{createdAt})
+        insert into core.client_form_metadata(id, identifier, jurisdiction, version, label, module, is_draft,
+        is_json_validator, created_at)
+        values (#{id}, #{identifier}, #{jurisdiction}, #{version}, #{label}, #{module}, #{isDraft}, #{isJsonValidator},
+        #{createdAt})
     </insert>
 
     <select id="getAvailableClientFormVersions" parameterType="map" resultMap="IdVersionTuple">
@@ -51,6 +53,11 @@
 
     <select id="getClientFormMetadata" parameterType="boolean" resultMap="BaseClientFormMetadataResultMap">
         SELECT * FROM core.client_form_metadata WHERE is_draft = #{isDraft, jdbcType=BIT}
+    </select>
+
+    <select id="getAllClientFormMetadataByVersion" parameterType="java.lang.String"
+            resultMap="BaseClientFormMetadataResultMap">
+        SELECT * FROM core.client_form_metadata WHERE version = #{version, jdbcType=VARCHAR}
     </select>
 
     <select id="getAllClientFormMetadata" resultMap="BaseClientFormMetadataResultMap">

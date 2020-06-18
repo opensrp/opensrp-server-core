@@ -91,6 +91,16 @@ public class ClientFormService {
 		return clientFormRepository.getMostRecentFormValidator(formIdentifier);
 	}
 
+	public void updateClientFormMetadataIsDraftValue(boolean isDraft, @NonNull String formVersion) {
+		List<ClientFormMetadata> metadataList = clientFormRepository.getAllClientFormMetadataByVersion(formVersion);
+		if (metadataList != null) {
+			for (ClientFormMetadata formMetadata: metadataList) {
+				formMetadata.setIsDraft(isDraft);
+				clientFormRepository.update(formMetadata);
+			}
+		}
+	}
+
 	public static class CompleteClientForm {
 
 		public ClientForm clientForm;
