@@ -49,8 +49,13 @@
         is_json_validator = #{isJsonValidator, jdbcType=BIT}
     </select>
 
-    <select id="getClientFormMetadata" parameterType="boolean" resultMap="BaseClientFormMetadataResultMap">
+    <select id="getDraftClientFormMetadata" parameterType="boolean" resultMap="BaseClientFormMetadataResultMap">
         SELECT * FROM core.client_form_metadata WHERE is_draft = #{isDraft, jdbcType=BIT}
+    </select>
+
+    <select id="getJsonWidgetValidatorClientFormMetadata" parameterType="boolean"
+        resultMap="BaseClientFormMetadataResultMap">
+        SELECT * FROM core.client_form_metadata WHERE is_json_validator = #{isJsonValidator, jdbcType=BIT}
     </select>
 
     <select id="getAllClientFormMetadata" resultMap="BaseClientFormMetadataResultMap">

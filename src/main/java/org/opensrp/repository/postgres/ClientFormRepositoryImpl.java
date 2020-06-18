@@ -96,8 +96,14 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 
 	@Nullable
 	@Override
-	public List<ClientFormMetadata> getAllClientFormMetadata(boolean isDraft) {
-		return clientFormMetadataMapper.getClientFormMetadata(isDraft);
+	public List<ClientFormMetadata> getAllDraftsClientFormMetadata(boolean isDraft) {
+		return clientFormMetadataMapper.getDraftClientFormMetadata(isDraft);
+	}
+
+	@Nullable
+	@Override
+	public List<ClientFormMetadata> getAllJsonWidgetValidatorClientFormMetadata(boolean isJsonValidator) {
+		return clientFormMetadataMapper.getJsonWidgetValidatorClientFormMetadata(isJsonValidator);
 	}
 
 	@Override
