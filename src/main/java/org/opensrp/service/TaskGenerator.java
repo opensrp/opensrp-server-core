@@ -4,6 +4,7 @@
 package org.opensrp.service;
 
 import org.opensrp.repository.ClientsRepository;
+import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.TaskRepository;
 import org.smartregister.domain.PlanDefinition;
@@ -21,8 +22,6 @@ public class TaskGenerator {
 	
 	private PlanEvaluator planEvaluator;
 	
-	private PathEvaluatorLibrary pathEvaluatorLibrary;
-	
 	@Autowired
 	private LocationRepository locationRepository;
 	
@@ -32,17 +31,18 @@ public class TaskGenerator {
 	@Autowired
 	private TaskRepository taskRepository;
 	
+	@Autowired
+	private EventsRepository eventsRepository;
+	
 	public TaskGenerator() {
-		PathEvaluatorLibrary.init();
-		pathEvaluatorLibrary = PathEvaluatorLibrary.getInstance();
-		pathEvaluatorLibrary.setLocationDao(locationRepository);
-		pathEvaluatorLibrary.setClientDao(clientsRepository);
-		pathEvaluatorLibrary.setTaskDao(taskRepository);
-		planEvaluator = new PlanEvaluator();
+		PathEvaluatorLibrary.init(locationRepository,clientsRepository,taskRepository,eventsRepository);
+		PathEvaluatorLibrary.getInstance();
+		
 	}
 	
 	@Async
 	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
+		planEvaluator = new PlanEvaluator();
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
 	}
 }
