@@ -6,6 +6,7 @@ import org.opensrp.repository.IdentifierSourceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class IdentifierSourceService {
 		return identifierSourceRepository.getAll();
 	}
 
+	@PreAuthorize("hasRole('IDENTIFIERSOURCE_VIEW')")
 	public IdentifierSource findByIdentifier(String identifier) {
 		return identifierSourceRepository.findByIdentifier(identifier);
 	}

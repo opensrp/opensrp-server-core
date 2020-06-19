@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -180,7 +181,8 @@ public class OpenmrsIDService {
 	public Long[] markIdsAsUsed(List<String> ids) {
 		return uniqueIdPostgresRepository.markAsUsed(ids);
 	}
-	
+
+	@PreAuthorize("hasRole('OPENMRS')")
 	public List<String> getOpenMRSIdentifiers(String source, String numberToGenerate, String userName, String password)
 	        throws JSONException {
 		List<String> ids = new ArrayList<>();
