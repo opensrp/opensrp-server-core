@@ -26,4 +26,6 @@ public interface CustomClientFormMetadataMapper extends ClientFormMetadataMapper
 	List<ClientFormMetadata> getJsonWidgetValidatorClientFormMetadata(boolean isJsonValidator);
 
 	List<ClientFormMetadata> getAllClientFormMetadata();
+
+	void updateClientMetadataIsDraftByVersion(@Param("isDraft") boolean isDraft, @Param("version")  String version);
 }

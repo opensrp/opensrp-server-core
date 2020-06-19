@@ -38,6 +38,8 @@ public interface ClientFormRepository extends BaseRepository<ClientForm> {
 	@Nullable
 	List<ClientFormMetadata> getAllJsonWidgetValidatorClientFormMetadata(boolean isJsonValidator);
 
+	void updateClientMetadataIsDraftByVersion(boolean isDraft, String formVersion);
+
 	@Nullable
 	List<ClientFormMetadata> getAllClientFormMetadata();
 

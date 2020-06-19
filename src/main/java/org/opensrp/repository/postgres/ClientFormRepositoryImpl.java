@@ -151,6 +151,13 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 		clientFormMapper.updateByPrimaryKeySelective(entity);
 	}
 
+	public void updateClientMetadataIsDraftByVersion(boolean isDraft, String formVersion) {
+		if (TextUtils.isBlank(formVersion)) {
+			return;
+		}
+		clientFormMetadataMapper.updateClientMetadataIsDraftByVersion(isDraft, formVersion);
+	}
+
 	@Override
 	public List<ClientForm> getAll() {
 		return clientFormMapper.getAll(0, DEFAULT_FETCH_SIZE);
