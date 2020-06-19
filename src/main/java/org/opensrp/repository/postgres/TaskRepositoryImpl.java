@@ -3,6 +3,7 @@ package org.opensrp.repository.postgres;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -11,6 +12,7 @@ import org.opensrp.domain.postgres.TaskMetadataExample;
 import org.opensrp.repository.TaskRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomTaskMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomTaskMetadataMapper;
+import org.smartregister.converters.TaskConverter;
 import org.smartregister.domain.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -299,9 +301,11 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
 	}
 	
-	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> locations){
-		//TODO convert to Fhir tasks
-		return null;
+	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
+		return tasks
+				.stream()
+				.map(task -> TaskConverter.convertTasktoFihrResource(task))
+				.collect(Collectors.toList());
 	}
 
 	

@@ -10,12 +10,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.ClientExample;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
@@ -29,6 +30,7 @@ import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartregister.converters.ClientConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -609,7 +611,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Patient> findClientById(String id) {
-		return convertToFHIR(get(id));
+		return convertToFHIR(Collections.singletonList(get(id)));
 	}
 	
 	@Override
@@ -646,12 +648,9 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	private List<com.ibm.fhir.model.resource.Patient> convertToFHIR(List<Client> clients) {
-		//TODO convert to Fhir locations
-		return null;
+		return clients.stream()
+				.map(client -> ClientConverter.convertClientToPatientResource(client))
+				.collect(Collectors.toList());
 	}
 	
-	private List<com.ibm.fhir.model.resource.Patient> convertToFHIR(Client client) {
-		//TODO convert to Fhir locations
-		return null;
-	}
 }

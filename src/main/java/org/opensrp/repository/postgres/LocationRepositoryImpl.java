@@ -3,17 +3,19 @@ package org.opensrp.repository.postgres;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
-import org.opensrp.domain.LocationTag;
+import org.smartregister.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
-import org.opensrp.domain.PhysicalLocation;
+import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.LocationMetadata;
@@ -29,6 +31,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
 import org.opensrp.search.LocationSearchBean;
 import org.opensrp.service.LocationTagService;
+import org.smartregister.converters.LocationConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -698,12 +701,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findJurisdictionsById(String id) {
-		return convertToFHIRLocation(get(id, false));
+		return convertToFHIRLocation(Collections.singletonList(get(id, false)));
 	}
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findLocationsById(String id) {
-		return convertToFHIRLocation(getStructure(id, false));
+		return convertToFHIRLocation(Collections.singletonList(getStructure(id, false)));
 	}
 	
 	@Override
@@ -712,12 +715,11 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 	
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
-		//TODO convert to Fhir locations
-		return null;
+		return locations
+				.stream()
+				.map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
+				.collect(Collectors.toList());
 	}
 	
-	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(PhysicalLocation locations) {
-		//TODO convert to Fhir locations
-		return null;
-	}
+	
 }
