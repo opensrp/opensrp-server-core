@@ -647,7 +647,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		return convertToFHIR(findByRelationshipId(relationship, id));
 	}
 	
-	private List<com.ibm.fhir.model.resource.Patient> convertToFHIR(List<Client> clients) {
+	private List<Patient> convertToFHIR(List<Client> clients) {
 		return clients.stream()
 				.map(client -> ClientConverter.convertClientToPatientResource(client))
 				.collect(Collectors.toList());

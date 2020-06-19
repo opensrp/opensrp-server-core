@@ -20,8 +20,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class TaskGenerator {
 	
-	private PlanEvaluator planEvaluator;
-	
 	@Autowired
 	private LocationRepository locationRepository;
 	
@@ -42,7 +40,7 @@ public class TaskGenerator {
 	
 	@Async
 	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
-		planEvaluator = new PlanEvaluator();
+		PlanEvaluator planEvaluator = new PlanEvaluator();
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
 	}
 }
