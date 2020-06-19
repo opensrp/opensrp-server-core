@@ -18,6 +18,7 @@ import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -207,11 +208,13 @@ public class ClientService {
 	public List<Client> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar) {
 		return allClients.notInOpenMRSByServerVersion(serverVersion, calendar);
 	}
-	
+
+	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	public List<Client> findByFieldValue(String field, List<String> ids) {
 		return allClients.findByFieldValue(field, ids);
 	}
-	
+
+	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	public List<Client> findByFieldValue(String id) {
 		return allClients.findByRelationShip(id);
 	}
