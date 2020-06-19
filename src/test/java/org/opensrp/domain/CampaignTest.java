@@ -9,7 +9,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
 import org.smartregister.domain.Task.TaskStatus;
 import org.opensrp.util.DateTypeConverter;
-import org.opensrp.util.TaskDateTimeTypeConverter;
+import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

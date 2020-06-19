@@ -25,7 +25,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.repository.postgres.ClientsRepositoryImpl;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.service.SearchService;
