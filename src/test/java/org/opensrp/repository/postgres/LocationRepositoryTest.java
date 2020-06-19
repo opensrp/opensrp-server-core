@@ -338,7 +338,9 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertTrue(locationRepository.getAll().isEmpty());
 		
 		String uuid = UUID.randomUUID().toString();
-		locationRepository.add(createLocation(uuid));
+		PhysicalLocation location = createLocation(uuid);
+		location.getProperties().setStatus(PropertyStatus.ACTIVE);
+		locationRepository.add(location);
 		
 		locations = locationRepository.getAll();
 		
