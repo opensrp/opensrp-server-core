@@ -20,7 +20,7 @@ import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.opensrp.common.Gender;
+import org.smartregister.common.Gender;
 import org.smartregister.domain.Address;
 import org.smartregister.domain.Client;
 import org.opensrp.search.AddressSearchBean;
