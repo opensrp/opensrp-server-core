@@ -21,6 +21,7 @@ import org.opensrp.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -325,7 +326,8 @@ public class EventService {
 	public List<Event> getAll() {
 		return allEvents.getAll();
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
 	public List<Event> findEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit) {
 		return allEvents.findEvents(eventSearchBean, sortBy, sortOrder, limit);
 	}
