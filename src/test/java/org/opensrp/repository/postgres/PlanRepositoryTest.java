@@ -358,7 +358,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setVersion("v1");
         plan.setName("Focus Investigation");
         plan.setTitle("Plan title");
-        plan.setStatus(PlanDefinition.PlanStatus.valueOf("incomplete"));
+        plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
 
         List<Jurisdiction> jurisdictions = new ArrayList<>();
         Jurisdiction jurisdiction = new Jurisdiction();
