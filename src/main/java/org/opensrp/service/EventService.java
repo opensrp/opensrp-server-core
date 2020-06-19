@@ -21,6 +21,7 @@ import org.opensrp.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -328,6 +329,7 @@ public class EventService {
 	}
 
 	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit) {
 		return allEvents.findEvents(eventSearchBean, sortBy, sortOrder, limit);
 	}
