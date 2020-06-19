@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.smartregister.domain.BaseDataEntity;
 
 public class AppStateToken extends BaseDataEntity {
 	

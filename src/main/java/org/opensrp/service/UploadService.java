@@ -17,7 +17,7 @@ import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.search.SettingSearchBean;
 import org.opensrp.search.UploadValidationBean;
-import org.opensrp.util.DateTimeTypeConverter;
+import org.smartregister.utils.DateTimeTypeConverter;
 import org.opensrp.util.JSONCSVUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

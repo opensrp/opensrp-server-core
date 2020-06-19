@@ -10,6 +10,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.smartregister.domain.Address;
+import org.smartregister.domain.BaseDataObject;
 
 
 public class Location extends BaseDataObject {

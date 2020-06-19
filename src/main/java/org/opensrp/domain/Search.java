@@ -14,6 +14,8 @@ import org.joda.time.DateTime;
 import org.opensrp.common.Gender;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.smartregister.domain.Address;
+import org.smartregister.domain.BaseEntity;
 
 public class Search extends BaseEntity {
 	
