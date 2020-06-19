@@ -13,6 +13,7 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -99,8 +100,8 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 		assertEquals(clientForm, completeClientForm.clientForm);
 		assertEquals(clientFormMetadata, completeClientForm.clientFormMetadata);
 
-		assertEquals(6, (long) completeClientForm.clientForm.getId());
-		assertEquals(6, (long) completeClientForm.clientFormMetadata.getId());
+		assertEquals(7, (long) completeClientForm.clientForm.getId());
+		assertEquals(7, (long) completeClientForm.clientFormMetadata.getId());
 	}
 
 	@Test
@@ -130,7 +131,7 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testGetAllClientFormMetadataShouldReturnNonDraftFormsMetadata() {
 		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getDraftsClientFormMetadata(false);
-		assertEquals(5, clientFormMetadataList.size());
+		assertEquals(6, clientFormMetadataList.size());
 	}
 
 	@Test
@@ -161,7 +162,7 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testGetAllClientFormMetadataShouldReturnNonJsonValidatorFormsMetadata() {
 		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getJsonWidgetValidatorClientFormMetadata(false);
-		assertEquals(5, clientFormMetadataList.size());
+		assertEquals(6, clientFormMetadataList.size());
 	}
 
 	@Test
@@ -185,7 +186,7 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 		}
 
 		List<ClientFormMetadata> clientFormMetadataList = clientFormService.getAllClientFormMetadata();
-		assertEquals(count + 5, clientFormMetadataList.size());
+		assertEquals(count + 6, clientFormMetadataList.size());
 	}
 
 	@Test
@@ -213,7 +214,18 @@ public class ClientFormServiceTest extends BaseRepositoryTest {
 		ClientForm clientForm = clientFormService.getMostRecentFormValidator(formIdentifier);
 		System.out.println(clientForm.getJson());
 		assertTrue(((String) clientForm.getJson()).startsWith("\"1.0.4"));
-		assertEquals((Long) 10L, clientForm.getId());
+		assertEquals((Long) 11L, clientForm.getId());
+	}
+
+	@Test
+	public void testUpdateIsDraftByFormVersion() {
+		ClientFormMetadata metadata1 = clientFormService.getClientFormMetadataById(5);
+		assertFalse(metadata1.getIsDraft());
+		clientFormService.updateClientFormMetadataIsDraftValueByVersion(true, metadata1.getVersion());
+		metadata1 = clientFormService.getClientFormMetadataById(5);
+		ClientFormMetadata metadata2 = clientFormService.getClientFormMetadataById(6);
+		assertTrue(metadata1.getIsDraft());
+		assertTrue(metadata2.getIsDraft());
 	}
 
 	@Override
