@@ -2,7 +2,6 @@ package org.opensrp.service;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,41 +38,59 @@ public class EventService {
 		this.allEvents = allEvents;
 		this.clientService = clientService;
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findAllByIdentifier(String identifier) {
 		return allEvents.findAllByIdentifier(identifier);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findAllByIdentifier(String identifierType, String identifier) {
 		return allEvents.findAllByIdentifier(identifierType, identifier);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public Event getById(String id) {
 		return allEvents.findById(id);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public Event getByBaseEntityAndFormSubmissionId(String baseEntityId, String formSubmissionId) {
 		return allEvents.findByBaseEntityAndFormSubmissionId(baseEntityId, formSubmissionId);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findByBaseEntityId(String baseEntityId) {
 		return allEvents.findByBaseEntityId(baseEntityId);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public Event findByFormSubmissionId(String formSubmissionId) {
 		return allEvents.findByFormSubmissionId(formSubmissionId);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findEventsBy(EventSearchBean eventSearchBean) {
 		return allEvents.findEvents(eventSearchBean);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findEventsByDynamicQuery(String query) {
 		return allEvents.findEventsByDynamicQuery(query);
 	}
 	
 	private static Logger logger = LoggerFactory.getLogger(EventService.class.toString());
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public Event find(String uniqueId) {
 		try {
 			List<Event> el = allEvents.findAllByIdentifier(uniqueId);
@@ -83,7 +100,9 @@ public class EventService {
 			throw new IllegalArgumentException("Multiple events with identifier " + uniqueId + " exist.");
 		}
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public Event find(Event event) {
 		for (String idt : event.getIdentifiers().keySet()) {
 			try {
@@ -103,6 +122,8 @@ public class EventService {
 	 * @param eventId the if for the event
 	 * @return an event matching the eventId
 	 */
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public Event findById(String eventId) {
 		try {
 			if (StringUtils.isEmpty(eventId) ) {
@@ -122,6 +143,8 @@ public class EventService {
 	 * @param formSubmissionId form submission id for the events
 	 * @return an event matching the eventId or formsubmission id
 	 */
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public Event findByIdOrFormSubmissionId(String eventId, String formSubmissionId) {
 		Event event=null;
 		try {	
@@ -267,7 +290,8 @@ public class EventService {
 		
 		return event;
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_UPDATE')")
 	public void updateEvent(Event updatedEvent) {
 		// If update is on original entity
 		if (updatedEvent.isNew()) {
@@ -313,19 +337,27 @@ public class EventService {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findByServerVersion(long serverVersion) {
 		return allEvents.findByServerVersion(serverVersion);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar) {
 		return allEvents.notInOpenMRSByServerVersion(serverVersion, calendar);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> notInOpenMRSByServerVersionAndType(String type, long serverVersion, Calendar calendar) {
 		return allEvents.notInOpenMRSByServerVersionAndType(type, serverVersion, calendar);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> getAll() {
 		return allEvents.getAll();
 	}
@@ -335,21 +367,29 @@ public class EventService {
 	public List<Event> findEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit) {
 		return allEvents.findEvents(eventSearchBean, sortBy, sortOrder, limit);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findEvents(EventSearchBean eventSearchBean) {
 		return allEvents.findEvents(eventSearchBean);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findEventsByConceptAndValue(String concept, String conceptValue) {
 		return allEvents.findByConceptAndValue(concept, conceptValue);
 		
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findByBaseEntityAndType(String baseEntityId, String eventType) {
 		return allEvents.findByBaseEntityAndType(baseEntityId, eventType);
 		
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	private Event getUniqueEventFromEventList(List<Event> events) throws IllegalArgumentException {
 		if (events.size() > 1) {
 			throw new IllegalArgumentException();
@@ -359,7 +399,9 @@ public class EventService {
 		}
 		return events.get(0);
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findByProviderAndEntityType(String provider) {
 		return allEvents.findByProvider(provider);
 	}
@@ -374,6 +416,8 @@ public class EventService {
 	 * @param limit upper limit on number of tasks ids to fetch
 	 * @return a list of event ids
 	 */
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public Pair<List<String>, Long> findAllIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit) {
 		return allEvents.findIdsByEventType(eventType, isDeleted, serverVersion, limit);
 	}
