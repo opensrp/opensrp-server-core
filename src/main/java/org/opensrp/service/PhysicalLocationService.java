@@ -376,5 +376,31 @@ public class PhysicalLocationService {
 		JsonElement existingGeometryCoordsElement = JsonParser.parseString(existingEntity.getGeometry().getCoordinates().toString());
 		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
 	}
+
+	/**
+	 * Build full location tree with passed location id as tree root
+	 *
+	 * @param locationId id of the root location
+	 * @return full location hierarchy from passed location plus all of its descendants
+	 */
+	public LocationTree buildLocationHierachyFromLocation(String locationId) {
+		LocationTree locationTree = new LocationTree();
+
+		List<LocationDetail> locationDetails = locationRepository.findLocationWithDescendants(locationId);
+
+		/* @formatter:off */
+		Map<String, LocationDetail> locationMap = locationDetails
+				.stream()
+				.collect(Collectors.toMap(LocationDetail::getIdentifier, (entry) -> entry));
+		List<Location> locations = locationDetails
+				.stream()
+				.map(location -> getLocationFromDetail(location, locationMap))
+				.collect(Collectors.toList());
+		/* @formatter:on */
+
+		locationTree.buildTreeFromList(locations);
+
+		return locationTree;
+	}
 	
 }
