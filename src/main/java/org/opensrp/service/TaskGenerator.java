@@ -3,6 +3,8 @@
  */
 package org.opensrp.service;
 
+import javax.annotation.PostConstruct;
+
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.LocationRepository;
@@ -32,10 +34,9 @@ public class TaskGenerator {
 	@Autowired
 	private EventsRepository eventsRepository;
 	
-	public TaskGenerator() {
-		PathEvaluatorLibrary.init(locationRepository,clientsRepository,taskRepository,eventsRepository,"testUser");
-		PathEvaluatorLibrary.getInstance();
-		
+	@PostConstruct
+	private void postConstruct() {
+		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository, "testUser");
 	}
 	
 	@Async
