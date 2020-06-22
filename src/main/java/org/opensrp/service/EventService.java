@@ -137,7 +137,8 @@ public class EventService {
 		}
 		return event;
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_CREATE')")
 	public synchronized Event addEvent(Event event) {
 		Event e = find(event);
 		if (e != null) {
@@ -246,7 +247,8 @@ public class EventService {
 		
 		return event;
 	}
-	
+
+	@PreAuthorize("hasRole('EVENT_CREATE')")
 	public synchronized Event addorUpdateEvent(Event event) {
 		Event existingEvent = findByIdOrFormSubmissionId(event.getId(),event.getFormSubmissionId());
 		if (existingEvent != null) {

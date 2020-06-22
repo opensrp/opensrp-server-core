@@ -32,11 +32,13 @@ public class IdentifierSourceService {
 		return identifierSourceRepository.findByIdentifier(identifier);
 	}
 
+	@PreAuthorize("hasRole('IDENTIFIERSOURCE_CREATE')")
 	public void add(IdentifierSource identifierSource) {
 		validateFields(identifierSource);
 		identifierSourceRepository.add(identifierSource);
 	}
 
+	@PreAuthorize("hasRole('IDENTIFIERSOURCE_UPDATE')")
 	public void update(IdentifierSource identifierSource) {
 		validateFields(identifierSource);
 		identifierSourceRepository.update(identifierSource);

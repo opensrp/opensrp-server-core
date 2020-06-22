@@ -44,7 +44,8 @@ public class ClientService {
 	public List<Client> findAllByIdentifier(String identifier) {
 		return allClients.findAllByIdentifier(identifier);
 	}
-	
+
+	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	public List<Client> findAllByIdentifier(String identifierType, String identifier) {
 		return allClients.findAllByIdentifier(identifierType, identifier);
 	}
@@ -60,7 +61,8 @@ public class ClientService {
 	public List<Client> findByRelationshipIdAndType(String relationshipType, String entityId) {
 		return allClients.findByRelationshipId(relationshipType, entityId);
 	}
-	
+
+	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	public List<Client> findAllByAttribute(String attributeType, String attribute) {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
@@ -218,7 +220,8 @@ public class ClientService {
 	public List<Client> findByFieldValue(String id) {
 		return allClients.findByRelationShip(id);
 	}
-	
+
+	@PreAuthorize("hasRole('CLIENT_CREATE')")
 	public Client addorUpdate(Client client) {
 		if (client.getBaseEntityId() == null) {
 			throw new RuntimeException("No baseEntityId");
