@@ -28,9 +28,6 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 	@Qualifier("settingRepositoryPostgres")
 	private SettingRepository settingRepository;
 	
-	@Autowired
-	private OpenmrsLocationService openmrsLocationService;
-	
 	@Override
 	protected Set<String> getDatabaseScripts() {
 		Set<String> scripts = new HashSet<String>();

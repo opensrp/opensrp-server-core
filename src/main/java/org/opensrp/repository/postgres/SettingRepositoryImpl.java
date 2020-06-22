@@ -533,7 +533,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (StringUtils.isNotBlank(teamId)) {
 			criteria.andTeamIdEqualTo(teamId);
 		}
-		;
+
 		if (StringUtils.isNotBlank(settingsId)) {
 			criteria.andSettingsIdEqualTo(Long.valueOf(settingsId));
 		}
