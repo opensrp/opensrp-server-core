@@ -72,15 +72,6 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return location together with it's children whose id matches the provided param
 	 */
 	List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry,	String id, int pageSize);
-	
-	
-	 /**
-     * Gets the location primary key 
-     * @param identifier of of the plan
-     * @param isJurisdiction whether the to search for jurisdiction or structure
-     * @return the numerical primary key of a jurisdiction
-     */
-    public Long retrievePrimaryKey(String identifier, boolean isJurisdiction);
 
     /**
 	 * This methods searches for locations using a list of provided location ids.It returns location whose is in the list or whose parent is in list
@@ -148,6 +139,26 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return the parent locations inclusive of the location of the identifiers 
 	 */
 	List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers);
+
+	/**
+	 * This method is used to return a location based on the provided parameters
+	 * @param identifier identifier of the location
+	 * @param status status of the location
+	 * @return returns a location matching the passed parameters
+	 */
+	PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status, boolean returnGeometry);
+
+	/**
+	 * Gets the location primary key
+	 * @param identifier of of the location
+	 * @param isJurisdiction whether the to search for jurisdiction or structure
+	 * @param version version of the location
+	 * @return the numerical primary key of a jurisdiction
+	 */
+	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction, int version);
+
+
+	PhysicalLocation get(String id, boolean returnGeometry, int version);
 
 	/**
 	 * This method is used to return a count of structure based on the provided parameters

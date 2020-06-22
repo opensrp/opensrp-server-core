@@ -177,6 +177,24 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    public void testGetAllShouldGetAllManifestsWithOrdering() {
+        Manifest manifest = initTestManifest();
+        manifestRepository.add(manifest);
+
+        Manifest manifest2 = initTestManifest2();
+        manifestRepository.add(manifest2);
+
+        List<Manifest> manifests = manifestRepository.getAll(1);
+        assertNotNull(manifests);
+        assertEquals(1, manifests.size());
+
+        Set<String> ids = new HashSet<>();
+        assertEquals("6", manifests.get(0).getIdentifier());
+        ids.add(manifest2.getIdentifier());
+        assertTrue(testIfAllIdsExists(manifests, ids));
+    }
+
+    @Test
     public void testSafeRemove() {
         Manifest manifestToRemove = manifestRepository.get("1");
         assertNotNull(manifestToRemove);

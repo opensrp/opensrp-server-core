@@ -40,12 +40,34 @@
 
     <insert id="insertClientFormMetadata" parameterType="org.opensrp.domain.postgres.ClientFormMetadata"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        insert into core.client_form_metadata(id, identifier, jurisdiction, version, label, module, is_draft, is_json_validator, created_at)
-        values (#{id}, #{identifier}, #{jurisdiction}, #{version}, #{label}, #{module}, #{isDraft}, #{isJsonValidator}, #{createdAt})
+        insert into core.client_form_metadata(id, identifier, jurisdiction, version, label, module, is_draft,
+        is_json_validator, created_at)
+        values (#{id}, #{identifier}, #{jurisdiction}, #{version}, #{label}, #{module}, #{isDraft}, #{isJsonValidator},
+        #{createdAt})
     </insert>
 
     <select id="getAvailableClientFormVersions" parameterType="map" resultMap="IdVersionTuple">
         SELECT id, version FROM core.client_form_metadata WHERE identifier = #{formIdentifier} AND
         is_json_validator = #{isJsonValidator, jdbcType=BIT}
+    </select>
+
+    <select id="getDraftClientFormMetadata" parameterType="boolean" resultMap="BaseClientFormMetadataResultMap">
+        SELECT * FROM core.client_form_metadata WHERE is_draft = #{isDraft, jdbcType=BIT}
+    </select>
+
+    <select id="getJsonWidgetValidatorClientFormMetadata" parameterType="boolean"
+        resultMap="BaseClientFormMetadataResultMap">
+        SELECT * FROM core.client_form_metadata WHERE is_json_validator = #{isJsonValidator, jdbcType=BIT}
+    </select>
+
+    <select id="updateClientMetadataIsDraftByVersion" parameterType="map"
+            resultMap="BaseClientFormMetadataResultMap">
+        UPDATE core.client_form_metadata
+        SET is_draft = #{isDraft,jdbcType=BIGINT}
+        WHERE version = #{version, jdbcType=VARCHAR}
+    </select>
+
+    <select id="getAllClientFormMetadata" resultMap="BaseClientFormMetadataResultMap">
+        SELECT * FROM core.client_form_metadata
     </select>
 </mapper>
