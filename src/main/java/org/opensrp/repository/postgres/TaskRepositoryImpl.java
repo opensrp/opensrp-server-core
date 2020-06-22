@@ -300,7 +300,12 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		example.createCriteria().andPlanIdentifierEqualTo(planIdentifier).andForEntityEqualTo(id);
 		return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
 	}
-	
+
+	@Override
+	public void saveTask(Task task) {
+        add(task);
+	}
+
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
 		return tasks
 				.stream()
