@@ -3,8 +3,6 @@ package org.opensrp.repository.postgres.handler;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
-import org.opensrp.domain.postgres.SettingsMetadata;
-import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.setting.Setting;
 import org.postgresql.util.PGobject;
 
@@ -17,7 +15,7 @@ import java.sql.SQLException;
  * Created by Vincent Karuri on 27/04/2020
  */
 public class SettingMetadataTypeHandler extends BaseTypeHandler implements TypeHandler<Setting> {
-	
+
 	@Override
 	public void setParameter(PreparedStatement ps, int i, Setting parameter, JdbcType jdbcType) throws SQLException {
 		try {
