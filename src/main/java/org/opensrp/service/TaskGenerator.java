@@ -33,7 +33,7 @@ public class TaskGenerator {
 	private EventsRepository eventsRepository;
 	
 	public TaskGenerator() {
-		PathEvaluatorLibrary.init(locationRepository,clientsRepository,taskRepository,eventsRepository);
+		PathEvaluatorLibrary.init(locationRepository,clientsRepository,taskRepository,eventsRepository,"testUser");
 		PathEvaluatorLibrary.getInstance();
 		
 	}
