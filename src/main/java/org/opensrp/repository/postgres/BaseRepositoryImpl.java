@@ -14,8 +14,12 @@ public abstract class BaseRepositoryImpl<T> {
 	public static String REVISION_PREFIX = "v";
 	
 	public static String SERVER_VERSION = "server_version";
+
+	public static String VERSION = "version";
 	
 	public static String ASCENDING = "asc";
+
+	public static String DESCENDING = "desc";
 	
 	protected static Logger logger = LoggerFactory.getLogger(BaseRepositoryImpl.class.toString());
 	
