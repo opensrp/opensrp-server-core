@@ -322,8 +322,11 @@
 			lm."name",
 			lm.parent_id,
 			'false' voided,
-			lm.location_id,
-			string_agg(lt."name",',') tags
+			lm.location_id
+
+			<if test="tags">
+				, string_agg(lt."name",',') tags
+			</if>
 		FROM core.location_metadata lm
 		LEFT join core.location_tag_map ltm ON ltm.location_id =lm.location_id
 		LEFT join core.location_tag lt ON lt.id =ltm.location_tag_id

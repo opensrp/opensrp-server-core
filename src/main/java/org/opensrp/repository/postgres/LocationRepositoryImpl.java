@@ -729,7 +729,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<LocationDetail> findLocationWithDescendants(String locationId) {
-		return locationMetadataMapper.selectLocationWithDescendants(locationId);
+	public List<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags) {
+		return locationMetadataMapper.selectLocationWithDescendants(locationId, returnTags);
 	}
 }

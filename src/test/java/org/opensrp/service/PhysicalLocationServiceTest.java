@@ -690,11 +690,13 @@ public class PhysicalLocationServiceTest {
 		locationDetails.add(district2);
 		locationDetails.add(district3);
 
-		when(locationRepository.findLocationWithDescendants(locationId)).thenReturn(locationDetails);
+		Boolean returnTags = false;
+
+		when(locationRepository.findLocationWithDescendants(locationId, returnTags)).thenReturn(locationDetails);
 
 		LocationTree tree = locationService.buildLocationHierachyFromLocation(locationId);
 
-		verify(locationRepository).findLocationWithDescendants(locationId);
+		verify(locationRepository).findLocationWithDescendants(locationId, returnTags);
 		assertNotNull(tree);
 		assertEquals(1, tree.getLocationsHierarchy().size());
 

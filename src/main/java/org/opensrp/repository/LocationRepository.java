@@ -188,5 +188,5 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @param locationId location id of the root location
 	 * @return chi
 	 */
-	List<LocationDetail> findLocationWithDescendants(String locationId);
+	List<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags);
 }
