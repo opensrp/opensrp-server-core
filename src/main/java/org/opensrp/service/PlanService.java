@@ -253,5 +253,13 @@ public class PlanService {
 		}
 		return 0l;
 	}
+
+	public List<PlanDefinition> getPlanTemplates() {
+		return planRepository.getAllPlanTemplates();
+	}
+
+	public List<PlanDefinition> getPlansWithoutTemplates() {
+		return planRepository.getAllPlansWithoutTemplates();
+	}
 	
 }

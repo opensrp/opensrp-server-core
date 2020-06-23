@@ -63,4 +63,8 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @return plans with the identifiers and server version greater than or equal to server version param
 	 */
 	Long countPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion);
+
+	List<PlanDefinition> getAllPlanTemplates();
+
+	List<PlanDefinition> getAllPlansWithoutTemplates();
 }

@@ -129,8 +129,8 @@ public class PlanExample {
 
 		protected GeneratedCriteria() {
 			super();
-			criteria = new ArrayList<Criterion>();
-			jsonCriteria = new ArrayList<Criterion>();
+			criteria = new ArrayList<>();
+			jsonCriteria = new ArrayList<>();
 		}
 
 		public List<Criterion> getJsonCriteria() {
@@ -139,7 +139,7 @@ public class PlanExample {
 
 		protected void addJsonCriterion(String condition, Object value, String property) {
 			if (value == null) {
-				throw new IllegalArgumentException("Value for " + property + " cannot be null");
+				throw new RuntimeException("Value for " + property + " cannot be null");
 			}
 			jsonCriteria
 					.add(new Criterion(condition, value, "org.opensrp.repository.postgres.handler.PlanTypeHandler"));
@@ -148,7 +148,7 @@ public class PlanExample {
 
 		protected void addJsonCriterion(String condition, Object value1, Object value2, String property) {
 			if (value1 == null || value2 == null) {
-				throw new IllegalArgumentException("Between values for " + property + " cannot be null");
+				throw new RuntimeException("Between values for " + property + " cannot be null");
 			}
 			jsonCriteria.add(new Criterion(condition, value1, value2,
 					"org.opensrp.repository.postgres.handler.PlanTypeHandler"));
@@ -161,7 +161,7 @@ public class PlanExample {
 
 		public List<Criterion> getAllCriteria() {
 			if (allCriteria == null) {
-				allCriteria = new ArrayList<Criterion>();
+				allCriteria = new ArrayList<>();
 				allCriteria.addAll(criteria);
 				allCriteria.addAll(jsonCriteria);
 			}
@@ -174,7 +174,7 @@ public class PlanExample {
 
 		protected void addCriterion(String condition) {
 			if (condition == null) {
-				throw new IllegalArgumentException("Value for condition cannot be null");
+				throw new RuntimeException("Value for condition cannot be null");
 			}
 			criteria.add(new Criterion(condition));
 			allCriteria = null;
@@ -182,7 +182,7 @@ public class PlanExample {
 
 		protected void addCriterion(String condition, Object value, String property) {
 			if (value == null) {
-				throw new IllegalArgumentException("Value for " + property + " cannot be null");
+				throw new RuntimeException("Value for " + property + " cannot be null");
 			}
 			criteria.add(new Criterion(condition, value));
 			allCriteria = null;
@@ -190,7 +190,7 @@ public class PlanExample {
 
 		protected void addCriterion(String condition, Object value1, Object value2, String property) {
 			if (value1 == null || value2 == null) {
-				throw new IllegalArgumentException("Between values for " + property + " cannot be null");
+				throw new RuntimeException("Between values for " + property + " cannot be null");
 			}
 			criteria.add(new Criterion(condition, value1, value2));
 			allCriteria = null;
@@ -503,6 +503,66 @@ public class PlanExample {
 
 		public Criteria andServerVersionNotBetween(Long value1, Long value2) {
 			addCriterion("server_version not between", value1, value2, "serverVersion");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateIsNull() {
+			addCriterion("is_template is null");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateIsNotNull() {
+			addCriterion("is_template is not null");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateEqualTo(Boolean value) {
+			addCriterion("is_template =", value, "isTemplate");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateNotEqualTo(Boolean value) {
+			addCriterion("is_template <>", value, "isTemplate");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateGreaterThan(Boolean value) {
+			addCriterion("is_template >", value, "isTemplate");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateGreaterThanOrEqualTo(Boolean value) {
+			addCriterion("is_template >=", value, "isTemplate");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateLessThan(Boolean value) {
+			addCriterion("is_template <", value, "isTemplate");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateLessThanOrEqualTo(Boolean value) {
+			addCriterion("is_template <=", value, "isTemplate");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateIn(List<Boolean> values) {
+			addCriterion("is_template in", values, "isTemplate");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateNotIn(List<Boolean> values) {
+			addCriterion("is_template not in", values, "isTemplate");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateBetween(Boolean value1, Boolean value2) {
+			addCriterion("is_template between", value1, value2, "isTemplate");
+			return (Criteria) this;
+		}
+
+		public Criteria andIsTemplateNotBetween(Boolean value1, Boolean value2) {
+			addCriterion("is_template not between", value1, value2, "isTemplate");
 			return (Criteria) this;
 		}
 	}
