@@ -36,12 +36,12 @@ public class TaskGenerator {
 	
 	@PostConstruct
 	private void postConstruct() {
-		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository, "testUser");
+		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
 	}
 	
 	@Async
-	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition) {
-		PlanEvaluator planEvaluator = new PlanEvaluator();
+	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition, String username) {
+		PlanEvaluator planEvaluator = new PlanEvaluator(username);
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
 	}
 }
