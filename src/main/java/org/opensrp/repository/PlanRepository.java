@@ -64,7 +64,5 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 */
 	Long countPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion);
 
-	List<PlanDefinition> getAllPlanTemplates();
-
-	List<PlanDefinition> getAllPlansWithoutTemplates();
+	List<PlanDefinition> getAllPlans(boolean experimental);
 }

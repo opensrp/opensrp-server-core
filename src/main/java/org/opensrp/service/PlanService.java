@@ -45,8 +45,8 @@ public class PlanService {
 		return planRepository;
 	}
 	
-	public List<PlanDefinition> getAllPlans() {
-		return getPlanRepository().getAll();
+	public List<PlanDefinition> getAllPlans(boolean experimental) {
+		return getPlanRepository().getAllPlans(experimental);
 	}
 	
 	public void addOrUpdatePlan(PlanDefinition plan) {
@@ -252,14 +252,6 @@ public class PlanService {
 			return countPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
 		}
 		return 0l;
-	}
-
-	public List<PlanDefinition> getPlanTemplates() {
-		return planRepository.getAllPlanTemplates();
-	}
-
-	public List<PlanDefinition> getPlansWithoutTemplates() {
-		return planRepository.getAllPlansWithoutTemplates();
 	}
 	
 }
