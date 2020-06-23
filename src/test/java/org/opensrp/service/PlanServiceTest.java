@@ -52,6 +52,8 @@ public class PlanServiceTest {
 	@Mock
 	private TaskGenerator taskGenerator;
 	
+	private String user="johndoe";
+	
 	@Before
 	public void setUp() {
 		planService = new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService,taskGenerator);
@@ -68,7 +70,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(null);
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.addOrUpdatePlan(plan);
+		planService.addOrUpdatePlan(plan,user);
 		verify(planRepository).add(eq(plan));
 	}
 	
@@ -77,7 +79,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(new PlanDefinition());
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.addOrUpdatePlan(plan);
+		planService.addOrUpdatePlan(plan,user);
 		verify(planRepository).update(eq(plan));
 	}
 	
@@ -86,7 +88,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(null);
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.addPlan(plan);
+		planService.addPlan(plan,user);
 		verify(planRepository).add(eq(plan));
 	}
 	
@@ -95,7 +97,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(new PlanDefinition());
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.updatePlan(plan);
+		planService.updatePlan(plan,user);
 		verify(planRepository).update(eq(plan));
 	}
 	
