@@ -244,7 +244,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         pgPlan.setJson(plan);
         pgPlan.setServerVersion(plan.getServerVersion());
         pgPlan.setId(id);
-        pgPlan.setIsTemplate(plan.getTemplate());
+        pgPlan.setExperimental(plan.getExperimental());
         return pgPlan;
     }
 
@@ -315,7 +315,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     @Override
     public List<PlanDefinition> getAllPlanTemplates() {
         PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andDateDeletedIsNull().andIsTemplateEqualTo(Boolean.TRUE);
+        planExample.createCriteria().andDateDeletedIsNull().andExperimentalEqualTo(Boolean.TRUE);
         List<Plan> plans = planMapper.selectMany(planExample,0, DEFAULT_FETCH_SIZE);
         return convert(plans);
     }
@@ -323,7 +323,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     @Override
     public List<PlanDefinition> getAllPlansWithoutTemplates() {
         PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andDateDeletedIsNull().andIsTemplateEqualTo(Boolean.FALSE);
+        planExample.createCriteria().andDateDeletedIsNull().andExperimentalEqualTo(Boolean.FALSE);
         List<Plan> plans = planMapper.selectMany(planExample,0, DEFAULT_FETCH_SIZE);
         return convert(plans);
     }

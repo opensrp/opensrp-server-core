@@ -70,8 +70,8 @@
       <if test="serverVersion != null">
         server_version,
       </if>
-		<if test="isTemplate != null">
-			is_template,
+		<if test="experimental != null">
+			experimental,
 		</if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -90,8 +90,8 @@
       <if test="serverVersion != null">
         #{serverVersion,jdbcType=BIGINT},
       </if>
-		<if test="isTemplate != null">
-			#{isTemplate,jdbcType=BIT},
+		<if test="experimental != null">
+			#{experimental,jdbcType=BIT},
 		</if>
     </trim>
   </insert>

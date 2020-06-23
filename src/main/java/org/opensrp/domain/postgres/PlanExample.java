@@ -26,7 +26,7 @@ public class PlanExample {
 	 * @mbg.generated  Fri Aug 30 12:59:38 EAT 2019
 	 */
 	public PlanExample() {
-		oredCriteria = new ArrayList<Criteria>();
+		oredCriteria = new ArrayList<>();
 	}
 
 	/**
@@ -506,63 +506,63 @@ public class PlanExample {
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateIsNull() {
-			addCriterion("is_template is null");
+		public Criteria andExperimentalIsNull() {
+			addCriterion("experimental is null");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateIsNotNull() {
-			addCriterion("is_template is not null");
+		public Criteria andExperimentalIsNotNull() {
+			addCriterion("experimental is not null");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateEqualTo(Boolean value) {
-			addCriterion("is_template =", value, "isTemplate");
+		public Criteria andExperimentalEqualTo(Boolean value) {
+			addCriterion("experimental =", value, "experimental");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateNotEqualTo(Boolean value) {
-			addCriterion("is_template <>", value, "isTemplate");
+		public Criteria andExperimentalNotEqualTo(Boolean value) {
+			addCriterion("experimental <>", value, "experimental");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateGreaterThan(Boolean value) {
-			addCriterion("is_template >", value, "isTemplate");
+		public Criteria andExperimentalGreaterThan(Boolean value) {
+			addCriterion("experimental >", value, "experimental");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateGreaterThanOrEqualTo(Boolean value) {
-			addCriterion("is_template >=", value, "isTemplate");
+		public Criteria andExperimentalGreaterThanOrEqualTo(Boolean value) {
+			addCriterion("experimental >=", value, "experimental");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateLessThan(Boolean value) {
-			addCriterion("is_template <", value, "isTemplate");
+		public Criteria andExperimentalLessThan(Boolean value) {
+			addCriterion("experimental <", value, "experimental");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateLessThanOrEqualTo(Boolean value) {
-			addCriterion("is_template <=", value, "isTemplate");
+		public Criteria andExperimentalLessThanOrEqualTo(Boolean value) {
+			addCriterion("experimental <=", value, "experimental");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateIn(List<Boolean> values) {
-			addCriterion("is_template in", values, "isTemplate");
+		public Criteria andExperimentalIn(List<Boolean> values) {
+			addCriterion("experimental in", values, "experimental");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateNotIn(List<Boolean> values) {
-			addCriterion("is_template not in", values, "isTemplate");
+		public Criteria andExperimentalNotIn(List<Boolean> values) {
+			addCriterion("experimental not in", values, "experimental");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateBetween(Boolean value1, Boolean value2) {
-			addCriterion("is_template between", value1, value2, "isTemplate");
+		public Criteria andExperimentalBetween(Boolean value1, Boolean value2) {
+			addCriterion("experimental between", value1, value2, "experimental");
 			return (Criteria) this;
 		}
 
-		public Criteria andIsTemplateNotBetween(Boolean value1, Boolean value2) {
-			addCriterion("is_template not between", value1, value2, "isTemplate");
+		public Criteria andExperimentalNotBetween(Boolean value1, Boolean value2) {
+			addCriterion("experimental not between", value1, value2, "experimental");
 			return (Criteria) this;
 		}
 	}
