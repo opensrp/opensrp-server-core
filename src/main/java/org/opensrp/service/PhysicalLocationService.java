@@ -305,8 +305,7 @@ public class PhysicalLocationService {
 	public LocationTree buildLocationHierachy(Set<String> identifiers) {
 		LocationTree locationTree = new LocationTree();
 		List<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers);
-		List<Location> locations = getLocations(locationDetails);
-		locationTree.buildTreeFromList(locations);
+		locationTree.buildTreeFromList(getLocations(locationDetails));
 		return locationTree;
 	}
 	
@@ -396,12 +395,8 @@ public class PhysicalLocationService {
 	 */
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnTags) {
 		LocationTree locationTree = new LocationTree();
-
 		List<LocationDetail> locationDetails = locationRepository.findLocationWithDescendants(locationId, returnTags);
-		List<Location> locations = getLocations(locationDetails);
-
-		locationTree.buildTreeFromList(locations);
-
+		locationTree.buildTreeFromList(getLocations(locationDetails));
 		return locationTree;
 	}
 
