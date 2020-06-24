@@ -4,14 +4,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureMetadataExample;
 import org.opensrp.repository.postgres.mapper.StructureMetadataMapper;
-import org.springframework.data.jpa.repository.query.QueryUtils;
 
 public interface CustomStructureMetadataMapper extends StructureMetadataMapper {
 
