@@ -190,6 +190,7 @@
 			 	<foreach collection="identifiers" item="value"  open="(" separator="," close=")">
 	       			#{value}
 	   			</foreach>
+		        AND lm.status = 'ACTIVE'
 				UNION
 				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
 				FROM locations lm1
