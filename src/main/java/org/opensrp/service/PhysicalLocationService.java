@@ -305,16 +305,7 @@ public class PhysicalLocationService {
 	public LocationTree buildLocationHierachy(Set<String> identifiers) {
 		LocationTree locationTree = new LocationTree();
 		List<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers);
-		/* @formatter:off */
-		Map<String, LocationDetail> locationMap = locationDetails
-				.stream()
-		        .collect(Collectors.toMap(LocationDetail::getIdentifier, (entry) -> entry));
-		List<Location> locations = locationDetails
-				.stream()
-				.map(location -> getLocationFromDetail(location, locationMap))
-		        .collect(Collectors.toList());
-		/* @formatter:on */
-		locationTree.buildTreeFromList(locations);
+		locationTree.buildTreeFromList(getLocations(locationDetails));
 		return locationTree;
 	}
 	
@@ -331,6 +322,21 @@ public class PhysicalLocationService {
 			location.setParentLocation(new Location().withLocationId(parent.getIdentifier()));
 		}
 		return location;
+	}
+
+	private List<Location> getLocations(List<LocationDetail> locationDetails){
+		/* @formatter:off */
+		Map<String, LocationDetail> locationMap = locationDetails
+				.stream()
+				.collect(Collectors.toMap(LocationDetail::getIdentifier, (entry) -> entry));
+
+		List<Location> locations = locationDetails
+				.stream()
+				.map(location -> getLocationFromDetail(location, locationMap))
+				.collect(Collectors.toList());
+		/* @formatter:on */
+
+		return locations;
 	}
 
 	/**
@@ -376,5 +382,22 @@ public class PhysicalLocationService {
 		JsonElement existingGeometryCoordsElement = JsonParser.parseString(existingEntity.getGeometry().getCoordinates().toString());
 		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
 	}
-	
+
+	public LocationTree buildLocationHierachyFromLocation(String locationId) {
+		return buildLocationHierachyFromLocation(locationId, false);
+	}
+
+	/**
+	 * Build full location tree with passed location id as tree root
+	 *
+	 * @param locationId id of the root location
+	 * @return full location hierarchy from passed location plus all of its descendants
+	 */
+	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnTags) {
+		LocationTree locationTree = new LocationTree();
+		List<LocationDetail> locationDetails = locationRepository.findLocationWithDescendants(locationId, returnTags);
+		locationTree.buildTreeFromList(getLocations(locationDetails));
+		return locationTree;
+	}
+
 }

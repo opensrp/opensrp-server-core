@@ -724,4 +724,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public int countSearchLocations(LocationSearchBean locationSearchBean) {
 		return locationMetadataMapper.selectCountLocations(locationSearchBean);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags) {
+		return locationMetadataMapper.selectLocationWithDescendants(locationId, returnTags);
+	}
 }

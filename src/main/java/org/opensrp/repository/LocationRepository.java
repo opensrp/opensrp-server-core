@@ -181,4 +181,12 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @return returns a count of locations matching the passed parameters
 	 */
 	Long countLocationsByNames(String locationNames, long serverVersion);
+
+	/**
+	 * Get location with all of its descendants.
+	 *
+	 * @param locationId location id of the root location
+	 * @return chi
+	 */
+	List<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags);
 }

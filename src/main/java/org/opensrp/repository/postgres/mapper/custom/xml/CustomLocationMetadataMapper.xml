@@ -315,4 +315,42 @@
 		and lm.version = #{version,jdbcType=INTEGER}
 	</select>
 
+	<select id="selectLocationWithDescendants"
+			resultMap="DetailsResultMap">
+
+		SELECT lm.geojson_id identifier,
+			lm."name",
+			lm.parent_id,
+			'false' voided,
+			lm.location_id
+
+			<if test="tags">
+				, string_agg(lt."name", ',') tags
+			</if>
+
+		FROM core.location_metadata lm
+		LEFT join core.location_tag_map ltm ON ltm.location_id =lm.location_id
+
+		<if test="tags">
+			LEFT join core.location_tag lt ON lt.id =ltm.location_tag_id
+		</if>
+
+		WHERE lm.location_id IN
+		(
+			WITH RECURSIVE locations
+			AS
+			(
+				SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+				FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}
+				UNION
+				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+				FROM locations lm1
+				INNER JOIN core.location_metadata lm2 ON lm2.parent_id = lm1.geojson_id AND status = 'ACTIVE'
+			)
+			SELECT location_id FROM locations
+		)
+		GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id
+
+	</select>
+
 </mapper>
