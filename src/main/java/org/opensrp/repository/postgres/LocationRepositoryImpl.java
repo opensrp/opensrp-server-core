@@ -10,12 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opensrp.domain.LocationDetail;
-import org.opensrp.domain.LocationTag;
-import org.opensrp.domain.LocationTagMap;
-import org.opensrp.domain.LocationProperty;
-import org.opensrp.domain.PhysicalLocation;
-import org.opensrp.domain.StructureDetails;
+import org.opensrp.domain.*;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.LocationMetadata;
 import org.opensrp.domain.postgres.LocationMetadataExample;
@@ -731,5 +726,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags) {
 		return locationMetadataMapper.selectLocationWithDescendants(locationId, returnTags);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<StructureCount> findStructureCountsForLocation(Set<String> locationIds) {
+		return structureMetadataMapper.findStructureCountsForLocation(locationIds);
 	}
 }
