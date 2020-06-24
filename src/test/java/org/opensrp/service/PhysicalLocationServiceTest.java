@@ -590,7 +590,7 @@ public class PhysicalLocationServiceTest {
 		locationDetails.add(kenya);
 		locationDetails.add(nairobi);
 		when(locationRepository.findParentLocationsInclusive(identifiers)).thenReturn(locationDetails);
-		LocationTree tree = locationService.buildLocationHierachy(identifiers);
+		LocationTree tree = locationService.buildLocationHierachy(identifiers, true);
 		verify(locationRepository).findParentLocationsInclusive(identifiers);
 		assertNotNull(tree);
 		assertEquals(1, tree.getLocationsHierarchy().size());
@@ -694,7 +694,7 @@ public class PhysicalLocationServiceTest {
 
 		when(locationRepository.findLocationWithDescendants(locationId, returnTags)).thenReturn(locationDetails);
 
-		LocationTree tree = locationService.buildLocationHierachyFromLocation(locationId);
+		LocationTree tree = locationService.buildLocationHierachyFromLocation(locationId, false);
 
 		verify(locationRepository).findLocationWithDescendants(locationId, returnTags);
 		assertNotNull(tree);
@@ -726,5 +726,6 @@ public class PhysicalLocationServiceTest {
 		assertEquals(1, tags.size());
 		assertTrue(tags.contains("District"));
 	}
+
 	
 }
