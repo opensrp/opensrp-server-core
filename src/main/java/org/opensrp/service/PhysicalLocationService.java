@@ -322,6 +322,7 @@ public class PhysicalLocationService {
 		if (parent != null) {
 			location.setParentLocation(new Location().withLocationId(parent.getIdentifier()));
 		}
+		location.addAttribute("geographicLevel", locationDetail.getGeographicLevel());
 		return location;
 	}
 

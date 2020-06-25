@@ -28,5 +28,7 @@ public class LocationDetail implements Serializable {
 	private boolean voided;
 	
 	private String tags;
+
+	private Integer geographicLevel;
 	
 }
