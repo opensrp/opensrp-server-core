@@ -45,4 +45,6 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	List<LocationDetail> selectLocationHierachy( @Param("identifiers") Set<String> identifiers);
 
 	Location findByIdAndVersion(@Param("id") String id, @Param("geometry") boolean returnGeometry, @Param("version") int status);
+
+	List<LocationDetail> selectLocationWithDescendants(@Param("locationId") String locationId, @Param("tags") boolean returnTags);
 }

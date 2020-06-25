@@ -49,36 +49,36 @@ public class PlanService {
 		return getPlanRepository().getAllPlans(experimental);
 	}
 	
-	public void addOrUpdatePlan(PlanDefinition plan) {
+	public void addOrUpdatePlan(PlanDefinition plan,String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		if (getPlan(plan.getIdentifier()) != null) {
-			updatePlan(plan);
+			updatePlan(plan,username);
 		} else {
-			addPlan(plan);
+			addPlan(plan,username);
 		}
 	}
 	
-	public PlanDefinition addPlan(PlanDefinition plan) {
+	public PlanDefinition addPlan(PlanDefinition plan,String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().add(plan);
-		taskGenerator.processPlanEvaluation(plan, null);
+		taskGenerator.processPlanEvaluation(plan, null,username);
 		return plan;
 	}
 	
-	public PlanDefinition updatePlan(PlanDefinition plan) {
+	public PlanDefinition updatePlan(PlanDefinition plan, String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		PlanDefinition existing = getPlan(plan.getIdentifier());
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().update(plan);
-		taskGenerator.processPlanEvaluation(plan, existing);
+		taskGenerator.processPlanEvaluation(plan, existing,username);
 		return plan;
 	}
 	

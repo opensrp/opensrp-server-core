@@ -730,6 +730,15 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public int countSearchLocations(LocationSearchBean locationSearchBean) {
 		return locationMetadataMapper.selectCountLocations(locationSearchBean);
 	}
+  
+  	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags) {
+		return locationMetadataMapper.selectLocationWithDescendants(locationId, returnTags);
+	}
+  
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findJurisdictionsById(String id) {
@@ -752,6 +761,5 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 				.map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
 				.collect(Collectors.toList());
 	}
-	
 	
 }
