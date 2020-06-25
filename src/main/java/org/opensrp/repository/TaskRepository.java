@@ -1,10 +1,12 @@
 package org.opensrp.repository;
 
 import java.util.List;
-import org.apache.commons.lang3.tuple.Pair;
-import org.opensrp.domain.Task;
 
-public interface TaskRepository extends BaseRepository<Task> {
+import org.apache.commons.lang3.tuple.Pair;
+import org.smartregister.domain.Task;
+import org.smartregister.pathevaluator.dao.TaskDao;
+
+public interface TaskRepository extends BaseRepository<Task>, TaskDao {
 
 	List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion);
 

@@ -6,12 +6,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
-import org.opensrp.domain.Event;
+import org.smartregister.converters.EventConverter;
+import org.smartregister.domain.Event;
 import org.opensrp.domain.postgres.EventExample;
 import org.opensrp.domain.postgres.EventMetadata;
 import org.opensrp.domain.postgres.EventMetadataExample;
@@ -22,6 +24,8 @@ import org.opensrp.repository.postgres.mapper.custom.CustomEventMetadataMapper;
 import org.opensrp.search.EventSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 
 @Repository("eventsRepositoryPostgres")
 public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements EventsRepository {
@@ -473,6 +477,16 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	}
 	
 	/**
+	 * Gets events for a entity with details values
+	 * @param baseEntityId entity id
+	 * @param detailKey plan id
+	 * @return events for an entity in a plan
+	 */
+	private List<Event> findByBaseEntityIdAndPlanIdentifier(String baseEntityId,String detailKey, String detailValue) {
+		return convert(eventMapper.selectByBaseEntityIdAndDetails(baseEntityId,detailKey,detailValue));
+	}
+	
+	/**
 	 * Get the primary key of an event
 	 * @param event
 	 * @param allowArchived
@@ -587,4 +601,13 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		
 	}
 
+	@Override
+	public List<QuestionnaireResponse> findEventsByEntityIdAndPlan(String resourceId, String planIdentifier) {
+		return findByBaseEntityIdAndPlanIdentifier(resourceId, "planIdentifier", planIdentifier)
+				.stream()
+		        .map(event -> EventConverter.convertEventToEncounterResource(event))
+		        .collect(Collectors.toList());
+	}
+
+	
 }

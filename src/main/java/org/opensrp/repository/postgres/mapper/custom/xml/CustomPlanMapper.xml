@@ -50,7 +50,7 @@
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
-	
+
 	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Plan"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
     insert into core.plan
@@ -70,6 +70,9 @@
       <if test="serverVersion != null">
         server_version,
       </if>
+		<if test="experimental != null">
+			experimental,
+		</if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -87,6 +90,9 @@
       <if test="serverVersion != null">
         #{serverVersion,jdbcType=BIGINT},
       </if>
+		<if test="experimental != null">
+			#{experimental,jdbcType=BIT},
+		</if>
     </trim>
   </insert>
 

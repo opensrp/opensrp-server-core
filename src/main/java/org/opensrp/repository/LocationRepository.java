@@ -7,12 +7,13 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
-import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureCount;
+import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.search.LocationSearchBean;
+import org.smartregister.pathevaluator.dao.LocationDao;
 
-public interface LocationRepository extends BaseRepository<PhysicalLocation> {
+public interface LocationRepository extends BaseRepository<PhysicalLocation>, LocationDao {
 
 	PhysicalLocation getStructure(String id, boolean returnGeometry);
 

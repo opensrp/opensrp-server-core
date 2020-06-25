@@ -2,7 +2,7 @@ package org.opensrp.repository.postgres;
 
 import java.util.List;
 
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.repository.SearchRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
 import org.opensrp.search.AddressSearchBean;

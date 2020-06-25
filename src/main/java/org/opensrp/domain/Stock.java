@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.smartregister.domain.BaseDataObject;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Stock extends BaseDataObject {
