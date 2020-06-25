@@ -617,28 +617,28 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	@Override
 	public List<Patient> findFamilyByJurisdiction(String jurisdiction) {
 		ClientSearchBean searchBean = ClientSearchBean.builder().locations(Collections.singletonList(jurisdiction))
-		        .clientType("Family").build();
+		        .lastName("Family").build();
 		return convertToFHIR(findByCriteria(searchBean));
 	}
 	
 	@Override
 	public List<Patient> findFamilyByResidence(String structureId) {
 		ClientSearchBean searchBean = ClientSearchBean.builder().attributeType("residence").attributeType(structureId)
-		        .clientType("Family").build();
+		        .lastName("Family").build();
 		return convertToFHIR(findByCriteria(searchBean));
 	}
 	
 	@Override
 	public List<Patient> findFamilyMemberyByJurisdiction(String jurisdiction) {
 		ClientSearchBean searchBean = ClientSearchBean.builder().locations(Collections.singletonList(jurisdiction))
-		        .clientType("FamilyMember").build();//TODO convert to  .clientType!="FamilyMember"
+		        .lastNameNot("Family").build();
 		return convertToFHIR(findByCriteria(searchBean));
 	}
 	
 	@Override
 	public List<Patient> findFamilyMemberByResidence(String structureId) {
 		ClientSearchBean searchBean = ClientSearchBean.builder().attributeType("residence").attributeType(structureId)
-		        .clientType("FamilyMember").build();//TODO convert to  .clientType!="FamilyMember"
+		        .lastNameNot("Family").build();
 		return convertToFHIR(findByCriteria(searchBean));
 	}
 	
@@ -648,9 +648,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	private List<Patient> convertToFHIR(List<Client> clients) {
-		return clients.stream()
-				.map(client -> ClientConverter.convertClientToPatientResource(client))
-				.collect(Collectors.toList());
+		return clients.stream().map(client -> ClientConverter.convertClientToPatientResource(client))
+		        .collect(Collectors.toList());
 	}
 	
 }

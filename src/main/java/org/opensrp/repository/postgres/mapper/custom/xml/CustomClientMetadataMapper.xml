@@ -223,6 +223,9 @@
 			<bind name="lastName" value="'%' + clientBean.lastName + '%'" />
 			and c.json->>'lastName' ilike #{lastName}
 		</if>
+		<if test="clientBean.lastNameNot != null">
+			and c.json->>'lastName' != #{clientBean.lastNameNot,jdbcType=VARCHAR}
+		</if>
 		<if test="clientBean.identifiers != null" >
 			<trim prefix="and ("  suffix=")" >
 			 <foreach collection="clientBean.identifiers" index="key" item="value" separator=" or " >
