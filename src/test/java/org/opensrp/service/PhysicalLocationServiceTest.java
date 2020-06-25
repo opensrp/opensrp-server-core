@@ -673,5 +673,68 @@ public class PhysicalLocationServiceTest {
 		assertEquals(2, locations.longValue());
 
 	}
+
+	@Test
+	public void testBuildLocationHierachyFromLocation() {
+		String locationId = "1";
+
+		List<LocationDetail> locationDetails = new ArrayList<>();
+
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
+				.tags("Country").build();
+		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
+				.tags("Province").build();
+		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
+				.tags("Province").build();
+		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
+				.tags("District").build();
+		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
+				.tags("District").build();
+		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
+				.tags("District").build();
+
+		locationDetails.add(country);
+		locationDetails.add(province1);
+		locationDetails.add(province2);
+		locationDetails.add(district1);
+		locationDetails.add(district2);
+		locationDetails.add(district3);
+
+		Boolean returnTags = false;
+
+		when(locationRepository.findLocationWithDescendants(locationId, returnTags)).thenReturn(locationDetails);
+
+		LocationTree tree = locationService.buildLocationHierachyFromLocation(locationId);
+
+		verify(locationRepository).findLocationWithDescendants(locationId, returnTags);
+		assertNotNull(tree);
+		assertEquals(1, tree.getLocationsHierarchy().size());
+
+		TreeNode<String, Location> level0Node = tree.getLocationsHierarchy().get(country.getIdentifier());
+		assertNotNull(level0Node);
+		assertEquals(country.getIdentifier(), level0Node.getId());
+		assertEquals(country.getName(), level0Node.getLabel());
+		assertNull(level0Node.getParent());
+		assertEquals(country.getTags(), level0Node.getNode().getTags().iterator().next());
+		assertEquals(2, level0Node.getChildren().size());
+
+		TreeNode<String, Location> level1Node = level0Node.getChildren().get(province2.getIdentifier());
+		assertNotNull(level1Node);
+		assertEquals(province2.getIdentifier(), level1Node.getId());
+		assertEquals(province2.getName(), level1Node.getLabel());
+		assertEquals(2, level1Node.getChildren().size());
+		assertEquals(country.getIdentifier(), level1Node.getParent());
+
+		TreeNode<String, Location> level2Node = level1Node.getChildren().get(district2.getIdentifier());
+		assertNotNull(level2Node);
+		assertEquals(district2.getIdentifier(), level2Node.getId());
+		assertEquals(district2.getName(), level2Node.getLabel());
+		assertNull(level2Node.getChildren());
+		assertEquals(province2.getIdentifier(), level2Node.getParent());
+
+		Set<String> tags = level2Node.getNode().getTags();
+		assertEquals(1, tags.size());
+		assertTrue(tags.contains("District"));
+	}
 	
 }
