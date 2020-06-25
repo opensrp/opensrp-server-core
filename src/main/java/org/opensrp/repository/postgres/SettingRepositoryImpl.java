@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.api.util.TreeNode;
-import org.opensrp.connector.openmrs.service.OpenmrsLocationService;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.domain.postgres.SettingsMetadata;
@@ -42,9 +41,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	
 	@Autowired
 	private CustomSettingMetadataMapper settingMetadataMapper;
-	
-	@Autowired
-	private OpenmrsLocationService openmrsLocationService;
 	private String locationUuid;
 	
 	@Override
@@ -56,7 +52,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setDocumentId(id);
 		
-		return findSetting(settingQueryBean);
+		return findSetting(settingQueryBean,null);
 	}
 	
 	@Transactional
@@ -116,7 +112,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	private List<SettingsMetadata> getAvailableMetadataUsingSettingsId(SettingConfiguration entity, Long id) {
 		List<SettingsMetadata> settingsMetadata;
 		SettingSearchBean settingSearchBean = createDocumentIdSearchBean(entity);
-		SettingConfiguration settingConfiguration = findSetting(settingSearchBean);
+		SettingConfiguration settingConfiguration = findSetting(settingSearchBean,null);
 		settingsMetadata = createMetadata(settingConfiguration, id);
 		
 		return settingsMetadata;
@@ -154,30 +150,32 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 	
 	@Override
-	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
-		return findSettings(settingQueryBean, DEFAULT_FETCH_SIZE);
+	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean,Map<String, TreeNode<String, Location>> treeNodeHashMap ) {
+		return findSettings(settingQueryBean, DEFAULT_FETCH_SIZE, treeNodeHashMap);
 	}
 	
-	public SettingConfiguration findSetting(SettingSearchBean settingQueryBean) {
-		List<SettingConfiguration> settingConfigurations = findSettings(settingQueryBean);
+	public SettingConfiguration findSetting(SettingSearchBean settingQueryBean,Map<String, TreeNode<String, Location>> treeNodeHashMap ) {
+		List<SettingConfiguration> settingConfigurations = findSettings(settingQueryBean,treeNodeHashMap );
 		return settingConfigurations.isEmpty() ? null : settingConfigurations.get(0);
 	}
 	
-	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean, int limit) {
+	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean, int limit,Map<String, TreeNode<String, Location>> treeNodeHashMap) {
 		if (settingQueryBean.isResolveSettings()) {
-			return resolveSettings(findSettingsAndSettingsMetadata(settingQueryBean, limit),
+			return resolveSettings(findSettingsAndSettingsMetadata(settingQueryBean,treeNodeHashMap, limit),
 					settingQueryBean.isV1Settings());
 		} else {
-			return convertToSettingConfigurations(findSettingsAndSettingsMetadata(settingQueryBean, limit), settingQueryBean.isV1Settings());
+			return convertToSettingConfigurations(findSettingsAndSettingsMetadata(settingQueryBean,treeNodeHashMap, limit),
+					settingQueryBean.isV1Settings());
 		}
 	}
 	
-	public SettingsAndSettingsMetadataJoined findSettingsAndSettingsMetadata(SettingSearchBean settingQueryBean) {
-		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined = findSettingsAndSettingsMetadata(settingQueryBean, 1);
+	public SettingsAndSettingsMetadataJoined findSettingsAndSettingsMetadata(SettingSearchBean settingQueryBean,Map<String, TreeNode<String, Location>> treeNodeHashMap) {
+		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined = findSettingsAndSettingsMetadata(settingQueryBean,treeNodeHashMap, 1);
 		return isEmptyList(settingsAndSettingsMetadataJoined) ? null : settingsAndSettingsMetadataJoined.get(0);
 	}
 	
-	public List<SettingsAndSettingsMetadataJoined> findSettingsAndSettingsMetadata(SettingSearchBean settingQueryBean, int limit) {
+	public List<SettingsAndSettingsMetadataJoined> findSettingsAndSettingsMetadata(SettingSearchBean settingQueryBean,
+			Map<String, TreeNode<String, Location>> treeNodeHashMap, int limit) {
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
 		String locationId = settingQueryBean.getLocationId();
@@ -190,7 +188,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 		
 		if (settingQueryBean.isResolveSettings()) {
-			return fetchSettingsPerLocation(settingQueryBean, metadataExample, criteria, limit);
+			return fetchSettingsPerLocation(settingQueryBean, metadataExample, criteria,treeNodeHashMap, limit);
 		} else {
 			if (StringUtils.isNotEmpty(locationId)) {
 				criteria.andLocationIdEqualTo(locationId);
@@ -234,14 +232,18 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	private List<SettingsAndSettingsMetadataJoined> fetchSettingsPerLocation(SettingSearchBean settingSearchBean,
 	                                                                         SettingsMetadataExample metadataExample,
 	                                                                         SettingsMetadataExample.Criteria criteria,
+			 Map<String, TreeNode<String, Location>> treeNodeHashMap,
 	                                                                         int limit) {
 		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = new ArrayList<>();
 		locationUuid = settingSearchBean.getLocationId();
 		
-		Map<String, TreeNode<String, Location>> parentLocationTree = getChildParentLocationTree(locationUuid,
-				settingSearchBean, criteria);
-		if (parentLocationTree != null && parentLocationTree.size() > 0) {
-			reformattedLocationHierarchy(parentLocationTree);
+
+		if (settingSearchBean.getIdentifier() != null) {
+			criteria.andIdentifierEqualTo(settingSearchBean.getIdentifier());
+		}
+
+		if (treeNodeHashMap != null && treeNodeHashMap.size() > 0) {
+			reformattedLocationHierarchy(treeNodeHashMap);
 		}
 		
 		if (reformattedLocationHierarchy.size() > 0) {
@@ -292,25 +294,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		
 		return settingConfigurations;
 	}
-	
-	
-	private Map<String, TreeNode<String, Location>> getChildParentLocationTree(String locationId,
-	                                                                           SettingSearchBean settingSearchBean, SettingsMetadataExample.Criteria criteria) {
-		String locationTreeString = new Gson().toJson(openmrsLocationService.getLocationTreeOf(locationId));
-		LocationTree locationTree = new Gson().fromJson(locationTreeString, LocationTree.class);
-		Map<String, TreeNode<String, Location>> treeNodeHashMap = new HashMap<>();
-		if (locationTree != null) {
-			treeNodeHashMap = locationTree.getLocationsHierarchy();
-		}
-		if (settingSearchBean.getIdentifier() != null) {
-			criteria.andIdentifierEqualTo(settingSearchBean.getIdentifier());
-		}
-		
-		
-		return treeNodeHashMap;
-	}
-	
-	
+
 	private void reformattedLocationHierarchy(Map<String, TreeNode<String, Location>> parentLocation) {
 		Map.Entry<String, TreeNode<String, Location>> stringMapEntry = parentLocation.entrySet().iterator().next();
 		String locationKey = stringMapEntry.getKey();
@@ -338,7 +322,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	protected Long retrievePrimaryKey(SettingConfiguration settingConfiguration) {
 		SettingSearchBean settingSearchBean = createDocumentIdSearchBean(settingConfiguration);
 		SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined =
-				findSettingsAndSettingsMetadata(settingSearchBean);
+				findSettingsAndSettingsMetadata(settingSearchBean, null);
 		Settings pgSetting = settingsAndSettingsMetadataJoined == null ? null : settingsAndSettingsMetadataJoined.getSettings();
 		if (pgSetting == null) { return null;}
 		return pgSetting.getId();
@@ -598,7 +582,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setPrimaryKey(id);
 		
-		SettingConfiguration settingConfiguration = findSetting(settingQueryBean);
+		SettingConfiguration settingConfiguration = findSetting(settingQueryBean,null);
 		return settingConfiguration == null ? null : convert(settingConfiguration, id);
 	}
 }

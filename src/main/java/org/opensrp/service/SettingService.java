@@ -1,5 +1,7 @@
 package org.opensrp.service;
 
+import org.opensrp.api.domain.Location;
+import org.opensrp.api.util.TreeNode;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class SettingService {
@@ -32,8 +35,9 @@ public class SettingService {
 	 * @param settingQueryBean {@link SettingSearchBean} -- has the required parameters for the search
 	 * @return
 	 */
-	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
-		return settingRepository.findSettings(settingQueryBean);
+	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean,
+			Map<String, TreeNode<String, Location>> treeNodeHashMap) {
+		return settingRepository.findSettings(settingQueryBean,treeNodeHashMap);
 	}
 
 	/**

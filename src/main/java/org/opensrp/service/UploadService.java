@@ -140,7 +140,7 @@ public class UploadService {
         SettingSearchBean settingSearchBean = new SettingSearchBean();
         settingSearchBean.setIdentifier(CSV_UPLOAD_SETTING);
         settingSearchBean.setServerVersion(0L);
-        List<SettingConfiguration> configurations = settingRepository.findSettings(settingSearchBean);
+        List<SettingConfiguration> configurations = settingRepository.findSettings(settingSearchBean,null);
 
         int count = 0;
         while (count < configurations.size()) {

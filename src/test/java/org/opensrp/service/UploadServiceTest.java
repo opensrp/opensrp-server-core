@@ -53,7 +53,8 @@ public class UploadServiceTest {
         settingConfigurations.add(configuration);
 
 
-        Mockito.doReturn(settingConfigurations).when(settingRepository).findSettings(Mockito.any(SettingSearchBean.class));
+        Mockito.doReturn(settingConfigurations).when(settingRepository).findSettings(Mockito.any(SettingSearchBean.class),
+                null);
 
         List<Map<String, String>> csvClients = new ArrayList<>();
 

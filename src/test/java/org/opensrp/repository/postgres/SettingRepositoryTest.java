@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
-import org.opensrp.connector.openmrs.service.OpenmrsLocationService;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.setting.Setting;
@@ -67,26 +66,26 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		SettingSearchBean settingQueryBean = new SettingSearchBean();
 		settingQueryBean.setServerVersion(0L);
 		
-		List<SettingConfiguration> settings = settingRepository.findSettings(settingQueryBean);
+		List<SettingConfiguration> settings = settingRepository.findSettings(settingQueryBean, null);
 		assertEquals(3, settings.size());
 		
 		settingQueryBean.setTeamId("7e104eee-ec8a-4733-bcf7-c02c51cf43f4");
 		settingQueryBean.setServerVersion(0L);
-		settings = settingRepository.findSettings(settingQueryBean);
+		settings = settingRepository.findSettings(settingQueryBean,null);
 		
 		assertEquals(1, settings.size());
 		
 		settingQueryBean = new SettingSearchBean();
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setLocationId("44de66fb-e6c6-4bae-92bb-386dfe626eba");
-		settings = settingRepository.findSettings(settingQueryBean);
+		settings = settingRepository.findSettings(settingQueryBean,null);
 		
 		assertEquals(1, settings.size());
 		
 		settingQueryBean = new SettingSearchBean();
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setProviderId("demo");
-		settings = settingRepository.findSettings(settingQueryBean);
+		settings = settingRepository.findSettings(settingQueryBean,null);
 		
 		assertEquals(2, settings.size());
 		
@@ -94,14 +93,14 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setProviderId("demo");
 		settingQueryBean.setTeamId("7e104eee-ec8a-4733-bcf7-c02c51cf43f4");
-		settings = settingRepository.findSettings(settingQueryBean);
+		settings = settingRepository.findSettings(settingQueryBean,null);
 		
 		assertEquals(1, settings.size());
 		
 		settingQueryBean = new SettingSearchBean();
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setTeam("my-team");
-		settings = settingRepository.findSettings(settingQueryBean);
+		settings = settingRepository.findSettings(settingQueryBean,null);
 		
 		assertEquals(1, settings.size());
 		
@@ -112,7 +111,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		SettingSearchBean settingQueryBean = new SettingSearchBean();
 		settingQueryBean.setServerVersion(0L);
 		
-		List<SettingConfiguration> settings = settingRepository.findSettings(settingQueryBean);
+		List<SettingConfiguration> settings = settingRepository.findSettings(settingQueryBean, null);
 		assertEquals(3, settings.size());
 	}
 	

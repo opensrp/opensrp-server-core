@@ -4,8 +4,15 @@ package org.opensrp.search;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import org.opensrp.domain.BaseDataObject;
+import org.smartregister.domain.BaseDataObject;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SettingSearchBean extends BaseDataObject {
 	
 	@JsonProperty
