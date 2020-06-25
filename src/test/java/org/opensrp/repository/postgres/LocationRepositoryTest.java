@@ -904,4 +904,25 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertFalse(locationDetails.isEmpty());
 		assertEquals(1, locationDetails.size());
 	}
+
+	@Test
+	public void testFindLocationWithDescendants() {
+		List<LocationDetail> locations = locationRepository.findLocationWithDescendants("3734", false);
+
+		assertEquals(2, locations.size());
+
+		for (LocationDetail location : locations) {
+			MatcherAssert.assertThat(location.getIdentifier(), either(is("3734")).or(is("3735")));
+		}
+
+		locations = locationRepository.findLocationWithDescendants("3735", true);
+		assertEquals(1, locations.size());
+		assertEquals("3735", locations.get(0).getIdentifier());
+		assertEquals("Dhaka", locations.get(0).getName());
+		assertEquals("3734", locations.get(0).getParentId());
+		assertEquals(2l, locations.get(0).getId().longValue());
+
+		assertEquals(0, locationRepository.findLocationWithDescendants("21", false).size());
+	}
+
 }
