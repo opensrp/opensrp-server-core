@@ -8,11 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.opensrp.domain.Task;
-import org.opensrp.domain.Task.TaskStatus;
+import org.smartregister.domain.Task;
+import org.smartregister.domain.Task.TaskStatus;
 import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
-import org.opensrp.util.TaskDateTimeTypeConverter;
+import org.smartregister.utils.TaskDateTimeTypeConverter;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 

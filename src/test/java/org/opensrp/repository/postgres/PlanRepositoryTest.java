@@ -3,8 +3,8 @@ package org.opensrp.repository.postgres;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opensrp.domain.PlanDefinition;
-import org.opensrp.domain.postgres.Jurisdiction;
+import org.smartregister.domain.PlanDefinition;
+import org.smartregister.domain.Jurisdiction;
 import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -358,7 +358,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setVersion("v1");
         plan.setName("Focus Investigation");
         plan.setTitle("Plan title");
-        plan.setStatus("incomplete");
+        plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
 
         List<Jurisdiction> jurisdictions = new ArrayList<>();
         Jurisdiction jurisdiction = new Jurisdiction();

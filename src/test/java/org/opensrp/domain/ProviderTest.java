@@ -13,6 +13,7 @@ import com.openpojo.validation.test.impl.SetterTester;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
+import org.smartregister.domain.User;
 
 public class ProviderTest {
 	

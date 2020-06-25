@@ -16,16 +16,16 @@ import java.util.List;
 
 @Service
 public class SettingService {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(SettingService.class.toString());
-	
+
 	private SettingRepository settingRepository;
-	
+
 	@Autowired
 	public void setSettingRepository(SettingRepository settingRepository) {
 		this.settingRepository = settingRepository;
 	}
-	
+
 	/**
 	 * Initiates the find settings functionality
 	 *
@@ -35,7 +35,7 @@ public class SettingService {
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean) {
 		return settingRepository.findSettings(settingQueryBean);
 	}
-	
+
 	/**
 	 * Used to add the server version to payloads
 	 */
@@ -50,15 +50,17 @@ public class SettingService {
 					settingConfiguration.setServerVersion(currentTimeMillis);
 					settingRepository.update(settingConfiguration);
 					currentTimeMillis += 1;
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 					logger.error(e.getMessage());
 				}
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			logger.error(e.getMessage(), e);
 		}
 	}
-	
+
 	/**
 	 * Used by the v1 setting endpoint to create the settings configuration {@link SettingConfiguration} & save the settings
 	 *
@@ -69,25 +71,27 @@ public class SettingService {
 		SettingTypeHandler settingTypeHandler = new SettingTypeHandler();
 		SettingConfiguration settingConfigurations = null;
 		try {
-			settingConfigurations = settingTypeHandler.mapper.readValue(jsonSettingConfiguration, SettingConfiguration.class);
-		} catch (IOException e) {
+			settingConfigurations = settingTypeHandler.mapper
+					.readValue(jsonSettingConfiguration, SettingConfiguration.class);
+		}
+		catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		settingConfigurations.setV1Settings(true);
-		
+
 		if (settingConfigurations.getId() != null && settingRepository.get(settingConfigurations.getId()) != null) {
 			settingRepository.update(settingConfigurations);
-			
+
 		} else {
 			settingRepository.add(settingConfigurations);
 		}
-		
+
 		return settingConfigurations.getIdentifier();
-		
+
 	}
-	
+
 	/**
 	 * Gets a single setting object from the v2 endpoint to save
 	 *
@@ -98,7 +102,7 @@ public class SettingService {
 			settingRepository.addOrUpdate(setting);
 		}
 	}
-	
+
 	/**
 	 * Performs a settings delete using the v2 endpoint
 	 *
@@ -109,5 +113,5 @@ public class SettingService {
 			settingRepository.delete(id);
 		}
 	}
-	
+
 }

@@ -5,12 +5,13 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
+import org.smartregister.pathevaluator.dao.ClientDao;
 
-public interface ClientsRepository extends BaseRepository<Client> {
+public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	
 	Client findByBaseEntityId(String baseEntityId);
 	

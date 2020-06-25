@@ -16,7 +16,7 @@ import org.joda.time.Minutes;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.service.multimedia.BaseMultimediaFileManager;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.ClientsRepository;

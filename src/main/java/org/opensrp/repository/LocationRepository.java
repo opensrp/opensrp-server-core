@@ -7,11 +7,12 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
-import org.opensrp.domain.PhysicalLocation;
+import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.search.LocationSearchBean;
+import org.smartregister.pathevaluator.dao.LocationDao;
 
-public interface LocationRepository extends BaseRepository<PhysicalLocation> {
+public interface LocationRepository extends BaseRepository<PhysicalLocation>, LocationDao {
 
 	PhysicalLocation getStructure(String id, boolean returnGeometry);
 
@@ -181,4 +182,12 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @return returns a count of locations matching the passed parameters
 	 */
 	Long countLocationsByNames(String locationNames, long serverVersion);
+
+	/**
+	 * Get location with all of its descendants.
+	 *
+	 * @param locationId location id of the root location
+	 * @return chi
+	 */
+	List<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags);
 }

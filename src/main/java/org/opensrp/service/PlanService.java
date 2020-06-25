@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
-import org.opensrp.domain.PlanDefinition;
+import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +28,17 @@ public class PlanService {
 	
 	private OrganizationService organizationService;
 	
+	private TaskGenerator taskGenerator;
+	
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
-	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService) {
+	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService,
+	    TaskGenerator taskGenerator) {
 		this.planRepository = planRepository;
 		this.practitionerService = practitionerService;
 		this.practitionerRoleService = practitionerRoleService;
 		this.organizationService = organizationService;
+		this.taskGenerator = taskGenerator;
 	}
 	
 	public PlanRepository getPlanRepository() {
@@ -45,35 +49,36 @@ public class PlanService {
 		return getPlanRepository().getAll();
 	}
 	
-	public void addOrUpdatePlan(PlanDefinition plan) {
+	public void addOrUpdatePlan(PlanDefinition plan,String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
-		if (getPlanRepository().get(plan.getIdentifier()) != null) {
-			getPlanRepository().update(plan);
+		if (getPlan(plan.getIdentifier()) != null) {
+			updatePlan(plan,username);
 		} else {
-			getPlanRepository().add(plan);
+			addPlan(plan,username);
 		}
 	}
 	
-	public PlanDefinition addPlan(PlanDefinition plan) {
+	public PlanDefinition addPlan(PlanDefinition plan,String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().add(plan);
-		
+		taskGenerator.processPlanEvaluation(plan, null,username);
 		return plan;
 	}
 	
-	public PlanDefinition updatePlan(PlanDefinition plan) {
+	public PlanDefinition updatePlan(PlanDefinition plan, String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
+		PlanDefinition existing = getPlan(plan.getIdentifier());
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().update(plan);
-		
+		taskGenerator.processPlanEvaluation(plan, existing,username);
 		return plan;
 	}
 	
@@ -210,39 +215,43 @@ public class PlanService {
 	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted) {
 		return planRepository.findAllIds(serverVersion, limit, isDeleted);
 	}
-
+	
 	/**
-	 * Gets the count of plans using organization Ids that have server version >= the server version param
+	 * Gets the count of plans using organization Ids that have server version >= the server version
+	 * param
 	 *
 	 * @param organizationIds the list of organization Ids
 	 * @param serverVersion the server version to filter plans with
 	 * @return the count plans matching the above
 	 */
 	public Long countPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
-
+		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
-				.findAssignedLocationsAndPlans(organizationIds);
+		        .findAssignedLocationsAndPlans(organizationIds);
+		/* @formatter:off */
 		List<String> planIdentifiers = assignedPlansAndLocations
 				.stream()
-				.map(a-> a.getPlanId())
-				.collect(Collectors.toList());
+				.map(a -> a.getPlanId())
+		        .collect(Collectors.toList());
+		/* @formatter:on */
 		return planRepository.countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
-
+	
 	/**
-	 * Gets the count of plans that a user has access to according to the plan location assignment that have
-	 * server version >= the server version param
+	 * Gets the count of plans that a user has access to according to the plan location assignment
+	 * that have server version >= the server version param
 	 *
 	 * @param username the username of user
 	 * @param serverVersion the server version to filter plans with
 	 * @return the count of plans a user has access to
 	 */
 	public Long countPlansByUsernameAndServerVersion(String username, long serverVersion) {
-
+		
 		List<Long> organizationIds = getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
 			return countPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
 		}
 		return 0l;
 	}
+	
 }

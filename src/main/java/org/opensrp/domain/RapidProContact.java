@@ -1,6 +1,7 @@
 package org.opensrp.domain;
 
 import org.joda.time.DateTime;
+import org.smartregister.domain.Client;
 
 public class RapidProContact implements Comparable<Client> {
 	
