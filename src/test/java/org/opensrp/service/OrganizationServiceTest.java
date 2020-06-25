@@ -27,7 +27,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.PhysicalLocation;
+import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;

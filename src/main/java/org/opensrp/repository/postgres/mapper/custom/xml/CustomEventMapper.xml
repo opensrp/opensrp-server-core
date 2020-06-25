@@ -107,5 +107,18 @@
 			  and date_deleted is null
 	</select>
 	
+	<select id="selectByBaseEntityIdAndDetails" parameterType="map"
+		resultMap="BaseEventResultMap">
+		select
+		<include refid="Base_Event_Column_List" />
+		from from core.event  e
+		join core.event_metadata m on m.event_id=e.id
+		where e.base_entity_id= #{baseEntityId,jdbcType=VARCHAR}  
+			 and json->'details' ->>
+			#{detailKey,jdbcType=VARCHAR} =
+			#{detailValue,jdbcType=VARCHAR}
+			 and e.date_deleted is null
+	</select>
+	
 
 </mapper>

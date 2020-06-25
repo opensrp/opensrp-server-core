@@ -2,7 +2,7 @@ package org.opensrp.repository;
 
 import java.util.List;
 
-import org.opensrp.domain.LocationTag;
+import org.smartregister.domain.LocationTag;
 import org.opensrp.domain.postgres.LocationTagExample;
 
 public interface LocationTagRepository extends BaseRepository<LocationTag> {

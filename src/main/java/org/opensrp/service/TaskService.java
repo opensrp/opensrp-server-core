@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
-import org.opensrp.domain.Task;
+import org.smartregister.domain.Task;
 import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
 import org.slf4j.Logger;

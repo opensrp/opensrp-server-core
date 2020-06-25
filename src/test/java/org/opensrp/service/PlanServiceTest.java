@@ -1,12 +1,12 @@
 package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.domain.AssignedLocations;
-import org.opensrp.domain.PlanDefinition;
+import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 
@@ -49,9 +49,14 @@ public class PlanServiceTest {
 	@Mock
 	private OrganizationService organizationService;
 	
+	@Mock
+	private TaskGenerator taskGenerator;
+	
+	private String user="johndoe";
+	
 	@Before
 	public void setUp() {
-		planService = new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService);
+		planService = new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService,taskGenerator);
 	}
 	
 	@Test
@@ -65,7 +70,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(null);
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.addOrUpdatePlan(plan);
+		planService.addOrUpdatePlan(plan,user);
 		verify(planRepository).add(eq(plan));
 	}
 	
@@ -74,7 +79,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(new PlanDefinition());
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.addOrUpdatePlan(plan);
+		planService.addOrUpdatePlan(plan,user);
 		verify(planRepository).update(eq(plan));
 	}
 	
@@ -83,7 +88,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(null);
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.addPlan(plan);
+		planService.addPlan(plan,user);
 		verify(planRepository).add(eq(plan));
 	}
 	
@@ -92,7 +97,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(new PlanDefinition());
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.updatePlan(plan);
+		planService.updatePlan(plan,user);
 		verify(planRepository).update(eq(plan));
 	}
 	

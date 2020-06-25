@@ -2,8 +2,7 @@ package org.opensrp.domain.setting;
 
 import java.util.List;
 
-import org.opensrp.domain.BaseDataObject;
-
+import org.smartregister.domain.BaseDataObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SettingConfiguration extends BaseDataObject {

@@ -8,9 +8,9 @@ import java.sql.SQLException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
-import org.opensrp.domain.LocationProperty;
-import org.opensrp.domain.PhysicalLocation;
-import org.opensrp.util.PropertiesConverter;
+import org.smartregister.domain.LocationProperty;
+import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.utils.PropertiesConverter;
 import org.postgresql.util.PGobject;
 
 import com.google.gson.Gson;
