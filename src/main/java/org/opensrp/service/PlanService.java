@@ -45,8 +45,8 @@ public class PlanService {
 		return planRepository;
 	}
 	
-	public List<PlanDefinition> getAllPlans() {
-		return getPlanRepository().getAll();
+	public List<PlanDefinition> getAllPlans(boolean experimental) {
+		return getPlanRepository().getAllPlans(experimental);
 	}
 	
 	public void addOrUpdatePlan(PlanDefinition plan,String username) {
@@ -87,8 +87,8 @@ public class PlanService {
 	}
 	
 	public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion,
-	        List<String> operationalAreaIds) {
-		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds);
+	        List<String> operationalAreaIds,boolean experimental) {
+		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds, experimental);
 	}
 	
 	/**
@@ -101,8 +101,8 @@ public class PlanService {
 	 * @param fields list of fields to return
 	 * @return plan definitions whose identifiers match the provided params
 	 */
-	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields) {
-		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields);
+	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields, boolean experimental) {
+		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields, experimental);
 	}
 	
 	/**
@@ -112,7 +112,7 @@ public class PlanService {
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans matching the above
 	 */
-	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
+	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion, boolean experimental) {
 		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 		        .findAssignedLocationsAndPlans(organizationIds);
@@ -120,7 +120,7 @@ public class PlanService {
 		for (AssignedLocations assignedLocation : assignedPlansAndLocations) {
 			planIdentifiers.add(assignedLocation.getPlanId());
 		}
-		return planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
+		return planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion, experimental);
 	}
 	
 	/**
@@ -148,11 +148,11 @@ public class PlanService {
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans a user has access to
 	 */
-	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion) {
+	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion, boolean experimental) {
 		
 		List<Long> organizationIds = getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
-			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
+			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion, experimental);
 		}
 		return null;
 	}
@@ -200,8 +200,8 @@ public class PlanService {
 	 * @param limit upper limit on number of plas to fetch
 	 * @return list of plan identifiers
 	 */
-	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit) {
-		return getPlanRepository().getAllPlans(serverVersion, limit);
+	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit, boolean experimental) {
+		return getPlanRepository().getAllPlans(serverVersion, limit, experimental);
 	}
 	
 	/**
