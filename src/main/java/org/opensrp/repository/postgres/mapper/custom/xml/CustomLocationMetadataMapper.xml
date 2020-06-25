@@ -177,10 +177,12 @@
 	
 	<select id="selectLocationHierachy"
 			resultMap="DetailsResultMap">
-		select lm.geojson_id identifier ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,string_agg(lt."name",',') tags
+		select lm.geojson_id identifier ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,string_agg(lt."name",',') tags,
+		l.json->'properties'->>'geographicLevel' geographic_level
 		from core.location_metadata lm
 		left join core.location_tag_map ltm on ltm.location_id =lm.location_id 
-		left join core.location_tag lt on lt.id =ltm.location_tag_id 
+		left join core.location_tag lt on lt.id =ltm.location_tag_id
+		left join core.location l on l.id = lm.location_id
 		Where lm.location_id in
 		(
 			WITH RECURSIVE locations
@@ -198,7 +200,7 @@
 			)
 			SELECT location_id FROM locations
 		)
-		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id
+		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id, l.json
 	</select>
 
 	<resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetail">
@@ -208,6 +210,7 @@
 	    <result column="location_id" jdbcType="VARCHAR" property="id" />
 	    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
 	    <result column="tags" jdbcType="VARCHAR" property="tags" />
+		<result column="geographic_level" jdbcType="INTEGER" property="geographicLevel" />
 	</resultMap>
 
 	<select id="selectDetailsByPlanId"
