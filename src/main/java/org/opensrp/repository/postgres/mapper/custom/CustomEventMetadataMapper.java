@@ -30,4 +30,11 @@ public interface CustomEventMetadataMapper extends EventMetadataMapper {
 	 * @return the primary key
 	 */
 	Long selectPrimaryKey(EventMetadataExample eventMetadataExample);
+
+	/**
+	 * Gets events baseEntityIds in matching the criteria
+	 * @param example criteria
+	 * @return baseEntityIds matching criteria
+	 */
+	List<String> selectManyBaseEntityIds(@Param("example") EventMetadataExample example);
 }

@@ -73,5 +73,12 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	 * @return returns a count of events matching the passed parameters
 	 */
 	Long countEvents(EventSearchBean eventSearchBean);
+
+	/**
+	 * Gets events baseEntityIds in a location
+	 * @param locationId location id
+	 * @return baseEntityIds in a location
+	 */
+	List<String> findBaseEntityIdsByLocation(String locationId);
 	
 }

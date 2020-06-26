@@ -24,6 +24,7 @@ import org.opensrp.domain.postgres.ClientMetadataExample.Criteria;
 import org.opensrp.domain.postgres.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
+import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
 import org.opensrp.search.AddressSearchBean;
@@ -48,6 +49,9 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Autowired
 	private CustomClientMapper clientMapper;
+	
+	@Autowired
+	private EventsRepository eventsRepository;
 	
 	@Override
 	public Client get(String id) {
@@ -616,9 +620,12 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Patient> findFamilyByJurisdiction(String jurisdiction) {
-		ClientSearchBean searchBean = ClientSearchBean.builder().locations(Collections.singletonList(jurisdiction))
-		        .lastName("Family").build();
-		return convertToFHIR(findByCriteria(searchBean));
+		
+		List<String> baseEntityIds = eventsRepository.findBaseEntityIdsByLocation(jurisdiction);
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andBaseEntityIdIn(baseEntityIds).andDateDeletedIsNull()
+		        .andLastNameEqualTo("Family");
+		return convertToFHIR(convert(clientMetadataMapper.selectMany(clientMetadataExample, 0, 20000)));
 	}
 	
 	@Override
@@ -630,9 +637,11 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Patient> findFamilyMemberyByJurisdiction(String jurisdiction) {
-		ClientSearchBean searchBean = ClientSearchBean.builder().locations(Collections.singletonList(jurisdiction))
-		        .lastNameNot("Family").build();
-		return convertToFHIR(findByCriteria(searchBean));
+		List<String> baseEntityIds = eventsRepository.findBaseEntityIdsByLocation(jurisdiction);
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andBaseEntityIdIn(baseEntityIds).andDateDeletedIsNull()
+		        .andLastNameNotEqualTo("Family");
+		return convertToFHIR(convert(clientMetadataMapper.selectMany(clientMetadataExample, 0, 20000)));
 	}
 	
 	@Override

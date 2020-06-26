@@ -476,6 +476,16 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		return Pair.of(eventIdentifiers, lastServerVersion);
 	}
 	
+	
+	@Override
+	public List<String> findBaseEntityIdsByLocation(String locationId) {
+		EventMetadataExample example = new EventMetadataExample();
+		Criteria criteria = example.createCriteria();
+		criteria.andLocationIdEqualTo(locationId);
+		example.setDistinct(true);
+		return eventMetadataMapper.selectManyBaseEntityIds(example);
+	}
+	
 	/**
 	 * Gets events for a entity with details values
 	 * @param baseEntityId entity id
