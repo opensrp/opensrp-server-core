@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
-import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.ClientExample;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
@@ -32,6 +31,7 @@ import org.opensrp.search.ClientSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartregister.converters.ClientConverter;
+import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -632,9 +632,10 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Patient> findFamilyByResidence(String structureId) {
-		ClientSearchBean searchBean = ClientSearchBean.builder().attributeType("residence").attributeType(structureId)
-		        .lastName("Family").build();
-		return convertToFHIR(findByCriteria(searchBean));
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andResidenceEqualTo(structureId).andDateDeletedIsNull()
+		        .andLastNameEqualTo("Family");
+		return convertToFHIR(convert( clientMetadataMapper.selectMany(clientMetadataExample,0,DEFAULT_FETCH_SIZE)));
 	}
 	
 	@Override
@@ -650,9 +651,10 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Patient> findFamilyMemberByResidence(String structureId) {
-		ClientSearchBean searchBean = ClientSearchBean.builder().attributeType("residence").attributeType(structureId)
-		        .lastNameNot("Family").build();
-		return convertToFHIR(findByCriteria(searchBean));
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andResidenceEqualTo(structureId).andDateDeletedIsNull()
+		        .andLastNameNotEqualTo("Family");
+		return convertToFHIR(convert( clientMetadataMapper.selectMany(clientMetadataExample,0,DEFAULT_FETCH_SIZE)));
 	}
 	
 	@Override

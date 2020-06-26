@@ -48,8 +48,6 @@ public class ClientSearchBean {
 	
 	private String providerId;
 	
-	private String lastNameNot;
-	
 	@Builder.Default
 	private int pageNumber = 0;
 	
