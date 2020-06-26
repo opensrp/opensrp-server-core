@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
-import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.ClientExample;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
@@ -24,6 +23,7 @@ import org.opensrp.domain.postgres.ClientMetadataExample.Criteria;
 import org.opensrp.domain.postgres.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
+import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
 import org.opensrp.search.AddressSearchBean;
@@ -31,6 +31,7 @@ import org.opensrp.search.ClientSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartregister.converters.ClientConverter;
+import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -48,6 +49,9 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Autowired
 	private CustomClientMapper clientMapper;
+	
+	@Autowired
+	private EventsRepository eventsRepository;
 	
 	@Override
 	public Client get(String id) {
@@ -616,30 +620,41 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Patient> findFamilyByJurisdiction(String jurisdiction) {
-		ClientSearchBean searchBean = ClientSearchBean.builder().locations(Collections.singletonList(jurisdiction))
-		        .clientType("Family").build();
-		return convertToFHIR(findByCriteria(searchBean));
+		
+		List<String> baseEntityIds = eventsRepository.findBaseEntityIdsByLocation(jurisdiction);
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		if (baseEntityIds.isEmpty())
+			return Collections.emptyList();
+		clientMetadataExample.createCriteria().andBaseEntityIdIn(baseEntityIds).andDateDeletedIsNull()
+		        .andLastNameEqualTo("Family");
+		return convertToFHIR(convert(clientMetadataMapper.selectMany(clientMetadataExample, 0, 20000)));
 	}
 	
 	@Override
 	public List<Patient> findFamilyByResidence(String structureId) {
-		ClientSearchBean searchBean = ClientSearchBean.builder().attributeType("residence").attributeType(structureId)
-		        .clientType("Family").build();
-		return convertToFHIR(findByCriteria(searchBean));
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andResidenceEqualTo(structureId).andDateDeletedIsNull()
+		        .andLastNameEqualTo("Family");
+		return convertToFHIR(convert( clientMetadataMapper.selectMany(clientMetadataExample,0,DEFAULT_FETCH_SIZE)));
 	}
 	
 	@Override
 	public List<Patient> findFamilyMemberyByJurisdiction(String jurisdiction) {
-		ClientSearchBean searchBean = ClientSearchBean.builder().locations(Collections.singletonList(jurisdiction))
-		        .clientType("FamilyMember").build();//TODO convert to  .clientType!="FamilyMember"
-		return convertToFHIR(findByCriteria(searchBean));
+		List<String> baseEntityIds = eventsRepository.findBaseEntityIdsByLocation(jurisdiction);
+		if (baseEntityIds.isEmpty())
+			return Collections.emptyList();
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andBaseEntityIdIn(baseEntityIds).andDateDeletedIsNull()
+		        .andLastNameNotEqualTo("Family");
+		return convertToFHIR(convert(clientMetadataMapper.selectMany(clientMetadataExample, 0, 20000)));
 	}
 	
 	@Override
 	public List<Patient> findFamilyMemberByResidence(String structureId) {
-		ClientSearchBean searchBean = ClientSearchBean.builder().attributeType("residence").attributeType(structureId)
-		        .clientType("FamilyMember").build();//TODO convert to  .clientType!="FamilyMember"
-		return convertToFHIR(findByCriteria(searchBean));
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andResidenceEqualTo(structureId).andDateDeletedIsNull()
+		        .andLastNameNotEqualTo("Family");
+		return convertToFHIR(convert( clientMetadataMapper.selectMany(clientMetadataExample,0,DEFAULT_FETCH_SIZE)));
 	}
 	
 	@Override
@@ -648,9 +663,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	private List<Patient> convertToFHIR(List<Client> clients) {
-		return clients.stream()
-				.map(client -> ClientConverter.convertClientToPatientResource(client))
-				.collect(Collectors.toList());
+		return clients.stream().map(client -> ClientConverter.convertClientToPatientResource(client))
+		        .collect(Collectors.toList());
 	}
 	
 }
