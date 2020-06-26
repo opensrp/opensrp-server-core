@@ -121,9 +121,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         planMapper.updateByPrimaryKey(pgPlan);
     }
 
-    public List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds) {
+    public List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds, boolean experimental) {
         PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull();
+        planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull().andExperimentalEqualTo(experimental);
         List<Plan> plans = planMetadataMapper.selectMany(planExample, operationalAreaIds, 0, DEFAULT_FETCH_SIZE);
 
         return convert(plans);
@@ -134,9 +134,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
      * {@inheritDoc}
      */
     @Override
-    public List<PlanDefinition> getPlansByIdentifiersAndServerVersion(List<String> planIdentifiers,Long serverVersion ) {
+    public List<PlanDefinition> getPlansByIdentifiersAndServerVersion(List<String> planIdentifiers,Long serverVersion,boolean experimental ) {
         PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andIdentifierIn(planIdentifiers).andServerVersionGreaterThanOrEqualTo(serverVersion);
+        planExample.createCriteria().andIdentifierIn(planIdentifiers).andServerVersionGreaterThanOrEqualTo(serverVersion).andExperimentalEqualTo(experimental);
         List<Plan> plans = planMapper.selectMany(planExample, 0, DEFAULT_FETCH_SIZE);
 
         return convert(plans);
@@ -146,9 +146,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
      * {@inheritDoc}
      */
     @Override
-    public List<PlanDefinition> getAllPlans(Long serverVersion, int limit) {
+    public List<PlanDefinition> getAllPlans(Long serverVersion, int limit,boolean experimental) {
         PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull();
+        planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull().andExperimentalEqualTo(experimental);
         planExample.setOrderByClause(getOrderByClause(SERVER_VERSION,  ASCENDING));
 
         List<Plan> plans = planMapper.selectMany(planExample, 0, limit);
@@ -190,10 +190,10 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
      * {@inheritDoc}
      */
     @Override
-    public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields) {
+    public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields,boolean experimental) {
         PlanExample planExample = new PlanExample();
         if (ids != null && !ids.isEmpty()) {
-            planExample.createCriteria().andIdentifierIn(ids);
+            planExample.createCriteria().andIdentifierIn(ids).andExperimentalEqualTo(experimental);
         }
         List<String>  optionalFields = fields != null && fields.size() > 0 ? fields : null;
         List<Plan> plans = planMapper.selectManyReturnOptionalFields(planExample, optionalFields, 0, DEFAULT_FETCH_SIZE);
@@ -244,6 +244,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         pgPlan.setJson(plan);
         pgPlan.setServerVersion(plan.getServerVersion());
         pgPlan.setId(id);
+        pgPlan.setExperimental(plan.isExperimental());
         return pgPlan;
     }
 
@@ -309,5 +310,13 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         PlanExample planExample = new PlanExample();
         planExample.createCriteria().andIdentifierIn(planIdentifiers).andServerVersionGreaterThanOrEqualTo(serverVersion);
         return planMapper.countByExample(planExample);
+    }
+
+    @Override
+    public List<PlanDefinition> getAllPlans(boolean experimental) {
+        PlanExample planExample = new PlanExample();
+        planExample.createCriteria().andDateDeletedIsNull().andExperimentalEqualTo(experimental);
+        List<Plan> plans = planMapper.selectMany(planExample,0, DEFAULT_FETCH_SIZE);
+        return convert(plans);
     }
 }
