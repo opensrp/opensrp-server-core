@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
+import org.opensrp.api.util.TreeNode;
 import org.opensrp.domain.LocationDetail;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
@@ -25,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
 
 @Service
 public class PhysicalLocationService {
@@ -307,6 +311,9 @@ public class PhysicalLocationService {
 		LocationTree locationTree = new LocationTree();
 		List<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers);
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
+		if (returnStructureCount) {
+			populateParentLocationStructureCounts(locationTree.getLocationsHierarchy(), new HashMap<>());
+		}
 		return locationTree;
 	}
 	
@@ -329,7 +336,7 @@ public class PhysicalLocationService {
 	private Location updateStructureCount(Location location, Map<String, StructureCount> structureCountMap) {
 		StructureCount structureCount = structureCountMap.get(location.getLocationId());
 		if (structureCount != null) {
-			location.addAttribute("structureCount", structureCount.getCount());
+			location.addAttribute(STRUCTURE_COUNT, structureCount.getCount());
 		}
 		return location;
 	}
@@ -422,7 +429,52 @@ public class PhysicalLocationService {
 		LocationTree locationTree = new LocationTree();
 		List<LocationDetail> locationDetails = locationRepository.findLocationWithDescendants(locationId, returnTags);
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
+		if (returnStructureCount) {
+			populateParentLocationStructureCounts(locationTree.getLocationsHierarchy(), new HashMap<>());
+		}
 		return locationTree;
+	}
+
+	private Map<String, Integer> populateParentLocationStructureCounts(Map<String, TreeNode<String, Location>> nodeMap, Map<String,
+			Integer> parentLocationStructureCounts) {
+		if (nodeMap == null) {
+			return parentLocationStructureCounts;
+		}
+		for (Map.Entry<String, TreeNode<String, Location>> entry : nodeMap.entrySet()) {
+			TreeNode<String, Location> currentNodeMap = entry.getValue();
+			Location currentLocation = entry.getValue().getNode();
+
+			if (currentNodeMap.getChildren() != null) { // initialize structure count for parent locations
+				parentLocationStructureCounts.put(currentLocation.getLocationId(), 0);
+				if (currentLocation.getAttribute(STRUCTURE_COUNT) == null) {
+					currentLocation.addAttribute(STRUCTURE_COUNT, 0);
+				}
+			}
+
+			parentLocationStructureCounts = populateParentLocationStructureCounts(entry.getValue().getChildren(), parentLocationStructureCounts);
+
+			if (currentNodeMap.getChildren() == null) { //At the bottom of tree
+				if (currentLocation.getParentLocation() != null && currentLocation.getAttribute(STRUCTURE_COUNT) != null) {
+					String parentLocationId = currentLocation.getParentLocation().getLocationId();
+					// increment parent location structure count
+					int updatedStructureCount = parentLocationStructureCounts.get(parentLocationId) + (int) currentLocation.getAttribute(STRUCTURE_COUNT);
+					parentLocationStructureCounts.put(parentLocationId, updatedStructureCount);
+
+				}
+			} else { // location with at least 1 child
+				// set updated count for current node
+				int updatedStructureCount = parentLocationStructureCounts.get(currentLocation.getLocationId()) + (int) currentLocation.getAttribute(STRUCTURE_COUNT);
+				currentLocation.addAttribute(STRUCTURE_COUNT, updatedStructureCount);
+				// Update structure count for current node's parent
+				if (currentLocation.getParentLocation() != null) {
+					String parentLocationId = currentLocation.getParentLocation().getLocationId();
+					int updatedParentStructureCount = parentLocationStructureCounts.get(parentLocationId) + (int) currentLocation.getAttribute(STRUCTURE_COUNT);
+					parentLocationStructureCounts.put(parentLocationId, updatedStructureCount);
+				}
+			}
+
+		}
+		return parentLocationStructureCounts;
 	}
 
 }
