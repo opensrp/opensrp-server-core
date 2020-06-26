@@ -435,10 +435,10 @@ public class PhysicalLocationService {
 		return locationTree;
 	}
 
-	private Map<String, Integer> populateParentLocationStructureCounts(Map<String, TreeNode<String, Location>> nodeMap, Map<String,
+	private void populateParentLocationStructureCounts(Map<String, TreeNode<String, Location>> nodeMap, Map<String,
 			Integer> parentLocationStructureCounts) {
 		if (nodeMap == null) {
-			return parentLocationStructureCounts;
+			return;
 		}
 		for (Map.Entry<String, TreeNode<String, Location>> entry : nodeMap.entrySet()) {
 			TreeNode<String, Location> currentNodeMap = entry.getValue();
@@ -451,7 +451,7 @@ public class PhysicalLocationService {
 				}
 			}
 
-			parentLocationStructureCounts = populateParentLocationStructureCounts(entry.getValue().getChildren(), parentLocationStructureCounts);
+			populateParentLocationStructureCounts(entry.getValue().getChildren(), parentLocationStructureCounts);
 
 			if (currentNodeMap.getChildren() == null) { //At the bottom of tree
 				if (currentLocation.getParentLocation() != null && currentLocation.getAttribute(STRUCTURE_COUNT) != null) {
@@ -474,7 +474,7 @@ public class PhysicalLocationService {
 			}
 
 		}
-		return parentLocationStructureCounts;
+		return;
 	}
 
 }
