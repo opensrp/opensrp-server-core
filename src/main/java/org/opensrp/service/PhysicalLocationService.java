@@ -469,7 +469,7 @@ public class PhysicalLocationService {
 				if (currentLocation.getParentLocation() != null) {
 					String parentLocationId = currentLocation.getParentLocation().getLocationId();
 					int updatedParentStructureCount = parentLocationStructureCounts.get(parentLocationId) + (int) currentLocation.getAttribute(STRUCTURE_COUNT);
-					parentLocationStructureCounts.put(parentLocationId, updatedStructureCount);
+					parentLocationStructureCounts.put(parentLocationId, updatedParentStructureCount);
 				}
 			}
 
