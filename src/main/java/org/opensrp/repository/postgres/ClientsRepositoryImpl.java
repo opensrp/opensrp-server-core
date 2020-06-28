@@ -4,17 +4,18 @@ import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
-import org.opensrp.domain.Client;
 import org.opensrp.domain.postgres.ClientExample;
 import org.opensrp.domain.postgres.ClientMetadata;
 import org.opensrp.domain.postgres.ClientMetadataExample;
@@ -22,14 +23,19 @@ import org.opensrp.domain.postgres.ClientMetadataExample.Criteria;
 import org.opensrp.domain.postgres.CustomClient;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
+import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartregister.converters.ClientConverter;
+import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.ibm.fhir.model.resource.Patient;
 
 @Repository("clientsRepositoryPostgres")
 public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements ClientsRepository {
@@ -43,6 +49,9 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Autowired
 	private CustomClientMapper clientMapper;
+	
+	@Autowired
+	private EventsRepository eventsRepository;
 	
 	@Override
 	public Client get(String id) {
@@ -130,7 +139,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		clientMetadata.setId(clientMetadataMapper.selectByExample(clientMetadataExample).get(0).getId());
 		clientMetadataMapper.updateByPrimaryKey(clientMetadata);
 	}
-
+	
 	@Override
 	public List<Client> getAll() {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
@@ -174,7 +183,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		if (StringUtils.isBlank(baseEntityId)) {
 			return null;
 		}
-		ClientMetadataExample clientMetadataExample= new ClientMetadataExample();
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		clientMetadataExample.createCriteria().andBaseEntityIdEqualTo(baseEntityId).andDateDeletedIsNull();
 		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(clientMetadataExample);
 		return convert(pgClient);
@@ -571,7 +580,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		clientMapper.deleteByExample(new ClientExample());
 		
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -581,26 +590,81 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		ClientMetadataExample example = new ClientMetadataExample();
 		Criteria criteria = example.createCriteria();
 		criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
-
+		
 		if (isArchived) {
 			criteria.andDateDeletedIsNotNull();
 		} else {
 			criteria.andDateDeletedIsNull();
 		}
-
+		
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
-
-		List<String> clientIdentifiers = clientMetadataMapper.selectManyIds(example, 0,
-				fetchLimit);
-
+		
+		List<String> clientIdentifiers = clientMetadataMapper.selectManyIds(example, 0, fetchLimit);
+		
 		if (clientIdentifiers != null && !clientIdentifiers.isEmpty()) {
 			example = new ClientMetadataExample();
-			example.createCriteria().andDocumentIdEqualTo(clientIdentifiers.get(clientIdentifiers.size() -1));
+			example.createCriteria().andDocumentIdEqualTo(clientIdentifiers.get(clientIdentifiers.size() - 1));
 			List<ClientMetadata> clientMetaDataList = clientMetadataMapper.selectByExample(example);
-
-			lastServerVersion = clientMetaDataList != null && !clientMetaDataList.isEmpty() ?
-					clientMetaDataList.get(0).getServerVersion() : 0;
+			
+			lastServerVersion = clientMetaDataList != null && !clientMetaDataList.isEmpty()
+			        ? clientMetaDataList.get(0).getServerVersion()
+			        : 0;
 		}
 		return Pair.of(clientIdentifiers, lastServerVersion);
 	}
+	
+	@Override
+	public List<Patient> findClientById(String id) {
+		return convertToFHIR(Collections.singletonList(get(id)));
+	}
+	
+	@Override
+	public List<Patient> findFamilyByJurisdiction(String jurisdiction) {
+		
+		List<String> baseEntityIds = eventsRepository.findBaseEntityIdsByLocation(jurisdiction);
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		if (baseEntityIds.isEmpty())
+			return Collections.emptyList();
+		clientMetadataExample.createCriteria().andBaseEntityIdIn(baseEntityIds).andDateDeletedIsNull()
+		        .andLastNameEqualTo("Family");
+		return convertToFHIR(convert(clientMetadataMapper.selectMany(clientMetadataExample, 0, 20000)));
+	}
+	
+	@Override
+	public List<Patient> findFamilyByResidence(String structureId) {
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andResidenceEqualTo(structureId).andDateDeletedIsNull()
+		        .andLastNameEqualTo("Family");
+		return convertToFHIR(convert( clientMetadataMapper.selectMany(clientMetadataExample,0,DEFAULT_FETCH_SIZE)));
+	}
+	
+	@Override
+	public List<Patient> findFamilyMemberyByJurisdiction(String jurisdiction) {
+		List<String> baseEntityIds = eventsRepository.findBaseEntityIdsByLocation(jurisdiction);
+		if (baseEntityIds.isEmpty())
+			return Collections.emptyList();
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andBaseEntityIdIn(baseEntityIds).andDateDeletedIsNull()
+		        .andLastNameNotEqualTo("Family");
+		return convertToFHIR(convert(clientMetadataMapper.selectMany(clientMetadataExample, 0, 20000)));
+	}
+	
+	@Override
+	public List<Patient> findFamilyMemberByResidence(String structureId) {
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andResidenceEqualTo(structureId).andDateDeletedIsNull()
+		        .andLastNameNotEqualTo("Family");
+		return convertToFHIR(convert( clientMetadataMapper.selectMany(clientMetadataExample,0,DEFAULT_FETCH_SIZE)));
+	}
+	
+	@Override
+	public List<Patient> findClientByRelationship(String relationship, String id) {
+		return convertToFHIR(findByRelationshipId(relationship, id));
+	}
+	
+	private List<Patient> convertToFHIR(List<Client> clients) {
+		return clients.stream().map(client -> ClientConverter.convertClientToPatientResource(client))
+		        .collect(Collectors.toList());
+	}
+	
 }

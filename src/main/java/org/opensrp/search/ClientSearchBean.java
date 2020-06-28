@@ -5,6 +5,13 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientSearchBean {
 	
 	private String nameLike;
@@ -41,8 +48,10 @@ public class ClientSearchBean {
 	
 	private String providerId;
 	
+	@Builder.Default
 	private int pageNumber = 0;
 	
+	@Builder.Default
 	private int pageSize = 0;
 	
 	private String orderByField; // The field name which used to order result 

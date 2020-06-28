@@ -8,6 +8,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.smartregister.domain.BaseDataEntity;
 
 /**
  * @author muhammad.ahmed@ihsinformatics.com Created on May 25, 2015

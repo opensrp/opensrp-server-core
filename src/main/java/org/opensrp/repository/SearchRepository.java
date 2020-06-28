@@ -2,7 +2,7 @@ package org.opensrp.repository;
 
 import java.util.List;
 
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.search.ClientSearchBean;
 
 public interface SearchRepository {

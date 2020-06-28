@@ -33,7 +33,12 @@ public interface ClientFormRepository extends BaseRepository<ClientForm> {
 	ClientFormService.CompleteClientForm create(@NonNull ClientFormService.CompleteClientForm completeClientForm);
 
 	@Nullable
-	List<ClientFormMetadata> getAllClientFormMetadata(boolean isDraft);
+	List<ClientFormMetadata> getAllDraftsClientFormMetadata(boolean isDraft);
+
+	@Nullable
+	List<ClientFormMetadata> getAllJsonWidgetValidatorClientFormMetadata(boolean isJsonValidator);
+
+	void updateClientMetadataIsDraftByVersion(boolean isDraft, String formVersion);
 
 	@Nullable
 	List<ClientFormMetadata> getAllClientFormMetadata();

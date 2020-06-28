@@ -2,7 +2,6 @@ package org.opensrp.service;
 
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +12,8 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
-import org.opensrp.domain.Event;
-import org.opensrp.domain.Obs;
+import org.smartregister.domain.Event;
+import org.smartregister.domain.Obs;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.search.EventSearchBean;
 import org.opensrp.util.Utils;
@@ -184,7 +183,7 @@ public class EventService {
 			
 			boolean isCardId = identifier.startsWith(CARD_ID_PREFIX);
 			
-			List<org.opensrp.domain.Client> clients =
+			List<org.smartregister.domain.Client> clients =
 			        
 			        isCardId ? clientService
 			                .findAllByAttribute(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
@@ -194,7 +193,7 @@ public class EventService {
 				return event;
 			}
 			
-			for (org.opensrp.domain.Client client : clients) {
+			for (org.smartregister.domain.Client client : clients) {
 				
 				//set providerid to the last providerid who served this client in their catchment (assumption)
 				List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);

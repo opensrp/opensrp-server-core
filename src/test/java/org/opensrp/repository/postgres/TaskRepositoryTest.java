@@ -12,8 +12,8 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.opensrp.domain.Task;
-import org.opensrp.domain.Task.TaskStatus;
+import org.smartregister.domain.Task;
+import org.smartregister.domain.Task.TaskStatus;
 import org.opensrp.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -290,6 +290,33 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 
 		assertEquals(2, taskRepository.countTasksByPlanAndOwner("IRS_2018_S1", "demouser", 0).longValue());
 
+	}
+
+	@Test
+	public void testSaveTask() {
+		Task task = new Task();
+		task.setIdentifier("tsk-2332-k");
+		task.setPlanIdentifier("2018-IRS-S4");
+		task.setGroupIdentifier("7633hk-dsadsa");
+		task.setDescription("Visit Mwangala household");
+		task.setBusinessStatus("Not Visited");
+		task.setStatus(TaskStatus.READY);
+		task.setPriority(3);
+		task.setOwner("testUser");
+		task.setRequester("testUser");
+		taskRepository.add(task);
+
+		assertEquals(3, taskRepository.getAll().size());
+		Task addedTask = taskRepository.get("tsk-2332-k");
+		assertNotNull(addedTask);
+		assertEquals("2018-IRS-S4", addedTask.getPlanIdentifier());
+		assertEquals("7633hk-dsadsa", addedTask.getGroupIdentifier());
+		assertEquals("Visit Mwangala household", addedTask.getDescription());
+		assertEquals("Not Visited", addedTask.getBusinessStatus());
+		assertEquals(TaskStatus.READY, addedTask.getStatus());
+		assertEquals("testUser", addedTask.getOwner());
+		assertEquals("testUser", addedTask.getRequester());
+		assertEquals(3, addedTask.getPriority());
 	}
 
 }

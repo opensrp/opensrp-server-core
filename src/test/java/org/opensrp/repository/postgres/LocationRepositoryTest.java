@@ -28,22 +28,22 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
-import org.opensrp.domain.Client;
-import org.opensrp.domain.Geometry;
-import org.opensrp.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationDetail;
-import org.opensrp.domain.LocationProperty;
-import org.opensrp.domain.LocationProperty.PropertyStatus;
-import org.opensrp.domain.LocationTag;
+import org.smartregister.domain.Client;
+import org.smartregister.domain.Geometry;
+import org.smartregister.domain.LocationProperty;
+import org.smartregister.domain.LocationTag;
+import org.smartregister.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.LocationTagMap;
-import org.opensrp.domain.PhysicalLocation;
+import org.smartregister.domain.Geometry.GeometryType;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.LocationTagRepository;
 import org.opensrp.search.LocationSearchBean;
 import org.opensrp.search.LocationSearchBean.OrderByType;
-import org.opensrp.util.PropertiesConverter;
+import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.utils.PropertiesConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -338,7 +338,9 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertTrue(locationRepository.getAll().isEmpty());
 		
 		String uuid = UUID.randomUUID().toString();
-		locationRepository.add(createLocation(uuid));
+		PhysicalLocation location = createLocation(uuid);
+		location.getProperties().setStatus(PropertyStatus.ACTIVE);
+		locationRepository.add(location);
 		
 		locations = locationRepository.getAll();
 		
@@ -902,4 +904,25 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertFalse(locationDetails.isEmpty());
 		assertEquals(1, locationDetails.size());
 	}
+
+	@Test
+	public void testFindLocationWithDescendants() {
+		List<LocationDetail> locations = locationRepository.findLocationWithDescendants("3734", false);
+
+		assertEquals(2, locations.size());
+
+		for (LocationDetail location : locations) {
+			MatcherAssert.assertThat(location.getIdentifier(), either(is("3734")).or(is("3735")));
+		}
+
+		locations = locationRepository.findLocationWithDescendants("3735", true);
+		assertEquals(1, locations.size());
+		assertEquals("3735", locations.get(0).getIdentifier());
+		assertEquals("Dhaka", locations.get(0).getName());
+		assertEquals("3734", locations.get(0).getParentId());
+		assertEquals(2l, locations.get(0).getId().longValue());
+
+		assertEquals(0, locationRepository.findLocationWithDescendants("21", false).size());
+	}
+
 }

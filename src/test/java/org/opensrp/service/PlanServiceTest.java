@@ -1,12 +1,12 @@
 package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.domain.AssignedLocations;
-import org.opensrp.domain.PlanDefinition;
+import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 
@@ -49,15 +49,20 @@ public class PlanServiceTest {
 	@Mock
 	private OrganizationService organizationService;
 	
+	@Mock
+	private TaskGenerator taskGenerator;
+	
+	private String user="johndoe";
+	
 	@Before
 	public void setUp() {
-		planService = new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService);
+		planService = new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService,taskGenerator);
 	}
 	
 	@Test
 	public void testGetAllPlansShouldCallRepositoryGetAllMethod() {
-		planService.getAllPlans();
-		verify(planRepository).getAll();
+		planService.getAllPlans(false);
+		verify(planRepository).getAllPlans(eq(false));
 	}
 	
 	@Test
@@ -65,7 +70,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(null);
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.addOrUpdatePlan(plan);
+		planService.addOrUpdatePlan(plan,user);
 		verify(planRepository).add(eq(plan));
 	}
 	
@@ -74,7 +79,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(new PlanDefinition());
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.addOrUpdatePlan(plan);
+		planService.addOrUpdatePlan(plan,user);
 		verify(planRepository).update(eq(plan));
 	}
 	
@@ -83,7 +88,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(null);
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.addPlan(plan);
+		planService.addPlan(plan,user);
 		verify(planRepository).add(eq(plan));
 	}
 	
@@ -92,7 +97,7 @@ public class PlanServiceTest {
 		when(planRepository.get(anyString())).thenReturn(new PlanDefinition());
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
-		planService.updatePlan(plan);
+		planService.updatePlan(plan,user);
 		verify(planRepository).update(eq(plan));
 	}
 	
@@ -105,12 +110,12 @@ public class PlanServiceTest {
 	
 	@Test
 	public void testGetPlansByServerVersionAndOperationalAreaShouldCallRepositoryGetPlansByServerVersionAndOperationalAreaMethod() {
-		when(planRepository.getPlansByServerVersionAndOperationalAreas(anyLong(), any(List.class)))
+		when(planRepository.getPlansByServerVersionAndOperationalAreas(anyLong(), any(List.class), anyBoolean()))
 		        .thenReturn(new ArrayList<PlanDefinition>());
 		List<String> operationalAreaIds = new ArrayList<>();
 		operationalAreaIds.add("operation_area_1");
-		planService.getPlansByServerVersionAndOperationalArea(0l, operationalAreaIds);
-		verify(planRepository).getPlansByServerVersionAndOperationalAreas(eq(0l), eq(operationalAreaIds));
+		planService.getPlansByServerVersionAndOperationalArea(0l, operationalAreaIds,false);
+		verify(planRepository).getPlansByServerVersionAndOperationalAreas(eq(0l), eq(operationalAreaIds),eq(false));
 	}
 	
 	@Test
@@ -118,9 +123,9 @@ public class PlanServiceTest {
 		List<String> ids = Arrays.asList("plan1", "plan2");
 		List<String> fields = Arrays.asList("name", "action");
 		List<PlanDefinition> expected = Collections.singletonList(new PlanDefinition());
-		when(planRepository.getPlansByIdsReturnOptionalFields(ids, fields)).thenReturn(expected);
-		List<PlanDefinition> plans = planService.getPlansByIdsReturnOptionalFields(ids, fields);
-		verify(planRepository).getPlansByIdsReturnOptionalFields(ids, fields);
+		when(planRepository.getPlansByIdsReturnOptionalFields(ids, fields,false)).thenReturn(expected);
+		List<PlanDefinition> plans = planService.getPlansByIdsReturnOptionalFields(ids, fields,false);
+		verify(planRepository).getPlansByIdsReturnOptionalFields(ids, fields,false);
 		assertEquals(expected, plans);
 	}
 	
@@ -139,10 +144,10 @@ public class PlanServiceTest {
 		List<PlanDefinition> expected = Collections.singletonList(new PlanDefinition());
 		when(organizationService.findAssignedLocationsAndPlans(organizationIds))
 		        .thenReturn(assignedLocations);
-		when(planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion))
+		when(planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion, false))
 		        .thenReturn(expected);
-		List<PlanDefinition> plans = planService.getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
-		verify(planRepository).getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
+		List<PlanDefinition> plans = planService.getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion, false);
+		verify(planRepository).getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion, false);
 		verify(organizationService).findAssignedLocationsAndPlans(organizationIds);
 		assertEquals(expected, plans);
 	}
@@ -175,12 +180,12 @@ public class PlanServiceTest {
 		List<PlanDefinition> expected = Collections.singletonList(new PlanDefinition());
 		when(organizationService.findAssignedLocationsAndPlans(organizationIds))
 		        .thenReturn(assignedLocations);
-		when(planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion))
+		when(planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion, false))
 		        .thenReturn(expected);
 		when(practitionerService.getPractionerByUsername("janedoe")).thenReturn(practitioner);
 		when(practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier())).thenReturn(roles);
-		List<PlanDefinition> plans = planService.getPlansByUsernameAndServerVersion("janedoe", serverVersion);
-		verify(planRepository).getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
+		List<PlanDefinition> plans = planService.getPlansByUsernameAndServerVersion("janedoe", serverVersion, false);
+		verify(planRepository).getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion, false);
 		verify(organizationService).findAssignedLocationsAndPlans(organizationIds);
 		assertEquals(expected, plans);
 	}
