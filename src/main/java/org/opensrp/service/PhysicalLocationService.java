@@ -1,17 +1,13 @@
 package org.opensrp.service;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
+import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -20,6 +16,7 @@ import org.opensrp.search.LocationSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,6 +32,12 @@ public class PhysicalLocationService {
 	public void setLocationRepository(LocationRepository locationRepository) {
 		this.locationRepository = locationRepository;
 	}
+
+	@Autowired
+	private OrganizationService organizationService;
+
+	@Autowired
+	private PractitionerService practitionerService;
 	
 	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
 		return locationRepository.get(id, returnGeometry);
@@ -339,5 +342,17 @@ public class PhysicalLocationService {
 	public Long countLocationsByNames(String locationNames, long serverVersion){
 		return locationRepository.countLocationsByNames(locationNames,serverVersion);
 	};
-	
+
+	@Cacheable(value= "locationCache", key= "#username")
+	public List<AssignedLocations> getAssignedLocations(String username) {
+		List<Long> organizationIds = practitionerService.getOrganizationsByUserId(username).right;
+		if (isEmptyOrNull(organizationIds)) {
+			return new ArrayList<>();
+		}
+		return organizationService.findAssignedLocationsAndPlans(organizationIds);
+	}
+
+	private boolean isEmptyOrNull(Collection<? extends Object> collection) {
+		return collection == null || collection.isEmpty();
+	}
 }
