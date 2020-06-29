@@ -492,8 +492,8 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	 * @param detailKey plan id
 	 * @return events for an entity in a plan
 	 */
-	private List<Event> findByBaseEntityIdAndPlanIdentifier(String baseEntityId,String detailKey, String detailValue) {
-		return convert(eventMapper.selectByBaseEntityIdAndDetails(baseEntityId,detailKey,detailValue));
+	private List<Event> findByBaseEntityIdAndPlanIdentifier(String baseEntityId, String planIdentifier) {
+		return convert(eventMetadataMapper.selectByBaseEntityIdAndDetails(baseEntityId,planIdentifier));
 	}
 	
 	/**
@@ -594,6 +594,8 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 				eventMetadata.setDateEdited(event.getDateEdited().toDate());
 			if (event.getDateVoided() != null)
 				eventMetadata.setDateDeleted(event.getDateVoided().toDate());
+			String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
+			eventMetadata.setPlanIdentifier(planIdentifier);
 			return eventMetadata;
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e);
@@ -613,7 +615,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 
 	@Override
 	public List<QuestionnaireResponse> findEventsByEntityIdAndPlan(String resourceId, String planIdentifier) {
-		return findByBaseEntityIdAndPlanIdentifier(resourceId, "planIdentifier", planIdentifier)
+		return findByBaseEntityIdAndPlanIdentifier(resourceId, planIdentifier)
 				.stream()
 		        .map(event -> EventConverter.convertEventToEncounterResource(event))
 		        .collect(Collectors.toList());
