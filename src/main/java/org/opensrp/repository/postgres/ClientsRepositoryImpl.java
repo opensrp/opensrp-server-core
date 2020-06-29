@@ -405,6 +405,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 			Object residence = client.getAttribute(RESIDENCE);
 			if (residence != null)
 				clientMetadata.setResidence(residence.toString());
+			clientMetadata.setLocationId(client.getLocationId());
+			clientMetadata.setClientType(client.getClientType());
 			return clientMetadata;
 		}
 		catch (Exception e) {
@@ -660,6 +662,13 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	@Override
 	public List<Patient> findClientByRelationship(String relationship, String id) {
 		return convertToFHIR(findByRelationshipId(relationship, id));
+	}
+
+	@Override
+	public List<Client> findByClientTypeAndLocationId(String clientType, String locationId) {
+		List<org.opensrp.domain.postgres.Client> clients = clientMetadataMapper.selectByLocationIdOfType(clientType,
+				locationId);
+		return convert(clients);
 	}
 	
 	private List<Patient> convertToFHIR(List<Client> clients) {

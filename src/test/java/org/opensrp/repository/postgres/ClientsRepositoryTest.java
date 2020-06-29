@@ -697,5 +697,15 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals("5bd3e1eb-5cd4-4e8d-9180", clientIds.get(0));
 		assertEquals(1573733955111l, idsModel.getRight().longValue());
 	}
+
+	@Test
+	public void testFindByClientTypeAndLocationId() {
+		Client client = new Client("f67823b0-378e-4a35-93fc-bb00def74e24").withLocationId("location-1");
+		client.setClientType("Client-type-1");
+		clientsRepository.add(client);
+		List<Client> clients = clientsRepository.findByClientTypeAndLocationId("Client-type-1","location-1");
+		assertEquals(1,clients.size());
+
+	}
 	
 }
