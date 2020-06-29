@@ -3,21 +3,29 @@
  */
 package org.opensrp.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author Samuel Githengi created on 09/10/19
  */
-public class AssignedLocations {
+public class AssignedLocations implements Serializable {
 
+	@JsonProperty
 	private String organizationId;
 
+	@JsonProperty
 	private String jurisdictionId;
 
+	@JsonProperty
 	private String planId;
 
+	@JsonProperty
 	private Date fromDate;
 
+	@JsonProperty
 	private Date toDate;
 
 	public AssignedLocations(String jurisdictionId, String planId) {

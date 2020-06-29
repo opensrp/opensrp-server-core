@@ -18,6 +18,7 @@ import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -34,51 +35,61 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public Client getByBaseEntityId(String baseEntityId) {
 		return allClients.findByBaseEntityId(baseEntityId);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllClients() {
 		return allClients.findAllClients();
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllByIdentifier(String identifier) {
 		return allClients.findAllByIdentifier(identifier);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllByIdentifier(String identifierType, String identifier) {
 		return allClients.findAllByIdentifier(identifierType, identifier);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByRelationshipIdAndDateCreated(String relationalId, String dateFrom, String dateTo) {
 		return allClients.findByRelationshipIdAndDateCreated(relationalId, dateFrom, dateTo);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByRelationship(String relationalId) {
 		return allClients.findByRelationShip(relationalId);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByRelationshipIdAndType(String relationshipType, String entityId) {
 		return allClients.findByRelationshipId(relationshipType, entityId);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllByAttribute(String attributeType, String attribute) {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllByMatchingName(String nameMatches) {
 		return allClients.findAllByMatchingName(nameMatches);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean,
 	                                   DateTime lastEditFrom, DateTime lastEditTo) {
 		clientSearchBean.setLastEditFrom(lastEditFrom);
@@ -88,6 +99,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByCriteria(ClientSearchBean clientSearchBean, Long serverVersion) {
 		return allClients.findByCriteria(clientSearchBean, new AddressSearchBean());
 	}
@@ -98,6 +110,7 @@ public class ClientService {
 		}*/
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByDynamicQuery(String query) {
 		return allClients.findByDynamicQuery(query);
 	}
@@ -148,6 +161,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public Client find(String uniqueId) {
 		// find by document id
 		Client c = allClients.findByBaseEntityId(uniqueId);
@@ -218,6 +232,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByServerVersion(long serverVersion) {
 		return allClients.findByServerVersion(serverVersion);
 	}
@@ -324,11 +339,13 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findMembersByRelationshipId(String relationshipId) {
 		return allClients.findMembersByRelationshipId(relationshipId);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllClientsByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
 		return allClients.findAllClientsByCriteria(clientSearchBean, addressSearchBean);
 	}
