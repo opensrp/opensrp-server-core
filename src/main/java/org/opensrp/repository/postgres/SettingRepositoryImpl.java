@@ -193,7 +193,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			metadataExample.or(metadataExample.createCriteria().andSettingsIdEqualTo(primaryKey));
 		}
 
-		if (StringUtils.isNotBlank(settingQueryBean.getId())) {
+		if (StringUtils.isBlank(settingQueryBean.getId())) {
 			criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 		}
 
