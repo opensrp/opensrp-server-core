@@ -192,7 +192,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (primaryKey != null) {
 			metadataExample.or(metadataExample.createCriteria().andSettingsIdEqualTo(primaryKey));
 		}
-		criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
+
+		if (StringUtils.isNotBlank(settingQueryBean.getId())) {
+			criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
+		}
 
 		if (settingQueryBean.isResolveSettings()) {
 			return fetchSettingsPerLocation(settingQueryBean, metadataExample, criteria, treeNodeHashMap, limit);
@@ -215,7 +218,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		String id = settingQueryBean.getId();
 
 		if (StringUtils.isBlank(providerId) && StringUtils.isBlank(locationId) && StringUtils.isBlank(team)
-				&& StringUtils.isBlank(teamId) && StringUtils.isBlank(documentId) && StringUtils.isBlank(identifier) && StringUtils.isBlank(id)) {
+				&& StringUtils.isBlank(teamId) && StringUtils.isBlank(documentId) && StringUtils.isBlank(identifier)
+				&& StringUtils.isBlank(id)) {
 			criteria.andTeamIdIsNull().andTeamIsNull().andProviderIdIsNull().andLocationIdIsNull().andDocumentIdIsNotNull()
 					.andIdentifierIsNotNull().andIdIsNotNull();
 		} else {
