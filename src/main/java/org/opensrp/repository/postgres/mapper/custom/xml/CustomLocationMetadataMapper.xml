@@ -182,7 +182,7 @@
 		from core.location_metadata lm
 		left join core.location_tag_map ltm on ltm.location_id =lm.location_id 
 		left join core.location_tag lt on lt.id =ltm.location_tag_id
-		left join core.location l on l.id = lm.location_id
+		INNER join core.location l on l.id = lm.location_id
 		Where lm.location_id in
 		(
 			WITH RECURSIVE locations
@@ -334,7 +334,7 @@
 			</if>
 
 		FROM core.location_metadata lm
-		LEFT join core.location l on l.id = lm.location_id
+		INNER join core.location l on l.id = lm.location_id
 
 		<if test="tags">
 			LEFT join core.location_tag_map ltm ON ltm.location_id = lm.location_id
