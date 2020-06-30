@@ -200,7 +200,7 @@
 			)
 			SELECT location_id FROM locations
 		)
-		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id, l.json
+		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id, geographic_level
 	</select>
 
 	<resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetail">
@@ -355,7 +355,7 @@
 			)
 			SELECT location_id FROM locations
 		)
-		GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id, l.json
+		GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id, geographic_level
 
 	</select>
 
