@@ -705,7 +705,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		clientsRepository.add(client);
 		List<Client> clients = clientsRepository.findByClientTypeAndLocationId("Client-type-1","location-1");
 		assertEquals(1,clients.size());
-
+		assertEquals("f67823b0-378e-4a35-93fc-bb00def74e24", clients.get(0).getBaseEntityId());
 	}
 	
 }

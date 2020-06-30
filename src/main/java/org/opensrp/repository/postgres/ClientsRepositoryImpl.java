@@ -642,20 +642,15 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Patient> findFamilyMemberyByJurisdiction(String jurisdiction) {
-		List<String> baseEntityIds = eventsRepository.findBaseEntityIdsByLocation(jurisdiction);
-		if (baseEntityIds.isEmpty())
-			return Collections.emptyList();
-		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
-		clientMetadataExample.createCriteria().andBaseEntityIdIn(baseEntityIds).andDateDeletedIsNull()
-		        .andLastNameNotEqualTo("Family");
-		return convertToFHIR(convert(clientMetadataMapper.selectMany(clientMetadataExample, 0, 20000)));
+		List<Client> clients = findByClientTypeAndLocationId("Family",jurisdiction);
+		return convertToFHIR(clients);
 	}
 	
 	@Override
 	public List<Patient> findFamilyMemberByResidence(String structureId) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		clientMetadataExample.createCriteria().andResidenceEqualTo(structureId).andDateDeletedIsNull()
-		        .andLastNameNotEqualTo("Family");
+		        .andClientTypeNotEqualTo("Family");
 		return convertToFHIR(convert( clientMetadataMapper.selectMany(clientMetadataExample,0,DEFAULT_FETCH_SIZE)));
 	}
 	
