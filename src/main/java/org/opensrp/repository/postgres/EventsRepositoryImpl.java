@@ -493,7 +493,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	 * @return events for an entity in a plan
 	 */
 	private List<Event> findByBaseEntityIdAndPlanIdentifier(String baseEntityId, String planIdentifier) {
-		return convert(eventMetadataMapper.selectByBaseEntityIdAndDetails(baseEntityId,planIdentifier));
+		return convert(eventMetadataMapper.selectByBaseEntityIdAndPlanIdentifier(baseEntityId,planIdentifier));
 	}
 	
 	/**

@@ -190,7 +190,7 @@
 		</if>
 	</select>
 
-	<select id="selectByBaseEntityIdAndDetails" parameterType="map"
+	<select id="selectByBaseEntityIdAndPlanIdentifier" parameterType="map"
 			resultMap="BaseEventResultMap">
 		select
 		<include refid="Base_Event_Column_List" />
