@@ -13,6 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,6 +39,7 @@ import org.mockito.Mockito;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.api.util.TreeNode;
+import org.opensrp.domain.StructureCount;
 import org.smartregister.domain.Geometry.GeometryType;
 import org.opensrp.domain.LocationDetail;
 import org.smartregister.domain.LocationProperty;
@@ -737,5 +739,169 @@ public class PhysicalLocationServiceTest {
 		assertTrue(tags.contains("District"));
 	}
 
-	
+	@Test
+	public void testBuildLocationHierarchy() {
+		List<LocationDetail> locationDetails = new ArrayList<>();
+
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
+				.tags("Country").geographicLevel(0).build();
+		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
+				.tags("Province").geographicLevel(1).build();
+		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
+				.tags("Province").geographicLevel(1).build();
+		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
+				.tags("District").geographicLevel(2).build();
+		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
+				.tags("District").geographicLevel(2).build();
+		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
+				.tags("District").geographicLevel(2).build();
+
+		locationDetails.add(country);
+		locationDetails.add(province1);
+		locationDetails.add(province2);
+		locationDetails.add(district1);
+		locationDetails.add(district2);
+		locationDetails.add(district3);
+
+		Set<String> locationIdentifiers = new HashSet<>();
+		locationIdentifiers.add(district1.getIdentifier());
+		locationIdentifiers.add(district2.getIdentifier());
+		locationIdentifiers.add(district2.getIdentifier());
+
+		when(locationRepository.findParentLocationsInclusive(locationIdentifiers)).thenReturn(locationDetails);
+
+		LocationTree tree = locationService.buildLocationHierachy(locationIdentifiers, false);
+
+		TreeNode<String, Location> countryNode = tree.getLocationsHierarchy().get(country.getIdentifier());
+		assertNotNull(countryNode);
+		assertEquals(country.getIdentifier(), countryNode.getId());
+		assertEquals(country.getName(), countryNode.getLabel());
+		assertNull(countryNode.getParent());
+		assertEquals(country.getTags(), countryNode.getNode().getTags().iterator().next());
+		assertEquals(2, countryNode.getChildren().size());
+		assertNull(countryNode.getNode().getAttribute(STRUCTURE_COUNT));
+		assertEquals(0, countryNode.getNode().getAttribute("geographicLevel"));
+
+		TreeNode<String, Location> province2Node = countryNode.getChildren().get(province2.getIdentifier());
+		assertNotNull(province2Node);
+		assertEquals(province2.getIdentifier(), province2Node.getId());
+		assertEquals(province2.getName(), province2Node.getLabel());
+		assertEquals(2, province2Node.getChildren().size());
+		assertEquals(country.getIdentifier(), province2Node.getParent());
+		assertNull(countryNode.getNode().getAttribute(STRUCTURE_COUNT));
+		assertEquals(1, province2Node.getNode().getAttribute("geographicLevel"));
+
+		TreeNode<String, Location> district2Node = province2Node.getChildren().get(district2.getIdentifier());
+		assertNotNull(district2Node);
+		assertEquals(district2.getIdentifier(), district2Node.getId());
+		assertEquals(district2.getName(), district2Node.getLabel());
+		assertNull(district2Node.getChildren());
+		assertEquals(province2.getIdentifier(), district2Node.getParent());
+		assertNull(countryNode.getNode().getAttribute(STRUCTURE_COUNT));
+		assertEquals(2, district2Node.getNode().getAttribute("geographicLevel"));
+	}
+
+	@Test
+	public void testBuildLocationHierarchyWithStructureCounts() {
+		List<LocationDetail> locationDetails = new ArrayList<>();
+
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
+				.tags("Country").geographicLevel(0).build();
+		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
+				.tags("Province").geographicLevel(1).build();
+		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
+				.tags("Province").geographicLevel(1).build();
+		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
+				.tags("District").geographicLevel(2).build();
+		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
+				.tags("District").geographicLevel(2).build();
+		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
+				.tags("District").geographicLevel(2).build();
+
+		locationDetails.add(country);
+		locationDetails.add(province1);
+		locationDetails.add(province2);
+		locationDetails.add(district1);
+		locationDetails.add(district2);
+		locationDetails.add(district3);
+
+		Set<String> locationIdentifiers = new HashSet<>();
+		locationIdentifiers.add(country.getIdentifier());
+		locationIdentifiers.add(province1.getIdentifier());
+		locationIdentifiers.add(province2.getIdentifier());
+		locationIdentifiers.add(district1.getIdentifier());
+		locationIdentifiers.add(district2.getIdentifier());
+		locationIdentifiers.add(district3.getIdentifier());
+
+		when(locationRepository.findParentLocationsInclusive(locationIdentifiers)).thenReturn(locationDetails);
+
+		List<StructureCount> structureCounts = new ArrayList<>();
+		StructureCount structureCountD1 = StructureCount.builder().parentId(district1.getIdentifier()).count(10).build();
+		StructureCount structureCountD2 = StructureCount.builder().parentId(district2.getIdentifier()).count(5).build();
+		StructureCount structureCountD3 = StructureCount.builder().parentId(district3.getIdentifier()).count(8).build();
+		structureCounts.add(structureCountD1);
+		structureCounts.add(structureCountD2);
+		structureCounts.add(structureCountD3);
+
+
+		when(locationRepository.findStructureCountsForLocation(locationIdentifiers)).thenReturn(structureCounts);
+
+		LocationTree tree = locationService.buildLocationHierachy(locationIdentifiers, true);
+
+		TreeNode<String, Location> countryNode = tree.getLocationsHierarchy().get(country.getIdentifier());
+		assertNotNull(countryNode);
+		assertEquals(country.getIdentifier(), countryNode.getId());
+		assertEquals(country.getName(), countryNode.getLabel());
+		assertNull(countryNode.getParent());
+		assertEquals(country.getTags(), countryNode.getNode().getTags().iterator().next());
+		assertEquals(2, countryNode.getChildren().size());
+		assertEquals(0, countryNode.getNode().getAttribute("geographicLevel"));
+		assertEquals(23, countryNode.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> province1Node = countryNode.getChildren().get(province1.getIdentifier());
+		assertNotNull(province1Node);
+		assertEquals(province1.getIdentifier(), province1Node.getId());
+		assertEquals(province1.getName(), province1Node.getLabel());
+		assertEquals(1, province1Node.getChildren().size());
+		assertEquals(country.getIdentifier(), province1Node.getParent());
+		assertEquals(1, province1Node.getNode().getAttribute("geographicLevel"));
+		assertEquals(10, province1Node.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> province2Node = countryNode.getChildren().get(province2.getIdentifier());
+		assertNotNull(province2Node);
+		assertEquals(province2.getIdentifier(), province2Node.getId());
+		assertEquals(province2.getName(), province2Node.getLabel());
+		assertEquals(2, province2Node.getChildren().size());
+		assertEquals(country.getIdentifier(), province2Node.getParent());
+		assertEquals(1, province2Node.getNode().getAttribute("geographicLevel"));
+		assertEquals(13, province2Node.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> district1Node = province1Node.getChildren().get(district1.getIdentifier());
+		assertNotNull(district1Node);
+		assertEquals(district1.getIdentifier(), district1Node.getId());
+		assertEquals(district1.getName(), district1Node.getLabel());
+		assertNull(district1Node.getChildren());
+		assertEquals(province1.getIdentifier(), district1Node.getParent());
+		assertEquals(2, district1Node.getNode().getAttribute("geographicLevel"));
+		assertEquals(10, district1Node.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> district2Node = province2Node.getChildren().get(district2.getIdentifier());
+		assertNotNull(district2Node);
+		assertEquals(district2.getIdentifier(), district2Node.getId());
+		assertEquals(district2.getName(), district2Node.getLabel());
+		assertNull(district2Node.getChildren());
+		assertEquals(province2.getIdentifier(), district2Node.getParent());
+		assertEquals(2, district2Node.getNode().getAttribute("geographicLevel"));
+		assertEquals(5, district2Node.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> district3Node = province2Node.getChildren().get(district3.getIdentifier());
+		assertNotNull(district3Node);
+		assertEquals(district3.getIdentifier(), district3Node.getId());
+		assertEquals(district3.getName(), district3Node.getLabel());
+		assertNull(district3Node.getChildren());
+		assertEquals(province2.getIdentifier(), district3Node.getParent());
+		assertEquals(2, district3Node.getNode().getAttribute("geographicLevel"));
+		assertEquals(8, district3Node.getNode().getAttribute(STRUCTURE_COUNT));
+	}
+
 }
