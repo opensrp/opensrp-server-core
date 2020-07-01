@@ -17,22 +17,24 @@ public class JSONCSVUtil {
      * construct a json object given the configuration set and the object set
      *
      * @param csvValues
-     * @param configs
+     * @param configGroup
      * @return
      */
-    public static JSONObject toJSON(Map<String, String> csvValues, Map<String, CSVRowConfig> configs) {
+    public static JSONObject toJSON(Map<String, String> csvValues, Map<String, List<CSVRowConfig>> configGroup) {
         JSONObject jsonObject = new JSONObject();
         for (Map.Entry<String, String> value :
                 csvValues.entrySet()) {
-            CSVRowConfig config = configs.get(value.getKey());
-            if (config == null)
-                throw new IllegalStateException("Column" + value.getKey() + " is missing a config");
+            List<CSVRowConfig> configs = configGroup.get(value.getKey());
+            for(CSVRowConfig config : configs){
+                if (config == null)
+                    throw new IllegalStateException("Column" + value.getKey() + " is missing a config");
 
-            if (config.validate(value.getValue())) {
-                if (StringUtils.isNotBlank(value.getValue()))
-                    addNodeToJson(config.getFieldMapping(), value.getValue(), jsonObject);
-            }else{
-                throw new IllegalStateException("CSV has an invalid value for field " + config.getColumnName() + " mapping " + config.getFieldMapping());
+                if (config.validate(value.getValue())) {
+                    if (StringUtils.isNotBlank(value.getValue()))
+                        addNodeToJson(config.getFieldMapping(), value.getValue(), jsonObject);
+                }else{
+                    throw new IllegalStateException("CSV has an invalid value for field " + config.getColumnName() + " mapping " + config.getFieldMapping());
+                }
             }
         }
         return jsonObject;
