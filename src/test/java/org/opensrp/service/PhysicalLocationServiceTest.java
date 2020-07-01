@@ -782,23 +782,26 @@ public class PhysicalLocationServiceTest {
 		assertNull(countryNode.getNode().getAttribute(STRUCTURE_COUNT));
 		assertEquals(0, countryNode.getNode().getAttribute("geographicLevel"));
 
+		TreeNode<String, Location> province1Node = countryNode.getChildren().get(province1.getIdentifier());
+		assertNotNull(province1Node);
+		verifyLocationData(province1Node, province1, country, 1, true);
+		assertNull(province1Node.getNode().getAttribute(STRUCTURE_COUNT));
+
 		TreeNode<String, Location> province2Node = countryNode.getChildren().get(province2.getIdentifier());
-		assertNotNull(province2Node);
-		assertEquals(province2.getIdentifier(), province2Node.getId());
-		assertEquals(province2.getName(), province2Node.getLabel());
-		assertEquals(2, province2Node.getChildren().size());
-		assertEquals(country.getIdentifier(), province2Node.getParent());
-		assertNull(countryNode.getNode().getAttribute(STRUCTURE_COUNT));
-		assertEquals(1, province2Node.getNode().getAttribute("geographicLevel"));
+		verifyLocationData(province2Node, province2, country, 1, true);
+		assertNull(province1Node.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> district1Node = province1Node.getChildren().get(district1.getIdentifier());
+		verifyLocationData(district1Node, district1, province1, 2, false);
+		assertNull(province1Node.getNode().getAttribute(STRUCTURE_COUNT));
 
 		TreeNode<String, Location> district2Node = province2Node.getChildren().get(district2.getIdentifier());
-		assertNotNull(district2Node);
-		assertEquals(district2.getIdentifier(), district2Node.getId());
-		assertEquals(district2.getName(), district2Node.getLabel());
-		assertNull(district2Node.getChildren());
-		assertEquals(province2.getIdentifier(), district2Node.getParent());
-		assertNull(countryNode.getNode().getAttribute(STRUCTURE_COUNT));
-		assertEquals(2, district2Node.getNode().getAttribute("geographicLevel"));
+		verifyLocationData(district2Node, district2, province2, 2, false);
+		assertNull(province1Node.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> district3Node = province2Node.getChildren().get(district3.getIdentifier());
+		verifyLocationData(district3Node, district3, province2, 2, false);
+		assertNull(province1Node.getNode().getAttribute(STRUCTURE_COUNT));
 	}
 
 	@Test
@@ -860,48 +863,35 @@ public class PhysicalLocationServiceTest {
 
 		TreeNode<String, Location> province1Node = countryNode.getChildren().get(province1.getIdentifier());
 		assertNotNull(province1Node);
-		assertEquals(province1.getIdentifier(), province1Node.getId());
-		assertEquals(province1.getName(), province1Node.getLabel());
-		assertEquals(1, province1Node.getChildren().size());
-		assertEquals(country.getIdentifier(), province1Node.getParent());
-		assertEquals(1, province1Node.getNode().getAttribute("geographicLevel"));
+		verifyLocationData(province1Node, province1, country, 1, true);
 		assertEquals(10, province1Node.getNode().getAttribute(STRUCTURE_COUNT));
 
 		TreeNode<String, Location> province2Node = countryNode.getChildren().get(province2.getIdentifier());
-		assertNotNull(province2Node);
-		assertEquals(province2.getIdentifier(), province2Node.getId());
-		assertEquals(province2.getName(), province2Node.getLabel());
-		assertEquals(2, province2Node.getChildren().size());
-		assertEquals(country.getIdentifier(), province2Node.getParent());
-		assertEquals(1, province2Node.getNode().getAttribute("geographicLevel"));
+		verifyLocationData(province2Node, province2, country, 1, true);
 		assertEquals(13, province2Node.getNode().getAttribute(STRUCTURE_COUNT));
 
 		TreeNode<String, Location> district1Node = province1Node.getChildren().get(district1.getIdentifier());
-		assertNotNull(district1Node);
-		assertEquals(district1.getIdentifier(), district1Node.getId());
-		assertEquals(district1.getName(), district1Node.getLabel());
-		assertNull(district1Node.getChildren());
-		assertEquals(province1.getIdentifier(), district1Node.getParent());
-		assertEquals(2, district1Node.getNode().getAttribute("geographicLevel"));
+		verifyLocationData(district1Node, district1, province1, 2, false);
 		assertEquals(10, district1Node.getNode().getAttribute(STRUCTURE_COUNT));
 
 		TreeNode<String, Location> district2Node = province2Node.getChildren().get(district2.getIdentifier());
-		assertNotNull(district2Node);
-		assertEquals(district2.getIdentifier(), district2Node.getId());
-		assertEquals(district2.getName(), district2Node.getLabel());
-		assertNull(district2Node.getChildren());
-		assertEquals(province2.getIdentifier(), district2Node.getParent());
-		assertEquals(2, district2Node.getNode().getAttribute("geographicLevel"));
+		verifyLocationData(district2Node, district2, province2, 2, false);
 		assertEquals(5, district2Node.getNode().getAttribute(STRUCTURE_COUNT));
 
 		TreeNode<String, Location> district3Node = province2Node.getChildren().get(district3.getIdentifier());
-		assertNotNull(district3Node);
-		assertEquals(district3.getIdentifier(), district3Node.getId());
-		assertEquals(district3.getName(), district3Node.getLabel());
-		assertNull(district3Node.getChildren());
-		assertEquals(province2.getIdentifier(), district3Node.getParent());
-		assertEquals(2, district3Node.getNode().getAttribute("geographicLevel"));
+		verifyLocationData(district3Node, district3, province2, 2, false);
 		assertEquals(8, district3Node.getNode().getAttribute(STRUCTURE_COUNT));
+	}
+
+	private void verifyLocationData(TreeNode<String, Location> node, LocationDetail locationDetail, LocationDetail parentLD, int geographicLevel, boolean hasChildren ) {
+		assertNotNull(node);
+		assertEquals(locationDetail.getIdentifier(), node.getId());
+		assertEquals(locationDetail.getName(), node.getLabel());
+		if (!hasChildren) {
+			assertNull(node.getChildren());
+		}
+		assertEquals(parentLD.getIdentifier(), node.getParent());
+		assertEquals(geographicLevel, node.getNode().getAttribute("geographicLevel"));
 	}
 
 }
