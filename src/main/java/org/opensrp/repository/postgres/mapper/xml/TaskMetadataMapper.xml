@@ -15,6 +15,7 @@
     <result column="for_entity" jdbcType="VARCHAR" property="forEntity" />
     <result column="server_version" jdbcType="BIGINT" property="serverVersion" />
     <result column="owner" jdbcType="VARCHAR" property="owner" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -91,7 +92,7 @@
       This element was generated on Tue Mar 10 19:32:58 EAT 2020.
     -->
     id, task_id, identifier, plan_identifier, group_identifier, for_entity, server_version, 
-    owner
+    owner, code
   </sql>
   <select id="selectByExample" parameterType="org.opensrp.domain.postgres.TaskMetadataExample" resultMap="BaseResultMap">
     <!--
@@ -151,10 +152,12 @@
     -->
     insert into core.task_metadata (id, task_id, identifier, 
       plan_identifier, group_identifier, for_entity, 
-      server_version, owner)
+      server_version, owner, code
+      )
     values (#{id,jdbcType=BIGINT}, #{taskId,jdbcType=BIGINT}, #{identifier,jdbcType=VARCHAR}, 
       #{planIdentifier,jdbcType=VARCHAR}, #{groupIdentifier,jdbcType=VARCHAR}, #{forEntity,jdbcType=VARCHAR}, 
-      #{serverVersion,jdbcType=BIGINT}, #{owner,jdbcType=VARCHAR})
+      #{serverVersion,jdbcType=BIGINT}, #{owner,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.TaskMetadata">
     <!--
@@ -188,6 +191,9 @@
       <if test="owner != null">
         owner,
       </if>
+      <if test="code != null">
+        code,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -213,6 +219,9 @@
       </if>
       <if test="owner != null">
         #{owner,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -259,6 +268,9 @@
       <if test="record.owner != null">
         owner = #{record.owner,jdbcType=VARCHAR},
       </if>
+      <if test="record.code != null">
+        code = #{record.code,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -278,7 +290,8 @@
       group_identifier = #{record.groupIdentifier,jdbcType=VARCHAR},
       for_entity = #{record.forEntity,jdbcType=VARCHAR},
       server_version = #{record.serverVersion,jdbcType=BIGINT},
-      owner = #{record.owner,jdbcType=VARCHAR}
+      owner = #{record.owner,jdbcType=VARCHAR},
+      code = #{record.code,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -312,6 +325,9 @@
       <if test="owner != null">
         owner = #{owner,jdbcType=VARCHAR},
       </if>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -328,7 +344,8 @@
       group_identifier = #{groupIdentifier,jdbcType=VARCHAR},
       for_entity = #{forEntity,jdbcType=VARCHAR},
       server_version = #{serverVersion,jdbcType=BIGINT},
-      owner = #{owner,jdbcType=VARCHAR}
+      owner = #{owner,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

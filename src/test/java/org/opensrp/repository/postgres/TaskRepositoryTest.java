@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.HashSet;
 import java.util.List;
@@ -317,6 +318,34 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("testUser", addedTask.getOwner());
 		assertEquals("testUser", addedTask.getRequester());
 		assertEquals(3, addedTask.getPriority());
+	}
+
+	@Test
+	public void testCheckIfTaskExists() {
+		Task task = new Task();
+		task.setIdentifier("tsk-2332-kl");
+		task.setPlanIdentifier("test-plan-id-1");
+	    task.setForEntity("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd");
+		task.setCode("test-code");
+		task.setStatus(TaskStatus.READY);
+		taskRepository.add(task);
+		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd",
+				"test-plan-id-1","test-code");
+		assertTrue(taskExists);
+	}
+
+	@Test
+	public void testCheckIfTaskExistsReturnsFalse() {
+		Task task = new Task();
+		task.setIdentifier("tsk-2332-km");
+		task.setPlanIdentifier("test-plan-id-2");
+		task.setForEntity("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fe");
+		task.setCode("test-code-2");
+		task.setStatus(TaskStatus.ARCHIVED);
+		taskRepository.add(task);
+		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fe",
+				"test-plan-id-2","test-code-2");
+		assertFalse(taskExists);
 	}
 
 }
