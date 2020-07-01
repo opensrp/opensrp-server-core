@@ -1,28 +1,47 @@
 
 package org.opensrp.search;
 
-public class SettingSearchBean {
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.smartregister.domain.BaseDataObject;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SettingSearchBean extends BaseDataObject {
+	
+	@JsonProperty
 	private String identifier;
 	
-	private String providerId;
-	
-	private String locationId;
-	
-	private String team;
-	
+	@JsonProperty
 	private String teamId;
 	
-	private Long serverVersion;
-
-	public String getIdentifier() {
-		return identifier;
-	}
-
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
-
+	@JsonProperty
+	private String team;
+	
+	@JsonProperty
+	private String providerId;
+	
+	@JsonProperty
+	private String locationId;
+	
+	@JsonProperty
+	private String childLocationId;
+	
+	@JsonIgnore
+	private boolean v1Settings;
+	
+	@JsonIgnore
+	private boolean resolveSettings;
+	
+	private Long primaryKey;
+	
+	private String documentId;
 	public String getProviderId() {
 		return providerId;
 	}
@@ -55,12 +74,51 @@ public class SettingSearchBean {
 		this.teamId = teamId;
 	}
 	
-	public Long getServerVersion() {
-		return serverVersion;
+	public String getIdentifier() {
+		return identifier;
 	}
 	
-	public void setServerVersion(Long serverVersion) {
-		this.serverVersion = serverVersion;
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
 	}
 	
+	public String getChildLocationId() {
+		return childLocationId;
+	}
+	
+	public void setChildLocationId(String childLocationId) {
+		this.childLocationId = childLocationId;
+	}
+	
+	public String getDocumentId() {
+		return documentId;
+	}
+	
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
+	}
+	
+	public Long getPrimaryKey() {
+		return primaryKey;
+	}
+	
+	public void setPrimaryKey(Long primaryKey) {
+		this.primaryKey = primaryKey;
+	}
+	
+	public boolean isResolveSettings() {
+		return resolveSettings;
+	}
+	
+	public void setResolveSettings(boolean resolveSettings) {
+		this.resolveSettings = resolveSettings;
+	}
+	
+	public boolean isV1Settings() {
+		return v1Settings;
+	}
+	
+	public void setV1Settings(boolean v1Settings) {
+		this.v1Settings = v1Settings;
+	}
 }
