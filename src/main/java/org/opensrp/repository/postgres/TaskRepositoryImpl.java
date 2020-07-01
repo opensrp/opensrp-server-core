@@ -314,10 +314,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		statuses.add("Archived");
 
 		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, planIdentifier, code,statuses);
-		if (taskCount >= 1) {
-			return true;
-		}
-		return false;
+		return taskCount >= 1;
 	}
 
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
