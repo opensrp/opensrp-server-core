@@ -1,6 +1,8 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.TreeNode;
 import org.opensrp.domain.postgres.Settings;
@@ -418,7 +420,16 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	private Setting convertToSetting(SettingsMetadata settingsMetadata, boolean isV1Settings) {
 		Setting setting = new Setting();
-		setting.setValue(settingsMetadata.getSettingValue());
+		String value = settingsMetadata.getSettingValue();
+		if (StringUtils.isNotBlank(value)) {
+			try {
+				JSONArray jsonArray = new JSONArray(value);
+				setting.setValues(jsonArray);
+			} catch (JSONException e) {
+				setting.setValue(value);
+			}
+		}
+
 		setting.setKey(settingsMetadata.getSettingKey());
 		setting.setSettingMetadataId(String.valueOf(settingsMetadata.getId()));
 		setting.setUuid(settingsMetadata.getUuid());
