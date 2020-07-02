@@ -127,4 +127,19 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
+	<resultMap id="StructureCountResultMap" type="org.opensrp.domain.StructureCount">
+		<result column="parent_id" jdbcType="VARCHAR" property="parentId" />
+		<result column="count" jdbcType="INTEGER" property="count" />
+	</resultMap>
+
+	<select id="findStructureCountsForLocation"	resultMap="StructureCountResultMap">
+		SELECT parent_id, count(*)
+		FROM core.structure_metadata
+		WHERE parent_id IN
+		<foreach collection="locationIdentifiers" item="value"  open="(" separator="," close=")">
+			#{value}
+		</foreach>
+		GROUP BY parent_id
+	</select>
+
 </mapper>
