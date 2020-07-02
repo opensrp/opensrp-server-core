@@ -37,6 +37,7 @@ import org.smartregister.domain.LocationProperty.PropertyStatus;
 import org.opensrp.domain.LocationTagMap;
 import org.smartregister.domain.Geometry.GeometryType;
 import org.opensrp.domain.StructureDetails;
+import org.opensrp.domain.StructureCount;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.LocationTagRepository;
@@ -923,6 +924,22 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(2l, locations.get(0).getId().longValue());
 
 		assertEquals(0, locationRepository.findLocationWithDescendants("21", false).size());
+	}
+
+	@Test
+	public void testFindStructureCountsForLocation() {
+		Set locationIds = new HashSet();
+		locationIds.add("3724");
+		locationIds.add("3734");
+
+		List<StructureCount> structureCounts = locationRepository.findStructureCountsForLocation(locationIds);
+		structureCounts.size();
+		assertEquals("3724", structureCounts.get(0).getParentId());
+		assertEquals(1, structureCounts.get(0).getCount());
+
+		assertEquals("3734", structureCounts.get(1).getParentId());
+		assertEquals(1, structureCounts.get(0).getCount());
+
 	}
 
 }
