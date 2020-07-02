@@ -35,9 +35,9 @@ public class SettingsMetadataExampleGeneratedCriteria {
 		protected void addCriterion(String condition) {
 			if (condition == null) {
 				try {
-					throw new Exception("Value for condition cannot be null");
+					throw new IllegalArgumentException("Value for condition cannot be null");
 				}
-				catch (Exception e) {
+				catch (IllegalArgumentException e) {
 					e.printStackTrace();
 				}
 			}
@@ -47,9 +47,9 @@ public class SettingsMetadataExampleGeneratedCriteria {
 		protected void addCriterion(String condition, Object value, String property) {
 			if (value == null) {
 				try {
-					throw new Exception("Value for " + property + " cannot be null");
+					throw new IllegalArgumentException("Value for " + property + " cannot be null");
 				}
-				catch (Exception e) {
+				catch (IllegalArgumentException e) {
 					e.printStackTrace();
 				}
 			}
@@ -59,9 +59,9 @@ public class SettingsMetadataExampleGeneratedCriteria {
 		protected void addCriterion(String condition, Object value1, Object value2, String property) {
 			if (value1 == null || value2 == null) {
 				try {
-					throw new Exception("Between values for " + property + " cannot be null");
+					throw new IllegalArgumentException("Between values for " + property + " cannot be null");
 				}
-				catch (Exception e) {
+				catch (IllegalArgumentException e) {
 					e.printStackTrace();
 				}
 			}
