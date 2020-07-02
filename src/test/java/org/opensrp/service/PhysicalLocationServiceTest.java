@@ -789,19 +789,19 @@ public class PhysicalLocationServiceTest {
 
 		TreeNode<String, Location> province2Node = countryNode.getChildren().get(province2.getIdentifier());
 		verifyLocationData(province2Node, province2, country, 1, true);
-		assertNull(province1Node.getNode().getAttribute(STRUCTURE_COUNT));
+		assertNull(province2Node.getNode().getAttribute(STRUCTURE_COUNT));
 
 		TreeNode<String, Location> district1Node = province1Node.getChildren().get(district1.getIdentifier());
 		verifyLocationData(district1Node, district1, province1, 2, false);
-		assertNull(province1Node.getNode().getAttribute(STRUCTURE_COUNT));
+		assertNull(district1Node.getNode().getAttribute(STRUCTURE_COUNT));
 
 		TreeNode<String, Location> district2Node = province2Node.getChildren().get(district2.getIdentifier());
 		verifyLocationData(district2Node, district2, province2, 2, false);
-		assertNull(province1Node.getNode().getAttribute(STRUCTURE_COUNT));
+		assertNull(district2Node.getNode().getAttribute(STRUCTURE_COUNT));
 
 		TreeNode<String, Location> district3Node = province2Node.getChildren().get(district3.getIdentifier());
 		verifyLocationData(district3Node, district3, province2, 2, false);
-		assertNull(province1Node.getNode().getAttribute(STRUCTURE_COUNT));
+		assertNull(district3Node.getNode().getAttribute(STRUCTURE_COUNT));
 	}
 
 	@Test
