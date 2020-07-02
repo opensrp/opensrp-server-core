@@ -474,7 +474,6 @@ public class PhysicalLocationService {
 			}
 
 		}
-		return;
 	}
 
 }
