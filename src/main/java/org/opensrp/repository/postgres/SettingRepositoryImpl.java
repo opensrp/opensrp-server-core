@@ -420,16 +420,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	private Setting convertToSetting(SettingsMetadata settingsMetadata, boolean isV1Settings) {
 		Setting setting = new Setting();
-		String value = settingsMetadata.getSettingValue();
-		if (StringUtils.isNotBlank(value)) {
-			try {
-				JSONArray jsonArray = new JSONArray(value);
-				setting.setValues(jsonArray);
-			} catch (JSONException e) {
-				setting.setValue(value);
-			}
-		}
-
+		getSettingValue(settingsMetadata, setting);
 		setting.setKey(settingsMetadata.getSettingKey());
 		setting.setSettingMetadataId(String.valueOf(settingsMetadata.getId()));
 		setting.setUuid(settingsMetadata.getUuid());
@@ -448,6 +439,19 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			setting.setDocumentId(settingsMetadata.getDocumentId());
 		}
 		return setting;
+	}
+
+	private void getSettingValue(SettingsMetadata settingsMetadata, Setting setting) {
+		String value = settingsMetadata.getSettingValue();
+		if (StringUtils.isNotBlank(value)) {
+			try {
+				JSONArray jsonArray = new JSONArray(value);
+				setting.setValues(jsonArray);
+			}
+			catch (JSONException e) {
+				setting.setValue(value);
+			}
+		}
 	}
 
 	@Override
@@ -557,7 +561,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (StringUtils.isNotBlank(settingsId)) {
 			criteria.andSettingsIdEqualTo(Long.valueOf(settingsId));
 		}
-		;
+
 		if (StringUtils.isNotBlank(locationId)) {
 			criteria.andSettingKeyEqualTo(settingKey);
 		}
@@ -574,7 +578,13 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			for (Setting setting : settings) {
 				SettingsMetadata metadata = new SettingsMetadata();
 				metadata.setSettingKey(setting.getKey());
-				metadata.setSettingValue(setting.getValue());
+				if (StringUtils.isNotBlank(setting.getValue())) {
+					metadata.setSettingValue(setting.getValue());
+				}
+
+				if (setting.getValues() != null && setting.getValues().length() > 0) {
+					metadata.setSettingValue(String.valueOf(setting.getValues()));
+				}
 				metadata.setSettingDescription(setting.getDescription());
 				metadata.setSettingLabel(setting.getLabel());
 				metadata.setSettingsId(id);
