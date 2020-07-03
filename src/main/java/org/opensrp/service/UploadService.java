@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,10 +70,9 @@ public class UploadService {
         validationBean.setHeaderColumns(csvClients.size() > 0 ? csvClients.get(0).size() : 0);
 
         List<Pair<Client, Event>> totalRows = new ArrayList<>();
-        Map<String, CSVRowConfig> configs = getCSVConfig(eventName)
+        Map<String, List<CSVRowConfig>> configs = getCSVConfig(eventName)
                 .stream()
-                .collect(Collectors.toMap(CSVRowConfig::getColumnName,
-                        Function.identity()));
+                .collect(Collectors.groupingBy(CSVRowConfig::getColumnName));
 
         if(csvClients.size() > 0 && csvClients.get(0).size() != configs.size())
             throw new IllegalArgumentException("The number of rows must be equal to the mappings size");

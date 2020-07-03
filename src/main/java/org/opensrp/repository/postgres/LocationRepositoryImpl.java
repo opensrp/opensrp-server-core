@@ -15,6 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.smartregister.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
+import org.opensrp.domain.StructureCount;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -739,6 +740,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		return locationMetadataMapper.selectLocationWithDescendants(locationId, returnTags);
 	}
   
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<StructureCount> findStructureCountsForLocation(Set<String> locationIds) {
+		return structureMetadataMapper.findStructureCountsForLocation(locationIds);
+	}
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findJurisdictionsById(String id) {
@@ -761,5 +769,4 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 				.map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
 				.collect(Collectors.toList());
 	}
-	
 }
