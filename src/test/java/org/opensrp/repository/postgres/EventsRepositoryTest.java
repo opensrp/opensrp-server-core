@@ -666,6 +666,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		eventsRepository.add(event);
 		List<QuestionnaireResponse> questionnaireResponses = eventsRepository.findEventsByEntityIdAndPlan("4355345345431","plan-id-12345");
 		assertEquals(1,questionnaireResponses.size());
+		assertEquals(event.getFormSubmissionId(),questionnaireResponses.get(0).getId());
 	}
 	
 }
