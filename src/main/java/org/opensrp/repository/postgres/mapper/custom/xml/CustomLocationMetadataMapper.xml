@@ -24,6 +24,7 @@
 		from core.location_metadata lm
 		join core.location l on lm.location_id = l.id
 		where lm.geojson_id = #{id,jdbcType=VARCHAR}
+		and lm.status = 'ACTIVE'
 	</select>
 
 
