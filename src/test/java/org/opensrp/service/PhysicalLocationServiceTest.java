@@ -77,36 +77,47 @@ public class PhysicalLocationServiceTest {
 		locationService = new PhysicalLocationService();
 		locationService.setLocationRepository(locationRepository);
 	}
-	
+
 	@Test
 	public void testGetLocation() {
-		when(locationRepository.get("3734", true,0)).thenReturn(createLocation());
+		when(locationRepository.get("3734", true)).thenReturn(createLocation());
 		PhysicalLocation parentLocation = locationService.getLocation("3734", true);
+		verify(locationRepository).get("3734", true);
+		verifyLocationData(parentLocation);
+
+	}
+	
+	@Test
+	public void testGetLocationWithVersion() {
+		when(locationRepository.get("3734", true,0)).thenReturn(createLocation());
+		PhysicalLocation parentLocation = locationService.getLocation("3734", true, 0);
 		verify(locationRepository).get("3734", true, 0);
+		verifyLocationData(parentLocation);
+	}
+
+	private void verifyLocationData(PhysicalLocation parentLocation) {
 		verifyNoMoreInteractions(locationRepository);
-		
 		assertEquals("3734", parentLocation.getId());
 		assertEquals("Feature", parentLocation.getType());
 		assertEquals(GeometryType.MULTI_POLYGON, parentLocation.getGeometry().getType());
-		
+
 		assertEquals("21", parentLocation.getProperties().getParentId());
 		assertEquals("01_5", parentLocation.getProperties().getName());
 		assertEquals("41587456-b7c8-4c4e-b433-23a786f742fc", parentLocation.getProperties().getUid());
 		assertEquals("3734", parentLocation.getProperties().getCode());
-		
+
 		assertFalse(parentLocation.getGeometry().getCoordinates().isJsonNull());
 		JsonArray coordinates = parentLocation.getGeometry().getCoordinates().get(0).getAsJsonArray().get(0)
-		        .getAsJsonArray();
+				.getAsJsonArray();
 		assertEquals(267, coordinates.size());
-		
+
 		JsonArray coordinate1 = coordinates.get(0).getAsJsonArray();
 		assertEquals(32.59989007736522, coordinate1.get(0).getAsDouble(), 0);
 		assertEquals(-14.167432040756012, coordinate1.get(1).getAsDouble(), 0);
-		
+
 		JsonArray coordinate67 = coordinates.get(66).getAsJsonArray();
 		assertEquals(32.5988341383848, coordinate67.get(0).getAsDouble(), 0);
 		assertEquals(-14.171814074659776, coordinate67.get(1).getAsDouble(), 0);
-		
 	}
 	
 	@Test
@@ -178,7 +189,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testAddOrUpdateShouldUpdateLocation() {
 		PhysicalLocation physicalLocation = createLocation();
-		when(locationRepository.get("3734", true, 0)).thenReturn(physicalLocation);
+		when(locationRepository.get("3734", true)).thenReturn(physicalLocation);
 		locationService.addOrUpdate(createLocation());
 		verify(locationRepository).update(argumentCaptor.capture());
 		
@@ -430,8 +441,7 @@ public class PhysicalLocationServiceTest {
 		expectedLocations.add(createStructure());
 		expectedLocations.add(createStructure());
 		
-		when(locationRepository.get("12323", true,0)).thenReturn(physicalLocation);
-		//when(locationService.isGeometryCoordsEqual(any(), any())).thenReturn(true);
+		when(locationRepository.get("12323", true)).thenReturn(physicalLocation);
 		locationService.saveLocations(expectedLocations, true);
 		
 		verify(locationRepository, times(2)).add(argumentCaptor.capture());
