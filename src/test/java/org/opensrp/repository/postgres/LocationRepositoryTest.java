@@ -254,6 +254,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		physicalLocation.getProperties().setEffectiveEndDate(effectiveEndDate);
 		physicalLocation.setJurisdiction(true);
 		locationRepository.update(physicalLocation);
+		assertNull(locationRepository.get("3734"));
 		PhysicalLocation updatedLocation = locationRepository.get("3734", true, 0);
 		
 		assertNotNull(updatedLocation);
