@@ -151,7 +151,7 @@ public class TaskServiceTest {
 
 		List<Task> expected = new ArrayList<>();
 		Task task = initializeTask();
-		task.setServerVersion(null);
+		task.setServerVersion(0l);
 		expected.add(task);
 		when(taskRepository.findByEmptyServerVersion()).thenReturn(expected);
 

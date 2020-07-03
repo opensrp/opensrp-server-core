@@ -202,7 +202,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertTrue(tasks.isEmpty());
 
 		Task task = taskRepository.get("iyr-998njoo");
-		task.setServerVersion(null);
+		task.setServerVersion(0l);
 		taskRepository.update(task);
 
 		tasks = taskRepository.findByEmptyServerVersion();

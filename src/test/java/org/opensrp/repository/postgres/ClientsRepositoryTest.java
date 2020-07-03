@@ -422,7 +422,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertTrue(clientsRepository.findByEmptyServerVersion().isEmpty());
 		
 		Client client = clientsRepository.get("05934ae338431f28bf6793b2415a0374");
-		client.setServerVersion(null);
+		client.setServerVersion(0l);
 		clientsRepository.update(client);
 		
 		client = clientsRepository.findByEmptyServerVersion().get(0);

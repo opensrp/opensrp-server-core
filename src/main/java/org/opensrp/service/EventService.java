@@ -250,7 +250,7 @@ public class EventService {
 			event.setId(existingEvent.getId());
 			event.setRevision(existingEvent.getRevision());
 			event.setDateEdited(DateTime.now());
-			event.setServerVersion(null);
+			event.setServerVersion(0l);
 			event.setRevision(existingEvent.getRevision());
 			allEvents.update(event);
 			
