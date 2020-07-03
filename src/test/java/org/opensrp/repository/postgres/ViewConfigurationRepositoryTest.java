@@ -139,7 +139,7 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		assertTrue(viewConfigurationRepository.findByEmptyServerVersion().isEmpty());
 		
 		ViewConfiguration view = viewConfigurationRepository.get("d243bc5737fb389e52601cb850299541");
-		view.setServerVersion(null);
+		view.setServerVersion(0l);
 		viewConfigurationRepository.update(view);
 		
 		List<ViewConfiguration> views = viewConfigurationRepository.findByEmptyServerVersion();
