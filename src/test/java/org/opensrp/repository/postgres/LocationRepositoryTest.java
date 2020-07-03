@@ -156,6 +156,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	public void testAddLocation() {
 		String uuid = UUID.randomUUID().toString();
 		PhysicalLocation physicalLocation = createLocation(uuid);
+		physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
 		locationRepository.add(physicalLocation);
 		PhysicalLocation savedLocation = locationRepository.get("223232");
 		
@@ -241,7 +242,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	public void testUpdateLocation() throws ParseException {
 		PhysicalLocation physicalLocation = locationRepository.get("3734");
 		physicalLocation.getGeometry().setType(GeometryType.POLYGON);
-		physicalLocation.getProperties().setStatus(PropertyStatus.PENDING_REVIEW);
+		physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
 		physicalLocation.getProperties().setGeographicLevel(3);
 		
 		Date effectiveStartDate = dateFormat.parse("2019-07-15");
@@ -254,7 +255,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		assertNotNull(updatedLocation);
 		assertEquals(GeometryType.POLYGON, updatedLocation.getGeometry().getType());
-		assertEquals(PropertyStatus.PENDING_REVIEW, updatedLocation.getProperties().getStatus());
+		assertEquals(PropertyStatus.ACTIVE, updatedLocation.getProperties().getStatus());
 		assertEquals(3, updatedLocation.getProperties().getGeographicLevel());
 		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
 		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
