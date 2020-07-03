@@ -241,8 +241,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testUpdateLocation() throws ParseException {
 		PhysicalLocation physicalLocation = locationRepository.get("3734");
+		assertEquals(0, physicalLocation.getProperties().getVersion());
+		assertEquals(PropertyStatus.ACTIVE, physicalLocation.getProperties().getStatus());
+
 		physicalLocation.getGeometry().setType(GeometryType.POLYGON);
-		physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
+		physicalLocation.getProperties().setStatus(PropertyStatus.PENDING_REVIEW);
 		physicalLocation.getProperties().setGeographicLevel(3);
 		
 		Date effectiveStartDate = dateFormat.parse("2019-07-15");
@@ -251,11 +254,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		physicalLocation.getProperties().setEffectiveEndDate(effectiveEndDate);
 		physicalLocation.setJurisdiction(true);
 		locationRepository.update(physicalLocation);
-		PhysicalLocation updatedLocation = locationRepository.get("3734");
+		PhysicalLocation updatedLocation = locationRepository.get("3734", true, 0);
 		
 		assertNotNull(updatedLocation);
 		assertEquals(GeometryType.POLYGON, updatedLocation.getGeometry().getType());
-		assertEquals(PropertyStatus.ACTIVE, updatedLocation.getProperties().getStatus());
+		assertEquals(PropertyStatus.PENDING_REVIEW, updatedLocation.getProperties().getStatus());
 		assertEquals(3, updatedLocation.getProperties().getGeographicLevel());
 		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
 		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
@@ -263,6 +266,35 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		assertNull(locationRepository.getStructure("3734", true));
 		
+	}
+
+	@Test
+	public void testUpdateActiveLocation() throws ParseException {
+		PhysicalLocation physicalLocation = locationRepository.get("3734");
+		assertEquals(0, physicalLocation.getProperties().getVersion());
+		assertEquals(PropertyStatus.ACTIVE, physicalLocation.getProperties().getStatus());
+		physicalLocation.getGeometry().setType(GeometryType.POLYGON);
+		physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
+		physicalLocation.getProperties().setGeographicLevel(3);
+
+		Date effectiveStartDate = dateFormat.parse("2019-07-15");
+		Date effectiveEndDate = dateFormat.parse("2020-07-15");
+		physicalLocation.getProperties().setEffectiveStartDate(effectiveStartDate);
+		physicalLocation.getProperties().setEffectiveEndDate(effectiveEndDate);
+		physicalLocation.setJurisdiction(true);
+		locationRepository.update(physicalLocation);
+		PhysicalLocation updatedLocation = locationRepository.get("3734");
+
+		assertNotNull(updatedLocation);
+		assertEquals(GeometryType.POLYGON, updatedLocation.getGeometry().getType());
+		assertEquals(PropertyStatus.ACTIVE, updatedLocation.getProperties().getStatus());
+		assertEquals(3, updatedLocation.getProperties().getGeographicLevel());
+		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
+		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
+		assertEquals(0, updatedLocation.getProperties().getVersion());
+
+		assertNull(locationRepository.getStructure("3734", true));
+
 	}
 	
 	@Test
