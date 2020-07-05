@@ -45,7 +45,11 @@ public class PhysicalLocationService {
 	}
 	
 	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
-		return locationRepository.get(id, returnGeometry, 0);
+		return locationRepository.get(id, returnGeometry);
+	}
+
+	public PhysicalLocation getLocation(String id, boolean returnGeometry, int version) {
+		return locationRepository.get(id, returnGeometry, version);
 	}
 	
 	public PhysicalLocation getStructure(String id, boolean returnGeometry) {
