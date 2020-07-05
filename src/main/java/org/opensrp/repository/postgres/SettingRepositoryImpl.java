@@ -572,41 +572,45 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	private List<SettingsMetadata> createMetadata(SettingConfiguration settingConfiguration, Long id) {
 		List<SettingsMetadata> settingsMetadata = new ArrayList<>();
-		List<Setting> settings = settingConfiguration.getSettings();
+		if (settingConfiguration != null) {
+			List<Setting> settings = settingConfiguration.getSettings();
 
-		try {
-			for (Setting setting : settings) {
-				SettingsMetadata metadata = new SettingsMetadata();
-				metadata.setSettingKey(setting.getKey());
-				if (StringUtils.isNotBlank(setting.getValue())) {
-					metadata.setSettingValue(setting.getValue());
+			try {
+				for (Setting setting : settings) {
+					SettingsMetadata metadata = new SettingsMetadata();
+					metadata.setSettingKey(setting.getKey());
+					if (StringUtils.isNotBlank(setting.getValue())) {
+						metadata.setSettingValue(setting.getValue());
+					}
+
+					if (setting.getValues() != null && setting.getValues().length() > 0) {
+						metadata.setSettingValue(String.valueOf(setting.getValues()));
+					}
+					metadata.setSettingDescription(setting.getDescription());
+					metadata.setSettingLabel(setting.getLabel());
+					metadata.setSettingsId(id);
+					metadata.setSettingType(setting.getType());
+					metadata.setUuid(setting.getUuid() != null ? setting.getUuid() : UUID.randomUUID().toString());
+					metadata.setInheritedFrom(setting.getInheritedFrom());
+					metadata.setDocumentId(
+							settingConfiguration.getId() != null ?
+									settingConfiguration.getId() :
+									UUID.randomUUID().toString());
+					metadata.setIdentifier(settingConfiguration.getIdentifier());
+					metadata.setProviderId(settingConfiguration.getProviderId());
+					metadata.setLocationId(settingConfiguration.getLocationId());
+					metadata.setTeam(settingConfiguration.getTeam());
+					metadata.setTeamId(settingConfiguration.getTeamId());
+					metadata.setServerVersion(settingConfiguration.getServerVersion());
+					metadata.setJson(convertToSetting(metadata, false)); //always want to create the json on the settings
+					// creation
+
+					settingsMetadata.add(metadata);
 				}
-
-				if (setting.getValues() != null && setting.getValues().length() > 0) {
-					metadata.setSettingValue(String.valueOf(setting.getValues()));
-				}
-				metadata.setSettingDescription(setting.getDescription());
-				metadata.setSettingLabel(setting.getLabel());
-				metadata.setSettingsId(id);
-				metadata.setSettingType(setting.getType());
-				metadata.setUuid(setting.getUuid() != null ? setting.getUuid() : UUID.randomUUID().toString());
-				metadata.setInheritedFrom(setting.getInheritedFrom());
-				metadata.setDocumentId(
-						settingConfiguration.getId() != null ? settingConfiguration.getId() : UUID.randomUUID().toString());
-				metadata.setIdentifier(settingConfiguration.getIdentifier());
-				metadata.setProviderId(settingConfiguration.getProviderId());
-				metadata.setLocationId(settingConfiguration.getLocationId());
-				metadata.setTeam(settingConfiguration.getTeam());
-				metadata.setTeamId(settingConfiguration.getTeamId());
-				metadata.setServerVersion(settingConfiguration.getServerVersion());
-				metadata.setJson(convertToSetting(metadata, false)); //always want to create the json on the settings
-				// creation
-
-				settingsMetadata.add(metadata);
 			}
-		}
-		catch (Exception e) {
-			logger.error(e.getMessage(), e);
+			catch (Exception e) {
+				logger.error(e.getMessage(), e);
+			}
 		}
 
 		return settingsMetadata;
