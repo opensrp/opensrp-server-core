@@ -192,7 +192,7 @@ public class TaskServiceTest {
 
 		ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
 		verify(taskRepository).update(argumentCaptor.capture());
-		assertNull(argumentCaptor.getValue().getServerVersion());
+		assertEquals(0l,argumentCaptor.getValue().getServerVersion().longValue());
 		assertEquals("Not Sprayable", argumentCaptor.getValue().getBusinessStatus());
 
 		assertEquals("tsk11231jh22", task.getIdentifier());
