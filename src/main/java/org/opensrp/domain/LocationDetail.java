@@ -30,5 +30,7 @@ public class LocationDetail implements Serializable {
 	private String tags;
 
 	private Integer geographicLevel;
+
+	private String[] path;
 	
 }
