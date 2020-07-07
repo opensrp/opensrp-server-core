@@ -360,4 +360,38 @@
 
 	</select>
 
+	<select id="selectChildrenIds"
+			resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+
+		select
+		<if test="example.distinct">
+			distinct
+		</if>
+
+		<if test="geometry">
+			<include refid="Base_Column_List" />
+		</if>
+
+		<if test="!geometry">
+			<include refid="No_Geometry_Column_List" />
+		</if>
+		from core.location l
+		(
+		WITH RECURSIVE locations
+		AS
+		( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+		FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}
+		UNION
+		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+		FROM locations lm1
+		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id )
+
+		SELECT geojson_id FROM locations
+		)  ids;
+
+		<if test="example.orderByClause != null">
+			order by lm.${example.orderByClause}
+		</if>
+	</select>
+
 </mapper>

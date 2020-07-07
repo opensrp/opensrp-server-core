@@ -762,7 +762,18 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<com.ibm.fhir.model.resource.Location> findLocationByJurisdiction(String jurisdiction) {
 		return convertToFHIRLocation(findStructuresByProperties(false, jurisdiction, null));
 	}
-	
+
+
+	@Override
+	public List<com.ibm.fhir.model.resource.Location> findChildLocationByJurisdiction(boolean returnGeometry, String id) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		if (id == null) {
+			return null;
+		}
+		List<Location> locations = locationMetadataMapper.selectChildrenIds(locationMetadataExample, returnGeometry, id);
+		return convertToFHIRLocation(convert(locations));
+	}
+
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
 		return locations
 				.stream()
