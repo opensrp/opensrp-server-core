@@ -29,5 +29,5 @@ public interface CustomEventMapper extends EventMapper {
 
 	List<Event> selectByBaseEntityIdAndDetails(@Param("baseEntityId") String baseEntityId, @Param("detailKey") String detailKey,
 	        @Param("detailValue") String detailValue);
-	
+
 }
