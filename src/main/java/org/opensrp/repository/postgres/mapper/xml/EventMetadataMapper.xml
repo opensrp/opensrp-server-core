@@ -24,6 +24,7 @@
     <result column="date_created" jdbcType="TIMESTAMP" property="dateCreated" />
     <result column="date_edited" jdbcType="TIMESTAMP" property="dateEdited" />
     <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted" />
+    <result column="plan_identifier" jdbcType="VARCHAR" property="planIdentifier" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -101,7 +102,7 @@
     -->
     id, event_id, document_id, base_entity_id, form_submission_id, server_version, openmrs_uuid, 
     event_type, event_date, entity_type, provider_id, location_id, team, team_id, date_created, 
-    date_edited, date_deleted
+    date_edited, date_deleted, plan_identifier
   </sql>
   <select id="selectByExample" parameterType="org.opensrp.domain.postgres.EventMetadataExample" resultMap="BaseResultMap">
     <!--
@@ -164,13 +165,15 @@
       openmrs_uuid, event_type, event_date, 
       entity_type, provider_id, location_id, 
       team, team_id, date_created, 
-      date_edited, date_deleted)
+      date_edited, date_deleted, plan_identifier
+      )
     values (#{id,jdbcType=BIGINT}, #{eventId,jdbcType=BIGINT}, #{documentId,jdbcType=VARCHAR}, 
       #{baseEntityId,jdbcType=VARCHAR}, #{formSubmissionId,jdbcType=VARCHAR}, #{serverVersion,jdbcType=BIGINT}, 
       #{openmrsUuid,jdbcType=VARCHAR}, #{eventType,jdbcType=VARCHAR}, #{eventDate,jdbcType=TIMESTAMP}, 
       #{entityType,jdbcType=VARCHAR}, #{providerId,jdbcType=VARCHAR}, #{locationId,jdbcType=VARCHAR}, 
       #{team,jdbcType=VARCHAR}, #{teamId,jdbcType=VARCHAR}, #{dateCreated,jdbcType=TIMESTAMP}, 
-      #{dateEdited,jdbcType=TIMESTAMP}, #{dateDeleted,jdbcType=TIMESTAMP})
+      #{dateEdited,jdbcType=TIMESTAMP}, #{dateDeleted,jdbcType=TIMESTAMP}, #{planIdentifier,jdbcType=VARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.EventMetadata">
     <!--
@@ -231,6 +234,9 @@
       <if test="dateDeleted != null">
         date_deleted,
       </if>
+      <if test="planIdentifier != null">
+        plan_identifier,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -283,6 +289,9 @@
       </if>
       <if test="dateDeleted != null">
         #{dateDeleted,jdbcType=TIMESTAMP},
+      </if>
+      <if test="planIdentifier != null">
+        #{planIdentifier,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -356,6 +365,9 @@
       <if test="record.dateDeleted != null">
         date_deleted = #{record.dateDeleted,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.planIdentifier != null">
+        plan_identifier = #{record.planIdentifier,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -384,7 +396,8 @@
       team_id = #{record.teamId,jdbcType=VARCHAR},
       date_created = #{record.dateCreated,jdbcType=TIMESTAMP},
       date_edited = #{record.dateEdited,jdbcType=TIMESTAMP},
-      date_deleted = #{record.dateDeleted,jdbcType=TIMESTAMP}
+      date_deleted = #{record.dateDeleted,jdbcType=TIMESTAMP},
+      plan_identifier = #{record.planIdentifier,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -445,6 +458,9 @@
       <if test="dateDeleted != null">
         date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
       </if>
+      <if test="planIdentifier != null">
+        plan_identifier = #{planIdentifier,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -470,7 +486,8 @@
       team_id = #{teamId,jdbcType=VARCHAR},
       date_created = #{dateCreated,jdbcType=TIMESTAMP},
       date_edited = #{dateEdited,jdbcType=TIMESTAMP},
-      date_deleted = #{dateDeleted,jdbcType=TIMESTAMP}
+      date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
+      plan_identifier = #{planIdentifier,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>
