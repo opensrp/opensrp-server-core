@@ -313,7 +313,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		locations.add(2243);
 		locations.add(1);
 		organizationSearchBean.setLocations(locations);
-		int totalCount = organizationRepository.findTotalSearchOrganizations(organizationSearchBean);
+		int totalCount = organizationRepository.findOrganizationCount(organizationSearchBean);
 		assertEquals(1, totalCount);
 		
 	}
@@ -324,7 +324,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		practitionerRoleRepository.add(initTestPractitionerRole());
 		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
 		
-		int totalCount = organizationRepository.findTotalSearchOrganizations(organizationSearchBean);
+		int totalCount = organizationRepository.findOrganizationCount(organizationSearchBean);
 		assertEquals(3, totalCount);
 		
 	}

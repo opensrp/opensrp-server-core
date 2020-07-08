@@ -306,7 +306,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 	
 	@Override
-	public int findTotalSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
-		return organizationMapper.selectTotalSearchOrganizations(organizationSearchBean);
+	public int findOrganizationCount(OrganizationSearchBean organizationSearchBean) {
+		return organizationMapper.selectOrganizationCount(organizationSearchBean).size();
 	}
 }

@@ -32,7 +32,7 @@ public interface CustomOrganizationMapper extends OrganizationMapper {
 	                                                                @Param("offset") int offset, @Param("limit") int limit);
 
 
-	int selectTotalSearchOrganizations(@Param("searchBean") OrganizationSearchBean searchBean);
+	List<org.opensrp.domain.Organization> selectOrganizationCount(@Param("searchBean") OrganizationSearchBean searchBean);
 
 	List<Organization> selectOrganizationsEncompassLocations(@Param("identifier") String identifier, @Param("activeDate") Date activeDate);
 }
