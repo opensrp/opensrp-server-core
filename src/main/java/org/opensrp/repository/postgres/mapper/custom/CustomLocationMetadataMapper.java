@@ -48,6 +48,5 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 
 	List<LocationDetail> selectLocationWithDescendants(@Param("locationId") String locationId, @Param("tags") boolean returnTags);
 
-	List<String> selectChildrenIds(@Param("geometry") boolean returnGeometry,
-			@Param("locationId") String locationId);
+	List<String> selectChildrenIds(@Param("locationId") String locationId);
 }
