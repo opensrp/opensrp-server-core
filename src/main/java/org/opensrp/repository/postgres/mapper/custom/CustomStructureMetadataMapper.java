@@ -2,8 +2,10 @@ package org.opensrp.repository.postgres.mapper.custom;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.ibatis.annotations.Param;
+import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureMetadataExample;
@@ -22,5 +24,7 @@ public interface CustomStructureMetadataMapper extends StructureMetadataMapper {
 
 	List<String> selectManyIds(@Param("example") StructureMetadataExample structureMetadataExample,
 			@Param("offset") int offset, @Param("limit") int limit);
+
+	List<StructureCount> findStructureCountsForLocation(@Param("locationIdentifiers") Set<String> locationIdentifiers);
 
 }
