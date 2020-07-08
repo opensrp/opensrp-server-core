@@ -37,4 +37,6 @@ public interface CustomEventMetadataMapper extends EventMetadataMapper {
 	 * @return baseEntityIds matching criteria
 	 */
 	List<String> selectManyBaseEntityIds(@Param("example") EventMetadataExample example);
+
+	List<Event> selectByBaseEntityIdAndPlanIdentifier(@Param("baseEntityId") String baseEntityId, @Param("planIdentifier") String planIdentifier);
 }
