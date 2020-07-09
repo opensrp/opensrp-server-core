@@ -190,5 +190,14 @@
 		</if>
 	</select>
 
+	<select id="selectByBaseEntityIdAndPlanIdentifier" parameterType="map"
+			resultMap="BaseEventResultMap">
+		select
+		<include refid="Base_Event_Column_List" />
+		from core.event_metadata em
+		join core.event e on em.event_id = e.id
+		where em.base_entity_id= #{baseEntityId,jdbcType=VARCHAR} and
+		em.plan_identifier = #{planIdentifier,jdbcType=VARCHAR}
+	</select>
 
 </mapper>
