@@ -347,4 +347,8 @@ public class ClientService {
 	public Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived) {
 		return allClients.findAllIds(serverVersion, limit, isArchived);
 	}
+
+	public List<Client> findByClientTypeAndLocationId(String clientType, String locationId) {
+		return allClients.findByClientTypeAndLocationId(clientType,locationId);
+	}
 }

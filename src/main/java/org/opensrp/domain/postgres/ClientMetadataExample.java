@@ -129,7 +129,7 @@ public class ClientMetadataExample {
 
 		protected GeneratedCriteria() {
 			super();
-			criteria = new ArrayList<Criterion>();
+			criteria = new ArrayList<>();
 		}
 
 		public boolean isValid() {
@@ -176,7 +176,7 @@ public class ClientMetadataExample {
 			if (values == null || values.size() == 0) {
 				throw new RuntimeException("Value list for " + property + " cannot be null or empty");
 			}
-			List<java.sql.Date> dateList = new ArrayList<java.sql.Date>();
+			List<java.sql.Date> dateList = new ArrayList<>();
 			Iterator<Date> iter = values.iterator();
 			while (iter.hasNext()) {
 				dateList.add(new java.sql.Date(iter.next().getTime()));
@@ -1118,6 +1118,146 @@ public class ClientMetadataExample {
 
 		public Criteria andResidenceNotBetween(String value1, String value2) {
 			addCriterion("residence not between", value1, value2, "residence");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdIsNull() {
+			addCriterion("location_id is null");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdIsNotNull() {
+			addCriterion("location_id is not null");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdEqualTo(String value) {
+			addCriterion("location_id =", value, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdNotEqualTo(String value) {
+			addCriterion("location_id <>", value, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdGreaterThan(String value) {
+			addCriterion("location_id >", value, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdGreaterThanOrEqualTo(String value) {
+			addCriterion("location_id >=", value, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdLessThan(String value) {
+			addCriterion("location_id <", value, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdLessThanOrEqualTo(String value) {
+			addCriterion("location_id <=", value, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdLike(String value) {
+			addCriterion("location_id like", value, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdNotLike(String value) {
+			addCriterion("location_id not like", value, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdIn(List<String> values) {
+			addCriterion("location_id in", values, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdNotIn(List<String> values) {
+			addCriterion("location_id not in", values, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdBetween(String value1, String value2) {
+			addCriterion("location_id between", value1, value2, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andLocationIdNotBetween(String value1, String value2) {
+			addCriterion("location_id not between", value1, value2, "locationId");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeIsNull() {
+			addCriterion("client_type is null");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeIsNotNull() {
+			addCriterion("client_type is not null");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeEqualTo(String value) {
+			addCriterion("client_type =", value, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeNotEqualTo(String value) {
+			addCriterion("client_type <>", value, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeGreaterThan(String value) {
+			addCriterion("client_type >", value, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeGreaterThanOrEqualTo(String value) {
+			addCriterion("client_type >=", value, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeLessThan(String value) {
+			addCriterion("client_type <", value, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeLessThanOrEqualTo(String value) {
+			addCriterion("client_type <=", value, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeLike(String value) {
+			addCriterion("client_type like", value, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeNotLike(String value) {
+			addCriterion("client_type not like", value, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeIn(List<String> values) {
+			addCriterion("client_type in", values, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeNotIn(List<String> values) {
+			addCriterion("client_type not in", values, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeBetween(String value1, String value2) {
+			addCriterion("client_type between", value1, value2, "clientType");
+			return (Criteria) this;
+		}
+
+		public Criteria andClientTypeNotBetween(String value1, String value2) {
+			addCriterion("client_type not between", value1, value2, "clientType");
 			return (Criteria) this;
 		}
 	}
