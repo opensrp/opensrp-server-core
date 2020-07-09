@@ -179,29 +179,32 @@
 	<select id="selectLocationHierachy"
 			resultMap="DetailsResultMap">
 		select lm.geojson_id identifier ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,string_agg(lt."name",',') tags,
-		l.json->'properties'->>'geographicLevel' geographic_level
+		l.json->'properties'->>'geographicLevel' geographic_level,
+		record.level
 		from core.location_metadata lm
 		left join core.location_tag_map ltm on ltm.location_id =lm.location_id 
 		left join core.location_tag lt on lt.id =ltm.location_tag_id
 		INNER join core.location l on l.id = lm.location_id
-		Where lm.location_id in
+		JOIN
 		(
 			WITH RECURSIVE locations
 			AS
-			( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+			( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, 0 as level
 				FROM core.location_metadata lm1 WHERE geojson_id  IN
 			 	<foreach collection="identifiers" item="value"  open="(" separator="," close=")">
 	       			#{value}
 	   			</foreach>
-		        AND lm.status = 'ACTIVE'
+		        AND lm1.status = 'ACTIVE'
 				UNION
-				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id,level+1 as level
 				FROM locations lm1
 				INNER JOIN core.location_metadata lm2 on lm2.geojson_id = lm1.parent_id 
 			)
-			SELECT location_id FROM locations
-		)
-		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id, geographic_level
+			SELECT location_id, level FROM locations
+		) record
+		on lm.location_id =record.location_id
+		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id, geographic_level, record.level
+		order by record.level
 	</select>
 
 	<resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetail">
