@@ -129,11 +129,10 @@
 	<select id="selectSearchOrganizations" resultMap="resultMap">
 		select o.id,o.identifier,o."name",o."type",o.parent_id,count(distinct(pr.id))as member_count 
 		<include refid="query"/>	
+		group by o.id,o.identifier,o."name",o."type",o.parent_id
 		<if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
 			order by ${searchBean.orderByFieldName}  ${searchBean.orderByType}  
-		</if>
-		
-		group by o.id,o.identifier,o."name",o."type",o.parent_id
+		</if>		
 		LIMIT #{limit} OFFSET #{offset}	
 	</select>
 	<select id="selectOrganizationCount" resultType="Integer">	
