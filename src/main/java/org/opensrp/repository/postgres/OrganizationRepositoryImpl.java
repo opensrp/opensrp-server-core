@@ -3,12 +3,10 @@ package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.CodeSystem;
@@ -281,13 +279,13 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	
 	@Override
 	public List<Organization> findSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
-		Map<String, Integer> pageSizeAndOffset = getPageSizeAndOffset(organizationSearchBean);
-		return organizationMapper.selectSearchOrganizations(organizationSearchBean, pageSizeAndOffset.get("offset"),
-		    pageSizeAndOffset.get("pageSize"));
+		Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(organizationSearchBean);
+		return organizationMapper.selectSearchOrganizations(organizationSearchBean, pageSizeAndOffset.getRight(),
+		    pageSizeAndOffset.getLeft());
 	}
 	
-	private Map<String, Integer> getPageSizeAndOffset(OrganizationSearchBean organizationSearchBean) {
-		Map<String, Integer> pageSizeAndOffset = new HashMap<>();
+	private Pair<Integer, Integer> getPageSizeAndOffset(OrganizationSearchBean organizationSearchBean) {
+
 		Integer pageSize = 0;
 		Integer offset = 0;
 		if (organizationSearchBean.getPageSize() == null || organizationSearchBean.getPageSize() == 0) {
@@ -300,13 +298,11 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			offset = (organizationSearchBean.getPageNumber() - 1) * pageSize;
 		}
 		
-		pageSizeAndOffset.put("pageSize", pageSize);
-		pageSizeAndOffset.put("offset", offset);
-		return pageSizeAndOffset;
+		return Pair.of(pageSize, offset);
 	}
 	
 	@Override
 	public int findOrganizationCount(OrganizationSearchBean organizationSearchBean) {
-		return organizationMapper.selectOrganizationCount(organizationSearchBean).size();
+		return organizationMapper.selectOrganizationCount(organizationSearchBean);
 	}
 }
