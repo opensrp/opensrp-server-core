@@ -405,6 +405,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 			Object residence = client.getAttribute(RESIDENCE);
 			if (residence != null)
 				clientMetadata.setResidence(residence.toString());
+			clientMetadata.setLocationId(client.getLocationId());
+			clientMetadata.setClientType(client.getClientType());
 			return clientMetadata;
 		}
 		catch (Exception e) {
@@ -640,26 +642,28 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Patient> findFamilyMemberyByJurisdiction(String jurisdiction) {
-		List<String> baseEntityIds = eventsRepository.findBaseEntityIdsByLocation(jurisdiction);
-		if (baseEntityIds.isEmpty())
-			return Collections.emptyList();
-		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
-		clientMetadataExample.createCriteria().andBaseEntityIdIn(baseEntityIds).andDateDeletedIsNull()
-		        .andLastNameNotEqualTo("Family");
-		return convertToFHIR(convert(clientMetadataMapper.selectMany(clientMetadataExample, 0, 20000)));
+		List<Client> clients = findByClientTypeAndLocationId("Family",jurisdiction);
+		return convertToFHIR(clients);
 	}
 	
 	@Override
 	public List<Patient> findFamilyMemberByResidence(String structureId) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		clientMetadataExample.createCriteria().andResidenceEqualTo(structureId).andDateDeletedIsNull()
-		        .andLastNameNotEqualTo("Family");
+		        .andClientTypeNotEqualTo("Family");
 		return convertToFHIR(convert( clientMetadataMapper.selectMany(clientMetadataExample,0,DEFAULT_FETCH_SIZE)));
 	}
 	
 	@Override
 	public List<Patient> findClientByRelationship(String relationship, String id) {
 		return convertToFHIR(findByRelationshipId(relationship, id));
+	}
+
+	@Override
+	public List<Client> findByClientTypeAndLocationId(String clientType, String locationId) {
+		List<org.opensrp.domain.postgres.Client> clients = clientMetadataMapper.selectByLocationIdOfType(clientType,
+				locationId);
+		return convert(clients);
 	}
 	
 	private List<Patient> convertToFHIR(List<Client> clients) {

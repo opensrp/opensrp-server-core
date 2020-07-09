@@ -1,6 +1,12 @@
 package org.opensrp.repository.postgres;
 
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.CodeSystem;
@@ -11,12 +17,11 @@ import org.opensrp.domain.postgres.OrganizationLocationExample;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper;
+import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+
 
 /**
  * Created by Samuel Githengi on 8/30/19.
@@ -271,5 +276,33 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		pgOrganization.setParentId(organization.getPartOf());
 		return pgOrganization;
 	}
+	
+	@Override
+	public List<Organization> findSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
+		Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(organizationSearchBean);
+		return organizationMapper.selectSearchOrganizations(organizationSearchBean, pageSizeAndOffset.getRight(),
+		    pageSizeAndOffset.getLeft());
+	}
+	
+	private Pair<Integer, Integer> getPageSizeAndOffset(OrganizationSearchBean organizationSearchBean) {
 
+		Integer pageSize = 0;
+		Integer offset = 0;
+		if (organizationSearchBean.getPageSize() == null || organizationSearchBean.getPageSize() == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		} else {
+			pageSize = organizationSearchBean.getPageSize();
+		}
+		
+		if (organizationSearchBean.getPageNumber() != null && organizationSearchBean.getPageNumber() != 0) {
+			offset = (organizationSearchBean.getPageNumber() - 1) * pageSize;
+		}
+		
+		return Pair.of(pageSize, offset);
+	}
+	
+	@Override
+	public int findOrganizationCount(OrganizationSearchBean organizationSearchBean) {
+		return organizationMapper.selectOrganizationCount(organizationSearchBean);
+	}
 }
