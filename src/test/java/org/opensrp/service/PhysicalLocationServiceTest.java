@@ -612,7 +612,7 @@ public class PhysicalLocationServiceTest {
 		locationDetails.add(kenya);
 		locationDetails.add(nairobi);
 		when(locationRepository.findParentLocationsInclusive(identifiers)).thenReturn(locationDetails);
-		LocationTree tree = locationService.buildLocationHierachy(identifiers, true);
+		LocationTree tree = locationService.buildLocationHierachy(identifiers, false);
 		verify(locationRepository).findParentLocationsInclusive(identifiers);
 		assertNotNull(tree);
 		assertEquals(1, tree.getLocationsHierarchy().size());
@@ -911,12 +911,13 @@ public class PhysicalLocationServiceTest {
 		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
 				.tags("District").geographicLevel(2).build();
 
-		locationDetails.add(country);
-		locationDetails.add(province1);
-		locationDetails.add(province2);
-		locationDetails.add(district1);
-		locationDetails.add(district2);
+		// records are ordered by level in the db query
 		locationDetails.add(district3);
+		locationDetails.add(district2);
+		locationDetails.add(district1);
+		locationDetails.add(province2);
+		locationDetails.add(province1);
+		locationDetails.add(country);
 
 		Set<String> locationIdentifiers = new HashSet<>();
 		locationIdentifiers.add(country.getIdentifier());
