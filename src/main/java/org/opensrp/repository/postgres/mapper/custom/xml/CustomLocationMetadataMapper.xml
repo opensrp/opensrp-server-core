@@ -178,12 +178,17 @@
 	
 	<select id="selectLocationHierachy"
 			resultMap="DetailsResultMap">
-		select lm.geojson_id identifier ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,string_agg(lt."name",',') tags,
+		select lm.geojson_id identifier ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,
+		<if test="tags">
+		string_agg(lt."name",',') tags,
+		</if>
 		l.json->'properties'->>'geographicLevel' geographic_level,
 		record.level
 		from core.location_metadata lm
+		<if test="tags">
 		left join core.location_tag_map ltm on ltm.location_id =lm.location_id 
 		left join core.location_tag lt on lt.id =ltm.location_tag_id
+		</if>
 		INNER join core.location l on l.id = lm.location_id
 		JOIN
 		(
@@ -203,7 +208,9 @@
 			SELECT location_id, level FROM locations
 		) record
 		on lm.location_id =record.location_id
+		<if test="tags">
 		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id, geographic_level, record.level
+		</if>
 		order by record.level
 	</select>
 
