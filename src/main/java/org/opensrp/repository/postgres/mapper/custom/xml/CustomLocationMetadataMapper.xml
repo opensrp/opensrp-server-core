@@ -215,7 +215,6 @@
 	    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
 	    <result column="tags" jdbcType="VARCHAR" property="tags" />
 		<result column="geographic_level" jdbcType="INTEGER" property="geographicLevel" />
-		<result column="path" jdbcType="OTHER" property="path" typeHandler="org.apache.ibatis.type.ArrayTypeHandler" />
 	</resultMap>
 
 	<select id="selectDetailsByPlanId"
@@ -333,7 +332,7 @@
 			'false' voided,
 			lm.location_id,
 		    l.json->'properties'->>'geographicLevel' geographic_level
-		    ,record.path
+		    ,record.level
 
 		<if test="tags">
 				, string_agg(lt."name", ',') tags
@@ -352,19 +351,20 @@
 			WITH RECURSIVE locations
 			AS
 			(
-				SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, ARRAY[parent_id , geojson_id ] as path
+				SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, 0 as level
 				FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}
 				UNION
-				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id, lm1.path || lm2.geojson_id  as path
+				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id, level+1 as level
 				FROM locations lm1
-				INNER JOIN core.location_metadata lm2 ON lm2.parent_id = lm1.geojson_id AND status = 'ACTIVE'
+				INNER JOIN core.location_metadata lm2 ON lm2.parent_id = lm1.geojson_id AND lm2.status = 'ACTIVE'
 			)
-			SELECT location_id, path FROM locations
+			SELECT location_id, level FROM locations
 		) record
 		on lm.location_id = record.location_id
 		<if test="tags">
-			GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id, geographic_level, record.path
+			GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id, geographic_level, record.level
 		</if>
+		order by record.level DESC
 
 	</select>
 
