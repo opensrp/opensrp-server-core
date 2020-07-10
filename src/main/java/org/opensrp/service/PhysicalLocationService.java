@@ -309,11 +309,13 @@ public class PhysicalLocationService {
 	 * including the identifiers
 	 * 
 	 * @param identifiers the id of locations to get location hierarchy
+	 * @param returnStructureCount whether to return structure counts for the jurisdictions
+	 * @param returnTags whether to return loction tags
 	 * @return the location hierarchy/tree of the identifiers
 	 */
-	public LocationTree buildLocationHierachy(Set<String> identifiers, boolean returnStructureCount) {
+	public LocationTree buildLocationHierachy(Set<String> identifiers, boolean returnStructureCount, boolean returnTags) {
 		LocationTree locationTree = new LocationTree();
-		List<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers);
+		List<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers, returnTags);
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
 		return locationTree;
 	}

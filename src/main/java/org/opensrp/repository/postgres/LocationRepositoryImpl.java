@@ -485,9 +485,16 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 */
 	@Override
 	public List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers) {
-		return locationMetadataMapper.selectLocationHierachy(identifiers);
+		return locationMetadataMapper.selectLocationHierachy(identifiers, true);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers, boolean returnTags) {
+		return locationMetadataMapper.selectLocationHierachy(identifiers, returnTags);
+	}
 
 	@Override
 	public PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status, boolean returnGeometry) {

@@ -142,6 +142,16 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers);
 
 	/**
+	 * Gets the parent locations inclusive of the location of the identifiers.
+	 * This returns the details of ancestors including locations the identifiers
+	 * @param identifiers the identifiers of locations to get the parent locations
+	 * @param returnTags Whether or not to return location tags
+	 * @return the parent locations inclusive of the location of the identifiers
+	 */
+	List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers, boolean returnTags);
+
+
+	/**
 	 * This method is used to return a location based on the provided parameters
 	 * @param identifier identifier of the location
 	 * @param status status of the location
