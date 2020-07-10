@@ -755,24 +755,25 @@ public class PhysicalLocationServiceTest {
 		List<LocationDetail> locationDetails = new ArrayList<>();
 
 		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
-				.tags("Country").geographicLevel(0).path(new String[] { "1" }).build();
+				.tags("Country").geographicLevel(0).build();
 		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
-				.tags("Province").geographicLevel(1).path(new String[] { "1", "11" }).build();
+				.tags("Province").geographicLevel(1).build();
 		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
-				.tags("Province").geographicLevel(1).path(new String[] { "1", "12" }).build();
+				.tags("Province").geographicLevel(1).build();
 		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
-				.tags("District").geographicLevel(2).path(new String[] { "1", "11", "111" }).build();
+				.tags("District").geographicLevel(2).build();
 		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
-				.tags("District").geographicLevel(2).path(new String[] { "1", "12", "121" }).build();
+				.tags("District").geographicLevel(2).build();
 		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
-				.tags("District").geographicLevel(2).path(new String[] { "1", "12", "122" }).build();
+				.tags("District").geographicLevel(2).build();
 
-		locationDetails.add(country);
-		locationDetails.add(province1);
-		locationDetails.add(province2);
-		locationDetails.add(district1);
-		locationDetails.add(district2);
+		// records are ordered by level in the db query
 		locationDetails.add(district3);
+		locationDetails.add(district2);
+		locationDetails.add(district1);
+		locationDetails.add(province2);
+		locationDetails.add(province1);
+		locationDetails.add(country);
 
 		Set<String> locationIdentifiers = new HashSet<>();
 		locationIdentifiers.add(country.getIdentifier());
