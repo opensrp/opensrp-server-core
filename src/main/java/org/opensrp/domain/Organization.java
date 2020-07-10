@@ -26,7 +26,8 @@ public class Organization implements Serializable {
 	public CodeSystem type;
 
 	private Set<AssignedLocations> assignedLocations;
-
+	
+	private Integer memberCount;
 	public Long getId() {
 		return id;
 	}
@@ -81,6 +82,14 @@ public class Organization implements Serializable {
 
 	public void setAssignedLocations(Set<AssignedLocations> assignedLocations) {
 		this.assignedLocations = assignedLocations;
+	}
+
+	public Integer getMemberCount() {
+		return memberCount;
+	}
+	
+	public void setMemberCount(Integer memberCount) {
+		this.memberCount = memberCount;
 	}
 
 }

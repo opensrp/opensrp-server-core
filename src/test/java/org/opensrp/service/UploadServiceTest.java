@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
@@ -53,7 +54,7 @@ public class UploadServiceTest {
         settingConfigurations.add(configuration);
 
 
-        Mockito.doReturn(settingConfigurations).when(settingRepository).findSettings(Mockito.any(SettingSearchBean.class));
+        Mockito.doReturn(settingConfigurations).when(settingRepository).findSettings(ArgumentMatchers.any(SettingSearchBean.class), ArgumentMatchers.eq(null));
 
         List<Map<String, String>> csvClients = new ArrayList<>();
 

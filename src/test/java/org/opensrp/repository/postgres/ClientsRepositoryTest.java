@@ -422,7 +422,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertTrue(clientsRepository.findByEmptyServerVersion().isEmpty());
 		
 		Client client = clientsRepository.get("05934ae338431f28bf6793b2415a0374");
-		client.setServerVersion(null);
+		client.setServerVersion(0l);
 		clientsRepository.update(client);
 		
 		client = clientsRepository.findByEmptyServerVersion().get(0);
@@ -436,7 +436,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertFalse(clientsRepository.findByEmptyServerVersion().isEmpty());
 		
 	}
-	
+
 	@Test
 	public void testFindByServerVersion() {
 		assertEquals(11, clientsRepository.findByServerVersion(1520935878136l).size());
@@ -450,7 +450,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 			assertTrue(client.getServerVersion() >= 1521003136406l);
 			assertTrue(expectedIds.contains(client.getId()));
 		}
-		
+
 		//test deleted clients
 		for (Client client : clients)
 			clientsRepository.safeRemove(client);
@@ -484,21 +484,23 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertTrue(clientsRepository.findByFieldValue(BASE_ENTITY_ID,
 		    Arrays.asList(new String[] { "f33c71c7-a9a4-495d-8028-b6d59e4034b3" })).isEmpty());
 	}
-	
+
+
 	@Test
 	public void testNotInOpenMRSByServerVersion() {
 		assertTrue(clientsRepository.notInOpenMRSByServerVersion(0l, Calendar.getInstance()).isEmpty());
-		
+
 		Client client = clientsRepository.get("05934ae338431f28bf6793b2415a0374");
 		client.removeIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE);
+		client.setServerVersion(1l);
 		clientsRepository.update(client);
-		
+
 		client = clientsRepository.notInOpenMRSByServerVersion(0l, Calendar.getInstance()).get(0);
 		assertEquals("94f3e8fb-2f05-4fca-8119-2b593d1962eb", client.getBaseEntityId());
 		assertEquals("Fith", client.getFirstName());
 		assertEquals("2018-03-01", client.getBirthdate().toLocalDate().toString());
 		assertEquals("218224-4", client.getIdentifier("ZEIR_ID"));
-		
+
 		//test deleted clients
 		clientsRepository.safeRemove(client);
 		assertTrue(clientsRepository.notInOpenMRSByServerVersion(0l, Calendar.getInstance()).isEmpty());
@@ -696,6 +698,16 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, clientIds.size());
 		assertEquals("5bd3e1eb-5cd4-4e8d-9180", clientIds.get(0));
 		assertEquals(1573733955111l, idsModel.getRight().longValue());
+	}
+
+	@Test
+	public void testFindByClientTypeAndLocationId() {
+		Client client = new Client("f67823b0-378e-4a35-93fc-bb00def74e24").withLocationId("location-1");
+		client.setClientType("Client-type-1");
+		clientsRepository.add(client);
+		List<Client> clients = clientsRepository.findByClientTypeAndLocationId("Client-type-1","location-1");
+		assertEquals(1,clients.size());
+		assertEquals("f67823b0-378e-4a35-93fc-bb00def74e24", clients.get(0).getBaseEntityId());
 	}
 	
 }
