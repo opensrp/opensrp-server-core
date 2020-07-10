@@ -962,7 +962,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testFindStructureCountsForLocation() {
-		Set locationIds = new HashSet();
+		Set<String> locationIds = new HashSet<>();
 		locationIds.add("3724");
 		locationIds.add("3734");
 
@@ -974,6 +974,16 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("3734", structureCounts.get(1).getParentId());
 		assertEquals(1, structureCounts.get(0).getCount());
 
+	}
+
+	@Test
+	public void testFindChildLocationByJurisdiction() {
+
+		List<String> locationIds = locationRepository.findChildLocationByJurisdiction("3734");
+		assertEquals(2, locationIds.size());
+		for (String id : locationIds) {
+			MatcherAssert.assertThat(id, either(is("3734")).or(is("3735")));
+		}
 	}
 
 }

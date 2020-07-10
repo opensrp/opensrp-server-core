@@ -44,8 +44,8 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testAdd() {
-		long now = System.currentTimeMillis();
-		
+//		long now = System.currentTimeMillis();
+		long lastSyncedVersion = 1517890951252l;
 		ViewConfiguration viewConfiguration = new ViewConfiguration();
 		viewConfiguration.setIdentifier("help");
 		View view = new View();
@@ -55,12 +55,13 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		view.setOrientation("vertical");
 		viewConfiguration.setViews(new ArrayList<View>());
 		viewConfiguration.getViews().add(view);
+		viewConfiguration.setServerVersion(1518890951252l);
 		
 		viewConfigurationRepository.add(viewConfiguration);
 		
 		assertEquals(6, viewConfigurationRepository.getAll().size());
-		
-		List<ViewConfiguration> savedViews = viewConfigurationRepository.findViewConfigurationsByVersion(now);
+
+		List<ViewConfiguration> savedViews = viewConfigurationRepository.findViewConfigurationsByVersion(lastSyncedVersion);
 		assertEquals(1, savedViews.size());
 		assertEquals(1, savedViews.get(0).getViews().size());
 		assertEquals("faq", savedViews.get(0).getViews().get(0).getIdentifier());
@@ -139,7 +140,7 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		assertTrue(viewConfigurationRepository.findByEmptyServerVersion().isEmpty());
 		
 		ViewConfiguration view = viewConfigurationRepository.get("d243bc5737fb389e52601cb850299541");
-		view.setServerVersion(null);
+		view.setServerVersion(0l);
 		viewConfigurationRepository.update(view);
 		
 		List<ViewConfiguration> views = viewConfigurationRepository.findByEmptyServerVersion();

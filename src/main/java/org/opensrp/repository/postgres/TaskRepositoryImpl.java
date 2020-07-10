@@ -291,6 +291,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		taskMetadata.setForEntity(entity.getForEntity());
 		taskMetadata.setServerVersion(entity.getServerVersion());
 		taskMetadata.setOwner(entity.getOwner());
+		taskMetadata.setCode(entity.getCode());
 		return taskMetadata;
 	}
 
@@ -309,7 +310,19 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 
 	@Override
 	public boolean checkIfTaskExists(String baseEntityId, String planIdentifier, String code) {
-		return false;  //TODO : Implementation in issue#43 PR
+		List<String> statuses = new ArrayList<>();
+		statuses.add("Cancelled");
+		statuses.add("Archived");
+
+		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, planIdentifier, code,statuses);
+		return taskCount >= 1;
+	}
+
+	@Override
+	public List<com.ibm.fhir.model.resource.Task> findAllTasksForEntity(String id) {
+		TaskMetadataExample example = new TaskMetadataExample();
+		example.createCriteria().andForEntityEqualTo(id);
+		return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
 	}
 
 	@Override
@@ -322,6 +335,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		update(task);
 	}
 
+
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
 		return tasks
 				.stream()
@@ -329,5 +343,5 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 				.collect(Collectors.toList());
 	}
 
-	
+
 }
