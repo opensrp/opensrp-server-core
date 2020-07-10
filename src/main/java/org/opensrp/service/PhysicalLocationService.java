@@ -350,6 +350,8 @@ public class PhysicalLocationService {
 				int updatedCount = cumulativeCountsMap.get(locationDetail.getIdentifier()) == null ? structureCount.getCount() :
 						cumulativeCountsMap.get(locationDetail.getIdentifier()) + structureCount.getCount();
 				cumulativeCountsMap.put(locationDetail.getIdentifier(), updatedCount);
+			} else if (cumulativeCountsMap.get(locationDetail.getIdentifier()) == null) {
+				cumulativeCountsMap.put(locationDetail.getIdentifier(), 0);
 			}
 
 			if (locationDetail.getParentId() != null) {

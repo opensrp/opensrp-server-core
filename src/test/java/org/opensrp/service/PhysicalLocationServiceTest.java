@@ -766,8 +766,11 @@ public class PhysicalLocationServiceTest {
 				.tags("District").geographicLevel(2).build();
 		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
 				.tags("District").geographicLevel(2).build();
+		LocationDetail district4 = LocationDetail.builder().name("District 4").id(8l).identifier("123").parentId("12")
+				.tags("District").geographicLevel(2).build(); // Test what happens when child location has no structures
 
 		// records are ordered by level in the db query
+		locationDetails.add(district4);
 		locationDetails.add(district3);
 		locationDetails.add(district2);
 		locationDetails.add(district1);
@@ -782,6 +785,7 @@ public class PhysicalLocationServiceTest {
 		locationIdentifiers.add(district1.getIdentifier());
 		locationIdentifiers.add(district2.getIdentifier());
 		locationIdentifiers.add(district3.getIdentifier());
+		locationIdentifiers.add(district4.getIdentifier());
 
 		when(locationRepository.findLocationWithDescendants(locationId, false)).thenReturn(locationDetails);
 
@@ -911,8 +915,11 @@ public class PhysicalLocationServiceTest {
 				.tags("District").geographicLevel(2).build();
 		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
 				.tags("District").geographicLevel(2).build();
+		LocationDetail district4 = LocationDetail.builder().name("District 4").id(8l).identifier("123").parentId("12")
+				.tags("District").geographicLevel(2).build(); // Test what happens when child not has no structures
 
 		// records are ordered by level in the db query
+		locationDetails.add(district4);
 		locationDetails.add(district3);
 		locationDetails.add(district2);
 		locationDetails.add(district1);
@@ -927,6 +934,7 @@ public class PhysicalLocationServiceTest {
 		locationIdentifiers.add(district1.getIdentifier());
 		locationIdentifiers.add(district2.getIdentifier());
 		locationIdentifiers.add(district3.getIdentifier());
+		locationIdentifiers.add(district4.getIdentifier());
 
 		when(locationRepository.findParentLocationsInclusive(locationIdentifiers, false)).thenReturn(locationDetails);
 
