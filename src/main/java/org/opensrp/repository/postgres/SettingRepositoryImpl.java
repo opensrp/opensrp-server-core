@@ -435,7 +435,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			setting.setTeam(settingsMetadata.getTeam());
 			setting.setLocationId(settingsMetadata.getLocationId());
 			setting.setType(settingsMetadata.getSettingType());
-			setting.setServerVersion(settingsMetadata.getServerVersion());
+			if (settingsMetadata.getServerVersion() != null) {
+				setting.setServerVersion(settingsMetadata.getServerVersion());
+			}
 			setting.setDocumentId(settingsMetadata.getDocumentId());
 		}
 		return setting;

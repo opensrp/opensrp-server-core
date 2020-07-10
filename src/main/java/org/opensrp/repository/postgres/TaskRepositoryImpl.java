@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.postgres.TaskMetadata;
@@ -290,6 +291,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		taskMetadata.setForEntity(entity.getForEntity());
 		taskMetadata.setServerVersion(entity.getServerVersion());
 		taskMetadata.setOwner(entity.getOwner());
+		taskMetadata.setCode(entity.getCode());
 		return taskMetadata;
 	}
 
@@ -302,8 +304,18 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public void saveTask(Task task) {
-        add(task);
+	public void saveTask(Task task, QuestionnaireResponse questionnaireResponse) {
+      add(task);
+	}
+
+	@Override
+	public boolean checkIfTaskExists(String baseEntityId, String planIdentifier, String code) {
+		List<String> statuses = new ArrayList<>();
+		statuses.add("Cancelled");
+		statuses.add("Archived");
+
+		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, planIdentifier, code,statuses);
+		return taskCount >= 1;
 	}
 
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
@@ -313,5 +325,5 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 				.collect(Collectors.toList());
 	}
 
-	
+
 }

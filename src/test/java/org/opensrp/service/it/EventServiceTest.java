@@ -391,7 +391,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		assertEquals(1, dbEvents.size());
 		assertEquals(expectedEvent, actualEvent);
 		
-		dbEvents.get(0).setServerVersion(null);
+		dbEvents.get(0).setServerVersion(0l);
 		assertObjectUpdate(expectedEvent, dbEvents.get(0));
 	}
 	
