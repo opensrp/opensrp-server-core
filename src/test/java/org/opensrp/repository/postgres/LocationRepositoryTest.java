@@ -976,4 +976,14 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 	}
 
+	@Test
+	public void testFindChildLocationByJurisdiction() {
+
+		List<String> locationIds = locationRepository.findChildLocationByJurisdiction(true, "3734");
+		assertEquals(2, locationIds.size());
+		for (String id : locationIds) {
+			MatcherAssert.assertThat(id, either(is("3734")).or(is("3735")));
+		}
+	}
+
 }
