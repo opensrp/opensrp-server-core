@@ -766,9 +766,6 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 	@Override
 	public List<String> findChildLocationByJurisdiction(String id) {
-		if (id == null) {
-			return null;
-		}
 		return locationMetadataMapper.selectChildrenIds(id);
 	}
 
