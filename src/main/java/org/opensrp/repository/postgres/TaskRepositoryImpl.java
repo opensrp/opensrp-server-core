@@ -291,6 +291,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		taskMetadata.setForEntity(entity.getForEntity());
 		taskMetadata.setServerVersion(entity.getServerVersion());
 		taskMetadata.setOwner(entity.getOwner());
+		taskMetadata.setCode(entity.getCode());
 		return taskMetadata;
 	}
 
@@ -309,7 +310,12 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 
 	@Override
 	public boolean checkIfTaskExists(String baseEntityId, String planIdentifier, String code) {
-		return false; //implementation defined in issue#43 //TODO: Its not merged yet, in review phase
+		List<String> statuses = new ArrayList<>();
+		statuses.add("Cancelled");
+		statuses.add("Archived");
+
+		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, planIdentifier, code,statuses);
+		return taskCount >= 1;
 	}
 
 	@Override
@@ -326,5 +332,5 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 				.collect(Collectors.toList());
 	}
 
-	
+
 }
