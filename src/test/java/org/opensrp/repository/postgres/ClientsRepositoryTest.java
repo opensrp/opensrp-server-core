@@ -447,7 +447,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		    "5bd3e1eb-5cd4-4e8d-9180-4293b7ea3b78", "f5934ae338431f28bf6793b24159ce5a");
 		assertEquals(8, clients.size());
 		for (Client client : clients) {
-//			assertTrue(client.getServerVersion() >= 1521003136406l); //TODO: Fix it
+			assertTrue(client.getServerVersion() >= 1521003136406l);
 			assertTrue(expectedIds.contains(client.getId()));
 		}
 
