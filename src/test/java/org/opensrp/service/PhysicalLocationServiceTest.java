@@ -611,9 +611,9 @@ public class PhysicalLocationServiceTest {
 		        .tags("City,Zone").build();
 		locationDetails.add(kenya);
 		locationDetails.add(nairobi);
-		when(locationRepository.findParentLocationsInclusive(identifiers)).thenReturn(locationDetails);
-		LocationTree tree = locationService.buildLocationHierachy(identifiers, false);
-		verify(locationRepository).findParentLocationsInclusive(identifiers);
+		when(locationRepository.findParentLocationsInclusive(identifiers, false)).thenReturn(locationDetails);
+		LocationTree tree = locationService.buildLocationHierachy(identifiers, false, false);
+		verify(locationRepository).findParentLocationsInclusive(identifiers, false);
 		assertNotNull(tree);
 		assertEquals(1, tree.getLocationsHierarchy().size());
 		TreeNode<String, Location> countryNode = tree.getLocationsHierarchy().get(kenya.getIdentifier());
@@ -859,9 +859,9 @@ public class PhysicalLocationServiceTest {
 		locationIdentifiers.add(district2.getIdentifier());
 		locationIdentifiers.add(district2.getIdentifier());
 
-		when(locationRepository.findParentLocationsInclusive(locationIdentifiers)).thenReturn(locationDetails);
+		when(locationRepository.findParentLocationsInclusive(locationIdentifiers, true)).thenReturn(locationDetails);
 
-		LocationTree tree = locationService.buildLocationHierachy(locationIdentifiers, false);
+		LocationTree tree = locationService.buildLocationHierachy(locationIdentifiers, false, true);
 
 		TreeNode<String, Location> countryNode = tree.getLocationsHierarchy().get(country.getIdentifier());
 		assertNotNull(countryNode);
@@ -928,7 +928,7 @@ public class PhysicalLocationServiceTest {
 		locationIdentifiers.add(district2.getIdentifier());
 		locationIdentifiers.add(district3.getIdentifier());
 
-		when(locationRepository.findParentLocationsInclusive(locationIdentifiers)).thenReturn(locationDetails);
+		when(locationRepository.findParentLocationsInclusive(locationIdentifiers, false)).thenReturn(locationDetails);
 
 		List<StructureCount> structureCounts = new ArrayList<>();
 		StructureCount structureCountD1 = StructureCount.builder().parentId(district1.getIdentifier()).count(10).build();
@@ -941,7 +941,7 @@ public class PhysicalLocationServiceTest {
 
 		when(locationRepository.findStructureCountsForLocation(locationIdentifiers)).thenReturn(structureCounts);
 
-		LocationTree tree = locationService.buildLocationHierachy(locationIdentifiers, true);
+		LocationTree tree = locationService.buildLocationHierachy(locationIdentifiers, true, false);
 
 		TreeNode<String, Location> countryNode = tree.getLocationsHierarchy().get(country.getIdentifier());
 		assertNotNull(countryNode);
