@@ -305,7 +305,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 
 	@Override
 	public void saveTask(Task task, QuestionnaireResponse questionnaireResponse) {
-      add(task);
+         add(task);
 	}
 
 	@Override
@@ -316,6 +316,13 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 
 		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, planIdentifier, code,statuses);
 		return taskCount >= 1;
+	}
+
+	@Override
+	public List<com.ibm.fhir.model.resource.Task> findAllTasksForEntity(String id) {
+		TaskMetadataExample example = new TaskMetadataExample();
+		example.createCriteria().andForEntityEqualTo(id);
+		return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
 	}
 
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
