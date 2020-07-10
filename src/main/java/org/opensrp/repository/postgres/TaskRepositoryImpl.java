@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.postgres.TaskMetadata;
@@ -302,8 +303,23 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public void saveTask(Task task) {
-        add(task);
+	public void saveTask(Task task, QuestionnaireResponse questionnaireResponse) {
+          add(task);
+	}
+
+	@Override
+	public boolean checkIfTaskExists(String baseEntityId, String planIdentifier, String code) {
+		return false;  //TODO : Implementation in issue#43 PR
+	}
+
+	@Override
+	public Task getTaskByEntityId(String identifier) {
+		return get(identifier);
+	}
+
+	@Override
+	public void updateTask(Task task) {
+		update(task);
 	}
 
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
