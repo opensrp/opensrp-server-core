@@ -12,6 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
+import org.opensrp.repository.PlanRepository;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.opensrp.repository.EventsRepository;
@@ -19,7 +20,9 @@ import org.opensrp.search.EventSearchBean;
 import org.opensrp.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +33,15 @@ public class EventService {
 	private final EventsRepository allEvents;
 	
 	private ClientService clientService;
+
+	@Autowired
+	private TaskGenerator taskGenerator;
+
+	@Autowired
+	private PlanRepository planRepository;
+
+	@Value("#{opensrp['plan.evaluation.enabled']}")
+	protected Boolean isPlanEvaluationEnabled;
 	
 	@Autowired
 	public EventService(EventsRepository allEvents, ClientService clientService) {
@@ -135,7 +147,7 @@ public class EventService {
 		return event;
 	}
 	
-	public synchronized Event addEvent(Event event) {
+	public synchronized Event addEvent(Event event, String username) {
 		Event e = find(event);
 		if (e != null) {
 			throw new IllegalArgumentException(
@@ -150,6 +162,11 @@ public class EventService {
 		
 		event.setDateCreated(DateTime.now());
 		allEvents.add(event);
+		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
+		if (isPlanEvaluationEnabled && planIdentifier != null) {
+			PlanDefinition plan = planRepository.get(planIdentifier);
+			taskGenerator.processPlanEvaluation(plan, null, username);
+		}
 		return event;
 	}
 	
@@ -162,7 +179,7 @@ public class EventService {
 	 * @param event
 	 * @return
 	 */
-	public synchronized Event processOutOfArea(Event event) {
+	public synchronized Event processOutOfArea(Event event, String username) {
 		try {
 			final String BIRTH_REGISTRATION_EVENT = "Birth Registration";
 			final String GROWTH_MONITORING_EVENT = "Growth Monitoring";
@@ -227,7 +244,7 @@ public class EventService {
 						        .withFormSubmissionId(UUID.randomUUID().toString()).withDateCreated(event.getDateCreated());
 						
 						newEvent.setObs(event.getObs());
-						addEvent(newEvent);
+						addEvent(newEvent, username);
 					}
 				}
 				//Legacy code only picked the first item so we break

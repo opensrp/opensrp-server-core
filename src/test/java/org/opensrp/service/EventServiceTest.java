@@ -4,6 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE;
 
 import java.sql.SQLException;
@@ -19,7 +23,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.opensrp.common.AllConstants.Client;
+import org.opensrp.repository.PlanRepository;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.opensrp.repository.ClientsRepository;
@@ -28,12 +35,14 @@ import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.repository.postgres.EventsRepositoryImpl;
 import org.opensrp.repository.postgres.handler.BaseTypeHandler;
 import org.opensrp.util.DateTimeDeserializer;
+import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class EventServiceTest extends BaseRepositoryTest {
 	
@@ -46,12 +55,22 @@ public class EventServiceTest extends BaseRepositoryTest {
 	@Autowired
 	@Qualifier("clientsRepositoryPostgres")
 	private ClientsRepository clientsRepository;
+
+	@Mock
+	private PlanRepository planRepository;
+
+	@Mock
+	private TaskGenerator taskGenerator;
 	
 	private Set<String> scripts = new HashSet<String>();;
+
+	private String username ="johndoe";
 	
 	@Before
 	public void setUpPostgresRepository() {
+		initMocks(this);
 		eventService = new EventService(eventsRepository, new ClientService(clientsRepository));
+		ReflectionTestUtils.setField(eventService, "isPlanEvaluationEnabled", true);
 	}
 	
 	@Override
@@ -107,8 +126,12 @@ public class EventServiceTest extends BaseRepositoryTest {
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		Event event = new Event().withBaseEntityId("435534534543").withEventType("Growth Monitoring")
 		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs);
-		
-		eventService.addEvent(event);
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("identifier");
+
+		when(planRepository.get(anyString())).thenReturn(plan);
+		Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), any(PlanDefinition.class), anyString());
+		eventService.addEvent(event, username);
 		
 		event = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
 		assertEquals("435534534543", event.getBaseEntityId());
@@ -120,34 +143,34 @@ public class EventServiceTest extends BaseRepositoryTest {
 		event = new Event().withBaseEntityId("2423nj-sdfsd-sf2dfsd-2399d").withEventType("Vaccination")
 		        .withFormSubmissionId("hshj2342_jsjs-jhjsdfds-23").withEventDate(new DateTime()).withObs(obs);
 		event.setDateVoided(new DateTime());
-		eventService.addEvent(event);
+		eventService.addEvent(event,username);
 		assertNull(eventService.findByFormSubmissionId(event.getFormSubmissionId()));
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddEventForExistingEvent() {
 		Event event = eventService.findById("05934ae338431f28bf6793b241bdc44a");
-		eventService.addEvent(event);
+		eventService.addEvent(event, username);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddEventDuplicateIdentifiers() {
 		Event event = new Event().withIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE, "4aecc0c1-e008-4227-938d-66db17236a3d");
-		eventService.addEvent(event);
+		eventService.addEvent(event, username);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddEventDuplicateBaseEntityFormSubmission() {
 		Event event = new Event().withBaseEntityId("58b33379-dab2-4f5c-8f09-6d2bd63023d8").withFormSubmissionId(
 		    "5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
-		eventService.addEvent(event);
+		eventService.addEvent(event, username);
 	}
 	
 	@Test(expected = DuplicateKeyException.class)
 	public void testAddEventDuplicateFormSubmission() {
 		Event event = new Event().withBaseEntityId("58b33379-dab2-4f").withFormSubmissionId(
 		    "5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
-		eventService.addEvent(event);
+		eventService.addEvent(event, username);
 		
 	}
 	
@@ -157,7 +180,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		populateDatabase();
 		Event event = new Event().withEventType("Vaccination").withProviderId("tester111")
 		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "218229-3");
-		Event outOfAreaEvent = eventService.processOutOfArea(event);
+		Event outOfAreaEvent = eventService.processOutOfArea(event, username);
 		
 		assertNotNull(outOfAreaEvent);
 		assertNotNull(outOfAreaEvent.getDetails());
@@ -169,7 +192,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		event = new Event().withEventType("Out of Area Service").withProviderId("tester111")
 		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "218229-3");
 		
-		outOfAreaEvent = eventService.processOutOfArea(event);
+		outOfAreaEvent = eventService.processOutOfArea(event, username);
 		assertEquals(event, outOfAreaEvent);
 		assertEquals(20, eventService.getAll().size());
 		
@@ -177,7 +200,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		event = new Event().withEventType("Out of Area Service").withProviderId("tester112")
 		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "c_2182291985");
 		
-		outOfAreaEvent = eventService.processOutOfArea(event);
+		outOfAreaEvent = eventService.processOutOfArea(event, username);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
 		assertEquals(20, eventService.getAll().size());
@@ -187,7 +210,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs)
 		        .withIdentifier(Client.ZEIR_ID, "218229-3");
 		
-		outOfAreaEvent = eventService.processOutOfArea(event);
+		outOfAreaEvent = eventService.processOutOfArea(event, username);
 		assertEquals(event, outOfAreaEvent);
 		
 		assertEquals(21, eventService.getAll().size());

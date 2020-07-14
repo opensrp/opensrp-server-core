@@ -24,6 +24,8 @@ public class AllEventsIntegrationTest {
 	
 	@Autowired
 	private EventsRepositoryImpl allEvents;
+
+	private String username ="johndoe";
 	
 	@Before
 	public void setUp() throws Exception {
@@ -43,7 +45,7 @@ public class AllEventsIntegrationTest {
 			e.addObs(new Obs("concept", "txt", "1030AAAAAAAAAAAAAAAA", null, "2015-01-01", "comments test" + i, "measles2"));
 			e.addObs(new Obs("concept", "txt", "1029AAAAAAAAAAAAAAAA", null, "2015-01-01", "comments test" + i, "tt1"));
 			e.addObs(new Obs("concept", "txt", "1030AAAAAAAAAAAAAAAA", null, "2016-02-01", "comments test" + i, "tt2"));
-			eventService.addEvent(e);
+			eventService.addEvent(e,username);
 		}
 	}
 	
