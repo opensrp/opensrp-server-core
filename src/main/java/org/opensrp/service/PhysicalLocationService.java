@@ -27,17 +27,17 @@ public class PhysicalLocationService {
 	private LocationRepository locationRepository;
 	
 	private final boolean DEFAULT_RETURN_BOOLEAN = true;
-	
-	@Autowired
-	public void setLocationRepository(LocationRepository locationRepository) {
-		this.locationRepository = locationRepository;
-	}
 
 	@Autowired
 	private OrganizationService organizationService;
 
 	@Autowired
 	private PractitionerService practitionerService;
+	
+	@Autowired
+	public void setLocationRepository(LocationRepository locationRepository) {
+		this.locationRepository = locationRepository;
+	}
 	
 	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
 		return locationRepository.get(id, returnGeometry);
