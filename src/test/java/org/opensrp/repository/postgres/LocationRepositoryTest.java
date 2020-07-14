@@ -889,6 +889,36 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void testfindParentLocationsInclusiveWithReturnTagsFalse() {
+
+		PhysicalLocation location = locationRepository.get("3734");
+		List<LocationTag> expectedTags = locationTagRepository.getAll();
+		location.setLocationTags(new HashSet<>(expectedTags));
+		locationRepository.update(location);
+
+		Set<String> identifiers = Collections.singleton("3735");
+		List<LocationDetail> locations = locationRepository.findParentLocationsInclusive(identifiers, false);
+		assertEquals(2, locations.size());
+		for (LocationDetail l : locations) {
+			MatcherAssert.assertThat(l.getIdentifier(), either(is("3734")).or(is("3735")));
+		}
+
+		assertEquals(2, locationRepository.findParentLocationsInclusive(new HashSet<>(Arrays.asList("3735", "21"))).size());
+
+		//Location without a parent
+		locations = locationRepository.findParentLocationsInclusive(Collections.singleton("3734"), false);
+		assertEquals(1, locations.size());
+		assertEquals("3734", locations.get(0).getIdentifier());
+		assertEquals("Bangladesh", locations.get(0).getName());
+		assertEquals("21", locations.get(0).getParentId());
+		assertEquals(1l, locations.get(0).getId().longValue());
+		assertNull(locations.get(0).getTags());
+
+		//Non existent location
+		assertEquals(0, locationRepository.findParentLocationsInclusive(Collections.singleton("21")).size());
+	}
+
+	@Test
 	public void testCountStructuresByParentAndServerVersion() {
 
 		Long locations = locationRepository.countStructuresByParentAndServerVersion("3734", 1542376382859l);
@@ -984,6 +1014,20 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		for (String id : locationIds) {
 			MatcherAssert.assertThat(id, either(is("3734")).or(is("3735")));
 		}
+	}
+
+	@Test
+	public void testFindLocationByIdentifierAndStatus() {
+
+		PhysicalLocation actualLocation = locationRepository.findLocationByIdentifierAndStatus("3734", LocationProperty.PropertyStatus.ACTIVE.name(), false);
+
+		assertEquals("3734", actualLocation.getId());
+		assertEquals("Bangladesh", actualLocation.getProperties().getName());
+		assertEquals("21", actualLocation.getProperties().getParentId());
+
+		PhysicalLocation actualInactiveLocation = locationRepository.findLocationByIdentifierAndStatus("3734", LocationProperty.PropertyStatus.INACTIVE.name(), false);
+		assertNull(actualInactiveLocation);
+
 	}
 
 }

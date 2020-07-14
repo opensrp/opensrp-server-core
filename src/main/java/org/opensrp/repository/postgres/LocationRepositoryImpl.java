@@ -485,15 +485,22 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 */
 	@Override
 	public List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers) {
-		return locationMetadataMapper.selectLocationHierachy(identifiers);
+		return locationMetadataMapper.selectLocationHierachy(identifiers, true);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers, boolean returnTags) {
+		return locationMetadataMapper.selectLocationHierachy(identifiers, returnTags);
+	}
 
 	@Override
 	public PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status, boolean returnGeometry) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andGeojsonIdEqualTo(identifier)
-				.andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+				.andStatusEqualTo(status);
 		locationMetadataExample.setOrderByClause(getOrderByClause(VERSION, DESCENDING));
 
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
