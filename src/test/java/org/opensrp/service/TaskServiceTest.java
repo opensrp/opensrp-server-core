@@ -151,7 +151,7 @@ public class TaskServiceTest {
 
 		List<Task> expected = new ArrayList<>();
 		Task task = initializeTask();
-		task.setServerVersion(null);
+		task.setServerVersion(0l);
 		expected.add(task);
 		when(taskRepository.findByEmptyServerVersion()).thenReturn(expected);
 
@@ -192,7 +192,7 @@ public class TaskServiceTest {
 
 		ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
 		verify(taskRepository).update(argumentCaptor.capture());
-		assertNull(argumentCaptor.getValue().getServerVersion());
+		assertEquals(0l,argumentCaptor.getValue().getServerVersion().longValue());
 		assertEquals("Not Sprayable", argumentCaptor.getValue().getBusinessStatus());
 
 		assertEquals("tsk11231jh22", task.getIdentifier());

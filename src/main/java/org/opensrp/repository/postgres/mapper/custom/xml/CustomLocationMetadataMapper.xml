@@ -375,4 +375,22 @@
 
 	</select>
 
+	<select id="selectChildrenIds" resultType="String">
+		select *
+		from
+		(
+		WITH RECURSIVE locations
+		AS
+		( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+		FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}  AND status='ACTIVE'
+		UNION
+		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+		FROM locations lm1
+		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id  AND status='ACTIVE')
+
+		SELECT geojson_id FROM locations
+		)  ids;
+
+	</select>
+
 </mapper>

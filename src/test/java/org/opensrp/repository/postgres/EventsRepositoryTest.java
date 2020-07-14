@@ -525,7 +525,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		eventsRepository.update(event);
 		
 		event = eventsRepository.get("05934ae338431f28bf6793b241bdbb60");
-		event.setServerVersion(null);
+		event.setServerVersion(0l);
 		eventsRepository.update(event);
 		long beforeFetch = System.currentTimeMillis();
 		List<Event> events = eventsRepository.findByEmptyServerVersion();

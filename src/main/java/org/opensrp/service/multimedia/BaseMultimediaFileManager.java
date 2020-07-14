@@ -92,7 +92,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                         client.removeAttribute("Patient Image");
                     }
                     client.addAttribute("Patient Image", multimediaDTO.getCaseId() + ".jpg");
-                    client.setServerVersion(null);
+                    client.setServerVersion(0l);
                     clientService.updateClient(client);
                 }
                 return SUCCESS;

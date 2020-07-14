@@ -109,7 +109,7 @@ public class ReportService {
 		Report existingReport = findById(report.getId());
 		if (existingReport != null) {
 			report.setDateEdited(DateTime.now());
-			report.setServerVersion(null);
+			report.setServerVersion(0l);
 			report.setRevision(existingReport.getRevision());
 			allReports.update(report);
 			
