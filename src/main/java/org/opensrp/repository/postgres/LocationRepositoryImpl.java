@@ -500,7 +500,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status, boolean returnGeometry) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andGeojsonIdEqualTo(identifier)
-				.andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+				.andStatusEqualTo(status);
 		locationMetadataExample.setOrderByClause(getOrderByClause(VERSION, DESCENDING));
 
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
