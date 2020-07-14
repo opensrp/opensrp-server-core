@@ -24,14 +24,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.AppStateToken;
+import org.opensrp.repository.PlanRepository;
+import org.opensrp.service.*;
 import org.smartregister.domain.Client;
 import org.smartregister.domain.Event;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
-import org.opensrp.service.ClientService;
-import org.opensrp.service.ConfigService;
-import org.opensrp.service.ErrorTraceService;
-import org.opensrp.service.EventService;
 import org.opensrp.service.formSubmission.handler.EventsHandler;
 import org.opensrp.service.formSubmission.handler.EventsRouter;
 import org.opensrp.service.formSubmission.handler.IHandlerMapper;
@@ -58,6 +56,12 @@ public class EventListenerTest {
 	
 	@Mock
 	private IHandlerMapper handlerMapper;
+
+	@Mock
+	private PlanRepository planRepository;
+
+	@Mock
+	private TaskGenerator taskGenerator;
 	
 	private EventService eventService;
 	
@@ -70,7 +74,7 @@ public class EventListenerTest {
 		when(configService.registerAppStateToken(any(AllConstants.Config.class), Matchers.anyObject(), anyString(),
 		    anyBoolean())).thenReturn(new AppStateToken("token", 01l, 02l));
 		eventsRouter = new EventsRouter(handlerMapper, "/schedules/schedule-configs");
-		eventService = new EventService(allEvents, clientService);
+		eventService = new EventService(allEvents, clientService, taskGenerator, planRepository);
 		eventsListener = new EventsListener(eventsRouter, configService, allEvents, eventService, errorTraceService,
 		        allClients);
 	}

@@ -20,15 +20,22 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import org.mockito.Mockito;
 import org.opensrp.common.AllConstants.Client;
 import org.opensrp.repository.PlanRepository;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
+import org.smartregister.domain.ExecutionPeriod;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
@@ -45,7 +52,8 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class EventServiceTest extends BaseRepositoryTest {
-	
+
+	@InjectMocks
 	private EventService eventService;
 	
 	@Autowired
@@ -65,11 +73,17 @@ public class EventServiceTest extends BaseRepositoryTest {
 	private Set<String> scripts = new HashSet<String>();;
 
 	private String username ="johndoe";
-	
+
+	@Captor
+	private ArgumentCaptor<PlanDefinition> planDefinitionArgumentCaptor;
+
+	@Captor
+	private ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
+
 	@Before
 	public void setUpPostgresRepository() {
 		initMocks(this);
-		eventService = new EventService(eventsRepository, new ClientService(clientsRepository));
+		eventService = new EventService(eventsRepository, new ClientService(clientsRepository), taskGenerator, planRepository);
 		ReflectionTestUtils.setField(eventService, "isPlanEvaluationEnabled", true);
 	}
 	
@@ -172,6 +186,28 @@ public class EventServiceTest extends BaseRepositoryTest {
 		    "5f1b201d-2132-4eb9-8fa1-3169a61cc50a");
 		eventService.addEvent(event, username);
 		
+	}
+
+	@Test
+	public void testAddEventShouldEvaluatePlan() {
+		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
+		Map<String,String> details = new HashMap<>();
+		details.put("planIdentifier", "plan-id-1");
+		Event event = new Event().withBaseEntityId("435534534543").withEventType("Growth Monitoring")
+				.withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs);
+        event.setDetails(details);
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("plan-id-1");
+		plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
+		ExecutionPeriod executionPeriod = new ExecutionPeriod();
+		executionPeriod.setEnd(new LocalDate().plusYears(2));
+		plan.setEffectivePeriod(executionPeriod);
+
+		when(planRepository.get("plan-id-1")).thenReturn(plan);
+		Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), any(PlanDefinition.class), anyString());
+		eventService.addEvent(event, username);
+		verify(planRepository, times(1)).get(stringArgumentCaptor.capture());
+		verify(taskGenerator, times(1)).processPlanEvaluation(planDefinitionArgumentCaptor.capture(),planDefinitionArgumentCaptor.capture(),stringArgumentCaptor.capture());
 	}
 	
 	@Test

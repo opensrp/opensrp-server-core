@@ -34,19 +34,19 @@ public class EventService {
 	
 	private ClientService clientService;
 
-	@Autowired
 	private TaskGenerator taskGenerator;
 
-	@Autowired
 	private PlanRepository planRepository;
 
 	@Value("#{opensrp['plan.evaluation.enabled']}")
 	protected Boolean isPlanEvaluationEnabled;
 	
 	@Autowired
-	public EventService(EventsRepository allEvents, ClientService clientService) {
+	public EventService(EventsRepository allEvents, ClientService clientService, TaskGenerator taskGenerator, PlanRepository planRepository) {
 		this.allEvents = allEvents;
 		this.clientService = clientService;
+		this.taskGenerator = taskGenerator;
+		this.planRepository = planRepository;
 	}
 	
 	public List<Event> findAllByIdentifier(String identifier) {
@@ -146,7 +146,7 @@ public class EventService {
 		}
 		return event;
 	}
-	
+
 	public synchronized Event addEvent(Event event, String username) {
 		Event e = find(event);
 		if (e != null) {
@@ -165,6 +165,8 @@ public class EventService {
 		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
 		if (isPlanEvaluationEnabled && planIdentifier != null) {
 			PlanDefinition plan = planRepository.get(planIdentifier);
+			if(plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null ||
+					plan.getEffectivePeriod().getEnd().isAfter(new DateTime().toLocalDate())))
 			taskGenerator.processPlanEvaluation(plan, null, username);
 		}
 		return event;
