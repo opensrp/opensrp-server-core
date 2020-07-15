@@ -9,6 +9,8 @@ import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.TaskRepository;
+import org.smartregister.converters.EventConverter;
+import org.smartregister.domain.Event;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
@@ -43,5 +45,11 @@ public class TaskGenerator {
 	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition, String username) {
 		PlanEvaluator planEvaluator = new PlanEvaluator(username);
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
+	}
+
+	@Async
+	public void processPlanEvaluation(PlanDefinition planDefinition, String username, Event event) {
+		PlanEvaluator planEvaluator = new PlanEvaluator(username);
+		planEvaluator.evaluatePlan(planDefinition, EventConverter.convertEventToEncounterResource(event));
 	}
 }

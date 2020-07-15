@@ -13,6 +13,7 @@ import org.opensrp.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
@@ -31,6 +32,7 @@ public class AllEventsIntegrationTest {
 	public void setUp() throws Exception {
 		allEvents.removeAll();
 		initMocks(this);
+		ReflectionTestUtils.setField(eventService, "isPlanEvaluationEnabled", true);
 	}
 	
 	private void addEvents() {

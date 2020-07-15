@@ -167,7 +167,7 @@ public class EventService {
 			PlanDefinition plan = planRepository.get(planIdentifier);
 			if(plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null ||
 					plan.getEffectivePeriod().getEnd().isAfter(new DateTime().toLocalDate())))
-			taskGenerator.processPlanEvaluation(plan, null, username);
+			taskGenerator.processPlanEvaluation(plan, username, event);
 		}
 		return event;
 	}

@@ -80,6 +80,10 @@ public class EventServiceTest extends BaseRepositoryTest {
 	@Captor
 	private ArgumentCaptor<String> stringArgumentCaptor = ArgumentCaptor.forClass(String.class);
 
+	@Captor
+	private ArgumentCaptor<Event> eventArgumentCaptor;
+
+
 	@Before
 	public void setUpPostgresRepository() {
 		initMocks(this);
@@ -144,7 +148,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		plan.setIdentifier("identifier");
 
 		when(planRepository.get(anyString())).thenReturn(plan);
-		Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), any(PlanDefinition.class), anyString());
+		Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), anyString(), any(Event.class));
 		eventService.addEvent(event, username);
 		
 		event = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
@@ -207,7 +211,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), any(PlanDefinition.class), anyString());
 		eventService.addEvent(event, username);
 		verify(planRepository, times(1)).get(stringArgumentCaptor.capture());
-		verify(taskGenerator, times(1)).processPlanEvaluation(planDefinitionArgumentCaptor.capture(),planDefinitionArgumentCaptor.capture(),stringArgumentCaptor.capture());
+		verify(taskGenerator, times(1)).processPlanEvaluation(planDefinitionArgumentCaptor.capture(),stringArgumentCaptor.capture(),eventArgumentCaptor.capture());
 	}
 	
 	@Test
