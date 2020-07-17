@@ -1,7 +1,7 @@
 package org.opensrp.repository;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.opensrp.domain.PlanDefinition;
+import org.smartregister.domain.PlanDefinition;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface PlanRepository extends BaseRepository<PlanDefinition> {
 
-    List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds);
+    List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds, boolean experimental);
 
     /**
      * This method searches for plans using a list of provided
@@ -21,7 +21,7 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
      * @param fields list of fields to return
      * @return plan definitions whose identifiers match the provided params
      */
-    List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields);
+    List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields, boolean experimental);
     
     
     /**
@@ -36,7 +36,7 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @param serverVersion 
 	 * @return plans with the identifiers and server version greater than or equal to server version param
 	 */
-	List<PlanDefinition> getPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion);
+	List<PlanDefinition> getPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion, boolean experimental);
 
 	/**
 	 *  This method searches for plans ordered by serverVersion ascending
@@ -45,7 +45,7 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @param limit upper limit on number of plans to fetch
 	 * @return list of plan identifiers
 	 */
-	List<PlanDefinition> getAllPlans(Long serverVersion, int limit);
+	List<PlanDefinition> getAllPlans(Long serverVersion, int limit, boolean experimental);
 
 	/**
 	 * This method fetches all plan Ids
@@ -63,4 +63,6 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @return plans with the identifiers and server version greater than or equal to server version param
 	 */
 	Long countPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion);
+
+	List<PlanDefinition> getAllPlans(boolean experimental);
 }

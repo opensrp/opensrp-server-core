@@ -7,11 +7,13 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
-import org.opensrp.domain.PhysicalLocation;
+import org.opensrp.domain.StructureCount;
+import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.search.LocationSearchBean;
+import org.smartregister.pathevaluator.dao.LocationDao;
 
-public interface LocationRepository extends BaseRepository<PhysicalLocation> {
+public interface LocationRepository extends BaseRepository<PhysicalLocation>, LocationDao {
 
 	PhysicalLocation getStructure(String id, boolean returnGeometry);
 
@@ -71,15 +73,6 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @return location together with it's children whose id matches the provided param
 	 */
 	List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry,	String id, int pageSize);
-	
-	
-	 /**
-     * Gets the location primary key 
-     * @param identifier of of the plan
-     * @param isJurisdiction whether the to search for jurisdiction or structure
-     * @return the numerical primary key of a jurisdiction
-     */
-    public Long retrievePrimaryKey(String identifier, boolean isJurisdiction);
 
     /**
 	 * This methods searches for locations using a list of provided location ids.It returns location whose is in the list or whose parent is in list
@@ -149,6 +142,36 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers);
 
 	/**
+	 * Gets the parent locations inclusive of the location of the identifiers.
+	 * This returns the details of ancestors including locations the identifiers
+	 * @param identifiers the identifiers of locations to get the parent locations
+	 * @param returnTags Whether or not to return location tags
+	 * @return the parent locations inclusive of the location of the identifiers
+	 */
+	List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers, boolean returnTags);
+
+
+	/**
+	 * This method is used to return a location based on the provided parameters
+	 * @param identifier identifier of the location
+	 * @param status status of the location
+	 * @return returns a location matching the passed parameters
+	 */
+	PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status, boolean returnGeometry);
+
+	/**
+	 * Gets the location primary key
+	 * @param identifier of of the location
+	 * @param isJurisdiction whether the to search for jurisdiction or structure
+	 * @param version version of the location
+	 * @return the numerical primary key of a jurisdiction
+	 */
+	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction, int version);
+
+
+	PhysicalLocation get(String id, boolean returnGeometry, int version);
+
+	/**
 	 * This method is used to return a count of structure based on the provided parameters
 	 * @param parentId a string of comma separated ids for the parent locations
 	 * @param serverVersion
@@ -170,4 +193,19 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation> {
 	 * @return returns a count of locations matching the passed parameters
 	 */
 	Long countLocationsByNames(String locationNames, long serverVersion);
+
+	/**
+	 * Get location with all of its descendants.
+	 *
+	 * @param locationId location id of the root location
+	 * @return chi
+	 */
+	List<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags);
+
+	/**
+	 * This method returns a map containing a location identifier and a count of associated structures
+	 * @param locationIds
+	 * @return
+	 */
+	List<StructureCount> findStructureCountsForLocation(Set<String> locationIds);
 }

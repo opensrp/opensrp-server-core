@@ -1316,6 +1316,76 @@ public class EventMetadataExample {
 			addCriterion("date_deleted not between", value1, value2, "dateDeleted");
 			return (Criteria) this;
 		}
+
+		public Criteria andPlanIdentifierIsNull() {
+			addCriterion("plan_identifier is null");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierIsNotNull() {
+			addCriterion("plan_identifier is not null");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierEqualTo(String value) {
+			addCriterion("plan_identifier =", value, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierNotEqualTo(String value) {
+			addCriterion("plan_identifier <>", value, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierGreaterThan(String value) {
+			addCriterion("plan_identifier >", value, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierGreaterThanOrEqualTo(String value) {
+			addCriterion("plan_identifier >=", value, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierLessThan(String value) {
+			addCriterion("plan_identifier <", value, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierLessThanOrEqualTo(String value) {
+			addCriterion("plan_identifier <=", value, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierLike(String value) {
+			addCriterion("plan_identifier like", value, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierNotLike(String value) {
+			addCriterion("plan_identifier not like", value, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierIn(List<String> values) {
+			addCriterion("plan_identifier in", values, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierNotIn(List<String> values) {
+			addCriterion("plan_identifier not in", values, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierBetween(String value1, String value2) {
+			addCriterion("plan_identifier between", value1, value2, "planIdentifier");
+			return (Criteria) this;
+		}
+
+		public Criteria andPlanIdentifierNotBetween(String value1, String value2) {
+			addCriterion("plan_identifier not between", value1, value2, "planIdentifier");
+			return (Criteria) this;
+		}
 	}
 	
 	/**

@@ -11,7 +11,7 @@ import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opensrp.domain.LocationTag;
+import org.smartregister.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.postgres.LocationTagExample;
 import org.opensrp.repository.LocationTagRepository;

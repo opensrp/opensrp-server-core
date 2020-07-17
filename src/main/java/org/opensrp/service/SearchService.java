@@ -2,7 +2,7 @@ package org.opensrp.service;
 
 import java.util.List;
 
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.repository.SearchRepository;
 import org.opensrp.search.ClientSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;

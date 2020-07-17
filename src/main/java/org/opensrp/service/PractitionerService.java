@@ -16,13 +16,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PractitionerService {
-	
+
 	private PractitionerRepository practitionerRepository;
-	
+
 	private PractitionerRoleService practitionerRoleService;
-	
+
 	private OrganizationService organizationService;
-	
+
 	@Autowired
 	public PractitionerService(PractitionerRepository practitionerRepository,
 	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService) {

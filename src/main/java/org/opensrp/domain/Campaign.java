@@ -1,7 +1,8 @@
 package org.opensrp.domain;
 
 import org.joda.time.DateTime;
-import org.opensrp.domain.Task.TaskStatus;
+import org.smartregister.domain.ExecutionPeriod;
+import org.smartregister.domain.Task.TaskStatus;
 
 public class Campaign {
 

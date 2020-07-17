@@ -1,7 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import org.opensrp.common.AllConstants.BaseEntity;
-import org.opensrp.domain.BaseDataEntity;
+import org.smartregister.domain.BaseDataEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +14,12 @@ public abstract class BaseRepositoryImpl<T> {
 	public static String REVISION_PREFIX = "v";
 	
 	public static String SERVER_VERSION = "server_version";
+
+	public static String VERSION = "version";
 	
 	public static String ASCENDING = "asc";
+
+	public static String DESCENDING = "desc";
 	
 	protected static Logger logger = LoggerFactory.getLogger(BaseRepositoryImpl.class.toString());
 	

@@ -10,8 +10,8 @@ import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONException;
-import org.opensrp.domain.Address;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Address;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
@@ -262,7 +262,7 @@ public class ClientService {
 			client.setRevision(c.getRevision());
 			client.setId(c.getId());
 			client.setDateEdited(DateTime.now());
-			client.setServerVersion(null);
+			client.setServerVersion(0l);
 			client.addIdentifier("OPENMRS_UUID", c.getIdentifier("OPENMRS_UUID"));
 			allClients.update(client);
 			
@@ -285,7 +285,7 @@ public class ClientService {
 			client.setId(c.getId());
 			client.setDateEdited(DateTime.now());
 			if (resetServerVersion) {
-				client.setServerVersion(null);
+				client.setServerVersion(0l);
 			}
 			allClients.update(client);
 			
@@ -394,5 +394,9 @@ public class ClientService {
 	 */
 	public Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived) {
 		return allClients.findAllIds(serverVersion, limit, isArchived);
+	}
+
+	public List<Client> findByClientTypeAndLocationId(String clientType, String locationId) {
+		return allClients.findByClientTypeAndLocationId(clientType,locationId);
 	}
 }
