@@ -534,17 +534,18 @@ public class PhysicalLocationServiceTest {
 	
 	@Test
 	public void testFindLocationDetailsByPlanId() {
-		List<LocationDetail> expectedLocationDetails = new ArrayList<>();
+		Set<LocationDetail> expectedLocationDetails = new HashSet<>();
 		LocationDetail locationDetail = LocationDetail.builder().identifier("identifier-1").name("location-one").build();
 		expectedLocationDetails.add(locationDetail);
 		
 		when(locationRepository.findLocationDetailsByPlanId("identifier-1")).thenReturn(expectedLocationDetails);
-		List<LocationDetail> actualLocationDetails = locationService.findLocationDetailsByPlanId("identifier-1");
+		Set<LocationDetail> actualLocationDetails = locationService.findLocationDetailsByPlanId("identifier-1");
 		
 		verify(locationRepository).findLocationDetailsByPlanId(anyString());
 		assertEquals(1, actualLocationDetails.size());
-		assertEquals(actualLocationDetails.get(0).getIdentifier(), "identifier-1");
-		assertEquals(actualLocationDetails.get(0).getName(), "location-one");
+		LocationDetail actuallocationDetail = actualLocationDetails.iterator().next();
+		assertEquals(actuallocationDetail.getIdentifier(), "identifier-1");
+		assertEquals(actuallocationDetail.getName(), "location-one");
 		
 	}
 	
@@ -605,7 +606,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testbuildLocationHierachy() {
 		Set<String> identifiers = new HashSet<>(Arrays.asList("1234", "21"));
-		List<LocationDetail> locationDetails = new ArrayList<>();
+		Set<LocationDetail> locationDetails = new HashSet<>();
 		LocationDetail kenya = LocationDetail.builder().name("Kenya").id(1l).identifier("254").tags("Country").build();
 		LocationDetail nairobi = LocationDetail.builder().name("Nairobi").id(2l).identifier("252-020").parentId("254")
 		        .tags("City,Zone").build();
@@ -690,7 +691,7 @@ public class PhysicalLocationServiceTest {
 	public void testBuildLocationHierachyFromLocation() {
 		String locationId = "1";
 
-		List<LocationDetail> locationDetails = new ArrayList<>();
+		Set<LocationDetail> locationDetails = new HashSet<>();
 
 		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
 				.tags("Country").build();
@@ -752,7 +753,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testBuildLocationHierachyFromLocationWithStructureCounts() {
 		String locationId = "1";
-		List<LocationDetail> locationDetails = new ArrayList<>();
+		Set<LocationDetail> locationDetails = new HashSet<>();
 
 		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
 				.tags("Country").geographicLevel(0).build();
@@ -836,7 +837,7 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testBuildLocationHierarchy() {
-		List<LocationDetail> locationDetails = new ArrayList<>();
+		Set<LocationDetail> locationDetails = new HashSet<>();
 
 		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
 				.tags("Country").geographicLevel(0).build();
@@ -901,7 +902,7 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testBuildLocationHierarchyWithStructureCounts() {
-		List<LocationDetail> locationDetails = new ArrayList<>();
+		Set<LocationDetail> locationDetails = new HashSet<>();
 
 		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
 				.tags("Country").geographicLevel(0).build();
