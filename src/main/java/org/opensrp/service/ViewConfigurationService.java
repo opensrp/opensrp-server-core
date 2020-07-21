@@ -7,6 +7,7 @@ import org.opensrp.repository.ViewConfigurationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,11 +21,13 @@ public class ViewConfigurationService {
 	public void setViewConfigurationRepository(ViewConfigurationRepository viewConfigurationRepository) {
 		this.viewConfigurationRepository = viewConfigurationRepository;
 	}
-	
+
+	@PreAuthorize("hasRole('SYNC_VIEWCONFIGURATION')")
 	public List<ViewConfiguration> findViewConfigurationsByVersion(Long lastSyncedServerVersion) {
 		return viewConfigurationRepository.findViewConfigurationsByVersion(lastSyncedServerVersion);
 	}
-	
+
+	@PreAuthorize("hasRole('VIEWCONFIGURATION_UPDATE')")
 	public void addServerVersion() {
 		try {
 			List<ViewConfiguration> viewConfigurations = viewConfigurationRepository.findByEmptyServerVersion();

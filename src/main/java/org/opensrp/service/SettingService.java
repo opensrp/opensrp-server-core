@@ -10,6 +10,7 @@ import org.opensrp.search.SettingSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -35,6 +36,7 @@ public class SettingService {
 	 * @param settingQueryBean {@link SettingSearchBean} -- has the required parameters for the search
 	 * @return
 	 */
+	@PreAuthorize("hasRole('SETTINGCONFIGURATION_VIEW')")
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean,
 			Map<String, TreeNode<String, Location>> treeNodeHashMap) {
 		return settingRepository.findSettings(settingQueryBean,treeNodeHashMap);
@@ -71,6 +73,7 @@ public class SettingService {
 	 * @param jsonSettingConfiguration {@link String} -- the string representation of the settings configuration
 	 * @return
 	 */
+	@PreAuthorize("hasRole('SETTINGCONFIGURATION_CREATE') or hasRole('SETTINGCONFIGURATION_UPDATE')")
 	public synchronized String saveSetting(String jsonSettingConfiguration) {
 		SettingTypeHandler settingTypeHandler = new SettingTypeHandler();
 		SettingConfiguration settingConfigurations = null;
@@ -101,6 +104,7 @@ public class SettingService {
 	 *
 	 * @param setting {@link Setting}
 	 */
+	@PreAuthorize("hasRole('SETTINGCONFIGURATION_CREATE') or hasRole('SETTINGCONFIGURATION_UPDATE')")
 	public void addOrUpdateSettings(Setting setting) {
 		if (setting != null) {
 			settingRepository.addOrUpdate(setting);
@@ -112,6 +116,7 @@ public class SettingService {
 	 *
 	 * @param id {@link Long} -- settings id
 	 */
+	@PreAuthorize("hasRole('SETTINGCONFIGURATION_DELETE')")
 	public void deleteSetting(Long id) {
 		if (id != null) {
 			settingRepository.delete(id);

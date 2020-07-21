@@ -30,11 +30,12 @@ public class PractitionerService {
 		this.practitionerRoleService = practitionerRoleService;
 		this.organizationService = organizationService;
 	}
-	
+
 	public PractitionerRepository getPractitionerRepository() {
 		return practitionerRepository;
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_VIEW')")
 	public Practitioner getPractitioner(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().get(identifier);
 	}
@@ -42,11 +43,13 @@ public class PractitionerService {
 	public org.opensrp.domain.postgres.Practitioner getPgPractitioner(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().getPractitioner(identifier);
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_VIEW')")
 	public List<Practitioner> getAllPractitioners() {
 		return getPractitionerRepository().getAll();
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_CREATE') or hasRole('PRACTITIONER_UPDATE')")
 	public Practitioner addOrUpdatePractitioner(Practitioner practitioner) {
 		if (StringUtils.isBlank(practitioner.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -59,7 +62,8 @@ public class PractitionerService {
 		}
 		return practitioner;
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_DELETE')")
 	public void deletePractitioner(Practitioner practitioner) {
 		if (StringUtils.isBlank(practitioner.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -68,7 +72,8 @@ public class PractitionerService {
 		getPractitionerRepository().safeRemove(practitioner);
 		
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_DELETE')")
 	public void deletePractitioner(String identifier) {
 		if (StringUtils.isBlank(identifier)) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -95,6 +100,7 @@ public class PractitionerService {
 	 * @param username
 	 * @return practitioner with the username
 	 */
+	@PreAuthorize("hasRole('PRACTITIONER_VIEW')")
 	public Practitioner getPractionerByUsername(String username) {
 		return getPractitionerRepository().getPractitionerByUsername(username);
 		
@@ -106,7 +112,8 @@ public class PractitionerService {
 	 * @param organizationId the identifier for organization
 	 * @return practitioners in an organization
 	 */
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_VIEW')")
 	public List<Practitioner> getPractitionersByOrgIdentifier(String organizationIdentifier) {
 		organizationService.validateIdentifier(organizationIdentifier);
 		Organization organization = organizationService.getOrganization(organizationIdentifier);

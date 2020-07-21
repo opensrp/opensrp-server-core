@@ -9,6 +9,9 @@ import org.opensrp.domain.postgres.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,15 +30,22 @@ public class PractitionerRoleService {
 		this.practitionerRepository = practitionerRepository;
 		this.organizationService = organizationService;
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_ROLE_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'PractitionerRole', 'PRACTITIONER_ROLE_VIEW')")
 	public PractitionerRole getPractitionerRole(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : practitionerRoleRepository.get(identifier);
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_ROLE_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'PRACTITIONER_ROLE_VIEW')")
 	public List<PractitionerRole> getAllPractitionerRoles() {
 		return practitionerRoleRepository.getAll();
 	}
-	
+
+	@PreAuthorize("(hasPermission(#practitionerRole,'PractitionerRole', 'PRACTITIONER_ROLE_VIEW') and "
+			+ "hasPermission(#practitionerRole,'PractitionerRole', 'PRACTITIONER_ROLE_CREATE') and "
+			+ "hasPermission(#practitionerRole,'PractitionerRole', 'PRACTITIONER_ROLE_UPDATE'))")
 	public PractitionerRole addOrUpdatePractitionerRole(PractitionerRole practitionerRole) {
 		if (StringUtils.isBlank(practitionerRole.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -48,7 +58,8 @@ public class PractitionerRoleService {
 		}
 		return practitionerRole;
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_ROLE_DELETE') and hasPermission(#practitionerRole,'PractitionerRole', 'PRACTITIONER_ROLE_DELETE')")
 	public void deletePractitionerRole(PractitionerRole practitionerRole) {
 		if (StringUtils.isBlank(practitionerRole.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -56,7 +67,8 @@ public class PractitionerRoleService {
 		
 		practitionerRoleRepository.safeRemove(practitionerRole);
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_ROLE_DELETE')")
 	public void deletePractitionerRole(String identifier) {
 		if (StringUtils.isBlank(identifier)) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -64,7 +76,8 @@ public class PractitionerRoleService {
 		
 		practitionerRoleRepository.safeRemove(identifier);
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_ROLE_DELETE')")
 	public void deletePractitionerRole(String organizationIdentifier, String practitionerIdentifier) {
 		if (StringUtils.isBlank(organizationIdentifier) || StringUtils.isBlank(practitionerIdentifier)) {
 			throw new IllegalArgumentException("Organization Identifier or Practitioner Identifier not specified");
@@ -80,7 +93,9 @@ public class PractitionerRoleService {
 		
 		practitionerRoleRepository.safeRemove(organization.getId(), pgPractitioner.getId());
 	}
-	
+
+	@PreAuthorize("hasRole('PRACTITIONER_ROLE_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'PRACTITIONER_ROLE_VIEW')")
 	public List<PractitionerRole> getRolesForPractitioner(String practitionerIdentifier) {
 		if (StringUtils.isBlank(practitionerIdentifier)) {
 			throw new IllegalArgumentException("Identifier not specified");

@@ -7,6 +7,7 @@ import org.opensrp.domain.Stock;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.search.StockSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,31 +19,37 @@ public class StockService {
 	public StockService(StocksRepository allStocks) {
 		this.allStocks = allStocks;
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_VIEW')")
 	public List<Stock> findAllByProviderid(String providerid) {
 		return allStocks.findAllByProviderid(providerid);
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_VIEW')")
 	public Stock getById(String id) {
 		return allStocks.findById(id);
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_VIEW')")
 	public List<Stock> getAll() {
 		return allStocks.getAll();
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_VIEW')")
 	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int limit) {
 		return allStocks.findStocks(searchBean, sortBy, sortOrder, limit);
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_VIEW')")
 	public List<Stock> findStocks(StockSearchBean searchBean) {
 		return allStocks.findStocks(searchBean);
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_VIEW')")
 	public List<Stock> findAllStocks() {
 		return allStocks.findAllStocks();
 	}
-	
+
 	public Stock find(Stock stock) {
 		Stock st = allStocks.findById(stock.getId());
 		if (st == null) {
@@ -51,7 +58,8 @@ public class StockService {
 			return stock;
 		}
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_CREATE')")
 	public synchronized Stock addStock(Stock stock) {
 		Stock st = find(stock);
 		if (st != null) {
@@ -61,7 +69,8 @@ public class StockService {
 		allStocks.add(stock);
 		return stock;
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_CREATE') or hasRole('STOCK_UPDATE')")
 	public synchronized Stock addorUpdateStock(Stock stock) {
 		if (stock.getId() != null && getById(stock.getId()) != null) {
 			stock.setDateEdited(DateTime.now());
@@ -74,7 +83,8 @@ public class StockService {
 		}
 		return stock;
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_UPDATE')")
 	public void updateStock(Stock updatedStock) {
 		// If update is on original entity
 		if (updatedStock.isNew()) {
@@ -86,7 +96,8 @@ public class StockService {
 		
 		allStocks.update(updatedStock);
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_VIEW')")
 	public Stock find(String uniqueId) {
 		List<Stock> sList = allStocks.findAllByProviderid(uniqueId);
 		if (sList.size() > 1) {
@@ -96,7 +107,8 @@ public class StockService {
 		}
 		return null;
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_UPDATE')")
 	public Stock mergeStock(Stock updatedStock) {
 		Stock original = find(updatedStock);
 		if (original == null) {
@@ -106,7 +118,8 @@ public class StockService {
 		allStocks.update(original);
 		return original;
 	}
-	
+
+	@PreAuthorize("hasRole('STOCK_VIEW')")
 	public List<Stock> findStocksBy(StockSearchBean searchBean) {
 		return allStocks.findStocks(searchBean);
 	}

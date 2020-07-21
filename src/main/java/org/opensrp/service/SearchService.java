@@ -6,6 +6,7 @@ import org.smartregister.domain.Client;
 import org.opensrp.repository.SearchRepository;
 import org.opensrp.search.ClientSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ public class SearchService {
 
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> searchClient(ClientSearchBean clientSearchBean, String firstName, String middleName, String lastName,
 	        Integer limit) {
 		return search.findByCriteria(clientSearchBean, firstName, middleName, lastName, limit);
