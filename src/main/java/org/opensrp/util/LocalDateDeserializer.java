@@ -10,11 +10,11 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
 
-public class LocaldateDeserializer extends StdScalarDeserializer<LocalDate> {
+public class LocalDateDeserializer extends StdScalarDeserializer<LocalDate> {
 	
 	private static final long serialVersionUID = -805075518081134882L;
 	
-	public LocaldateDeserializer() {
+	public LocalDateDeserializer() {
 		super(LocalDate.class);
 	}
 	
