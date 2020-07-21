@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -753,7 +754,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testBuildLocationHierachyFromLocationWithStructureCounts() {
 		String locationId = "1";
-		Set<LocationDetail> locationDetails = new HashSet<>();
+		Set<LocationDetail> locationDetails = new LinkedHashSet<>();
 
 		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
 				.tags("Country").geographicLevel(0).build();
@@ -902,7 +903,7 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testBuildLocationHierarchyWithStructureCounts() {
-		Set<LocationDetail> locationDetails = new HashSet<>();
+		Set<LocationDetail> locationDetails = new LinkedHashSet<>();
 
 		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
 				.tags("Country").geographicLevel(0).build();
