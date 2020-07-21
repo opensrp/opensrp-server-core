@@ -1,5 +1,6 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -31,7 +32,7 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 			@Param("locationId") String locationId,
 			@Param("offset") int offset, @Param("limit") int limit);
 
-	Set<LocationDetail> selectDetailsByPlanId(@Param("example") LocationMetadataExample locationMetadataExample,
+	LinkedHashSet<LocationDetail> selectDetailsByPlanId(@Param("example") LocationMetadataExample locationMetadataExample,
 											   @Param("planIdentifier") String planIdentifier);
 
 	List<String> selectManyIds(@Param("example") LocationMetadataExample locationMetadataExample, @Param("offset") int offset,
@@ -42,11 +43,11 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 
 	int selectCountLocations(@Param("locationSearchBean") LocationSearchBean locationSearchBean);
 	
-	Set<LocationDetail> selectLocationHierachy( @Param("identifiers") Set<String> identifiers, @Param("tags") boolean returnTags);
+	LinkedHashSet<LocationDetail> selectLocationHierachy( @Param("identifiers") Set<String> identifiers, @Param("tags") boolean returnTags);
 
 	Location findByIdAndVersion(@Param("id") String id, @Param("geometry") boolean returnGeometry, @Param("version") int version);
 
-	Set<LocationDetail> selectLocationWithDescendants(@Param("locationId") String locationId, @Param("tags") boolean returnTags);
+	LinkedHashSet<LocationDetail> selectLocationWithDescendants(@Param("locationId") String locationId, @Param("tags") boolean returnTags);
 
 	List<String> selectChildrenIds(@Param("locationId") String locationId);
 }
