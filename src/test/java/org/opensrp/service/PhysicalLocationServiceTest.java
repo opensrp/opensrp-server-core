@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -534,17 +535,18 @@ public class PhysicalLocationServiceTest {
 	
 	@Test
 	public void testFindLocationDetailsByPlanId() {
-		List<LocationDetail> expectedLocationDetails = new ArrayList<>();
+		Set<LocationDetail> expectedLocationDetails = new HashSet<>();
 		LocationDetail locationDetail = LocationDetail.builder().identifier("identifier-1").name("location-one").build();
 		expectedLocationDetails.add(locationDetail);
 		
 		when(locationRepository.findLocationDetailsByPlanId("identifier-1")).thenReturn(expectedLocationDetails);
-		List<LocationDetail> actualLocationDetails = locationService.findLocationDetailsByPlanId("identifier-1");
+		Set<LocationDetail> actualLocationDetails = locationService.findLocationDetailsByPlanId("identifier-1");
 		
 		verify(locationRepository).findLocationDetailsByPlanId(anyString());
 		assertEquals(1, actualLocationDetails.size());
-		assertEquals(actualLocationDetails.get(0).getIdentifier(), "identifier-1");
-		assertEquals(actualLocationDetails.get(0).getName(), "location-one");
+		LocationDetail actuallocationDetail = actualLocationDetails.iterator().next();
+		assertEquals(actuallocationDetail.getIdentifier(), "identifier-1");
+		assertEquals(actuallocationDetail.getName(), "location-one");
 		
 	}
 	
@@ -605,15 +607,15 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testbuildLocationHierachy() {
 		Set<String> identifiers = new HashSet<>(Arrays.asList("1234", "21"));
-		List<LocationDetail> locationDetails = new ArrayList<>();
+		Set<LocationDetail> locationDetails = new HashSet<>();
 		LocationDetail kenya = LocationDetail.builder().name("Kenya").id(1l).identifier("254").tags("Country").build();
 		LocationDetail nairobi = LocationDetail.builder().name("Nairobi").id(2l).identifier("252-020").parentId("254")
 		        .tags("City,Zone").build();
 		locationDetails.add(kenya);
 		locationDetails.add(nairobi);
-		when(locationRepository.findParentLocationsInclusive(identifiers)).thenReturn(locationDetails);
-		LocationTree tree = locationService.buildLocationHierachy(identifiers, true);
-		verify(locationRepository).findParentLocationsInclusive(identifiers);
+		when(locationRepository.findParentLocationsInclusive(identifiers, false)).thenReturn(locationDetails);
+		LocationTree tree = locationService.buildLocationHierachy(identifiers, false, false);
+		verify(locationRepository).findParentLocationsInclusive(identifiers, false);
 		assertNotNull(tree);
 		assertEquals(1, tree.getLocationsHierarchy().size());
 		TreeNode<String, Location> countryNode = tree.getLocationsHierarchy().get(kenya.getIdentifier());
@@ -690,7 +692,7 @@ public class PhysicalLocationServiceTest {
 	public void testBuildLocationHierachyFromLocation() {
 		String locationId = "1";
 
-		List<LocationDetail> locationDetails = new ArrayList<>();
+		Set<LocationDetail> locationDetails = new HashSet<>();
 
 		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
 				.tags("Country").build();
@@ -750,8 +752,93 @@ public class PhysicalLocationServiceTest {
 	}
 
 	@Test
+	public void testBuildLocationHierachyFromLocationWithStructureCounts() {
+		String locationId = "1";
+		Set<LocationDetail> locationDetails = new LinkedHashSet<>();
+
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
+				.tags("Country").geographicLevel(0).build();
+		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
+				.tags("Province").geographicLevel(1).build();
+		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
+				.tags("Province").geographicLevel(1).build();
+		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
+				.tags("District").geographicLevel(2).build();
+		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
+				.tags("District").geographicLevel(2).build();
+		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
+				.tags("District").geographicLevel(2).build();
+		LocationDetail district4 = LocationDetail.builder().name("District 4").id(8l).identifier("123").parentId("12")
+				.tags("District").geographicLevel(2).build(); // Test what happens when child location has no structures
+
+		// records are ordered by level in the db query
+		locationDetails.add(district4);
+		locationDetails.add(district3);
+		locationDetails.add(district2);
+		locationDetails.add(district1);
+		locationDetails.add(province2);
+		locationDetails.add(province1);
+		locationDetails.add(country);
+
+		Set<String> locationIdentifiers = new HashSet<>();
+		locationIdentifiers.add(country.getIdentifier());
+		locationIdentifiers.add(province1.getIdentifier());
+		locationIdentifiers.add(province2.getIdentifier());
+		locationIdentifiers.add(district1.getIdentifier());
+		locationIdentifiers.add(district2.getIdentifier());
+		locationIdentifiers.add(district3.getIdentifier());
+		locationIdentifiers.add(district4.getIdentifier());
+
+		when(locationRepository.findLocationWithDescendants(locationId, false)).thenReturn(locationDetails);
+
+		List<StructureCount> structureCounts = new ArrayList<>();
+		StructureCount structureCountD1 = StructureCount.builder().parentId(district1.getIdentifier()).count(10).build();
+		StructureCount structureCountD2 = StructureCount.builder().parentId(district2.getIdentifier()).count(5).build();
+		StructureCount structureCountD3 = StructureCount.builder().parentId(district3.getIdentifier()).count(8).build();
+		structureCounts.add(structureCountD1);
+		structureCounts.add(structureCountD2);
+		structureCounts.add(structureCountD3);
+
+
+		when(locationRepository.findStructureCountsForLocation(locationIdentifiers)).thenReturn(structureCounts);
+
+		LocationTree tree = locationService.buildLocationHierachyFromLocation(locationId, true);
+
+		TreeNode<String, Location> countryNode = tree.getLocationsHierarchy().get(country.getIdentifier());
+		assertNotNull(countryNode);
+		assertEquals(country.getIdentifier(), countryNode.getId());
+		assertEquals(country.getName(), countryNode.getLabel());
+		assertNull(countryNode.getParent());
+		assertEquals(country.getTags(), countryNode.getNode().getTags().iterator().next());
+		assertEquals(2, countryNode.getChildren().size());
+		assertEquals(0, countryNode.getNode().getAttribute("geographicLevel"));
+		assertEquals(23, countryNode.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> province1Node = countryNode.getChildren().get(province1.getIdentifier());
+		assertNotNull(province1Node);
+		verifyLocationData(province1Node, province1, country, 1, true);
+		assertEquals(10, province1Node.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> province2Node = countryNode.getChildren().get(province2.getIdentifier());
+		verifyLocationData(province2Node, province2, country, 1, true);
+		assertEquals(13, province2Node.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> district1Node = province1Node.getChildren().get(district1.getIdentifier());
+		verifyLocationData(district1Node, district1, province1, 2, false);
+		assertEquals(10, district1Node.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> district2Node = province2Node.getChildren().get(district2.getIdentifier());
+		verifyLocationData(district2Node, district2, province2, 2, false);
+		assertEquals(5, district2Node.getNode().getAttribute(STRUCTURE_COUNT));
+
+		TreeNode<String, Location> district3Node = province2Node.getChildren().get(district3.getIdentifier());
+		verifyLocationData(district3Node, district3, province2, 2, false);
+		assertEquals(8, district3Node.getNode().getAttribute(STRUCTURE_COUNT));
+	}
+
+	@Test
 	public void testBuildLocationHierarchy() {
-		List<LocationDetail> locationDetails = new ArrayList<>();
+		Set<LocationDetail> locationDetails = new HashSet<>();
 
 		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
 				.tags("Country").geographicLevel(0).build();
@@ -778,9 +865,9 @@ public class PhysicalLocationServiceTest {
 		locationIdentifiers.add(district2.getIdentifier());
 		locationIdentifiers.add(district2.getIdentifier());
 
-		when(locationRepository.findParentLocationsInclusive(locationIdentifiers)).thenReturn(locationDetails);
+		when(locationRepository.findParentLocationsInclusive(locationIdentifiers, true)).thenReturn(locationDetails);
 
-		LocationTree tree = locationService.buildLocationHierachy(locationIdentifiers, false);
+		LocationTree tree = locationService.buildLocationHierachy(locationIdentifiers, false, true);
 
 		TreeNode<String, Location> countryNode = tree.getLocationsHierarchy().get(country.getIdentifier());
 		assertNotNull(countryNode);
@@ -816,7 +903,7 @@ public class PhysicalLocationServiceTest {
 
 	@Test
 	public void testBuildLocationHierarchyWithStructureCounts() {
-		List<LocationDetail> locationDetails = new ArrayList<>();
+		Set<LocationDetail> locationDetails = new LinkedHashSet<>();
 
 		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
 				.tags("Country").geographicLevel(0).build();
@@ -830,13 +917,17 @@ public class PhysicalLocationServiceTest {
 				.tags("District").geographicLevel(2).build();
 		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
 				.tags("District").geographicLevel(2).build();
+		LocationDetail district4 = LocationDetail.builder().name("District 4").id(8l).identifier("123").parentId("12")
+				.tags("District").geographicLevel(2).build(); // Test what happens when child not has no structures
 
-		locationDetails.add(country);
-		locationDetails.add(province1);
-		locationDetails.add(province2);
-		locationDetails.add(district1);
-		locationDetails.add(district2);
+		// records are ordered by level in the db query
+		locationDetails.add(district4);
 		locationDetails.add(district3);
+		locationDetails.add(district2);
+		locationDetails.add(district1);
+		locationDetails.add(province2);
+		locationDetails.add(province1);
+		locationDetails.add(country);
 
 		Set<String> locationIdentifiers = new HashSet<>();
 		locationIdentifiers.add(country.getIdentifier());
@@ -845,8 +936,9 @@ public class PhysicalLocationServiceTest {
 		locationIdentifiers.add(district1.getIdentifier());
 		locationIdentifiers.add(district2.getIdentifier());
 		locationIdentifiers.add(district3.getIdentifier());
+		locationIdentifiers.add(district4.getIdentifier());
 
-		when(locationRepository.findParentLocationsInclusive(locationIdentifiers)).thenReturn(locationDetails);
+		when(locationRepository.findParentLocationsInclusive(locationIdentifiers, false)).thenReturn(locationDetails);
 
 		List<StructureCount> structureCounts = new ArrayList<>();
 		StructureCount structureCountD1 = StructureCount.builder().parentId(district1.getIdentifier()).count(10).build();
@@ -859,7 +951,7 @@ public class PhysicalLocationServiceTest {
 
 		when(locationRepository.findStructureCountsForLocation(locationIdentifiers)).thenReturn(structureCounts);
 
-		LocationTree tree = locationService.buildLocationHierachy(locationIdentifiers, true);
+		LocationTree tree = locationService.buildLocationHierachy(locationIdentifiers, true, false);
 
 		TreeNode<String, Location> countryNode = tree.getLocationsHierarchy().get(country.getIdentifier());
 		assertNotNull(countryNode);

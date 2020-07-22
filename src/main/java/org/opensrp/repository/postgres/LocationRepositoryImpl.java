@@ -399,7 +399,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
+	public Set<LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
 		
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
@@ -484,16 +484,23 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers) {
-		return locationMetadataMapper.selectLocationHierachy(identifiers);
+	public Set<LocationDetail> findParentLocationsInclusive(Set<String> identifiers) {
+		return locationMetadataMapper.selectLocationHierachy(identifiers, true);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Set<LocationDetail> findParentLocationsInclusive(Set<String> identifiers, boolean returnTags) {
+		return locationMetadataMapper.selectLocationHierachy(identifiers, returnTags);
+	}
 
 	@Override
 	public PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status, boolean returnGeometry) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andGeojsonIdEqualTo(identifier)
-				.andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+				.andStatusEqualTo(status);
 		locationMetadataExample.setOrderByClause(getOrderByClause(VERSION, DESCENDING));
 
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
@@ -736,7 +743,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags) {
+	public Set<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags) {
 		return locationMetadataMapper.selectLocationWithDescendants(locationId, returnTags);
 	}
   

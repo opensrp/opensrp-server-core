@@ -1,5 +1,7 @@
 package org.opensrp.service;
 
+import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,26 +11,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
-import org.opensrp.api.util.TreeNode;
 import org.opensrp.domain.LocationDetail;
-import org.smartregister.domain.LocationProperty;
-import org.smartregister.domain.PhysicalLocation;
-import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.StructureCount;
+import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.search.LocationSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartregister.domain.LocationProperty;
+import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 @Service
 public class PhysicalLocationService {
@@ -258,7 +258,7 @@ public class PhysicalLocationService {
 	 * @param planIdentifier identifier of the plan
 	 * @return list of location details i.e. identifier and name
 	 */
-	public List<LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
+	public Set<LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
 		return locationRepository.findLocationDetailsByPlanId(planIdentifier);
 	}
 	
@@ -309,19 +309,19 @@ public class PhysicalLocationService {
 	 * including the identifiers
 	 * 
 	 * @param identifiers the id of locations to get location hierarchy
+	 * @param returnStructureCount whether to return structure counts for the jurisdictions
+	 * @param returnTags whether to return loction tags
 	 * @return the location hierarchy/tree of the identifiers
 	 */
-	public LocationTree buildLocationHierachy(Set<String> identifiers, boolean returnStructureCount) {
+	public LocationTree buildLocationHierachy(Set<String> identifiers, boolean returnStructureCount, boolean returnTags) {
 		LocationTree locationTree = new LocationTree();
-		List<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers);
+		Set<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers, returnTags);
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
-		if (returnStructureCount) {
-			populateParentLocationStructureCounts(locationTree.getLocationsHierarchy(), new HashMap<>());
-		}
 		return locationTree;
 	}
 	
-	private Location getLocationFromDetail(LocationDetail locationDetail, Map<String, LocationDetail> locationMap) {
+	private Location getLocationFromDetail(LocationDetail locationDetail, Map<String, LocationDetail> locationMap
+			, boolean returnStructureCounts, Map<String, Integer> cumulativeCountsMap ) {
 		Location location = new Location();
 		location.setLocationId(locationDetail.getIdentifier());
 		location.setName(locationDetail.getName());
@@ -334,45 +334,69 @@ public class PhysicalLocationService {
 			location.setParentLocation(new Location().withLocationId(parent.getIdentifier()));
 		}
 		location.addAttribute("geographicLevel", locationDetail.getGeographicLevel());
-		return location;
-	}
 
-	private Location updateStructureCount(Location location, Map<String, StructureCount> structureCountMap) {
-		StructureCount structureCount = structureCountMap.get(location.getLocationId());
-		if (structureCount != null) {
-			location.addAttribute(STRUCTURE_COUNT, structureCount.getCount());
+		if (returnStructureCounts) {
+			location.addAttribute(STRUCTURE_COUNT, cumulativeCountsMap.get(location.getLocationId()));
 		}
 		return location;
 	}
 
-	private List<Location> getLocations(List<LocationDetail> locationDetails, boolean returnStructureCounts){
+	private void populateCumulativeCountsMap(Set<LocationDetail> locationDetails, Map<String, Integer> cumulativeCountsMap,
+			Map<String, StructureCount> structureCountMap) {
+
+		for (LocationDetail locationDetail: locationDetails) {
+			StructureCount structureCount = structureCountMap.get(locationDetail.getIdentifier());
+			if (structureCount != null) { //only locations with structure counts
+				int updatedCount = cumulativeCountsMap.get(locationDetail.getIdentifier()) == null ? structureCount.getCount() :
+						cumulativeCountsMap.get(locationDetail.getIdentifier()) + structureCount.getCount();
+				cumulativeCountsMap.put(locationDetail.getIdentifier(), updatedCount);
+			} else if (cumulativeCountsMap.get(locationDetail.getIdentifier()) == null) {
+				cumulativeCountsMap.put(locationDetail.getIdentifier(), 0);
+			}
+
+			if (locationDetail.getParentId() != null) {
+				// init parent location map value
+				if (cumulativeCountsMap.get(locationDetail.getParentId()) == null) {
+					cumulativeCountsMap.put(locationDetail.getParentId(), 0);
+				}
+
+				// update parent location structure count
+				int updatedCount =  cumulativeCountsMap.get(locationDetail.getParentId()) + cumulativeCountsMap.get(locationDetail.getIdentifier());
+				cumulativeCountsMap.put(locationDetail.getParentId(), updatedCount);
+			}
+
+		}
+
+	}
+
+	private List<Location> getLocations(Set<LocationDetail> locationDetails, boolean returnStructureCounts){
 		/* @formatter:off */
 		List<StructureCount> structureCountsForLocation = null;
+		Map<String, StructureCount> structureCountMap = null;
+		Map<String, Integer> cumulativeCountsMap = new HashMap<>();
 		Map<String, LocationDetail> locationMap = locationDetails
 				.stream()
 				.collect(Collectors.toMap(LocationDetail::getIdentifier, (entry) -> entry));
-
-		List<Location> locations = locationDetails
-				.stream()
-				.map(location -> getLocationFromDetail(location, locationMap))
-				.collect(Collectors.toList());
 
 		if (returnStructureCounts) {
 			structureCountsForLocation = locationRepository
 					.findStructureCountsForLocation(locationMap.keySet());
 
-			Map<String, StructureCount> structureCountMap = structureCountsForLocation
+			structureCountMap = structureCountsForLocation
 					.stream()
 					.collect(Collectors.toMap(StructureCount::getParentId, (entry) -> entry));
 
-			locations = locations
-					.stream()
-					.map(location -> updateStructureCount(location, structureCountMap))
-					.collect(Collectors.toList());
-		}
-		/* @formatter:on */
+				populateCumulativeCountsMap(locationDetails, cumulativeCountsMap, structureCountMap);
 
-		return locations;
+		}
+
+		return locationDetails
+				.stream()
+				.map(location -> getLocationFromDetail(location, locationMap, returnStructureCounts, cumulativeCountsMap))
+				.collect(Collectors.toList());
+
+
+		/* @formatter:on */
 	}
 
 	/**
@@ -431,53 +455,9 @@ public class PhysicalLocationService {
 	 */
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnTags, boolean returnStructureCount) {
 		LocationTree locationTree = new LocationTree();
-		List<LocationDetail> locationDetails = locationRepository.findLocationWithDescendants(locationId, returnTags);
+		Set<LocationDetail> locationDetails = locationRepository.findLocationWithDescendants(locationId, returnTags);
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
-		if (returnStructureCount) {
-			populateParentLocationStructureCounts(locationTree.getLocationsHierarchy(), new HashMap<>());
-		}
 		return locationTree;
-	}
-
-	private void populateParentLocationStructureCounts(Map<String, TreeNode<String, Location>> nodeMap, Map<String,
-			Integer> parentLocationStructureCounts) {
-		if (nodeMap == null) {
-			return;
-		}
-		for (Map.Entry<String, TreeNode<String, Location>> entry : nodeMap.entrySet()) {
-			TreeNode<String, Location> currentNodeMap = entry.getValue();
-			Location currentLocation = entry.getValue().getNode();
-
-			if (currentNodeMap.getChildren() != null) { // initialize structure count for parent locations
-				parentLocationStructureCounts.put(currentLocation.getLocationId(), 0);
-				if (currentLocation.getAttribute(STRUCTURE_COUNT) == null) {
-					currentLocation.addAttribute(STRUCTURE_COUNT, 0);
-				}
-			}
-
-			populateParentLocationStructureCounts(entry.getValue().getChildren(), parentLocationStructureCounts);
-
-			if (currentNodeMap.getChildren() == null) { //At the bottom of tree
-				if (currentLocation.getParentLocation() != null && currentLocation.getAttribute(STRUCTURE_COUNT) != null) {
-					String parentLocationId = currentLocation.getParentLocation().getLocationId();
-					// increment parent location structure count
-					int updatedStructureCount = parentLocationStructureCounts.get(parentLocationId) + (int) currentLocation.getAttribute(STRUCTURE_COUNT);
-					parentLocationStructureCounts.put(parentLocationId, updatedStructureCount);
-
-				}
-			} else { // location with at least 1 child
-				// set updated count for current node
-				int updatedStructureCount = parentLocationStructureCounts.get(currentLocation.getLocationId()) + (int) currentLocation.getAttribute(STRUCTURE_COUNT);
-				currentLocation.addAttribute(STRUCTURE_COUNT, updatedStructureCount);
-				// Update structure count for current node's parent
-				if (currentLocation.getParentLocation() != null) {
-					String parentLocationId = currentLocation.getParentLocation().getLocationId();
-					int updatedParentStructureCount = parentLocationStructureCounts.get(parentLocationId) + (int) currentLocation.getAttribute(STRUCTURE_COUNT);
-					parentLocationStructureCounts.put(parentLocationId, updatedParentStructureCount);
-				}
-			}
-
-		}
 	}
 
 }

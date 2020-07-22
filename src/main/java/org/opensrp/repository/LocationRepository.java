@@ -98,7 +98,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @param planIdentifier identifier of the plan
 	 * @return list of location details i.e. identifier and name
 	 */
-	List<LocationDetail> findLocationDetailsByPlanId(String planIdentifier);
+	Set<LocationDetail> findLocationDetailsByPlanId(String planIdentifier);
 
 	/**
 	 * This method searches for jurisdictions ordered by serverVersion ascending
@@ -139,7 +139,17 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @param identifiers the identifiers of locations to get the parent locations
 	 * @return the parent locations inclusive of the location of the identifiers 
 	 */
-	List<LocationDetail> findParentLocationsInclusive(Set<String> identifiers);
+	Set<LocationDetail> findParentLocationsInclusive(Set<String> identifiers);
+
+	/**
+	 * Gets the parent locations inclusive of the location of the identifiers.
+	 * This returns the details of ancestors including locations the identifiers
+	 * @param identifiers the identifiers of locations to get the parent locations
+	 * @param returnTags Whether or not to return location tags
+	 * @return the parent locations inclusive of the location of the identifiers
+	 */
+	Set<LocationDetail> findParentLocationsInclusive(Set<String> identifiers, boolean returnTags);
+
 
 	/**
 	 * This method is used to return a location based on the provided parameters
@@ -190,7 +200,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @param locationId location id of the root location
 	 * @return chi
 	 */
-	List<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags);
+	Set<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags);
 
 	/**
 	 * This method returns a map containing a location identifier and a count of associated structures
