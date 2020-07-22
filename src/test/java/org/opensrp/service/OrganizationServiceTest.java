@@ -27,10 +27,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.PhysicalLocation;
+import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
+import org.opensrp.search.OrganizationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
@@ -151,7 +152,7 @@ public class OrganizationServiceTest {
 		Long locationId = 123l;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
-		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
+		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, null, null);
 		Date date = new Date();
@@ -180,7 +181,7 @@ public class OrganizationServiceTest {
 		Long planId = null;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
-		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
+		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
 		Date dateFrom = new Date();
 		Date dateTo = null;
@@ -199,7 +200,7 @@ public class OrganizationServiceTest {
 		Long planId = 19871l;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
-		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
+		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
 		Date dateFrom = new Date();
 		Date dateTo = null;
@@ -283,4 +284,19 @@ public class OrganizationServiceTest {
 		verify(organizationRepository, never()).findAssignedLocations(anyLong());
 	}
 	
+
+	@Test
+	public void testSearchOrganizationsBySearchParam() {
+		organization.setActive(true);
+		organization.setMemberCount(1);
+		List<Organization> expected = Collections.singletonList(organization);
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		organizationSearchBean.setPageNumber(0);
+		organizationSearchBean.setPageSize(10);
+		when(organizationRepository.findSearchOrganizations(organizationSearchBean)).thenReturn(expected);
+		List<Organization> organizations = organizationService.getSearchOrganizations(organizationSearchBean);
+		verify(organizationRepository).findSearchOrganizations(organizationSearchBean);
+		assertEquals(expected, organizations);
+	}
+
 }

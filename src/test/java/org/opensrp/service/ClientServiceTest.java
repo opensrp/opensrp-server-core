@@ -7,14 +7,15 @@ import static org.junit.Assert.assertTrue;
 import static org.opensrp.common.AllConstants.Client.OPENMRS_UUID_IDENTIFIER_TYPE;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
-import org.opensrp.domain.Address;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Address;
+import org.smartregister.domain.Client;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.repository.postgres.ClientsRepositoryImpl;
@@ -198,7 +199,19 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		assertEquals(existingServerVesion, updatedClient.getServerVersion().longValue());
 		
 		clientService.addorUpdate(savedClient, true);
-		assertTrue(clientService.find(savedClient.getBaseEntityId()).getServerVersion() > existingServerVesion);
+		assertEquals(clientService.find(savedClient.getBaseEntityId()).getServerVersion().longValue(), existingServerVesion);
+	}
+
+	@Test
+	public void testFindByClientTypeAndLocationId() {
+		Client client = new Client("f67823b0-378e-4a35-93fc-bb00def75e2f").withBirthdate(new DateTime("2017-03-31"), true)
+				.withGender("Male").withFirstName("xobili").withLastName("mbangwa");
+		client.setClientType("test-client-type");
+		client.setLocationId("test-location-id");
+		clientService.addClient(client);
+		List<Client> clients = clientService.findByClientTypeAndLocationId("test-client-type","test-location-id");
+		assertEquals(1, clients.size());
+		assertEquals("f67823b0-378e-4a35-93fc-bb00def75e2f", clients.get(0).getBaseEntityId());
 	}
 	
 }

@@ -5,12 +5,13 @@ import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
+import org.smartregister.pathevaluator.dao.ClientDao;
 
-public interface ClientsRepository extends BaseRepository<Client> {
+public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	
 	Client findByBaseEntityId(String baseEntityId);
 	
@@ -90,5 +91,7 @@ public interface ClientsRepository extends BaseRepository<Client> {
 	 * @return a list of client ids and last server version
 	 */
 	Pair<List<String>, Long>  findAllIds(long serverVersion, int limit, boolean isArchived);
+
+	List<Client> findByClientTypeAndLocationId(String clientType, String locationId);
 	
 }

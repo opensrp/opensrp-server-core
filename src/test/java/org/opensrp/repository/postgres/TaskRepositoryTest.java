@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +13,8 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.opensrp.domain.Task;
-import org.opensrp.domain.Task.TaskStatus;
+import org.smartregister.domain.Task;
+import org.smartregister.domain.Task.TaskStatus;
 import org.opensrp.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -201,7 +202,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertTrue(tasks.isEmpty());
 
 		Task task = taskRepository.get("iyr-998njoo");
-		task.setServerVersion(null);
+		task.setServerVersion(0l);
 		taskRepository.update(task);
 
 		tasks = taskRepository.findByEmptyServerVersion();
@@ -290,6 +291,61 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 
 		assertEquals(2, taskRepository.countTasksByPlanAndOwner("IRS_2018_S1", "demouser", 0).longValue());
 
+	}
+
+	@Test
+	public void testSaveTask() {
+		Task task = new Task();
+		task.setIdentifier("tsk-2332-k");
+		task.setPlanIdentifier("2018-IRS-S4");
+		task.setGroupIdentifier("7633hk-dsadsa");
+		task.setDescription("Visit Mwangala household");
+		task.setBusinessStatus("Not Visited");
+		task.setStatus(TaskStatus.READY);
+		task.setPriority(3);
+		task.setOwner("testUser");
+		task.setRequester("testUser");
+		taskRepository.add(task);
+
+		assertEquals(3, taskRepository.getAll().size());
+		Task addedTask = taskRepository.get("tsk-2332-k");
+		assertNotNull(addedTask);
+		assertEquals("2018-IRS-S4", addedTask.getPlanIdentifier());
+		assertEquals("7633hk-dsadsa", addedTask.getGroupIdentifier());
+		assertEquals("Visit Mwangala household", addedTask.getDescription());
+		assertEquals("Not Visited", addedTask.getBusinessStatus());
+		assertEquals(TaskStatus.READY, addedTask.getStatus());
+		assertEquals("testUser", addedTask.getOwner());
+		assertEquals("testUser", addedTask.getRequester());
+		assertEquals(3, addedTask.getPriority());
+	}
+
+	@Test
+	public void testCheckIfTaskExists() {
+		Task task = new Task();
+		task.setIdentifier("tsk-2332-kl");
+		task.setPlanIdentifier("test-plan-id-1");
+	    task.setForEntity("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd");
+		task.setCode("test-code");
+		task.setStatus(TaskStatus.READY);
+		taskRepository.add(task);
+		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd",
+				"test-plan-id-1","test-code");
+		assertTrue(taskExists);
+	}
+
+	@Test
+	public void testCheckIfTaskExistsReturnsFalse() {
+		Task task = new Task();
+		task.setIdentifier("tsk-2332-km");
+		task.setPlanIdentifier("test-plan-id-2");
+		task.setForEntity("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fe");
+		task.setCode("test-code-2");
+		task.setStatus(TaskStatus.ARCHIVED);
+		taskRepository.add(task);
+		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fe",
+				"test-plan-id-2","test-code-2");
+		assertFalse(taskExists);
 	}
 
 }

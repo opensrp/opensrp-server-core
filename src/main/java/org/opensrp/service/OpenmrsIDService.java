@@ -14,7 +14,7 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
 import org.slf4j.Logger;
@@ -183,12 +183,12 @@ public class OpenmrsIDService {
 	}
 
 	@PreAuthorize("hasRole('OPENMRS')")
-	public List<String> getOpenMRSIdentifiers(String source, String numberToGenerate, String userName, String password)
+	public List<String> getOpenMRSIdentifiers(String source, String numberToGenerate)
 	        throws JSONException {
 		List<String> ids = new ArrayList<>();
 		String openMRSUrl = this.openmrsUrl + OPENMRS_IDGEN_URL;
 		openMRSUrl += "?source=" + source + "&numberToGenerate=" + numberToGenerate;
-		openMRSUrl += "&username=" + userName + "&password=" + password;
+		openMRSUrl += "&username=" + openmrsUserName + "&password=" + openmrsPassword;
 		
 		HttpGet get = new HttpGet(openMRSUrl);
 		try {

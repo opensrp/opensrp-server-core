@@ -96,6 +96,29 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 
 	@Nullable
 	@Override
+	public List<ClientFormMetadata> getAllDraftsClientFormMetadata(boolean isDraft) {
+		return clientFormMetadataMapper.getDraftClientFormMetadata(isDraft);
+	}
+
+	@Nullable
+	@Override
+	public List<ClientFormMetadata> getAllJsonWidgetValidatorClientFormMetadata(boolean isJsonValidator) {
+		return clientFormMetadataMapper.getJsonWidgetValidatorClientFormMetadata(isJsonValidator);
+	}
+
+	@Override
+	public List<ClientFormMetadata> getAllClientFormMetadata() {
+		return clientFormMetadataMapper.getAllClientFormMetadata();
+	}
+
+	@Nullable
+	@Override
+	public ClientForm getMostRecentFormValidator(@NonNull String formIdentifier) {
+		return clientFormMapper.getMostRecentFormValidator(formIdentifier);
+	}
+
+	@Nullable
+	@Override
 	public ClientForm get(String id) {
 		if (TextUtils.isEmpty(id)) {
 			return null;
@@ -126,6 +149,13 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 		}
 
 		clientFormMapper.updateByPrimaryKeySelective(entity);
+	}
+
+	public void updateClientMetadataIsDraftByVersion(boolean isDraft, String formVersion) {
+		if (TextUtils.isBlank(formVersion)) {
+			return;
+		}
+		clientFormMetadataMapper.updateClientMetadataIsDraftByVersion(isDraft, formVersion);
 	}
 
 	@Override

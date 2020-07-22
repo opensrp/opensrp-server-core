@@ -11,12 +11,15 @@ import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
-import org.opensrp.domain.Event;
-import org.opensrp.domain.Obs;
+import org.smartregister.domain.Event;
+import org.smartregister.domain.Obs;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.search.EventSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -522,7 +525,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		eventsRepository.update(event);
 		
 		event = eventsRepository.get("05934ae338431f28bf6793b241bdbb60");
-		event.setServerVersion(null);
+		event.setServerVersion(0l);
 		eventsRepository.update(event);
 		long beforeFetch = System.currentTimeMillis();
 		List<Event> events = eventsRepository.findByEmptyServerVersion();
@@ -644,6 +647,26 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		for (Event event : eventObjects)
 			eventsRepository.safeRemove(event);
 		assertEquals(0, eventsRepository.countEvents(eventSearchBean).longValue());
+	}
+
+	@Test
+	public void testFindEventsByEntityIdAndPlan() {
+		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
+		Event event = new Event().withBaseEntityId("4355345345431").withEventType("GrowthMonitoring").
+				withFormSubmissionId("gjhg34534nvbnv33453450").withEventDate(new DateTime()).withObs(obs)
+				.withLocationId("test-location-id").withChildLocationId("test-child-location-id");
+		event.setTeam("team");
+		event.setTeamId("team-id");
+		event.setProviderId("provider-id");
+		event.setServerVersion(12345678l);
+
+		Map<String, String> details = new HashMap<>();
+		details.put("planIdentifier", "plan-id-12345");
+		event.setDetails(details);
+		eventsRepository.add(event);
+		List<QuestionnaireResponse> questionnaireResponses = eventsRepository.findEventsByEntityIdAndPlan("4355345345431","plan-id-12345");
+		assertEquals(1,questionnaireResponses.size());
+		assertEquals(event.getFormSubmissionId(),questionnaireResponses.get(0).getId());
 	}
 	
 }

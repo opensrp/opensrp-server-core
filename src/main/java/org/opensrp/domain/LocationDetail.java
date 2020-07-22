@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
+@EqualsAndHashCode(of = { "identifier" })
 public class LocationDetail implements Serializable {
 	
 	private static final long serialVersionUID = 7360003982578282029L;
@@ -28,5 +30,7 @@ public class LocationDetail implements Serializable {
 	private boolean voided;
 	
 	private String tags;
+	
+	private Integer geographicLevel;
 	
 }

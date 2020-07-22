@@ -3,6 +3,7 @@ package org.opensrp.domain;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.smartregister.domain.BaseDataEntity;
 
 public class Camp extends BaseDataEntity {
 	

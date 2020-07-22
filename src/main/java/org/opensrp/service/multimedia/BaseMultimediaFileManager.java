@@ -1,6 +1,6 @@
 package org.opensrp.service.multimedia;
 
-import org.opensrp.domain.Client;
+import org.smartregister.domain.Client;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.MultimediaRepository;
@@ -92,7 +92,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                         client.removeAttribute("Patient Image");
                     }
                     client.addAttribute("Patient Image", multimediaDTO.getCaseId() + ".jpg");
-                    client.setServerVersion(null);
+                    client.setServerVersion(0l);
                     clientService.updateClient(client);
                 }
                 return SUCCESS;

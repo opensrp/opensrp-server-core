@@ -299,8 +299,8 @@ public class ReportServiceTest extends BaseIntegrationTest {
 		assertEquals(updatedReport, actualReport);
 		
 		assertNotNull(dbReports.get(0).getServerVersion());
-		updatedReport.setServerVersion(null);
-		dbReports.get(0).setServerVersion(null);
+		updatedReport.setServerVersion(0l);
+		dbReports.get(0).setServerVersion(0l);
 		
 		assertObjectUpdate(updatedReport, dbReports.get(0));
 	}

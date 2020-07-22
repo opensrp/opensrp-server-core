@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
-import org.opensrp.domain.Task;
+import org.smartregister.domain.Task;
 import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class TaskService {
 	public void addOrUpdateTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		task.setServerVersion(null);
+		task.setServerVersion(0l);
 		task.setLastModified(new DateTime());
 		if (taskRepository.get(task.getIdentifier()) != null) {
 			taskRepository.update(task);
@@ -48,7 +48,7 @@ public class TaskService {
 	public Task addTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		task.setServerVersion(null);
+		task.setServerVersion(0l);
 		task.setAuthoredOn(new DateTime());
 		task.setLastModified(new DateTime());
 		taskRepository.add(task);
@@ -59,7 +59,7 @@ public class TaskService {
 	public Task updateTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		task.setServerVersion(null);
+		task.setServerVersion(0l);
 		task.setLastModified(new DateTime());
 		taskRepository.update(task);
 		return task;
@@ -127,7 +127,7 @@ public class TaskService {
 						task.setBusinessStatus(taskUpdate.getBusinessStatus());
 						task.setStatus(status);
 						task.setLastModified(new DateTime());
-						task.setServerVersion(null);
+						task.setServerVersion(0l);
 						taskRepository.update(task);
 						updatedTaskIds.add(task.getIdentifier());
 				}

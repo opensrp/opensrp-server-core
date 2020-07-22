@@ -109,6 +109,24 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
+    <select id="selectManyWithOrdering"
+        resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
+        select
+        <if test="example.distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from core.manifest m
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="example.orderByClause != null">
+            order by m.${example.orderByClause}
+        </if>
+        ORDER BY  created_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
 
     <select id="selectByAppId" parameterType="string"
             resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">

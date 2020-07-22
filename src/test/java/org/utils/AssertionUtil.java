@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.opensrp.domain.BaseDataObject;
 import org.opensrp.domain.Location;
+import org.smartregister.domain.BaseDataObject;
 
 public final class AssertionUtil {
 	

@@ -12,6 +12,7 @@ import org.opensrp.domain.Organization;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
+import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -140,9 +141,8 @@ public class OrganizationService {
 			throw new IllegalArgumentException("Organization not found");
 		
 		organizationRepository.assignLocationAndPlan(organization.getId(), jurisdictionId,
-		    locationRepository.retrievePrimaryKey(jurisdictionId, true), planId, planRepository.retrievePrimaryKey(planId),
-		    fromDate == null ? new Date() : fromDate, toDate);
-		
+				locationRepository.retrievePrimaryKey(jurisdictionId, true, 0), planId,
+				planRepository.retrievePrimaryKey(planId), fromDate == null ? new Date() : fromDate, toDate);
 	}
 	
 	/**
@@ -189,5 +189,47 @@ public class OrganizationService {
 		return organizationRepository.findAssignedLocationsByPlanId(planId);
 		
 	}
+
+
+	/**
+	 * Set the Organization repository
+	 * 
+	 * @param organizationRepository the organizationRepository to set
+	 */
+	@Autowired
+	public void setOrganizationRepository(OrganizationRepository organizationRepository) {
+		this.organizationRepository = organizationRepository;
+	}
+
+	/**
+	 * set the location repository
+	 * 
+	 * @param locationRepository the locationRepository to set
+	 */
+	@Autowired
+	/**
+	 * @param locationRepository the locationRepository to set
+	 */
+	public void setLocationRepository(LocationRepository locationRepository) {
+		this.locationRepository = locationRepository;
+	}
+
+	/**
+	 * set the plan Repository
+	 * 
+	 * @param planRepository the planRepository to set
+	 */
+	@Autowired
+	public void setPlanRepository(PlanRepository planRepository) {
+		this.planRepository = planRepository;
+	}
 	
+	public List<Organization> getSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
+		return organizationRepository.findSearchOrganizations(organizationSearchBean);
+	}
+	
+	public Integer findOrganizationCount(OrganizationSearchBean organizationSearchBean) {
+		return organizationRepository.findOrganizationCount(organizationSearchBean);
+	}
+
 }
