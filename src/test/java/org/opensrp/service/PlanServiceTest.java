@@ -51,9 +51,9 @@ public class PlanServiceTest {
 	
 	@Mock
 	private TaskGenerator taskGenerator;
-	
+
 	private String user="johndoe";
-	
+
 	@Before
 	public void setUp() {
 		planService = new PlanService(planRepository, practitionerService, organizationService,taskGenerator);

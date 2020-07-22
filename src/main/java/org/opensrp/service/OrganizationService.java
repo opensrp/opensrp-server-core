@@ -21,13 +21,13 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class OrganizationService {
-	
+
 	private OrganizationRepository organizationRepository;
-	
+
 	private LocationRepository locationRepository;
-	
+
 	private PlanRepository planRepository;
-	
+
 	@Autowired
 	public OrganizationService(OrganizationRepository organizationRepository, LocationRepository locationRepository,
 	    PlanRepository planRepository) {
@@ -35,7 +35,7 @@ public class OrganizationService {
 		this.locationRepository = locationRepository;
 		this.planRepository = planRepository;
 	}
-	
+
 	/**
 	 * Get all organizations
 	 * 
@@ -44,7 +44,7 @@ public class OrganizationService {
 	public List<Organization> getAllOrganizations() {
 		return organizationRepository.getAll();
 	}
-	
+
 	/**
 	 * Returns all organizations filtered by locations
 	 *
@@ -63,7 +63,7 @@ public class OrganizationService {
 	public Organization getOrganization(String identifier) {
 		return organizationRepository.get(identifier);
 	}
-	
+
 	/**
 	 * Get the organization that has the identifier
 	 * 
@@ -73,16 +73,16 @@ public class OrganizationService {
 	public Organization getOrganization(Long id) {
 		return organizationRepository.getByPrimaryKey(id);
 	}
-	
+
 	private void validateIdentifier(Organization organization) {
 		validateIdentifier(organization.getIdentifier());
 	}
-	
+
 	public void validateIdentifier(String identifier) {
 		if (StringUtils.isBlank(identifier))
 			throw new IllegalArgumentException("Organization Identifier not specified");
 	}
-	
+
 	/**
 	 * Adds or Updates an Organization
 	 * 
@@ -96,9 +96,9 @@ public class OrganizationService {
 		} else {
 			organizationRepository.add(organization);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Adds an Organization
 	 * 
@@ -107,9 +107,9 @@ public class OrganizationService {
 	public void addOrganization(Organization organization) {
 		validateIdentifier(organization);
 		organizationRepository.add(organization);
-		
+
 	}
-	
+
 	/**
 	 * Updates an Organization
 	 * 
@@ -118,9 +118,9 @@ public class OrganizationService {
 	public void updateOrganization(Organization organization) {
 		validateIdentifier(organization);
 		organizationRepository.update(organization);
-		
+
 	}
-	
+
 	/**
 	 * Assigns the jurisdiction and /or plan to the organization with organizationId
 	 * 
@@ -143,8 +143,9 @@ public class OrganizationService {
 		organizationRepository.assignLocationAndPlan(organization.getId(), jurisdictionId,
 				locationRepository.retrievePrimaryKey(jurisdictionId, true, 0), planId,
 				planRepository.retrievePrimaryKey(planId), fromDate == null ? new Date() : fromDate, toDate);
+
 	}
-	
+
 	/**
 	 * Gets the locations and Plans assigned to an organization
 	 * 
@@ -157,9 +158,9 @@ public class OrganizationService {
 		if (organization == null)
 			throw new IllegalArgumentException("Organization not found");
 		return organizationRepository.findAssignedLocations(organization.getId());
-		
+
 	}
-	
+
 	/**
 	 * Gets the locations and Plans assigned to a list of organizations
 	 * 
@@ -168,9 +169,9 @@ public class OrganizationService {
 	 */
 	public List<AssignedLocations> findAssignedLocationsAndPlans(List<Long> organizationIds) {
 		return organizationRepository.findAssignedLocations(organizationIds);
-		
+
 	}
-	
+
 	/**
 	 * Gets the locations and Plans using the Plan Identifier
 	 *
@@ -180,16 +181,15 @@ public class OrganizationService {
 	public List<AssignedLocations> findAssignedLocationsAndPlansByPlanIdentifier(String planIdentifier) {
 		if (StringUtils.isBlank(planIdentifier))
 			throw new IllegalArgumentException("PlanIdentifier Identifier not specified");
-		
+
 		Long planId = planRepository.retrievePrimaryKey(planIdentifier);
-		
+
 		if (planId == null)
 			throw new IllegalArgumentException("Plan not found");
-		
-		return organizationRepository.findAssignedLocationsByPlanId(planId);
-		
-	}
 
+		return organizationRepository.findAssignedLocationsByPlanId(planId);
+
+	}
 
 	/**
 	 * Set the Organization repository
@@ -223,11 +223,11 @@ public class OrganizationService {
 	public void setPlanRepository(PlanRepository planRepository) {
 		this.planRepository = planRepository;
 	}
-	
+
 	public List<Organization> getSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findSearchOrganizations(organizationSearchBean);
 	}
-	
+
 	public Integer findOrganizationCount(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findOrganizationCount(organizationSearchBean);
 	}

@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 
+
 import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.AssignedLocations;
+
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
@@ -48,7 +50,7 @@ public class PhysicalLocationService {
 
 	@Autowired
 	private PractitionerService practitionerService;
-	
+
 	@Autowired
 	public void setLocationRepository(LocationRepository locationRepository) {
 		this.locationRepository = locationRepository;
@@ -61,7 +63,7 @@ public class PhysicalLocationService {
 	public PhysicalLocation getLocation(String id, boolean returnGeometry, int version) {
 		return locationRepository.get(id, returnGeometry, version);
 	}
-	
+
 	public PhysicalLocation getStructure(String id, boolean returnGeometry) {
 		return locationRepository.getStructure(id, returnGeometry);
 	}

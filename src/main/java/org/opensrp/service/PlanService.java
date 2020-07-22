@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Vincent Karuri on 06/05/2019
- */
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.repository.PlanRepository;
@@ -19,17 +15,18 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class PlanService {
 	
 	private PlanRepository planRepository;
-	
-	private OrganizationService organizationService;
-	
+
 	private PractitionerService practitionerService;
-	
+
+	private OrganizationService organizationService;
+
 	private TaskGenerator taskGenerator;
-	
+
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
 	    OrganizationService organizationService, TaskGenerator taskGenerator) {
@@ -44,7 +41,6 @@ public class PlanService {
 		return planRepository;
 	}
 	
-
 	@PreAuthorize("hasRole('PLAN_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'PLAN_VIEW')")
 	public List<PlanDefinition> getAllPlans(boolean experimental) {
@@ -82,7 +78,6 @@ public class PlanService {
 	@PreAuthorize("hasPermission(#plan,'PlanDefinition', 'PLAN_UPDATE') ")
 	/* @formatter:on */
 	public PlanDefinition updatePlan(PlanDefinition plan, String username) {
-
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
@@ -129,7 +124,6 @@ public class PlanService {
 	 * @return the plans matching the above
 	 */
 	@PreAuthorize("hasPermission(#organizationIds,'Organization', 'PLAN_VIEW')")
-
 	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion, boolean experimental) {
 		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
@@ -168,9 +162,7 @@ public class PlanService {
 	 * @return the plans a user has access to
 	 */
 	@PreAuthorize("hasPermission(#username,'User', 'PLAN_VIEW')")
-	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion, boolean experimental) {
-
-		
+	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion, boolean experimental) {		
 		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
 			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion, experimental);
@@ -192,7 +184,7 @@ public class PlanService {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * This method searches for plans ordered by serverVersion ascending
 	 *
@@ -218,7 +210,7 @@ public class PlanService {
 	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted) {
 		return planRepository.findAllIds(serverVersion, limit, isDeleted);
 	}
-	
+
 	/**
 	 * Gets the count of plans using organization Ids that have server version >= the server version
 	 * param
@@ -229,7 +221,7 @@ public class PlanService {
 	 */
 	@PreAuthorize("hasPermission(#organizationIds,'Organization', 'PLAN_VIEW')")
 	public Long countPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
-		
+
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 		        .findAssignedLocationsAndPlans(organizationIds);
 		/* @formatter:off */
@@ -240,7 +232,7 @@ public class PlanService {
 		/* @formatter:on */
 		return planRepository.countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
-	
+
 	/**
 	 * Gets the count of plans that a user has access to according to the plan location assignment
 	 * that have server version >= the server version param
@@ -259,5 +251,5 @@ public class PlanService {
 		}
 		return 0l;
 	}
-	
+
 }
