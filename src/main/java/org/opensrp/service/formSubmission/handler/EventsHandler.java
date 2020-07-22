@@ -1,7 +1,7 @@
 package org.opensrp.service.formSubmission.handler;
 
 import org.json.JSONObject;
-import org.opensrp.domain.Event;
+import org.smartregister.domain.Event;
 
 public interface EventsHandler {
 	

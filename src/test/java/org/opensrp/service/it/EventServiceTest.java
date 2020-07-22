@@ -32,8 +32,8 @@ import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
-import org.opensrp.domain.Client;
-import org.opensrp.domain.Event;
+import org.smartregister.domain.Client;
+import org.smartregister.domain.Event;
 import org.opensrp.repository.postgres.ClientsRepositoryImpl;
 import org.opensrp.repository.postgres.EventsRepositoryImpl;
 import org.opensrp.service.EventService;
@@ -391,7 +391,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		assertEquals(1, dbEvents.size());
 		assertEquals(expectedEvent, actualEvent);
 		
-		dbEvents.get(0).setServerVersion(null);
+		dbEvents.get(0).setServerVersion(0l);
 		assertObjectUpdate(expectedEvent, dbEvents.get(0));
 	}
 	

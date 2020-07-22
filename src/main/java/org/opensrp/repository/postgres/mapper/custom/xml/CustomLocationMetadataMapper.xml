@@ -24,6 +24,7 @@
 		from core.location_metadata lm
 		join core.location l on lm.location_id = l.id
 		where lm.geojson_id = #{id,jdbcType=VARCHAR}
+		and lm.status = 'ACTIVE'
 	</select>
 
 
@@ -164,7 +165,7 @@
 		UNION
 		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
 		FROM locations lm1
-		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id )
+		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id AND status = 'ACTIVE' )
 		SELECT location_id FROM locations
 		)
 
@@ -177,27 +178,40 @@
 	
 	<select id="selectLocationHierachy"
 			resultMap="DetailsResultMap">
-		select lm.geojson_id identifier ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,string_agg(lt."name",',') tags
+		select lm.geojson_id identifier ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,
+		<if test="tags">
+		string_agg(lt."name",',') tags,
+		</if>
+		l.json->'properties'->>'geographicLevel' geographic_level,
+		record.level
 		from core.location_metadata lm
+		<if test="tags">
 		left join core.location_tag_map ltm on ltm.location_id =lm.location_id 
-		left join core.location_tag lt on lt.id =ltm.location_tag_id 
-		Where lm.location_id in
+		left join core.location_tag lt on lt.id =ltm.location_tag_id
+		</if>
+		INNER join core.location l on l.id = lm.location_id
+		JOIN
 		(
 			WITH RECURSIVE locations
 			AS
-			( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+			( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, 0 as level
 				FROM core.location_metadata lm1 WHERE geojson_id  IN
 			 	<foreach collection="identifiers" item="value"  open="(" separator="," close=")">
 	       			#{value}
 	   			</foreach>
+		        AND lm1.status = 'ACTIVE'
 				UNION
-				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id,level+1 as level
 				FROM locations lm1
 				INNER JOIN core.location_metadata lm2 on lm2.geojson_id = lm1.parent_id 
 			)
-			SELECT location_id FROM locations
-		)
-		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id
+			SELECT location_id, level FROM locations
+		) record
+		on lm.location_id =record.location_id
+		<if test="tags">
+		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id, geographic_level, record.level
+		</if>
+		order by record.level
 	</select>
 
 	<resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetail">
@@ -207,6 +221,7 @@
 	    <result column="location_id" jdbcType="VARCHAR" property="id" />
 	    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
 	    <result column="tags" jdbcType="VARCHAR" property="tags" />
+		<result column="geographic_level" jdbcType="INTEGER" property="geographicLevel" />
 	</resultMap>
 
 	<select id="selectDetailsByPlanId"
@@ -220,7 +235,10 @@
 		pm.operational_area_id as identifier,  lm.name
 		FROM core.plan_metadata pm
 		JOIN core.location_metadata lm ON pm.operational_area_id = lm.geojson_id
-		WHERE pm.identifier = #{planIdentifier,jdbcType=VARCHAR}
+		AND pm.identifier = #{planIdentifier,jdbcType=VARCHAR}
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
 
 		<if test="example.orderByClause != null">
 			order by lm.${example.orderByClause}
@@ -295,5 +313,84 @@
         <include refid="whereCondition"/>
         
     </select>
+
+	<select id="findByIdAndVersion" parameterType="java.lang.String"
+			resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+		select
+		<if test="geometry">
+			<include refid="Base_Column_List" />
+		</if>
+
+		<if test="!geometry">
+			<include refid="No_Geometry_Column_List" />
+		</if>
+		from core.location_metadata lm
+		join core.location l on lm.location_id = l.id
+		where lm.geojson_id = #{id,jdbcType=VARCHAR}
+		and lm.version = #{version,jdbcType=INTEGER}
+	</select>
+
+	<select id="selectLocationWithDescendants"
+			resultMap="DetailsResultMap">
+
+		SELECT lm.geojson_id identifier,
+			lm."name",
+			lm.parent_id,
+			'false' voided,
+			lm.location_id,
+		    l.json->'properties'->>'geographicLevel' geographic_level
+		    ,record.level
+
+		<if test="tags">
+				, string_agg(lt."name", ',') tags
+			</if>
+
+		FROM core.location_metadata lm
+		INNER join core.location l on l.id = lm.location_id
+
+		<if test="tags">
+			LEFT join core.location_tag_map ltm ON ltm.location_id = lm.location_id
+			LEFT join core.location_tag lt ON lt.id = ltm.location_tag_id
+		</if>
+
+		JOIN
+		(
+			WITH RECURSIVE locations
+			AS
+			(
+				SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, 0 as level
+				FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}
+				UNION
+				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id, level+1 as level
+				FROM locations lm1
+				INNER JOIN core.location_metadata lm2 ON lm2.parent_id = lm1.geojson_id AND lm2.status = 'ACTIVE'
+			)
+			SELECT location_id, level FROM locations
+		) record
+		on lm.location_id = record.location_id
+		<if test="tags">
+			GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id, geographic_level, record.level
+		</if>
+		order by record.level DESC
+
+	</select>
+
+	<select id="selectChildrenIds" resultType="String">
+		select *
+		from
+		(
+		WITH RECURSIVE locations
+		AS
+		( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+		FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}  AND status='ACTIVE'
+		UNION
+		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+		FROM locations lm1
+		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id  AND status='ACTIVE')
+
+		SELECT geojson_id FROM locations
+		)  ids;
+
+	</select>
 
 </mapper>

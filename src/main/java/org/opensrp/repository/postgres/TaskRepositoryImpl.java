@@ -1,20 +1,23 @@
 package org.opensrp.repository.postgres;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opensrp.domain.Task;
 import org.opensrp.domain.postgres.TaskMetadata;
 import org.opensrp.domain.postgres.TaskMetadataExample;
 import org.opensrp.repository.TaskRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomTaskMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomTaskMetadataMapper;
+import org.smartregister.converters.TaskConverter;
+import org.smartregister.domain.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Repository
 public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements TaskRepository {
@@ -288,6 +291,56 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		taskMetadata.setForEntity(entity.getForEntity());
 		taskMetadata.setServerVersion(entity.getServerVersion());
 		taskMetadata.setOwner(entity.getOwner());
+		taskMetadata.setCode(entity.getCode());
 		return taskMetadata;
 	}
+
+	
+	@Override
+	public List<com.ibm.fhir.model.resource.Task> findTasksForEntity(String id, String planIdentifier) {
+		TaskMetadataExample example = new TaskMetadataExample();
+		example.createCriteria().andPlanIdentifierEqualTo(planIdentifier).andForEntityEqualTo(id);
+		return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
+	}
+
+	@Override
+	public void saveTask(Task task, QuestionnaireResponse questionnaireResponse) {
+         add(task);
+	}
+
+	@Override
+	public boolean checkIfTaskExists(String baseEntityId, String planIdentifier, String code) {
+		List<String> statuses = new ArrayList<>();
+		statuses.add("Cancelled");
+		statuses.add("Archived");
+
+		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, planIdentifier, code,statuses);
+		return taskCount >= 1;
+	}
+
+	@Override
+	public List<com.ibm.fhir.model.resource.Task> findAllTasksForEntity(String id) {
+		TaskMetadataExample example = new TaskMetadataExample();
+		example.createCriteria().andForEntityEqualTo(id);
+		return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
+	}
+
+	@Override
+	public Task getTaskByEntityId(String s) {
+		return null;             //https://github.com/OpenSRP/opensrp-server-core/pull/273/files Implementation under this
+	}
+
+	@Override
+	public void updateTask(Task task) {
+		//https://github.com/OpenSRP/opensrp-server-core/pull/273/files Implementation under this
+	}
+
+	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
+		return tasks
+				.stream()
+				.map(task -> TaskConverter.convertTasktoFihrResource(task))
+				.collect(Collectors.toList());
+	}
+
+
 }

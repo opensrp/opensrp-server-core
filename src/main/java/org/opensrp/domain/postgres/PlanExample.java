@@ -26,7 +26,7 @@ public class PlanExample {
 	 * @mbg.generated  Fri Aug 30 12:59:38 EAT 2019
 	 */
 	public PlanExample() {
-		oredCriteria = new ArrayList<Criteria>();
+		oredCriteria = new ArrayList<>();
 	}
 
 	/**
@@ -129,8 +129,8 @@ public class PlanExample {
 
 		protected GeneratedCriteria() {
 			super();
-			criteria = new ArrayList<Criterion>();
-			jsonCriteria = new ArrayList<Criterion>();
+			criteria = new ArrayList<>();
+			jsonCriteria = new ArrayList<>();
 		}
 
 		public List<Criterion> getJsonCriteria() {
@@ -161,7 +161,7 @@ public class PlanExample {
 
 		public List<Criterion> getAllCriteria() {
 			if (allCriteria == null) {
-				allCriteria = new ArrayList<Criterion>();
+				allCriteria = new ArrayList<>();
 				allCriteria.addAll(criteria);
 				allCriteria.addAll(jsonCriteria);
 			}
@@ -503,6 +503,66 @@ public class PlanExample {
 
 		public Criteria andServerVersionNotBetween(Long value1, Long value2) {
 			addCriterion("server_version not between", value1, value2, "serverVersion");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalIsNull() {
+			addCriterion("experimental is null");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalIsNotNull() {
+			addCriterion("experimental is not null");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalEqualTo(Boolean value) {
+			addCriterion("experimental =", value, "experimental");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalNotEqualTo(Boolean value) {
+			addCriterion("experimental <>", value, "experimental");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalGreaterThan(Boolean value) {
+			addCriterion("experimental >", value, "experimental");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalGreaterThanOrEqualTo(Boolean value) {
+			addCriterion("experimental >=", value, "experimental");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalLessThan(Boolean value) {
+			addCriterion("experimental <", value, "experimental");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalLessThanOrEqualTo(Boolean value) {
+			addCriterion("experimental <=", value, "experimental");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalIn(List<Boolean> values) {
+			addCriterion("experimental in", values, "experimental");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalNotIn(List<Boolean> values) {
+			addCriterion("experimental not in", values, "experimental");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalBetween(Boolean value1, Boolean value2) {
+			addCriterion("experimental between", value1, value2, "experimental");
+			return (Criteria) this;
+		}
+
+		public Criteria andExperimentalNotBetween(Boolean value1, Boolean value2) {
+			addCriterion("experimental not between", value1, value2, "experimental");
 			return (Criteria) this;
 		}
 	}

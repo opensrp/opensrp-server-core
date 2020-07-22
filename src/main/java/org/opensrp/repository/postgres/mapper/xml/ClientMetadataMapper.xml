@@ -21,6 +21,8 @@
     <result column="birth_date" jdbcType="DATE" property="birthDate" />
     <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted" />
     <result column="residence" jdbcType="VARCHAR" property="residence" />
+    <result column="location_id" jdbcType="VARCHAR" property="locationId" />
+    <result column="client_type" jdbcType="VARCHAR" property="clientType" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -97,7 +99,8 @@
       This element was generated on Tue Apr 30 18:07:16 EAT 2019.
     -->
     id, client_id, document_id, base_entity_id, relational_id, server_version, openmrs_uuid, 
-    unique_id, first_name, middle_name, last_name, birth_date, date_deleted, residence
+    unique_id, first_name, middle_name, last_name, birth_date, date_deleted, residence, 
+    location_id, client_type
   </sql>
   <select id="selectByExample" parameterType="org.opensrp.domain.postgres.ClientMetadataExample" resultMap="BaseResultMap">
     <!--
@@ -159,12 +162,14 @@
       base_entity_id, relational_id, server_version, 
       openmrs_uuid, unique_id, first_name, 
       middle_name, last_name, birth_date, 
-      date_deleted, residence)
+      date_deleted, residence, location_id, 
+      client_type)
     values (#{id,jdbcType=BIGINT}, #{clientId,jdbcType=BIGINT}, #{documentId,jdbcType=VARCHAR}, 
       #{baseEntityId,jdbcType=VARCHAR}, #{relationalId,jdbcType=VARCHAR}, #{serverVersion,jdbcType=BIGINT}, 
       #{openmrsUuid,jdbcType=VARCHAR}, #{uniqueId,jdbcType=VARCHAR}, #{firstName,jdbcType=VARCHAR}, 
       #{middleName,jdbcType=VARCHAR}, #{lastName,jdbcType=VARCHAR}, #{birthDate,jdbcType=DATE}, 
-      #{dateDeleted,jdbcType=TIMESTAMP}, #{residence,jdbcType=VARCHAR})
+      #{dateDeleted,jdbcType=TIMESTAMP}, #{residence,jdbcType=VARCHAR}, #{locationId,jdbcType=VARCHAR}, 
+      #{clientType,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.ClientMetadata">
     <!--
@@ -216,6 +221,12 @@
       <if test="residence != null">
         residence,
       </if>
+      <if test="locationId != null">
+        location_id,
+      </if>
+      <if test="clientType != null">
+        client_type,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -259,6 +270,12 @@
       </if>
       <if test="residence != null">
         #{residence,jdbcType=VARCHAR},
+      </if>
+      <if test="locationId != null">
+        #{locationId,jdbcType=VARCHAR},
+      </if>
+      <if test="clientType != null">
+        #{clientType,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -323,6 +340,12 @@
       <if test="record.residence != null">
         residence = #{record.residence,jdbcType=VARCHAR},
       </if>
+      <if test="record.locationId != null">
+        location_id = #{record.locationId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.clientType != null">
+        client_type = #{record.clientType,jdbcType=VARCHAR},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -348,7 +371,9 @@
       last_name = #{record.lastName,jdbcType=VARCHAR},
       birth_date = #{record.birthDate,jdbcType=DATE},
       date_deleted = #{record.dateDeleted,jdbcType=TIMESTAMP},
-      residence = #{record.residence,jdbcType=VARCHAR}
+      residence = #{record.residence,jdbcType=VARCHAR},
+      location_id = #{record.locationId,jdbcType=VARCHAR},
+      client_type = #{record.clientType,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -400,6 +425,12 @@
       <if test="residence != null">
         residence = #{residence,jdbcType=VARCHAR},
       </if>
+      <if test="locationId != null">
+        location_id = #{locationId,jdbcType=VARCHAR},
+      </if>
+      <if test="clientType != null">
+        client_type = #{clientType,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -422,7 +453,9 @@
       last_name = #{lastName,jdbcType=VARCHAR},
       birth_date = #{birthDate,jdbcType=DATE},
       date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
-      residence = #{residence,jdbcType=VARCHAR}
+      residence = #{residence,jdbcType=VARCHAR},
+      location_id = #{locationId,jdbcType=VARCHAR},
+      client_type = #{clientType,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

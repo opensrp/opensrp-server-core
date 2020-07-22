@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
-import org.opensrp.domain.Event;
+import org.smartregister.domain.Event;
 import org.postgresql.util.PGobject;
 
 public class EventTypeHandler extends BaseTypeHandler implements TypeHandler<Event> {

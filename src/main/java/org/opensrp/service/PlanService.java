@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
-import org.opensrp.domain.PlanDefinition;
+import org.smartregister.domain.PlanDefinition;
 import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -23,17 +23,24 @@ import org.springframework.stereotype.Service;
 public class PlanService {
 	
 	private PlanRepository planRepository;
-	
-	private OrganizationService organizationService;
-	
+
 	private PractitionerService practitionerService;
-	
+
+	private PractitionerRoleService practitionerRoleService;
+
+	private OrganizationService organizationService;
+
+	private TaskGenerator taskGenerator;
+
 	@Autowired
-	public PlanService(PlanRepository planRepository, OrganizationService organizationService,
-	    PractitionerService practitionerService) {
+	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
+			PractitionerRoleService practitionerRoleService, OrganizationService organizationService,
+			TaskGenerator taskGenerator) {
 		this.planRepository = planRepository;
-		this.organizationService = organizationService;
 		this.practitionerService = practitionerService;
+		this.practitionerRoleService = practitionerRoleService;
+		this.organizationService = organizationService;
+		this.taskGenerator = taskGenerator;
 	}
 	
 	public PlanRepository getPlanRepository() {
@@ -42,47 +49,48 @@ public class PlanService {
 	
 	@PreAuthorize("hasRole('PLAN_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'PLAN_VIEW')")
-	public List<PlanDefinition> getAllPlans() {
-		return getPlanRepository().getAll();
+	public List<PlanDefinition> getAllPlans(boolean experimental) {
+		return getPlanRepository().getAllPlans(experimental);
 	}
 	
 	@PreAuthorize("(hasPermission(#plan,'PlanDefinition', 'PLAN_CREATE') and "
 	        + "hasPermission(#plan,'PlanDefinition', 'PLAN_UPDATE'))")
-	public void addOrUpdatePlan(PlanDefinition plan) {
+	public void addOrUpdatePlan(PlanDefinition plan,String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		if (getPlan(plan.getIdentifier()) != null) {
-			updatePlan(plan);
+			updatePlan(plan,username);
 		} else {
-			addPlan(plan);
+			addPlan(plan,username);
 		}
 	}
 	
 	/* @formatter:off */
 	@PreAuthorize("hasPermission(#plan,'PlanDefinition', 'PLAN_CREATE')")
 	/* @formatter:on */
-	public PlanDefinition addPlan(PlanDefinition plan) {
+	public PlanDefinition addPlan(PlanDefinition plan,String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().add(plan);
-		
+		taskGenerator.processPlanEvaluation(plan, null,username);
 		return plan;
 	}
 	
 	/* @formatter:off */
 	@PreAuthorize("hasPermission(#plan,'PlanDefinition', 'PLAN_UPDATE') ")
 	/* @formatter:on */
-	public PlanDefinition updatePlan(PlanDefinition plan) {
+	public PlanDefinition updatePlan(PlanDefinition plan, String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
+		PlanDefinition existing = getPlan(plan.getIdentifier());
 		plan.setServerVersion(System.currentTimeMillis());
 		getPlanRepository().update(plan);
-		
+		taskGenerator.processPlanEvaluation(plan, existing,username);
 		return plan;
 	}
 	
@@ -94,8 +102,8 @@ public class PlanService {
 	
 	@PreAuthorize("hasPermission(#operationalAreaIds,'Jurisdiction', 'PLAN_VIEW')")
 	public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion,
-	        List<String> operationalAreaIds) {
-		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds);
+	        List<String> operationalAreaIds,boolean experimental) {
+		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds, experimental);
 	}
 	
 	/**
@@ -110,8 +118,8 @@ public class PlanService {
 	 */
 	@PreAuthorize("hasRole('PLAN_VIEW')")
 	@PostAuthorize("hasPermission(returnObject,'PlanDefinition', 'PLAN_VIEW')")
-	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields) {
-		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields);
+	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields, boolean experimental) {
+		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields, experimental);
 	}
 	
 	/**
@@ -122,7 +130,7 @@ public class PlanService {
 	 * @return the plans matching the above
 	 */
 	@PreAuthorize("hasPermission(#organizationIds,'Organization', 'PLAN_VIEW')")
-	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
+	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion, boolean experimental) {
 		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 		        .findAssignedLocationsAndPlans(organizationIds);
@@ -130,7 +138,7 @@ public class PlanService {
 		for (AssignedLocations assignedLocation : assignedPlansAndLocations) {
 			planIdentifiers.add(assignedLocation.getPlanId());
 		}
-		return planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
+		return planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion, experimental);
 	}
 	
 	/**
@@ -160,11 +168,11 @@ public class PlanService {
 	 * @return the plans a user has access to
 	 */
 	@PreAuthorize("hasPermission(#username,'User', 'PLAN_VIEW')")
-	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion) {
+	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion, boolean experimental) {
 		
 		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
-			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
+			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion, experimental);
 		}
 		return null;
 	}
@@ -183,7 +191,7 @@ public class PlanService {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * This method searches for plans ordered by serverVersion ascending
 	 *
@@ -192,8 +200,8 @@ public class PlanService {
 	 * @return list of plan identifiers
 	 */
 	@PreAuthorize("hasRole('PLAN_ADMIN')")
-	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit) {
-		return getPlanRepository().getAllPlans(serverVersion, limit);
+	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit, boolean experimental) {
+		return getPlanRepository().getAllPlans(serverVersion, limit, experimental);
 	}
 	
 	/**
@@ -210,7 +218,8 @@ public class PlanService {
 	}
 
 	/**
-	 * Gets the count of plans using organization Ids that have server version >= the server version param
+	 * Gets the count of plans using organization Ids that have server version >= the server version
+	 * param
 	 *
 	 * @param organizationIds the list of organization Ids
 	 * @param serverVersion the server version to filter plans with
@@ -220,17 +229,19 @@ public class PlanService {
 	public Long countPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
 
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
-				.findAssignedLocationsAndPlans(organizationIds);
+		        .findAssignedLocationsAndPlans(organizationIds);
+		/* @formatter:off */
 		List<String> planIdentifiers = assignedPlansAndLocations
 				.stream()
-				.map(a-> a.getPlanId())
-				.collect(Collectors.toList());
+				.map(a -> a.getPlanId())
+		        .collect(Collectors.toList());
+		/* @formatter:on */
 		return planRepository.countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
 
 	/**
-	 * Gets the count of plans that a user has access to according to the plan location assignment that have
-	 * server version >= the server version param
+	 * Gets the count of plans that a user has access to according to the plan location assignment
+	 * that have server version >= the server version param
 	 *
 	 * @param username the username of user
 	 * @param serverVersion the server version to filter plans with
@@ -245,4 +256,5 @@ public class PlanService {
 		}
 		return 0l;
 	}
+
 }

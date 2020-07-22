@@ -65,7 +65,7 @@ public class StockService {
 	public synchronized Stock addorUpdateStock(Stock stock) {
 		if (stock.getId() != null && getById(stock.getId()) != null) {
 			stock.setDateEdited(DateTime.now());
-			stock.setServerVersion(null);
+			stock.setServerVersion(0l);
 			stock.setRevision(getById(stock.getId()).getRevision());
 			allStocks.update(stock);
 		} else {

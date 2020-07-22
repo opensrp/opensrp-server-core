@@ -82,4 +82,17 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
+	<select id="countTasksByEntityIdAndPlanIdentifierAndCode" resultType="int">
+        select count(tm.id)
+        from core.task_metadata tm
+		join core.task t on tm.task_id = t.id
+		where tm.plan_identifier = #{planIdentifier,jdbcType=VARCHAR} AND
+		tm.for_entity = #{baseEntityId,jdbcType=VARCHAR} AND
+		tm.code = #{code,jdbcType=VARCHAR} AND
+		t.json ->> 'status' NOT IN
+		<foreach item="item" index="index" collection="statuses" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+    </select>
+
 </mapper>

@@ -8,11 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.opensrp.domain.Task;
-import org.opensrp.domain.Task.TaskStatus;
+import org.smartregister.domain.Task;
+import org.smartregister.domain.Task.TaskStatus;
 import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
-import org.opensrp.util.TaskDateTimeTypeConverter;
+import org.smartregister.utils.TaskDateTimeTypeConverter;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -151,7 +151,7 @@ public class TaskServiceTest {
 
 		List<Task> expected = new ArrayList<>();
 		Task task = initializeTask();
-		task.setServerVersion(null);
+		task.setServerVersion(0l);
 		expected.add(task);
 		when(taskRepository.findByEmptyServerVersion()).thenReturn(expected);
 
@@ -192,7 +192,7 @@ public class TaskServiceTest {
 
 		ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
 		verify(taskRepository).update(argumentCaptor.capture());
-		assertNull(argumentCaptor.getValue().getServerVersion());
+		assertEquals(0l,argumentCaptor.getValue().getServerVersion().longValue());
 		assertEquals("Not Sprayable", argumentCaptor.getValue().getBusinessStatus());
 
 		assertEquals("tsk11231jh22", task.getIdentifier());

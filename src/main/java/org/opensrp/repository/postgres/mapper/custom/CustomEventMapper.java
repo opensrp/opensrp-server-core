@@ -26,5 +26,8 @@ public interface CustomEventMapper extends EventMapper {
 	        @Param("concept") String concept, @Param("parentCode") String parentCode);
 	
 	List<Event> selectByConceptAndValue(@Param("concept") String concept, @Param("conceptValue") String conceptValue);
-	
+
+	List<Event> selectByBaseEntityIdAndDetails(@Param("baseEntityId") String baseEntityId, @Param("detailKey") String detailKey,
+	        @Param("detailValue") String detailValue);
+
 }

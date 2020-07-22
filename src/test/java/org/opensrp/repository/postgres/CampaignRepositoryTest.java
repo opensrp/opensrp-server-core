@@ -12,9 +12,9 @@ import java.util.Set;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.opensrp.domain.Campaign;
-import org.opensrp.domain.ExecutionPeriod;
-import org.opensrp.domain.Task;
 import org.opensrp.repository.CampaignRepository;
+import org.smartregister.domain.ExecutionPeriod;
+import org.smartregister.domain.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class CampaignRepositoryTest extends BaseRepositoryTest {
