@@ -864,7 +864,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.update(location);
 		
 		Set<String> identifiers = Collections.singleton("3735");
-		List<LocationDetail> locations = locationRepository.findParentLocationsInclusive(identifiers);
+		Set<LocationDetail> locations = locationRepository.findParentLocationsInclusive(identifiers);
 		assertEquals(2, locations.size());
 		for (LocationDetail l : locations) {
 			MatcherAssert.assertThat(l.getIdentifier(), either(is("3734")).or(is("3735")));
@@ -875,11 +875,12 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		//Location without a parent
 		locations = locationRepository.findParentLocationsInclusive(Collections.singleton("3734"));
 		assertEquals(1, locations.size());
-		assertEquals("3734", locations.get(0).getIdentifier());
-		assertEquals("Bangladesh", locations.get(0).getName());
-		assertEquals("21", locations.get(0).getParentId());
-		assertEquals(1l, locations.get(0).getId().longValue());
-		List<String> tags = Arrays.asList(locations.get(0).getTags().split(","));
+		LocationDetail actualLocationDetail = locations.iterator().next();
+		assertEquals("3734", actualLocationDetail.getIdentifier());
+		assertEquals("Bangladesh", actualLocationDetail.getName());
+		assertEquals("21", actualLocationDetail.getParentId());
+		assertEquals(1l, actualLocationDetail.getId().longValue());
+		List<String> tags = Arrays.asList(actualLocationDetail.getTags().split(","));
 		assertEquals(expectedTags.size(), tags.size());
 		assertTrue(tags.contains(expectedTags.get(0).getName()));
 		assertTrue(tags.contains(expectedTags.get(1).getName()));
@@ -897,7 +898,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.update(location);
 
 		Set<String> identifiers = Collections.singleton("3735");
-		List<LocationDetail> locations = locationRepository.findParentLocationsInclusive(identifiers, false);
+		Set<LocationDetail> locations = locationRepository.findParentLocationsInclusive(identifiers, false);
 		assertEquals(2, locations.size());
 		for (LocationDetail l : locations) {
 			MatcherAssert.assertThat(l.getIdentifier(), either(is("3734")).or(is("3735")));
@@ -908,11 +909,12 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		//Location without a parent
 		locations = locationRepository.findParentLocationsInclusive(Collections.singleton("3734"), false);
 		assertEquals(1, locations.size());
-		assertEquals("3734", locations.get(0).getIdentifier());
-		assertEquals("Bangladesh", locations.get(0).getName());
-		assertEquals("21", locations.get(0).getParentId());
-		assertEquals(1l, locations.get(0).getId().longValue());
-		assertNull(locations.get(0).getTags());
+		LocationDetail actualLocationDetail = locations.iterator().next();
+		assertEquals("3734", actualLocationDetail.getIdentifier());
+		assertEquals("Bangladesh", actualLocationDetail.getName());
+		assertEquals("21", actualLocationDetail.getParentId());
+		assertEquals(1l, actualLocationDetail.getId().longValue());
+		assertNull(actualLocationDetail.getTags());
 
 		//Non existent location
 		assertEquals(0, locationRepository.findParentLocationsInclusive(Collections.singleton("21")).size());
@@ -965,14 +967,14 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	public void testSelectDetailsByPlanId() {
 
 		String planIdentifier = "a8b3010c-1ba5-556d-8b16-71266397b8b9";
-		List<LocationDetail> locationDetails = locationRepository.findLocationDetailsByPlanId(planIdentifier);
+		Set<LocationDetail> locationDetails = locationRepository.findLocationDetailsByPlanId(planIdentifier);
 		assertFalse(locationDetails.isEmpty());
 		assertEquals(1, locationDetails.size());
 	}
 
 	@Test
 	public void testFindLocationWithDescendants() {
-		List<LocationDetail> locations = locationRepository.findLocationWithDescendants("3734", false);
+		Set<LocationDetail> locations = locationRepository.findLocationWithDescendants("3734", false);
 
 		assertEquals(2, locations.size());
 
@@ -982,10 +984,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 
 		locations = locationRepository.findLocationWithDescendants("3735", true);
 		assertEquals(1, locations.size());
-		assertEquals("3735", locations.get(0).getIdentifier());
-		assertEquals("Dhaka", locations.get(0).getName());
-		assertEquals("3734", locations.get(0).getParentId());
-		assertEquals(2l, locations.get(0).getId().longValue());
+		LocationDetail actualLocationdetail = locations.iterator().next();
+		assertEquals("3735", actualLocationdetail.getIdentifier());
+		assertEquals("Dhaka", actualLocationdetail.getName());
+		assertEquals("3734", actualLocationdetail.getParentId());
+		assertEquals(2l, actualLocationdetail.getId().longValue());
 
 		assertEquals(0, locationRepository.findLocationWithDescendants("21", false).size());
 	}

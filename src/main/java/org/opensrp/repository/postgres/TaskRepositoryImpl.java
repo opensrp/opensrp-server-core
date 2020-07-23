@@ -305,7 +305,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 
 	@Override
 	public void saveTask(Task task, QuestionnaireResponse questionnaireResponse) {
-         add(task);
+          add(task);
 	}
 
 	@Override
@@ -326,14 +326,15 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public Task getTaskByEntityId(String s) {
-		return null;             //https://github.com/OpenSRP/opensrp-server-core/pull/273/files Implementation under this
+	public Task getTaskByEntityId(String identifier) {
+		return get(identifier);
 	}
 
 	@Override
 	public void updateTask(Task task) {
-		//https://github.com/OpenSRP/opensrp-server-core/pull/273/files Implementation under this
+		update(task);
 	}
+
 
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
 		return tasks
