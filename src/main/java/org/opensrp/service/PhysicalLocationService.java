@@ -1,10 +1,10 @@
 package org.opensrp.service;
 
+import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
@@ -12,20 +12,21 @@ import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.api.util.TreeNode;
 import org.opensrp.domain.LocationDetail;
-import org.smartregister.domain.LocationProperty;
-import org.smartregister.domain.PhysicalLocation;
-import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.StructureCount;
+import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.search.LocationSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartregister.domain.LocationProperty;
+import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 @Service
 public class PhysicalLocationService {
@@ -278,7 +279,7 @@ public class PhysicalLocationService {
 	 * @param planIdentifier identifier of the plan
 	 * @return list of location details i.e. identifier and name
 	 */
-	public List<LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
+	public Set<LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
 		return locationRepository.findLocationDetailsByPlanId(planIdentifier);
 	}
 	
@@ -338,7 +339,7 @@ public class PhysicalLocationService {
 	 */
 	public LocationTree buildLocationHierachy(Set<String> identifiers, boolean returnStructureCount, boolean returnTags) {
 		LocationTree locationTree = new LocationTree();
-		List<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers, returnTags);
+		Set<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers, returnTags);
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
 		return locationTree;
 	}
@@ -364,7 +365,7 @@ public class PhysicalLocationService {
 		return location;
 	}
 
-	private void populateCumulativeCountsMap(List<LocationDetail> locationDetails, Map<String, Integer> cumulativeCountsMap,
+	private void populateCumulativeCountsMap(Set<LocationDetail> locationDetails, Map<String, Integer> cumulativeCountsMap,
 			Map<String, StructureCount> structureCountMap) {
 
 		for (LocationDetail locationDetail: locationDetails) {
@@ -392,7 +393,7 @@ public class PhysicalLocationService {
 
 	}
 
-	private List<Location> getLocations(List<LocationDetail> locationDetails, boolean returnStructureCounts){
+	private List<Location> getLocations(Set<LocationDetail> locationDetails, boolean returnStructureCounts){
 		/* @formatter:off */
 		List<StructureCount> structureCountsForLocation = null;
 		Map<String, StructureCount> structureCountMap = null;
@@ -413,15 +414,13 @@ public class PhysicalLocationService {
 
 		}
 
-		List<Location> locations = locationDetails
+		return locationDetails
 				.stream()
 				.map(location -> getLocationFromDetail(location, locationMap, returnStructureCounts, cumulativeCountsMap))
 				.collect(Collectors.toList());
 
 
 		/* @formatter:on */
-
-		return locations;
 	}
 
 	/**
@@ -480,7 +479,7 @@ public class PhysicalLocationService {
 	 */
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnTags, boolean returnStructureCount) {
 		LocationTree locationTree = new LocationTree();
-		List<LocationDetail> locationDetails = locationRepository.findLocationWithDescendants(locationId, returnTags);
+		Set<LocationDetail> locationDetails = locationRepository.findLocationWithDescendants(locationId, returnTags);
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
 		return locationTree;
 	}
