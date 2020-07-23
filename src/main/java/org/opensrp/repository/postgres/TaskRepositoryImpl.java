@@ -335,7 +335,6 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		update(task);
 	}
 
-
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
 		return tasks
 				.stream()

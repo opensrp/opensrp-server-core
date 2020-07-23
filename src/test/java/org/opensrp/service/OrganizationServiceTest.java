@@ -283,6 +283,7 @@ public class OrganizationServiceTest {
 		organizationService.findAssignedLocationsAndPlansByPlanIdentifier("plan-id-1");
 		verify(organizationRepository, never()).findAssignedLocations(anyLong());
 	}
+
 	@Test
 	public void testSearchOrganizationsBySearchParam() {
 		organization.setActive(true);
@@ -297,3 +298,4 @@ public class OrganizationServiceTest {
 		assertEquals(expected, organizations);
 	}
 }
+

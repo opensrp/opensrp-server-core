@@ -4,20 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Created by Vincent Karuri on 06/05/2019
- */
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
 import org.smartregister.domain.PlanDefinition;
 import org.opensrp.repository.PlanRepository;
+import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class PlanService {
@@ -33,7 +31,7 @@ public class PlanService {
 	private TaskGenerator taskGenerator;
 
 	@Autowired
-	public PlanService(PlanRepository planRepository, PractitionerService practitionerService, PractitionerRoleService practitionerRoleService,
+	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
 			OrganizationService organizationService, TaskGenerator taskGenerator) {
 		this.planRepository = planRepository;
 		this.organizationService = organizationService;
@@ -46,7 +44,7 @@ public class PlanService {
 	public PlanRepository getPlanRepository() {
 		return planRepository;
 	}
-	
+
 	@PreAuthorize("hasRole('PLAN_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'PLAN_VIEW')")
 	public List<PlanDefinition> getAllPlans(boolean experimental) {
@@ -70,7 +68,7 @@ public class PlanService {
 	/* @formatter:off */
 	@PreAuthorize("hasPermission(#plan,'PlanDefinition', 'PLAN_CREATE')")
 	/* @formatter:on */
-	public PlanDefinition addPlan(PlanDefinition plan,String username) {
+	public PlanDefinition addPlan(PlanDefinition plan, String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
@@ -79,7 +77,7 @@ public class PlanService {
 		taskGenerator.processPlanEvaluation(plan, null,username);
 		return plan;
 	}
-	
+
 	/* @formatter:off */
 	@PreAuthorize("hasPermission(#plan,'PlanDefinition', 'PLAN_UPDATE') ")
 	/* @formatter:on */
@@ -255,6 +253,7 @@ public class PlanService {
 	public Long countPlansByUsernameAndServerVersion(String username, long serverVersion) {
 
 		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
+
 		if (organizationIds != null) {
 			return countPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
 		}

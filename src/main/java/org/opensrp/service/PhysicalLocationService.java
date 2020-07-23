@@ -11,6 +11,7 @@ import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.api.util.TreeNode;
+
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
