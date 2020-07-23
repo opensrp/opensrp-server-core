@@ -1,8 +1,17 @@
 package org.opensrp.service;
 
+
+
 import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -10,7 +19,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.AssignedLocations;
-import org.opensrp.api.util.TreeNode;
 
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.StructureCount;
@@ -453,6 +461,19 @@ public class PhysicalLocationService {
 		return locationRepository.countLocationsByNames(locationNames,serverVersion);
 	};
 
+	@Cacheable(value= "locationCache", key= "#username")
+	public List<AssignedLocations> getAssignedLocations(String username) {
+		List<Long> organizationIds = practitionerService.getOrganizationsByUserId(username).right;
+		if (isEmptyOrNull(organizationIds)) {
+			return new ArrayList<>();
+		}
+		return organizationService.findAssignedLocationsAndPlans(organizationIds);
+	}
+
+	private boolean isEmptyOrNull(Collection<? extends Object> collection) {
+		return collection == null || collection.isEmpty();
+	}
+
 	/**
 	 * This method checks whether the coordinates contained in the locations Geometry are equal
 	 * @param newEntity location entity
@@ -485,17 +506,4 @@ public class PhysicalLocationService {
 		return locationTree;
 	}
 
-
-	@Cacheable(value= "locationCache", key= "#username")
-	public List<AssignedLocations> getAssignedLocations(String username) {
-		List<Long> organizationIds = practitionerService.getOrganizationsByUserId(username).right;
-		if (isEmptyOrNull(organizationIds)) {
-			return new ArrayList<>();
-		}
-		return organizationService.findAssignedLocationsAndPlans(organizationIds);
-	}
-
-	private boolean isEmptyOrNull(Collection<? extends Object> collection) {
-		return collection == null || collection.isEmpty();
-	}
 }
