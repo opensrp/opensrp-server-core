@@ -9,15 +9,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,12 +21,15 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
+import org.opensrp.domain.Practitioner;
+import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.OrganizationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.data.redis.core.HashOperations;
 
 /**
  * @author Samuel Githengi created on 09/17/19
@@ -51,6 +48,9 @@ public class OrganizationServiceTest {
 	 @Mock
 	private LocationRepository locationRepository;
 
+	 @Mock
+	 private PractitionerService practitionerService;
+
 	private Organization organization;
 
 	private String identifier = UUID.randomUUID().toString();
@@ -62,6 +62,9 @@ public class OrganizationServiceTest {
 		organizationService = new OrganizationService(organizationRepository, locationRepository, planRepository);
 		organization = new Organization();
 		organization.setIdentifier(identifier);
+		organizationService.setPractitionerService(practitionerService);
+		HashOperations<String,String,List<AssignedLocations>> hashOps = mock(HashOperations.class);
+		Whitebox.setInternalState(organizationService,"hashOps",hashOps);
 
 	}
 
@@ -152,9 +155,12 @@ public class OrganizationServiceTest {
 		Long locationId = 123l;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
+		List<Practitioner> practitioners = new ArrayList<>();
+		practitioners.add(initTestPractitioner());
 		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, null, null);
+		when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
 		Date date = new Date();
 		verify(organizationRepository).assignLocationAndPlan(eq(1233l), eq(jurisdictionIdentifier), eq(locationId),
 		    eq(planIdentifier), eq(planId), dateCaptor.capture(), dateCaptor.capture());
@@ -181,8 +187,11 @@ public class OrganizationServiceTest {
 		Long planId = null;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
+		List<Practitioner> practitioners = new ArrayList<>();
+		practitioners.add(initTestPractitioner());
 		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
+		when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
 		Date dateFrom = new Date();
 		Date dateTo = null;
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, dateFrom, dateTo);
@@ -200,8 +209,11 @@ public class OrganizationServiceTest {
 		Long planId = 19871l;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
+		List<Practitioner> practitioners = new ArrayList<>();
+		practitioners.add(initTestPractitioner());
 		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
+		when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
 		Date dateFrom = new Date();
 		Date dateTo = null;
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, dateFrom, dateTo);
@@ -298,4 +310,13 @@ public class OrganizationServiceTest {
 		assertEquals(expected, organizations);
 	}
 
+	private Practitioner initTestPractitioner(){
+		Practitioner practitioner = new Practitioner();
+		practitioner.setIdentifier("practitoner-1-identifier");
+		practitioner.setActive(true);
+		practitioner.setName("Practitioner");
+		practitioner.setUsername("Practioner1");
+		practitioner.setUserId("user1");
+		return practitioner;
+	}
 }

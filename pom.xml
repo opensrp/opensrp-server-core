@@ -29,6 +29,8 @@
 		<jackson.version>2.10.2</jackson.version>
 		<powermock.version>2.0.5</powermock.version>
 		<lombok.version>1.18.12</lombok.version>
+		<spring.data.redis>2.2.4.RELEASE</spring.data.redis>
+		<redis.jedis.version>3.2.0</redis.jedis.version>
 
 	</properties>
 
@@ -295,6 +297,18 @@
 			<artifactId>lombok</artifactId>
 			<version>${lombok.version}</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<version>${spring.data.redis}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>${redis.jedis.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->
