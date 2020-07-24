@@ -499,6 +499,9 @@ public class PhysicalLocationService {
 	private void persistInRedisCache(List<AssignedLocations> assignedLocations, String username) {
 		List<Date> toDates = new ArrayList<>();
 		Boolean toDateExists = false;
+		long expiryTime = new Date().getTime() >= findMinimumDate(toDates).getTime() ?
+				new Date().getTime() - findMinimumDate(toDates).getTime() : findMinimumDate(toDates).getTime() - new Date().getTime();
+		expiryTime = expiryTime / 1000 ;
 		for (AssignedLocations assignedLocation : assignedLocations) {
 			if (assignedLocation.getToDate() != null) {
 				toDates.add(assignedLocation.getToDate());
@@ -507,7 +510,7 @@ public class PhysicalLocationService {
 		}
 		hashOps.put(username, ASSIGNED_LOCATIONS_HASH_KEY, assignedLocations);
 		if (toDateExists) {
-			redisTemplate.expire(username, findMinimumDate(toDates).getTime(), TimeUnit.MILLISECONDS);
+			redisTemplate.expire(username, expiryTime , TimeUnit.SECONDS);
 		}
 	}
 
