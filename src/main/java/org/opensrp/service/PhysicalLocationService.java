@@ -498,13 +498,17 @@ public class PhysicalLocationService {
 
 	private void persistInRedisCache(List<AssignedLocations> assignedLocations, String username) {
 		List<Date> toDates = new ArrayList<>();
-		for(AssignedLocations assignedLocation : assignedLocations) {
-			if(assignedLocation.getToDate()!=null) {
+		Boolean toDateExists = false;
+		for (AssignedLocations assignedLocation : assignedLocations) {
+			if (assignedLocation.getToDate() != null) {
 				toDates.add(assignedLocation.getToDate());
+				toDateExists = true;
 			}
 		}
 		hashOps.put(username, ASSIGNED_LOCATIONS_HASH_KEY, assignedLocations);
-		redisTemplate.expire(username, findMinimumDate(toDates).getTime(), TimeUnit.MILLISECONDS);
+		if (toDateExists) {
+			redisTemplate.expire(username, findMinimumDate(toDates).getTime(), TimeUnit.MILLISECONDS);
+		}
 	}
 
 	private Date findMinimumDate(List<Date> dates) {
