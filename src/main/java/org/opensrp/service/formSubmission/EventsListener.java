@@ -46,8 +46,6 @@ public class EventsListener {
 	
 	private ErrorTraceService errorTraceService;
 
-	private String username = "";  //TODO : Pass in a parameter
-	
 	@Autowired
 	public EventsListener(EventsRouter eventsRouter, ConfigService configService, EventsRepository allEvents,
 	    ErrorTraceService errorTraceService) {
@@ -95,7 +93,7 @@ public class EventsListener {
 			
 			for (Event event : events) {
 				try {
-					event = eventService.processOutOfArea(event, username);
+					event = eventService.processOutOfArea(event, event.getProviderId());
 					eventsRouter.route(event);
 					configService.updateAppStateToken(AllConstants.Config.EVENTS_PARSER_LAST_PROCESSED_EVENT,
 					    event.getServerVersion());
@@ -142,7 +140,7 @@ public class EventsListener {
 				for (Event event : events) {
 					try {
 						Thread.sleep(1);
-						event = eventService.processOutOfArea(event,username);
+						event = eventService.processOutOfArea(event,event.getProviderId());
 						event.setServerVersion(currentTimeMillis);
 						allEvents.update(event,true);
 						
