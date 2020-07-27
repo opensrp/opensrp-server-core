@@ -5,9 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,20 +15,12 @@ import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,13 +30,12 @@ import org.mockito.Mockito;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.api.util.TreeNode;
-import org.opensrp.domain.StructureCount;
+import org.opensrp.domain.*;
+import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.Geometry.GeometryType;
-import org.opensrp.domain.LocationDetail;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.LocationProperty.PropertyStatus;
 import org.smartregister.domain.PhysicalLocation;
-import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.search.LocationSearchBean;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -54,6 +43,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.gson.JsonArray;
 import org.smartregister.utils.PropertiesConverter;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({ "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*", "org.w3c.*" })
@@ -62,7 +53,15 @@ public class PhysicalLocationServiceTest {
 	private PhysicalLocationService locationService;
 	
 	private LocationRepository locationRepository;
-	
+
+	private HashOperations<String,String,List<AssignedLocations>> hashOps;
+
+	private RedisTemplate<String, String> redisTemplate;
+
+	private PractitionerService practitionerService;
+
+	private OrganizationService organizationService;
+
 	private ArgumentCaptor<PhysicalLocation> argumentCaptor = ArgumentCaptor.forClass(PhysicalLocation.class);
 
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(LocationProperty.class, new PropertiesConverter())
@@ -75,8 +74,16 @@ public class PhysicalLocationServiceTest {
 	@Before
 	public void setUp() {
 		locationRepository = mock(LocationRepository.class);
+		practitionerService = mock(PractitionerService.class);
+		organizationService = mock(OrganizationService.class);
 		locationService = new PhysicalLocationService();
 		locationService.setLocationRepository(locationRepository);
+		locationService.setOrganizationService(organizationService);
+		locationService.setPractitionerService(practitionerService);
+		hashOps = mock(HashOperations.class);
+		redisTemplate = mock(RedisTemplate.class);
+		Whitebox.setInternalState(locationService,"hashOps",hashOps);
+		Whitebox.setInternalState(locationService,"redisTemplate",redisTemplate);
 	}
 
 	@Test
@@ -996,4 +1003,40 @@ public class PhysicalLocationServiceTest {
 		assertEquals(geographicLevel, node.getNode().getAttribute("geographicLevel"));
 	}
 
+	@Test
+	public void testGetAssignedLocationsFromCache() {
+		AssignedLocations assigment = new AssignedLocations("loc1", "plan1");
+		List<AssignedLocations> expected = Collections.singletonList(assigment);
+		when(hashOps.hasKey(anyString(), any(Object.class))).thenReturn(Boolean.TRUE);
+		when(hashOps.get(anyString(), any(Object.class))).thenReturn(expected);
+		List<AssignedLocations> actual = locationService.getAssignedLocations("testUser");
+		assertEquals(expected.size(),actual.size());
+		assertEquals(expected.get(0).getPlanId(),"plan1");
+		assertEquals(expected.get(0).getJurisdictionId(),"loc1");
+	}
+
+	@Test
+	public void testGetAssignedLocationsFromDb() {
+		AssignedLocations assigment1 = new AssignedLocations("loc1", "plan1");
+		assigment1.setToDate(new Date());
+		AssignedLocations assigment2 = new AssignedLocations("loc2", "plan2");
+		assigment2.setToDate(new Date());
+		List<AssignedLocations> expected = new ArrayList<>();
+		expected.add(assigment1);
+		expected.add(assigment2);
+		List<Long> expectedOrganizationIds = Collections.singletonList(1234l);
+		Practitioner practitioner = new Practitioner();
+		ImmutablePair<Practitioner, List<Long>> practitionerListImmutablePair = new ImmutablePair<>(practitioner,expectedOrganizationIds);
+		when(hashOps.hasKey(anyString(), any(Object.class))).thenReturn(Boolean.FALSE);
+		when(practitionerService.getOrganizationsByUserId(anyString())).thenReturn(practitionerListImmutablePair);
+		when(organizationService.findAssignedLocationsAndPlans(any(List.class))).thenReturn(expected);
+		when(redisTemplate.expire(anyString(),any(long.class),any(TimeUnit.class))).thenReturn(Boolean.TRUE);
+
+		List<AssignedLocations> actual = locationService.getAssignedLocations("testUser");
+		assertEquals(expected.size(),actual.size());
+		assertEquals(expected.get(0).getPlanId(),"plan1");
+		assertEquals(expected.get(1).getPlanId(),"plan2");
+		assertEquals(expected.get(0).getJurisdictionId(),"loc1");
+		assertEquals(expected.get(1).getJurisdictionId(),"loc2");
+	}
 }

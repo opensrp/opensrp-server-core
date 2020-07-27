@@ -60,7 +60,15 @@ public class PhysicalLocationService {
 	public void setLocationRepository(LocationRepository locationRepository) {
 		this.locationRepository = locationRepository;
 	}
-	
+
+	public void setOrganizationService(OrganizationService organizationService) {
+		this.organizationService = organizationService;
+	}
+
+	public void setPractitionerService(PractitionerService practitionerService) {
+		this.practitionerService = practitionerService;
+	}
+
 	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
 		return locationRepository.get(id, returnGeometry);
 	}
@@ -499,15 +507,15 @@ public class PhysicalLocationService {
 	private void persistInRedisCache(List<AssignedLocations> assignedLocations, String username) {
 		List<Date> toDates = new ArrayList<>();
 		Boolean toDateExists = false;
-		long expiryTime = new Date().getTime() >= findMinimumDate(toDates).getTime() ?
-				new Date().getTime() - findMinimumDate(toDates).getTime() : findMinimumDate(toDates).getTime() - new Date().getTime();
-		expiryTime = expiryTime / 1000 ;
 		for (AssignedLocations assignedLocation : assignedLocations) {
 			if (assignedLocation.getToDate() != null) {
 				toDates.add(assignedLocation.getToDate());
 				toDateExists = true;
 			}
 		}
+		long expiryTime = new Date().getTime() >= findMinimumDate(toDates).getTime() ?
+				new Date().getTime() - findMinimumDate(toDates).getTime() : findMinimumDate(toDates).getTime() - new Date().getTime();
+		expiryTime = expiryTime / 1000 ;
 		hashOps.put(username, ASSIGNED_LOCATIONS_HASH_KEY, assignedLocations);
 		if (toDateExists) {
 			redisTemplate.expire(username, expiryTime , TimeUnit.SECONDS);
