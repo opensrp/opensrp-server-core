@@ -30,11 +30,13 @@ import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.OrganizationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * @author Samuel Githengi created on 09/17/19
  */
 @RunWith(PowerMockRunner.class)
+@ActiveProfiles(profiles = { "jedis"})
 public class OrganizationServiceTest {
 
 	private OrganizationService organizationService;

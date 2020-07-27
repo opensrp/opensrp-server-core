@@ -31,6 +31,7 @@
 		<lombok.version>1.18.12</lombok.version>
 		<spring.data.redis>2.2.4.RELEASE</spring.data.redis>
 		<redis.jedis.version>3.2.0</redis.jedis.version>
+		<redis.lettuce.version>5.2.2.RELEASE</redis.lettuce.version>
 
 	</properties>
 
@@ -621,6 +622,45 @@
 			<properties>
 				<opensrp.database.profile>postgres</opensrp.database.profile>
 			</properties>
+		</profile>
+		<profile>
+			<id>jedis</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>opensrp.redis.client.type</name>
+					<value>jedis</value>
+				</property>
+			</activation>
+			<properties>
+				<opensrp.redis.client.profile>jedis</opensrp.redis.client.profile>
+			</properties>
+		</profile>
+		<profile>
+			<id>lettuce</id>
+			<activation>
+				<property>
+					<name>opensrp.redis.client.type</name>
+					<value>lettuce</value>
+				</property>
+			</activation>
+			<properties>
+				<opensrp.redis.client.profile>lettuce</opensrp.redis.client.profile>
+			</properties>
+			<dependencies>
+				<!-- https://mvnrepository.com/artifact/io.lettuce/lettuce-core -->
+				<dependency>
+					<groupId>io.lettuce</groupId>
+					<artifactId>lettuce-core</artifactId>
+					<version>5.2.2.RELEASE</version>
+				</dependency>
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-tx</artifactId>
+					<version>${spring.version}</version>
+				</dependency>
+
+			</dependencies>
 		</profile>
 		<profile>
 			<id>release</id>
