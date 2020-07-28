@@ -439,8 +439,8 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testFindByServerVersion() {
-		assertEquals(11, clientsRepository.findByServerVersion(1520935878136l).size());
-		List<Client> clients = clientsRepository.findByServerVersion(1521003136406l);
+		assertEquals(11, clientsRepository.findByServerVersion(1520935878136l, null).size());
+		List<Client> clients = clientsRepository.findByServerVersion(1521003136406l, null);
 		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce",
 		    "ade884f8-2685-45fd-93f8-122045b2635e", "2e14b66f-206c-4314-a0f7-c5d2c4d9860f",
 		    "b0cb057b-c396-4ec9-bfab-388117a9a5f6", "28ea8f0a-fa53-447d-b8f9-ad07263b382c",
@@ -454,7 +454,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		//test deleted clients
 		for (Client client : clients)
 			clientsRepository.safeRemove(client);
-		assertTrue(clientsRepository.findByServerVersion(1521003136406l).isEmpty());
+		assertTrue(clientsRepository.findByServerVersion(1521003136406l, null).isEmpty());
 	}
 	
 	@Test
