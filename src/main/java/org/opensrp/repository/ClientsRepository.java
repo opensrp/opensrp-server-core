@@ -14,6 +14,8 @@ import org.smartregister.pathevaluator.dao.ClientDao;
 public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	
 	Client findByBaseEntityId(String baseEntityId);
+
+	Client findById(String id);
 	
 	List<Client> findAllClients();
 	

@@ -188,7 +188,18 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(clientMetadataExample);
 		return convert(pgClient);
 	}
-	
+
+	@Override
+	public Client findById(String id) {
+		if (StringUtils.isBlank(id)) {
+			return null;
+		}
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andDocumentIdEqualTo(id).andDateDeletedIsNull();
+		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(clientMetadataExample);
+		return convert(pgClient);
+	}
+
 	@Override
 	public List<Client> findAllClients() {
 		return getAll();

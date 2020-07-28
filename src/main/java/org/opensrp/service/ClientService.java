@@ -351,4 +351,14 @@ public class ClientService {
 	public List<Client> findByClientTypeAndLocationId(String clientType, String locationId) {
 		return allClients.findByClientTypeAndLocationId(clientType,locationId);
 	}
+
+	/**
+	 * This method searches for client using an id
+	 *
+	 * @param id server version for last client that was fetched
+	 * @return a client object
+	 */
+	public Client getById(String id) {
+		return allClients.findById(id);
+	}
 }
