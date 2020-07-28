@@ -89,13 +89,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
-		/*SettingsMetadata settingsMetadata = metadata.get(0);
-
-		//We update the metadata data block with the new metadata so that the server version is updated.
-		if (!entity.isV1Settings()) {
-			metadata = reconcileMetadata(getAvailableMetadataUsingSettingsId(entity, id), settingsMetadata);
-		}
-*/
 		settingMetadataMapper.updateMany(metadata);
 	}
 
