@@ -709,5 +709,27 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1,clients.size());
 		assertEquals("f67823b0-378e-4a35-93fc-bb00def74e24", clients.get(0).getBaseEntityId());
 	}
-	
+
+	@Test
+	public void testFindById() {
+		Client client = clientsRepository.findById("05934ae338431f28bf6793b24164cbd9");
+		assertEquals("86c039a2-0b68-4166-849e-f49897e3a510", client.getBaseEntityId());
+		assertEquals("ab91df5d-e433-40f3-b44f-427b73c9ae2a", client.getIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE));
+		assertEquals("Sally", client.getFirstName());
+		assertEquals("Mtini", client.getLastName().trim());
+
+	}
+
+	@Test
+	public void testFindByServerVersionWithLimit() {
+		assertEquals(21, clientsRepository.findByServerVersion(0l, null).size());
+		List<Client> clients = clientsRepository.findByServerVersion(1521003136406l, 2);
+		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce");
+		assertEquals(2, clients.size());
+		for (Client client : clients) {
+			assertTrue(client.getServerVersion() >= 1521003136406l);
+			assertTrue(expectedIds.contains(client.getId()));
+		}
+	}
+
 }
