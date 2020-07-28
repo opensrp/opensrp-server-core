@@ -37,7 +37,7 @@ public class SettingService {
 	 */
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean,
 			Map<String, TreeNode<String, Location>> treeNodeHashMap) {
-		return settingRepository.findSettings(settingQueryBean,treeNodeHashMap);
+		return settingRepository.findSettings(settingQueryBean, treeNodeHashMap);
 	}
 
 	/**
@@ -103,6 +103,7 @@ public class SettingService {
 	 */
 	public void addOrUpdateSettings(Setting setting) {
 		if (setting != null) {
+			setting.setServerVersion(Calendar.getInstance().getTimeInMillis());
 			settingRepository.addOrUpdate(setting);
 		}
 	}

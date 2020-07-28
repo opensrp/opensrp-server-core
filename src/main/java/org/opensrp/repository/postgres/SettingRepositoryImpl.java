@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 import static org.opensrp.util.Utils.isEmptyList;
@@ -36,6 +35,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	private static final Logger logger = LoggerFactory.getLogger(SettingRepositoryImpl.class);
 
 	private final List<String> reformattedLocationHierarchy = new ArrayList<>();
+
+	public List<String> getReformattedLocationHierarchy() {
+		return reformattedLocationHierarchy;
+	}
 
 	@Autowired
 	private CustomSettingMapper settingMapper;
@@ -86,15 +89,13 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
-		SettingsMetadata settingsMetadata = metadata.get(0);
+		/*SettingsMetadata settingsMetadata = metadata.get(0);
+
 		//We update the metadata data block with the new metadata so that the server version is updated.
 		if (!entity.isV1Settings()) {
 			metadata = reconcileMetadata(getAvailableMetadataUsingSettingsId(entity, id), settingsMetadata);
 		}
-
-		if (metadata == null) {
-			return;
-		}
+*/
 		settingMetadataMapper.updateMany(metadata);
 	}
 
@@ -169,10 +170,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			Map<String, TreeNode<String, Location>> treeNodeHashMap) {
 		if (settingQueryBean.isResolveSettings()) {
 			return resolveSettings(findSettingsAndSettingsMetadata(settingQueryBean, treeNodeHashMap, limit),
-					settingQueryBean.isV1Settings());
+					settingQueryBean.isV1Settings(), settingQueryBean.isResolveSettings());
 		} else {
 			return convertToSettingConfigurations(findSettingsAndSettingsMetadata(settingQueryBean, treeNodeHashMap, limit),
-					settingQueryBean.isV1Settings());
+					settingQueryBean.isV1Settings(), settingQueryBean.isResolveSettings());
 		}
 	}
 
@@ -200,7 +201,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 
 		if (settingQueryBean.isResolveSettings()) {
-			return fetchSettingsPerLocation(settingQueryBean, metadataExample, criteria, treeNodeHashMap, limit);
+			return fetchSettingsPerLocation(settingQueryBean, metadataExample, treeNodeHashMap, limit);
 		} else {
 			if (StringUtils.isNotEmpty(locationId)) {
 				criteria.andLocationIdEqualTo(locationId);
@@ -250,22 +251,18 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	private List<SettingsAndSettingsMetadataJoined> fetchSettingsPerLocation(SettingSearchBean settingSearchBean,
 			SettingsMetadataExample metadataExample,
-			SettingsMetadataExample.Criteria criteria,
 			Map<String, TreeNode<String, Location>> treeNodeHashMap,
 			int limit) {
 		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = new ArrayList<>();
 		locationUuid = settingSearchBean.getLocationId();
 
-		if (settingSearchBean.getIdentifier() != null) {
-			criteria.andIdentifierEqualTo(settingSearchBean.getIdentifier());
-		}
-
+		reformattedLocationHierarchy.clear();
 		if (treeNodeHashMap != null && treeNodeHashMap.size() > 0) {
 			reformattedLocationHierarchy(treeNodeHashMap);
 		}
 
 		if (reformattedLocationHierarchy.size() > 0) {
-			metadataExample.or(metadataExample.createCriteria().andLocationIdIn(reformattedLocationHierarchy));
+			metadataExample.createCriteria().andLocationIdIn(reformattedLocationHierarchy);
 			settingsAndSettingsMetadataJoinedList = settingMetadataMapper.selectMany(metadataExample, 0, limit);
 		}
 
@@ -273,12 +270,13 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	private List<SettingConfiguration> resolveSettings(
-			List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined, boolean isV1Settings) {
+			List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined, boolean isV1Settings,
+			boolean resolveSettings) {
 		Map<String, SettingConfiguration> stringConfigurationMap = new HashMap<>();
 		Map<String, Setting> stringSettingsMap = new HashMap<>();
 
 		List<SettingConfiguration> configurations = convertToSettingConfigurations(settingsAndSettingsMetadataJoined,
-				isV1Settings);
+				isV1Settings, resolveSettings);
 
 		for (SettingConfiguration configuration : configurations) {
 			String configKey =
@@ -323,10 +321,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			reformattedLocationHierarchy.add(locationKey);
 		}
 
-		TreeNode<String, Location> childLocation = stringMapEntry.getValue();
-		Map<String, TreeNode<String, Location>> newLocation = childLocation.getChildren();
-
-		if (!Objects.equals(locationUuid, locationKey)) {
+		if (!locationUuid.equals(locationKey)) {
+			TreeNode<String, Location> childLocation = stringMapEntry.getValue();
+			Map<String, TreeNode<String, Location>> newLocation = childLocation.getChildren();
 			reformattedLocationHierarchy(newLocation);
 		}
 	}
@@ -392,11 +389,12 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	private List<SettingConfiguration> convertToSettingConfigurations(
 			List<SettingsAndSettingsMetadataJoined> jointSettings) {
-		return convertToSettingConfigurations(jointSettings, false);
+		return convertToSettingConfigurations(jointSettings, false, false);
 	}
 
 	private List<SettingConfiguration> convertToSettingConfigurations(
-			List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined, boolean isV1Settings) {
+			List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoined, boolean isV1Settings,
+			boolean resolveSettings) {
 		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
 		if (settingsAndSettingsMetadataJoined == null || settingsAndSettingsMetadataJoined.isEmpty()) {
 			return settingConfigurations;
@@ -410,7 +408,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				settingConfigurationMap.put(jointSetting.getSettings().getId(), settingConfiguration);
 				settingConfiguration.setSettings(new ArrayList<>());
 			}
-			settingConfiguration.getSettings().add(convertToSetting(jointSetting.getSettingsMetadata(), isV1Settings));
+			settingConfiguration.getSettings().add(convertToSetting(jointSetting.getSettingsMetadata(), isV1Settings, resolveSettings));
 			settingConfiguration.setDocumentId(settingConfiguration.getSettings().get(0).getDocumentId());
 			settingConfiguration.setIdentifier(settingConfiguration.getSettings().get(0).getSettingIdentifier());
 		}
@@ -418,13 +416,17 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settingConfigurations;
 	}
 
-	private Setting convertToSetting(SettingsMetadata settingsMetadata, boolean isV1Settings) {
+	private Setting convertToSetting(SettingsMetadata settingsMetadata, boolean isV1Settings, boolean resolveSettings) {
 		Setting setting = new Setting();
 		getSettingValue(settingsMetadata, setting);
 		setting.setKey(settingsMetadata.getSettingKey());
 		setting.setSettingMetadataId(String.valueOf(settingsMetadata.getId()));
 		setting.setUuid(settingsMetadata.getUuid());
-		setting.setInheritedFrom(settingsMetadata.getInheritedFrom());
+		if (resolveSettings && !locationUuid.equals(settingsMetadata.getInheritedFrom())) {
+			setting.setInheritedFrom(settingsMetadata.getLocationId());
+		} else {
+			setting.setInheritedFrom(settingsMetadata.getInheritedFrom());
+		}
 		setting.setDescription(settingsMetadata.getSettingDescription());
 		setting.setLabel(settingsMetadata.getSettingLabel());
 		setting.setSettingIdentifier(settingsMetadata.getIdentifier());
@@ -441,6 +443,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			setting.setDocumentId(settingsMetadata.getDocumentId());
 		}
 		return setting;
+	}
+
+	private Setting convertToSetting(SettingsMetadata settingsMetadata, boolean isV1Settings) {
+		return convertToSetting(settingsMetadata, isV1Settings, false);
 	}
 
 	private void getSettingValue(SettingsMetadata settingsMetadata, Setting setting) {
@@ -534,11 +540,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			if (!checkIfMetadataExists(metadata)) {
 				settingsMetadataList.add(metadata);
 			}
-		}
-
-		//We update the metadata data block with the new metadata so that the server version is updated.
-		if (!entity.isV1Settings() && pgSettings.getId() != null) {
-			settingsMetadataList.addAll(getAvailableMetadataUsingSettingsId(entity, pgSettings.getId()));
 		}
 
 		settingMetadataMapper.insertMany(settingsMetadataList);
