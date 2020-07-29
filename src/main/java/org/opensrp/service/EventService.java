@@ -38,8 +38,8 @@ public class EventService {
 
 	private PlanRepository planRepository;
 
-	@Value("#{opensrp['plan.evaluation.enabled']}")
-	protected boolean isPlanEvaluationEnabled ;
+	@Value("#{opensrp['plan.evaluation.enabled'] ?: false}")
+	private boolean isPlanEvaluationEnabled ;
 	
 	@Autowired
 	public EventService(EventsRepository allEvents, ClientService clientService, TaskGenerator taskGenerator, PlanRepository planRepository) {
