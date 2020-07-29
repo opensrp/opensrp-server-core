@@ -200,8 +200,8 @@ public class ClientService {
 	
 	}
 	
-	public List<Client> findByServerVersion(long serverVersion) {
-		return allClients.findByServerVersion(serverVersion);
+	public List<Client> findByServerVersion(long serverVersion, Integer limit) {
+		return allClients.findByServerVersion(serverVersion, limit);
 	}
 	
 	public List<Client> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar) {
@@ -350,5 +350,15 @@ public class ClientService {
 
 	public List<Client> findByClientTypeAndLocationId(String clientType, String locationId) {
 		return allClients.findByClientTypeAndLocationId(clientType,locationId);
+	}
+
+	/**
+	 * This method searches for client using an id
+	 *
+	 * @param id server version for last client that was fetched
+	 * @return a client object
+	 */
+	public Client findById(String id) {
+		return allClients.findById(id);
 	}
 }
