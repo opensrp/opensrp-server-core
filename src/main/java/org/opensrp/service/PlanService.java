@@ -15,6 +15,8 @@ import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -60,7 +62,8 @@ public class PlanService {
 			addPlan(plan,username);
 		}
 	}
-	
+
+	@CachePut(value = "plans", key = "#plan.identifier")
 	public PlanDefinition addPlan(PlanDefinition plan,String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -70,7 +73,8 @@ public class PlanService {
 		taskGenerator.processPlanEvaluation(plan, null,username);
 		return plan;
 	}
-	
+
+	@CachePut(value = "plans", key = "#plan.identifier")
 	public PlanDefinition updatePlan(PlanDefinition plan, String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -81,7 +85,8 @@ public class PlanService {
 		taskGenerator.processPlanEvaluation(plan, existing,username);
 		return plan;
 	}
-	
+
+	@Cacheable(value = "plans", key = "#identifier")
 	public PlanDefinition getPlan(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
 	}

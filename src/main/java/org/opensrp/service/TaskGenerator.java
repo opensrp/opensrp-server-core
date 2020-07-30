@@ -5,6 +5,7 @@ package org.opensrp.service;
 
 import javax.annotation.PostConstruct;
 
+import org.opensrp.queue.QueueHelper;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.LocationRepository;
@@ -43,7 +44,7 @@ public class TaskGenerator {
 	
 	@Async
 	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition, String username) {
-		PlanEvaluator planEvaluator = new PlanEvaluator(username);
+		PlanEvaluator planEvaluator = new PlanEvaluator(username, new QueueHelper());
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
 	}
 
