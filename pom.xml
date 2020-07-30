@@ -24,7 +24,7 @@
 		<opensrp.common.version>2.0.3-SNAPSHOT</opensrp.common.version>
 		<opensrp.api.version>1.0.1</opensrp.api.version>
 		<opensrp.interface.version>2.0.1-SNAPSHOT</opensrp.interface.version>
-		<opensrp.plan.evaluator.version>0.0.17-SNAPSHOT</opensrp.plan.evaluator.version>
+		<opensrp.plan.evaluator.version>0.0.20-SNAPSHOT</opensrp.plan.evaluator.version>
 		<jackson.version>2.10.2</jackson.version>
 		<powermock.version>2.0.5</powermock.version>
 		<lombok.version>1.18.12</lombok.version>
@@ -289,6 +289,25 @@
 			<artifactId>lombok</artifactId>
 			<version>${lombok.version}</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-amqp -->
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-amqp</artifactId>
+			<version>2.2.9.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+			<version>1.7.1.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.rabbitmq</groupId>
+			<artifactId>amqp-client</artifactId>
+			<version>4.8.0</version>
 		</dependency>
 
 		<!-- Test dependencies -->
