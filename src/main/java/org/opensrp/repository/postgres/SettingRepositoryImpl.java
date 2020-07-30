@@ -36,10 +36,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	private final List<String> reformattedLocationHierarchy = new ArrayList<>();
 
-	public List<String> getReformattedLocationHierarchy() {
-		return reformattedLocationHierarchy;
-	}
-
 	@Autowired
 	private CustomSettingMapper settingMapper;
 
@@ -90,28 +86,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
 		settingMetadataMapper.updateMany(metadata);
-	}
-
-	private List<SettingsMetadata> reconcileMetadata(List<SettingsMetadata> settingsMetadataList,
-			SettingsMetadata settingsMetadata) {
-		for (int i = 0; i < settingsMetadataList.size(); i++) {
-			if (settingsMetadataList.get(i).getUuid().equals(settingsMetadata.getUuid())) {
-				settingsMetadataList.remove(i);
-				settingsMetadataList.add(settingsMetadata);
-				break;
-			}
-		}
-
-		return settingsMetadataList;
-	}
-
-	private List<SettingsMetadata> getAvailableMetadataUsingSettingsId(SettingConfiguration entity, Long id) {
-		List<SettingsMetadata> settingsMetadata;
-		SettingSearchBean settingSearchBean = createDocumentIdSearchBean(entity);
-		SettingConfiguration settingConfiguration = findSetting(settingSearchBean, null);
-		settingsMetadata = createMetadata(settingConfiguration, id);
-
-		return settingsMetadata;
 	}
 
 	@Override
@@ -255,7 +229,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				reformattedLocationHierarchy(treeNodeHashMap);
 			}
 
-			logger.error("tests stuff " + reformattedLocationHierarchy.size());
 			if (reformattedLocationHierarchy.size() > 0) {
 				criteria.andLocationIdIn(reformattedLocationHierarchy);
 				settingsAndSettingsMetadataJoinedList = settingMetadataMapper.selectMany(metadataExample, 0, limit);
@@ -637,5 +610,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 		SettingConfiguration settingConfiguration = findSetting(settingQueryBean, null);
 		return settingConfiguration == null ? null : convert(settingConfiguration, id);
+	}
+
+	public List<String> getReformattedLocationHierarchy() {
+		return reformattedLocationHierarchy;
 	}
 }

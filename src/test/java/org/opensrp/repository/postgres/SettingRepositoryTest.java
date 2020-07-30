@@ -2,7 +2,6 @@ package org.opensrp.repository.postgres;
 
 import com.google.gson.Gson;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
@@ -18,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -289,14 +286,14 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 			treeNodeHashMap = locationTree.getLocationsHierarchy();
 		}
 
-		Assert.assertNotNull(treeNodeHashMap);
+		assertNotNull(treeNodeHashMap);
 		SettingRepositoryImpl settingRepository = new SettingRepositoryImpl();
 
-		Whitebox.setInternalState(settingRepository,"locationUuid", "44de66fb-e6c6-4bae-92bb-386dfe626eba");
+		Whitebox.setInternalState(settingRepository, "locationUuid", "44de66fb-e6c6-4bae-92bb-386dfe626eba");
 		Whitebox.invokeMethod(settingRepository, "reformattedLocationHierarchy", treeNodeHashMap);
 		List<String> reformattedLocationHierarchy = settingRepository.getReformattedLocationHierarchy();
-		Assert.assertNotNull(reformattedLocationHierarchy);
-		Assert.assertEquals(5, reformattedLocationHierarchy.size());
+		assertNotNull(reformattedLocationHierarchy);
+		assertEquals(5, reformattedLocationHierarchy.size());
 	}
 
 	@Test
@@ -309,14 +306,14 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 			treeNodeHashMap = locationTree.getLocationsHierarchy();
 		}
 
-		Assert.assertNotNull(treeNodeHashMap);
+		assertNotNull(treeNodeHashMap);
 		SettingRepositoryImpl settingRepository = new SettingRepositoryImpl();
 
-		Whitebox.setInternalState(settingRepository,"locationUuid", "02ebbc84-5e29-4cd5-9b79-c594058923e9");
+		Whitebox.setInternalState(settingRepository, "locationUuid", "02ebbc84-5e29-4cd5-9b79-c594058923e9");
 		Whitebox.invokeMethod(settingRepository, "reformattedLocationHierarchy", treeNodeHashMap);
 		List<String> reformattedLocationHierarchy = settingRepository.getReformattedLocationHierarchy();
-		Assert.assertNotNull(reformattedLocationHierarchy);
-		Assert.assertEquals(1, reformattedLocationHierarchy.size());
+		assertNotNull(reformattedLocationHierarchy);
+		assertEquals(1, reformattedLocationHierarchy.size());
 	}
 
 }
