@@ -6,10 +6,8 @@ package org.opensrp.service;
 import javax.annotation.PostConstruct;
 
 import org.opensrp.queue.QueueHelper;
-import org.opensrp.repository.ClientsRepository;
-import org.opensrp.repository.EventsRepository;
-import org.opensrp.repository.LocationRepository;
-import org.opensrp.repository.TaskRepository;
+import org.opensrp.queue.RabbitMQSender;
+import org.opensrp.repository.*;
 import org.smartregister.converters.EventConverter;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.PlanDefinition;
@@ -26,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class TaskGenerator {
 	
 	@Autowired
-	private LocationRepository locationRepository;
+	LocationRepository locationRepository;
 	
 	@Autowired
 	private ClientsRepository clientsRepository;
@@ -36,6 +34,12 @@ public class TaskGenerator {
 	
 	@Autowired
 	private EventsRepository eventsRepository;
+
+	@Autowired
+	PlanService planService;
+
+	@Autowired
+	RabbitMQSender rabbitMQSender;
 	
 	@PostConstruct
 	private void postConstruct() {
@@ -44,7 +48,12 @@ public class TaskGenerator {
 	
 	@Async
 	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition, String username) {
-		PlanEvaluator planEvaluator = new PlanEvaluator(username, new QueueHelper());
+		QueueHelper queueHelper = new QueueHelper();
+		queueHelper.setPlanService(planService);
+		queueHelper.setRabbitMQSender(rabbitMQSender);
+		PlanEvaluator planEvaluator = new PlanEvaluator(username,queueHelper);
+		planEvaluator.setLocationDao(locationRepository);
+
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
 	}
 
