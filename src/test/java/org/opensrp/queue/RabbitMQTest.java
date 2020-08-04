@@ -74,7 +74,7 @@ public class RabbitMQTest {
 			customPlanEvaluatorMessage.setJurisdiction(jurisdiction);
 			customPlanEvaluatorMessage.setTriggerType(TriggerType.PLAN_ACTIVATION);
 
-			rabbitTemplate.convertAndSend("javainuse.exchange", "javainuse.routingkey", customPlanEvaluatorMessage);
+			rabbitTemplate.convertAndSend("rabbitmq.exchange", "rabbitmq.routingkey", customPlanEvaluatorMessage);
 			CustomPlanEvaluatorMessage received = (CustomPlanEvaluatorMessage) rabbitTemplate.receiveAndConvert();
 			assertEquals(customPlanEvaluatorMessage.getJurisdiction().getCode(), received.getJurisdiction().getCode());
 			assertEquals(customPlanEvaluatorMessage.getTriggerType().name(), received.getTriggerType().name());
