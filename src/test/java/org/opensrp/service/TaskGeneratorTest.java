@@ -93,7 +93,7 @@ public class TaskGeneratorTest {
 	}
 
 	@Test
-	public void testAddOrUpdatePlanShouldCallRepositoryAddMethod() {
+	public void testProcessPlanEvaluation() {
 		PlanDefinition planDefinition = createPlan();
 		List<String> jurisdictionList = new ArrayList<>();
 		jurisdictionList.add("jurisdiction");
