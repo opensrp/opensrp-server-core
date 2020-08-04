@@ -208,4 +208,14 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return
 	 */
 	List<StructureCount> findStructureCountsForLocation(Set<String> locationIds);
+
+	/**
+	 * This methods searches for a location and it's children using the provided location ids
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param identifiers location ids
+	 * @param pageSize number of records to be returned
+	 * @return location together with it's children whose id matches the provided param
+	 */
+	List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> identifiers, int pageSize);
 }
