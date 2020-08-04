@@ -29,7 +29,7 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 
 	List<Location> selectWithChildren(@Param("example") LocationMetadataExample locationMetadataExample,
 			@Param("geometry") boolean returnGeometry,
-			@Param("locationId") String locationId,
+			@Param("locationIds") Set<String> locationIds,
 			@Param("offset") int offset, @Param("limit") int limit);
 
 	LinkedHashSet<LocationDetail> selectDetailsByPlanId(@Param("example") LocationMetadataExample locationMetadataExample,
