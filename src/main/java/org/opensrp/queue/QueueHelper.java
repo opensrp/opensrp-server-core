@@ -5,16 +5,17 @@ import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.dao.QueuingHelper;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-@Service
+@Component
 public class QueueHelper implements QueuingHelper {
 
-	@Autowired
 	PlanService planService;
 
-	@Autowired
 	RabbitMQSender rabbitMQSender;
 
 	@Override
@@ -22,7 +23,7 @@ public class QueueHelper implements QueuingHelper {
 		PlanDefinition planDefinition = planService.getPlan(planIdentifier);
 		Jurisdiction jurisdiction = new Jurisdiction(locationId);
 		CustomPlanEvaluatorMessage customPlanEvaluatorMessage = new CustomPlanEvaluatorMessage(planDefinition,triggerType,jurisdiction); //todo : rename
-        rabbitMQSender.send(customPlanEvaluatorMessage);
+		rabbitMQSender.send(customPlanEvaluatorMessage);
 	}
 
 	public void setPlanService(PlanService planService) {

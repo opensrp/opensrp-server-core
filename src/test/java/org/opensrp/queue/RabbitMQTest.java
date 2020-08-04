@@ -1,9 +1,12 @@
 package org.opensrp.queue;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensrp.config.RabbitMQConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.pathevaluator.TriggerType;
 import org.springframework.amqp.AmqpException;
@@ -24,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
-public class RabbitMQClientTest {
+public class RabbitMQTest {
 
 	@Autowired
 	private AmqpAdmin amqpAdmin;
@@ -41,6 +44,8 @@ public class RabbitMQClientTest {
 	@Autowired
 	private Queue queue;
 
+	private static Logger logger = LoggerFactory.getLogger(RabbitMQTest.class.toString());
+
 	@Configuration
 	@Import(RabbitMQConfig.class) // the actual configuration
 	public static class TestConfig {
@@ -54,15 +59,20 @@ public class RabbitMQClientTest {
 		}
 	}
 
+	@Before
+	public void setup() {
+		amqpAdmin.purgeQueue(queue.getName());
+		amqpAdmin.declareQueue(new Queue(queue.getName(), false));
+	}
+
 	@Test
-	public void simpleProducerConsumerTest() {
+	public void senderReceiverTestWithRabbitTemplate() {
 		try {
 			CustomPlanEvaluatorMessage customPlanEvaluatorMessage = new CustomPlanEvaluatorMessage();
 			Jurisdiction jurisdiction = new Jurisdiction();
 			jurisdiction.setCode("test-loc1");
 			customPlanEvaluatorMessage.setJurisdiction(jurisdiction);
 			customPlanEvaluatorMessage.setTriggerType(TriggerType.PLAN_ACTIVATION);
-			amqpAdmin.declareQueue(new Queue(queue.getName(), false));
 
 			rabbitTemplate.convertAndSend("javainuse.exchange", "javainuse.routingkey", customPlanEvaluatorMessage);
 			CustomPlanEvaluatorMessage received = (CustomPlanEvaluatorMessage) rabbitTemplate.receiveAndConvert();
@@ -73,4 +83,29 @@ public class RabbitMQClientTest {
 			Assert.fail("Test failed: " + e.getLocalizedMessage());
 		}
 	}
+
+	@Test
+	public void senderReceiverTestWithComponents() {
+		try {
+			CustomPlanEvaluatorMessage customPlanEvaluatorMessage = new CustomPlanEvaluatorMessage();
+			Jurisdiction jurisdiction = new Jurisdiction();
+			jurisdiction.setCode("test-loc1");
+			customPlanEvaluatorMessage.setJurisdiction(jurisdiction);
+			rabbitMQSender.setRabbitTemplate(rabbitTemplate);
+			rabbitMQSender.setQueue(queue);
+			rabbitMQSender.send(customPlanEvaluatorMessage);
+			rabbitMQReceiver.setRabbitTemplate(rabbitTemplate);
+			rabbitMQReceiver.setQueue(queue);
+			CustomPlanEvaluatorMessage received = rabbitMQReceiver.receiveMessage();
+
+			logger.info("Message received : " + received);
+			Assert.assertEquals(customPlanEvaluatorMessage.getJurisdiction().getCode(),
+					received.getJurisdiction().getCode());
+
+		}
+		catch (AmqpException e) {
+			Assert.fail("Test failed: " + e.getLocalizedMessage());
+		}
+	}
+
 }

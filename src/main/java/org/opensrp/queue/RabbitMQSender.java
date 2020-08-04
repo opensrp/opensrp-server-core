@@ -1,28 +1,34 @@
 package org.opensrp.queue;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RabbitMQSender {
 
-	@Autowired
 	private AmqpTemplate rabbitTemplate;
 
-	@Value("${rabbitmq.exchange}")
-	private String exchange;
+	private Queue queue;
 
-	@Value("${rabbitmq.routingkey}")
-	private String routingkey;
+	private static Logger logger = LoggerFactory.getLogger(RabbitMQSender.class.toString());
+
+	public RabbitMQSender(AmqpTemplate rabbitTemplate) {
+		this.rabbitTemplate = rabbitTemplate;
+	}
 
 	public void send(CustomPlanEvaluatorMessage customPlanEvaluatorMessage) {
-		rabbitTemplate.convertAndSend(exchange, routingkey, customPlanEvaluatorMessage);
-		System.out.println("Send msg = " + customPlanEvaluatorMessage);
+		rabbitTemplate.convertAndSend(queue.getName(), customPlanEvaluatorMessage);
+		logger.info("Send Message : " + customPlanEvaluatorMessage.toString());
 	}
 
 	public void setRabbitTemplate(AmqpTemplate rabbitTemplate) {
 		this.rabbitTemplate = rabbitTemplate;
+	}
+
+	public void setQueue(Queue queue) {
+		this.queue = queue;
 	}
 }

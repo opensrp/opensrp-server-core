@@ -13,6 +13,7 @@ import org.smartregister.domain.Event;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,9 @@ public class TaskGenerator {
 
 	@Autowired
 	RabbitMQSender rabbitMQSender;
+
+	@Autowired
+	AmqpTemplate rabbitTemplate;
 	
 	@PostConstruct
 	private void postConstruct() {

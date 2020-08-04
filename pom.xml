@@ -28,6 +28,7 @@
 		<jackson.version>2.10.2</jackson.version>
 		<powermock.version>2.0.5</powermock.version>
 		<lombok.version>1.18.12</lombok.version>
+		<spring.ampqp.version>2.2.9.RELEASE</spring.ampqp.version>
 
 	</properties>
 
@@ -295,19 +296,14 @@
 		<dependency>
 			<groupId>org.springframework.amqp</groupId>
 			<artifactId>spring-amqp</artifactId>
-			<version>2.2.9.RELEASE</version>
+			<version>${spring.ampqp.version}</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit -->
 		<dependency>
 			<groupId>org.springframework.amqp</groupId>
 			<artifactId>spring-rabbit</artifactId>
-			<version>1.7.1.RELEASE</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.rabbitmq</groupId>
-			<artifactId>amqp-client</artifactId>
-			<version>4.8.0</version>
+			<version>${spring.ampqp.version}</version>
 		</dependency>
 
 		<!-- Test dependencies -->

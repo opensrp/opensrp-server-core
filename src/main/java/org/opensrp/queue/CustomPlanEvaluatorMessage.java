@@ -6,12 +6,14 @@ import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.TriggerType;
 
+import java.io.Serializable;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CustomPlanEvaluatorMessage {
+public class CustomPlanEvaluatorMessage implements Serializable {
 
 	@JsonProperty
 	private PlanDefinition planDefinition;
