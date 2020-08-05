@@ -1,22 +1,28 @@
 package org.opensrp.config;
 
 import org.opensrp.queue.RabbitMQReceiver;
+import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
+import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+@EnableRabbit
 @Configuration
-@ComponentScan
+@ComponentScan("org.opensrp")
 public class RabbitMQConfig {
 
 	@Value("${rabbitmq.queue}")
@@ -39,6 +45,9 @@ public class RabbitMQConfig {
 
 	@Value("${rabbitmq.virtualhost}")
 	private String virtualHost;
+
+	@Autowired
+	RabbitMQReceiver rabbitMQReceiver;
 
 	@Bean
 	Queue queue() {
@@ -75,6 +84,10 @@ public class RabbitMQConfig {
 		final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
 		rabbitTemplate.setDefaultReceiveQueue(queueName);
 		rabbitTemplate.setMessageConverter(jsonMessageConverter());
+
+		rabbitTemplate.setReplyAddress(queue().getName());
+		rabbitTemplate.setReplyTimeout(60000);
+		rabbitTemplate.setUseDirectReplyToContainer(false);
 		return rabbitTemplate;
 	}
 
@@ -84,12 +97,43 @@ public class RabbitMQConfig {
 	}
 
 	@Bean
-	MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory ) {
+	MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory) {
 		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
 		simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
 		simpleMessageListenerContainer.setQueues(queue());
-		simpleMessageListenerContainer.setMessageListener(new RabbitMQReceiver());
+		simpleMessageListenerContainer.setMessageListener(rabbitMQReceiver);
 		return simpleMessageListenerContainer;
+	}
 
+	@Bean
+	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
+		final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+		factory.setConnectionFactory(connectionFactory());
+		factory.setMessageConverter(jsonMessageConverter());
+		factory.setConcurrentConsumers(1);
+		factory.setMaxConcurrentConsumers(1);
+		return factory;
+	}
+
+	@Bean
+	SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setQueueNames(queueName);
+		container.setMessageListener(listenerAdapter); //
+		container.setMissingQueuesFatal(false);
+		container.setMaxConcurrentConsumers(1);
+		container.setConcurrentConsumers(1);
+		container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
+		return container;
+	}
+
+	@Bean
+	MessageListenerAdapter listenerAdapter(RabbitMQReceiver receiver) {
+		PlanEvaluator planEvaluator = new PlanEvaluator("");
+		receiver.setPlanEvaluator(planEvaluator);
+		MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(receiver, "onMessage");
+		messageListenerAdapter.setMessageConverter(jsonMessageConverter());
+		return messageListenerAdapter;
 	}
 }

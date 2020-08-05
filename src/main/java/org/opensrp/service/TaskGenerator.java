@@ -56,8 +56,6 @@ public class TaskGenerator {
 		queueHelper.setPlanService(planService);
 		queueHelper.setRabbitMQSender(rabbitMQSender);
 		PlanEvaluator planEvaluator = new PlanEvaluator(username,queueHelper);
-		planEvaluator.setLocationDao(locationRepository);
-
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
 	}
 

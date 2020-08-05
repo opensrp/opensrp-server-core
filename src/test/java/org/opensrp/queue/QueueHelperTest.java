@@ -1,70 +1,63 @@
-package org.opensrp.service;
+package org.opensrp.queue;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
+
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
-import org.opensrp.queue.CustomPlanEvaluatorMessage;
-import org.opensrp.queue.RabbitMQSender;
-import org.opensrp.repository.LocationRepository;
-import org.powermock.reflect.Whitebox;
+import org.opensrp.service.PlanService;
+import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
-import org.smartregister.pathevaluator.PathEvaluatorLibrary;
-import org.smartregister.pathevaluator.dao.*;
+import org.smartregister.pathevaluator.TriggerType;
+import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.smartregister.utils.DateTypeConverter;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.Queue;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(MockitoJUnitRunner.class)
-public class TaskGeneratorTest {
-
-	private TaskGenerator taskGenerator;
-
-	@Mock
-	private LocationDao locationDao;
-
-	@Mock
-	private ClientDao clientDao;
-
-	@Mock
-	private TaskDao taskDao;
-
-	@Mock
-	private EventDao eventDao;
-
-	@Mock
-	private LocationProvider locationProvider;
-
-	@Mock
-	private ClientProvider clientProvider;
-
-	@Mock
-	private TaskProvider taskProvider;
-
-	@Mock
-	private EventProvider eventProvider;
-
-	@Mock
-	private LocationRepository locationRepository;
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
+public class QueueHelperTest {
 
 	@Mock
 	PlanService planService;
 
 	@Mock
+	PlanEvaluator planEvaluator;
+
+	@Autowired
 	RabbitMQSender rabbitMQSender;
+
+	@Autowired
+	AmqpTemplate rabbitTemplate;
+
+	@Autowired
+	Queue queue;
+
+	@InjectMocks
+	private QueueHelper queueHelper;
+
+	@Autowired
+	private AmqpAdmin amqpAdmin;
 
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
 			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
@@ -73,35 +66,26 @@ public class TaskGeneratorTest {
 
 	@Before
 	public void setup() {
-		MockitoAnnotations.initMocks(this);
-		PathEvaluatorLibrary.init(locationDao, clientDao, taskDao, eventDao);
-		PathEvaluatorLibrary instance = PathEvaluatorLibrary.getInstance();
-
-		Whitebox.setInternalState(instance, "locationProvider", locationProvider);
-		Whitebox.setInternalState(instance, "clientProvider", clientProvider);
-		Whitebox.setInternalState(instance, "taskProvider", taskProvider);
-		Whitebox.setInternalState(instance, "eventProvider", eventProvider);
-
-		taskGenerator = new TaskGenerator();
-
-		Whitebox.setInternalState(taskGenerator, "locationRepository", locationRepository);
-		Whitebox.setInternalState(taskGenerator, "planService", planService);
-		Whitebox.setInternalState(taskGenerator, "rabbitMQSender", rabbitMQSender);
-		when(locationProvider.getLocationDao()).thenReturn(locationDao);
-		when(clientProvider.getClientDao()).thenReturn(clientDao);
+		initMocks(this);
+		amqpAdmin.purgeQueue(queue.getName());
+		queueHelper = new QueueHelper();
+		rabbitMQSender.setRabbitTemplate(rabbitTemplate);
+		rabbitMQSender.setQueue(queue);
+		queueHelper.setRabbitMQSender(rabbitMQSender);
+		queueHelper.setPlanService(planService);
 	}
 
 	@Test
-	public void testProcessPlanEvaluation() {
+	public void testAddToQueue() throws InterruptedException {
 		PlanDefinition planDefinition = createPlan();
-		List<String> jurisdictionList = new ArrayList<>();
-		jurisdictionList.add("jurisdiction");
-		planDefinition.setIdentifier(plan);
-		planDefinition.setStatus(PlanDefinition.PlanStatus.ACTIVE);
-		when(locationRepository.findChildLocationByJurisdiction(anyString())).thenReturn(jurisdictionList);
 		when(planService.getPlan(anyString())).thenReturn(planDefinition);
-		Mockito.doNothing().when(rabbitMQSender).send(any(CustomPlanEvaluatorMessage.class));
-		taskGenerator.processPlanEvaluation(planDefinition, null, "john");
+		Mockito.doNothing().when(planEvaluator).evaluatePlan(any(PlanDefinition.class),any(TriggerType.class),any(Jurisdiction.class),any(
+				QuestionnaireResponse.class));
+		queueHelper.addToQueue("planid", TriggerType.PLAN_ACTIVATION,"loc-1");
+		int count = (Integer) amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT");
+        assertEquals(0,count); // This shows message has been consumed
+//		verify(planEvaluator).evaluatePlan(any(PlanDefinition.class),any(TriggerType.class),any(Jurisdiction.class),nullable(
+//				QuestionnaireResponse.class)); //TODO
 	}
 
 	public static PlanDefinition createPlan() {
