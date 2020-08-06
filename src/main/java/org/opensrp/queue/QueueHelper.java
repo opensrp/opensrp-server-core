@@ -11,16 +11,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class QueueHelper implements QueuingHelper {
 
-	PlanService planService;
+	private PlanService planService;
 
-	RabbitMQSender rabbitMQSender;
+	private RabbitMQSender rabbitMQSender;
 
 	@Override
 	public void addToQueue(String planIdentifier, TriggerType triggerType, String locationId) {
 		PlanDefinition planDefinition = planService.getPlan(planIdentifier);
 		Jurisdiction jurisdiction = new Jurisdiction(locationId);
-		CustomPlanEvaluatorMessage customPlanEvaluatorMessage = new CustomPlanEvaluatorMessage(planDefinition,triggerType,jurisdiction); //todo : rename
-		rabbitMQSender.send(customPlanEvaluatorMessage);
+		PlanEvaluatorMessage planEvaluatorMessage = new PlanEvaluatorMessage(planDefinition,triggerType,jurisdiction); //todo : rename
+		rabbitMQSender.send(planEvaluatorMessage);
 	}
 
 	public void setPlanService(PlanService planService) {

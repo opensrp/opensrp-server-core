@@ -55,7 +55,7 @@ public class RabbitMQTest {
 		private Queue queue;
 
 		@Bean
-		MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory) {
+		public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory) {
 			SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
 			simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
 			return simpleMessageListenerContainer;
@@ -81,16 +81,16 @@ public class RabbitMQTest {
 	@Test
 	public void senderReceiverTestWithRabbitTemplate() {
 		try {
-			CustomPlanEvaluatorMessage customPlanEvaluatorMessage = new CustomPlanEvaluatorMessage();
+			PlanEvaluatorMessage planEvaluatorMessage = new PlanEvaluatorMessage();
 			Jurisdiction jurisdiction = new Jurisdiction();
 			jurisdiction.setCode("test-loc1");
-			customPlanEvaluatorMessage.setJurisdiction(jurisdiction);
-			customPlanEvaluatorMessage.setTriggerType(TriggerType.PLAN_ACTIVATION);
+			planEvaluatorMessage.setJurisdiction(jurisdiction);
+			planEvaluatorMessage.setTriggerType(TriggerType.PLAN_ACTIVATION);
 
-			rabbitTemplate.convertAndSend("rabbitmq.exchange", "rabbitmq.routingkey", customPlanEvaluatorMessage);
-			CustomPlanEvaluatorMessage received = (CustomPlanEvaluatorMessage) rabbitTemplate.receiveAndConvert();
-			assertEquals(customPlanEvaluatorMessage.getJurisdiction().getCode(), received.getJurisdiction().getCode());
-			assertEquals(customPlanEvaluatorMessage.getTriggerType().name(), received.getTriggerType().name());
+			rabbitTemplate.convertAndSend("rabbitmq.exchange", "rabbitmq.routingkey", planEvaluatorMessage);
+			PlanEvaluatorMessage received = (PlanEvaluatorMessage) rabbitTemplate.receiveAndConvert();
+			assertEquals(planEvaluatorMessage.getJurisdiction().getCode(), received.getJurisdiction().getCode());
+			assertEquals(planEvaluatorMessage.getTriggerType().name(), received.getTriggerType().name());
 		}
 		catch (AmqpException e) {
 			Assert.fail("Test failed: " + e.getLocalizedMessage());
@@ -100,19 +100,19 @@ public class RabbitMQTest {
 	@Test
 	public void senderReceiverTestWithComponents() {
 		try {
-			CustomPlanEvaluatorMessage customPlanEvaluatorMessage = new CustomPlanEvaluatorMessage();
+			PlanEvaluatorMessage planEvaluatorMessage = new PlanEvaluatorMessage();
 			Jurisdiction jurisdiction = new Jurisdiction();
 			jurisdiction.setCode("test-loc1");
-			customPlanEvaluatorMessage.setJurisdiction(jurisdiction);
+			planEvaluatorMessage.setJurisdiction(jurisdiction);
 			rabbitMQSender.setRabbitTemplate(rabbitTemplate);
 			rabbitMQSender.setQueue(queue);
-			rabbitMQSender.send(customPlanEvaluatorMessage);
+			rabbitMQSender.send(planEvaluatorMessage);
 			rabbitMQReceiver.setRabbitTemplate(rabbitTemplate);
 			rabbitMQReceiver.setQueue(queue);
-			CustomPlanEvaluatorMessage received = rabbitMQReceiver.receiveMessage();
+			PlanEvaluatorMessage received = rabbitMQReceiver.receiveMessage();
 
 			logger.info("Message received : " + received);
-			Assert.assertEquals(customPlanEvaluatorMessage.getJurisdiction().getCode(),
+			assertEquals(planEvaluatorMessage.getJurisdiction().getCode(),
 					received.getJurisdiction().getCode());
 
 		}

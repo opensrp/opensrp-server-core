@@ -2,7 +2,13 @@ package org.opensrp.config;
 
 import org.opensrp.queue.RabbitMQReceiver;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -26,10 +32,10 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
 	@Value("${rabbitmq.queue}")
-	String queueName;
+	private String queueName;
 
 	@Value("${rabbitmq.exchange}")
-	String exchange;
+	private String exchange;
 
 	@Value("${rabbitmq.routingkey}")
 	private String routingkey;
@@ -47,20 +53,20 @@ public class RabbitMQConfig {
 	private String virtualHost;
 
 	@Autowired
-	RabbitMQReceiver rabbitMQReceiver;
+	private RabbitMQReceiver rabbitMQReceiver;
 
 	@Bean
-	Queue queue() {
+	public Queue queue() {
 		return new Queue(queueName, false);
 	}
 
 	@Bean
-	DirectExchange exchange() {
+	public DirectExchange exchange() {
 		return new DirectExchange(exchange);
 	}
 
 	@Bean
-	Binding binding(Queue queue, DirectExchange exchange) {
+	public Binding binding(Queue queue, DirectExchange exchange) {
 		return BindingBuilder.bind(queue).to(exchange).with(routingkey);
 	}
 
@@ -116,7 +122,7 @@ public class RabbitMQConfig {
 	}
 
 	@Bean
-	SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
+	public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setQueueNames(queueName);
@@ -129,7 +135,7 @@ public class RabbitMQConfig {
 	}
 
 	@Bean
-	MessageListenerAdapter listenerAdapter(RabbitMQReceiver receiver) {
+	public MessageListenerAdapter listenerAdapter(RabbitMQReceiver receiver) {
 		PlanEvaluator planEvaluator = new PlanEvaluator("");
 		receiver.setPlanEvaluator(planEvaluator);
 		MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(receiver, "onMessage");

@@ -32,25 +32,25 @@ public class RabbitMQReceiver implements MessageListener {
 	public void onMessage(Message message) {
 		logger.info("Consuming Message - " + new String(message.getBody()));
 		int count = (Integer) amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT");
-		CustomPlanEvaluatorMessage customPlanEvaluatorMessage = null;
+		PlanEvaluatorMessage planEvaluatorMessage = null;
 
 		if (count >= 1) {
 			logger.info("Messages in queue present");
-			customPlanEvaluatorMessage = (CustomPlanEvaluatorMessage) rabbitTemplate
+			planEvaluatorMessage = (PlanEvaluatorMessage) rabbitTemplate
 					.receiveAndConvert(queue.getName());
 		}
-		logger.info("CustomPlanEvaluatorMessage received : ", customPlanEvaluatorMessage);
-		if (customPlanEvaluatorMessage != null) {
-			planEvaluator.evaluatePlan(customPlanEvaluatorMessage.getPlanDefinition(),
-					customPlanEvaluatorMessage.getTriggerType(),
-					customPlanEvaluatorMessage.getJurisdiction(), null);
+		logger.info("CustomPlanEvaluatorMessage received : ", planEvaluatorMessage);
+		if (planEvaluatorMessage != null) {
+			planEvaluator.evaluatePlan(planEvaluatorMessage.getPlanDefinition(),
+					planEvaluatorMessage.getTriggerType(),
+					planEvaluatorMessage.getJurisdiction(), null);
 		}
 	}
 
-	public CustomPlanEvaluatorMessage receiveMessage() {
-		CustomPlanEvaluatorMessage customPlanEvaluatorMessage = (CustomPlanEvaluatorMessage) rabbitTemplate
+	public PlanEvaluatorMessage receiveMessage() {
+		PlanEvaluatorMessage planEvaluatorMessage = (PlanEvaluatorMessage) rabbitTemplate
 				.receiveAndConvert(queue.getName());
-		return customPlanEvaluatorMessage;
+		return planEvaluatorMessage;
 	}
 
 	public void setRabbitTemplate(AmqpTemplate rabbitTemplate) {

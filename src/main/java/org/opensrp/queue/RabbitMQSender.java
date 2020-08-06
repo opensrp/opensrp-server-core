@@ -19,9 +19,9 @@ public class RabbitMQSender {
 		this.rabbitTemplate = rabbitTemplate;
 	}
 
-	public void send(CustomPlanEvaluatorMessage customPlanEvaluatorMessage) {
-		rabbitTemplate.convertAndSend(queue.getName(), customPlanEvaluatorMessage);
-		logger.info("Send Message : " + customPlanEvaluatorMessage.toString());
+	public void send(PlanEvaluatorMessage planEvaluatorMessage) {
+		rabbitTemplate.convertAndSend(queue.getName(), planEvaluatorMessage);
+		logger.info("Send Message : " + planEvaluatorMessage.toString());
 	}
 
 	public void setRabbitTemplate(AmqpTemplate rabbitTemplate) {

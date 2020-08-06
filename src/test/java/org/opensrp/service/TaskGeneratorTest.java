@@ -11,13 +11,20 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opensrp.queue.CustomPlanEvaluatorMessage;
+import org.opensrp.queue.PlanEvaluatorMessage;
 import org.opensrp.queue.RabbitMQSender;
 import org.opensrp.repository.LocationRepository;
 import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
-import org.smartregister.pathevaluator.dao.*;
+import org.smartregister.pathevaluator.dao.LocationDao;
+import org.smartregister.pathevaluator.dao.ClientDao;
+import org.smartregister.pathevaluator.dao.TaskDao;
+import org.smartregister.pathevaluator.dao.EventDao;
+import org.smartregister.pathevaluator.dao.EventProvider;
+import org.smartregister.pathevaluator.dao.LocationProvider;
+import org.smartregister.pathevaluator.dao.ClientProvider;
+import org.smartregister.pathevaluator.dao.TaskProvider;
 import org.smartregister.utils.DateTypeConverter;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
@@ -25,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -98,9 +104,7 @@ public class TaskGeneratorTest {
 		jurisdictionList.add("jurisdiction");
 		planDefinition.setIdentifier(plan);
 		planDefinition.setStatus(PlanDefinition.PlanStatus.ACTIVE);
-		when(locationRepository.findChildLocationByJurisdiction(anyString())).thenReturn(jurisdictionList);
-		when(planService.getPlan(anyString())).thenReturn(planDefinition);
-		Mockito.doNothing().when(rabbitMQSender).send(any(CustomPlanEvaluatorMessage.class));
+		Mockito.doNothing().when(rabbitMQSender).send(any(PlanEvaluatorMessage.class));
 		taskGenerator.processPlanEvaluation(planDefinition, null, "john");
 	}
 

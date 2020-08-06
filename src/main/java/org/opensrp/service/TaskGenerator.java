@@ -7,7 +7,10 @@ import javax.annotation.PostConstruct;
 
 import org.opensrp.queue.QueueHelper;
 import org.opensrp.queue.RabbitMQSender;
-import org.opensrp.repository.*;
+import org.opensrp.repository.LocationRepository;
+import org.opensrp.repository.ClientsRepository;
+import org.opensrp.repository.TaskRepository;
+import org.opensrp.repository.EventsRepository;
 import org.smartregister.converters.EventConverter;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.PlanDefinition;
@@ -25,7 +28,7 @@ import org.springframework.stereotype.Service;
 public class TaskGenerator {
 	
 	@Autowired
-	LocationRepository locationRepository;
+	private LocationRepository locationRepository;
 	
 	@Autowired
 	private ClientsRepository clientsRepository;
