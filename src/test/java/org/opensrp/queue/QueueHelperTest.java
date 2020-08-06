@@ -39,19 +39,19 @@ import static org.mockito.MockitoAnnotations.initMocks;
 public class QueueHelperTest {
 
 	@Mock
-	PlanService planService;
+	private PlanService planService;
 
 	@Mock
-	PlanEvaluator planEvaluator;
+	private PlanEvaluator planEvaluator;
 
 	@Autowired
-	RabbitMQSender rabbitMQSender;
+	private RabbitMQSender rabbitMQSender;
 
 	@Autowired
-	AmqpTemplate rabbitTemplate;
+	private AmqpTemplate rabbitTemplate;
 
 	@Autowired
-	Queue queue;
+	private Queue queue;
 
 	@InjectMocks
 	private QueueHelper queueHelper;

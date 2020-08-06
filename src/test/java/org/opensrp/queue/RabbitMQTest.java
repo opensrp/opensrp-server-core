@@ -63,7 +63,7 @@ public class RabbitMQTest {
 		}
 
 		@Bean  //Override behavior
-		SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
+		public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
 				MessageListenerAdapter listenerAdapter) {
 			SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 			container.setConnectionFactory(connectionFactory);

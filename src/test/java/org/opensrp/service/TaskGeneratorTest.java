@@ -67,10 +67,10 @@ public class TaskGeneratorTest {
 	private LocationRepository locationRepository;
 
 	@Mock
-	PlanService planService;
+	private PlanService planService;
 
 	@Mock
-	RabbitMQSender rabbitMQSender;
+	private RabbitMQSender rabbitMQSender;
 
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
 			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();

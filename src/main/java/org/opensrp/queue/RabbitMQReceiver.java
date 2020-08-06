@@ -3,7 +3,11 @@ package org.opensrp.queue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.MessageListener;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +25,10 @@ public class RabbitMQReceiver implements MessageListener {
 	private Queue queue;
 
 	@Autowired
-	AmqpAdmin amqpAdmin;
+	private AmqpAdmin amqpAdmin;
 
 	@Value("${rabbitmq.queue}")
-	String queueName;
+	private String queueName;
 
 	private static Logger logger = LoggerFactory.getLogger(RabbitMQReceiver.class.toString());
 

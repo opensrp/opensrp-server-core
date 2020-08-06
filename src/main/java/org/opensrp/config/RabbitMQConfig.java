@@ -103,7 +103,7 @@ public class RabbitMQConfig {
 	}
 
 	@Bean
-	MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory) {
+	public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory) {
 		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
 		simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
 		simpleMessageListenerContainer.setQueues(queue());

@@ -40,13 +40,13 @@ public class TaskGenerator {
 	private EventsRepository eventsRepository;
 
 	@Autowired
-	PlanService planService;
+	private PlanService planService;
 
 	@Autowired
-	RabbitMQSender rabbitMQSender;
+	private RabbitMQSender rabbitMQSender;
 
 	@Autowired
-	AmqpTemplate rabbitTemplate;
+	private AmqpTemplate rabbitTemplate;
 	
 	@PostConstruct
 	private void postConstruct() {
