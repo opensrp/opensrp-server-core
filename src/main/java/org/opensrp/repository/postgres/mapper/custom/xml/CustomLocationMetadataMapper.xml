@@ -161,7 +161,12 @@
 		WITH RECURSIVE locations
 		AS
 		( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
-		FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}
+		FROM core.location_metadata lm1 WHERE 
+		lm1.geojson_id IN
+		<foreach collection="locationIds" item="value"  open="(" separator="," close=")">
+	       			#{value}
+	   			</foreach>
+	   			AND lm1.status = 'ACTIVE'
 		UNION
 		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
 		FROM locations lm1
