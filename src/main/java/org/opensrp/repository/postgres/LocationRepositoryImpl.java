@@ -411,14 +411,23 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 */
 	@Override
 	public List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id, int pageSize) {
+		return findLocationByIdsWithChildren(returnGeometry, Collections.singleton(id), pageSize);
+	}
+
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> identifiers, int pageSize) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		if (id == null) {
+		if (identifiers == null) {
 			return null;
 		}
 		
 		int limit = Math.abs(pageSize);
 		limit = limit < FETCH_SIZE_LIMIT ? limit : FETCH_SIZE_LIMIT;
-		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample, returnGeometry, id, 0,
+		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample, returnGeometry, identifiers, 0,
 		    limit);
 		return convert(locations);
 	}
