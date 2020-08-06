@@ -439,8 +439,8 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testFindByServerVersion() {
-		assertEquals(11, clientsRepository.findByServerVersion(1520935878136l).size());
-		List<Client> clients = clientsRepository.findByServerVersion(1521003136406l);
+		assertEquals(11, clientsRepository.findByServerVersion(1520935878136l, null).size());
+		List<Client> clients = clientsRepository.findByServerVersion(1521003136406l, null);
 		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce",
 		    "ade884f8-2685-45fd-93f8-122045b2635e", "2e14b66f-206c-4314-a0f7-c5d2c4d9860f",
 		    "b0cb057b-c396-4ec9-bfab-388117a9a5f6", "28ea8f0a-fa53-447d-b8f9-ad07263b382c",
@@ -454,7 +454,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		//test deleted clients
 		for (Client client : clients)
 			clientsRepository.safeRemove(client);
-		assertTrue(clientsRepository.findByServerVersion(1521003136406l).isEmpty());
+		assertTrue(clientsRepository.findByServerVersion(1521003136406l, null).isEmpty());
 	}
 	
 	@Test
@@ -709,5 +709,27 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1,clients.size());
 		assertEquals("f67823b0-378e-4a35-93fc-bb00def74e24", clients.get(0).getBaseEntityId());
 	}
-	
+
+	@Test
+	public void testFindById() {
+		Client client = clientsRepository.findById("05934ae338431f28bf6793b24164cbd9");
+		assertEquals("86c039a2-0b68-4166-849e-f49897e3a510", client.getBaseEntityId());
+		assertEquals("ab91df5d-e433-40f3-b44f-427b73c9ae2a", client.getIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE));
+		assertEquals("Sally", client.getFirstName());
+		assertEquals("Mtini", client.getLastName().trim());
+
+	}
+
+	@Test
+	public void testFindByServerVersionWithLimit() {
+		assertEquals(21, clientsRepository.findByServerVersion(0l, null).size());
+		List<Client> clients = clientsRepository.findByServerVersion(1521003136406l, 2);
+		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241839005", "05934ae338431f28bf6793b2418380ce");
+		assertEquals(2, clients.size());
+		for (Client client : clients) {
+			assertTrue(client.getServerVersion() >= 1521003136406l);
+			assertTrue(expectedIds.contains(client.getId()));
+		}
+	}
+
 }

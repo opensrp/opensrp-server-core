@@ -726,6 +726,17 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		}
 	}
 	
+	
+	@Test
+	public void testFindLocationByIdsWithChildren() {
+		
+		List<PhysicalLocation> locations = locationRepository.findLocationByIdsWithChildren(true, new HashSet<>(Arrays.asList("3734","3735")), 10);
+		assertEquals(2, locations.size());
+		for (PhysicalLocation location : locations) {
+			MatcherAssert.assertThat(location.getId(), either(is("3734")).or(is("3735")));
+		}
+	}
+	
 	@Test
 	public void testFindAllLocationIdsShouldOrderByServerVersion() {
 		
