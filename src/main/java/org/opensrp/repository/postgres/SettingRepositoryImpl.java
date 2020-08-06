@@ -564,7 +564,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			criteria.andSettingsIdEqualTo(Long.valueOf(settingsId));
 		}
 
-		if (StringUtils.isNotBlank(locationId)) {
+		if (StringUtils.isNotBlank(settingKey)) {
 			criteria.andSettingKeyEqualTo(settingKey);
 		}
 		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = settingMetadataMapper
