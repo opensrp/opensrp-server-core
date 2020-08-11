@@ -6,7 +6,6 @@ package org.opensrp.service;
 import javax.annotation.PostConstruct;
 
 import org.opensrp.queue.QueueHelper;
-import org.opensrp.queue.RabbitMQSender;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.TaskRepository;
@@ -16,7 +15,6 @@ import org.smartregister.domain.Event;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
