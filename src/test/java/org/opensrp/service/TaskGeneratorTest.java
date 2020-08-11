@@ -91,8 +91,6 @@ public class TaskGeneratorTest {
 		taskGenerator = new TaskGenerator();
 
 		Whitebox.setInternalState(taskGenerator, "locationRepository", locationRepository);
-		Whitebox.setInternalState(taskGenerator, "planService", planService);
-		Whitebox.setInternalState(taskGenerator, "rabbitMQSender", rabbitMQSender);
 		when(locationProvider.getLocationDao()).thenReturn(locationDao);
 		when(clientProvider.getClientDao()).thenReturn(clientDao);
 	}
