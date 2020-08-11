@@ -60,7 +60,8 @@ public class RabbitMQReceiver implements MessageListener {
     @RabbitListener(queues = "rabbitmq.task.queue")
     public void onMessage(Message message) {
         logger.info("Consuming Message - " + new String(message.getBody()));
-        int count = (Integer) amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT");
+        int count = (Integer) (amqpAdmin.getQueueProperties(queue.getName()) != null ?
+                amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT") : 0);
         PlanEvaluatorMessage planEvaluatorMessage = null;
         if (count >= 1) {
             planEvaluatorMessage = gson.fromJson(new String(message.getBody()), PlanEvaluatorMessage.class);
