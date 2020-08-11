@@ -38,15 +38,6 @@ public class TaskGenerator {
 	
 	@Autowired
 	private EventsRepository eventsRepository;
-
-	@Autowired
-	private PlanService planService;
-
-	@Autowired
-	private RabbitMQSender rabbitMQSender;
-
-	@Autowired
-	private AmqpTemplate rabbitTemplate;
 	
 	@PostConstruct
 	private void postConstruct() {
@@ -56,8 +47,6 @@ public class TaskGenerator {
 	@Async
 	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition, String username) {
 		QueueHelper queueHelper = new QueueHelper();
-		queueHelper.setPlanService(planService);
-		queueHelper.setRabbitMQSender(rabbitMQSender);
 		PlanEvaluator planEvaluator = new PlanEvaluator(username,queueHelper);
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
 	}

@@ -52,9 +52,6 @@ public class RabbitMQConfig {
 	@Value("${rabbitmq.virtualhost}")
 	private String virtualHost;
 
-	@Autowired
-	private RabbitMQReceiver rabbitMQReceiver;
-
 	@Bean
 	public Queue queue() {
 		return new Queue(queueName, false);
@@ -107,7 +104,7 @@ public class RabbitMQConfig {
 		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
 		simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
 		simpleMessageListenerContainer.setQueues(queue());
-		simpleMessageListenerContainer.setMessageListener(rabbitMQReceiver);
+		simpleMessageListenerContainer.setMessageListener(new RabbitMQReceiver());
 		return simpleMessageListenerContainer;
 	}
 
@@ -119,27 +116,5 @@ public class RabbitMQConfig {
 		factory.setConcurrentConsumers(1);
 		factory.setMaxConcurrentConsumers(1);
 		return factory;
-	}
-
-	@Bean
-	public SimpleMessageListenerContainer container(ConnectionFactory connectionFactory, MessageListenerAdapter listenerAdapter) {
-		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-		container.setConnectionFactory(connectionFactory);
-		container.setQueueNames(queueName);
-		container.setMessageListener(listenerAdapter); //
-		container.setMissingQueuesFatal(false);
-		container.setMaxConcurrentConsumers(1);
-		container.setConcurrentConsumers(1);
-		container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-		return container;
-	}
-
-	@Bean
-	public MessageListenerAdapter listenerAdapter(RabbitMQReceiver receiver) {
-		PlanEvaluator planEvaluator = new PlanEvaluator("");
-		receiver.setPlanEvaluator(planEvaluator);
-		MessageListenerAdapter messageListenerAdapter = new MessageListenerAdapter(receiver, "onMessage");
-		messageListenerAdapter.setMessageConverter(jsonMessageConverter());
-		return messageListenerAdapter;
 	}
 }
