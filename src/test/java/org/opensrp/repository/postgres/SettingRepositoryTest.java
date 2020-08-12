@@ -2,7 +2,6 @@ package org.opensrp.repository.postgres;
 
 import com.google.gson.Gson;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
