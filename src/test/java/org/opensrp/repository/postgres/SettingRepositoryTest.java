@@ -326,7 +326,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		SettingSearchBean settingQueryBeanTwo = new SettingSearchBean();
 		settingQueryBeanTwo.setServerVersion(0L);
 		List<SettingConfiguration> allGlobalSettings = settingRepository.findSettings(settingQueryBeanTwo, null);
-		Assert.assertEquals(3, allGlobalSettings.size());
+		assertEquals(3, allGlobalSettings.size());
 	}
 
 	private void verifySettingsAreSame(Map<String, Setting> settingMap, List<Setting> settings) {
