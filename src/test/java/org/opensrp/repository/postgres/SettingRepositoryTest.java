@@ -261,6 +261,31 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		verifySettingsAreSame(expectedSettings, actualSettings);
 	}
 
+	@Test
+	public void testAddGlobalSettingShouldAddSetting() {
+		Setting setting = new Setting();
+		setting.setDescription("description");
+		setting.setDocumentId("document_id_32932");
+		setting.setKey("key_32932");
+		setting.setValue("value");
+		setting.setLabel("label");
+		setting.setInheritedFrom("location_id_2");
+		setting.setIdentifier("setting_identifier_32932");
+		setting.setServerVersion(0L);
+		settingRepository.addOrUpdate(setting);
+
+		Map<String, Setting> expectedSettings = new HashMap<>();
+		expectedSettings.put("key_32932", setting);
+
+		SettingSearchBean settingQueryBean = new SettingSearchBean();
+		settingQueryBean.setServerVersion(0L);
+		settingQueryBean.setIdentifier("setting_identifier_32932");
+		List<SettingConfiguration> settings = settingRepository.findSettings(settingQueryBean, null);
+		List<Setting> actualSettings = settings.get(0).getSettings();
+		assertNotNull(actualSettings);
+		verifySettingsAreSame(expectedSettings, actualSettings);
+	}
+
 	private void verifySettingsAreSame(Map<String, Setting> settingMap, List<Setting> settings) {
 		for (Setting actualSetting : settings) {
 			Setting expectedSetting = settingMap.get(actualSetting.getKey());
