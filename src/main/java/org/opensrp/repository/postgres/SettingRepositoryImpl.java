@@ -324,9 +324,15 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (uniqueId == null) {
 			return settingSearchBean;
 		}
-		String documentId = uniqueId.toString();
 
-		settingSearchBean.setDocumentId(documentId);
+		String settingId = settingConfiguration.getId();
+
+		if (StringUtils.isNotBlank(settingId)) {
+			settingSearchBean.setDocumentId(uniqueId.toString());
+		} else {
+			settingSearchBean.setIdentifier(uniqueId.toString());
+		}
+
 		settingSearchBean.setServerVersion(0L);
 
 		return settingSearchBean;
@@ -337,7 +343,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (settingConfiguration == null) {
 			return null;
 		}
-		return settingConfiguration.getId();
+		String settingId = settingConfiguration.getId();
+		String settingIdentifier = settingConfiguration.getIdentifier();
+
+		return StringUtils.isNotBlank(settingId) ? settingId : settingIdentifier;
 	}
 
 	private Settings convert(SettingConfiguration entity, Long id) {
@@ -511,8 +520,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				settingsMetadataList.add(metadata);
 			}
 		}
-
-		settingMetadataMapper.insertMany(settingsMetadataList);
+			settingMetadataMapper.insertMany(settingsMetadataList);
 	}
 
 	private boolean checkIfMetadataExists(SettingsMetadata settingsMetadata) {
@@ -523,6 +531,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		String teamId = settingsMetadata.getTeamId();
 		String settingsId = String.valueOf(settingsMetadata.getSettingsId());
 		String settingKey = settingsMetadata.getSettingKey();
+		String documentId = settingsMetadata.getDocumentId();
 
 		if (StringUtils.isNotBlank(locationId)) {
 			criteria.andLocationIdEqualTo(locationId);
@@ -533,6 +542,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 		if (StringUtils.isNotBlank(settingsId)) {
 			criteria.andSettingsIdEqualTo(Long.valueOf(settingsId));
+		}
+
+		if (StringUtils.isNotBlank(documentId)) {
+			criteria.andDocumentIdEqualTo(documentId);
 		}
 
 		if (StringUtils.isNotBlank(settingKey)) {
