@@ -21,7 +21,21 @@ public class RabbitMQSender {
 
 	public void send(PlanEvaluatorMessage planEvaluatorMessage) {
 		rabbitTemplate.convertAndSend(queue.getName(), planEvaluatorMessage);
+//		rabbitTemplate.convertAndSend("", queue.getName(), planEvaluatorMessage, m -> {
+//			m.getMessageProperties().setContentType("application/json");
+//			return m;
+//		});
 		logger.info("Send Message : " + planEvaluatorMessage.toString());
+	}
+
+	public void send(ResourceEvaluatorMessage resourceEvaluatorMessage) {
+		rabbitTemplate.convertAndSend(queue.getName(), resourceEvaluatorMessage);
+//		rabbitTemplate.convertAndSend("", queue.getName(), resourceEvaluatorMessage, m -> {
+//			m.getMessageProperties().setContentType("application/json");
+//			return m;
+//		});
+		logger.info("Send Message : " + resourceEvaluatorMessage.toString());
+
 	}
 
 	public void setRabbitTemplate(AmqpTemplate rabbitTemplate) {

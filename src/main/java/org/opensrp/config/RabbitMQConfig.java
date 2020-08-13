@@ -1,6 +1,5 @@
 package org.opensrp.config;
 
-import org.opensrp.queue.RabbitMQReceiver;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Binding;
@@ -14,13 +13,21 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
+import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @EnableRabbit
 @Configuration
@@ -65,7 +72,20 @@ public class RabbitMQConfig {
 
 	@Bean
 	public MessageConverter jsonMessageConverter() {
-		return new Jackson2JsonMessageConverter();
+//		return new Jackson2JsonMessageConverter();
+		Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
+//		DefaultClassMapper classMapper = new DefaultClassMapper();
+//		classMapper.setTrustedPackages("*");
+//		Map<String, Class<?>> idClassMapping = new HashMap<String, Class<?>>();
+//		idClassMapping.put(
+//				"org.opensrp.queue.PlanEvaluatorMessage", PlanEvaluatorMessage.class);
+//		idClassMapping.put(
+//				"org.opensrp.queue.ResourceEvaluatorMessage", ResourceEvaluatorMessage.class);
+//		classMapper.setIdClassMapping(idClassMapping);
+//		converter.setClassMapper(classMapper);
+
+		return converter;
+
 	}
 
 	@Bean
@@ -83,7 +103,6 @@ public class RabbitMQConfig {
 		final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
 		rabbitTemplate.setDefaultReceiveQueue(queueName);
 		rabbitTemplate.setMessageConverter(jsonMessageConverter());
-
 		rabbitTemplate.setReplyAddress(queue().getName());
 		rabbitTemplate.setReplyTimeout(60000);
 		rabbitTemplate.setUseDirectReplyToContainer(false);
@@ -95,22 +114,57 @@ public class RabbitMQConfig {
 		return new RabbitAdmin(connectionFactory());
 	}
 
-	@Bean
-	public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory) {
-		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
-		simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
-		simpleMessageListenerContainer.setQueues(queue());
-		simpleMessageListenerContainer.setMessageListener(new RabbitMQReceiver());
-		return simpleMessageListenerContainer;
-	}
+//	@Bean
+//	public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory) {
+//		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
+//		simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
+//		simpleMessageListenerContainer.setQueues(queue());
+//		simpleMessageListenerContainer.setMessageListener(new RabbitMQReceiver());
+//		return simpleMessageListenerContainer;
+//	}
 
 	@Bean
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
 		final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory());
 		factory.setMessageConverter(jsonMessageConverter());
+
 		factory.setConcurrentConsumers(1);
 		factory.setMaxConcurrentConsumers(1);
 		return factory;
 	}
+
+//	@Bean
+//	public MappingJackson2MessageConverter jackson2Converter() {
+//		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
+//		return converter;
+//	}
+//
+//	@Bean
+//	public DefaultMessageHandlerMethodFactory myHandlerMethodFactory() {
+//		DefaultMessageHandlerMethodFactory factory = new DefaultMessageHandlerMethodFactory();
+//		factory.setMessageConverter(jackson2Converter());
+//		return factory;
+//	}
+
+//	@Override
+//	public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
+//		registrar.setMessageHandlerMethodFactory(myHandlerMethodFactory());
+//	}
+
+//
+//	@Bean
+//	SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
+//			MessageListenerAdapter listenerAdapter) {
+//		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+//		container.setConnectionFactory(connectionFactory);
+//		container.setQueueNames(queueName);
+//		container.setMessageListener(listenerAdapter);
+//		return container;
+//	}
+//
+//	@Bean
+//	MessageListenerAdapter listenerAdapter(RabbitMQReceiver rabbitMQReceiver) {
+//		return new MessageListenerAdapter(rabbitMQReceiver, "receiveMessage");
+//	}
 }

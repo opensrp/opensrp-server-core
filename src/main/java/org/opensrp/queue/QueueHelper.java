@@ -1,6 +1,8 @@
 package org.opensrp.queue;
 
+import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.opensrp.service.PlanService;
+import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.TriggerType;
@@ -23,6 +25,14 @@ public class QueueHelper implements QueuingHelper {
 		Jurisdiction jurisdiction = new Jurisdiction(locationId);
 		PlanEvaluatorMessage planEvaluatorMessage = new PlanEvaluatorMessage(planDefinition,triggerType,jurisdiction);
 		rabbitMQSender.send(planEvaluatorMessage);
+	}
+
+	@Override
+	public void addToQueue(String resource, QuestionnaireResponse questionnaireResponse, Action action, String planIdentifier, String jurisdictionCode,
+			TriggerType triggerType) {
+		ResourceEvaluatorMessage resourceEvaluatorMessage = new ResourceEvaluatorMessage(resource, questionnaireResponse,
+				action, planIdentifier, jurisdictionCode, triggerType);
+		rabbitMQSender.send(resourceEvaluatorMessage);
 	}
 
 	public void setPlanService(PlanService planService) {
