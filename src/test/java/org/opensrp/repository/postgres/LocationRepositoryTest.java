@@ -245,7 +245,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(PropertyStatus.ACTIVE, physicalLocation.getProperties().getStatus());
 
 		physicalLocation.getGeometry().setType(GeometryType.POLYGON);
-		physicalLocation.getProperties().setStatus(PropertyStatus.PENDING_REVIEW);
+		physicalLocation.getProperties().setStatus(PropertyStatus.NOT_ELIGIBLE);
 		physicalLocation.getProperties().setGeographicLevel(3);
 		
 		Date effectiveStartDate = dateFormat.parse("2019-07-15");
@@ -259,7 +259,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		assertNotNull(updatedLocation);
 		assertEquals(GeometryType.POLYGON, updatedLocation.getGeometry().getType());
-		assertEquals(PropertyStatus.PENDING_REVIEW, updatedLocation.getProperties().getStatus());
+		assertEquals(PropertyStatus.NOT_ELIGIBLE, updatedLocation.getProperties().getStatus());
 		assertEquals(3, updatedLocation.getProperties().getGeographicLevel());
 		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
 		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
@@ -289,6 +289,35 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(updatedLocation);
 		assertEquals(GeometryType.POLYGON, updatedLocation.getGeometry().getType());
 		assertEquals(PropertyStatus.ACTIVE, updatedLocation.getProperties().getStatus());
+		assertEquals(3, updatedLocation.getProperties().getGeographicLevel());
+		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
+		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
+		assertEquals(0, updatedLocation.getProperties().getVersion());
+
+		assertNull(locationRepository.getStructure("3734", true));
+
+	}
+	
+	@Test
+	public void testUpdatePendingReviewLocation() throws ParseException {
+		PhysicalLocation physicalLocation = locationRepository.get("3734");
+		assertEquals(0, physicalLocation.getProperties().getVersion());
+		assertEquals(PropertyStatus.ACTIVE, physicalLocation.getProperties().getStatus());
+		physicalLocation.getGeometry().setType(GeometryType.POLYGON);
+		physicalLocation.getProperties().setStatus(PropertyStatus.PENDING_REVIEW);
+		physicalLocation.getProperties().setGeographicLevel(3);
+
+		Date effectiveStartDate = dateFormat.parse("2019-07-15");
+		Date effectiveEndDate = dateFormat.parse("2020-07-15");
+		physicalLocation.getProperties().setEffectiveStartDate(effectiveStartDate);
+		physicalLocation.getProperties().setEffectiveEndDate(effectiveEndDate);
+		physicalLocation.setJurisdiction(true);
+		locationRepository.update(physicalLocation);
+		PhysicalLocation updatedLocation = locationRepository.get("3734");
+
+		assertNotNull(updatedLocation);
+		assertEquals(GeometryType.POLYGON, updatedLocation.getGeometry().getType());
+		assertEquals(PropertyStatus.PENDING_REVIEW, updatedLocation.getProperties().getStatus());
 		assertEquals(3, updatedLocation.getProperties().getGeographicLevel());
 		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
 		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
@@ -1033,13 +1062,13 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindLocationByIdentifierAndStatus() {
 
-		PhysicalLocation actualLocation = locationRepository.findLocationByIdentifierAndStatus("3734", LocationProperty.PropertyStatus.ACTIVE.name(), false);
+		PhysicalLocation actualLocation = locationRepository.findLocationByIdentifierAndStatus("3734", Collections.singletonList(LocationProperty.PropertyStatus.ACTIVE.name()), false);
 
 		assertEquals("3734", actualLocation.getId());
 		assertEquals("Bangladesh", actualLocation.getProperties().getName());
 		assertEquals("21", actualLocation.getProperties().getParentId());
 
-		PhysicalLocation actualInactiveLocation = locationRepository.findLocationByIdentifierAndStatus("3734", LocationProperty.PropertyStatus.INACTIVE.name(), false);
+		PhysicalLocation actualInactiveLocation = locationRepository.findLocationByIdentifierAndStatus("3734", Collections.singletonList(LocationProperty.PropertyStatus.INACTIVE.name()), false);
 		assertNull(actualInactiveLocation);
 
 	}

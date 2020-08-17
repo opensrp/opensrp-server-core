@@ -1,5 +1,8 @@
 package org.opensrp.repository.postgres;
 
+import static org.smartregister.domain.LocationProperty.PropertyStatus.ACTIVE;
+import static org.smartregister.domain.LocationProperty.PropertyStatus.PENDING_REVIEW;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,11 +16,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
-import org.smartregister.domain.LocationTag;
 import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.StructureCount;
-import org.smartregister.domain.LocationProperty;
-import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.LocationMetadata;
@@ -34,6 +34,8 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapp
 import org.opensrp.search.LocationSearchBean;
 import org.opensrp.service.LocationTagService;
 import org.smartregister.converters.LocationConverter;
+import org.smartregister.domain.LocationTag;
+import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -184,7 +186,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<PhysicalLocation> getAll() {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+		locationMetadataExample.createCriteria().andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
@@ -233,8 +235,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andStatusEqualTo(
-				LocationProperty.PropertyStatus.ACTIVE.name());
+		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion)
+		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
@@ -245,7 +247,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria()
 		        .andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames, ",")))
-		        .andServerVersionGreaterThanOrEqualTo(serverVersion).andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+		        .andServerVersionGreaterThanOrEqualTo(serverVersion)
+		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
@@ -344,7 +347,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			return null;
 		}
 		
-		locationMetadataExample.createCriteria().andGeojsonIdIn(ids).andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+		locationMetadataExample.createCriteria().andGeojsonIdIn(ids)
+		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
 		    returnGeometry, 0, DEFAULT_FETCH_SIZE);
@@ -361,9 +365,11 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			return null;
 		}
 		
-		locationMetadataExample.createCriteria().andGeojsonIdIn(ids).andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+		locationMetadataExample.createCriteria().andGeojsonIdIn(ids)
+		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		
-		locationMetadataExample.or(locationMetadataExample.createCriteria().andParentIdIn(ids).andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name()));
+		locationMetadataExample.or(locationMetadataExample.createCriteria().andParentIdIn(ids)
+		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name())));
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
 		    returnGeometry, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
@@ -402,7 +408,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public Set<LocationDetail> findLocationDetailsByPlanId(String planIdentifier) {
 		
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+		locationMetadataExample.createCriteria().andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		return locationMetadataMapper.selectDetailsByPlanId(locationMetadataExample, planIdentifier);
 	}
 	
@@ -413,13 +419,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id, int pageSize) {
 		return findLocationByIdsWithChildren(returnGeometry, Collections.singleton(id), pageSize);
 	}
-
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> identifiers, int pageSize) {
+	public List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> identifiers,
+	        int pageSize) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		if (identifiers == null) {
 			return null;
@@ -427,11 +433,11 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		int limit = Math.abs(pageSize);
 		limit = limit < FETCH_SIZE_LIMIT ? limit : FETCH_SIZE_LIMIT;
-		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample, returnGeometry, identifiers, 0,
-		    limit);
+		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample, returnGeometry,
+		    identifiers, 0, limit);
 		return convert(locations);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -439,7 +445,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion)
-				.andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
@@ -496,7 +502,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public Set<LocationDetail> findParentLocationsInclusive(Set<String> identifiers) {
 		return locationMetadataMapper.selectLocationHierachy(identifiers, true);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -504,24 +510,23 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public Set<LocationDetail> findParentLocationsInclusive(Set<String> identifiers, boolean returnTags) {
 		return locationMetadataMapper.selectLocationHierachy(identifiers, returnTags);
 	}
-
+	
 	@Override
-	public PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status, boolean returnGeometry) {
+	public PhysicalLocation findLocationByIdentifierAndStatus(String identifier, List<String> status, boolean returnGeometry) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andGeojsonIdEqualTo(identifier)
-				.andStatusEqualTo(status);
+		locationMetadataExample.createCriteria().andGeojsonIdEqualTo(identifier).andStatusIn(status);
 		locationMetadataExample.setOrderByClause(getOrderByClause(VERSION, DESCENDING));
-
+		
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
-				returnGeometry, 0, 1);
+		    returnGeometry, 0, 1);
 		if (locations == null || locations.isEmpty()) {
 			return null;
 		}
-
+		
 		PhysicalLocation locationEntity = convert(locations.get(0));
 		return locationEntity;
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -541,7 +546,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public Long countLocationsByServerVersion(long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion)
-		.andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		return locationMetadataMapper.countByExample(locationMetadataExample);
 	}
 	
@@ -552,9 +557,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public Long countLocationsByNames(String locationNames, long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria()
-				.andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames, ",")))
-				.andServerVersionGreaterThanOrEqualTo(serverVersion)
-				.andStatusEqualTo(LocationProperty.PropertyStatus.ACTIVE.name());
+		        .andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames, ",")))
+		        .andServerVersionGreaterThanOrEqualTo(serverVersion)
+		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		return locationMetadataMapper.countByExample(locationMetadataExample);
 	}
 	
@@ -569,7 +574,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		int version = entity.getProperties() != null ? entity.getProperties().getVersion() : 0;
 		return retrievePrimaryKey(identifier, entity.isJurisdiction(), version);
 	}
-
+	
 	@Override
 	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction, int version) {
 		
@@ -587,12 +592,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			return pgEntity.getId();
 		}
 	}
-
+	
 	@Override
 	public PhysicalLocation get(String id, boolean returnGeometry, int version) {
 		return convert(locationMetadataMapper.findByIdAndVersion(id, true, version));
 	}
-
+	
 	@Override
 	protected Object getUniqueField(PhysicalLocation entity) {
 		if (entity == null) {
@@ -747,15 +752,15 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public int countSearchLocations(LocationSearchBean locationSearchBean) {
 		return locationMetadataMapper.selectCountLocations(locationSearchBean);
 	}
-  
-  	/**
+	
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Set<LocationDetail> findLocationWithDescendants(String locationId, boolean returnTags) {
 		return locationMetadataMapper.selectLocationWithDescendants(locationId, returnTags);
 	}
-  
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -778,17 +783,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<com.ibm.fhir.model.resource.Location> findLocationByJurisdiction(String jurisdiction) {
 		return convertToFHIRLocation(findStructuresByProperties(false, jurisdiction, null));
 	}
-
-
+	
 	@Override
 	public List<String> findChildLocationByJurisdiction(String id) {
 		return locationMetadataMapper.selectChildrenIds(id);
 	}
-
+	
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
-		return locations
-				.stream()
-				.map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
-				.collect(Collectors.toList());
+		return locations.stream().map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
+		        .collect(Collectors.toList());
 	}
 }
