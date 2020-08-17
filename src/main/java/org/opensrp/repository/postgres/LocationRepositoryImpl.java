@@ -512,9 +512,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 	
 	@Override
-	public PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status, boolean returnGeometry) {
+	public PhysicalLocation findLocationByIdentifierAndStatus(String identifier, List<String> status, boolean returnGeometry) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andGeojsonIdEqualTo(identifier).andStatusEqualTo(status);
+		locationMetadataExample.createCriteria().andGeojsonIdEqualTo(identifier).andStatusIn(status);
 		locationMetadataExample.setOrderByClause(getOrderByClause(VERSION, DESCENDING));
 		
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
