@@ -1033,13 +1033,13 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindLocationByIdentifierAndStatus() {
 
-		PhysicalLocation actualLocation = locationRepository.findLocationByIdentifierAndStatus("3734", LocationProperty.PropertyStatus.ACTIVE.name(), false);
+		PhysicalLocation actualLocation = locationRepository.findLocationByIdentifierAndStatus("3734", Collections.singletonList(LocationProperty.PropertyStatus.ACTIVE.name()), false);
 
 		assertEquals("3734", actualLocation.getId());
 		assertEquals("Bangladesh", actualLocation.getProperties().getName());
 		assertEquals("21", actualLocation.getProperties().getParentId());
 
-		PhysicalLocation actualInactiveLocation = locationRepository.findLocationByIdentifierAndStatus("3734", LocationProperty.PropertyStatus.INACTIVE.name(), false);
+		PhysicalLocation actualInactiveLocation = locationRepository.findLocationByIdentifierAndStatus("3734", Collections.singletonList(LocationProperty.PropertyStatus.INACTIVE.name()), false);
 		assertNull(actualInactiveLocation);
 
 	}
