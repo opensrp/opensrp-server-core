@@ -4,13 +4,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class RabbitMQSender {
 
+	@Autowired
 	private AmqpTemplate rabbitTemplate;
 
+	@Autowired
 	private Queue queue;
 
 	private static Logger logger = LoggerFactory.getLogger(RabbitMQSender.class.toString());

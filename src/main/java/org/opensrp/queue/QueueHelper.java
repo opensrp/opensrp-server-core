@@ -67,14 +67,25 @@ public class QueueHelper implements QueuingHelper {
 	}
 
 	public QueueHelper() {
-//		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
-		planEvaluator = new PlanEvaluator("");
-		fhirParser = FHIRParser.parser(Format.JSON);
+
 	}
+
+//	public QueueHelper(boolean isQueuingEnabled) {
+////		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
+//		planEvaluator = new PlanEvaluator("");
+//		fhirParser = FHIRParser.parser(Format.JSON);
+//
+//		rabbitMQSender = new RabbitMQSender(rabbitTemplate);
+//		this.isQueuingEnabled = isQueuingEnabled;
+//	}
 
 	@PostConstruct
 	private void postConstruct() {
 		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
+				planEvaluator = new PlanEvaluator("");
+				fhirParser = FHIRParser.parser(Format.JSON);
+		System.out.println(this.isQueuingEnabled);
+
 	}
 
 //	@PostConstruct
