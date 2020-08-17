@@ -79,15 +79,17 @@ public class RabbitMQReceiver {
         logger.info("Consuming Message - " + planEvaluatorMessage);
         int count = (Integer) (amqpAdmin.getQueueProperties(queue.getName()) != null ?
                 amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT") : 0);
-//        PlanEvaluatorMessage planEvaluatorMessage = null;
-        if (count >= 1) {
-            planEvaluatorMessage = gson.fromJson(planEvaluatorMessage.toString(), PlanEvaluatorMessage.class);
+//        PlanEvaluatorMessage planEvaluatorMessage1 = null;
+//        if (count >= 1) {
+        if(planEvaluatorMessage!=null) {
+//            planEvaluatorMessage1 = gson.fromJson(planEvaluatorMessage.toString(), PlanEvaluatorMessage.class);
             logger.info("CustomPlanEvaluatorMessage received : ", planEvaluatorMessage);
             if (planEvaluatorMessage != null) {
                 planEvaluator.evaluatePlan(planEvaluatorMessage.getPlanDefinition(),
                         planEvaluatorMessage.getTriggerType(),
                         planEvaluatorMessage.getJurisdiction(), null);
             }
+            //        }
         }
     }
 

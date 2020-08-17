@@ -1,5 +1,8 @@
 package org.opensrp.config;
 
+import org.opensrp.queue.PlanEvaluatorMessage;
+import org.opensrp.queue.ResourceEvaluatorMessage;
+import org.slf4j.Logger;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Binding;
@@ -12,10 +15,12 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
 import org.springframework.amqp.rabbit.listener.MessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistrar;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.amqp.rabbit.support.ListenerExecutionFailedException;
 import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
@@ -25,6 +30,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory;
+import org.springframework.util.ErrorHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,15 +80,15 @@ public class RabbitMQConfig {
 	public MessageConverter jsonMessageConverter() {
 //		return new Jackson2JsonMessageConverter();
 		Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
-//		DefaultClassMapper classMapper = new DefaultClassMapper();
-//		classMapper.setTrustedPackages("*");
-//		Map<String, Class<?>> idClassMapping = new HashMap<String, Class<?>>();
-//		idClassMapping.put(
-//				"org.opensrp.queue.PlanEvaluatorMessage", PlanEvaluatorMessage.class);
-//		idClassMapping.put(
-//				"org.opensrp.queue.ResourceEvaluatorMessage", ResourceEvaluatorMessage.class);
-//		classMapper.setIdClassMapping(idClassMapping);
-//		converter.setClassMapper(classMapper);
+		DefaultClassMapper classMapper = new DefaultClassMapper();
+		classMapper.setTrustedPackages("*");
+		Map<String, Class<?>> idClassMapping = new HashMap<String, Class<?>>();
+		idClassMapping.put(
+				"org.opensrp.queue.PlanEvaluatorMessage", PlanEvaluatorMessage.class);
+		idClassMapping.put(
+				"org.opensrp.queue.ResourceEvaluatorMessage", ResourceEvaluatorMessage.class);
+		classMapper.setIdClassMapping(idClassMapping);
+		converter.setClassMapper(classMapper);
 
 		return converter;
 
@@ -131,8 +137,17 @@ public class RabbitMQConfig {
 
 		factory.setConcurrentConsumers(1);
 		factory.setMaxConcurrentConsumers(1);
+		factory.setErrorHandler(errorHandler());
 		return factory;
 	}
+
+	//////////////
+	@Bean
+	public ErrorHandler errorHandler() {
+		return new ConditionalRejectingErrorHandler(new MyFatalExceptionStrategy());
+	}
+
+	//////////
 
 //	@Bean
 //	public MappingJackson2MessageConverter jackson2Converter() {
@@ -167,4 +182,21 @@ public class RabbitMQConfig {
 //	MessageListenerAdapter listenerAdapter(RabbitMQReceiver rabbitMQReceiver) {
 //		return new MessageListenerAdapter(rabbitMQReceiver, "receiveMessage");
 //	}
+
+	public static class MyFatalExceptionStrategy extends ConditionalRejectingErrorHandler.DefaultExceptionStrategy {
+
+		private final Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
+
+		@Override
+		public boolean isFatal(Throwable t) {
+			if (t instanceof ListenerExecutionFailedException) {
+				ListenerExecutionFailedException lefe = (ListenerExecutionFailedException) t;
+				logger.error("Failed to process inbound message from queue "
+						+ lefe.getFailedMessage().getMessageProperties().getConsumerQueue()
+						+ "; failed message: " + lefe.getFailedMessage(), t);
+			}
+			return super.isFatal(t);
+		}
+
+	}
 }

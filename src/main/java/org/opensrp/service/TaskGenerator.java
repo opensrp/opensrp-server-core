@@ -36,6 +36,9 @@ public class TaskGenerator {
 	
 	@Autowired
 	private EventsRepository eventsRepository;
+
+//	@Autowired
+//	private QueueHelper queueHelper;
 	
 	@PostConstruct
 	private void postConstruct() {
