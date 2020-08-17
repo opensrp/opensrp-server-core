@@ -2,6 +2,7 @@ package org.opensrp.repository.postgres;
 
 import com.google.gson.Gson;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
@@ -17,7 +18,10 @@ import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -296,18 +300,24 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testSaveGlobalSettingsUsingV1endpoint() {
+	public void testSaveGlobalSettingsUsingV1endpoint() throws IOException {
 		String popCharacteristicsGlobal = "{\"identifier\":\"population_characteristics\",\"settings\":[{\"description\":\"The proportion of women in the adult population (18 years or older), with a BMI less than 18.5, is 20% or higher.\",\"label\":\"Undernourished prevalence 20% or higher\",\"value\":\"false\",\"key\":\"pop_undernourish\"},{\"description\":\"The proportion of pregnant women in the population with anaemia (haemoglobin level less than 11 g/dl) is 40% or higher.\",\"label\":\"Anaemia prevalence 40% or higher\",\"value\":\"false\",\"key\":\"pop_anaemia_40\"}],\"type\":\"SettingConfiguration\"}";
 		String testGlobalsSaveV1 = "{\"identifier\":\"test_globals_save_v1\",\"settings\":[{\"description\":\"Is "
 				+ "an ultrasound machine available and functional at your facility and a trained health worker available to use it?\",\"label\":\"Ultrasound available\",\"type\":\"SettingConfiguration\",\"value\":false,\"key\":\"site_ultrasound\"},{\"description\":\"Does your facility use an automated blood pressure (BP) measurement tool?\",\"label\":\"Automated BP measurement tool\",\"type\":\"SettingConfiguration\",\"value\":false,\"key\":\"site_bp_tool\"}],\"type\":\"SettingConfiguration\"}";
+		FileInputStream fis = new FileInputStream("src/test/resources/settings.json");
+		String largeSettingPayload = IOUtils.toString(fis, StandardCharsets.UTF_8);
+
 		SettingTypeHandler settingTypeHandler = new SettingTypeHandler();
 		SettingConfiguration popCharacteristicsSettingConfig = null;
 		SettingConfiguration siteCharacteristicsSettingConfig = null;
+		SettingConfiguration largeSettingPayloadSettingConfig = null;
 		try {
 			popCharacteristicsSettingConfig = settingTypeHandler.mapper
 					.readValue(popCharacteristicsGlobal, SettingConfiguration.class);
 			siteCharacteristicsSettingConfig = settingTypeHandler.mapper
 					.readValue(testGlobalsSaveV1, SettingConfiguration.class);
+			largeSettingPayloadSettingConfig = settingTypeHandler.mapper
+					.readValue(largeSettingPayload, SettingConfiguration.class);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
@@ -319,8 +329,12 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		siteCharacteristicsSettingConfig.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		siteCharacteristicsSettingConfig.setV1Settings(true);
 
+		largeSettingPayloadSettingConfig.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		largeSettingPayloadSettingConfig.setV1Settings(true);
+
 		settingRepository.add(popCharacteristicsSettingConfig);
 		settingRepository.add(siteCharacteristicsSettingConfig);
+		settingRepository.add(largeSettingPayloadSettingConfig);
 
 		SettingSearchBean settingQueryBeanTwo = new SettingSearchBean();
 		settingQueryBeanTwo.setServerVersion(0L);
