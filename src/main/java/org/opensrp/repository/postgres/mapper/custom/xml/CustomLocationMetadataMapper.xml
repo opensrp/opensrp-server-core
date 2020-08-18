@@ -24,7 +24,7 @@
 		from core.location_metadata lm
 		join core.location l on lm.location_id = l.id
 		where lm.geojson_id = #{id,jdbcType=VARCHAR}
-		and lm.status = 'ACTIVE'
+		and lm.status IN ('ACTIVE', 'PENDING_REVIEW')
 	</select>
 
 
@@ -166,11 +166,11 @@
 		<foreach collection="locationIds" item="value"  open="(" separator="," close=")">
 	       			#{value}
 	   			</foreach>
-	   			AND lm1.status = 'ACTIVE'
+	   			AND lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
 		UNION
 		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
 		FROM locations lm1
-		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id AND status = 'ACTIVE' )
+		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id AND status IN ('ACTIVE', 'PENDING_REVIEW') )
 		SELECT location_id FROM locations
 		)
 
@@ -204,7 +204,7 @@
 			 	<foreach collection="identifiers" item="value"  open="(" separator="," close=")">
 	       			#{value}
 	   			</foreach>
-		        AND lm1.status = 'ACTIVE'
+		        AND lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
 				UNION
 				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id,level+1 as level
 				FROM locations lm1
@@ -368,7 +368,7 @@
 				UNION
 				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id, level+1 as level
 				FROM locations lm1
-				INNER JOIN core.location_metadata lm2 ON lm2.parent_id = lm1.geojson_id AND lm2.status = 'ACTIVE'
+				INNER JOIN core.location_metadata lm2 ON lm2.parent_id = lm1.geojson_id AND lm2.status IN ('ACTIVE', 'PENDING_REVIEW')
 			)
 			SELECT location_id, level FROM locations
 		) record
@@ -387,11 +387,11 @@
 		WITH RECURSIVE locations
 		AS
 		( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
-		FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}  AND status='ACTIVE'
+		FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}  AND status IN ('ACTIVE', 'PENDING_REVIEW')
 		UNION
 		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
 		FROM locations lm1
-		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id  AND status='ACTIVE')
+		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id  AND status IN ('ACTIVE', 'PENDING_REVIEW'))
 
 		SELECT geojson_id FROM locations
 		)  ids;
