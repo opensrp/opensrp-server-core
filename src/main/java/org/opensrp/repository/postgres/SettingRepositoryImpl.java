@@ -519,11 +519,16 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			pgSettings = convert(entity, id);
 		}
 
-		checkWhetherMetadataExistsBeforeSave(entity, settings, pgSettings);
+		try {
+			checkWhetherMetadataExistsBeforeSave(entity, settings, pgSettings);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void checkWhetherMetadataExistsBeforeSave(SettingConfiguration entity, List<Setting> settings,
-			Settings pgSettings) {
+			Settings pgSettings) throws SQLException {
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> settingsMetadata = createMetadata(entity, pgSettings.getId());
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
@@ -533,67 +538,59 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				settingsMetadataList.add(metadata);
 			}
 		}
-
 		insertSettingMetadata(settingsMetadataList);
 	}
 
-	private void insertSettingMetadata(List<SettingsMetadata> settingsMetadataList) {
+	private void insertSettingMetadata(List<SettingsMetadata> settingsMetadataList) throws SQLException {
+		String insertSettingMetadata = "INSERT INTO core.settings_metadata ( settings_id, document_id, identifier, "
+				+ "server_version, team, team_id, provider_id, location_id, uuid, json, setting_type, setting_value, setting_key, setting_description, setting_label, inherited_from) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+		Connection connection = null;
+
 		try {
-			String insertSettingMetadata = "INSERT INTO core.settings_metadata ( settings_id, document_id, identifier, "
-					+ "server_version, team, team_id, provider_id, location_id, uuid, json, setting_type, setting_value, setting_key, setting_description, setting_label, inherited_from) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			connection = DataSourceUtils.getConnection(openSRPDataSource);
+			PreparedStatement preparedStatement = connection.prepareStatement(insertSettingMetadata);
+			for (SettingsMetadata settingsMetadata : settingsMetadataList) {
 
-			Connection connection = null;
-
-			try {
-				connection = DataSourceUtils.getConnection(openSRPDataSource);
-				PreparedStatement preparedStatement = connection.prepareStatement(insertSettingMetadata);
-				final int batchSize = 1000;
-				int count = 0;
-				for (SettingsMetadata settingsMetadata : settingsMetadataList) {
-
-					ObjectMapper objectMapper = new ObjectMapper();
-					String json = objectMapper.writeValueAsString(settingsMetadata.getJson());
-
-					PGobject pGobject = new PGobject();
-					pGobject.setType("json");
-					pGobject.setValue(json);
-
-					preparedStatement.setLong(1, settingsMetadata.getSettingsId());
-					preparedStatement.setString(2, settingsMetadata.getDocumentId());
-					preparedStatement.setString(3, settingsMetadata.getIdentifier());
-					preparedStatement.setLong(4, settingsMetadata.getServerVersion());
-					preparedStatement.setString(5, settingsMetadata.getTeam());
-					preparedStatement.setString(6, settingsMetadata.getTeamId());
-					preparedStatement.setString(7, settingsMetadata.getProviderId());
-					preparedStatement.setString(8, settingsMetadata.getLocationId());
-					preparedStatement.setString(9, settingsMetadata.getUuid());
-					preparedStatement.setObject(10, pGobject);
-					preparedStatement.setString(11, settingsMetadata.getSettingType());
-					preparedStatement.setString(12, settingsMetadata.getSettingValue());
-					preparedStatement.setString(13, settingsMetadata.getSettingKey());
-					preparedStatement.setString(14, settingsMetadata.getSettingDescription());
-					preparedStatement.setString(15, settingsMetadata.getSettingLabel());
-					preparedStatement.setString(16, settingsMetadata.getInheritedFrom());
-					preparedStatement.addBatch();
-					if (++count % batchSize == 0) {
-						preparedStatement.executeBatch();
-					}
+				ObjectMapper objectMapper = new ObjectMapper();
+				String json = null;
+				try {
+					json = objectMapper.writeValueAsString(settingsMetadata.getJson());
 				}
-				preparedStatement.executeBatch(); // insert remaining records
-				preparedStatement.close();
-				connection.close();
-			}
-			finally {
-				if (connection != null) {
-					DataSourceUtils.releaseConnection(connection, openSRPDataSource);
+				catch (JsonProcessingException e) {
+					e.printStackTrace();
 				}
+
+				PGobject pGobject = new PGobject();
+				pGobject.setType("json");
+				pGobject.setValue(json);
+
+				preparedStatement.setLong(1, settingsMetadata.getSettingsId());
+				preparedStatement.setString(2, settingsMetadata.getDocumentId());
+				preparedStatement.setString(3, settingsMetadata.getIdentifier());
+				preparedStatement.setLong(4, settingsMetadata.getServerVersion());
+				preparedStatement.setString(5, settingsMetadata.getTeam());
+				preparedStatement.setString(6, settingsMetadata.getTeamId());
+				preparedStatement.setString(7, settingsMetadata.getProviderId());
+				preparedStatement.setString(8, settingsMetadata.getLocationId());
+				preparedStatement.setString(9, settingsMetadata.getUuid());
+				preparedStatement.setObject(10, pGobject);
+				preparedStatement.setString(11, settingsMetadata.getSettingType());
+				preparedStatement.setString(12, settingsMetadata.getSettingValue());
+				preparedStatement.setString(13, settingsMetadata.getSettingKey());
+				preparedStatement.setString(14, settingsMetadata.getSettingDescription());
+				preparedStatement.setString(15, settingsMetadata.getSettingLabel());
+				preparedStatement.setString(16, settingsMetadata.getInheritedFrom());
+				preparedStatement.addBatch();
 			}
+			preparedStatement.executeBatch();
+			preparedStatement.close();
+			connection.close();
 		}
-		catch (SQLException e) {
-			logger.error(e.getMessage(), e);
-		}
-		catch (JsonProcessingException e) {
-			logger.error(e.getMessage(), e);
+		finally {
+			if (connection != null) {
+				DataSourceUtils.releaseConnection(connection, openSRPDataSource);
+			}
 		}
 	}
 
@@ -657,10 +654,23 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 									settingConfiguration.getId() :
 									UUID.randomUUID().toString());
 					metadata.setIdentifier(settingConfiguration.getIdentifier());
-					metadata.setProviderId(settingConfiguration.getProviderId());
-					metadata.setLocationId(settingConfiguration.getLocationId());
-					metadata.setTeam(settingConfiguration.getTeam());
-					metadata.setTeamId(settingConfiguration.getTeamId());
+
+					if (StringUtils.isNotBlank(settingConfiguration.getProviderId())) {
+						metadata.setProviderId(settingConfiguration.getProviderId());
+					}
+
+					if (StringUtils.isNotBlank(settingConfiguration.getLocationId())) {
+						metadata.setLocationId(settingConfiguration.getLocationId());
+					}
+
+					if (StringUtils.isNotBlank(settingConfiguration.getTeam())) {
+						metadata.setTeam(settingConfiguration.getTeam());
+					}
+
+					if (StringUtils.isNotBlank(settingConfiguration.getTeamId())) {
+						metadata.setTeamId(settingConfiguration.getTeamId());
+					}
+
 					metadata.setServerVersion(settingConfiguration.getServerVersion());
 					metadata.setJson(convertToSetting(metadata, false)); //always want to create the json on the settings
 					// creation
