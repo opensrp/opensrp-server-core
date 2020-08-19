@@ -40,9 +40,6 @@ public class QueueHelper implements QueuingHelper {
 	private RabbitMQSender rabbitMQSender;
 
 	@Autowired
-	private AmqpTemplate rabbitTemplate;
-
-	@Autowired
 	private LocationRepository locationRepository;
 
 	@Autowired
@@ -70,42 +67,21 @@ public class QueueHelper implements QueuingHelper {
 
 	}
 
-//	public QueueHelper(boolean isQueuingEnabled) {
-////		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
-//		planEvaluator = new PlanEvaluator("");
-//		fhirParser = FHIRParser.parser(Format.JSON);
-//
-//		rabbitMQSender = new RabbitMQSender(rabbitTemplate);
-//		this.isQueuingEnabled = isQueuingEnabled;
-//	}
-
 	@PostConstruct
-	private void postConstruct() {
+	public void init() {
 		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
-				planEvaluator = new PlanEvaluator("");
-				fhirParser = FHIRParser.parser(Format.JSON);
-		System.out.println(this.isQueuingEnabled);
-
+		planEvaluator = new PlanEvaluator("");
+		fhirParser = FHIRParser.parser(Format.JSON);
 	}
-
-//	@PostConstruct
-//	public void init() {
-////		rabbitMQSender = new RabbitMQSender(rabbitTemplate);
-//		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
-//		planEvaluator = new PlanEvaluator("");
-//		fhirParser = FHIRParser.parser(Format.JSON);
-//	}
 
 	@Override
 	public void addToQueue(String planIdentifier, TriggerType triggerType, String locationId) {
 		PlanDefinition planDefinition = planService.getPlan(planIdentifier);
 		Jurisdiction jurisdiction = new Jurisdiction(locationId);
-		PlanEvaluatorMessage planEvaluatorMessage = new PlanEvaluatorMessage(planDefinition,triggerType,jurisdiction);
-		if(isQueuingEnabled) {
+		PlanEvaluatorMessage planEvaluatorMessage = new PlanEvaluatorMessage(planDefinition, triggerType, jurisdiction);
+		if (isQueuingEnabled) {
 			rabbitMQSender.send(planEvaluatorMessage);
-		}
-		else
-		{
+		} else {
 			planEvaluator.evaluatePlan(planEvaluatorMessage.getPlanDefinition(),
 					planEvaluatorMessage.getTriggerType(),
 					planEvaluatorMessage.getJurisdiction(), null);
@@ -114,25 +90,24 @@ public class QueueHelper implements QueuingHelper {
 	}
 
 	@Override
-	public void addToQueue(String resource, QuestionnaireResponse questionnaireResponse, Action action, String planIdentifier, String jurisdictionCode,
+	public void addToQueue(String resource, QuestionnaireResponse questionnaireResponse, Action action,
+			String planIdentifier, String jurisdictionCode,
 			TriggerType triggerType) {
 		ResourceEvaluatorMessage resourceEvaluatorMessage = new ResourceEvaluatorMessage(resource, questionnaireResponse,
 				action, planIdentifier, jurisdictionCode, triggerType);
-		if(isQueuingEnabled) {
+		if (isQueuingEnabled) {
 			rabbitMQSender.send(resourceEvaluatorMessage);
-		}
-		else {
-			System.out.println("Inside resourceev" + resourceEvaluatorMessage);
-			InputStream stream = new ByteArrayInputStream(resourceEvaluatorMessage.getResource().getBytes(StandardCharsets.UTF_8));
+		} else {
+			InputStream stream = new ByteArrayInputStream(
+					resourceEvaluatorMessage.getResource().getBytes(StandardCharsets.UTF_8));
 			try {
 				DomainResource domainResource = fhirParser.parse(stream);
-				planEvaluator.evaluateResource(domainResource,resourceEvaluatorMessage.getQuestionnaireResponse(),
+				planEvaluator.evaluateResource(domainResource, resourceEvaluatorMessage.getQuestionnaireResponse(),
 						resourceEvaluatorMessage.action, resourceEvaluatorMessage.planIdentifier,
 						resourceEvaluatorMessage.jurisdictionCode, resourceEvaluatorMessage.getTriggerType());
 			}
 			catch (FHIRParserException e) {
 				e.printStackTrace();
-//				logger.error("FHIRParserException occurred " + e.getMessage());
 			}
 		}
 	}

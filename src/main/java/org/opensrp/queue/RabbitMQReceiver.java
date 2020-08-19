@@ -38,77 +38,60 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class RabbitMQReceiver {
 
-    private PlanEvaluator planEvaluator;
+	private PlanEvaluator planEvaluator;
 
-    @Autowired
-    private Queue queue;
+	@Autowired
+	private LocationRepository locationRepository;
 
-    @Autowired
-    private AmqpAdmin amqpAdmin;
+	@Autowired
+	private ClientsRepository clientsRepository;
 
-    @Autowired
-    private LocationRepository locationRepository;
+	@Autowired
+	private TaskRepository taskRepository;
 
-    @Autowired
-    private ClientsRepository clientsRepository;
+	@Autowired
+	private EventsRepository eventsRepository;
 
-    @Autowired
-    private TaskRepository taskRepository;
+	private FHIRParser fhirParser;
 
-    @Autowired
-    private EventsRepository eventsRepository;
+	private static Logger logger = LoggerFactory.getLogger(RabbitMQReceiver.class.toString());
 
-    private FHIRParser fhirParser;
+	@PostConstruct
+	public void init() {
+		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
+		planEvaluator = new PlanEvaluator("");
+		fhirParser = FHIRParser.parser(Format.JSON);
+	}
 
-    private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-            .registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
+	@RabbitHandler
+	@RabbitListener(queues = "rabbitmq.task.queue")
+	public void receiver(PlanEvaluatorMessage planEvaluatorMessage) {
+		logger.info("PlanEvaluatorMessage listener invoked - Consuming Message - " + planEvaluatorMessage);
+		if (planEvaluatorMessage != null) {
+			logger.info("CustomPlanEvaluatorMessage received : ", planEvaluatorMessage);
+			if (planEvaluatorMessage != null) {
+				planEvaluator.evaluatePlan(planEvaluatorMessage.getPlanDefinition(),
+						planEvaluatorMessage.getTriggerType(),
+						planEvaluatorMessage.getJurisdiction(), null);
+			}
+		}
+	}
 
-
-    private static Logger logger = LoggerFactory.getLogger(RabbitMQReceiver.class.toString());
-
-    @PostConstruct
-    private void postConstruct() {
-        PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
-        planEvaluator = new PlanEvaluator("");
-        fhirParser = FHIRParser.parser(Format.JSON);
-    }
-
-    @RabbitHandler
-    @RabbitListener(queues = "rabbitmq.task.queue")
-    public void receiver(PlanEvaluatorMessage planEvaluatorMessage) {
-        logger.info("Consuming Message - " + planEvaluatorMessage);
-        int count = (Integer) (amqpAdmin.getQueueProperties(queue.getName()) != null ?
-                amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT") : 0);
-//        PlanEvaluatorMessage planEvaluatorMessage1 = null;
-//        if (count >= 1) {
-        if(planEvaluatorMessage!=null) {
-//            planEvaluatorMessage1 = gson.fromJson(planEvaluatorMessage.toString(), PlanEvaluatorMessage.class);
-            logger.info("CustomPlanEvaluatorMessage received : ", planEvaluatorMessage);
-            if (planEvaluatorMessage != null) {
-                planEvaluator.evaluatePlan(planEvaluatorMessage.getPlanDefinition(),
-                        planEvaluatorMessage.getTriggerType(),
-                        planEvaluatorMessage.getJurisdiction(), null);
-            }
-            //        }
-        }
-    }
-
-    @RabbitHandler
-    @RabbitListener(queues = "rabbitmq.task.queue")
-    public void receiver(ResourceEvaluatorMessage resourceEvaluatorMessage) {
-        System.out.println("Inside resourceev" + resourceEvaluatorMessage);
-        InputStream stream = new ByteArrayInputStream(resourceEvaluatorMessage.getResource().getBytes(StandardCharsets.UTF_8));
-        try {
-            DomainResource resource = fhirParser.parse(stream);
-            planEvaluator.evaluateResource(resource,resourceEvaluatorMessage.getQuestionnaireResponse(),
-                    resourceEvaluatorMessage.action, resourceEvaluatorMessage.planIdentifier,
-                    resourceEvaluatorMessage.jurisdictionCode, resourceEvaluatorMessage.getTriggerType());
-        }
-        catch (FHIRParserException e) {
-            e.printStackTrace();
-            logger.error("FHIRParserException occurred " + e.getMessage());
-        }
-
-    }
+	@RabbitHandler
+	@RabbitListener(queues = "rabbitmq.task.queue")
+	public void receiver(ResourceEvaluatorMessage resourceEvaluatorMessage) {
+		System.out.println("ResourceEvaluatorMessage invoked - Consuming Message: " + resourceEvaluatorMessage);
+		InputStream stream = new ByteArrayInputStream(
+				resourceEvaluatorMessage.getResource().getBytes(StandardCharsets.UTF_8));
+		try {
+			DomainResource resource = fhirParser.parse(stream);
+			planEvaluator.evaluateResource(resource, resourceEvaluatorMessage.getQuestionnaireResponse(),
+					resourceEvaluatorMessage.action, resourceEvaluatorMessage.planIdentifier,
+					resourceEvaluatorMessage.jurisdictionCode, resourceEvaluatorMessage.getTriggerType());
+		}
+		catch (FHIRParserException e) {
+			logger.error("FHIRParserException occurred " + e.getMessage());
+		}
+	}
 
 }

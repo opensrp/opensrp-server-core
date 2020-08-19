@@ -3,12 +3,7 @@ package org.opensrp.config;
 import org.opensrp.queue.PlanEvaluatorMessage;
 import org.opensrp.queue.ResourceEvaluatorMessage;
 import org.slf4j.Logger;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -21,11 +16,9 @@ import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.util.ErrorHandler;
 
 import java.util.HashMap;
@@ -74,7 +67,6 @@ public class RabbitMQConfig {
 
 	@Bean
 	public MessageConverter jsonMessageConverter() {
-//		return new Jackson2JsonMessageConverter();
 		Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
 		DefaultClassMapper classMapper = new DefaultClassMapper();
 		classMapper.setTrustedPackages("*");
@@ -116,68 +108,21 @@ public class RabbitMQConfig {
 		return new RabbitAdmin(connectionFactory());
 	}
 
-//	@Bean
-//	public MessageListenerContainer messageListenerContainer(ConnectionFactory connectionFactory) {
-//		SimpleMessageListenerContainer simpleMessageListenerContainer = new SimpleMessageListenerContainer();
-//		simpleMessageListenerContainer.setConnectionFactory(connectionFactory);
-//		simpleMessageListenerContainer.setQueues(queue());
-//		simpleMessageListenerContainer.setMessageListener(new RabbitMQReceiver());
-//		return simpleMessageListenerContainer;
-//	}
-
 	@Bean
 	public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
 		final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory());
 		factory.setMessageConverter(jsonMessageConverter());
-
 		factory.setConcurrentConsumers(1);
 		factory.setMaxConcurrentConsumers(1);
 		factory.setErrorHandler(errorHandler());
 		return factory;
 	}
 
-	//////////////
 	@Bean
 	public ErrorHandler errorHandler() {
 		return new ConditionalRejectingErrorHandler(new MyFatalExceptionStrategy());
 	}
-
-	//////////
-
-//	@Bean
-//	public MappingJackson2MessageConverter jackson2Converter() {
-//		MappingJackson2MessageConverter converter = new MappingJackson2MessageConverter();
-//		return converter;
-//	}
-//
-//	@Bean
-//	public DefaultMessageHandlerMethodFactory myHandlerMethodFactory() {
-//		DefaultMessageHandlerMethodFactory factory = new DefaultMessageHandlerMethodFactory();
-//		factory.setMessageConverter(jackson2Converter());
-//		return factory;
-//	}
-
-//	@Override
-//	public void configureRabbitListeners(RabbitListenerEndpointRegistrar registrar) {
-//		registrar.setMessageHandlerMethodFactory(myHandlerMethodFactory());
-//	}
-
-//
-//	@Bean
-//	SimpleMessageListenerContainer container(ConnectionFactory connectionFactory,
-//			MessageListenerAdapter listenerAdapter) {
-//		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
-//		container.setConnectionFactory(connectionFactory);
-//		container.setQueueNames(queueName);
-//		container.setMessageListener(listenerAdapter);
-//		return container;
-//	}
-//
-//	@Bean
-//	MessageListenerAdapter listenerAdapter(RabbitMQReceiver rabbitMQReceiver) {
-//		return new MessageListenerAdapter(rabbitMQReceiver, "receiveMessage");
-//	}
 
 	public static class MyFatalExceptionStrategy extends ConditionalRejectingErrorHandler.DefaultExceptionStrategy {
 
