@@ -1,7 +1,5 @@
 package org.opensrp.config;
 
-import org.opensrp.queue.PlanEvaluatorMessage;
-import org.opensrp.queue.ResourceEvaluatorMessage;
 import org.slf4j.Logger;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
@@ -12,21 +10,15 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
 import org.springframework.amqp.rabbit.support.ListenerExecutionFailedException;
-import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ErrorHandler;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @EnableRabbit
 @Configuration
-@ComponentScan("org.opensrp")
 public class RabbitMQConfig {
 
 	@Value("${rabbitmq.queue}")
@@ -50,6 +42,9 @@ public class RabbitMQConfig {
 	@Value("${rabbitmq.virtualhost}")
 	private String virtualHost;
 
+	@Value("${rabbitmq.reply.timeout}")
+	private Integer replyTimeout;
+
 	@Bean
 	public Queue queue() {
 		return new Queue(queueName, false);
@@ -67,19 +62,7 @@ public class RabbitMQConfig {
 
 	@Bean
 	public MessageConverter jsonMessageConverter() {
-		Jackson2JsonMessageConverter converter = new Jackson2JsonMessageConverter();
-		DefaultClassMapper classMapper = new DefaultClassMapper();
-		classMapper.setTrustedPackages("*");
-		Map<String, Class<?>> idClassMapping = new HashMap<String, Class<?>>();
-		idClassMapping.put(
-				"org.opensrp.queue.PlanEvaluatorMessage", PlanEvaluatorMessage.class);
-		idClassMapping.put(
-				"org.opensrp.queue.ResourceEvaluatorMessage", ResourceEvaluatorMessage.class);
-		classMapper.setIdClassMapping(idClassMapping);
-		converter.setClassMapper(classMapper);
-
-		return converter;
-
+		return new Jackson2JsonMessageConverter();
 	}
 
 	@Bean
@@ -98,7 +81,7 @@ public class RabbitMQConfig {
 		rabbitTemplate.setDefaultReceiveQueue(queueName);
 		rabbitTemplate.setMessageConverter(jsonMessageConverter());
 		rabbitTemplate.setReplyAddress(queue().getName());
-		rabbitTemplate.setReplyTimeout(60000);
+		rabbitTemplate.setReplyTimeout(replyTimeout);
 		rabbitTemplate.setUseDirectReplyToContainer(false);
 		return rabbitTemplate;
 	}
