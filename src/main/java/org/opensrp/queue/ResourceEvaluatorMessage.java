@@ -15,22 +15,24 @@ import java.io.Serializable;
 @ToString
 public class ResourceEvaluatorMessage implements Serializable {
 
-	@JsonProperty
-	String resource;
+	private static final long serialVersionUID = -1607322794388098644L;
 
 	@JsonProperty
-	QuestionnaireResponse questionnaireResponse;
+	private String resource;
 
 	@JsonProperty
-	Action action;
+	private QuestionnaireResponse questionnaireResponse;
 
 	@JsonProperty
-	String planIdentifier;
+	private Action action;
 
 	@JsonProperty
-	String jurisdictionCode;
+	private String planIdentifier;
 
 	@JsonProperty
-	TriggerType triggerType;
+	private String jurisdictionCode;
+
+	@JsonProperty
+	private TriggerType triggerType;
 
 }

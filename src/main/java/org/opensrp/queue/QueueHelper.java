@@ -102,9 +102,11 @@ public class QueueHelper implements QueuingHelper {
 					resourceEvaluatorMessage.getResource().getBytes(StandardCharsets.UTF_8));
 			try {
 				DomainResource domainResource = fhirParser.parse(stream);
-				planEvaluator.evaluateResource(domainResource, resourceEvaluatorMessage.getQuestionnaireResponse(),
-						resourceEvaluatorMessage.action, resourceEvaluatorMessage.planIdentifier,
-						resourceEvaluatorMessage.jurisdictionCode, resourceEvaluatorMessage.getTriggerType());
+				if (domainResource != null && resourceEvaluatorMessage!=null && resourceEvaluatorMessage.getAction() != null) {
+					planEvaluator.evaluateResource(domainResource, resourceEvaluatorMessage.getQuestionnaireResponse(),
+							resourceEvaluatorMessage.getAction(), resourceEvaluatorMessage.getPlanIdentifier(),
+							resourceEvaluatorMessage.getJurisdictionCode(), resourceEvaluatorMessage.getTriggerType());
+				}
 			}
 			catch (FHIRParserException e) {
 				e.printStackTrace();
