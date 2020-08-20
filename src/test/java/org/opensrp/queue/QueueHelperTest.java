@@ -2,26 +2,29 @@ package org.opensrp.queue;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.ibm.fhir.model.format.Format;
+import com.ibm.fhir.model.parser.FHIRParser;
 import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import com.ibm.fhir.model.type.code.LocationStatus;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 
+import static com.ibm.fhir.model.type.String.of;
 import static org.junit.Assert.assertEquals;
 
-import org.mockito.Mockito;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.service.PlanService;
+import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.TriggerType;
-import org.smartregister.pathevaluator.condition.ConditionHelper;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.smartregister.utils.DateTypeConverter;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
@@ -32,8 +35,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,6 +50,9 @@ public class QueueHelperTest {
 
 	@Mock
 	private PlanEvaluator planEvaluator;
+
+	@Mock
+	private FHIRParser fhirParser;
 
 	@Autowired
 	private RabbitMQSender rabbitMQSender;
@@ -64,8 +72,8 @@ public class QueueHelperTest {
 	@Autowired
 	LocationRepository locationRepository;
 
-	@Mock
-	private ConditionHelper conditionHelper;
+	@Captor
+	ArgumentCaptor<Jurisdiction> argumentCaptor = ArgumentCaptor.forClass(Jurisdiction.class);
 
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
 			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
@@ -112,6 +120,10 @@ public class QueueHelperTest {
 		rabbitMQSender.setQueue(queue);
 		queueHelper.setRabbitMQSender(rabbitMQSender);
 		queueHelper.setPlanService(planService);
+		fhirParser = FHIRParser.parser(Format.JSON);
+		Whitebox.setInternalState(queueHelper, "isQueuingEnabled", true);
+		Whitebox.setInternalState(queueHelper, "planEvaluator", planEvaluator);
+		Whitebox.setInternalState(queueHelper, "fhirParser", fhirParser);
 	}
 
 	@Test
@@ -129,13 +141,25 @@ public class QueueHelperTest {
 	@Test
 	public void testAddToQueueV2() {
 		Action action = new Action();
-		//		when(conditionHelper.evaluateActionConditions(any(DomainResource.class),any(Action.class),anyString(),any(TriggerType.class))).thenReturn(true);
 		Mockito.doNothing().when(planEvaluator)
 				.evaluateResource(any(DomainResource.class), nullable(QuestionnaireResponse.class), any(Action.class),
 						anyString(), anyString(), any(TriggerType.class));
 		queueHelper.addToQueue(location, null, action, "plan-id", "jur-id", TriggerType.PLAN_ACTIVATION);
 		int count = (Integer) amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT");
 		assertEquals(0, count); // This shows message has been consumed
+	}
+
+	@Test
+	public void testAddToQueueWithQueuingDisabled() {
+		Whitebox.setInternalState(queueHelper, "isQueuingEnabled", false);
+		PlanDefinition planDefinition = createPlan();
+		when(planService.getPlan(anyString())).thenReturn(planDefinition);
+		Mockito.doNothing().when(planEvaluator)
+				.evaluatePlan(any(PlanDefinition.class), any(TriggerType.class), any(Jurisdiction.class), any(
+						QuestionnaireResponse.class));
+		queueHelper.addToQueue("planid", TriggerType.PLAN_ACTIVATION, "loc-1");
+		verify(planEvaluator, times(1))
+				.evaluatePlan(eq(planDefinition), eq(TriggerType.PLAN_ACTIVATION), eq(argumentCaptor.capture()), null);
 	}
 
 	public static PlanDefinition createPlan() {
@@ -145,4 +169,9 @@ public class QueueHelperTest {
 	public static DomainResource createFHIRLocation() {
 		return gson.fromJson(location, DomainResource.class);
 	}
+
+	public static Location createLocation() {
+		return Location.builder().id(UUID.randomUUID().toString()).name(of("Nairobi")).status(LocationStatus.ACTIVE).build();
+	}
+
 }
