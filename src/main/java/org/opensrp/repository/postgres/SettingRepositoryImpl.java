@@ -519,16 +519,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			pgSettings = convert(entity, id);
 		}
 
-		try {
-			checkWhetherMetadataExistsBeforeSave(entity, settings, pgSettings);
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-		}
+		checkWhetherMetadataExistsBeforeSave(entity, settings, pgSettings);
 	}
 
 	private void checkWhetherMetadataExistsBeforeSave(SettingConfiguration entity, List<Setting> settings,
-			Settings pgSettings) throws SQLException {
+			Settings pgSettings) {
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> settingsMetadata = createMetadata(entity, pgSettings.getId());
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
@@ -541,9 +536,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		insertSettingMetadata(settingsMetadataList);
 	}
 
-	private void insertSettingMetadata(List<SettingsMetadata> settingsMetadataList) throws SQLException {
+	private void insertSettingMetadata(List<SettingsMetadata> settingsMetadataList) {
 		String insertSettingMetadata = "INSERT INTO core.settings_metadata ( settings_id, document_id, identifier, "
-				+ "server_version, team, team_id, provider_id, location_id, uuid, json, setting_type, setting_value, setting_key, setting_description, setting_label, inherited_from) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+				+ "server_version, team, team_id, provider_id, location_id, uuid, json, setting_type, setting_value, "
+				+ "setting_key, setting_description, setting_label, inherited_from) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
+				+ "?) ON conflict DO NOTHING";
 
 		Connection connection = null;
 
@@ -553,39 +550,43 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			for (SettingsMetadata settingsMetadata : settingsMetadataList) {
 
 				ObjectMapper objectMapper = new ObjectMapper();
-				String json = null;
+				String json;
 				try {
 					json = objectMapper.writeValueAsString(settingsMetadata.getJson());
+
+					PGobject pGobject = new PGobject();
+					pGobject.setType("json");
+					pGobject.setValue(json);
+
+					preparedStatement.setLong(1, settingsMetadata.getSettingsId());
+					preparedStatement.setString(2, settingsMetadata.getDocumentId());
+					preparedStatement.setString(3, settingsMetadata.getIdentifier());
+					preparedStatement.setLong(4, settingsMetadata.getServerVersion());
+					preparedStatement.setString(5, settingsMetadata.getTeam());
+					preparedStatement.setString(6, settingsMetadata.getTeamId());
+					preparedStatement.setString(7, settingsMetadata.getProviderId());
+					preparedStatement.setString(8, settingsMetadata.getLocationId());
+					preparedStatement.setString(9, settingsMetadata.getUuid());
+					preparedStatement.setObject(10, pGobject);
+					preparedStatement.setString(11, settingsMetadata.getSettingType());
+					preparedStatement.setString(12, settingsMetadata.getSettingValue());
+					preparedStatement.setString(13, settingsMetadata.getSettingKey());
+					preparedStatement.setString(14, settingsMetadata.getSettingDescription());
+					preparedStatement.setString(15, settingsMetadata.getSettingLabel());
+					preparedStatement.setString(16, settingsMetadata.getInheritedFrom());
+					preparedStatement.addBatch();
 				}
 				catch (JsonProcessingException e) {
 					e.printStackTrace();
 				}
-
-				PGobject pGobject = new PGobject();
-				pGobject.setType("json");
-				pGobject.setValue(json);
-
-				preparedStatement.setLong(1, settingsMetadata.getSettingsId());
-				preparedStatement.setString(2, settingsMetadata.getDocumentId());
-				preparedStatement.setString(3, settingsMetadata.getIdentifier());
-				preparedStatement.setLong(4, settingsMetadata.getServerVersion());
-				preparedStatement.setString(5, settingsMetadata.getTeam());
-				preparedStatement.setString(6, settingsMetadata.getTeamId());
-				preparedStatement.setString(7, settingsMetadata.getProviderId());
-				preparedStatement.setString(8, settingsMetadata.getLocationId());
-				preparedStatement.setString(9, settingsMetadata.getUuid());
-				preparedStatement.setObject(10, pGobject);
-				preparedStatement.setString(11, settingsMetadata.getSettingType());
-				preparedStatement.setString(12, settingsMetadata.getSettingValue());
-				preparedStatement.setString(13, settingsMetadata.getSettingKey());
-				preparedStatement.setString(14, settingsMetadata.getSettingDescription());
-				preparedStatement.setString(15, settingsMetadata.getSettingLabel());
-				preparedStatement.setString(16, settingsMetadata.getInheritedFrom());
-				preparedStatement.addBatch();
 			}
 			preparedStatement.executeBatch();
 			preparedStatement.close();
 			connection.close();
+		}
+		catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e.getMessage());
 		}
 		finally {
 			if (connection != null) {
