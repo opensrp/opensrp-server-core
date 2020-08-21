@@ -16,7 +16,6 @@ import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -38,9 +37,6 @@ public class TaskGenerator {
 	
 	@Autowired
 	private EventsRepository eventsRepository;
-
-	@Value("#{opensrp['rabbitmq.queuing.enabled']  ?: true}")
-	private boolean isQueuingEnabled;
 
 	@Autowired
 	@Lazy

@@ -19,7 +19,6 @@ import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.dao.QueuingHelper;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
-import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
