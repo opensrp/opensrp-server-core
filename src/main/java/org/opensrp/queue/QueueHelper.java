@@ -78,13 +78,11 @@ public class QueueHelper implements QueuingHelper {
 	public void addToQueue(String planIdentifier, TriggerType triggerType, String locationId) {
 		PlanDefinition planDefinition = planService.getPlan(planIdentifier);
 		Jurisdiction jurisdiction = new Jurisdiction(locationId);
-		PlanEvaluatorMessage planEvaluatorMessage = new PlanEvaluatorMessage(planDefinition, triggerType, jurisdiction);
+		PlanEvaluatorMessage planEvaluatorMessage = new PlanEvaluatorMessage(planIdentifier, triggerType, jurisdiction);
 		if (isQueuingEnabled) {
 			rabbitMQSender.send(planEvaluatorMessage);
 		} else {
-			planEvaluator.evaluatePlan(planEvaluatorMessage.getPlanDefinition(),
-					planEvaluatorMessage.getTriggerType(),
-					planEvaluatorMessage.getJurisdiction(), null);
+			planEvaluator.evaluatePlan(planDefinition, triggerType, jurisdiction, null);
 		}
 
 	}

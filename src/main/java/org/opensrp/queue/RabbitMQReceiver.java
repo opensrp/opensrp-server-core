@@ -10,8 +10,10 @@ import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.TaskRepository;
+import org.opensrp.service.PlanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -25,7 +27,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 @Component
-@RabbitListener(queues = "rabbitmq.task.queue")
+@RabbitListener(queues = "rabbitmq.task.queue", id = "listener")
 public class RabbitMQReceiver {
 
 	private PlanEvaluator planEvaluator;
@@ -42,6 +44,9 @@ public class RabbitMQReceiver {
 	@Autowired
 	private EventsRepository eventsRepository;
 
+	@Autowired
+	private PlanService planService;
+
 	private FHIRParser fhirParser;
 
 	private static Logger logger = LoggerFactory.getLogger(RabbitMQReceiver.class.toString());
@@ -56,8 +61,10 @@ public class RabbitMQReceiver {
 	@RabbitHandler
 	public void receiver(PlanEvaluatorMessage planEvaluatorMessage) {
 		logger.info("PlanEvaluatorMessage listener invoked - Consuming Message - " + planEvaluatorMessage);
+
 		if (planEvaluatorMessage != null) {
-			planEvaluator.evaluatePlan(planEvaluatorMessage.getPlanDefinition(),
+			PlanDefinition planDefinition = planService.getPlan(planEvaluatorMessage.getPlanIdentifier());
+			planEvaluator.evaluatePlan(planDefinition,
 					planEvaluatorMessage.getTriggerType(),
 					planEvaluatorMessage.getJurisdiction(), null);
 		}
@@ -72,7 +79,7 @@ public class RabbitMQReceiver {
 			try {
 				if (stream != null) {
 					DomainResource resource = fhirParser.parse(stream);
-					if (resource != null && resourceEvaluatorMessage != null) {
+					if (resource != null && resourceEvaluatorMessage != null && resourceEvaluatorMessage.getAction()!=null ) {
 						planEvaluator.evaluateResource(resource, resourceEvaluatorMessage.getQuestionnaireResponse(),
 								resourceEvaluatorMessage.getAction(), resourceEvaluatorMessage.getPlanIdentifier(),
 								resourceEvaluatorMessage.getJurisdictionCode(), resourceEvaluatorMessage.getTriggerType());

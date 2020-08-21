@@ -22,7 +22,7 @@ public class PlanEvaluatorMessage implements Serializable {
 	private static final long serialVersionUID = -1138446817700416884L;
 
 	@JsonProperty
-	private PlanDefinition planDefinition;
+	private String planIdentifier;
 
 	@JsonProperty
 	private TriggerType triggerType;
