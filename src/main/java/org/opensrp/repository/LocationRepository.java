@@ -157,7 +157,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @param status status of the location
 	 * @return returns a location matching the passed parameters
 	 */
-	PhysicalLocation findLocationByIdentifierAndStatus(String identifier, String status, boolean returnGeometry);
+	PhysicalLocation findLocationByIdentifierAndStatus(String identifier, List<String> status, boolean returnGeometry);
 
 	/**
 	 * Gets the location primary key
