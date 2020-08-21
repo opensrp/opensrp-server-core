@@ -208,7 +208,7 @@
 				UNION
 				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id,level+1 as level
 				FROM locations lm1
-				INNER JOIN core.location_metadata lm2 on lm2.geojson_id = lm1.parent_id 
+				INNER JOIN core.location_metadata lm2 on lm2.geojson_id = lm1.parent_id  AND lm2.status IN ('ACTIVE', 'PENDING_REVIEW')
 			)
 			SELECT location_id, level FROM locations
 		) record
@@ -364,7 +364,7 @@
 			AS
 			(
 				SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, 0 as level
-				FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}
+				FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}  AND lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
 				UNION
 				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id, level+1 as level
 				FROM locations lm1
