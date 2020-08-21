@@ -10,6 +10,8 @@ import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.TaskRepository;
 import org.opensrp.service.PlanService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
@@ -58,6 +60,8 @@ public class QueueHelper implements QueuingHelper {
 	@Value("#{opensrp['rabbitmq.queuing.enabled']  ?: false}")
 	private boolean isQueuingEnabled;
 
+	private static Logger logger = LoggerFactory.getLogger(QueueHelper.class.toString());
+
 	public QueueHelper(PlanEvaluator planEvaluator, FHIRParser fhirParser) {
 		this.planEvaluator = planEvaluator;
 		this.fhirParser = fhirParser;
@@ -100,14 +104,15 @@ public class QueueHelper implements QueuingHelper {
 					resourceEvaluatorMessage.getResource().getBytes(StandardCharsets.UTF_8));
 			try {
 				DomainResource domainResource = fhirParser.parse(stream);
-				if (domainResource != null && resourceEvaluatorMessage!=null && resourceEvaluatorMessage.getAction() != null) {
+				if (domainResource != null && resourceEvaluatorMessage != null
+						&& resourceEvaluatorMessage.getAction() != null) {
 					planEvaluator.evaluateResource(domainResource, resourceEvaluatorMessage.getQuestionnaireResponse(),
 							resourceEvaluatorMessage.getAction(), resourceEvaluatorMessage.getPlanIdentifier(),
 							resourceEvaluatorMessage.getJurisdictionCode(), resourceEvaluatorMessage.getTriggerType());
 				}
 			}
 			catch (FHIRParserException e) {
-				e.printStackTrace();
+				logger.error("FHIRParserException occurred " + e.getMessage());
 			}
 		}
 	}

@@ -53,7 +53,6 @@ public class TaskGenerator {
 	
 	@Async
 	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition, String username) {
-//		QueueHelper queueHelper = new QueueHelper(isQueuingEnabled);
 		PlanEvaluator planEvaluator = new PlanEvaluator(username,queueHelper);
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
 	}
