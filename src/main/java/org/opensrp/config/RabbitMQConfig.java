@@ -10,7 +10,9 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
 import org.springframework.amqp.rabbit.support.ListenerExecutionFailedException;
+import org.springframework.amqp.support.converter.DefaultClassMapper;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
+import org.springframework.amqp.support.converter.MessageConversionException;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +46,12 @@ public class RabbitMQConfig {
 
 	@Value("${rabbitmq.reply.timeout}")
 	private Integer replyTimeout;
+
+	@Value("${rabbitmq.concurrent.consumers}")
+	private Integer concurrentConsumers;
+
+	@Value("${rabbitmq.max.concurrent.consumers}")
+	private Integer maxConcurrentConsumers;
 
 	@Bean
 	public Queue queue() {
@@ -96,8 +104,8 @@ public class RabbitMQConfig {
 		final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory());
 		factory.setMessageConverter(jsonMessageConverter());
-		factory.setConcurrentConsumers(1);
-		factory.setMaxConcurrentConsumers(1);
+		factory.setConcurrentConsumers(concurrentConsumers);
+		factory.setMaxConcurrentConsumers(maxConcurrentConsumers);
 		factory.setErrorHandler(errorHandler());
 		return factory;
 	}

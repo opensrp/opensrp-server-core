@@ -1,7 +1,5 @@
 package org.opensrp.queue;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.ibm.fhir.model.format.Format;
 import com.ibm.fhir.model.parser.FHIRParser;
 import com.ibm.fhir.model.parser.exception.FHIRParserException;
@@ -64,9 +62,11 @@ public class RabbitMQReceiver {
 
 		if (planEvaluatorMessage != null) {
 			PlanDefinition planDefinition = planService.getPlan(planEvaluatorMessage.getPlanIdentifier());
-			planEvaluator.evaluatePlan(planDefinition,
-					planEvaluatorMessage.getTriggerType(),
-					planEvaluatorMessage.getJurisdiction(), null);
+			if (planDefinition != null) {
+				planEvaluator.evaluatePlan(planDefinition,
+						planEvaluatorMessage.getTriggerType(),
+						planEvaluatorMessage.getJurisdiction(), null);
+			}
 		}
 	}
 
@@ -79,7 +79,9 @@ public class RabbitMQReceiver {
 			try {
 				if (stream != null) {
 					DomainResource resource = fhirParser.parse(stream);
-					if (resource != null && resourceEvaluatorMessage != null && resourceEvaluatorMessage.getAction()!=null ) {
+					if (resource != null && resourceEvaluatorMessage != null
+							&& resourceEvaluatorMessage.getAction() != null
+							&& resourceEvaluatorMessage.getAction().getCondition() != null) {
 						planEvaluator.evaluateResource(resource, resourceEvaluatorMessage.getQuestionnaireResponse(),
 								resourceEvaluatorMessage.getAction(), resourceEvaluatorMessage.getPlanIdentifier(),
 								resourceEvaluatorMessage.getJurisdictionCode(), resourceEvaluatorMessage.getTriggerType());
