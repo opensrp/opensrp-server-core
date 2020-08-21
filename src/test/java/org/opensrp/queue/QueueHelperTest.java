@@ -21,7 +21,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.ArgumentCaptor;
-import org.opensrp.repository.LocationRepository;
 import org.opensrp.service.PlanService;
 import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.Action;
