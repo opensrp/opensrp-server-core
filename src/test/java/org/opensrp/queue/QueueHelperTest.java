@@ -75,9 +75,6 @@ public class QueueHelperTest {
 	@Autowired
 	private AmqpAdmin amqpAdmin;
 
-	@Autowired
-	private LocationRepository locationRepository;
-
 	@Captor
 	private ArgumentCaptor<Jurisdiction> argumentCaptor = ArgumentCaptor.forClass(Jurisdiction.class);
 
