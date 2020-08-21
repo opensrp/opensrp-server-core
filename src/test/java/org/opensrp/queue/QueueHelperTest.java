@@ -60,9 +60,6 @@ public class QueueHelperTest {
 	@Mock
 	private PlanEvaluator planEvaluator;
 
-	@Mock
-	private FHIRParser fhirParser;
-
 	@Autowired
 	private RabbitMQSender rabbitMQSender;
 
@@ -79,10 +76,10 @@ public class QueueHelperTest {
 	private AmqpAdmin amqpAdmin;
 
 	@Autowired
-	LocationRepository locationRepository;
+	private LocationRepository locationRepository;
 
 	@Captor
-	ArgumentCaptor<Jurisdiction> argumentCaptor = ArgumentCaptor.forClass(Jurisdiction.class);
+	private ArgumentCaptor<Jurisdiction> argumentCaptor = ArgumentCaptor.forClass(Jurisdiction.class);
 
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
 			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
@@ -129,7 +126,7 @@ public class QueueHelperTest {
 		rabbitMQSender.setQueue(queue);
 		queueHelper.setRabbitMQSender(rabbitMQSender);
 		queueHelper.setPlanService(planService);
-		fhirParser = FHIRParser.parser(Format.JSON);
+		FHIRParser fhirParser = FHIRParser.parser(Format.JSON);
 		Whitebox.setInternalState(queueHelper, "isQueuingEnabled", true);
 		Whitebox.setInternalState(queueHelper, "planEvaluator", planEvaluator);
 		Whitebox.setInternalState(queueHelper, "fhirParser", fhirParser);
