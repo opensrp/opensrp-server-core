@@ -388,7 +388,7 @@ public class QueueHelperTest {
 	}
 
 	@Test
-	public void AddToQueueV2WithQueuingDisabledAndInvalidResource() {
+	public void testAddToQueueV2WithQueuingDisabledAndInvalidResource() {
 		Whitebox.setInternalState(queueHelper, "isQueuingEnabled", false);
 		Action action = createAction();
 		queueHelper.addToQueue(plan, null, action, "plan-id", "jur-id", TriggerType.PLAN_ACTIVATION);
