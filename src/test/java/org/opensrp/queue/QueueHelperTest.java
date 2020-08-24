@@ -26,6 +26,8 @@ import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
+import org.smartregister.domain.Condition;
+import org.smartregister.domain.Expression;
 import org.smartregister.pathevaluator.TriggerType;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.smartregister.utils.DateTypeConverter;
@@ -37,6 +39,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.mockito.Mockito;
@@ -76,6 +80,8 @@ public class QueueHelperTest {
 
 	@Captor
 	private ArgumentCaptor<Jurisdiction> argumentCaptor = ArgumentCaptor.forClass(Jurisdiction.class);
+
+	private ArgumentCaptor<DomainResource> domainResourceArgumentCaptor = ArgumentCaptor.forClass(DomainResource.class);
 
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
 			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
@@ -164,6 +170,19 @@ public class QueueHelperTest {
 				.evaluatePlan(eq(planDefinition), eq(TriggerType.PLAN_ACTIVATION), eq(argumentCaptor.capture()), null);
 	}
 
+	@Test
+	public void testAddToQueueV2WithQueuingDisabled() {
+		Whitebox.setInternalState(queueHelper, "isQueuingEnabled", false);
+		Action action = createAction();
+		Mockito.doNothing().when(planEvaluator)
+				.evaluateResource(any(DomainResource.class), nullable(QuestionnaireResponse.class), any(Action.class),
+						anyString(), anyString(), any(TriggerType.class));
+		queueHelper.addToQueue(location, null, action, "plan-id", "jur-id", TriggerType.PLAN_ACTIVATION);
+		verify(planEvaluator, times(1))
+				.evaluateResource(eq(domainResourceArgumentCaptor.capture()), null, eq(action), eq("plan-id"), eq("jur-id"),
+						eq(TriggerType.PLAN_ACTIVATION));
+	}
+
 	public static PlanDefinition createPlan() {
 		return gson.fromJson(plan, PlanDefinition.class);
 	}
@@ -174,6 +193,24 @@ public class QueueHelperTest {
 
 	public static Location createLocation() {
 		return Location.builder().id(UUID.randomUUID().toString()).name(of("Nairobi")).status(LocationStatus.ACTIVE).build();
+	}
+
+	public static Action createAction() {
+		Action action = new Action();
+		Set<Condition> conditions = new HashSet<>();
+		Condition condition = new Condition();
+		Expression expression = new Expression();
+		expression.setExpression("'Cancelled'");
+		condition.setExpression(expression);
+		conditions.add(condition);
+
+		condition = new Condition();
+		expression = new Expression();
+		expression.setExpression("'Family Already Registered'");
+		condition.setExpression(expression);
+		conditions.add(condition);
+		action.setCondition(conditions);
+		return action;
 	}
 
 }
