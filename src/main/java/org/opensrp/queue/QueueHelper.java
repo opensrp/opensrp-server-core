@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class QueueHelper implements QueuingHelper {
 
 	@Autowired
