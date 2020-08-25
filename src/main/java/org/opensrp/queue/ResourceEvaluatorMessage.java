@@ -39,4 +39,10 @@ public class ResourceEvaluatorMessage implements Serializable {
 	@JsonProperty
 	private TriggerType triggerType;
 
+	@Override
+	public String toString() {
+		String result = "QuestionnareResponse id is: null " + "Action Identifier is : " + getAction() != null ? getAction().getIdentifier() : "null" + "PlanIdentifier : " + getPlanIdentifier() + ", Jurisdiction Code : " + getJurisdictionCode() + ", TriggerType : " + getTriggerType();
+		return result;
+	}
+
 }

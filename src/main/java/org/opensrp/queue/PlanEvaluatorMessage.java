@@ -28,4 +28,10 @@ public class PlanEvaluatorMessage implements Serializable {
 
 	@JsonProperty
 	private Jurisdiction jurisdiction;
+
+	@Override
+	public String toString() {
+		String result = "PlanIdentifier : " + getPlanIdentifier() + ", TriggerType : " + getTriggerType() + ", Jurisdiction Code : " + getJurisdiction();
+		return result;
+	}
 }

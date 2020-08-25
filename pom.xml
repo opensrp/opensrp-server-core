@@ -292,20 +292,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-amqp -->
-		<dependency>
-			<groupId>org.springframework.amqp</groupId>
-			<artifactId>spring-amqp</artifactId>
-			<version>${spring.ampqp.version}</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit -->
-		<dependency>
-			<groupId>org.springframework.amqp</groupId>
-			<artifactId>spring-rabbit</artifactId>
-			<version>${spring.ampqp.version}</version>
-		</dependency>
-
 		<!-- Test dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -657,6 +643,34 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>rabbitmq</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>opensrp.queuing.service</name>
+					<value>rabbitmq</value>
+				</property>
+			</activation>
+			<properties>
+				<opensrp.queuing.service.profile>rabbitmq</opensrp.queuing.service.profile>
+			</properties>
+			<dependencies>
+				<!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-amqp -->
+				<dependency>
+					<groupId>org.springframework.amqp</groupId>
+					<artifactId>spring-amqp</artifactId>
+					<version>${spring.ampqp.version}</version>
+				</dependency>
+
+				<!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit -->
+				<dependency>
+					<groupId>org.springframework.amqp</groupId>
+					<artifactId>spring-rabbit</artifactId>
+					<version>${spring.ampqp.version}</version>
+				</dependency>
+			</dependencies>
 		</profile>
 	</profiles>
 </project>

@@ -58,7 +58,7 @@ public class RabbitMQReceiver {
 
 	@RabbitHandler
 	public void receiver(PlanEvaluatorMessage planEvaluatorMessage) {
-		logger.info("PlanEvaluatorMessage listener invoked - Consuming Message - " + planEvaluatorMessage);
+		logger.info("PlanEvaluatorMessage listener invoked - Consuming Message with Plan Definition Identifier : " + planEvaluatorMessage.getPlanIdentifier());
 
 		if (planEvaluatorMessage != null) {
 			PlanDefinition planDefinition = planService.getPlan(planEvaluatorMessage.getPlanIdentifier());
@@ -72,13 +72,14 @@ public class RabbitMQReceiver {
 
 	@RabbitHandler
 	public void receiver(ResourceEvaluatorMessage resourceEvaluatorMessage) {
-		logger.info("ResourceEvaluatorMessage invoked - Consuming Message: " + resourceEvaluatorMessage);
+		logger.info("ResourceEvaluatorMessage invoked - Consuming Message");
 		if (resourceEvaluatorMessage != null) {
 			InputStream stream = resourceEvaluatorMessage.getResource() != null ? new ByteArrayInputStream(
 					resourceEvaluatorMessage.getResource().getBytes(StandardCharsets.UTF_8)) : null;
 			try {
 				if (stream != null) {
 					DomainResource resource = fhirParser.parse(stream);
+					logger.info("Resource id is : " + resource.getId());
 					if (resource != null && resourceEvaluatorMessage != null
 							&& resourceEvaluatorMessage.getAction() != null
 							&& resourceEvaluatorMessage.getAction().getCondition() != null) {

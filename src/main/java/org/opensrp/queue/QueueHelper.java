@@ -56,6 +56,8 @@ public class QueueHelper implements QueuingHelper {
 
 	private FHIRParser fhirParser;
 
+	private String username;
+
 	@Value("#{opensrp['rabbitmq.queuing.enabled']  ?: false}")
 	private boolean isQueuingEnabled;
 
@@ -73,7 +75,7 @@ public class QueueHelper implements QueuingHelper {
 	@PostConstruct
 	public void init() {
 		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
-		planEvaluator = new PlanEvaluator("");
+		planEvaluator = new PlanEvaluator(username);
 		fhirParser = FHIRParser.parser(Format.JSON);
 	}
 
@@ -122,5 +124,9 @@ public class QueueHelper implements QueuingHelper {
 
 	public void setRabbitMQSender(RabbitMQSender rabbitMQSender) {
 		this.rabbitMQSender = rabbitMQSender;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 }
