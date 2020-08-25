@@ -513,11 +513,11 @@ public class PhysicalLocationService {
 				toDateExists = true;
 			}
 		}
-		long expiryTime = new Date().getTime() >= findMinimumDate(toDates).getTime() ?
-				new Date().getTime() - findMinimumDate(toDates).getTime() : findMinimumDate(toDates).getTime() - new Date().getTime();
-		expiryTime = expiryTime / 1000 ;
-		hashOps.put(username, ASSIGNED_LOCATIONS_HASH_KEY, assignedLocations);
+
 		if (toDateExists) {
+			long expiryTime = Math.abs(findMinimumDate(toDates).getTime() - new Date().getTime());
+			expiryTime = expiryTime / 1000 ;
+			hashOps.put(username, ASSIGNED_LOCATIONS_HASH_KEY, assignedLocations);
 			redisTemplate.expire(username, expiryTime , TimeUnit.SECONDS);
 		}
 	}
