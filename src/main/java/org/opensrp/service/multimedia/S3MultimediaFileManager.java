@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +25,7 @@ import java.io.InputStream;
 /**
  * Created by Vincent Karuri on 24/10/2019
  */
+@Profile("AWS_S3")
 @Component("S3MultimediaFileManager")
 public class S3MultimediaFileManager extends ObjectStorageMultimediaFileManager {
 

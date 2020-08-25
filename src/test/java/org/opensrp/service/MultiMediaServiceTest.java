@@ -2,6 +2,9 @@ package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.opensrp.service.MultimediaService.IMAGES_DIR;
 
 import java.io.File;
@@ -22,6 +25,8 @@ import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
+import org.opensrp.service.multimedia.FileSystemMultimediaFileManager;
+import org.opensrp.service.multimedia.MultimediaFileManager;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -118,4 +123,23 @@ public class MultiMediaServiceTest extends BaseRepositoryTest {
 		assertEquals(baseEntityId + ".jpg", client.getAttribute("Patient Image"));
 		assertEquals(0, Minutes.minutesBetween(client.getDateEdited(), DateTime.now()).getMinutes());
 	}
+
+	@Test
+	public void testSaveFileWithFileSystemMultimediaFileManager() {
+		MultimediaFileManager fileManager = mock(FileSystemMultimediaFileManager.class);
+		multimediaService.setFileManager(fileManager);
+		byte[] testBytes = new byte[10];
+		MultimediaDTO multimediaDTO = mock(MultimediaDTO.class);
+		multimediaService.saveFile(multimediaDTO, testBytes, null);
+		verify(fileManager).saveFile(eq(multimediaDTO), eq(testBytes), eq(null));
+	}
+
+	@Test
+	public void testRetrieveFileWithFileSystemFileManager() {
+		MultimediaFileManager fileManager = mock(FileSystemMultimediaFileManager.class);
+		multimediaService.setFileManager(fileManager);
+		multimediaService.retrieveFile("file_path");
+		verify(fileManager).retrieveFile(eq("file_path"));
+	}
+
 }
