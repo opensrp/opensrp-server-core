@@ -33,7 +33,6 @@ import java.nio.charset.StandardCharsets;
 
 @Profile("rabbitmq")
 @Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class QueueHelper implements QueuingHelper {
 
 	@Autowired
