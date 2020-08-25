@@ -17,6 +17,7 @@ import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -24,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+@Profile("rabbitmq")
 @Component
 @RabbitListener(queues = "rabbitmq.task.queue", id = "listener")
 public class RabbitMQReceiver {

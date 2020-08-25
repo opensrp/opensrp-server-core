@@ -22,6 +22,7 @@ import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +31,9 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+@Profile("rabbitmq")
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class QueueHelper implements QueuingHelper {
 
 	@Autowired

@@ -16,7 +16,6 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class ResourceEvaluatorMessage implements Serializable {
 
 	private static final long serialVersionUID = -1607322794388098644L;

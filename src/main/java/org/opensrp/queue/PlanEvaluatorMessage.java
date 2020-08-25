@@ -15,7 +15,6 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class PlanEvaluatorMessage implements Serializable {
 
 	private static final long serialVersionUID = -1138446817700416884L;
