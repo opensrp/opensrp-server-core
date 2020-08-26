@@ -14,6 +14,8 @@ import org.smartregister.pathevaluator.dao.ClientDao;
 public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	
 	Client findByBaseEntityId(String baseEntityId);
+
+	Client findById(String id);
 	
 	List<Client> findAllClients();
 	
@@ -49,8 +51,15 @@ public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	List<Client> findByRelationShip(String relationIndentier);
 	
 	List<Client> findByEmptyServerVersion();
-	
-	List<Client> findByServerVersion(long serverVersion);
+
+	/**
+	 * This method searches for all clients ordered by serverVersion ascending
+	 * and return size determined by limit is available or default fetch size
+	 * @param serverVersion server version for last client that was fetched
+	 * @param limit number of records to fetch
+	 * @return
+	 */
+	List<Client> findByServerVersion(long serverVersion, Integer limit);
 	
 	List<Client> findByFieldValue(String field, List<String> ids);
 	
