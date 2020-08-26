@@ -3,6 +3,8 @@ package org.opensrp.service;
 
 
 import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
+import static org.smartregister.domain.LocationProperty.PropertyStatus.ACTIVE;
+import static org.smartregister.domain.LocationProperty.PropertyStatus.PENDING_REVIEW;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -109,9 +111,9 @@ public class PhysicalLocationService {
 			throw new IllegalArgumentException("id not specified");
 		physicalLocation.setServerVersion(null);
 		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndStatus(physicalLocation.getId(),
-				LocationProperty.PropertyStatus.ACTIVE.name(), true);
+		    Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()), true);
 		boolean locationHasNoUpdates = isGeometryCoordsEqual(physicalLocation, existingEntity);
-		if (locationHasNoUpdates || !physicalLocation.isJurisdiction() || existingEntity == null){
+		if (locationHasNoUpdates || !physicalLocation.isJurisdiction() || existingEntity == null) {
 			locationRepository.update(physicalLocation);
 		} else {
 			//make existing location inactive
@@ -123,7 +125,6 @@ public class PhysicalLocationService {
 			//increment location version
 			int newVersion = existingEntity.getProperties().getVersion() + 1;
 			physicalLocation.getProperties().setVersion(newVersion);
-			physicalLocation.getProperties().setStatus(LocationProperty.PropertyStatus.ACTIVE);
 
 			locationRepository.add(physicalLocation);
 		}
@@ -267,6 +268,20 @@ public class PhysicalLocationService {
 	}
 	
 	/**
+	 * This methods searches for a location and it's children using the provided location Ids
+	 * returns the Geometry optionally if @param returnGeometry is set to true.
+	 *
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param locationIds location ids
+	 * @param pageSize number of records to be returned
+	 * @return location together with it's children whose id matches the provided param
+	 */
+	public List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> locationIds,
+	        int pageSize) {
+		return locationRepository.findLocationByIdsWithChildren(returnGeometry, locationIds, pageSize);
+	}
+
+	/**
 	 * This method searches for all structure ids
 	 *
 	 * @param serverVersion
@@ -345,8 +360,8 @@ public class PhysicalLocationService {
 		return locationTree;
 	}
 	
-	private Location getLocationFromDetail(LocationDetail locationDetail, Map<String, LocationDetail> locationMap
-			, boolean returnStructureCounts, Map<String, Integer> cumulativeCountsMap ) {
+	private Location getLocationFromDetail(LocationDetail locationDetail, Map<String, LocationDetail> locationMap,
+	        boolean returnStructureCounts, Map<String, Integer> cumulativeCountsMap) {
 		Location location = new Location();
 		location.setLocationId(locationDetail.getIdentifier());
 		location.setName(locationDetail.getName());
@@ -367,13 +382,14 @@ public class PhysicalLocationService {
 	}
 
 	private void populateCumulativeCountsMap(Set<LocationDetail> locationDetails, Map<String, Integer> cumulativeCountsMap,
-			Map<String, StructureCount> structureCountMap) {
+	        Map<String, StructureCount> structureCountMap) {
 
-		for (LocationDetail locationDetail: locationDetails) {
+		for (LocationDetail locationDetail : locationDetails) {
 			StructureCount structureCount = structureCountMap.get(locationDetail.getIdentifier());
 			if (structureCount != null) { //only locations with structure counts
-				int updatedCount = cumulativeCountsMap.get(locationDetail.getIdentifier()) == null ? structureCount.getCount() :
-						cumulativeCountsMap.get(locationDetail.getIdentifier()) + structureCount.getCount();
+				int updatedCount = cumulativeCountsMap.get(locationDetail.getIdentifier()) == null
+				        ? structureCount.getCount()
+				        : cumulativeCountsMap.get(locationDetail.getIdentifier()) + structureCount.getCount();
 				cumulativeCountsMap.put(locationDetail.getIdentifier(), updatedCount);
 			} else if (cumulativeCountsMap.get(locationDetail.getIdentifier()) == null) {
 				cumulativeCountsMap.put(locationDetail.getIdentifier(), 0);
@@ -386,7 +402,8 @@ public class PhysicalLocationService {
 				}
 
 				// update parent location structure count
-				int updatedCount =  cumulativeCountsMap.get(locationDetail.getParentId()) + cumulativeCountsMap.get(locationDetail.getIdentifier());
+				int updatedCount = cumulativeCountsMap.get(locationDetail.getParentId())
+				        + cumulativeCountsMap.get(locationDetail.getIdentifier());
 				cumulativeCountsMap.put(locationDetail.getParentId(), updatedCount);
 			}
 
@@ -394,7 +411,7 @@ public class PhysicalLocationService {
 
 	}
 
-	private List<Location> getLocations(Set<LocationDetail> locationDetails, boolean returnStructureCounts){
+	private List<Location> getLocations(Set<LocationDetail> locationDetails, boolean returnStructureCounts) {
 		/* @formatter:off */
 		List<StructureCount> structureCountsForLocation = null;
 		Map<String, StructureCount> structureCountMap = null;
@@ -426,6 +443,7 @@ public class PhysicalLocationService {
 
 	/**
 	 * This method is used to return a count of structure based on the provided parameters
+	 *
 	 * @param parentId id for the parent location
 	 * @param serverVersion
 	 * @return returns a count of structures matching the passed parameters
@@ -436,21 +454,23 @@ public class PhysicalLocationService {
 
 	/**
 	 * This method is used to return a count of locations based on the provided parameters
+	 *
 	 * @param serverVersion
 	 * @return returns a count of locations matching the passed parameters
 	 */
-	public Long countLocationsByServerVersion(long serverVersion){
+	public Long countLocationsByServerVersion(long serverVersion) {
 		return locationRepository.countLocationsByServerVersion(serverVersion);
 	};
 
 	/**
 	 * This method is used to return a count of locations based on the provided parameters
+	 *
 	 * @param locationNames A string of comma separated location names
 	 * @param serverVersion
 	 * @return returns a count of locations matching the passed parameters
 	 */
-	public Long countLocationsByNames(String locationNames, long serverVersion){
-		return locationRepository.countLocationsByNames(locationNames,serverVersion);
+	public Long countLocationsByNames(String locationNames, long serverVersion) {
+		return locationRepository.countLocationsByNames(locationNames, serverVersion);
 	};
 
 	public List<AssignedLocations> getAssignedLocations(String username) {
@@ -471,9 +491,9 @@ public class PhysicalLocationService {
 	private boolean isEmptyOrNull(Collection<? extends Object> collection) {
 		return collection == null || collection.isEmpty();
 	}
-
 	/**
 	 * This method checks whether the coordinates contained in the locations Geometry are equal
+	 *
 	 * @param newEntity location entity
 	 * @param existingEntity location entity
 	 * @return
@@ -483,7 +503,8 @@ public class PhysicalLocationService {
 			return false;
 		}
 		JsonElement newGeometryCoordsElement = JsonParser.parseString(newEntity.getGeometry().getCoordinates().toString());
-		JsonElement existingGeometryCoordsElement = JsonParser.parseString(existingEntity.getGeometry().getCoordinates().toString());
+		JsonElement existingGeometryCoordsElement = JsonParser
+		        .parseString(existingEntity.getGeometry().getCoordinates().toString());
 		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
 	}
 
@@ -497,7 +518,8 @@ public class PhysicalLocationService {
 	 * @param locationId id of the root location
 	 * @return full location hierarchy from passed location plus all of its descendants
 	 */
-	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnTags, boolean returnStructureCount) {
+	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnTags,
+	        boolean returnStructureCount) {
 		LocationTree locationTree = new LocationTree();
 		Set<LocationDetail> locationDetails = locationRepository.findLocationWithDescendants(locationId, returnTags);
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
@@ -528,5 +550,4 @@ public class PhysicalLocationService {
 		}
 		return null;
 	}
-
 }

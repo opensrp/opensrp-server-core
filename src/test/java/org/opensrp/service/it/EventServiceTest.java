@@ -49,6 +49,8 @@ public class EventServiceTest extends BaseIntegrationTest {
 	
 	@Autowired
 	private EventService eventService;
+
+	private String username ="johndoe";
 	
 	@Before
 	public void setUp() {
@@ -277,7 +279,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 	public void shouldAddEvent() {
 		Event expectedEvent = getEvent();
 		
-		Event actualEvent = eventService.addEvent(expectedEvent);
+		Event actualEvent = eventService.addEvent(expectedEvent, username);
 		
 		List<Event> dbEvents = allEvents.getAll();
 		assertEquals(1, dbEvents.size());
@@ -297,7 +299,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		
 		addObjectToRepository(asList(expectedEvent, expectedEvent2, invalidEvent), allEvents);
 		
-		eventService.addEvent(expectedEvent);
+		eventService.addEvent(expectedEvent,username);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -310,7 +312,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		
 		addObjectToRepository(asList(expectedEvent, invalidEvent), allEvents);
 		
-		eventService.addEvent(expectedEvent);
+		eventService.addEvent(expectedEvent,username);
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
@@ -324,7 +326,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		addObjectToRepository(asList(expectedEvent, invalidEvent), allEvents);
 		
 		expectedEvent.setFormSubmissionId(null);
-		eventService.addEvent(expectedEvent);
+		eventService.addEvent(expectedEvent,username);
 	}
 	
 	@Test
@@ -483,7 +485,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		Event expectedEvent = getEvent();
 		expectedEvent.setBaseEntityId(null);
 		expectedEvent.addIdentifier(ZEIR_ID.toUpperCase(), "zeirId");
-		Event actualEvent = eventService.processOutOfArea(expectedEvent);
+		Event actualEvent = eventService.processOutOfArea(expectedEvent,username);
 		
 		assertNull(actualEvent.getIdentifier(ZEIR_ID.toUpperCase()));
 		assertEquals(BASE_ENTITY_ID, actualEvent.getBaseEntityId());
@@ -494,7 +496,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		expectedEvent = getEvent();
 		expectedEvent.setBaseEntityId("");
 		expectedEvent.addIdentifier(ZEIR_ID.toUpperCase(), "zeirId");
-		actualEvent = eventService.processOutOfArea(expectedEvent);
+		actualEvent = eventService.processOutOfArea(expectedEvent,username);
 		
 		assertNull(actualEvent.getIdentifier(ZEIR_ID.toUpperCase()));
 		assertEquals(BASE_ENTITY_ID, actualEvent.getBaseEntityId());
@@ -516,7 +518,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		expectedEvent.setBaseEntityId(DIFFERENT_BASE_ENTITY_ID);
 		expectedEvent.addIdentifier(ZEIR_ID.toUpperCase(), "zeirId");
 		
-		Event actualEvent = eventService.processOutOfArea(expectedEvent);
+		Event actualEvent = eventService.processOutOfArea(expectedEvent,username);
 		
 		assertEquals("zeirId", actualEvent.getIdentifier(ZEIR_ID.toUpperCase()));
 		assertEquals(DIFFERENT_BASE_ENTITY_ID, actualEvent.getBaseEntityId());
@@ -535,7 +537,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		expectedEvent.setBaseEntityId(null);
 		expectedEvent.addIdentifier(ZEIR_ID.toUpperCase(), "zeirId");
 		
-		Event actualEvent = eventService.processOutOfArea(expectedEvent);
+		Event actualEvent = eventService.processOutOfArea(expectedEvent,username);
 		
 		assertEquals("zeirId", actualEvent.getIdentifier(ZEIR_ID.toUpperCase()));
 		assertNull(actualEvent.getBaseEntityId());
@@ -556,7 +558,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		Event expectedEvent = getEvent();
 		expectedEvent.setBaseEntityId(null);
 		expectedEvent.addIdentifier(ZEIR_ID.toUpperCase(), "zeirId");
-		Event actualEvent = eventService.processOutOfArea(expectedEvent);
+		Event actualEvent = eventService.processOutOfArea(expectedEvent,username);
 		
 		assertEquals("zeirId", actualEvent.getIdentifier(ZEIR_ID.toUpperCase()));
 		assertNull(actualEvent.getBaseEntityId());

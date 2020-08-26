@@ -440,7 +440,7 @@ public class ClientServiceTest extends BaseIntegrationTest {
 		addObjectToRepository(Collections.singletonList(getClient()), allClients);
 		Client expectedClient = allClients.getAll().get(0);
 		
-		List<Client> actualClientList = clientService.findByServerVersion(expectedClient.getServerVersion() - 1);
+		List<Client> actualClientList = clientService.findByServerVersion(expectedClient.getServerVersion(), null);
 		
 		assertEquals(1, actualClientList.size());
 		assertEquals(expectedClient, actualClientList.get(0));

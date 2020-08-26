@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
@@ -26,11 +27,14 @@ public class AllEventsIntegrationTest {
 	
 	@Autowired
 	private EventsRepositoryImpl allEvents;
+
+	private String username ="johndoe";
 	
 	@Before
 	public void setUp() throws Exception {
 		allEvents.removeAll();
 		initMocks(this);
+		ReflectionTestUtils.setField(eventService, "isPlanEvaluationEnabled", true);
 	}
 	
 	private void addEvents() {
@@ -45,7 +49,7 @@ public class AllEventsIntegrationTest {
 			e.addObs(new Obs("concept", "txt", "1030AAAAAAAAAAAAAAAA", null, "2015-01-01", "comments test" + i, "measles2"));
 			e.addObs(new Obs("concept", "txt", "1029AAAAAAAAAAAAAAAA", null, "2015-01-01", "comments test" + i, "tt1"));
 			e.addObs(new Obs("concept", "txt", "1030AAAAAAAAAAAAAAAA", null, "2016-02-01", "comments test" + i, "tt2"));
-			eventService.addEvent(e);
+			eventService.addEvent(e,username);
 		}
 	}
 	

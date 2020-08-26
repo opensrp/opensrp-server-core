@@ -1,16 +1,25 @@
 package org.opensrp.repository.postgres;
 
+import com.google.gson.Gson;
+
 import org.junit.Test;
+import org.opensrp.api.domain.Location;
+import org.opensrp.api.util.LocationTree;
+import org.opensrp.api.util.TreeNode;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
+import org.opensrp.repository.postgres.handler.SettingTypeHandler;
 import org.opensrp.search.SettingSearchBean;
+import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -241,7 +250,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		setting.setTeam("team");
 		setting.setTeamId("team_id");
 		setting.setProviderId("provider_id");
-		setting.setDocumentId("document_id_32932");
+		setting.setSettingsId("document_id_32932");
 		setting.setKey("key_32932");
 		setting.setValue("value");
 		setting.setInheritedFrom("location_id_2");
@@ -261,6 +270,64 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		verifySettingsAreSame(expectedSettings, actualSettings);
 	}
 
+	@Test
+	public void testAddGlobalSettingShouldAddSetting() {
+		Setting setting = new Setting();
+		setting.setDescription("description");
+		setting.setDocumentId("document_id_32932");
+		setting.setKey("key_32932");
+		setting.setValue("value");
+		setting.setLabel("label");
+		setting.setInheritedFrom("location_id_2");
+		setting.setIdentifier("setting_identifier_32932");
+		setting.setServerVersion(0L);
+		settingRepository.addOrUpdate(setting);
+
+		Map<String, Setting> expectedSettings = new HashMap<>();
+		expectedSettings.put("key_32932", setting);
+
+		SettingSearchBean settingQueryBean = new SettingSearchBean();
+		settingQueryBean.setServerVersion(0L);
+		settingQueryBean.setIdentifier("setting_identifier_32932");
+		List<SettingConfiguration> settings = settingRepository.findSettings(settingQueryBean, null);
+		List<Setting> actualSettings = settings.get(0).getSettings();
+		assertNotNull(actualSettings);
+		verifySettingsAreSame(expectedSettings, actualSettings);
+	}
+
+	@Test
+	public void testSaveGlobalSettingsUsingV1endpoint() {
+		String popCharacteristicsGlobal = "{\"identifier\":\"population_characteristics\",\"settings\":[{\"description\":\"The proportion of women in the adult population (18 years or older), with a BMI less than 18.5, is 20% or higher.\",\"label\":\"Undernourished prevalence 20% or higher\",\"value\":\"false\",\"key\":\"pop_undernourish\"},{\"description\":\"The proportion of pregnant women in the population with anaemia (haemoglobin level less than 11 g/dl) is 40% or higher.\",\"label\":\"Anaemia prevalence 40% or higher\",\"value\":\"false\",\"key\":\"pop_anaemia_40\"}],\"type\":\"SettingConfiguration\"}";
+		String testGlobalsSaveV1 = "{\"identifier\":\"test_globals_save_v1\",\"settings\":[{\"description\":\"Is "
+				+ "an ultrasound machine available and functional at your facility and a trained health worker available to use it?\",\"label\":\"Ultrasound available\",\"type\":\"SettingConfiguration\",\"value\":false,\"key\":\"site_ultrasound\"},{\"description\":\"Does your facility use an automated blood pressure (BP) measurement tool?\",\"label\":\"Automated BP measurement tool\",\"type\":\"SettingConfiguration\",\"value\":false,\"key\":\"site_bp_tool\"}],\"type\":\"SettingConfiguration\"}";
+		SettingTypeHandler settingTypeHandler = new SettingTypeHandler();
+		SettingConfiguration popCharacteristicsSettingConfig = null;
+		SettingConfiguration siteCharacteristicsSettingConfig = null;
+		try {
+			popCharacteristicsSettingConfig = settingTypeHandler.mapper
+					.readValue(popCharacteristicsGlobal, SettingConfiguration.class);
+			siteCharacteristicsSettingConfig = settingTypeHandler.mapper
+					.readValue(testGlobalsSaveV1, SettingConfiguration.class);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		popCharacteristicsSettingConfig.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		popCharacteristicsSettingConfig.setV1Settings(true);
+
+		siteCharacteristicsSettingConfig.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		siteCharacteristicsSettingConfig.setV1Settings(true);
+
+		settingRepository.add(popCharacteristicsSettingConfig);
+		settingRepository.add(siteCharacteristicsSettingConfig);
+
+		SettingSearchBean settingQueryBeanTwo = new SettingSearchBean();
+		settingQueryBeanTwo.setServerVersion(0L);
+		List<SettingConfiguration> allGlobalSettings = settingRepository.findSettings(settingQueryBeanTwo, null);
+		assertEquals(3, allGlobalSettings.size());
+	}
+
 	private void verifySettingsAreSame(Map<String, Setting> settingMap, List<Setting> settings) {
 		for (Setting actualSetting : settings) {
 			Setting expectedSetting = settingMap.get(actualSetting.getKey());
@@ -269,4 +336,45 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 			assertEquals(expectedSetting.getValue(), actualSetting.getValue());
 		}
 	}
+
+	@Test
+	public void testReformattedLocationHierarchyWithChildLocationId() throws Exception {
+		LocationTree locationTree = new Gson().fromJson(
+				"{\"locationsHierarchy\":{\"map\":{\"02ebbc84-5e29-4cd5-9b79-c594058923e9\":{\"id\":\"02ebbc84-5e29-4cd5-9b79-c594058923e9\",\"label\":\"Uganda\",\"node\":{\"locationId\":\"02ebbc84-5e29-4cd5-9b79-c594058923e9\",\"name\":\"Uganda\",\"tags\":[\"Country\"],\"voided\":false},\"children\":{\"8340315f-48e4-4768-a1ce-414532b4c49b\":{\"id\":\"8340315f-48e4-4768-a1ce-414532b4c49b\",\"label\":\"Kampala\",\"node\":{\"locationId\":\"8340315f-48e4-4768-a1ce-414532b4c49b\",\"name\":\"Kampala\",\"parentLocation\":{\"locationId\":\"02ebbc84-5e29-4cd5-9b79-c594058923e9\",\"name\":\"Uganda\",\"voided\":false},\"tags\":[\"District\"],\"voided\":false},\"children\":{\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\":{\"id\":\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\",\"label\":\"KCCA\",\"node\":{\"locationId\":\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\",\"name\":\"KCCA\",\"parentLocation\":{\"locationId\":\"8340315f-48e4-4768-a1ce-414532b4c49b\",\"name\":\"Kampala\",\"parentLocation\":{\"locationId\":\"02ebbc84-5e29-4cd5-9b79-c594058923e9\",\"name\":\"Uganda\",\"voided\":false},\"voided\":false},\"tags\":[\"County\"],\"voided\":false},\"children\":{\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\":{\"id\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\",\"label\":\"Central Division\",\"node\":{\"locationId\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\",\"name\":\"Central Division\",\"parentLocation\":{\"locationId\":\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\",\"name\":\"KCCA\",\"parentLocation\":{\"locationId\":\"8340315f-48e4-4768-a1ce-414532b4c49b\",\"name\":\"Kampala\",\"voided\":false},\"voided\":false},\"tags\":[\"Sub-county\"],\"voided\":false},\"children\":{\"44de66fb-e6c6-4bae-92bb-386dfe626eba\":{\"id\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\",\"label\":\"Bukesa Urban Health Centre\",\"node\":{\"locationId\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\",\"name\":\"Bukesa Urban Health Centre\",\"parentLocation\":{\"locationId\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\",\"name\":\"Central Division\",\"parentLocation\":{\"locationId\":\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\",\"name\":\"KCCA\",\"voided\":false},\"voided\":false},\"tags\":[\"Health Facility\"],\"voided\":false},\"children\":{\"982eb3f3-b7e3-450f-a38e-d067f2345212\":{\"id\":\"982eb3f3-b7e3-450f-a38e-d067f2345212\",\"label\":\"Jambula Girls School\",\"node\":{\"locationId\":\"982eb3f3-b7e3-450f-a38e-d067f2345212\",\"name\":\"Jambula Girls School\",\"parentLocation\":{\"locationId\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\",\"name\":\"Bukesa Urban Health Centre\",\"parentLocation\":{\"locationId\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\",\"name\":\"Central Division\",\"voided\":false},\"voided\":false},\"tags\":[\"School\"],\"voided\":false},\"parent\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\"},\"ee08a6e0-3f73-4c28-b186-64d5cd06f4ce\":{\"id\":\"ee08a6e0-3f73-4c28-b186-64d5cd06f4ce\",\"label\":\"Nsalo Secondary School\",\"node\":{\"locationId\":\"ee08a6e0-3f73-4c28-b186-64d5cd06f4ce\",\"name\":\"Nsalo Secondary School\",\"parentLocation\":{\"locationId\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\",\"name\":\"Bukesa Urban Health Centre\",\"parentLocation\":{\"locationId\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\",\"name\":\"Central Division\",\"voided\":false},\"voided\":false},\"tags\":[\"School\"],\"voided\":false},\"parent\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\"}},\"parent\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\"}},\"parent\":\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\"}},\"parent\":\"8340315f-48e4-4768-a1ce-414532b4c49b\"}},\"parent\":\"02ebbc84-5e29-4cd5-9b79-c594058923e9\"}}}},\"parentChildren\":{\"8340315f-48e4-4768-a1ce-414532b4c49b\":[\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\"],\"02ebbc84-5e29-4cd5-9b79-c594058923e9\":[\"8340315f-48e4-4768-a1ce-414532b4c49b\"],\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\":[\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\"],\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\":[\"44de66fb-e6c6-4bae-92bb-386dfe626eba\"],\"44de66fb-e6c6-4bae-92bb-386dfe626eba\":[\"982eb3f3-b7e3-450f-a38e-d067f2345212\",\"ee08a6e0-3f73-4c28-b186-64d5cd06f4ce\"]}}}",
+				LocationTree.class);
+		Map<String, TreeNode<String, Location>> treeNodeHashMap = new HashMap<>();
+		if (locationTree != null) {
+			treeNodeHashMap = locationTree.getLocationsHierarchy();
+		}
+
+		assertNotNull(treeNodeHashMap);
+		SettingRepositoryImpl settingRepository = new SettingRepositoryImpl();
+
+		Whitebox.setInternalState(settingRepository, "locationUuid", "44de66fb-e6c6-4bae-92bb-386dfe626eba");
+		Whitebox.invokeMethod(settingRepository, "reformattedLocationHierarchy", treeNodeHashMap);
+		List<String> reformattedLocationHierarchy = settingRepository.getReformattedLocationHierarchy();
+		assertNotNull(reformattedLocationHierarchy);
+		assertEquals(5, reformattedLocationHierarchy.size());
+	}
+
+	@Test
+	public void testReformattedLocationHierarchyWithParentLocationId() throws Exception {
+		LocationTree locationTree = new Gson().fromJson(
+				"{\"locationsHierarchy\":{\"map\":{\"02ebbc84-5e29-4cd5-9b79-c594058923e9\":{\"id\":\"02ebbc84-5e29-4cd5-9b79-c594058923e9\",\"label\":\"Uganda\",\"node\":{\"locationId\":\"02ebbc84-5e29-4cd5-9b79-c594058923e9\",\"name\":\"Uganda\",\"tags\":[\"Country\"],\"voided\":false},\"children\":{\"8340315f-48e4-4768-a1ce-414532b4c49b\":{\"id\":\"8340315f-48e4-4768-a1ce-414532b4c49b\",\"label\":\"Kampala\",\"node\":{\"locationId\":\"8340315f-48e4-4768-a1ce-414532b4c49b\",\"name\":\"Kampala\",\"parentLocation\":{\"locationId\":\"02ebbc84-5e29-4cd5-9b79-c594058923e9\",\"name\":\"Uganda\",\"voided\":false},\"tags\":[\"District\"],\"voided\":false},\"children\":{\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\":{\"id\":\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\",\"label\":\"KCCA\",\"node\":{\"locationId\":\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\",\"name\":\"KCCA\",\"parentLocation\":{\"locationId\":\"8340315f-48e4-4768-a1ce-414532b4c49b\",\"name\":\"Kampala\",\"parentLocation\":{\"locationId\":\"02ebbc84-5e29-4cd5-9b79-c594058923e9\",\"name\":\"Uganda\",\"voided\":false},\"voided\":false},\"tags\":[\"County\"],\"voided\":false},\"children\":{\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\":{\"id\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\",\"label\":\"Central Division\",\"node\":{\"locationId\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\",\"name\":\"Central Division\",\"parentLocation\":{\"locationId\":\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\",\"name\":\"KCCA\",\"parentLocation\":{\"locationId\":\"8340315f-48e4-4768-a1ce-414532b4c49b\",\"name\":\"Kampala\",\"voided\":false},\"voided\":false},\"tags\":[\"Sub-county\"],\"voided\":false},\"children\":{\"44de66fb-e6c6-4bae-92bb-386dfe626eba\":{\"id\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\",\"label\":\"Bukesa Urban Health Centre\",\"node\":{\"locationId\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\",\"name\":\"Bukesa Urban Health Centre\",\"parentLocation\":{\"locationId\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\",\"name\":\"Central Division\",\"parentLocation\":{\"locationId\":\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\",\"name\":\"KCCA\",\"voided\":false},\"voided\":false},\"tags\":[\"Health Facility\"],\"voided\":false},\"children\":{\"982eb3f3-b7e3-450f-a38e-d067f2345212\":{\"id\":\"982eb3f3-b7e3-450f-a38e-d067f2345212\",\"label\":\"Jambula Girls School\",\"node\":{\"locationId\":\"982eb3f3-b7e3-450f-a38e-d067f2345212\",\"name\":\"Jambula Girls School\",\"parentLocation\":{\"locationId\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\",\"name\":\"Bukesa Urban Health Centre\",\"parentLocation\":{\"locationId\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\",\"name\":\"Central Division\",\"voided\":false},\"voided\":false},\"tags\":[\"School\"],\"voided\":false},\"parent\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\"},\"ee08a6e0-3f73-4c28-b186-64d5cd06f4ce\":{\"id\":\"ee08a6e0-3f73-4c28-b186-64d5cd06f4ce\",\"label\":\"Nsalo Secondary School\",\"node\":{\"locationId\":\"ee08a6e0-3f73-4c28-b186-64d5cd06f4ce\",\"name\":\"Nsalo Secondary School\",\"parentLocation\":{\"locationId\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\",\"name\":\"Bukesa Urban Health Centre\",\"parentLocation\":{\"locationId\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\",\"name\":\"Central Division\",\"voided\":false},\"voided\":false},\"tags\":[\"School\"],\"voided\":false},\"parent\":\"44de66fb-e6c6-4bae-92bb-386dfe626eba\"}},\"parent\":\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\"}},\"parent\":\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\"}},\"parent\":\"8340315f-48e4-4768-a1ce-414532b4c49b\"}},\"parent\":\"02ebbc84-5e29-4cd5-9b79-c594058923e9\"}}}},\"parentChildren\":{\"8340315f-48e4-4768-a1ce-414532b4c49b\":[\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\"],\"02ebbc84-5e29-4cd5-9b79-c594058923e9\":[\"8340315f-48e4-4768-a1ce-414532b4c49b\"],\"b1ef8a0b-275b-43fc-a580-1e21ceb34c78\":[\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\"],\"4e188e6d-2ffb-4b25-85f9-b9fbf5010d40\":[\"44de66fb-e6c6-4bae-92bb-386dfe626eba\"],\"44de66fb-e6c6-4bae-92bb-386dfe626eba\":[\"982eb3f3-b7e3-450f-a38e-d067f2345212\",\"ee08a6e0-3f73-4c28-b186-64d5cd06f4ce\"]}}}",
+				LocationTree.class);
+		Map<String, TreeNode<String, Location>> treeNodeHashMap = new HashMap<>();
+		if (locationTree != null) {
+			treeNodeHashMap = locationTree.getLocationsHierarchy();
+		}
+
+		assertNotNull(treeNodeHashMap);
+		SettingRepositoryImpl settingRepository = new SettingRepositoryImpl();
+
+		Whitebox.setInternalState(settingRepository, "locationUuid", "02ebbc84-5e29-4cd5-9b79-c594058923e9");
+		Whitebox.invokeMethod(settingRepository, "reformattedLocationHierarchy", treeNodeHashMap);
+		List<String> reformattedLocationHierarchy = settingRepository.getReformattedLocationHierarchy();
+		assertNotNull(reformattedLocationHierarchy);
+		assertEquals(1, reformattedLocationHierarchy.size());
+	}
+
 }
