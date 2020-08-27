@@ -316,20 +316,12 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		String largeSettingPayload = IOUtils.toString(fis, StandardCharsets.UTF_8);
 
 		SettingTypeHandler settingTypeHandler = new SettingTypeHandler();
-		SettingConfiguration popCharacteristicsSettingConfig = null;
-		SettingConfiguration siteCharacteristicsSettingConfig = null;
-		SettingConfiguration largeSettingPayloadSettingConfig = null;
-		try {
-			popCharacteristicsSettingConfig = settingTypeHandler.mapper
-					.readValue(popCharacteristicsGlobal, SettingConfiguration.class);
-			siteCharacteristicsSettingConfig = settingTypeHandler.mapper
-					.readValue(testGlobalsSaveV1, SettingConfiguration.class);
-			largeSettingPayloadSettingConfig = settingTypeHandler.mapper
-					.readValue(largeSettingPayload, SettingConfiguration.class);
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		SettingConfiguration popCharacteristicsSettingConfig = settingTypeHandler.mapper
+				.readValue(popCharacteristicsGlobal, SettingConfiguration.class);
+		SettingConfiguration siteCharacteristicsSettingConfig = settingTypeHandler.mapper
+				.readValue(testGlobalsSaveV1, SettingConfiguration.class);
+		SettingConfiguration largeSettingPayloadSettingConfig = settingTypeHandler.mapper
+				.readValue(largeSettingPayload, SettingConfiguration.class);
 
 		popCharacteristicsSettingConfig.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		popCharacteristicsSettingConfig.setV1Settings(true);
@@ -350,13 +342,8 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		assertEquals(3, allGlobalSettings.size());
 
 		String textGlobalSaveV1Update = "{\"type\":\"SettingConfiguration\",\"serverVersion\":1597999833442,\"identifier\":\"test_globals_save_v1\",\"settings\":[{\"type\":\"SettingConfiguration\",\"serverVersion\":1597999833442,\"documentId\":\"ff3efba8-cda1-4f88-a271-96afb1d4fd63\",\"key\":\"site_ultrasound\",\"value\":\"false\",\"label\":\"Ultrasound available\",\"description\":\"Is an ultrasound machine available and functional at your facility and a trained health worker available to use it?\",\"uuid\":\"e01cce9e-02cd-4443-880c-09d483597cca\",\"settingsId\":\"16\",\"settingIdentifier\":\"test_globals_save_v1\",\"settingMetadataId\":\"19\"},{\"type\":\"SettingConfiguration\",\"serverVersion\":1597999833442,\"documentId\":\"ff3efba8-cda1-4f88-a271-96afb1d4fd63\",\"key\":\"site_bp_tool\",\"value\":\"true\",\"label\":\"Automated BP measurement tool\",\"description\":\"Does your facility use an automated blood pressure (BP) measurement tool?\",\"uuid\":\"3298a9c0-57f3-41e7-ba5d-320274443db4\",\"settingsId\":\"16\",\"settingIdentifier\":\"test_globals_save_v1\",\"settingMetadataId\":\"20\"},{\"key\":\"site_bp_tool_update\",\"value\":\"true\",\"label\":\"Automated BP measurement tool\",\"description\":\"Does your facility use an automated blood pressure (BP) measurement tool?\"}],\"_rev\":\"v1\"}";
-		SettingConfiguration testUpdateSettings = null;
-		try {
-			testUpdateSettings = settingTypeHandler.mapper.readValue(textGlobalSaveV1Update, SettingConfiguration.class);
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		SettingConfiguration testUpdateSettings = settingTypeHandler.mapper
+				.readValue(textGlobalSaveV1Update, SettingConfiguration.class);
 		testUpdateSettings.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		testUpdateSettings.setV1Settings(true);
 		testUpdateSettings.setId(allGlobalSettings.get(0).getId());
