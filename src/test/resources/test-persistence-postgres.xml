@@ -12,9 +12,9 @@
 		<!-- uncomment this to allow local postgres port 5432 test runs -->
 		<!--
 		<property name="url" value="jdbc:postgresql://localhost:5432/opensrp_test" /> -->
-		<property name="url" value="jdbc:postgresql://localhost:5432/anc" />
-		<property name="username" value="postgres" />
-		<property name="password" value="postgres" />
+		<property name="url" value="jdbc:postgresql://localhost:5433/opensrp_test" />
+		<property name="username" value="opensrp_admin" />
+		<property name="password" value="admin" />
 	</bean>
 
 	<tx:annotation-driven transaction-manager="openSRPTransactionManager" />
