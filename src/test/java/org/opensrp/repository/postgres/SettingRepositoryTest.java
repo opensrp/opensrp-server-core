@@ -1,5 +1,6 @@
 package org.opensrp.repository.postgres;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import org.apache.commons.io.IOUtils;
@@ -180,7 +181,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		settingMap.put("key3", setting);
 
 		expectedSettingConfiguration.setSettings(settings);
-		settingRepository.add(expectedSettingConfiguration);
+		settingRepository.addSettings(expectedSettingConfiguration);
 
 		SettingConfiguration actualSettingConfiguration = settingRepository.get("test_id");
 		assertNotNull(actualSettingConfiguration);
@@ -219,6 +220,14 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		setting.setDescription("description30");
 		settings.add(setting);
 		settingMap.put("key3", setting);
+
+		Setting setting1 = new Setting();
+		setting1.setKey("key4");
+		setting1.setValue("value40");
+		setting1.setDescription("description40");
+		settings.add(setting1);
+		settingMap.put("key4", setting1);
+
 		expectedSettingConfiguration.setSettings(settings);
 
 		settingRepository.update(expectedSettingConfiguration);
@@ -331,14 +340,35 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		largeSettingPayloadSettingConfig.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		largeSettingPayloadSettingConfig.setV1Settings(true);
 
-		settingRepository.add(popCharacteristicsSettingConfig);
-		settingRepository.add(siteCharacteristicsSettingConfig);
-		settingRepository.add(largeSettingPayloadSettingConfig);
+		settingRepository.addSettings(popCharacteristicsSettingConfig);
+		settingRepository.addSettings(siteCharacteristicsSettingConfig);
+		settingRepository.addSettings(largeSettingPayloadSettingConfig);
 
 		SettingSearchBean settingQueryBeanTwo = new SettingSearchBean();
 		settingQueryBeanTwo.setServerVersion(0L);
 		List<SettingConfiguration> allGlobalSettings = settingRepository.findSettings(settingQueryBeanTwo, null);
 		assertEquals(3, allGlobalSettings.size());
+
+		String textGlobalSaveV1Update = "{\"type\":\"SettingConfiguration\",\"serverVersion\":1597999833442,\"identifier\":\"test_globals_save_v1\",\"settings\":[{\"type\":\"SettingConfiguration\",\"serverVersion\":1597999833442,\"documentId\":\"ff3efba8-cda1-4f88-a271-96afb1d4fd63\",\"key\":\"site_ultrasound\",\"value\":\"false\",\"label\":\"Ultrasound available\",\"description\":\"Is an ultrasound machine available and functional at your facility and a trained health worker available to use it?\",\"uuid\":\"e01cce9e-02cd-4443-880c-09d483597cca\",\"settingsId\":\"16\",\"settingIdentifier\":\"test_globals_save_v1\",\"settingMetadataId\":\"19\"},{\"type\":\"SettingConfiguration\",\"serverVersion\":1597999833442,\"documentId\":\"ff3efba8-cda1-4f88-a271-96afb1d4fd63\",\"key\":\"site_bp_tool\",\"value\":\"true\",\"label\":\"Automated BP measurement tool\",\"description\":\"Does your facility use an automated blood pressure (BP) measurement tool?\",\"uuid\":\"3298a9c0-57f3-41e7-ba5d-320274443db4\",\"settingsId\":\"16\",\"settingIdentifier\":\"test_globals_save_v1\",\"settingMetadataId\":\"20\"},{\"key\":\"site_bp_tool_update\",\"value\":\"true\",\"label\":\"Automated BP measurement tool\",\"description\":\"Does your facility use an automated blood pressure (BP) measurement tool?\"}],\"_rev\":\"v1\"}";
+		SettingConfiguration testUpdateSettings = null;
+		try {
+			testUpdateSettings = settingTypeHandler.mapper.readValue(textGlobalSaveV1Update, SettingConfiguration.class);
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		testUpdateSettings.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		testUpdateSettings.setV1Settings(true);
+		testUpdateSettings.setId(allGlobalSettings.get(0).getId());
+
+		settingRepository.update(testUpdateSettings);
+
+		SettingSearchBean settingQueryBeanThree = new SettingSearchBean();
+		settingQueryBeanThree.setServerVersion(0L);
+		List<SettingConfiguration> allGlobalSettingsTwo = settingRepository.findSettings(settingQueryBeanThree, null);
+		ObjectMapper objectMapper = new ObjectMapper();
+		String json = objectMapper.writeValueAsString(allGlobalSettingsTwo.get(0));
+		assertEquals(3, allGlobalSettingsTwo.size());
 	}
 
 	private void verifySettingsAreSame(Map<String, Setting> settingMap, List<Setting> settings) {

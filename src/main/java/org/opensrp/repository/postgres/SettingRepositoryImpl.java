@@ -69,6 +69,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return findSetting(settingQueryBean, null);
 	}
 
+	@Override
+	public void add(SettingConfiguration entity) {
+		//todo not required.
+	}
+
 	@Transactional
 	@Override
 	public void update(SettingConfiguration entity) {
@@ -96,9 +101,38 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return;
 		}
 
-		entity.setSettings(settings); // re-inject settings block
+		entity.setSettings(settings);// re-inject settings block
+		SettingConfiguration newSetting = getNewSetting(entity);
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
+
+		if (newSetting.getSettings().size() > 0) {
+			List<SettingsMetadata> metadataList = createMetadata(newSetting, id);
+			insertSettingMetadata(metadataList);
+		}
+
 		settingMetadataMapper.updateMany(metadata);
+	}
+
+	/**
+	 *
+	 * @param settingConfiguration
+	 * @return
+	 */
+	private SettingConfiguration getNewSetting(SettingConfiguration settingConfiguration) {
+		SettingConfiguration settingConfiguration1 = new SettingConfiguration();
+		List<Setting> settings = settingConfiguration.getSettings();
+		List<Setting> newUnsavedSettings = new ArrayList<>();
+		if (settings != null && settings.size() > 0) {
+			for (Setting setting: settings) {
+				if (StringUtils.isBlank(setting.getUuid())) {
+					newUnsavedSettings.add(setting);
+				}
+			}
+		}
+
+		settingConfiguration1.setSettings(newUnsavedSettings);
+
+		return settingConfiguration1;
 	}
 
 	@Override
@@ -455,7 +489,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	@Override
-	public void addOrUpdate(Setting setting) {
+	public String addOrUpdate(Setting setting) {
 		List<Setting> settings = new ArrayList<>();
 		settings.add(setting);
 		SettingConfiguration settingConfiguration = new SettingConfiguration();
@@ -477,8 +511,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (StringUtils.isNotBlank(setting.getId())) {
 			update(settingConfiguration);
 		} else {
-			add(settingConfiguration);
+			return addSettings(settingConfiguration);
 		}
+
+		return null;
 	}
 
 	@Override
@@ -487,9 +523,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	@Override
-	public void add(SettingConfiguration entity) {
+	public String addSettings(SettingConfiguration entity) {
 		if (entity == null || entity.getSettings() == null || entity.getIdentifier() == null) {
-			return;
+			return null;
 		}
 
 		Long id = retrievePrimaryKey(entity);
@@ -507,22 +543,22 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			entity.setSettings(null); // strip out the settings block
 			pgSettings = convert(entity, id);
 			if (pgSettings == null) {
-				return;
+				return null;
 			}
 
 			int rowsAffected = settingMapper.insertSelectiveAndSetId(pgSettings);
 			if (rowsAffected < 1 || pgSettings.getId() == null) {
-				return;
+				return null;
 			}
 		} else {
 			settings = entity.getSettings();
 			pgSettings = convert(entity, id);
 		}
 
-		checkWhetherMetadataExistsBeforeSave(entity, settings, pgSettings);
+		return checkWhetherMetadataExistsBeforeSave(entity, settings, pgSettings);
 	}
 
-	private void checkWhetherMetadataExistsBeforeSave(SettingConfiguration entity, List<Setting> settings,
+	private String checkWhetherMetadataExistsBeforeSave(SettingConfiguration entity, List<Setting> settings,
 			Settings pgSettings) {
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> settingsMetadata = createMetadata(entity, pgSettings.getId());
@@ -533,16 +569,19 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				settingsMetadataList.add(metadata);
 			}
 		}
-		insertSettingMetadata(settingsMetadataList);
+
+		return insertSettingMetadata(settingsMetadataList);
 	}
 
-	private void insertSettingMetadata(List<SettingsMetadata> settingsMetadataList) {
+	private String insertSettingMetadata(List<SettingsMetadata> settingsMetadataList) {
 		String insertSettingMetadata = "INSERT INTO core.settings_metadata ( settings_id, document_id, identifier, "
 				+ "server_version, team, team_id, provider_id, location_id, uuid, json, setting_type, setting_value, "
 				+ "setting_key, setting_description, setting_label, inherited_from) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
 				+ "?) ON conflict DO NOTHING";
 
 		Connection connection = null;
+
+		List<String> notSavedSettings = new ArrayList<>();
 
 		try {
 			connection = DataSourceUtils.getConnection(openSRPDataSource);
@@ -578,6 +617,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				}
 				catch (JsonProcessingException e) {
 					e.printStackTrace();
+					notSavedSettings.add(settingsMetadata.getSettingKey());
 				}
 			}
 			preparedStatement.executeBatch();
@@ -593,6 +633,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				DataSourceUtils.releaseConnection(connection, openSRPDataSource);
 			}
 		}
+
+		return notSavedSettings.toString();
 	}
 
 	private boolean checkIfMetadataExists(SettingsMetadata settingsMetadata) {

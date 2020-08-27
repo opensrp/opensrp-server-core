@@ -1,5 +1,6 @@
 package org.opensrp.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.TreeNode;
 import org.opensrp.domain.setting.Setting;
@@ -84,15 +85,20 @@ public class SettingService {
 
 		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		settingConfigurations.setV1Settings(true);
-
+		String settingsResponse = null;
 		if (settingConfigurations.getId() != null && settingRepository.get(settingConfigurations.getId()) != null) {
 			settingRepository.update(settingConfigurations);
 
 		} else {
-			settingRepository.add(settingConfigurations);
+			settingsResponse = settingRepository.addSettings(settingConfigurations);
 		}
 
-		return settingConfigurations.getIdentifier();
+		String response = settingConfigurations.getIdentifier();
+		if (StringUtils.isNotBlank(settingsResponse)) {
+			response = response + String.format("%s%s", " settings response ", settingsResponse);
+		}
+
+		return response;
 
 	}
 
@@ -101,11 +107,15 @@ public class SettingService {
 	 *
 	 * @param setting {@link Setting}
 	 */
-	public void addOrUpdateSettings(Setting setting) {
+	public String addOrUpdateSettings(Setting setting) {
+		String settingsResponse = null;
+
 		if (setting != null) {
 			setting.setServerVersion(Calendar.getInstance().getTimeInMillis());
-			settingRepository.addOrUpdate(setting);
+			settingsResponse = settingRepository.addOrUpdate(setting);
 		}
+
+		return settingsResponse;
 	}
 
 	/**
