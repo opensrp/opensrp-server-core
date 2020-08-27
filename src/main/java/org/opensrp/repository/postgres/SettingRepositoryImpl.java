@@ -102,37 +102,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 
 		entity.setSettings(settings);// re-inject settings block
-		SettingConfiguration newSetting = getNewSetting(entity);
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
-
-		if (newSetting.getSettings().size() > 0) {
-			List<SettingsMetadata> metadataList = createMetadata(newSetting, id);
-			insertSettingMetadata(metadataList);
-		}
-
 		settingMetadataMapper.updateMany(metadata);
-	}
-
-	/**
-	 *
-	 * @param settingConfiguration
-	 * @return
-	 */
-	private SettingConfiguration getNewSetting(SettingConfiguration settingConfiguration) {
-		SettingConfiguration settingConfiguration1 = new SettingConfiguration();
-		List<Setting> settings = settingConfiguration.getSettings();
-		List<Setting> newUnsavedSettings = new ArrayList<>();
-		if (settings != null && settings.size() > 0) {
-			for (Setting setting: settings) {
-				if (StringUtils.isBlank(setting.getUuid())) {
-					newUnsavedSettings.add(setting);
-				}
-			}
-		}
-
-		settingConfiguration1.setSettings(newUnsavedSettings);
-
-		return settingConfiguration1;
 	}
 
 	@Override
