@@ -14,6 +14,7 @@ import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.postgres.SettingsMetadataExample;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
+import org.opensrp.exception.DatabaseException;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Connection;
+import java.sql.DataTruncation;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -597,7 +599,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 		catch (SQLException e) {
 			logger.error(e.getMessage(), e);
-			throw new RuntimeException(e.getMessage());
+			throw new DatabaseException(e.getMessage());
 		}
 		finally {
 			if (connection != null) {
