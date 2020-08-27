@@ -571,15 +571,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		}
 		
 		String identifier = uniqueId.toString();
-		int version = entity.getProperties() != null ? entity.getProperties().getVersion() : 0;
-		return retrievePrimaryKey(identifier, entity.isJurisdiction(), version);
+		return retrievePrimaryKey(identifier, entity.isJurisdiction());
 	}
 	
 	@Override
-	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction, int version) {
+	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction) {
 		
 		if (isJurisdiction) {
-			Location pgEntity = locationMetadataMapper.findByIdAndVersion(identifier, true, version);
+			Location pgEntity = locationMetadataMapper.findById(identifier, true);
 			if (pgEntity == null) {
 				return null;
 			}
@@ -592,6 +591,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			return pgEntity.getId();
 		}
 	}
+	
+	
 	
 	@Override
 	public PhysicalLocation get(String id, boolean returnGeometry, int version) {
