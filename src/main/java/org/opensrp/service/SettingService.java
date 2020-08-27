@@ -98,6 +98,15 @@ public class SettingService {
 		}
 		
 		if (existingConfiguration != null) {
+			Map<String, String> uuidMap = new HashMap<>();
+			for (Setting setting : existingConfiguration.getSettings()) {
+				uuidMap.put(setting.getKey(), setting.getUuid());
+			}
+			settingConfigurations.getSettings().stream().filter(s -> StringUtils.isBlank(s.getUuid()))
+			        .forEach(s -> s.setUuid(uuidMap.get(s.getKey())));
+			if (StringUtils.isBlank(settingConfigurations.getId())) {
+				settingConfigurations.setId(existingConfiguration.getId());
+			}
 			settingRepository.update(settingConfigurations);
 			
 		} else {
