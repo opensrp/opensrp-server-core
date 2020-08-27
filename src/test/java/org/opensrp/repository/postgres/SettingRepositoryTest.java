@@ -353,8 +353,6 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		SettingSearchBean settingQueryBeanThree = new SettingSearchBean();
 		settingQueryBeanThree.setServerVersion(0L);
 		List<SettingConfiguration> allGlobalSettingsTwo = settingRepository.findSettings(settingQueryBeanThree, null);
-		ObjectMapper objectMapper = new ObjectMapper();
-		String json = objectMapper.writeValueAsString(allGlobalSettingsTwo.get(0));
 		assertEquals(3, allGlobalSettingsTwo.size());
 	}
 

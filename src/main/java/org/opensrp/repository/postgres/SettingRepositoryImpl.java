@@ -697,23 +697,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 									settingConfiguration.getId() :
 									UUID.randomUUID().toString());
 					metadata.setIdentifier(settingConfiguration.getIdentifier());
-
-					if (StringUtils.isNotBlank(settingConfiguration.getProviderId())) {
-						metadata.setProviderId(settingConfiguration.getProviderId());
-					}
-
-					if (StringUtils.isNotBlank(settingConfiguration.getLocationId())) {
-						metadata.setLocationId(settingConfiguration.getLocationId());
-					}
-
-					if (StringUtils.isNotBlank(settingConfiguration.getTeam())) {
-						metadata.setTeam(settingConfiguration.getTeam());
-					}
-
-					if (StringUtils.isNotBlank(settingConfiguration.getTeamId())) {
-						metadata.setTeamId(settingConfiguration.getTeamId());
-					}
-
+					checkIdentityAttributtes(settingConfiguration, metadata);
 					metadata.setServerVersion(settingConfiguration.getServerVersion());
 					metadata.setJson(convertToSetting(metadata, false)); //always want to create the json on the settings
 					// creation
@@ -727,6 +711,24 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 
 		return settingsMetadata;
+	}
+
+	private void checkIdentityAttributtes(SettingConfiguration settingConfiguration, SettingsMetadata metadata) {
+		if (StringUtils.isNotBlank(settingConfiguration.getProviderId())) {
+			metadata.setProviderId(settingConfiguration.getProviderId());
+		}
+
+		if (StringUtils.isNotBlank(settingConfiguration.getLocationId())) {
+			metadata.setLocationId(settingConfiguration.getLocationId());
+		}
+
+		if (StringUtils.isNotBlank(settingConfiguration.getTeam())) {
+			metadata.setTeam(settingConfiguration.getTeam());
+		}
+
+		if (StringUtils.isNotBlank(settingConfiguration.getTeamId())) {
+			metadata.setTeamId(settingConfiguration.getTeamId());
+		}
 	}
 
 	@Override
