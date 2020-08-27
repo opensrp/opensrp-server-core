@@ -1,6 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import org.apache.commons.io.IOUtils;
