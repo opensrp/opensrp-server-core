@@ -82,9 +82,6 @@ public class QueueHelperTest {
 	@Autowired
 	private PlanRepository planRepository;
 
-	@Captor
-	private ArgumentCaptor<Jurisdiction> argumentCaptor = ArgumentCaptor.forClass(Jurisdiction.class);
-
 	private ArgumentCaptor<DomainResource> domainResourceArgumentCaptor = ArgumentCaptor.forClass(DomainResource.class);
 
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())

@@ -3,7 +3,6 @@ package org.opensrp.queue;
 import javax.annotation.PostConstruct;
 
 import org.opensrp.queue.sender.MessageSender;
-import org.opensrp.queue.sender.RabbitMQSenderImpl;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.LocationRepository;
