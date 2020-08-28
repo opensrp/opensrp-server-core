@@ -59,8 +59,8 @@ public class QueueHelper implements QueuingHelper {
 		messageSender.send(resourceEvaluatorMessage);
 	}
 	
-	public void setRabbitMQSender(RabbitMQSenderImpl rabbitMQSender) {
-		this.messageSender = rabbitMQSender;
+	public void setRabbitMQSender(MessageSender messageSender) {
+		this.messageSender = messageSender;
 	}
 	
 	public void setUsername(String username) {

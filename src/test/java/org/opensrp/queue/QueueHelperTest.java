@@ -2,8 +2,6 @@ package org.opensrp.queue;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.ibm.fhir.model.format.Format;
-import com.ibm.fhir.model.parser.FHIRParser;
 import com.ibm.fhir.model.resource.DomainResource;
 import com.ibm.fhir.model.resource.Location;
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
@@ -24,7 +22,6 @@ import org.mockito.ArgumentCaptor;
 import org.opensrp.queue.sender.RabbitMQSenderImpl;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.service.PlanService;
-import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
@@ -54,7 +51,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.nullable;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.never;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -333,11 +329,6 @@ public class QueueHelperTest {
 		rabbitMQSender.setRabbitTemplate(rabbitTemplate);
 		rabbitMQSender.setQueue(queue);
 		queueHelper.setRabbitMQSender(rabbitMQSender);
-		queueHelper.setPlanService(planService);
-		FHIRParser fhirParser = FHIRParser.parser(Format.JSON);
-		Whitebox.setInternalState(queueHelper, "isQueuingEnabled", true);
-		Whitebox.setInternalState(queueHelper, "planEvaluator", planEvaluator);
-		Whitebox.setInternalState(queueHelper, "fhirParser", fhirParser);
 	}
 
 	@Test
@@ -365,34 +356,7 @@ public class QueueHelperTest {
 	}
 
 	@Test
-	public void testAddToQueueWithQueuingDisabled() {
-		Whitebox.setInternalState(queueHelper, "isQueuingEnabled", false);
-		PlanDefinition planDefinition = createPlan();
-		when(planService.getPlan(anyString())).thenReturn(planDefinition);
-		Mockito.doNothing().when(planEvaluator)
-				.evaluatePlan(any(PlanDefinition.class), any(TriggerType.class), any(Jurisdiction.class), any(
-						QuestionnaireResponse.class));
-		queueHelper.addToQueue("planid", TriggerType.PLAN_ACTIVATION, "loc-1");
-		verify(planEvaluator, times(1))
-				.evaluatePlan(eq(planDefinition), eq(TriggerType.PLAN_ACTIVATION), eq(argumentCaptor.capture()), null);
-	}
-
-	@Test
-	public void testAddToQueueV2WithQueuingDisabled() {
-		Whitebox.setInternalState(queueHelper, "isQueuingEnabled", false);
-		Action action = createAction();
-		Mockito.doNothing().when(planEvaluator)
-				.evaluateResource(any(DomainResource.class), nullable(QuestionnaireResponse.class), any(Action.class),
-						anyString(), anyString(), any(TriggerType.class));
-		queueHelper.addToQueue(location, null, action, "plan-id", "jur-id", TriggerType.PLAN_ACTIVATION);
-		verify(planEvaluator, times(1))
-				.evaluateResource(eq(domainResourceArgumentCaptor.capture()), null, eq(action), eq("plan-id"), eq("jur-id"),
-						eq(TriggerType.PLAN_ACTIVATION));
-	}
-
-	@Test
 	public void testAddToQueueV2WithQueuingDisabledAndInvalidResource() {
-		Whitebox.setInternalState(queueHelper, "isQueuingEnabled", false);
 		Action action = createAction();
 		queueHelper.addToQueue(plan, null, action, "plan-id", "jur-id", TriggerType.PLAN_ACTIVATION);
 		verify(planEvaluator, never())
