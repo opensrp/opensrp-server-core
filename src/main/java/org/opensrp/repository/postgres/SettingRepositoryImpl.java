@@ -603,7 +603,12 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			}
 		}
 
-		return notSavedSettings.toString();
+		String responce = "";
+		if (notSavedSettings.size() > 0) {
+			responce = notSavedSettings.toString();
+		}
+
+		return responce;
 	}
 
 	private boolean checkIfMetadataExists(SettingsMetadata settingsMetadata) {
