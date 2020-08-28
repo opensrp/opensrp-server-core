@@ -2,6 +2,7 @@ package org.opensrp.repository.postgres;
 
 import com.google.gson.Gson;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
@@ -17,7 +18,9 @@ import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -177,7 +180,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		settingMap.put("key3", setting);
 
 		expectedSettingConfiguration.setSettings(settings);
-		settingRepository.add(expectedSettingConfiguration);
+		settingRepository.addSettings(expectedSettingConfiguration);
 
 		SettingConfiguration actualSettingConfiguration = settingRepository.get("test_id");
 		assertNotNull(actualSettingConfiguration);
@@ -216,6 +219,14 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		setting.setDescription("description30");
 		settings.add(setting);
 		settingMap.put("key3", setting);
+
+		Setting setting1 = new Setting();
+		setting1.setKey("key4");
+		setting1.setValue("value40");
+		setting1.setDescription("description40");
+		settings.add(setting1);
+		settingMap.put("key4", setting1);
+
 		expectedSettingConfiguration.setSettings(settings);
 
 		settingRepository.update(expectedSettingConfiguration);
@@ -296,22 +307,20 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testSaveGlobalSettingsUsingV1endpoint() {
+	public void testSaveGlobalSettingsUsingV1endpoint() throws IOException {
 		String popCharacteristicsGlobal = "{\"identifier\":\"population_characteristics\",\"settings\":[{\"description\":\"The proportion of women in the adult population (18 years or older), with a BMI less than 18.5, is 20% or higher.\",\"label\":\"Undernourished prevalence 20% or higher\",\"value\":\"false\",\"key\":\"pop_undernourish\"},{\"description\":\"The proportion of pregnant women in the population with anaemia (haemoglobin level less than 11 g/dl) is 40% or higher.\",\"label\":\"Anaemia prevalence 40% or higher\",\"value\":\"false\",\"key\":\"pop_anaemia_40\"}],\"type\":\"SettingConfiguration\"}";
 		String testGlobalsSaveV1 = "{\"identifier\":\"test_globals_save_v1\",\"settings\":[{\"description\":\"Is "
 				+ "an ultrasound machine available and functional at your facility and a trained health worker available to use it?\",\"label\":\"Ultrasound available\",\"type\":\"SettingConfiguration\",\"value\":false,\"key\":\"site_ultrasound\"},{\"description\":\"Does your facility use an automated blood pressure (BP) measurement tool?\",\"label\":\"Automated BP measurement tool\",\"type\":\"SettingConfiguration\",\"value\":false,\"key\":\"site_bp_tool\"}],\"type\":\"SettingConfiguration\"}";
+		FileInputStream fis = new FileInputStream("src/test/resources/settings.json");
+		String largeSettingPayload = IOUtils.toString(fis, StandardCharsets.UTF_8);
+
 		SettingTypeHandler settingTypeHandler = new SettingTypeHandler();
-		SettingConfiguration popCharacteristicsSettingConfig = null;
-		SettingConfiguration siteCharacteristicsSettingConfig = null;
-		try {
-			popCharacteristicsSettingConfig = settingTypeHandler.mapper
-					.readValue(popCharacteristicsGlobal, SettingConfiguration.class);
-			siteCharacteristicsSettingConfig = settingTypeHandler.mapper
-					.readValue(testGlobalsSaveV1, SettingConfiguration.class);
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		SettingConfiguration popCharacteristicsSettingConfig = settingTypeHandler.mapper
+				.readValue(popCharacteristicsGlobal, SettingConfiguration.class);
+		SettingConfiguration siteCharacteristicsSettingConfig = settingTypeHandler.mapper
+				.readValue(testGlobalsSaveV1, SettingConfiguration.class);
+		SettingConfiguration largeSettingPayloadSettingConfig = settingTypeHandler.mapper
+				.readValue(largeSettingPayload, SettingConfiguration.class);
 
 		popCharacteristicsSettingConfig.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		popCharacteristicsSettingConfig.setV1Settings(true);
@@ -319,13 +328,31 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		siteCharacteristicsSettingConfig.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		siteCharacteristicsSettingConfig.setV1Settings(true);
 
-		settingRepository.add(popCharacteristicsSettingConfig);
-		settingRepository.add(siteCharacteristicsSettingConfig);
+		largeSettingPayloadSettingConfig.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		largeSettingPayloadSettingConfig.setV1Settings(true);
+
+		settingRepository.addSettings(popCharacteristicsSettingConfig);
+		settingRepository.addSettings(siteCharacteristicsSettingConfig);
+		settingRepository.addSettings(largeSettingPayloadSettingConfig);
 
 		SettingSearchBean settingQueryBeanTwo = new SettingSearchBean();
 		settingQueryBeanTwo.setServerVersion(0L);
 		List<SettingConfiguration> allGlobalSettings = settingRepository.findSettings(settingQueryBeanTwo, null);
 		assertEquals(3, allGlobalSettings.size());
+
+		String textGlobalSaveV1Update = "{\"type\":\"SettingConfiguration\",\"serverVersion\":1597999833442,\"identifier\":\"test_globals_save_v1\",\"settings\":[{\"type\":\"SettingConfiguration\",\"serverVersion\":1597999833442,\"documentId\":\"ff3efba8-cda1-4f88-a271-96afb1d4fd63\",\"key\":\"site_ultrasound\",\"value\":\"false\",\"label\":\"Ultrasound available\",\"description\":\"Is an ultrasound machine available and functional at your facility and a trained health worker available to use it?\",\"uuid\":\"e01cce9e-02cd-4443-880c-09d483597cca\",\"settingsId\":\"16\",\"settingIdentifier\":\"test_globals_save_v1\",\"settingMetadataId\":\"19\"},{\"type\":\"SettingConfiguration\",\"serverVersion\":1597999833442,\"documentId\":\"ff3efba8-cda1-4f88-a271-96afb1d4fd63\",\"key\":\"site_bp_tool\",\"value\":\"true\",\"label\":\"Automated BP measurement tool\",\"description\":\"Does your facility use an automated blood pressure (BP) measurement tool?\",\"uuid\":\"3298a9c0-57f3-41e7-ba5d-320274443db4\",\"settingsId\":\"16\",\"settingIdentifier\":\"test_globals_save_v1\",\"settingMetadataId\":\"20\"},{\"key\":\"site_bp_tool_update\",\"value\":\"true\",\"label\":\"Automated BP measurement tool\",\"description\":\"Does your facility use an automated blood pressure (BP) measurement tool?\"}],\"_rev\":\"v1\"}";
+		SettingConfiguration testUpdateSettings = settingTypeHandler.mapper
+				.readValue(textGlobalSaveV1Update, SettingConfiguration.class);
+		testUpdateSettings.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		testUpdateSettings.setV1Settings(true);
+		testUpdateSettings.setId(allGlobalSettings.get(0).getId());
+
+		settingRepository.update(testUpdateSettings);
+
+		SettingSearchBean settingQueryBeanThree = new SettingSearchBean();
+		settingQueryBeanThree.setServerVersion(0L);
+		List<SettingConfiguration> allGlobalSettingsTwo = settingRepository.findSettings(settingQueryBeanThree, null);
+		assertEquals(3, allGlobalSettingsTwo.size());
 	}
 
 	private void verifySettingsAreSame(Map<String, Setting> settingMap, List<Setting> settings) {
