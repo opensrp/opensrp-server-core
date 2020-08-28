@@ -36,6 +36,9 @@ public class ResourceEvaluatorMessage implements Serializable {
 
 	@JsonProperty
 	private TriggerType triggerType;
+	
+	@JsonProperty
+	private String username;
 
 	@Override
 	public String toString() {

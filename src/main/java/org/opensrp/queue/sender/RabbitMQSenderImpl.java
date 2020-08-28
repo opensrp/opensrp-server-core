@@ -1,5 +1,7 @@
-package org.opensrp.queue;
+package org.opensrp.queue.sender;
 
+import org.opensrp.queue.PlanEvaluatorMessage;
+import org.opensrp.queue.ResourceEvaluatorMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Queue;
@@ -10,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Profile("rabbitmq")
 @Component
-public class RabbitMQSender {
+public class RabbitMQSenderImpl implements MessageSender{
 
 	@Autowired
 	private AmqpTemplate rabbitTemplate;
@@ -18,17 +20,19 @@ public class RabbitMQSender {
 	@Autowired
 	private Queue queue;
 
-	private static Logger logger = LoggerFactory.getLogger(RabbitMQSender.class.toString());
+	private static Logger logger = LoggerFactory.getLogger(RabbitMQSenderImpl.class.toString());
 
-	public RabbitMQSender(AmqpTemplate rabbitTemplate) {
+	public RabbitMQSenderImpl(AmqpTemplate rabbitTemplate) {
 		this.rabbitTemplate = rabbitTemplate;
 	}
 
+	@Override
 	public void send(PlanEvaluatorMessage planEvaluatorMessage) {
 		rabbitTemplate.convertAndSend(queue.getName(), planEvaluatorMessage);
 		logger.info("Send Message : " + planEvaluatorMessage.toString());
 	}
 
+	@Override
 	public void send(ResourceEvaluatorMessage resourceEvaluatorMessage) {
 		rabbitTemplate.convertAndSend(queue.getName(), resourceEvaluatorMessage);
 		logger.info("Send Message : " + resourceEvaluatorMessage.toString());

@@ -21,6 +21,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.ArgumentCaptor;
+import org.opensrp.queue.sender.RabbitMQSenderImpl;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.service.PlanService;
 import org.powermock.reflect.Whitebox;
@@ -68,7 +69,7 @@ public class QueueHelperTest {
 	private PlanEvaluator planEvaluator;
 
 	@Autowired
-	private RabbitMQSender rabbitMQSender;
+	private RabbitMQSenderImpl rabbitMQSender;
 
 	@Autowired
 	private AmqpTemplate rabbitTemplate;

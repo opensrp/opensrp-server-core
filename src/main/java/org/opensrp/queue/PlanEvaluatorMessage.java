@@ -26,6 +26,9 @@ public class PlanEvaluatorMessage implements Serializable {
 
 	@JsonProperty
 	private Jurisdiction jurisdiction;
+	
+	@JsonProperty
+	private String username;
 
 	@Override
 	public String toString() {
