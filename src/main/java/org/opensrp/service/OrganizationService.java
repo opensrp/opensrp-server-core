@@ -134,7 +134,7 @@ public class OrganizationService {
 			throw new IllegalArgumentException("Organization not found");
 
 		organizationRepository.assignLocationAndPlan(organization.getId(), jurisdictionId,
-				locationRepository.retrievePrimaryKey(jurisdictionId, true, 0), planId,
+				locationRepository.retrievePrimaryKey(jurisdictionId, true), planId,
 				planRepository.retrievePrimaryKey(planId), fromDate == null ? new Date() : fromDate, toDate);
 
 	}
