@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import static com.ibm.fhir.model.type.String.of;
 import static org.junit.Assert.assertEquals;
 
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.ArgumentCaptor;
