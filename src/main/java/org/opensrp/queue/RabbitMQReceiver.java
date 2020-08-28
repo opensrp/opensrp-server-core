@@ -64,7 +64,7 @@ public class RabbitMQReceiver {
 
 		if (planEvaluatorMessage != null) {
 			PlanDefinition planDefinition = planService.getPlan(planEvaluatorMessage.getPlanIdentifier());
-			if (planDefinition != null) {
+			if (planDefinition != null && planDefinition.getActions() != null && planEvaluatorMessage.getJurisdiction() != null) {
 				planEvaluator.evaluatePlan(planDefinition,
 						planEvaluatorMessage.getTriggerType(),
 						planEvaluatorMessage.getJurisdiction(), null);
