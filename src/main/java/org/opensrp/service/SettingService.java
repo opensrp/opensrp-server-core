@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,10 +86,29 @@ public class SettingService {
 
 		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		settingConfigurations.setV1Settings(true);
-		String settingsResponse = null;
-		if (settingConfigurations.getId() != null && settingRepository.get(settingConfigurations.getId()) != null) {
+		
+		SettingConfiguration existingConfiguration=null;
+	
+		if (StringUtils.isNotBlank(settingConfigurations.getId())) {
+			existingConfiguration = settingRepository.get(settingConfigurations.getId());
+		} else if (StringUtils.isNotBlank(settingConfigurations.getIdentifier())) {
+			SettingSearchBean settingQueryBean = new SettingSearchBean();
+			settingQueryBean.setIdentifier(settingConfigurations.getIdentifier());
+			existingConfiguration = settingRepository.findSetting(settingQueryBean, null);
+		}
+		
+		if (existingConfiguration != null) {
+			Map<String, String> uuidMap = new HashMap<>();
+			for (Setting setting : existingConfiguration.getSettings()) {
+				uuidMap.put(setting.getKey(), setting.getUuid());
+			}
+			settingConfigurations.getSettings().stream().filter(s -> StringUtils.isBlank(s.getUuid()))
+			        .forEach(s -> s.setUuid(uuidMap.get(s.getKey())));
+			if (StringUtils.isBlank(settingConfigurations.getId())) {
+				settingConfigurations.setId(existingConfiguration.getId());
+			}
 			settingRepository.update(settingConfigurations);
-
+			
 		} else {
 			settingsResponse = settingRepository.addSettings(settingConfigurations);
 		}

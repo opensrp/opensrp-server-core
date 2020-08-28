@@ -64,7 +64,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return null;
 		}
 		SettingSearchBean settingQueryBean = new SettingSearchBean();
-		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setDocumentId(id);
 
 		return findSetting(settingQueryBean, null);
@@ -351,8 +350,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		} else {
 			settingSearchBean.setIdentifier(uniqueId.toString());
 		}
-
-		settingSearchBean.setServerVersion(0L);
 
 		return settingSearchBean;
 	}
