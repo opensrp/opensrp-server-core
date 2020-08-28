@@ -86,9 +86,9 @@ public class SettingService {
 
 		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
 		settingConfigurations.setV1Settings(true);
-		
-		SettingConfiguration existingConfiguration=null;
-	
+
+		SettingConfiguration existingConfiguration = null;
+
 		if (StringUtils.isNotBlank(settingConfigurations.getId())) {
 			existingConfiguration = settingRepository.get(settingConfigurations.getId());
 		} else if (StringUtils.isNotBlank(settingConfigurations.getIdentifier())) {
@@ -96,24 +96,30 @@ public class SettingService {
 			settingQueryBean.setIdentifier(settingConfigurations.getIdentifier());
 			existingConfiguration = settingRepository.findSetting(settingQueryBean, null);
 		}
-		
+
+		String settingsResponse = null;
 		if (existingConfiguration != null) {
 			Map<String, String> uuidMap = new HashMap<>();
 			for (Setting setting : existingConfiguration.getSettings()) {
 				uuidMap.put(setting.getKey(), setting.getUuid());
 			}
 			settingConfigurations.getSettings().stream().filter(s -> StringUtils.isBlank(s.getUuid()))
-			        .forEach(s -> s.setUuid(uuidMap.get(s.getKey())));
+					.forEach(s -> s.setUuid(uuidMap.get(s.getKey())));
 			if (StringUtils.isBlank(settingConfigurations.getId())) {
 				settingConfigurations.setId(existingConfiguration.getId());
 			}
 			settingRepository.update(settingConfigurations);
-			
+
 		} else {
-			settingRepository.add(settingConfigurations);
+			settingsResponse = settingRepository.addSettings(settingConfigurations);
 		}
 
-		return settingConfigurations.getIdentifier();
+		String response = settingConfigurations.getIdentifier();
+		if (StringUtils.isNotBlank(settingsResponse)) {
+			response = response + String.format("%s%s", " The following settings might not be saved ", settingsResponse);
+		}
+
+		return response;
 
 	}
 
@@ -122,11 +128,15 @@ public class SettingService {
 	 *
 	 * @param setting {@link Setting}
 	 */
-	public void addOrUpdateSettings(Setting setting) {
+	public String addOrUpdateSettings(Setting setting) {
+		String settingsResponse = null;
+
 		if (setting != null) {
 			setting.setServerVersion(Calendar.getInstance().getTimeInMillis());
-			settingRepository.addOrUpdate(setting);
+			settingsResponse = settingRepository.addOrUpdate(setting);
 		}
+
+		return settingsResponse;
 	}
 
 	/**

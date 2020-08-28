@@ -1,5 +1,8 @@
 package org.opensrp.repository.postgres;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,21 +14,29 @@ import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.postgres.SettingsMetadataExample;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
+import org.opensrp.exception.DatabaseException;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper;
 import org.opensrp.search.SettingSearchBean;
+import org.postgresql.util.PGobject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.sql.DataSource;
 
 import static org.opensrp.util.Utils.isEmptyList;
 
@@ -44,6 +55,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	private String locationUuid;
 
+	@Autowired
+	private DataSource openSRPDataSource;
+
 	@Override
 	public SettingConfiguration get(String id) {
 		if (StringUtils.isBlank(id)) {
@@ -53,6 +67,11 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingQueryBean.setDocumentId(id);
 
 		return findSetting(settingQueryBean, null);
+	}
+
+	@Override
+	public void add(SettingConfiguration entity) {
+		//todo not required.
 	}
 
 	@Transactional
@@ -82,7 +101,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return;
 		}
 
-		entity.setSettings(settings); // re-inject settings block
+		entity.setSettings(settings);// re-inject settings block
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
 		settingMetadataMapper.updateMany(metadata);
 	}
@@ -439,7 +458,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	@Override
-	public void addOrUpdate(Setting setting) {
+	public String addOrUpdate(Setting setting) {
 		List<Setting> settings = new ArrayList<>();
 		settings.add(setting);
 		SettingConfiguration settingConfiguration = new SettingConfiguration();
@@ -461,8 +480,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		if (StringUtils.isNotBlank(setting.getId())) {
 			update(settingConfiguration);
 		} else {
-			add(settingConfiguration);
+			return addSettings(settingConfiguration);
 		}
+
+		return null;
 	}
 
 	@Override
@@ -471,9 +492,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	@Override
-	public void add(SettingConfiguration entity) {
+	public String addSettings(SettingConfiguration entity) {
 		if (entity == null || entity.getSettings() == null || entity.getIdentifier() == null) {
-			return;
+			return null;
 		}
 
 		Long id = retrievePrimaryKey(entity);
@@ -491,22 +512,22 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			entity.setSettings(null); // strip out the settings block
 			pgSettings = convert(entity, id);
 			if (pgSettings == null) {
-				return;
+				return null;
 			}
 
 			int rowsAffected = settingMapper.insertSelectiveAndSetId(pgSettings);
 			if (rowsAffected < 1 || pgSettings.getId() == null) {
-				return;
+				return null;
 			}
 		} else {
 			settings = entity.getSettings();
 			pgSettings = convert(entity, id);
 		}
 
-		checkWhetherMetadataExistsBeforeSave(entity, settings, pgSettings);
+		return checkWhetherMetadataExistsBeforeSave(entity, settings, pgSettings);
 	}
 
-	private void checkWhetherMetadataExistsBeforeSave(SettingConfiguration entity, List<Setting> settings,
+	private String checkWhetherMetadataExistsBeforeSave(SettingConfiguration entity, List<Setting> settings,
 			Settings pgSettings) {
 		entity.setSettings(settings); // re-inject settings block
 		List<SettingsMetadata> settingsMetadata = createMetadata(entity, pgSettings.getId());
@@ -517,7 +538,77 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				settingsMetadataList.add(metadata);
 			}
 		}
-			settingMetadataMapper.insertMany(settingsMetadataList);
+
+		return insertSettingMetadata(settingsMetadataList);
+	}
+
+	private String insertSettingMetadata(List<SettingsMetadata> settingsMetadataList) {
+		String insertSettingMetadata = "INSERT INTO core.settings_metadata ( settings_id, document_id, identifier, "
+				+ "server_version, team, team_id, provider_id, location_id, uuid, json, setting_type, setting_value, "
+				+ "setting_key, setting_description, setting_label, inherited_from) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,"
+				+ "?) ON conflict DO NOTHING";
+
+		Connection connection = null;
+
+		List<String> notSavedSettings = new ArrayList<>();
+
+		try {
+			connection = DataSourceUtils.getConnection(openSRPDataSource);
+			PreparedStatement preparedStatement = connection.prepareStatement(insertSettingMetadata);
+			for (SettingsMetadata settingsMetadata : settingsMetadataList) {
+
+				ObjectMapper objectMapper = new ObjectMapper();
+				String json;
+				try {
+					json = objectMapper.writeValueAsString(settingsMetadata.getJson());
+
+					PGobject pGobject = new PGobject();
+					pGobject.setType("json");
+					pGobject.setValue(json);
+
+					preparedStatement.setLong(1, settingsMetadata.getSettingsId());
+					preparedStatement.setString(2, settingsMetadata.getDocumentId());
+					preparedStatement.setString(3, settingsMetadata.getIdentifier());
+					preparedStatement.setLong(4, settingsMetadata.getServerVersion());
+					preparedStatement.setString(5, settingsMetadata.getTeam());
+					preparedStatement.setString(6, settingsMetadata.getTeamId());
+					preparedStatement.setString(7, settingsMetadata.getProviderId());
+					preparedStatement.setString(8, settingsMetadata.getLocationId());
+					preparedStatement.setString(9, settingsMetadata.getUuid());
+					preparedStatement.setObject(10, pGobject);
+					preparedStatement.setString(11, settingsMetadata.getSettingType());
+					preparedStatement.setString(12, settingsMetadata.getSettingValue());
+					preparedStatement.setString(13, settingsMetadata.getSettingKey());
+					preparedStatement.setString(14, settingsMetadata.getSettingDescription());
+					preparedStatement.setString(15, settingsMetadata.getSettingLabel());
+					preparedStatement.setString(16, settingsMetadata.getInheritedFrom());
+					preparedStatement.addBatch();
+				}
+				catch (JsonProcessingException e) {
+					e.printStackTrace();
+					notSavedSettings.add(settingsMetadata.getSettingKey());
+				}
+			}
+			preparedStatement.executeBatch();
+			preparedStatement.close();
+			connection.close();
+		}
+		catch (SQLException e) {
+			logger.error(e.getMessage(), e);
+			throw new DatabaseException(e.getMessage());
+		}
+		finally {
+			if (connection != null) {
+				DataSourceUtils.releaseConnection(connection, openSRPDataSource);
+			}
+		}
+
+		String responce = "";
+		if (notSavedSettings.size() > 0) {
+			responce = notSavedSettings.toString();
+		}
+
+		return responce;
 	}
 
 	private boolean checkIfMetadataExists(SettingsMetadata settingsMetadata) {
@@ -580,10 +671,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 									settingConfiguration.getId() :
 									UUID.randomUUID().toString());
 					metadata.setIdentifier(settingConfiguration.getIdentifier());
-					metadata.setProviderId(settingConfiguration.getProviderId());
-					metadata.setLocationId(settingConfiguration.getLocationId());
-					metadata.setTeam(settingConfiguration.getTeam());
-					metadata.setTeamId(settingConfiguration.getTeamId());
+					checkIdentityAttributtes(settingConfiguration, metadata);
 					metadata.setServerVersion(settingConfiguration.getServerVersion());
 					metadata.setJson(convertToSetting(metadata, false)); //always want to create the json on the settings
 					// creation
@@ -597,6 +685,24 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		}
 
 		return settingsMetadata;
+	}
+
+	private void checkIdentityAttributtes(SettingConfiguration settingConfiguration, SettingsMetadata metadata) {
+		if (StringUtils.isNotBlank(settingConfiguration.getProviderId())) {
+			metadata.setProviderId(settingConfiguration.getProviderId());
+		}
+
+		if (StringUtils.isNotBlank(settingConfiguration.getLocationId())) {
+			metadata.setLocationId(settingConfiguration.getLocationId());
+		}
+
+		if (StringUtils.isNotBlank(settingConfiguration.getTeam())) {
+			metadata.setTeam(settingConfiguration.getTeam());
+		}
+
+		if (StringUtils.isNotBlank(settingConfiguration.getTeamId())) {
+			metadata.setTeamId(settingConfiguration.getTeamId());
+		}
 	}
 
 	@Override

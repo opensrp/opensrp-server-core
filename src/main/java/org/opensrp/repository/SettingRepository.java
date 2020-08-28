@@ -28,7 +28,9 @@ public interface SettingRepository extends BaseRepository<SettingConfiguration> 
 	
 	Settings getSettingById(Long id);
 
-	void addOrUpdate(Setting entity);
+	String addOrUpdate(Setting entity);
 	
 	void delete(Long settingId);
+
+	String addSettings(SettingConfiguration entity);
 }
