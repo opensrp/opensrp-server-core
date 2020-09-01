@@ -35,20 +35,19 @@ public class TaskService {
 	public void addOrUpdateTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		task.setServerVersion(0l);
+		task.setServerVersion(taskRepository.getNextServerVersion());
 		task.setLastModified(new DateTime());
-		if (taskRepository.get(task.getIdentifier()) != null) {
-			taskRepository.update(task);
+		if (getTask(task.getIdentifier()) != null) {
+			updateTask(task);
 		} else {
-			task.setAuthoredOn(new DateTime());
-			taskRepository.add(task);
+			addTask(task);
 		}
 	}
 
 	public Task addTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		task.setServerVersion(0l);
+		task.setServerVersion(taskRepository.getNextServerVersion());
 		task.setAuthoredOn(new DateTime());
 		task.setLastModified(new DateTime());
 		taskRepository.add(task);
@@ -59,7 +58,7 @@ public class TaskService {
 	public Task updateTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		task.setServerVersion(0l);
+		task.setServerVersion(taskRepository.getNextServerVersion());
 		task.setLastModified(new DateTime());
 		taskRepository.update(task);
 		return task;

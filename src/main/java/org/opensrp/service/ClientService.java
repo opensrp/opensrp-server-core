@@ -225,7 +225,7 @@ public class ClientService {
 			client.setRevision(c.getRevision());
 			client.setId(c.getId());
 			client.setDateEdited(DateTime.now());
-			client.setServerVersion(0l);
+			client.setServerVersion(allClients.getNextServerVersion());
 			client.addIdentifier("OPENMRS_UUID", c.getIdentifier("OPENMRS_UUID"));
 			allClients.update(client);
 			
@@ -247,7 +247,7 @@ public class ClientService {
 			client.setId(c.getId());
 			client.setDateEdited(DateTime.now());
 			if (resetServerVersion) {
-				client.setServerVersion(0l);
+				client.setServerVersion(allClients.getNextServerVersion());
 			}
 			allClients.update(client);
 			
@@ -360,5 +360,12 @@ public class ClientService {
 	 */
 	public Client findById(String id) {
 		return allClients.findById(id);
+	}
+
+	/**
+	 * @return
+	 */
+	public long getNextServerVersion() {
+		return allClients.getNextServerVersion();
 	}
 }

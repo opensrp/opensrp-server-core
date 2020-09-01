@@ -27,18 +27,17 @@ public class CampaignService {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
 		campaign.setServerVersion(System.currentTimeMillis());
-		if (campaignRepository.get(campaign.getIdentifier()) != null) {
-			campaignRepository.update(campaign);
+		if (getCampaign(campaign.getIdentifier()) != null) {
+			updateCampaign(campaign);
 		} else {
-			campaign.setAuthoredOn(new DateTime());
-			campaignRepository.add(campaign);
+			addCampaign(campaign);
 		}
 	}
 
 	public Campaign addCampaign(Campaign campaign) {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		campaign.setServerVersion(System.currentTimeMillis());
+		campaign.setServerVersion(campaignRepository.getNextServerVersion());
 		campaignRepository.add(campaign);
 		return campaign;
 	}
@@ -46,7 +45,7 @@ public class CampaignService {
 	public Campaign updateCampaign(Campaign campaign) {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		campaign.setServerVersion(System.currentTimeMillis());
+		campaign.setServerVersion(campaignRepository.getNextServerVersion());
 		campaignRepository.update(campaign);
 		return campaign;
 	}

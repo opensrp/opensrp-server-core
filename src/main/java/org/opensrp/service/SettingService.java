@@ -84,7 +84,7 @@ public class SettingService {
 			e.printStackTrace();
 		}
 
-		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		settingConfigurations.setServerVersion(settingRepository.getNextServerVersion());
 		settingConfigurations.setV1Settings(true);
 
 		SettingConfiguration existingConfiguration = null;
@@ -132,7 +132,7 @@ public class SettingService {
 		String settingsResponse = null;
 
 		if (setting != null) {
-			setting.setServerVersion(Calendar.getInstance().getTimeInMillis());
+			setting.setServerVersion(settingRepository.getNextServerVersion());
 			settingsResponse = settingRepository.addOrUpdate(setting);
 		}
 
