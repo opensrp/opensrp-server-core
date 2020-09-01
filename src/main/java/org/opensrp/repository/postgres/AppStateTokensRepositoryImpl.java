@@ -102,8 +102,8 @@ public class AppStateTokensRepositoryImpl implements AppStateTokensRepository {
 
 	@Override
 	public long getNextServerVersion() {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new UnsupportedOperationException();
 	}
+
 	
 }

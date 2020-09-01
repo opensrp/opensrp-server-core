@@ -306,9 +306,4 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		return organizationMapper.selectOrganizationCount(organizationSearchBean);
 	}
 
-	@Override
-	protected String getSequenceName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

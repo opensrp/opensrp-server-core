@@ -185,10 +185,5 @@ public class ClientFormRepositoryImpl extends BaseRepositoryImpl<ClientForm> imp
 	protected Object getUniqueField(@Nullable ClientForm clientForm) {
 		return clientForm != null ? clientForm.getId() : null;
 	}
-
-	@Override
-	protected String getSequenceName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }

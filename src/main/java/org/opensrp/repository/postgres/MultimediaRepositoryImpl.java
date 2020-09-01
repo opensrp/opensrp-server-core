@@ -206,11 +206,5 @@ public class MultimediaRepositoryImpl extends BaseRepositoryImpl<Multimedia> imp
 		multiMediaMapper.deleteByExample(new MultiMediaExample());
 		
 	}
-
-	@Override
-	protected String getSequenceName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }

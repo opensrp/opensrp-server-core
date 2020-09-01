@@ -266,9 +266,4 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         return practitionerId;
     }
 
-	@Override
-	protected String getSequenceName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

@@ -277,10 +277,4 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         }
         return reservedIdentifiers;
     }
-
-	@Override
-	protected String getSequenceName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

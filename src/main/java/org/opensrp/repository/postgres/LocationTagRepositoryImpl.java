@@ -333,11 +333,5 @@ public class LocationTagRepositoryImpl extends BaseRepositoryImpl<LocationTag> i
 		locationTagMapMapper.deleteByExample(example);
 		
 	}
-
-	@Override
-	protected String getSequenceName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }

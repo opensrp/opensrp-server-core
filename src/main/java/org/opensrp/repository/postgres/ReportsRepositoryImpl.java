@@ -320,11 +320,5 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 		reportMapper.deleteByExample(new ReportExample());
 		
 	}
-
-	@Override
-	protected String getSequenceName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }

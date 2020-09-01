@@ -335,11 +335,5 @@ public class ActionRepositoryImpl extends BaseRepositoryImpl<Action> implements 
 	public boolean contains(String id) {
 		return get(id) != null;
 	}
-
-	@Override
-	protected String getSequenceName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
 }
