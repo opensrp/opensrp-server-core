@@ -241,4 +241,10 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         return practitioners;
     }
 
+	@Override
+	protected String getSequenceName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

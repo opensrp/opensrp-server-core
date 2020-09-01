@@ -209,4 +209,10 @@ public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> impleme
 		return campaignMetadata;
 	}
 
+	@Override
+	protected String getSequenceName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

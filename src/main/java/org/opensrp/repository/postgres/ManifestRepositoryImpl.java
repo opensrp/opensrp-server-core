@@ -202,5 +202,11 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
 
         return convertedManifests;
     }
+
+	@Override
+	protected String getSequenceName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
 

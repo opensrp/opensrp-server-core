@@ -166,4 +166,10 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 
 		return pgIdentifierSource;
 	}
+
+	@Override
+	protected String getSequenceName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

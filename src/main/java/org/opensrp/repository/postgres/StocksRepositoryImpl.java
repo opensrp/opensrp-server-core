@@ -237,5 +237,11 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		metadata.setServerVersion(entity.getServerVersion());
 		return metadata;
 	}
+
+	@Override
+	protected String getSequenceName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

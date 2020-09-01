@@ -265,4 +265,10 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         Long practitionerId = organization != null ? organization.getId() : null;
         return practitionerId;
     }
+
+	@Override
+	protected String getSequenceName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

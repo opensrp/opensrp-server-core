@@ -335,5 +335,11 @@ public class AlertsRepositoryImpl extends BaseRepositoryImpl<Alert> implements A
 		alertMapper.deleteByExample(new AlertExample());
 		
 	}
+
+	@Override
+	protected String getSequenceName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

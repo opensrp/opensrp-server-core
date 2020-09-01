@@ -198,4 +198,10 @@ public class ErrorTraceRepositoryImpl extends BaseRepositoryImpl<ErrorTrace> imp
 	public void removeAll() {
 		errorTraceMapper.deleteByExample(new ErrorTraceExample());
 	}
+
+	@Override
+	protected String getSequenceName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

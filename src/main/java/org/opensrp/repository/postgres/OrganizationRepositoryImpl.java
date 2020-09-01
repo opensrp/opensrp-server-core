@@ -305,4 +305,10 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	public int findOrganizationCount(OrganizationSearchBean organizationSearchBean) {
 		return organizationMapper.selectOrganizationCount(organizationSearchBean);
 	}
+
+	@Override
+	protected String getSequenceName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
