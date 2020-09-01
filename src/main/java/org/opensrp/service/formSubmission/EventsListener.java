@@ -75,8 +75,6 @@ public class EventsListener {
 			return;
 		}
 		try {
-			//update server version first
-			addServerVersion();
 			logger.info("Fetching Events");
 			long version = getVersion();
 			
@@ -113,52 +111,6 @@ public class EventsListener {
 		finally {
 			lock.unlock();
 		}
-	}
-	
-	private synchronized void addServerVersion() {
-		try {
-			List<Client> clients = allClients.findByEmptyServerVersion();
-			long currentTimeMillis = getCurrentMilliseconds();
-			while (clients != null && !clients.isEmpty()) {
-				for (Client client : clients) {
-					try {
-						Thread.sleep(1);
-						client.setServerVersion(currentTimeMillis);
-						allClients.update(client,true);
-						logger.debug("Add server_version: found new client " + client.getBaseEntityId());
-					}
-					catch (InterruptedException e) {
-						logger.error("", e);
-					}
-					currentTimeMillis += 1;
-				}
-				clients = allClients.findByEmptyServerVersion();
-			}
-			
-			List<Event> events = allEvents.findByEmptyServerVersion();
-			while (events != null && !events.isEmpty()) {
-				for (Event event : events) {
-					try {
-						Thread.sleep(1);
-						event = eventService.processOutOfArea(event,event.getProviderId());
-						event.setServerVersion(currentTimeMillis);
-						allEvents.update(event,true);
-						
-						logger.debug("Add server_version: found new event " + event.getBaseEntityId());
-					}
-					catch (InterruptedException e) {
-						logger.error("", e);
-					}
-					currentTimeMillis += 1;
-				}
-				
-				events = allEvents.findByEmptyServerVersion();
-			}
-		}
-		catch (Exception e) {
-			logger.error("", e);
-		}
-		
 	}
 	
 	public long getCurrentMilliseconds() {

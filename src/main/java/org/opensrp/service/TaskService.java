@@ -87,26 +87,6 @@ public class TaskService {
 		return tasksWithErrors;
 	}
 
-	public void addServerVersion() {
-		try {
-			List<Task> tasks = taskRepository.findByEmptyServerVersion();
-			logger.info("RUNNING addServerVersion tasks size: " + tasks.size());
-			long currentTimeMillis = System.currentTimeMillis();
-			for (Task task : tasks) {
-				try {
-					Thread.sleep(1);
-					task.setServerVersion(currentTimeMillis);
-					taskRepository.update(task);
-					currentTimeMillis += 1;
-				} catch (InterruptedException e) {
-					logger.error(e.getMessage());
-				}
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
-	}
-
 	public static Task.TaskStatus fromString(String statusParam) {
 		for (Task.TaskStatus status : Task.TaskStatus.values()) {
 			if (status.name().equalsIgnoreCase(statusParam)) {
