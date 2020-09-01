@@ -1,5 +1,6 @@
 package org.opensrp.repository.postgres;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.common.AllConstants.BaseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +63,12 @@ public abstract class BaseRepositoryImpl<T> {
 	}
 	
 	public long getNextServerVersion(String sequenceName) {
-		SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("sequence_name", getSequenceName());
-		return jdbcTemplate.queryForObject("SELECT nextval(:sequence_name)", Long.class, namedParameters);
+		if (StringUtils.isBlank(sequenceName)) {
+			return System.currentTimeMillis();
+		} else {
+			SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("sequence_name", getSequenceName());
+			return jdbcTemplate.queryForObject("SELECT nextval(:sequence_name)", Long.class, namedParameters);
+		}
 		
 	}
 	
