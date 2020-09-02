@@ -18,6 +18,8 @@ import org.springframework.stereotype.Repository;
 @Repository("stocksRepositoryPostgres")
 public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements StocksRepository {
 	
+	private static final String SEQUENCE="core.stock_server_version_seq"; 
+	
 	@Autowired
 	private CustomStockMapper stockMapper;
 	
@@ -240,8 +242,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 
 	@Override
 	protected String getSequenceName() {
-		// TODO Auto-generated method stub
-		return null;
+		return SEQUENCE;
 	}
 	
 }
