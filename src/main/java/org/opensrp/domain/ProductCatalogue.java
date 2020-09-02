@@ -26,13 +26,13 @@ public class ProductCatalogue {
 
 	private String availability;
 
-	private String working;
+	private String condition;
 
 	private String appropriateUsage;
 
 	private Integer accountabilityPeriod;
 
-	private String imagePath;
+	private String photoPath;
 
 	private Long serverVersion;
 }

@@ -136,13 +136,6 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 	}
 
 	@Override
-	public List<ProductCatalogue> findProductCataloguesByVersion(Long lastSyncedServerVersion) {
-		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
-		productCatalogueExample.createCriteria().andServerVersionGreaterThanOrEqualTo(lastSyncedServerVersion);
-		return convert(customProductCatalogueMapper.selectMany(productCatalogueExample, 0, DEFAULT_FETCH_SIZE));
-	}
-
-	@Override
 	public List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean) {
 		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
 		ProductCatalogueExample.Criteria criteria = populateProductCatalogueSearchCriteria(productCatalogueSearchBean,

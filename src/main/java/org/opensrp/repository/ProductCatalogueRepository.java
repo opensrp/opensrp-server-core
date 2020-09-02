@@ -9,8 +9,6 @@ public interface ProductCatalogueRepository extends BaseRepository<ProductCatalo
 
 	ProductCatalogue getById(Long uniqueId);
 
-	List<ProductCatalogue> findProductCataloguesByVersion(Long lastSyncedServerVersion);
-
 	List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean);
 
 	void safeRemove(Long id);

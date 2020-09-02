@@ -31,10 +31,6 @@ public class ProductCatalogueService {
 		return uniqueId == 0 ? null : productCatalogueRepository.getById(uniqueId);
 	}
 
-	public List<ProductCatalogue> findProductCataloguesByVersion(Long lastSyncedServerVersion) {
-		return productCatalogueRepository.findProductCataloguesByVersion(lastSyncedServerVersion);
-	}
-
 	public void add(ProductCatalogue productCatalogue) {
 		validateFields(productCatalogue);
 		productCatalogueRepository.add(productCatalogue);
@@ -64,9 +60,10 @@ public class ProductCatalogueService {
 	}
 
 	public List<ProductCatalogue> getProductCatalogues(ProductCatalogueSearchBean productCatalogueSearchBean) {
-		if (StringUtils.isBlank(productCatalogueSearchBean.getProductName()) && productCatalogueSearchBean.getProductType() != null
-				&& StringUtils.isBlank(productCatalogueSearchBean.getProductType().name()) && productCatalogueSearchBean.getUniqueId() == 0
-				&& productCatalogueSearchBean.getServerVersion() == 0) {
+		if (StringUtils.isBlank(productCatalogueSearchBean.getProductName()) && (productCatalogueSearchBean == null ||
+				(productCatalogueSearchBean.getProductType() != null
+				&& StringUtils.isBlank(productCatalogueSearchBean.getProductType().name()))) && productCatalogueSearchBean.getUniqueId() == 0
+				&& productCatalogueSearchBean.getServerVersion() == null) {
 			return findAllSupplyCatalogs();
 		}
 		else {
@@ -84,8 +81,8 @@ public class ProductCatalogueService {
 			throw new IllegalArgumentException("Unicef sections was not specified");
 		} else if (StringUtils.isBlank(productCatalogue.getAvailability())) {
 			throw new IllegalArgumentException("The availability text was not specified");
-		} else if (StringUtils.isBlank(productCatalogue.getWorking())) {
-			throw new IllegalArgumentException("The working text was not specified");
+		} else if (StringUtils.isBlank(productCatalogue.getCondition())) {
+			throw new IllegalArgumentException("The condition text was not specified");
 		} else if (StringUtils.isBlank(productCatalogue.getAppropriateUsage())) {
 			throw new IllegalArgumentException("The product approprate usage text was not specified");
 		} else if (productCatalogue.getAccountabilityPeriod() == null) {
