@@ -11,17 +11,14 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.AppStateToken;
-import org.smartregister.domain.Client;
 import org.opensrp.domain.ErrorTrace;
-import org.smartregister.domain.Event;
-import org.opensrp.repository.ClientsRepository;
-import org.opensrp.repository.EventsRepository;
 import org.opensrp.service.ConfigService;
 import org.opensrp.service.ErrorTraceService;
 import org.opensrp.service.EventService;
 import org.opensrp.service.formSubmission.handler.EventsRouter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartregister.domain.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,37 +31,20 @@ public class EventsListener {
 	
 	private ConfigService configService;
 	
-	private EventsRepository allEvents;
-	
 	@Autowired
-	private ClientsRepository allClients;
-	
-	@Autowired
-	EventService eventService;
+	private EventService eventService;
 	
 	private EventsRouter eventsRouter;
 	
 	private ErrorTraceService errorTraceService;
 
 	@Autowired
-	public EventsListener(EventsRouter eventsRouter, ConfigService configService, EventsRepository allEvents,
+	public EventsListener(EventsRouter eventsRouter, ConfigService configService, EventService eventService,
 	    ErrorTraceService errorTraceService) {
 		this.configService = configService;
 		this.errorTraceService = errorTraceService;
 		this.eventsRouter = eventsRouter;
-		this.allEvents = allEvents;
-		this.configService.registerAppStateToken(AllConstants.Config.EVENTS_PARSER_LAST_PROCESSED_EVENT, 0,
-		    "Token to keep track of events processed for client n event parsing and schedule handling", true);
-	}
-	
-	public EventsListener(EventsRouter eventsRouter, ConfigService configService, EventsRepository allEvents,
-	    EventService eventService, ErrorTraceService errorTraceService, ClientsRepository allClients) {
-		this.configService = configService;
-		this.errorTraceService = errorTraceService;
-		this.eventsRouter = eventsRouter;
-		this.allEvents = allEvents;
 		this.eventService = eventService;
-		this.allClients = allClients;
 		this.configService.registerAppStateToken(AllConstants.Config.EVENTS_PARSER_LAST_PROCESSED_EVENT, 0,
 		    "Token to keep track of events processed for client n event parsing and schedule handling", true);
 	}
@@ -78,7 +58,7 @@ public class EventsListener {
 			logger.info("Fetching Events");
 			long version = getVersion();
 			
-			List<Event> events = allEvents.findByServerVersion(version);
+			List<Event> events = eventService.findByServerVersion(version);
 			
 			if (events.isEmpty()) {
 				logger.info("No new events found. Export token: " + version);
