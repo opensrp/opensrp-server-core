@@ -58,6 +58,7 @@ public class StockService {
 			throw new IllegalArgumentException(
 			        "A stock already exists with given id. Consider updating data.[" + st.getId() + "]");
 		}
+		stock.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.add(stock);
 		return stock;
 	}
@@ -70,6 +71,7 @@ public class StockService {
 			allStocks.update(stock);
 		} else {
 			stock.setDateCreated(DateTime.now());
+			stock.setServerVersion(allStocks.getNextServerVersion());
 			allStocks.add(stock);
 		}
 		return stock;
@@ -83,7 +85,7 @@ public class StockService {
 		}
 		
 		updatedStock.setDateEdited(DateTime.now());
-		
+		updatedStock.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.update(updatedStock);
 	}
 	
@@ -103,6 +105,7 @@ public class StockService {
 			throw new IllegalArgumentException("No stock found with given id. Consider adding new!");
 		}
 		original.setDateEdited(DateTime.now());
+		original.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.update(original);
 		return original;
 	}

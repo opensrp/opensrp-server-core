@@ -161,6 +161,7 @@ public class EventService {
 		}
 		
 		event.setDateCreated(DateTime.now());
+		event.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.add(event);
 		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
 		if (isPlanEvaluationEnabled && planIdentifier != null) {
@@ -275,6 +276,7 @@ public class EventService {
 			
 		} else {
 			event.setDateCreated(DateTime.now());
+			event.setServerVersion(allEvents.getNextServerVersion());
 			allEvents.add(event);
 			
 		}
@@ -290,7 +292,7 @@ public class EventService {
 		}
 		
 		updatedEvent.setDateEdited(DateTime.now());
-		
+		updatedEvent.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.update(updatedEvent);
 	}
 	
@@ -320,6 +322,7 @@ public class EventService {
 			}
 			
 			original.setDateEdited(DateTime.now());
+			original.setServerVersion(allEvents.getNextServerVersion());
 			allEvents.update(original);
 			return original;
 		}

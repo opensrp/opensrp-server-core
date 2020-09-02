@@ -107,6 +107,7 @@ public class ClientService {
 		}
 		
 		client.setDateCreated(DateTime.now());
+		client.setServerVersion(allClients.getNextServerVersion());
 		allClients.add(client);
 		return client;
 	}
@@ -162,6 +163,7 @@ public class ClientService {
 		}
 		
 		updatedClient.setDateEdited(DateTime.now());
+		updatedClient.setServerVersion(getNextServerVersion());
 		allClients.update(updatedClient);
 	}
 	
@@ -191,6 +193,7 @@ public class ClientService {
 			}
 			
 			original.setDateEdited(DateTime.now());
+			original.setServerVersion(getNextServerVersion());
 			allClients.update(original);
 			return original;
 		}
@@ -253,6 +256,7 @@ public class ClientService {
 			
 		} else {
 			client.setDateCreated(DateTime.now());
+			client.setServerVersion(allClients.getNextServerVersion());
 			allClients.add(client);
 		}
 		return client;

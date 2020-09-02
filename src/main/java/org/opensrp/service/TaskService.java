@@ -106,7 +106,7 @@ public class TaskService {
 						task.setBusinessStatus(taskUpdate.getBusinessStatus());
 						task.setStatus(status);
 						task.setLastModified(new DateTime());
-						task.setServerVersion(0l);
+						task.setServerVersion(taskRepository.getNextServerVersion());
 						taskRepository.update(task);
 						updatedTaskIds.add(task.getIdentifier());
 				}
