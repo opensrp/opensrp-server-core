@@ -408,31 +408,6 @@ public class PhysicalLocationServiceTest {
 	}
 	
 	@Test
-	public void testAddServerVersion() {
-		
-		List<PhysicalLocation> expectedLocations = new ArrayList<>();
-		expectedLocations.add(createLocation());
-		
-		List<PhysicalLocation> expectedStructures = new ArrayList<>();
-		expectedStructures.add(createStructure());
-		
-		when(locationRepository.findByEmptyServerVersion()).thenReturn(expectedLocations);
-		when(locationRepository.findStructuresByEmptyServerVersion()).thenReturn(expectedStructures);
-		
-		long now = System.currentTimeMillis();
-		locationService.addServerVersion();
-		
-		verify(locationRepository).findByEmptyServerVersion();
-		verify(locationRepository).findStructuresByEmptyServerVersion();
-		
-		verify(locationRepository, times(2)).update(argumentCaptor.capture());
-		assertEquals(2, argumentCaptor.getAllValues().size());
-		for (PhysicalLocation location : argumentCaptor.getAllValues())
-			assertTrue(location.getServerVersion() >= now);
-		
-	}
-	
-	@Test
 	public void testSaveLocations() {
 		
 		List<PhysicalLocation> expectedLocations = new ArrayList<>();
