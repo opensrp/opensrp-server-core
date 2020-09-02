@@ -199,7 +199,7 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		assertEquals(existingServerVesion, updatedClient.getServerVersion().longValue());
 		
 		clientService.addorUpdate(savedClient, true);
-		assertEquals(clientService.find(savedClient.getBaseEntityId()).getServerVersion().longValue(), existingServerVesion);
+		assertEquals(existingServerVesion+1,clientService.find(savedClient.getBaseEntityId()).getServerVersion().longValue());
 	}
 
 	@Test

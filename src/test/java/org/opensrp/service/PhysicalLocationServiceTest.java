@@ -267,9 +267,10 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testAdd() {
 		PhysicalLocation expected = createStructure();
+		when(locationRepository.getStructureNextServerVersion()).thenReturn(12l);
 		locationService.add(expected);
 		verify(locationRepository).add(argumentCaptor.capture());
-		assertNull(argumentCaptor.getValue().getServerVersion());
+		assertEquals(12,argumentCaptor.getValue().getServerVersion().longValue());
 		
 		PhysicalLocation structure = argumentCaptor.getValue();
 		
@@ -290,11 +291,11 @@ public class PhysicalLocationServiceTest {
 	
 	@Test
 	public void testUpdate() {
-		
+		when(locationRepository.getNextServerVersion()).thenReturn(15l);
 		PhysicalLocation expected = createLocation();
 		locationService.update(expected);
 		verify(locationRepository).update(argumentCaptor.capture());
-		assertNull(argumentCaptor.getValue().getServerVersion());
+		assertEquals(15,argumentCaptor.getValue().getServerVersion().longValue());
 		
 		PhysicalLocation parentLocation = argumentCaptor.getValue();
 		assertEquals("3734", parentLocation.getId());
@@ -409,7 +410,8 @@ public class PhysicalLocationServiceTest {
 	
 	@Test
 	public void testSaveLocations() {
-		
+		when(locationRepository.getNextServerVersion()).thenReturn(15l);
+		when(locationRepository.getStructureNextServerVersion()).thenReturn(150l);
 		List<PhysicalLocation> expectedLocations = new ArrayList<>();
 		PhysicalLocation physicalLocation = createStructure();
 		physicalLocation.setId("12323");
@@ -424,7 +426,7 @@ public class PhysicalLocationServiceTest {
 		verify(locationRepository, times(1)).update(argumentCaptor.capture());
 		for (PhysicalLocation location : argumentCaptor.getAllValues()) {
 			assertTrue(location.isJurisdiction());
-			assertNull(location.getServerVersion());
+			assertTrue(location.getServerVersion() >= 15l);
 		}
 		
 	}
