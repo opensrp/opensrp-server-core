@@ -60,7 +60,7 @@ public class ProductCatalogueService {
 	}
 
 	public List<ProductCatalogue> getProductCatalogues(ProductCatalogueSearchBean productCatalogueSearchBean) {
-		if (StringUtils.isBlank(productCatalogueSearchBean.getProductName()) && (productCatalogueSearchBean == null ||
+		if (StringUtils.isBlank(productCatalogueSearchBean.getProductName()) && (productCatalogueSearchBean.getProductType() == null ||
 				(productCatalogueSearchBean.getProductType() != null
 				&& StringUtils.isBlank(productCatalogueSearchBean.getProductType().name()))) && productCatalogueSearchBean.getUniqueId() == 0
 				&& productCatalogueSearchBean.getServerVersion() == null) {
