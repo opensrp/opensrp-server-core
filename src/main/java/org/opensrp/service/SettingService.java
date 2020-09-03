@@ -71,7 +71,6 @@ public class SettingService {
 			settingQueryBean.setIdentifier(settingConfigurations.getIdentifier());
 			existingConfiguration = settingRepository.findSetting(settingQueryBean, null);
 		}
-		settingConfigurations.setServerVersion(settingRepository.getNextServerVersion());
 
 		String settingsResponse = null;
 		if (existingConfiguration != null) {
