@@ -233,7 +233,7 @@ public class ClientService {
 			allClients.update(client);
 			
 		} else {
-			
+			client.setServerVersion(allClients.getNextServerVersion());
 			client.setDateCreated(DateTime.now());
 			allClients.add(client);
 		}
