@@ -99,7 +99,7 @@ public class PhysicalLocationService {
 		} else {
 			//make existing location inactive
 			existingEntity.getProperties().setStatus(LocationProperty.PropertyStatus.INACTIVE);
-			physicalLocation.setServerVersion(physicalLocation.isJurisdiction() ? locationRepository.getNextServerVersion()
+			existingEntity.setServerVersion(physicalLocation.isJurisdiction() ? locationRepository.getNextServerVersion()
 			        : locationRepository.getStructureNextServerVersion());
 			locationRepository.update(existingEntity);
 			
