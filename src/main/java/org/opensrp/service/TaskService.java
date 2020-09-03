@@ -35,20 +35,19 @@ public class TaskService {
 	public void addOrUpdateTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		task.setServerVersion(0l);
+		task.setServerVersion(taskRepository.getNextServerVersion());
 		task.setLastModified(new DateTime());
-		if (taskRepository.get(task.getIdentifier()) != null) {
-			taskRepository.update(task);
+		if (getTask(task.getIdentifier()) != null) {
+			updateTask(task);
 		} else {
-			task.setAuthoredOn(new DateTime());
-			taskRepository.add(task);
+			addTask(task);
 		}
 	}
 
 	public Task addTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		task.setServerVersion(0l);
+		task.setServerVersion(taskRepository.getNextServerVersion());
 		task.setAuthoredOn(new DateTime());
 		task.setLastModified(new DateTime());
 		taskRepository.add(task);
@@ -59,7 +58,7 @@ public class TaskService {
 	public Task updateTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		task.setServerVersion(0l);
+		task.setServerVersion(taskRepository.getNextServerVersion());
 		task.setLastModified(new DateTime());
 		taskRepository.update(task);
 		return task;
@@ -88,26 +87,6 @@ public class TaskService {
 		return tasksWithErrors;
 	}
 
-	public void addServerVersion() {
-		try {
-			List<Task> tasks = taskRepository.findByEmptyServerVersion();
-			logger.info("RUNNING addServerVersion tasks size: " + tasks.size());
-			long currentTimeMillis = System.currentTimeMillis();
-			for (Task task : tasks) {
-				try {
-					Thread.sleep(1);
-					task.setServerVersion(currentTimeMillis);
-					taskRepository.update(task);
-					currentTimeMillis += 1;
-				} catch (InterruptedException e) {
-					logger.error(e.getMessage());
-				}
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
-	}
-
 	public static Task.TaskStatus fromString(String statusParam) {
 		for (Task.TaskStatus status : Task.TaskStatus.values()) {
 			if (status.name().equalsIgnoreCase(statusParam)) {
@@ -127,7 +106,7 @@ public class TaskService {
 						task.setBusinessStatus(taskUpdate.getBusinessStatus());
 						task.setStatus(status);
 						task.setLastModified(new DateTime());
-						task.setServerVersion(0l);
+						task.setServerVersion(taskRepository.getNextServerVersion());
 						taskRepository.update(task);
 						updatedTaskIds.add(task.getIdentifier());
 				}

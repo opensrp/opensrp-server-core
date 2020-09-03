@@ -146,25 +146,6 @@ public class TaskServiceTest {
 		assertEquals(task, tasks.get(0));
 	}
 
-	@Test
-	public void addServerVersion() {
-
-		List<Task> expected = new ArrayList<>();
-		Task task = initializeTask();
-		task.setServerVersion(0l);
-		expected.add(task);
-		when(taskRepository.findByEmptyServerVersion()).thenReturn(expected);
-
-		long now = System.currentTimeMillis();
-		taskService.addServerVersion();
-		verify(taskRepository).findByEmptyServerVersion();
-		ArgumentCaptor<Task> argumentCaptor = ArgumentCaptor.forClass(Task.class);
-		verify(taskRepository).update(argumentCaptor.capture());
-		assertNotNull(argumentCaptor.getValue().getServerVersion());
-		assertTrue(argumentCaptor.getValue().getServerVersion() >= now);
-
-	}
-
 	private Task initializeTask() {
 		Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
 				.serializeNulls().create();

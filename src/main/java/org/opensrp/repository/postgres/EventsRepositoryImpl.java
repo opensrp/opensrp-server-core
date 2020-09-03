@@ -30,6 +30,8 @@ import com.ibm.fhir.model.resource.QuestionnaireResponse;
 @Repository("eventsRepositoryPostgres")
 public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements EventsRepository {
 
+	private static final String SEQUENCE="core.event_server_version_seq"; 
+	
 	@Autowired
 	private CustomEventMapper eventMapper;
 
@@ -178,12 +180,14 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	}
 
 	@Override
-	public Event findByFormSubmissionId(String formSubmissionId) {
+	public Event findByFormSubmissionId(String formSubmissionId, boolean includeArchived) {
 		if (StringUtils.isBlank(formSubmissionId)) {
 			return null;
 		}
 		EventMetadataExample example = new EventMetadataExample();
-		example.createCriteria().andFormSubmissionIdEqualTo(formSubmissionId).andDateDeletedIsNull();
+		Criteria criteria = example.createCriteria().andFormSubmissionIdEqualTo(formSubmissionId);
+		if (!includeArchived)
+			criteria.andDateDeletedIsNull();
 		List<org.opensrp.domain.postgres.Event> events = eventMetadataMapper.selectMany(example);
 		if (events.size() > 1) {
 			throw new IllegalStateException("Multiple events for formSubmissionId " + formSubmissionId);
@@ -619,6 +623,11 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 				.stream()
 		        .map(event -> EventConverter.convertEventToEncounterResource(event))
 		        .collect(Collectors.toList());
+	}
+
+	@Override
+	protected String getSequenceName() {
+		return SEQUENCE;
 	}
 
 	

@@ -44,6 +44,8 @@ import static org.opensrp.util.Utils.isEmptyList;
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
 
 	private static final Logger logger = LoggerFactory.getLogger(SettingRepositoryImpl.class);
+	
+	private static final String SEQUENCE="core.setting_server_version_seq"; 
 
 	private final List<String> reformattedLocationHierarchy = new ArrayList<>();
 
@@ -470,7 +472,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingConfiguration.setIdentifier(setting.getIdentifier());
 		settingConfiguration.setType(setting.getType());
 		settingConfiguration.setSettings(settings);
-		settingConfiguration.setServerVersion(setting.getServerVersion());
+		settingConfiguration.setServerVersion(getNextServerVersion());
 		settingConfiguration.setDocumentId(setting.getDocumentId());
 		if (StringUtils.isNotBlank(setting.getSettingsId())) {
 			settingConfiguration.setId(setting.getSettingsId());
@@ -730,5 +732,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	public List<String> getReformattedLocationHierarchy() {
 		return reformattedLocationHierarchy;
+	}
+
+	@Override
+	protected String getSequenceName() {
+		return SEQUENCE;
 	}
 }

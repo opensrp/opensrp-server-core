@@ -265,4 +265,5 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         Long practitionerId = organization != null ? organization.getId() : null;
         return practitionerId;
     }
+
 }

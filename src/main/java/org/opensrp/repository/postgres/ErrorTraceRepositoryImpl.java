@@ -198,4 +198,5 @@ public class ErrorTraceRepositoryImpl extends BaseRepositoryImpl<ErrorTrace> imp
 	public void removeAll() {
 		errorTraceMapper.deleteByExample(new ErrorTraceExample());
 	}
+
 }

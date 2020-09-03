@@ -305,4 +305,5 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	public int findOrganizationCount(OrganizationSearchBean organizationSearchBean) {
 		return organizationMapper.selectOrganizationCount(organizationSearchBean);
 	}
+
 }

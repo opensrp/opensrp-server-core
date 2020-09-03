@@ -113,17 +113,17 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindByFormSubmissionId() {
-		Event event = eventsRepository.findByFormSubmissionId("31c4a45a-09f4-4b01-abe8-a87526827df6");
+		Event event = eventsRepository.findByFormSubmissionId("31c4a45a-09f4-4b01-abe8-a87526827df6",false);
 		assertEquals("ea1f9439-a663-4073-93b9-6ef2b8bca3c1", event.getBaseEntityId());
 		assertEquals("05934ae338431f28bf6793b241781149", event.getId());
 		assertEquals("Growth Monitoring", event.getEventType());
 		//find non existent event
-		assertNull(eventsRepository.findByFormSubmissionId("05934ae338431f28bf4234gvnbvvh"));
-		assertNull(eventsRepository.findByFormSubmissionId(null));
+		assertNull(eventsRepository.findByFormSubmissionId("05934ae338431f28bf4234gvnbvvh",false));
+		assertNull(eventsRepository.findByFormSubmissionId(null,false));
 		
 		//test with deleted event
 		eventsRepository.safeRemove(event);
-		assertNull(eventsRepository.findByFormSubmissionId("31c4a45a-09f4-4b01-abe8-a87526827df6"));
+		assertNull(eventsRepository.findByFormSubmissionId("31c4a45a-09f4-4b01-abe8-a87526827df6",false));
 	}
 	
 	@Test
@@ -584,7 +584,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		
 		eventsRepository.add(event);
 		
-		event = eventsRepository.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
+		event = eventsRepository.findByFormSubmissionId("gjhg34534 nvbnv3345345__4",false);
 		assertEquals("435534534543", event.getBaseEntityId());
 		assertEquals("Growth Monitoring", event.getEventType());
 		assertEquals(1, event.getObs().size());
@@ -595,7 +595,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		        .withFormSubmissionId("hshj2342_jsjs-jhjsdfds-23").withEventDate(new DateTime()).withObs(obs);
 		event.setDateVoided(new DateTime());
 		eventsRepository.add(event);
-		assertNull(eventsRepository.findByFormSubmissionId(event.getFormSubmissionId()));
+		assertNull(eventsRepository.findByFormSubmissionId(event.getFormSubmissionId(),false));
 		
 	}
 	
