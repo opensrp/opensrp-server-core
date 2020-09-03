@@ -180,12 +180,14 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	}
 
 	@Override
-	public Event findByFormSubmissionId(String formSubmissionId) {
+	public Event findByFormSubmissionId(String formSubmissionId, boolean includeArchived) {
 		if (StringUtils.isBlank(formSubmissionId)) {
 			return null;
 		}
 		EventMetadataExample example = new EventMetadataExample();
-		example.createCriteria().andFormSubmissionIdEqualTo(formSubmissionId).andDateDeletedIsNull();
+		Criteria criteria = example.createCriteria().andFormSubmissionIdEqualTo(formSubmissionId);
+		if (!includeArchived)
+			criteria.andDateDeletedIsNull();
 		List<org.opensrp.domain.postgres.Event> events = eventMetadataMapper.selectMany(example);
 		if (events.size() > 1) {
 			throw new IllegalStateException("Multiple events for formSubmissionId " + formSubmissionId);

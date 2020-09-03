@@ -70,7 +70,7 @@ public class EventService {
 	}
 	
 	public Event findByFormSubmissionId(String formSubmissionId) {
-		return allEvents.findByFormSubmissionId(formSubmissionId);
+		return allEvents.findByFormSubmissionId(formSubmissionId,false);
 	}
 	
 	public List<Event> findEventsBy(EventSearchBean eventSearchBean) {
@@ -138,7 +138,7 @@ public class EventService {
 				 event = findById(eventId);
 			}
 			if (event == null && StringUtils.isNotEmpty(formSubmissionId)) {
-				return findByFormSubmissionId(formSubmissionId);
+				return allEvents.findByFormSubmissionId(formSubmissionId,true);
 			}
 		}
 		catch (Exception e) {
