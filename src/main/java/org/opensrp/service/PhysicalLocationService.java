@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
@@ -74,6 +76,7 @@ public class PhysicalLocationService {
 		}
 	}
 	
+	@Transactional
 	public void add(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -82,6 +85,7 @@ public class PhysicalLocationService {
 		locationRepository.add(physicalLocation);
 	}
 	
+	@Transactional
 	public void update(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
