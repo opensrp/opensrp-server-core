@@ -311,12 +311,12 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public boolean checkIfTaskExists(String baseEntityId, String planIdentifier, String code) {
+	public boolean checkIfTaskExists(String baseEntityId,String jurisdiction, String planIdentifier, String code) {
 		List<String> statuses = new ArrayList<>();
 		statuses.add("Cancelled");
 		statuses.add("Archived");
 
-		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, planIdentifier, code,statuses);
+		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, jurisdiction,planIdentifier, code,statuses);
 		return taskCount >= 1;
 	}
 

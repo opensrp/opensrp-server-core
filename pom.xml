@@ -5,7 +5,7 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>2.6.0.0-SNAPSHOT</version>
+	<version>2.7.0.0-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>http://github.com/OpenSRP/opensrp-server-core</url>
@@ -24,10 +24,11 @@
 		<opensrp.common.version>2.0.3-SNAPSHOT</opensrp.common.version>
 		<opensrp.api.version>1.0.1</opensrp.api.version>
 		<opensrp.interface.version>2.0.1-SNAPSHOT</opensrp.interface.version>
-		<opensrp.plan.evaluator.version>0.1.1-SNAPSHOT</opensrp.plan.evaluator.version>
+		<opensrp.plan.evaluator.version>0.1.2-SNAPSHOT</opensrp.plan.evaluator.version>
 		<jackson.version>2.10.2</jackson.version>
 		<powermock.version>2.0.5</powermock.version>
 		<lombok.version>1.18.12</lombok.version>
+		<spring.ampqp.version>2.2.9.RELEASE</spring.ampqp.version>
 
 	</properties>
 
@@ -642,6 +643,34 @@
 					</plugin>
 				</plugins>
 			</build>
+		</profile>
+		<profile>
+			<id>rabbitmq</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>opensrp.queuing.service</name>
+					<value>rabbitmq</value>
+				</property>
+			</activation>
+			<properties>
+				<opensrp.queuing.service.profile>rabbitmq</opensrp.queuing.service.profile>
+			</properties>
+			<dependencies>
+				<!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-amqp -->
+				<dependency>
+					<groupId>org.springframework.amqp</groupId>
+					<artifactId>spring-amqp</artifactId>
+					<version>${spring.ampqp.version}</version>
+				</dependency>
+
+				<!-- https://mvnrepository.com/artifact/org.springframework.amqp/spring-rabbit -->
+				<dependency>
+					<groupId>org.springframework.amqp</groupId>
+					<artifactId>spring-rabbit</artifactId>
+					<version>${spring.ampqp.version}</version>
+				</dependency>
+			</dependencies>
 		</profile>
 	</profiles>
 </project>
