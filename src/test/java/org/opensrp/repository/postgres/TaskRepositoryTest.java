@@ -327,9 +327,10 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setPlanIdentifier("test-plan-id-1");
 	    task.setForEntity("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd");
 		task.setCode("test-code");
+		task.setGroupIdentifier("group-1");
 		task.setStatus(TaskStatus.READY);
 		taskRepository.add(task);
-		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd",
+		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd","group-1",
 				"test-plan-id-1","test-code");
 		assertTrue(taskExists);
 	}
@@ -341,9 +342,10 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setPlanIdentifier("test-plan-id-2");
 		task.setForEntity("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fe");
 		task.setCode("test-code-2");
+		task.setGroupIdentifier("group-1");
 		task.setStatus(TaskStatus.ARCHIVED);
 		taskRepository.add(task);
-		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fe",
+		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fe","group-1",
 				"test-plan-id-2","test-code-2");
 		assertFalse(taskExists);
 	}
