@@ -68,7 +68,7 @@ public class PlanService {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
-		plan.setServerVersion(System.currentTimeMillis());
+		plan.setServerVersion(planRepository.getNextServerVersion());
 		getPlanRepository().add(plan);
 		taskGenerator.processPlanEvaluation(plan, null,username);
 		return plan;
@@ -80,7 +80,7 @@ public class PlanService {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		PlanDefinition existing = getPlan(plan.getIdentifier());
-		plan.setServerVersion(System.currentTimeMillis());
+		plan.setServerVersion(planRepository.getNextServerVersion());
 		getPlanRepository().update(plan);
 		taskGenerator.processPlanEvaluation(plan, existing,username);
 		return plan;

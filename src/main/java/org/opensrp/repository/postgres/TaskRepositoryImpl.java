@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements TaskRepository {
-
+	
+	private static final String SEQUENCE="core.task_server_version_seq"; 
+	
 	@Autowired
 	private CustomTaskMapper taskMapper;
 
@@ -341,6 +343,11 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 				.stream()
 				.map(task -> TaskConverter.convertTasktoFihrResource(task))
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	protected String getSequenceName() {
+		return SEQUENCE;
 	}
 
 

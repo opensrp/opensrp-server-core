@@ -217,4 +217,11 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return location together with it's children whose id matches the provided param
 	 */
 	List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> identifiers, int pageSize);
+
+	/**
+	 * Gets the next server version for structures
+	 * 
+	 * @return the next sequence value
+	 */
+	long getStructureNextServerVersion();
 }

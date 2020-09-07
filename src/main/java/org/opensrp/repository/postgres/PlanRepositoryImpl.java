@@ -27,7 +27,9 @@ import static org.opensrp.util.Utils.isEmptyList;
 
 @Repository
 public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> implements PlanRepository {
-
+	
+	private static final String SEQUENCE="core.plan_server_version_seq"; 
+	
     @Autowired
     private CustomPlanMapper planMapper;
 
@@ -319,4 +321,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         List<Plan> plans = planMapper.selectMany(planExample,0, DEFAULT_FETCH_SIZE);
         return convert(plans);
     }
+
+	@Override
+	protected String getSequenceName() {
+		return SEQUENCE;
+	}
 }
