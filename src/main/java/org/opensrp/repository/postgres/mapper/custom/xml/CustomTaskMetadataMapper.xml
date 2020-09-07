@@ -89,6 +89,7 @@
 		where tm.plan_identifier = #{planIdentifier,jdbcType=VARCHAR} AND
 		tm.for_entity = #{baseEntityId,jdbcType=VARCHAR} AND
 		tm.code = #{code,jdbcType=VARCHAR} AND
+		tm.group_identifier = #{jurisdiction,jdbcType=VARCHAR} AND
 		t.json ->> 'status' NOT IN
 		<foreach item="item" index="index" collection="statuses" open="(" separator="," close=")">
 			#{item}
