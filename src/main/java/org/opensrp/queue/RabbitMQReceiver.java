@@ -46,6 +46,9 @@ public class RabbitMQReceiver {
 
 	@Autowired
 	private PlanService planService;
+	
+	@Autowired
+	private QueueHelper queueHelper;
 
 	private FHIRParser fhirParser;
 
@@ -54,7 +57,7 @@ public class RabbitMQReceiver {
 	@PostConstruct
 	public void init() {
 		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
-		planEvaluator = new PlanEvaluator("");
+		planEvaluator = new PlanEvaluator("",queueHelper);
 		fhirParser = FHIRParser.parser(Format.JSON);
 	}
 
