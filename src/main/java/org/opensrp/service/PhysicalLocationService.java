@@ -187,10 +187,11 @@ public class PhysicalLocationService {
 	 * 
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param ids list of location ids
+	 * @param serverVersion server version if not null filter
 	 * @return jurisdictions whose ids match the provided params
 	 */
-	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
-		return locationRepository.findLocationsByIds(returnGeometry, ids);
+	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids, Long serverVersion) {
+		return locationRepository.findLocationsByIds(returnGeometry, ids,serverVersion);
 	}
 	
 	/**
@@ -424,6 +425,16 @@ public class PhysicalLocationService {
 	public Long countLocationsByNames(String locationNames, long serverVersion) {
 		return locationRepository.countLocationsByNames(locationNames, serverVersion);
 	};
+	
+	/**
+	 * Gets the count of locations based on locationIds and server version
+	 * @param locationIds the list of locationIds to filter with
+	 * @param serverVersion the server version to filter with 
+	 * @return number of records
+	 */
+	public long countLocationsByIds(List<String> locationIds, long serverVersion) {
+		return locationRepository.countLocationsByIds(locationIds, serverVersion);
+	}
 	
 	/**
 	 * This method checks whether the coordinates contained in the locations Geometry are equal

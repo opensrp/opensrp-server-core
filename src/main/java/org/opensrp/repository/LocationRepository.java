@@ -60,9 +60,10 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * It returns the Geometry optionally if @param returnGeometry is set to true.
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param ids list of location ids
+	 * @param serverVersion server version if not null filter
 	 * @return jurisdictions whose ids match the provided params
 	 */
-	List<PhysicalLocation> findLocationsByIds(boolean returnGeometry,	List<String> ids);
+	List<PhysicalLocation> findLocationsByIds(boolean returnGeometry,	List<String> ids, Long serverVersion);
 
 	/**
 	 * This methods searches for a location and it's children using the provided location id
@@ -224,4 +225,12 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return the next sequence value
 	 */
 	long getStructureNextServerVersion();
+
+	/**
+	 * Gets the count of locations based on locationIds and server version
+	 * @param locationIds the list of locationIds to filter with
+	 * @param serverVersion the server version to filter with 
+	 * @return number of records
+	 */
+	long countLocationsByIds(List<String> locationIds, long serverVersion);
 }
