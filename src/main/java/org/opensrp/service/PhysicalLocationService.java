@@ -187,12 +187,27 @@ public class PhysicalLocationService {
 	 * 
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param ids list of location ids
+	 * @return jurisdictions whose ids match the provided params
+	 */
+	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
+		return locationRepository.findLocationsByIds(returnGeometry, ids,null);
+	}
+	
+	/**
+	 * This methods provides an API endpoint that searches for locations using a list of provided
+	 * location ids. It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * 
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param ids list of location ids
 	 * @param serverVersion server version if not null filter
 	 * @return jurisdictions whose ids match the provided params
 	 */
 	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids, Long serverVersion) {
 		return locationRepository.findLocationsByIds(returnGeometry, ids,serverVersion);
 	}
+	
+	
+	
 	
 	/**
 	 * This methods searches for locations using a list of provided location ids.It returns location
