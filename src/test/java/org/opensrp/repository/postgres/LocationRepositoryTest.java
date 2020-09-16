@@ -494,16 +494,16 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	public void testFindByEmptyServerVersion() {
 		
 		List<PhysicalLocation> locations = locationRepository.findByEmptyServerVersion();
-		assertTrue(locations.isEmpty());
+		assertEquals(1, locations.size());
+		assertEquals("3735", locations.get(0).getId());
 		
-		PhysicalLocation location = locationRepository.get("3734");
-		location.setServerVersion(null);
+		PhysicalLocation location = locationRepository.get("3735");
+		location.setServerVersion(12l);
 		locationRepository.update(location);
 		
 		locations = locationRepository.findByEmptyServerVersion();
 		
-		assertEquals(1, locations.size());
-		assertEquals("3734", locations.get(0).getId());
+		assertTrue(locations.isEmpty());
 		
 	}
 	
@@ -785,7 +785,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		List<String> locationsIds = idsModel.getLeft();
 		assertEquals(1, locationsIds.size());
 		assertEquals("3735", locationsIds.get(0));
-		assertEquals(-1l, idsModel.getRight().longValue());
+		assertEquals(0l, idsModel.getRight().longValue());
 		
 	}
 	
