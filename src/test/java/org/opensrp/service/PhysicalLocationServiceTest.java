@@ -483,9 +483,22 @@ public class PhysicalLocationServiceTest {
 		List<PhysicalLocation> expectedLocations = Collections.singletonList(createLocation());
 		
 		List<String> locationIds = new ArrayList<>();
-		when(locationRepository.findLocationsByIds(true, locationIds)).thenReturn(expectedLocations);
+		when(locationRepository.findLocationsByIds(true, locationIds,null)).thenReturn(expectedLocations);
 		List<PhysicalLocation> locations = locationService.findLocationsByIds(true, locationIds);
-		verify(locationRepository).findLocationsByIds(true, locationIds);
+		verify(locationRepository).findLocationsByIds(true, locationIds,null);
+		assertEquals(1, locations.size());
+		assertEquals(expectedLocations, locations);
+		
+	}
+	@Test
+	public void testFindLocationsByIdWithServerVersion() {
+		List<PhysicalLocation> expectedLocations = Collections.singletonList(createLocation());
+		
+		List<String> locationIds = Arrays.asList("id1","Id2");
+		long serverVersion=1234;
+		when(locationRepository.findLocationsByIds(true, locationIds,serverVersion)).thenReturn(expectedLocations);
+		List<PhysicalLocation> locations = locationService.findLocationsByIds(true, locationIds,serverVersion);
+		verify(locationRepository).findLocationsByIds(true, locationIds,serverVersion);
 		assertEquals(1, locations.size());
 		assertEquals(expectedLocations, locations);
 		
