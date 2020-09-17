@@ -49,6 +49,9 @@ public class TaskGenerator {
 	
 	@Async
 	public void processPlanEvaluation(PlanDefinition planDefinition, PlanDefinition existingPlanDefinition, String username) {
+		if (!isInternalTaskGeneration(planDefinition)) {
+			return;
+		}
 		queueHelper.setUsername(username);
 		PlanEvaluator planEvaluator = new PlanEvaluator(username,queueHelper);
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
@@ -59,4 +62,18 @@ public class TaskGenerator {
 		PlanEvaluator planEvaluator = new PlanEvaluator(username);
 		planEvaluator.evaluatePlan(planDefinition, EventConverter.convertEventToEncounterResource(event));
 	}
+
+	public boolean isInternalTaskGeneration(PlanDefinition plan) {
+		boolean internalTaskGeneration = false;
+		for (PlanDefinition.UseContext useContext: plan.getUseContext()) {
+			if (useContext.getCode().equalsIgnoreCase("taskGenerationStatus")
+			     && useContext.getValueCodableConcept().equalsIgnoreCase("Internal")) {
+
+				internalTaskGeneration = true;
+				break;
+			}
+		}
+		return internalTaskGeneration;
+	}
+
 }
