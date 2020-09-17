@@ -18,7 +18,7 @@ public class TaskGeneratorTest {
 	@Rule
 	public MockitoRule rule = MockitoJUnit.rule();
 
-	TaskGenerator taskGenerator;
+	private TaskGenerator taskGenerator;
 
 	@Before
 	public void setUp() {
