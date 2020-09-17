@@ -70,8 +70,24 @@ public class PlanService {
 		}
 		plan.setServerVersion(planRepository.getNextServerVersion());
 		getPlanRepository().add(plan);
-		taskGenerator.processPlanEvaluation(plan, null,username);
+
+		if (isInternalTaskGeneration(plan)) {
+			taskGenerator.processPlanEvaluation(plan, null,username);
+		}
 		return plan;
+	}
+
+	public boolean isInternalTaskGeneration(PlanDefinition plan) {
+		boolean internalTaskGeneration = false;
+		for (PlanDefinition.UseContext useContext: plan.getUseContext()) {
+			if (useContext.getCode().equalsIgnoreCase("taskGenerationStatus")) {
+				if (useContext.getValueCodableConcept().equalsIgnoreCase("Internal")){
+					internalTaskGeneration = true;
+					break;
+				}
+			}
+		}
+		return internalTaskGeneration;
 	}
 
 	@CachePut(value = "plans", key = "#plan.identifier")
@@ -82,7 +98,10 @@ public class PlanService {
 		PlanDefinition existing = getPlan(plan.getIdentifier());
 		plan.setServerVersion(planRepository.getNextServerVersion());
 		getPlanRepository().update(plan);
-		taskGenerator.processPlanEvaluation(plan, existing,username);
+
+		if (isInternalTaskGeneration(plan)) {
+			taskGenerator.processPlanEvaluation(plan, existing,username);
+		}
 		return plan;
 	}
 
