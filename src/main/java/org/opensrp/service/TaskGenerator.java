@@ -66,11 +66,11 @@ public class TaskGenerator {
 	public boolean isInternalTaskGeneration(PlanDefinition plan) {
 		boolean internalTaskGeneration = false;
 		for (PlanDefinition.UseContext useContext: plan.getUseContext()) {
-			if (useContext.getCode().equalsIgnoreCase("taskGenerationStatus")) {
-				if (useContext.getValueCodableConcept().equalsIgnoreCase("Internal")){
-					internalTaskGeneration = true;
-					break;
-				}
+			if (useContext.getCode().equalsIgnoreCase("taskGenerationStatus")
+			     && useContext.getValueCodableConcept().equalsIgnoreCase("Internal")) {
+
+				internalTaskGeneration = true;
+				break;
 			}
 		}
 		return internalTaskGeneration;
