@@ -117,11 +117,11 @@
 			<if test="searchBean.dateUpdated != null">
 				and json->>'date_updated' = #{searchBean.dateUpdated,jdbcType=VARCHAR}
 			</if>
-			<if test="orderByClause != null">
-				order by sm.${orderByClause}
-			</if>
 		</trim>
 		</where>
+		<if test="orderByClause != null">
+			order by sm.${orderByClause}
+		</if>
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
