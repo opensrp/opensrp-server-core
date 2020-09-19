@@ -7,8 +7,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import javax.annotation.PostConstruct;
-
 import org.opensrp.queue.PlanEvaluatorMessage;
 import org.opensrp.queue.QueueHelper;
 import org.opensrp.queue.ResourceEvaluatorMessage;
@@ -38,16 +36,10 @@ public class InternalSenderImpl implements MessageSender {
 	@Autowired
 	private PlanService planservice;
 	
-	private FHIRParser fhirParser;
-	
 	@Autowired
 	@Lazy
 	private QueueHelper queueHelper;
-	
-	@PostConstruct
-	public void init() {
-		fhirParser = FHIRParser.parser(Format.JSON);
-	}
+
 	
 	@Override
 	public void send(PlanEvaluatorMessage planMessage) {
@@ -62,7 +54,7 @@ public class InternalSenderImpl implements MessageSender {
 		InputStream stream = new ByteArrayInputStream(resourceMessage.getResource().getBytes(StandardCharsets.UTF_8));
 		PlanEvaluator planEvaluator = new PlanEvaluator(resourceMessage.getUsername(),queueHelper);
 		try {
-			DomainResource domainResource = fhirParser.parse(stream);
+			DomainResource domainResource = FHIRParser.parser(Format.JSON).parse(stream);
 			if (domainResource != null && resourceMessage != null && resourceMessage.getAction() != null) {
 				planEvaluator.evaluateResource(domainResource, resourceMessage.getQuestionnaireResponse(),
 				    resourceMessage.getAction(), resourceMessage.getPlanIdentifier(), resourceMessage.getJurisdictionCode(),
