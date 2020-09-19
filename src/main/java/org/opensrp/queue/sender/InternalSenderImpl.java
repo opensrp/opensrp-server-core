@@ -60,7 +60,7 @@ public class InternalSenderImpl implements MessageSender {
 	@Override
 	public void send(ResourceEvaluatorMessage resourceMessage) {
 		InputStream stream = new ByteArrayInputStream(resourceMessage.getResource().getBytes(StandardCharsets.UTF_8));
-		PlanEvaluator planEvaluator = new PlanEvaluator(resourceMessage.getUsername());
+		PlanEvaluator planEvaluator = new PlanEvaluator(resourceMessage.getUsername(),queueHelper);
 		try {
 			DomainResource domainResource = fhirParser.parse(stream);
 			if (domainResource != null && resourceMessage != null && resourceMessage.getAction() != null) {
