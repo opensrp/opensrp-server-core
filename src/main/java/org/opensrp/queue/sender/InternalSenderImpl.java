@@ -10,12 +10,14 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.PostConstruct;
 
 import org.opensrp.queue.PlanEvaluatorMessage;
+import org.opensrp.queue.QueueHelper;
 import org.opensrp.queue.ResourceEvaluatorMessage;
 import org.opensrp.service.PlanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +40,10 @@ public class InternalSenderImpl implements MessageSender {
 	
 	private FHIRParser fhirParser;
 	
+	@Autowired
+	@Lazy
+	private QueueHelper queueHelper;
+	
 	@PostConstruct
 	public void init() {
 		fhirParser = FHIRParser.parser(Format.JSON);
@@ -45,7 +51,7 @@ public class InternalSenderImpl implements MessageSender {
 	
 	@Override
 	public void send(PlanEvaluatorMessage planMessage) {
-		PlanEvaluator planEvaluator = new PlanEvaluator(planMessage.getUsername());
+		PlanEvaluator planEvaluator = new PlanEvaluator(planMessage.getUsername(),queueHelper);
 		planEvaluator.evaluatePlan(planservice.getPlan(planMessage.getPlanIdentifier()), planMessage.getTriggerType(),
 		    planMessage.getJurisdiction(), null);
 		
