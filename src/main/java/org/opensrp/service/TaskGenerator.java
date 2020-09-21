@@ -59,7 +59,7 @@ public class TaskGenerator {
 
 	@Async
 	public void processPlanEvaluation(PlanDefinition planDefinition, String username, Event event) {
-		PlanEvaluator planEvaluator = new PlanEvaluator(username);
+		PlanEvaluator planEvaluator = new PlanEvaluator(username,queueHelper);
 		planEvaluator.evaluatePlan(planDefinition, EventConverter.convertEventToEncounterResource(event));
 	}
 
