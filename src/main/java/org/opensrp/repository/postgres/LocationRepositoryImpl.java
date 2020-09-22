@@ -22,6 +22,7 @@ import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.LocationMetadata;
 import org.opensrp.domain.postgres.LocationMetadataExample;
+import org.opensrp.domain.postgres.LocationMetadataExample.Criteria;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureFamilyDetails;
 import org.opensrp.domain.postgres.StructureMetadata;
@@ -344,14 +345,17 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
+	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids,Long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		if (ids == null || ids.isEmpty()) {
 			return null;
 		}
 		
-		locationMetadataExample.createCriteria().andGeojsonIdIn(ids)
+		Criteria criteria = locationMetadataExample.createCriteria().andGeojsonIdIn(ids)
 		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
+		if(serverVersion!=null) {
+			criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
+		}
 		
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
 		    returnGeometry, 0, DEFAULT_FETCH_SIZE);
@@ -561,6 +565,19 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria()
 		        .andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames, ",")))
+		        .andServerVersionGreaterThanOrEqualTo(serverVersion)
+		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
+		return locationMetadataMapper.countByExample(locationMetadataExample);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public long countLocationsByIds(List<String> locationIds, long serverVersion) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria()
+		        .andGeojsonIdIn(locationIds)
 		        .andServerVersionGreaterThanOrEqualTo(serverVersion)
 		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		return locationMetadataMapper.countByExample(locationMetadataExample);
