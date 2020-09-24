@@ -1,8 +1,16 @@
 package org.opensrp.service;
 
-import org.opensrp.domain.*;
+import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.Organization;
+import org.opensrp.domain.Practitioner;
+import org.opensrp.domain.PractitionerRole;
+import org.opensrp.domain.PractitionerRoleCode;
+import org.opensrp.domain.CodeSystem;
+import org.opensrp.domain.Code;
 import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.dto.FailedRecordSummary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +31,8 @@ public class ImportBulkDataService {
 
 	@Autowired
 	private PhysicalLocationService physicalLocationService;
+
+	private static Logger logger = LoggerFactory.getLogger(ImportBulkDataService.class.toString());
 
 	private static final String LOCATION_ID_KEY = "Location Id";
 
@@ -62,7 +72,6 @@ public class ImportBulkDataService {
 
 		String locationId = "";
 		String planId = "";
-		String locationName = "";
 		String organizationName = "";
 		try {
 			for (Map<String, String> csvdata : csvOrganizations) {
@@ -116,6 +125,7 @@ public class ImportBulkDataService {
 			}
 		}
 		catch (Exception e) {
+			logger.error("Exception occurred while persisting organization and assignment data : " + e.getMessage());
 			failedRecordSummary = new FailedRecordSummary();
 			failedRecordSummary.setRowNumber(rowCount);
 			failedRecordSummary.setReasonOfFailure("Exception occurred due to : " + e.getMessage());
@@ -157,11 +167,17 @@ public class ImportBulkDataService {
 		for (Map<String, String> csvdata : csvOrganizations) {
 			try {
 				rowCount++;
+				organizationIdFromCSV = getValueFromMap(ORGANIZATION_ID_KEY, csvdata);
+				organizationId = Long.valueOf(organizationIdFromCSV);
+
+				organization = organizationService.getOrganization(organizationId);
+				organizationIdentifier = organization != null ? organization.getIdentifier() : null;
 				userName = getValueFromMap(USER_NAME_KEY, csvdata);
 				practitioner = practitionerService.getPractionerByUsername(userName);
 
 				if (validateOrganizationFields(csvdata)) {
-					practitionerIdentifier = practitioner != null ? practitioner.getIdentifier() : UUID.randomUUID().toString();
+					practitionerIdentifier =
+							practitioner != null ? practitioner.getIdentifier() : UUID.randomUUID().toString();
 					if (practitioner == null) {
 						practitioner = new Practitioner();
 						practitioner.setIdentifier(practitionerIdentifier);
@@ -195,24 +211,20 @@ public class ImportBulkDataService {
 
 					practitionerRoleCode.setText(code);
 					practitionerRole.setCode(practitionerRoleCode);
-					organizationIdFromCSV = getValueFromMap(ORGANIZATION_ID_KEY, csvdata);
-					organizationId = Long.valueOf(organizationIdFromCSV);
 
-					organization = organizationService.getOrganization(organizationId);
-					organizationIdentifier = organization != null ? organization.getIdentifier() : null;
 					if (organizationIdentifier != null) {
 						practitionerRole.setOrganizationIdentifier(organizationIdentifier);
 						practitionerService.addOrUpdatePractitioner(practitioner);
-//						practitionerRoleService.addOrUpdatePractitionerRole(practitionerRole);
-						practitionerRoleService.assignPractitionerRole(organizationId,practitionerIdentifier,code,practitionerRole);
+						practitionerRoleService
+								.assignPractitionerRole(organizationId, practitionerIdentifier, code, practitionerRole);
 						rowsProcessed++;
-					} else {
-						failedRecordSummary = new FailedRecordSummary();
-						failedRecordSummary.setRowNumber(rowCount);
-						failedRecordSummary
-								.setReasonOfFailure("Failed to get organization against the given organization Id");
-						failedRecordSummaries.add(failedRecordSummary);
 					}
+				} else if (organizationIdentifier == null) {
+					failedRecordSummary = new FailedRecordSummary();
+					failedRecordSummary.setRowNumber(rowCount);
+					failedRecordSummary
+							.setReasonOfFailure("Failed to get organization against the given organization Id");
+					failedRecordSummaries.add(failedRecordSummary);
 				} else {
 					failedRecordSummary = new FailedRecordSummary();
 					failedRecordSummary.setRowNumber(rowCount);
@@ -222,6 +234,7 @@ public class ImportBulkDataService {
 				}
 			}
 			catch (Exception e) {
+				logger.error("Exception occurred while persisting practitioner and pratitioner role data : " + e.getMessage());
 				failedRecordSummary = new FailedRecordSummary();
 				failedRecordSummary.setRowNumber(rowCount);
 				failedRecordSummary.setReasonOfFailure("Exception occurred due to : " + e.getMessage());
@@ -235,8 +248,7 @@ public class ImportBulkDataService {
 
 	private Boolean validateLocationData(Map<String, String> csvdata) {
 		String locationIdFromCSV;
-		Long locationId = 0l;
-		String locationNameFromCSV = "";
+		String locationNameFromCSV;
 		PhysicalLocation physicalLocation;
 
 		locationNameFromCSV = getValueFromMap(LOCATION_NAME_KEY, csvdata);
