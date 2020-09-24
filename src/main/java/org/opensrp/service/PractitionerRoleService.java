@@ -114,4 +114,17 @@ public class PractitionerRoleService {
         return getPractitionerRoleRepository().getPgRolesForPractitioner(practitionerIdentifier);
     }
 
+    public void assignPractitionerRole(Long organizationId, String practitionerIdentifier, String code,
+            PractitionerRole practitionerRole) {
+        validateIdentifier(practitionerRole.getIdentifier());
+        Long practitionerId = practitionerService.getPractitionerIdByIdentifier(practitionerIdentifier);
+        practitionerRoleRepository
+                .assignPractitionerRole(organizationId, practitionerId, practitionerIdentifier, code, practitionerRole);
+    }
+
+    public void validateIdentifier(String identifier) {
+        if (StringUtils.isBlank(identifier))
+            throw new IllegalArgumentException("Practitioner Role Identifier not specified");
+    }
+
 }

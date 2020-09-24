@@ -117,4 +117,9 @@ public class PractitionerService {
 
 		return getPractitionerRepository().getPractitionersByOrgId(organization.getId());
 	}
+
+	public Long getPractitionerIdByIdentifier(String identifier) {
+		org.opensrp.domain.postgres.Practitioner pgPractitioner = practitionerRepository.getPractitioner(identifier) ;
+		return pgPractitioner != null ? pgPractitioner.getId() : null;
+	}
 }

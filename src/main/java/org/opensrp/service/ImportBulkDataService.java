@@ -101,10 +101,10 @@ public class ImportBulkDataService {
 					assignedLocations.add(assignedLocation);
 					organization.setAssignedLocations(assignedLocations);
 
-					organizationService.addOrganization(organization);
+					organizationService.addOrganization(organization); // as it can not be edited
 					organizationService
 							.assignLocationAndPlan(organizationIdentifier, locationId, planId, new Date(),
-									null);
+									null);  //handles update case as well
 					rowsProcessed++;
 				} else {
 					failedRecordSummary = new FailedRecordSummary();
@@ -138,7 +138,7 @@ public class ImportBulkDataService {
 		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
 		FailedRecordSummary failedRecordSummary;
 
-		Practitioner practitioner = new Practitioner();
+		Practitioner practitioner;
 		String practitionerIdentifier;
 		String practitionerName;
 		String userId;
@@ -153,15 +153,21 @@ public class ImportBulkDataService {
 		String organizationIdFromCSV = "";
 		Long organizationId;
 		Organization organization;
-
+		PractitionerRole practitionerRole = new PractitionerRole();
 		for (Map<String, String> csvdata : csvOrganizations) {
 			try {
 				rowCount++;
+				userName = getValueFromMap(USER_NAME_KEY, csvdata);
+				practitioner = practitionerService.getPractionerByUsername(userName);
+
 				if (validateOrganizationFields(csvdata)) {
-					practitionerIdentifier = UUID.randomUUID().toString();
+					practitionerIdentifier = practitioner != null ? practitioner.getIdentifier() : UUID.randomUUID().toString();
+					if (practitioner == null) {
+						practitioner = new Practitioner();
+						practitioner.setIdentifier(practitionerIdentifier);
+					}
 					practitioner.setName(practitionerIdentifier);
 					practitioner.setActive(Boolean.TRUE);
-					//					practitionerName = getValueFromMap(NAME_KEY, csvdata);
 					if (csvdata.containsKey(NAME_KEY)) {
 						practitionerName = getValueFromMap(NAME_KEY, csvdata);
 					} else {
@@ -176,9 +182,6 @@ public class ImportBulkDataService {
 					userName = getValueFromMap(USER_NAME_KEY, csvdata);
 					practitioner.setUsername(userName);
 
-					practitioner.setIdentifier(practitionerIdentifier);
-
-					PractitionerRole practitionerRole = new PractitionerRole();
 					practitionerRole.setActive(Boolean.TRUE);
 					practitionerRoleIdentifier = UUID.randomUUID().toString();
 					practitionerRole.setIdentifier(practitionerRoleIdentifier);
@@ -200,7 +203,8 @@ public class ImportBulkDataService {
 					if (organizationIdentifier != null) {
 						practitionerRole.setOrganizationIdentifier(organizationIdentifier);
 						practitionerService.addOrUpdatePractitioner(practitioner);
-						practitionerRoleService.addOrUpdatePractitionerRole(practitionerRole);
+//						practitionerRoleService.addOrUpdatePractitionerRole(practitionerRole);
+						practitionerRoleService.assignPractitionerRole(organizationId,practitionerIdentifier,code,practitionerRole);
 						rowsProcessed++;
 					} else {
 						failedRecordSummary = new FailedRecordSummary();
@@ -239,7 +243,6 @@ public class ImportBulkDataService {
 
 		if (csvdata.containsKey(LOCATION_ID_KEY)) {
 			locationIdFromCSV = getValueFromMap(LOCATION_ID_KEY, csvdata);
-			//			locationId = Long.valueOf(locationIdFromCSV);
 			physicalLocation = physicalLocationService.getLocation(locationIdFromCSV, false);
 			if (physicalLocation != null && physicalLocation.getProperties() != null && physicalLocation.getProperties()
 					.getName().equals(locationNameFromCSV)) {
