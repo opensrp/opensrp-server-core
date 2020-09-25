@@ -131,9 +131,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		List<OrganizationLocation> assignedLocations = getAssignedLocations(organizationId);
 		for (OrganizationLocation organizationLocation : assignedLocations) {
 			if (isExistingAssignment(jurisdictionId, planId, fromDate, organizationLocation)) {
-				organizationLocation.setFromDate(fromDate);
 				organizationLocation.setToDate(toDate);
-				organizationLocation.setDuration(new DateRange(fromDate, toDate));
+				organizationLocation.setDuration(new DateRange(organizationLocation.getFromDate(), toDate));
 				OrganizationLocationExample example = new OrganizationLocationExample();
 				example.createCriteria().andIdEqualTo(organizationLocation.getId());
 				organizationLocationMapper.updateByExample(organizationLocation, example);
@@ -154,7 +153,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	
 	private boolean isExistingAssignment(Long jurisdictionId, Long planId, Date fromDate,
 	        OrganizationLocation organizationLocation) {
-		if (!fromDate.equals(organizationLocation.getFromDate())) {
+		if (!LocalDate.fromDateFields(fromDate).equals(LocalDate.fromDateFields(organizationLocation.getFromDate()))) {
+			logger.debug("from dates does not match");
 			return false;
 		} else if (jurisdictionId != null && planId != null) {
 			return jurisdictionId.equals(organizationLocation.getLocationId())
@@ -180,13 +180,12 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		organizationLocationMapper.insertSelective(organizationLocation);
 	}
 	
-		
 	@Override
 	public List<AssignedLocations> findAssignedLocations(Long organizationId, boolean returnFutureAssignments) {
 		Date currentDate = new LocalDate().toDate();
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		Criteria criteria = example.createCriteria().andOrganizationIdEqualTo(organizationId);
-		if (returnFutureAssignments) {
+		if (!returnFutureAssignments) {
 			criteria.andFromDateLessThanOrEqualTo(currentDate);
 		}
 		return organizationLocationMapper.findAssignedlocationsAndPlans(example.getOredCriteria(),
@@ -194,7 +193,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 	
 	@Override
-	public List<AssignedLocations> findAssignedLocations(List<Long> organizationIds,boolean returnFutureAssignments) {
+	public List<AssignedLocations> findAssignedLocations(List<Long> organizationIds, boolean returnFutureAssignments) {
 		Date currentDate = new LocalDate().toDate();
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		example.createCriteria().andOrganizationIdIn(organizationIds).andFromDateLessThanOrEqualTo(currentDate);
