@@ -177,10 +177,6 @@ public class ImportBulkDataServiceTest {
 
 		Practitioner practitioner = new Practitioner();
 		practitioner.setIdentifier("a30f1e8b-ed9c-4e0c-a2fd-218c603fe5ec");
-		//
-		//		Organization organization = new Organization();
-		//		organization.setName("test-org-A");
-		//		organization.setIdentifier("a30f1e8b-ed9c-4e0c-a2fd-218c603fe523");
 
 		when(practitionerService.getPractionerByUsername(anyString())).thenReturn(practitioner);
 		when(organizationService.getOrganization(anyLong())).thenReturn(null);
