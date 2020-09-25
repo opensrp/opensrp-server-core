@@ -131,7 +131,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			String planIdentifier, Long planId, Date fromDate, Date toDate) {
 		List<OrganizationLocation> assignedLocations = getAssignedLocations(organizationId);
 		for (OrganizationLocation organizationLocation : assignedLocations) {
-			if (isExistingAssignment(jurisdictionId, planId, organizationLocation)) {
+			if (isExistingAssignment(jurisdictionId, planId,fromDate, organizationLocation)) {
 				organizationLocation.setFromDate(fromDate);
 				organizationLocation.setToDate(toDate);
 				organizationLocation.setDuration(new DateRange(fromDate,toDate));
@@ -153,15 +153,17 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 				example.getOrderByClause(), currentDate);
 	}
 
-	private boolean isExistingAssignment(Long jurisdictionId, Long planId, OrganizationLocation organizationLocation) {
-		if (jurisdictionId != null && planId != null) {
+	private boolean isExistingAssignment(Long jurisdictionId, Long planId, Date fromDate,
+	        OrganizationLocation organizationLocation) {
+		if (fromDate.equals(organizationLocation.getFromDate())) {
+			return false;
+		} else if (jurisdictionId != null && planId != null) {
 			return jurisdictionId.equals(organizationLocation.getLocationId())
-					&& planId.equals(organizationLocation.getPlanId());
+			        && planId.equals(organizationLocation.getPlanId());
 		} else if (jurisdictionId == null && planId != null) {
 			return planId.equals(organizationLocation.getPlanId()) && organizationLocation.getLocationId() == null;
 		} else if (jurisdictionId != null && planId == null) {
-			return jurisdictionId.equals(organizationLocation.getLocationId())
-					&& organizationLocation.getPlanId() == null;
+			return jurisdictionId.equals(organizationLocation.getLocationId()) && organizationLocation.getPlanId() == null;
 		} else {
 			return false;
 		}
