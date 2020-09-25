@@ -73,15 +73,7 @@ public class ImportBulkDataServiceTest {
 	@Before
 	public void setUp() {
 		initMocks(this);
-		//		importBulkDataService = new ImportBulkDataService();
 	}
-
-	//	@Override
-	//	protected Set<String> getDatabaseScripts() {
-	//		Set<String> scripts = new HashSet<String>();
-	//		scripts.add("identifier_source.sql");
-	//		return scripts;
-	//	}
 
 	@Test
 	public void testConvertandPersistOrganizationdata() {
