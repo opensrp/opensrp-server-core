@@ -39,17 +39,20 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 * organization
 	 * 
 	 * @param organizationId Id of organization
+	 * @param returnFutureAssignments flag to control if future assignments are returned
+	 * @return assigned plans and locations
 	 */
-	List<AssignedLocations> findAssignedLocations(Long organizationId);
+	List<AssignedLocations> findAssignedLocations(Long organizationId, boolean returnFutureAssignments);
 
 	/**
 	 * Gets the plans and jurisdictions that an organization is assigned to a list
 	 * organizations
 	 * 
 	 * @param organizationIds
-	 * @return
+	 * @param returnFutureAssignments flag to control if future assignments are returned
+	 * @return assigned plans and locations
 	 */
-	List<AssignedLocations> findAssignedLocations(List<Long> organizationIds);
+	List<AssignedLocations> findAssignedLocations(List<Long> organizationIds,boolean returnFutureAssignments);
 
 	/**
 	 * @param id
