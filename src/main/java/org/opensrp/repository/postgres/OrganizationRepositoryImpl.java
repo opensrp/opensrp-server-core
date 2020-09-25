@@ -11,6 +11,7 @@ import org.joda.time.LocalDate;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.CodeSystem;
 import org.opensrp.domain.Organization;
+import org.opensrp.domain.postgres.DateRange;
 import org.opensrp.domain.postgres.OrganizationExample;
 import org.opensrp.domain.postgres.OrganizationLocation;
 import org.opensrp.domain.postgres.OrganizationLocationExample;
@@ -133,6 +134,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			if (isExistingAssignment(jurisdictionId, planId, organizationLocation)) {
 				organizationLocation.setFromDate(fromDate);
 				organizationLocation.setToDate(toDate);
+				organizationLocation.setDuration(new DateRange(fromDate,toDate));
 				OrganizationLocationExample example = new OrganizationLocationExample();
 				example.createCriteria().andIdEqualTo(organizationLocation.getId());
 				organizationLocationMapper.updateByExample(organizationLocation, example);
@@ -173,6 +175,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		organizationLocation.setPlanId(planId);
 		organizationLocation.setFromDate(fromDate);
 		organizationLocation.setToDate(toDate);
+		organizationLocation.setDuration(new DateRange(fromDate,toDate));
 		organizationLocationMapper.insertSelective(organizationLocation);
 	}
 
