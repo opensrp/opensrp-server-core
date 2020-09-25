@@ -116,19 +116,14 @@ public class ImportBulkDataService {
 									null);  //handles update case as well
 					rowsProcessed++;
 				} else {
-					failedRecordSummary = new FailedRecordSummary();
-					failedRecordSummary.setRowNumber(rowCount);
-					failedRecordSummary
-							.setReasonOfFailure("Validation failed, provided location name mismatches with the system");
+					failedRecordSummary = getFailedRecordSummaryObject(rowCount,"Validation failed, provided location name mismatches with the system");
 					failedRecordSummaries.add(failedRecordSummary);
 				}
 			}
 		}
 		catch (Exception e) {
 			logger.error("Exception occurred while persisting organization and assignment data : " + e.getMessage());
-			failedRecordSummary = new FailedRecordSummary();
-			failedRecordSummary.setRowNumber(rowCount);
-			failedRecordSummary.setReasonOfFailure("Exception occurred due to : " + e.getMessage());
+			failedRecordSummary = getFailedRecordSummaryObject(rowCount,"Exception occurred due to : " + e.getMessage());
 			failedRecordSummaries.add(failedRecordSummary);
 		}
 
@@ -146,32 +141,25 @@ public class ImportBulkDataService {
 		csvBulkImportDataSummary.setNumberOfCsvRows(rowsInCsv);
 		Integer rowCount = 0;
 		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
-		FailedRecordSummary failedRecordSummary;
 
 		Practitioner practitioner;
 		String practitionerIdentifier;
 		String practitionerName;
 		String userId;
 		String userName;
-
-		String practitionerRoleIdentifier;
 		String organizationIdentifier;
-
-		PractitionerRoleCode practitionerRoleCode;
 		String code;
 
-		String organizationIdFromCSV = "";
+		String organizationIdFromCSV;
 		Long organizationId;
-		Organization organization;
-		PractitionerRole practitionerRole = new PractitionerRole();
+		PractitionerRole practitionerRole;
 		for (Map<String, String> csvdata : csvOrganizations) {
 			try {
 				rowCount++;
 				organizationIdFromCSV = getValueFromMap(ORGANIZATION_ID_KEY, csvdata);
 				organizationId = Long.valueOf(organizationIdFromCSV);
 
-				organization = organizationService.getOrganization(organizationId);
-				organizationIdentifier = organization != null ? organization.getIdentifier() : null;
+				organizationIdentifier = getOrganizationIdentifier(organizationId);
 				userName = getValueFromMap(USER_NAME_KEY, csvdata);
 				practitioner = practitionerService.getPractionerByUsername(userName);
 
@@ -198,21 +186,9 @@ public class ImportBulkDataService {
 					userName = getValueFromMap(USER_NAME_KEY, csvdata);
 					practitioner.setUsername(userName);
 
-					practitionerRole.setActive(Boolean.TRUE);
-					practitionerRoleIdentifier = UUID.randomUUID().toString();
-					practitionerRole.setIdentifier(practitionerRoleIdentifier);
-					practitionerRole.setPractitionerIdentifier(practitionerIdentifier);
-					practitionerRoleCode = new PractitionerRoleCode();
-					if (csvdata.containsKey(ROLE_KEY)) {
-						code = csvdata.get(ROLE_KEY);
-					} else {
-						code = "Health Worker";
-					}
-
-					practitionerRoleCode.setText(code);
-					practitionerRole.setCode(practitionerRoleCode);
-
+					practitionerRole = convertToPractitionerRole(practitionerIdentifier, csvdata);
 					if (organizationIdentifier != null) {
+						code = practitionerRole.getCode() != null ? practitionerRole.getCode().getText() : null;
 						practitionerRole.setOrganizationIdentifier(organizationIdentifier);
 						practitionerService.addOrUpdatePractitioner(practitioner);
 						practitionerRoleService
@@ -220,25 +196,15 @@ public class ImportBulkDataService {
 						rowsProcessed++;
 					}
 				} else if (organizationIdentifier == null) {
-					failedRecordSummary = new FailedRecordSummary();
-					failedRecordSummary.setRowNumber(rowCount);
-					failedRecordSummary
-							.setReasonOfFailure("Failed to get organization against the given organization Id");
-					failedRecordSummaries.add(failedRecordSummary);
+					failedRecordSummaries.add(getFailedRecordSummaryObject(rowCount,"Failed to get organization against the given organization Id"));
 				} else {
-					failedRecordSummary = new FailedRecordSummary();
-					failedRecordSummary.setRowNumber(rowCount);
-					failedRecordSummary
-							.setReasonOfFailure("Validation failed, provided organization name mismatches with the system");
-					failedRecordSummaries.add(failedRecordSummary);
+					failedRecordSummaries.add(getFailedRecordSummaryObject(rowCount,"Validation failed, provided organization name mismatches with the system"));
 				}
 			}
 			catch (Exception e) {
-				logger.error("Exception occurred while persisting practitioner and pratitioner role data : " + e.getMessage());
-				failedRecordSummary = new FailedRecordSummary();
-				failedRecordSummary.setRowNumber(rowCount);
-				failedRecordSummary.setReasonOfFailure("Exception occurred due to : " + e.getMessage());
-				failedRecordSummaries.add(failedRecordSummary);
+				logger.error(
+						"Exception occurred while persisting practitioner and pratitioner role data : " + e.getMessage());
+				failedRecordSummaries.add(getFailedRecordSummaryObject(rowCount, "Exception occurred due to : " + e.getMessage()));
 			}
 		}
 		csvBulkImportDataSummary.setNumberOfRowsProcessed(rowsProcessed);
@@ -256,7 +222,8 @@ public class ImportBulkDataService {
 		if (csvdata.containsKey(LOCATION_ID_KEY)) {
 			locationIdFromCSV = getValueFromMap(LOCATION_ID_KEY, csvdata);
 			physicalLocation = physicalLocationService.getLocation(locationIdFromCSV, false);
-			if (physicalLocation != null && physicalLocation.getProperties() != null && physicalLocation.getProperties()
+			if (locationNameFromCSV != null && physicalLocation != null && physicalLocation.getProperties() != null
+					&& physicalLocation.getProperties()
 					.getName().equals(locationNameFromCSV)) {
 				return Boolean.TRUE;
 			}
@@ -288,5 +255,38 @@ public class ImportBulkDataService {
 			return map.get(key);
 		}
 		return null;
+	}
+
+	private String getOrganizationIdentifier(Long organizationId) {
+		Organization organization = organizationService.getOrganization(organizationId);
+		return organization != null ? organization.getIdentifier() : null;
+	}
+
+	private PractitionerRole convertToPractitionerRole(String practitionerIdentifier, Map<String, String> csvdata) {
+		PractitionerRole practitionerRole = new PractitionerRole();
+		String practitionerRoleIdentifier;
+		PractitionerRoleCode practitionerRoleCode;
+		String code;
+		practitionerRole.setActive(Boolean.TRUE);
+		practitionerRoleIdentifier = UUID.randomUUID().toString();
+		practitionerRole.setIdentifier(practitionerRoleIdentifier);
+		practitionerRole.setPractitionerIdentifier(practitionerIdentifier);
+		practitionerRoleCode = new PractitionerRoleCode();
+		if (csvdata.containsKey(ROLE_KEY)) {
+			code = csvdata.get(ROLE_KEY);
+		} else {
+			code = "Health Worker";
+		}
+
+		practitionerRoleCode.setText(code);
+		practitionerRole.setCode(practitionerRoleCode);
+		return practitionerRole;
+	}
+
+	private FailedRecordSummary getFailedRecordSummaryObject(int rowNumber, String reasonOfFailure) {
+		FailedRecordSummary failedRecordSummary = new FailedRecordSummary();
+		failedRecordSummary.setRowNumber(rowNumber);
+		failedRecordSummary.setReasonOfFailure(reasonOfFailure);
+		return failedRecordSummary;
 	}
 }
