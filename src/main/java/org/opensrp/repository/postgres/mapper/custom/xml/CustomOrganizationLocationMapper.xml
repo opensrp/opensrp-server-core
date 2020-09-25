@@ -39,11 +39,11 @@
 		<choose>
 			<when test="oredCriteria != null">
 			  <include refid="org.opensrp.repository.postgres.mapper.OrganizationLocationMapper.Example_Where_Clause" />
-			  and ( ol.to_date is null  OR ol.to_date  <![CDATA[ > ]]> #{currentDate,jdbcType=TIMESTAMP} )
+			  and ( ol.to_date is null  OR ol.to_date  <![CDATA[ >= ]]> #{currentDate,jdbcType=TIMESTAMP} )
 			</when>
 			<otherwise>
 				<where>
-				  ( ol.to_date is null  OR ol.to_date  <![CDATA[ > ]]> #{currentDate,jdbcType=TIMESTAMP} )
+				  ( ol.to_date is null  OR ol.to_date  <![CDATA[ >= ]]> #{currentDate,jdbcType=TIMESTAMP} )
 				</where>
 			</otherwise>
 		</choose>
