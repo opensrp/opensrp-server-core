@@ -290,15 +290,15 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         if (organizationId != null && practitionerId != null) {
             return (practitionerRole.getPractitionerId().equals(practitionerId) &&
                     practitionerRole.getOrganizationId().equals(organizationId) &&
-                    practitionerRole.getCode().equals(code));
-        } else if (organizationId != null && practitionerId != null) {
-            return (practitionerRole.getPractitionerId().equals(practitionerId) &&
-                    practitionerRole.getOrganizationId().equals(organizationId) &&
-                    practitionerRole.getCode() == null);
-        } else if (organizationId != null && practitionerId != null) {
-            return (practitionerRole.getPractitionerId().equals(practitionerId) &&
-                    practitionerRole.getOrganizationId().equals(organizationId) &&
-                    practitionerRole.getCode() != code);
+                    practitionerRole.getCode().equals(code))
+                    ||
+                    (practitionerRole.getPractitionerId().equals(practitionerId) &&
+                            practitionerRole.getOrganizationId().equals(organizationId) &&
+                            practitionerRole.getCode() == null)
+                    ||
+                    (practitionerRole.getPractitionerId().equals(practitionerId) &&
+                            practitionerRole.getOrganizationId().equals(organizationId) &&
+                            practitionerRole.getCode() != code);
         }
         return false;
     }

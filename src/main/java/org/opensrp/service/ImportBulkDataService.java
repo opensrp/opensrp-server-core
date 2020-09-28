@@ -116,14 +116,15 @@ public class ImportBulkDataService {
 									null);  //handles update case as well
 					rowsProcessed++;
 				} else {
-					failedRecordSummary = getFailedRecordSummaryObject(rowCount,"Validation failed, provided location name mismatches with the system");
+					failedRecordSummary = getFailedRecordSummaryObject(rowCount,
+							"Validation failed, provided location name mismatches with the system");
 					failedRecordSummaries.add(failedRecordSummary);
 				}
 			}
 		}
 		catch (Exception e) {
-			logger.error("Exception occurred while persisting organization and assignment data : " + e.getMessage());
-			failedRecordSummary = getFailedRecordSummaryObject(rowCount,"Exception occurred due to : " + e.getMessage());
+			logger.error("Exception occurred while persisting organization and assignment data : " + e.getMessage(), e);
+			failedRecordSummary = getFailedRecordSummaryObject(rowCount, "Exception occurred due to : " + e.getMessage());
 			failedRecordSummaries.add(failedRecordSummary);
 		}
 
@@ -170,7 +171,6 @@ public class ImportBulkDataService {
 						practitioner = new Practitioner();
 						practitioner.setIdentifier(practitionerIdentifier);
 					}
-					practitioner.setName(practitionerIdentifier);
 					practitioner.setActive(Boolean.TRUE);
 					if (csvdata.containsKey(NAME_KEY)) {
 						practitionerName = getValueFromMap(NAME_KEY, csvdata);
@@ -188,7 +188,7 @@ public class ImportBulkDataService {
 
 					practitionerRole = convertToPractitionerRole(practitionerIdentifier, csvdata);
 					if (organizationIdentifier != null) {
-						code = practitionerRole.getCode() != null ? practitionerRole.getCode().getText() : null;
+						code = practitionerRole.getCode() != null ? practitionerRole.getCode().getText() : "Health Worker";
 						practitionerRole.setOrganizationIdentifier(organizationIdentifier);
 						practitionerService.addOrUpdatePractitioner(practitioner);
 						practitionerRoleService
@@ -196,15 +196,18 @@ public class ImportBulkDataService {
 						rowsProcessed++;
 					}
 				} else if (organizationIdentifier == null) {
-					failedRecordSummaries.add(getFailedRecordSummaryObject(rowCount,"Failed to get organization against the given organization Id"));
+					failedRecordSummaries.add(getFailedRecordSummaryObject(rowCount,
+							"Failed to get organization against the given organization Id"));
 				} else {
-					failedRecordSummaries.add(getFailedRecordSummaryObject(rowCount,"Validation failed, provided organization name mismatches with the system"));
+					failedRecordSummaries.add(getFailedRecordSummaryObject(rowCount,
+							"Validation failed, provided organization name mismatches with the system"));
 				}
 			}
 			catch (Exception e) {
 				logger.error(
-						"Exception occurred while persisting practitioner and pratitioner role data : " + e.getMessage());
-				failedRecordSummaries.add(getFailedRecordSummaryObject(rowCount, "Exception occurred due to : " + e.getMessage()));
+						"Exception occurred while persisting practitioner and pratitioner role data : " + e.getMessage() , e);
+				failedRecordSummaries
+						.add(getFailedRecordSummaryObject(rowCount, "Exception occurred due to : " + e.getMessage()));
 			}
 		}
 		csvBulkImportDataSummary.setNumberOfRowsProcessed(rowsProcessed);
@@ -212,7 +215,7 @@ public class ImportBulkDataService {
 		return csvBulkImportDataSummary;
 	}
 
-	private Boolean validateLocationData(Map<String, String> csvdata) {
+	private boolean validateLocationData(Map<String, String> csvdata) {
 		String locationIdFromCSV;
 		String locationNameFromCSV;
 		PhysicalLocation physicalLocation;
@@ -225,13 +228,13 @@ public class ImportBulkDataService {
 			if (locationNameFromCSV != null && physicalLocation != null && physicalLocation.getProperties() != null
 					&& physicalLocation.getProperties()
 					.getName().equals(locationNameFromCSV)) {
-				return Boolean.TRUE;
+				return true;
 			}
 		}
-		return Boolean.FALSE;
+		return false;
 	}
 
-	private Boolean validateOrganizationFields(Map<String, String> csvdata) {
+	private boolean validateOrganizationFields(Map<String, String> csvdata) {
 		String organizationIdFromCsv;
 		Long organizationId = 0l;
 		String organizationNameFromCSV = "";
@@ -244,17 +247,14 @@ public class ImportBulkDataService {
 			organizationId = Long.valueOf(organizationIdFromCsv);
 			organization = organizationService.getOrganization(organizationId);
 			if (organization != null && organization.getName().equals(organizationNameFromCSV)) {
-				return Boolean.TRUE;
+				return true;
 			}
 		}
-		return Boolean.FALSE;
+		return false;
 	}
 
 	private String getValueFromMap(String key, Map<String, String> map) {
-		if (map.containsKey(key)) {
-			return map.get(key);
-		}
-		return null;
+		return map.get(key);
 	}
 
 	private String getOrganizationIdentifier(Long organizationId) {

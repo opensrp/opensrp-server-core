@@ -118,6 +118,9 @@ public class PractitionerRoleService {
             PractitionerRole practitionerRole) {
         validateIdentifier(practitionerRole.getIdentifier());
         Long practitionerId = practitionerService.getPractitionerIdByIdentifier(practitionerIdentifier);
+        if (practitionerId == null) {
+            throw new IllegalArgumentException("Practitioner not found by the identifier : " + practitionerIdentifier);
+        }
         practitionerRoleRepository
                 .assignPractitionerRole(organizationId, practitionerId, practitionerIdentifier, code, practitionerRole);
     }
