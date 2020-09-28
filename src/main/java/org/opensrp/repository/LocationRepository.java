@@ -93,6 +93,8 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
      */
 	Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit);
 
+	Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit, Long minTime, Long maxTime);
+
 	/**
 	 * This method searches for location identifier and name using a plan identifier.
 	 *
@@ -133,6 +135,8 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean);
 
 	int countSearchLocations(LocationSearchBean locationSearchBean);
+
+	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit, Long minTime, Long maxTime);
 
 	/**
 	 * Gets the parent locations inclusive of the location of the identifiers. 

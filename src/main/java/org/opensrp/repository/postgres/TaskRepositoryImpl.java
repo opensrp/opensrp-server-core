@@ -1,13 +1,9 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joda.time.LocalDate;
 import org.opensrp.domain.postgres.TaskMetadata;
 import org.opensrp.domain.postgres.TaskMetadataExample;
 import org.opensrp.repository.TaskRepository;
@@ -19,338 +15,370 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Repository
 public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements TaskRepository {
-	
-	private static final String SEQUENCE="core.task_server_version_seq"; 
-	
-	@Autowired
-	private CustomTaskMapper taskMapper;
 
-	@Autowired
-	private CustomTaskMetadataMapper taskMetadataMapper;
+    private static final String SEQUENCE = "core.task_server_version_seq";
 
-	@Override
-	public Task get(String id) {
-		if (StringUtils.isBlank(id)) {
-			return null;
-		}
+    @Autowired
+    private CustomTaskMapper taskMapper;
 
-		org.opensrp.domain.postgres.Task pgTask = taskMetadataMapper.selectByIdentifier(id);
-		if (pgTask == null) {
-			return null;
-		}
-		return convert(pgTask);
-	}
+    @Autowired
+    private CustomTaskMetadataMapper taskMetadataMapper;
 
-	@Override
-	@Transactional
-	public void add(Task entity) {
-		if (getUniqueField(entity) == null) {
-			return;
-		}
+    @Override
+    public Task get(String id) {
+        if (StringUtils.isBlank(id)) {
+            return null;
+        }
 
-		if (retrievePrimaryKey(entity) != null) { // Task already added
-			return;
-		}
+        org.opensrp.domain.postgres.Task pgTask = taskMetadataMapper.selectByIdentifier(id);
+        if (pgTask == null) {
+            return null;
+        }
+        return convert(pgTask);
+    }
 
-		org.opensrp.domain.postgres.Task pgTask = convert(entity, null);
-		if (pgTask == null) {
-			return;
-		}
+    @Override
+    @Transactional
+    public void add(Task entity) {
+        if (getUniqueField(entity) == null) {
+            return;
+        }
 
-		int rowsAffected = taskMapper.insertSelectiveAndSetId(pgTask);
-		if (rowsAffected < 1 || pgTask.getId() == null) {
-			return;
-		}
+        if (retrievePrimaryKey(entity) != null) { // Task already added
+            return;
+        }
 
-		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
+        org.opensrp.domain.postgres.Task pgTask = convert(entity, null);
+        if (pgTask == null) {
+            return;
+        }
 
-		taskMetadataMapper.insertSelective(taskMetadata);
+        int rowsAffected = taskMapper.insertSelectiveAndSetId(pgTask);
+        if (rowsAffected < 1 || pgTask.getId() == null) {
+            return;
+        }
 
-	}
+        TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
 
-	@Override
-	@Transactional
-	public void update(Task entity) {
-		if (getUniqueField(entity) == null) {
-			return;
-		}
+        taskMetadataMapper.insertSelective(taskMetadata);
 
-		Long id = retrievePrimaryKey(entity);
-		if (id == null) { // Task does not exist
-			return;
-		}
+    }
 
-		org.opensrp.domain.postgres.Task pgTask = convert(entity, id);
-		if (pgTask == null) {
-			return;
-		}
-		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
+    @Override
+    @Transactional
+    public void update(Task entity) {
+        if (getUniqueField(entity) == null) {
+            return;
+        }
 
-		int rowsAffected = taskMapper.updateByPrimaryKey(pgTask);
-		if (rowsAffected < 1) {
-			return;
-		}
+        Long id = retrievePrimaryKey(entity);
+        if (id == null) { // Task does not exist
+            return;
+        }
 
-		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andTaskIdEqualTo(id);
-		taskMetadata.setId(taskMetadataMapper.selectByExample(taskMetadataExample).get(0).getId());
-		taskMetadataMapper.updateByPrimaryKey(taskMetadata);
+        org.opensrp.domain.postgres.Task pgTask = convert(entity, id);
+        if (pgTask == null) {
+            return;
+        }
+        TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
 
-	}
+        int rowsAffected = taskMapper.updateByPrimaryKey(pgTask);
+        if (rowsAffected < 1) {
+            return;
+        }
 
-	@Override
-	public List<Task> getAll() {
-		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(new TaskMetadataExample(), 0,
-				DEFAULT_FETCH_SIZE);
-		return convert(tasks);
-	}
+        TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+        taskMetadataExample.createCriteria().andTaskIdEqualTo(id);
+        taskMetadata.setId(taskMetadataMapper.selectByExample(taskMetadataExample).get(0).getId());
+        taskMetadataMapper.updateByPrimaryKey(taskMetadata);
 
-	@Override
-	public List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion) {
-		List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
-		List<String> groups = Arrays.asList(org.apache.commons.lang.StringUtils.split(group, ","));
-		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andPlanIdentifierIn(plans).andGroupIdentifierIn(groups)
-				.andServerVersionGreaterThanOrEqualTo(serverVersion);
-		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
-		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
-				DEFAULT_FETCH_SIZE);
-		return convert(tasks);
-	}
+    }
 
-	@Override
-	public List<Task> findByEmptyServerVersion() {
-		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andServerVersionIsNull();
-		taskMetadataExample.or(taskMetadataExample.createCriteria().andServerVersionEqualTo(0l));
-		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
-				DEFAULT_FETCH_SIZE);
-		return convert(tasks);
-	}
+    @Override
+    public List<Task> getAll() {
+        List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(new TaskMetadataExample(), 0,
+                DEFAULT_FETCH_SIZE);
+        return convert(tasks);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit) {
-		Long lastServerVersion = null;
-		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
-		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+    @Override
+    public List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion) {
+        List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
+        List<String> groups = Arrays.asList(org.apache.commons.lang.StringUtils.split(group, ","));
+        TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+        taskMetadataExample.createCriteria().andPlanIdentifierIn(plans).andGroupIdentifierIn(groups)
+                .andServerVersionGreaterThanOrEqualTo(serverVersion);
+        taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+        List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
+                DEFAULT_FETCH_SIZE);
+        return convert(tasks);
+    }
 
-		List<String> taskIdentifiers = taskMetadataMapper.selectManyIds(taskMetadataExample, 0,
-				fetchLimit);
+    @Override
+    public List<Task> findByEmptyServerVersion() {
+        TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+        taskMetadataExample.createCriteria().andServerVersionIsNull();
+        taskMetadataExample.or(taskMetadataExample.createCriteria().andServerVersionEqualTo(0l));
+        List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
+                DEFAULT_FETCH_SIZE);
+        return convert(tasks);
+    }
 
-		if (taskIdentifiers != null && !taskIdentifiers.isEmpty()) {
-			taskMetadataExample = new TaskMetadataExample();
-			taskMetadataExample.createCriteria().andIdentifierEqualTo(taskIdentifiers.get(taskIdentifiers.size() - 1));
-			List<TaskMetadata> taskMetaDataList = taskMetadataMapper.selectByExample(taskMetadataExample);
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit) {
+        Long lastServerVersion = null;
+        TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+        taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+        taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+        return getTaskListLongPair(limit, lastServerVersion, taskMetadataExample);
+    }
 
-			lastServerVersion = taskMetaDataList != null && !taskMetaDataList.isEmpty() ?
-					taskMetaDataList.get(0).getServerVersion() : 0;
+    @Override
+    public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Long minTime, Long maxTime) {
+        if (maxTime == null && minTime == null) {
+            return findAllIds(serverVersion, limit);
+        } else {
+            Long lastServerVersion = null;
+            TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+            TaskMetadataExample.Criteria criteria = taskMetadataExample.createCriteria();
+            criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
+            taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 
-		}
+            if (maxTime != null && minTime != null) {
+                criteria.andCreatedAtBetween(new LocalDate(minTime).toDate(), new LocalDate(maxTime).toDate());
+            } else if (minTime != null) {
+                criteria.andCreatedAtGreaterThanOrEqualTo(new LocalDate(minTime).toDate());
+            } else {
+                criteria.andCreatedAtLessThanOrEqualTo(new LocalDate(maxTime).toDate());
+            }
 
-		return Pair.of(taskIdentifiers, lastServerVersion);
-	}
+            return getTaskListLongPair(limit, lastServerVersion, taskMetadataExample);
+        }
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<Task> getAllTasks(Long serverVersion, int limit) {
-		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+    private Pair<List<String>, Long> getTaskListLongPair(int limit, Long lastServerVersion, TaskMetadataExample taskMetadataExample) {
+        int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
 
-		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0, limit);
-		return convert(tasks);
-	}
+        List<String> taskIdentifiers = taskMetadataMapper.selectManyIds(taskMetadataExample, 0,
+                fetchLimit);
 
-	@Override
-	public List<Task> getTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
-		List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
-		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andPlanIdentifierIn(plans)
-				.andOwnerEqualTo(owner)
-		        .andServerVersionGreaterThanOrEqualTo(serverVersion);
-		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
-		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
-				DEFAULT_FETCH_SIZE);
-		return convert(tasks);
-	}
+        if (taskIdentifiers != null && !taskIdentifiers.isEmpty()) {
+            taskMetadataExample = new TaskMetadataExample();
+            taskMetadataExample.createCriteria().andIdentifierEqualTo(taskIdentifiers.get(taskIdentifiers.size() - 1));
+            List<TaskMetadata> taskMetaDataList = taskMetadataMapper.selectByExample(taskMetadataExample);
 
-	@Override
-	public Long countTasksByPlanAndGroup(String plan, String group, long serverVersion) {
-		List<String> campaigns = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
-		List<String> groups = Arrays.asList(org.apache.commons.lang.StringUtils.split(group, ","));
-		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andPlanIdentifierIn(campaigns).andGroupIdentifierIn(groups)
-				.andServerVersionGreaterThanOrEqualTo(serverVersion);
-		return taskMetadataMapper.countByExample(taskMetadataExample);
-	}
+            lastServerVersion = taskMetaDataList != null && !taskMetaDataList.isEmpty() ?
+                    taskMetaDataList.get(0).getServerVersion() : 0;
 
-	@Override
-	public Long countTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
-		List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
-		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andPlanIdentifierIn(plans)
-				.andOwnerEqualTo(owner).andServerVersionGreaterThanOrEqualTo(serverVersion);
-		return taskMetadataMapper.countByExample(taskMetadataExample);
-	}
+        }
 
-	@Override
-	@Transactional
-	public void safeRemove(Task entity) {
-		if (entity == null) {
-			return;
-		}
+        return Pair.of(taskIdentifiers, lastServerVersion);
+    }
 
-		Long id = retrievePrimaryKey(entity);
-		if (id == null) {
-			return;
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Task> getAllTasks(Long serverVersion, int limit) {
+        TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+        taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+        taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 
-		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andTaskIdEqualTo(id);
-		int rowsAffected = taskMetadataMapper.deleteByExample(taskMetadataExample);
-		if (rowsAffected < 1) {
-			return;
-		}
+        List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0, limit);
+        return convert(tasks);
+    }
 
-		taskMapper.deleteByPrimaryKey(id);
+    @Override
+    public List<Task> getTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
+        List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
+        TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+        taskMetadataExample.createCriteria().andPlanIdentifierIn(plans)
+                .andOwnerEqualTo(owner)
+                .andServerVersionGreaterThanOrEqualTo(serverVersion);
+        taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+        List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
+                DEFAULT_FETCH_SIZE);
+        return convert(tasks);
+    }
 
-	}
+    @Override
+    public Long countTasksByPlanAndGroup(String plan, String group, long serverVersion) {
+        List<String> campaigns = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
+        List<String> groups = Arrays.asList(org.apache.commons.lang.StringUtils.split(group, ","));
+        TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+        taskMetadataExample.createCriteria().andPlanIdentifierIn(campaigns).andGroupIdentifierIn(groups)
+                .andServerVersionGreaterThanOrEqualTo(serverVersion);
+        return taskMetadataMapper.countByExample(taskMetadataExample);
+    }
 
-	@Override
-	protected Long retrievePrimaryKey(Task task) {
-		Object uniqueId = getUniqueField(task);
-		if (uniqueId == null) {
-			return null;
-		}
+    @Override
+    public Long countTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
+        List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
+        TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+        taskMetadataExample.createCriteria().andPlanIdentifierIn(plans)
+                .andOwnerEqualTo(owner).andServerVersionGreaterThanOrEqualTo(serverVersion);
+        return taskMetadataMapper.countByExample(taskMetadataExample);
+    }
 
-		String identifier = uniqueId.toString();
+    @Override
+    @Transactional
+    public void safeRemove(Task entity) {
+        if (entity == null) {
+            return;
+        }
 
-		org.opensrp.domain.postgres.Task pgTask = taskMetadataMapper.selectByIdentifier(identifier);
-		if (pgTask == null) {
-			return null;
-		}
-		return pgTask.getId();
-	}
+        Long id = retrievePrimaryKey(entity);
+        if (id == null) {
+            return;
+        }
 
-	@Override
-	protected Object getUniqueField(Task task) {
-		if (task == null) {
-			return null;
-		}
-		return task.getIdentifier();
-	}
+        TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+        taskMetadataExample.createCriteria().andTaskIdEqualTo(id);
+        int rowsAffected = taskMetadataMapper.deleteByExample(taskMetadataExample);
+        if (rowsAffected < 1) {
+            return;
+        }
 
-	private Task convert(org.opensrp.domain.postgres.Task pgTask) {
-		if (pgTask == null || pgTask.getJson() == null || !(pgTask.getJson() instanceof Task)) {
-			return null;
-		}
-		return (Task) pgTask.getJson();
-	}
+        taskMapper.deleteByPrimaryKey(id);
 
-	private org.opensrp.domain.postgres.Task convert(Task task, Long primaryKey) {
-		if (task == null) {
-			return null;
-		}
+    }
 
-		org.opensrp.domain.postgres.Task pgTask = new org.opensrp.domain.postgres.Task();
-		pgTask.setId(primaryKey);
-		pgTask.setJson(task);
+    @Override
+    protected Long retrievePrimaryKey(Task task) {
+        Object uniqueId = getUniqueField(task);
+        if (uniqueId == null) {
+            return null;
+        }
 
-		return pgTask;
-	}
+        String identifier = uniqueId.toString();
 
-	private List<Task> convert(List<org.opensrp.domain.postgres.Task> tasks) {
-		if (tasks == null || tasks.isEmpty()) {
-			return new ArrayList<>();
-		}
+        org.opensrp.domain.postgres.Task pgTask = taskMetadataMapper.selectByIdentifier(identifier);
+        if (pgTask == null) {
+            return null;
+        }
+        return pgTask.getId();
+    }
 
-		List<Task> convertedTasks = new ArrayList<>();
-		for (org.opensrp.domain.postgres.Task task : tasks) {
-			Task convertedTask = convert(task);
-			if (convertedTask != null) {
-				convertedTasks.add(convertedTask);
-			}
-		}
+    @Override
+    protected Object getUniqueField(Task task) {
+        if (task == null) {
+            return null;
+        }
+        return task.getIdentifier();
+    }
 
-		return convertedTasks;
-	}
+    private Task convert(org.opensrp.domain.postgres.Task pgTask) {
+        if (pgTask == null || pgTask.getJson() == null || !(pgTask.getJson() instanceof Task)) {
+            return null;
+        }
+        return (Task) pgTask.getJson();
+    }
 
-	private TaskMetadata createMetadata(Task entity, Long id) {
-		TaskMetadata taskMetadata = new TaskMetadata();
-		taskMetadata.setTaskId(id);
-		taskMetadata.setIdentifier(entity.getIdentifier());
-		taskMetadata.setPlanIdentifier(entity.getPlanIdentifier());
-		taskMetadata.setGroupIdentifier(entity.getGroupIdentifier());
-		taskMetadata.setForEntity(entity.getForEntity());
-		taskMetadata.setServerVersion(entity.getServerVersion());
-		taskMetadata.setOwner(entity.getOwner());
-		taskMetadata.setCode(entity.getCode());
-		return taskMetadata;
-	}
+    private org.opensrp.domain.postgres.Task convert(Task task, Long primaryKey) {
+        if (task == null) {
+            return null;
+        }
 
-	
-	@Override
-	public List<com.ibm.fhir.model.resource.Task> findTasksForEntity(String id, String planIdentifier) {
-		TaskMetadataExample example = new TaskMetadataExample();
-		example.createCriteria().andPlanIdentifierEqualTo(planIdentifier).andForEntityEqualTo(id);
-		return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
-	}
+        org.opensrp.domain.postgres.Task pgTask = new org.opensrp.domain.postgres.Task();
+        pgTask.setId(primaryKey);
+        pgTask.setJson(task);
 
-	@Override
-	public void saveTask(Task task, QuestionnaireResponse questionnaireResponse) {
-		task.setServerVersion(getNextServerVersion());
-		add(task);
-	}
+        return pgTask;
+    }
 
-	@Override
-	public boolean checkIfTaskExists(String baseEntityId,String jurisdiction, String planIdentifier, String code) {
-		List<String> statuses = new ArrayList<>();
-		statuses.add("Cancelled");
-		statuses.add("Archived");
+    private List<Task> convert(List<org.opensrp.domain.postgres.Task> tasks) {
+        if (tasks == null || tasks.isEmpty()) {
+            return new ArrayList<>();
+        }
 
-		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, jurisdiction,planIdentifier, code,statuses);
-		return taskCount >= 1;
-	}
+        List<Task> convertedTasks = new ArrayList<>();
+        for (org.opensrp.domain.postgres.Task task : tasks) {
+            Task convertedTask = convert(task);
+            if (convertedTask != null) {
+                convertedTasks.add(convertedTask);
+            }
+        }
 
-	@Override
-	public List<com.ibm.fhir.model.resource.Task> findAllTasksForEntity(String id) {
-		TaskMetadataExample example = new TaskMetadataExample();
-		example.createCriteria().andForEntityEqualTo(id);
-		return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
-	}
+        return convertedTasks;
+    }
 
-	@Override
-	public Task getTaskByEntityId(String identifier) {
-		return get(identifier);
-	}
-
-	@Override
-	public void updateTask(Task task) {
-		task.setServerVersion(getNextServerVersion());
-		update(task);
-	}
+    private TaskMetadata createMetadata(Task entity, Long id) {
+        TaskMetadata taskMetadata = new TaskMetadata();
+        taskMetadata.setTaskId(id);
+        taskMetadata.setIdentifier(entity.getIdentifier());
+        taskMetadata.setPlanIdentifier(entity.getPlanIdentifier());
+        taskMetadata.setGroupIdentifier(entity.getGroupIdentifier());
+        taskMetadata.setForEntity(entity.getForEntity());
+        taskMetadata.setServerVersion(entity.getServerVersion());
+        taskMetadata.setOwner(entity.getOwner());
+        taskMetadata.setCode(entity.getCode());
+        return taskMetadata;
+    }
 
 
-	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
-		return tasks
-				.stream()
-				.map(task -> TaskConverter.convertTasktoFihrResource(task))
-				.collect(Collectors.toList());
-	}
+    @Override
+    public List<com.ibm.fhir.model.resource.Task> findTasksForEntity(String id, String planIdentifier) {
+        TaskMetadataExample example = new TaskMetadataExample();
+        example.createCriteria().andPlanIdentifierEqualTo(planIdentifier).andForEntityEqualTo(id);
+        return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
+    }
 
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
-	}
+    @Override
+    public void saveTask(Task task, QuestionnaireResponse questionnaireResponse) {
+        task.setServerVersion(getNextServerVersion());
+        add(task);
+    }
+
+    @Override
+    public boolean checkIfTaskExists(String baseEntityId, String jurisdiction, String planIdentifier, String code) {
+        List<String> statuses = new ArrayList<>();
+        statuses.add("Cancelled");
+        statuses.add("Archived");
+
+        int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, jurisdiction, planIdentifier, code, statuses);
+        return taskCount >= 1;
+    }
+
+    @Override
+    public List<com.ibm.fhir.model.resource.Task> findAllTasksForEntity(String id) {
+        TaskMetadataExample example = new TaskMetadataExample();
+        example.createCriteria().andForEntityEqualTo(id);
+        return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
+    }
+
+    @Override
+    public Task getTaskByEntityId(String identifier) {
+        return get(identifier);
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        task.setServerVersion(getNextServerVersion());
+        update(task);
+    }
+
+
+    private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
+        return tasks
+                .stream()
+                .map(task -> TaskConverter.convertTasktoFihrResource(task))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    protected String getSequenceName() {
+        return SEQUENCE;
+    }
 
 
 }

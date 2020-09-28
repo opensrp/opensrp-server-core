@@ -21,6 +21,8 @@ public interface TaskRepository extends BaseRepository<Task>, TaskDao {
 	 */
 	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit);
 
+	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Long minTime, Long maxTime);
+
 	/**
 	 *  This method searches for tasks ordered by serverVersion ascending
 	 *

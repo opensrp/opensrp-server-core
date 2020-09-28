@@ -12,6 +12,8 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 
     List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds, boolean experimental);
 
+    Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted, Long minTime, Long maxTime);
+
     /**
      * This method searches for plans using a list of provided
      * plan identifiers and returns a subset of fields determined by the list of provided fields

@@ -101,6 +101,8 @@ public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	 */
 	Pair<List<String>, Long>  findAllIds(long serverVersion, int limit, boolean isArchived);
 
+	Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived, Long minTime, Long maxTime);
+
 	List<Client> findByClientTypeAndLocationId(String clientType, String locationId);
 	
 }
