@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.LocalDate;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.StructureCount;
@@ -391,11 +390,11 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			StructureMetadataExample.Criteria criteria = structureMetadataExample.createCriteria();
 			criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
 			if (maxTime != null && minTime != null) {
-				criteria.andCreatedAtBetween(new LocalDate(minTime).toDate(), new LocalDate(maxTime).toDate());
+				criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
 			} else if (minTime != null) {
-				criteria.andCreatedAtGreaterThanOrEqualTo(new LocalDate(minTime).toDate());
+				criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
 			} else {
-				criteria.andCreatedAtLessThanOrEqualTo(new LocalDate(maxTime).toDate());
+				criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
 			}
 			
 			return getStructuresListLongPair(limit, lastServerVersion, structureMetadataExample);
@@ -514,11 +513,11 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
 			locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 			if (maxTime != null && minTime != null) {
-				criteria.andCreatedAtBetween(new LocalDate(minTime).toDate(), new LocalDate(maxTime).toDate());
+				criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
 			} else if (minTime != null) {
-				criteria.andCreatedAtGreaterThanOrEqualTo(new LocalDate(minTime).toDate());
+				criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
 			} else {
-				criteria.andCreatedAtLessThanOrEqualTo(new LocalDate(minTime).toDate());
+				criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
 			}
 			return getLocationListLongPair(limit, lastServerVersion, locationMetadataExample);
 		}

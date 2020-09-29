@@ -61,6 +61,18 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	 */
 	Pair<List<String>, Long> findIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit);
 
+	/**
+	 * overloads {@link #findIdsByEventType(String, boolean, Long, int)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param minTime
+	 * @param maxTime
+	 * @return
+	 */
+	Pair<List<String>, Long> findIdsByEventType(String eventType, boolean isDeleted,
+												Long serverVersion, int limit,
+												Long minTime, Long maxTime);
+
 	/**Updates an event
 	 * @param entity the event to be updated
 	 * @param allowArchived a flag that allows update of archived events

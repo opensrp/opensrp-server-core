@@ -93,6 +93,14 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
      */
 	Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit);
 
+	/**
+	 * overloads {@link #findAllStructureIds(Long, int)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param minTime
+	 * @param maxTime
+	 * @return
+	 */
 	Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit, Long minTime, Long maxTime);
 
 	/**
@@ -131,12 +139,20 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return a list of location Ids
 	 */
 	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit);
+
+	/**
+	 * overloads {@link #findAllLocationIds(Long, int)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param minTime
+	 * @param maxTime
+	 * @return
+	 */
+	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit, Long minTime, Long maxTime);
 	
 	List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean);
 
 	int countSearchLocations(LocationSearchBean locationSearchBean);
-
-	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit, Long minTime, Long maxTime);
 
 	/**
 	 * Gets the parent locations inclusive of the location of the identifiers. 

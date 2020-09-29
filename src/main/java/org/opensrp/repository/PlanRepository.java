@@ -12,8 +12,6 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 
     List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds, boolean experimental);
 
-    Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted, Long minTime, Long maxTime);
-
     /**
      * This method searches for plans using a list of provided
      * plan identifiers and returns a subset of fields determined by the list of provided fields
@@ -58,6 +56,17 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @return a list of plan Ids  and the last server version
 	 */
 	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted);
+
+	/**
+	 * overloads {@link #findAllIds(Long, int, boolean)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param isDeleted
+	 * @param minTime
+	 * @param maxTime
+	 * @return
+	 */
+	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted, Long minTime, Long maxTime);
 
 	/** Gets the plans using the plan identifiers and whose server version is greater than or equal to server version
 	 * @param planIdentifiers the plan identifiers

@@ -1,9 +1,7 @@
 package org.opensrp.repository.postgres;
 
-import net.bytebuddy.asm.Advice;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.LocalDate;
 import org.opensrp.domain.postgres.Plan;
 import org.opensrp.domain.postgres.PlanExample;
 import org.opensrp.domain.postgres.PlanMetadata;
@@ -191,11 +189,11 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             }
 
             if (maxTime != null && minTime != null) {
-                criteria.andCreatedAtBetween(new LocalDate(minTime).toDate(), new LocalDate(maxTime).toDate());
+                criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
             } else if(minTime!=null){
-                criteria.andCreatedAtGreaterThanOrEqualTo(new LocalDate(minTime).toDate());
+                criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
             } else{
-                criteria.andCreatedAtLessThanOrEqualTo(new LocalDate(maxTime).toDate());
+                criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
             }
 
             return getPlanListLongPair(limit, lastServerVersion, planExample);

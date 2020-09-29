@@ -156,8 +156,7 @@ public class PhysicalLocationService {
 	 * @param properties map of location properties to filter with, each entry in map has property
 	 *            name and value
 	 * @return jurisdictions matching the params
-	 * @see org.opensrp.repository.LocationRepository#findLocationsByProperties(boolean, String,
-	 *      Map)
+	 * @see org.opensrp.repository.LocationRepository#findLocationsByProperties(boolean, String, Map)
 	 */
 	public List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId,
 	        Map<String, String> properties) {
@@ -165,16 +164,15 @@ public class PhysicalLocationService {
 	}
 	
 	/**
-	 * This methods searches for structures using the parentId and location properties It returns
-	 * the Geometry optionally if @param returnGeometry is set to true.
+	 * This methods searches for structures using the parentId and location properties It returns the
+	 * Geometry optionally if @param returnGeometry is set to true.
 	 * 
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param parentId string the parent id of the structure being searched
-	 * @param properties map of location properties to filter with, each entry in map has property
-	 *            name and value
+	 * @param properties map of location properties to filter with, each entry in map has property name
+	 *            and value
 	 * @return structures matching the params
-	 * @see org.opensrp.repository.LocationRepository#findStructuresByProperties(boolean, String,
-	 *      Map)
+	 * @see org.opensrp.repository.LocationRepository#findStructuresByProperties(boolean, String, Map)
 	 */
 	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
 	        Map<String, String> properties) {
@@ -190,9 +188,9 @@ public class PhysicalLocationService {
 	 * @return jurisdictions whose ids match the provided params
 	 */
 	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
-		return locationRepository.findLocationsByIds(returnGeometry, ids,null);
+		return locationRepository.findLocationsByIds(returnGeometry, ids, null);
 	}
-	
+
 	/**
 	 * This methods provides an API endpoint that searches for locations using a list of provided
 	 * location ids. It returns the Geometry optionally if @param returnGeometry is set to true.
@@ -203,11 +201,8 @@ public class PhysicalLocationService {
 	 * @return jurisdictions whose ids match the provided params
 	 */
 	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids, Long serverVersion) {
-		return locationRepository.findLocationsByIds(returnGeometry, ids,serverVersion);
+		return locationRepository.findLocationsByIds(returnGeometry, ids, serverVersion);
 	}
-	
-	
-	
 	
 	/**
 	 * This methods searches for locations using a list of provided location ids.It returns location
@@ -223,8 +218,8 @@ public class PhysicalLocationService {
 	}
 	
 	/**
-	 * This methods searches for a location and it's children using the provided location id It
-	 * returns the Geometry optionally if @param returnGeometry is set to true.
+	 * This methods searches for a location and it's children using the provided location id It returns
+	 * the Geometry optionally if @param returnGeometry is set to true.
 	 * 
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param id location id
@@ -236,8 +231,8 @@ public class PhysicalLocationService {
 	}
 	
 	/**
-	 * This methods searches for a location and it's children using the provided location Ids
-	 * returns the Geometry optionally if @param returnGeometry is set to true.
+	 * This methods searches for a location and it's children using the provided location Ids returns
+	 * the Geometry optionally if @param returnGeometry is set to true.
 	 * 
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param locationIds location ids
@@ -258,6 +253,19 @@ public class PhysicalLocationService {
 	 */
 	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit) {
 		return locationRepository.findAllStructureIds(serverVersion, limit);
+	}
+
+	/**
+	 * overloads {@link #findAllStructureIds} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param minTime
+	 * @param maxTime
+	 * @return
+	 */
+	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit,
+														Long minTime, Long maxTime ) {
+		return locationRepository.findAllStructureIds(serverVersion, limit, minTime, maxTime);
 	}
 	
 	/**
@@ -302,6 +310,18 @@ public class PhysicalLocationService {
 	 */
 	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit) {
 		return locationRepository.findAllLocationIds(serverVersion, limit);
+	}
+
+	/**
+	 * overloads {@link #findAllLocationIds(Long, int)}} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param minTime
+	 * @param maxTime
+	 * @return
+	 */
+	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit, Long minTime, Long maxTime) {
+		return locationRepository.findAllLocationIds(serverVersion, limit, minTime, maxTime);
 	}
 	
 	public List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
@@ -443,8 +463,9 @@ public class PhysicalLocationService {
 	
 	/**
 	 * Gets the count of locations based on locationIds and server version
+	 * 
 	 * @param locationIds the list of locationIds to filter with
-	 * @param serverVersion the server version to filter with 
+	 * @param serverVersion the server version to filter with
 	 * @return number of records
 	 */
 	public long countLocationsByIds(List<String> locationIds, long serverVersion) {

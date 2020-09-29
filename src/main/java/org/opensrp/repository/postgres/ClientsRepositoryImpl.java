@@ -4,7 +4,6 @@ import com.ibm.fhir.model.resource.Patient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.postgres.*;
 import org.opensrp.domain.postgres.ClientMetadataExample.Criteria;
@@ -619,11 +618,11 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
             }
 
             if (maxTime != null && minTime != null) {
-                criteria.andCreatedAtBetween(new LocalDate(minTime).toDate(), new LocalDate(maxTime).toDate());
+                criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
             } else if(minTime!=null){
-                criteria.andCreatedAtGreaterThanOrEqualTo(new LocalDate(minTime).toDate());
+                criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
             } else{
-                criteria.andCreatedAtLessThanOrEqualTo(new LocalDate(maxTime).toDate());
+                criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
             }
 
 

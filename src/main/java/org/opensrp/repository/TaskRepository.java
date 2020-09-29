@@ -21,6 +21,14 @@ public interface TaskRepository extends BaseRepository<Task>, TaskDao {
 	 */
 	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit);
 
+	/**
+	 * overloads {@link #findAllIds(Long, int)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param minTime
+	 * @param maxTime
+	 * @return
+	 */
 	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Long minTime, Long maxTime);
 
 	/**

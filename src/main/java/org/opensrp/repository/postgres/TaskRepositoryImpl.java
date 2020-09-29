@@ -2,12 +2,12 @@ package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.joda.time.LocalDate;
 import org.opensrp.domain.postgres.TaskMetadata;
 import org.opensrp.domain.postgres.TaskMetadataExample;
 import org.opensrp.repository.TaskRepository;
@@ -156,11 +156,11 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 			taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 			
 			if (maxTime != null && minTime != null) {
-				criteria.andCreatedAtBetween(new LocalDate(minTime).toDate(), new LocalDate(maxTime).toDate());
+				criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
 			} else if (minTime != null) {
-				criteria.andCreatedAtGreaterThanOrEqualTo(new LocalDate(minTime).toDate());
+				criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
 			} else {
-				criteria.andCreatedAtLessThanOrEqualTo(new LocalDate(maxTime).toDate());
+				criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
 			}
 			
 			return getTaskListLongPair(limit, lastServerVersion, taskMetadataExample);

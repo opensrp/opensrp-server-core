@@ -101,6 +101,14 @@ public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	 */
 	Pair<List<String>, Long>  findAllIds(long serverVersion, int limit, boolean isArchived);
 
+	/**
+	 * overloads {@link #findAllIds(long, int, boolean)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param minTime
+	 * @param maxTime
+	 * @return
+	 */
 	Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived, Long minTime, Long maxTime);
 
 	List<Client> findByClientTypeAndLocationId(String clientType, String locationId);
