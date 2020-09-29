@@ -487,11 +487,11 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 			}
 			
 			if (minTime != null && maxTime != null) {
-				criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
+				criteria.andDateCreatedBetween(new Date(minTime), new Date(maxTime));
 			} else if (minTime != null) {
-				criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
+				criteria.andDateCreatedGreaterThanOrEqualTo(new Date(minTime));
 			} else {
-				criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
+				criteria.andDateCreatedLessThanOrEqualTo(new Date(maxTime));
 			}
 			
 			return getEventListLongPair(limit, lastServerVersion, example);
