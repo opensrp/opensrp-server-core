@@ -25,8 +25,9 @@ public class UniqueIdGeneratorProcessor {
 	@Autowired
 	private IdentifierSourceService identifierSourceService;
 
-	public UniqueIdGeneratorProcessor(UniqueIdRepository uniqueIdRepository) {
+	public UniqueIdGeneratorProcessor(UniqueIdRepository uniqueIdRepository, IdentifierSourceService identifierSourceService) {
 		this.uniqueIdRepository = uniqueIdRepository;
+		this.identifierSourceService = identifierSourceService;
 	}
 
 	public synchronized List<String> getIdentifiers(IdentifierSource identifierSource, int batchSize, String usedBy) {
