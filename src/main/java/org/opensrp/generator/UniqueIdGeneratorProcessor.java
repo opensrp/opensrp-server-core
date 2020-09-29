@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
+import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.util.IdGeneratorUtil;
 import org.opensrp.util.IdentifierValidatorAlgorithm;
 import org.slf4j.Logger;
@@ -21,6 +22,9 @@ public class UniqueIdGeneratorProcessor {
 	@Autowired
 	private UniqueIdRepository uniqueIdRepository;
 
+	@Autowired
+	private IdentifierSourceService identifierSourceService;
+
 	public UniqueIdGeneratorProcessor(UniqueIdRepository uniqueIdRepository) {
 		this.uniqueIdRepository = uniqueIdRepository;
 	}
@@ -29,7 +33,8 @@ public class UniqueIdGeneratorProcessor {
 
 		UniqueId lastUniqueId = uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(identifierSource.getId());
 
-		Long sequenceValue = lastUniqueId != null ? lastUniqueId.getId() : null;
+		Long sequenceValue = identifierSource.getSequenceValue();
+
 		if (sequenceValue == null || sequenceValue < 0) {
 			if (identifierSource.getFirstIdentifierBase() != null) {
 				sequenceValue = IdGeneratorUtil.convertFromBase(identifierSource.getFirstIdentifierBase(),
@@ -77,6 +82,7 @@ public class UniqueIdGeneratorProcessor {
 			sequenceValue++;
 		}
 
+		identifierSourceService.saveSequenceValue(identifierSource, sequenceValue);
 		saveIds(identifiers, null, "not_used", new Date(), usedBy, new Date(), identifierSource.getId());
 
 		return identifiers;

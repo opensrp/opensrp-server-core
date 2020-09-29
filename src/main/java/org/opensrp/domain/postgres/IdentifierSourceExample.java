@@ -931,6 +931,66 @@ public class IdentifierSourceExample {
 			addCriterion("regex_format not between", value1, value2, "regexFormat");
 			return (Criteria) this;
 		}
+
+		public Criteria andSequenceValueIsNull() {
+			addCriterion("sequence_value is null");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueIsNotNull() {
+			addCriterion("sequence_value is not null");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueEqualTo(Long value) {
+			addCriterion("sequence_value =", value, "sequenceValue");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueNotEqualTo(Long value) {
+			addCriterion("sequence_value <>", value, "sequenceValue");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueGreaterThan(Long value) {
+			addCriterion("sequence_value >", value, "sequenceValue");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueGreaterThanOrEqualTo(Long value) {
+			addCriterion("sequence_value >=", value, "sequenceValue");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueLessThan(Long value) {
+			addCriterion("sequence_value <", value, "sequenceValue");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueLessThanOrEqualTo(Long value) {
+			addCriterion("sequence_value <=", value, "sequenceValue");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueIn(List<Long> values) {
+			addCriterion("sequence_value in", values, "sequenceValue");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueNotIn(List<Long> values) {
+			addCriterion("sequence_value not in", values, "sequenceValue");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueBetween(Long value1, Long value2) {
+			addCriterion("sequence_value between", value1, value2, "sequenceValue");
+			return (Criteria) this;
+		}
+
+		public Criteria andSequenceValueNotBetween(Long value1, Long value2) {
+			addCriterion("sequence_value not between", value1, value2, "sequenceValue");
+			return (Criteria) this;
+		}
 	}
 
 	/**

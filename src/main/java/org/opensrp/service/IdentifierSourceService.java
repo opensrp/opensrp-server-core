@@ -40,6 +40,10 @@ public class IdentifierSourceService {
 		identifierSourceRepository.update(identifierSource);
 	}
 
+	public void saveSequenceValue(IdentifierSource identifierSource, Long sequenceValue) {
+     identifierSourceRepository.updateIdSourceWithSequenceValue(identifierSource,sequenceValue);
+	}
+
 	private void validateFields(IdentifierSource identifierSource) {
 		if (StringUtils.isBlank(identifierSource.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier value was not specified");
