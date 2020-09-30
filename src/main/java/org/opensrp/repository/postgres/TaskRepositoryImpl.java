@@ -358,14 +358,15 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 	
 	@Override
-	public Task getTaskByEntityId(String identifier) {
+	public Task getTaskByIdentifier(String identifier) {
 		return get(identifier);
 	}
 	
 	@Override
-	public void updateTask(Task task) {
+	public Task updateTask(Task task) {
 		task.setServerVersion(getNextServerVersion());
 		update(task);
+		return get(task.getIdentifier());
 	}
 	
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
