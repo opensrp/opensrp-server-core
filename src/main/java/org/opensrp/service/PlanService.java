@@ -218,9 +218,10 @@ public class PlanService {
 	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted) {
 		return planRepository.findAllIds(serverVersion, limit, isDeleted);
 	}
-
+	
 	/**
 	 * overloads {@link #findAllIds(Long, int, boolean)} by adding date/time filters
+	 * 
 	 * @param serverVersion
 	 * @param limit
 	 * @param isDeleted

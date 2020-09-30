@@ -129,9 +129,10 @@ public class TaskService {
 	public Pair<List<String>, Long> findAllTaskIds(Long serverVersion, int limit) {
 		return taskRepository.findAllIds(serverVersion, limit);
 	}
-
+	
 	/**
 	 * overloads {@link #findAllTaskIds(Long, int)} by adding date/time filters
+	 * 
 	 * @param serverVersion
 	 * @param limit
 	 * @param minTime

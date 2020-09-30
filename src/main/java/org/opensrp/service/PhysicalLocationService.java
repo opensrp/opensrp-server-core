@@ -148,13 +148,13 @@ public class PhysicalLocationService {
 	}
 	
 	/**
-	 * This methods searches for jurisdictions using the parentId and location properties It returns
-	 * the Geometry optionally if @param returnGeometry is set to true.
+	 * This methods searches for jurisdictions using the parentId and location properties It returns the
+	 * Geometry optionally if @param returnGeometry is set to true.
 	 * 
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param parentId string the parent id of the jurisdiction being searched
-	 * @param properties map of location properties to filter with, each entry in map has property
-	 *            name and value
+	 * @param properties map of location properties to filter with, each entry in map has property name
+	 *            and value
 	 * @return jurisdictions matching the params
 	 * @see org.opensrp.repository.LocationRepository#findLocationsByProperties(boolean, String, Map)
 	 */
@@ -190,7 +190,7 @@ public class PhysicalLocationService {
 	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
 		return locationRepository.findLocationsByIds(returnGeometry, ids, null);
 	}
-
+	
 	/**
 	 * This methods provides an API endpoint that searches for locations using a list of provided
 	 * location ids. It returns the Geometry optionally if @param returnGeometry is set to true.
@@ -254,17 +254,17 @@ public class PhysicalLocationService {
 	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit) {
 		return locationRepository.findAllStructureIds(serverVersion, limit);
 	}
-
+	
 	/**
 	 * overloads {@link #findAllStructureIds} by adding date/time filters
+	 * 
 	 * @param serverVersion
 	 * @param limit
 	 * @param minTime
 	 * @param maxTime
 	 * @return
 	 */
-	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit,
-														Long minTime, Long maxTime ) {
+	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit, Long minTime, Long maxTime) {
 		return locationRepository.findAllStructureIds(serverVersion, limit, minTime, maxTime);
 	}
 	
@@ -311,9 +311,10 @@ public class PhysicalLocationService {
 	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit) {
 		return locationRepository.findAllLocationIds(serverVersion, limit);
 	}
-
+	
 	/**
 	 * overloads {@link #findAllLocationIds(Long, int)}} by adding date/time filters
+	 * 
 	 * @param serverVersion
 	 * @param limit
 	 * @param minTime
