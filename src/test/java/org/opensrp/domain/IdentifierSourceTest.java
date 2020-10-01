@@ -15,6 +15,6 @@ public class IdentifierSourceTest {
 		Validator validator = ValidatorBuilder.create().with(new SetterTester()).with(new GetterTester()).build();
 
 		validator.validate(PojoClassFactory.getPojoClass(IdentifierSource.class));
-		assertEquals(11,PojoClassFactory.getPojoClass(IdentifierSource.class).getPojoFields().size());
+		assertEquals(12,PojoClassFactory.getPojoClass(IdentifierSource.class).getPojoFields().size());
 	}
 }

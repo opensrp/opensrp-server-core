@@ -7,6 +7,7 @@ import org.mockito.Mockito;
 import org.opensrp.repository.UniqueIdRepository;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.domain.IdentifierSource;
+import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.util.IdentifierValidatorAlgorithm;
 
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -25,12 +27,15 @@ public class UniqueIdGeneratorProcessorTest {
 	@Mock
 	private UniqueIdRepository uniqueIdRepository;
 
+	@Mock
+	private IdentifierSourceService identifierSourceService;
+
 	private UniqueIdGeneratorProcessor uniqueIdGeneratorProcessor;
 
 	@Before
 	public void setUp() {
 		initMocks(this);
-		uniqueIdGeneratorProcessor = new UniqueIdGeneratorProcessor(uniqueIdRepository);
+		uniqueIdGeneratorProcessor = new UniqueIdGeneratorProcessor(uniqueIdRepository, identifierSourceService);
 	}
 
 	@Test
@@ -38,6 +43,7 @@ public class UniqueIdGeneratorProcessorTest {
 		Set<String> reservedIds = new HashSet<>();
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		doNothing().when(identifierSourceService).saveSequenceValue(any(IdentifierSource.class), anyLong());
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
 		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSource(),5,"");
 		assertTrue(ids.get(0).contains("-")); //Ensure check digit implementation
@@ -48,6 +54,7 @@ public class UniqueIdGeneratorProcessorTest {
 		Set<String> reservedIds = new HashSet<>();
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(null);
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		doNothing().when(identifierSourceService).saveSequenceValue(any(IdentifierSource.class), anyLong());
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
 		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceV2(),5,"");
 		assertTrue(ids.get(0).contains("-")); //Ensure check digit implementation
@@ -59,6 +66,7 @@ public class UniqueIdGeneratorProcessorTest {
 		Set<String> reservedIds = new HashSet<>();
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(null);
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		doNothing().when(identifierSourceService).saveSequenceValue(any(IdentifierSource.class), anyLong());
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
 		uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceV3(),5,"");
 	}
@@ -68,6 +76,7 @@ public class UniqueIdGeneratorProcessorTest {
 		Set<String> reservedIds = new HashSet<>();
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		doNothing().when(identifierSourceService).saveSequenceValue(any(IdentifierSource.class), anyLong());
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
 		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceA(),5,"");
 		assertEquals(ids.size(),5);
@@ -78,6 +87,7 @@ public class UniqueIdGeneratorProcessorTest {
 		Set<String> reservedIds = new HashSet<>();
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		doNothing().when(identifierSourceService).saveSequenceValue(any(IdentifierSource.class), anyLong());
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
 		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceB(),5,"");
 		assertEquals(ids.size(),5);
@@ -88,6 +98,7 @@ public class UniqueIdGeneratorProcessorTest {
 		Set<String> reservedIds = new HashSet<>();
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		doNothing().when(identifierSourceService).saveSequenceValue(any(IdentifierSource.class), anyLong());
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
 		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceC(),5,"");
 		for(String id : ids) {
@@ -100,6 +111,7 @@ public class UniqueIdGeneratorProcessorTest {
 		Set<String> reservedIds = new HashSet<>();
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		doNothing().when(identifierSourceService).saveSequenceValue(any(IdentifierSource.class), anyLong());
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
 		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceD(),5,"");
 		assertEquals(ids.size(),5);
@@ -110,6 +122,7 @@ public class UniqueIdGeneratorProcessorTest {
 		Set<String> reservedIds = new HashSet<>();
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		doNothing().when(identifierSourceService).saveSequenceValue(any(IdentifierSource.class), anyLong());
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
 		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceF(),5,"");
 		assertEquals(ids.size(),5);
@@ -120,6 +133,7 @@ public class UniqueIdGeneratorProcessorTest {
 		Set<String> reservedIds = new HashSet<>();
 		when(uniqueIdRepository.findByIdentifierSourceOrderByIdDesc(anyLong())).thenReturn(createUniqueId());
 		when(uniqueIdRepository.findReservedIdentifiers()).thenReturn(reservedIds);
+		doNothing().when(identifierSourceService).saveSequenceValue(any(IdentifierSource.class), anyLong());
 		Mockito.doNothing().when(uniqueIdRepository).add(any(UniqueId.class));
 		List<String> ids = uniqueIdGeneratorProcessor.getIdentifiers(createIdentifierSourceI(),5,"");
 		for(String id : ids) {
