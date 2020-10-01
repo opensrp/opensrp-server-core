@@ -3,7 +3,15 @@ package org.opensrp.repository.postgres;
 import static org.smartregister.domain.LocationProperty.PropertyStatus.ACTIVE;
 import static org.smartregister.domain.LocationProperty.PropertyStatus.PENDING_REVIEW;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,8 +20,14 @@ import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
-import org.opensrp.domain.postgres.*;
+import org.opensrp.domain.postgres.Location;
+import org.opensrp.domain.postgres.LocationMetadata;
+import org.opensrp.domain.postgres.LocationMetadataExample;
 import org.opensrp.domain.postgres.LocationMetadataExample.Criteria;
+import org.opensrp.domain.postgres.Structure;
+import org.opensrp.domain.postgres.StructureFamilyDetails;
+import org.opensrp.domain.postgres.StructureMetadata;
+import org.opensrp.domain.postgres.StructureMetadataExample;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
@@ -405,22 +419,23 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private Pair<List<String>, Long> getStructuresListLongPair(int limit, Long lastServerVersion,
 	        StructureMetadataExample structureMetadataExample) {
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
-		
-		List<String> structureIdentifiers = structureMetadataMapper.selectManyIds(structureMetadataExample, 0, fetchLimit);
+		Long serverVersion = lastServerVersion;
+		StructureMetadataExample example = structureMetadataExample;
+		List<String> structureIdentifiers = structureMetadataMapper.selectManyIds(example, 0, fetchLimit);
 		
 		if (structureIdentifiers != null && !structureIdentifiers.isEmpty()) {
-			structureMetadataExample = new StructureMetadataExample();
-			structureMetadataExample.createCriteria()
+			example = new StructureMetadataExample();
+			example.createCriteria()
 			        .andGeojsonIdEqualTo(structureIdentifiers.get(structureIdentifiers.size() - 1));
 			List<StructureMetadata> structureMetaDataList = structureMetadataMapper
-			        .selectByExample(structureMetadataExample);
-			
-			lastServerVersion = structureMetaDataList != null && !structureMetaDataList.isEmpty()
+			        .selectByExample(example);
+
+			serverVersion = structureMetaDataList != null && !structureMetaDataList.isEmpty()
 			        ? structureMetaDataList.get(0).getServerVersion()
 			        : 0;
 		}
 		
-		return Pair.of(structureIdentifiers, lastServerVersion);
+		return Pair.of(structureIdentifiers, serverVersion);
 	}
 	
 	/**
@@ -526,21 +541,22 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private Pair<List<String>, Long> getLocationListLongPair(int limit, Long lastServerVersion,
 	        LocationMetadataExample locationMetadataExample) {
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
-		
-		List<String> locationIdentifiers = locationMetadataMapper.selectManyIds(locationMetadataExample, 0, fetchLimit);
+		Long serverVersion = lastServerVersion;
+		LocationMetadataExample metadataExample = locationMetadataExample;
+		List<String> locationIdentifiers = locationMetadataMapper.selectManyIds(metadataExample, 0, fetchLimit);
 		
 		if (locationIdentifiers != null && !locationIdentifiers.isEmpty()) {
-			locationMetadataExample = new LocationMetadataExample();
-			locationMetadataExample.createCriteria()
+			metadataExample = new LocationMetadataExample();
+			metadataExample.createCriteria()
 			        .andGeojsonIdEqualTo(locationIdentifiers.get(locationIdentifiers.size() - 1));
-			List<LocationMetadata> locationMetadataList = locationMetadataMapper.selectByExample(locationMetadataExample);
-			
-			lastServerVersion = locationMetadataList != null && !locationMetadataList.isEmpty()
+			List<LocationMetadata> locationMetadataList = locationMetadataMapper.selectByExample(metadataExample);
+
+			serverVersion = locationMetadataList != null && !locationMetadataList.isEmpty()
 			        ? locationMetadataList.get(0).getServerVersion()
 			        : 0;
 		}
 		
-		return Pair.of(locationIdentifiers, lastServerVersion);
+		return Pair.of(locationIdentifiers, serverVersion);
 	}
 	
 	/**

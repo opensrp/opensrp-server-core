@@ -170,21 +170,23 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	private Pair<List<String>, Long> getTaskListLongPair(int limit, Long lastServerVersion,
 	        TaskMetadataExample taskMetadataExample) {
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
-		
-		List<String> taskIdentifiers = taskMetadataMapper.selectManyIds(taskMetadataExample, 0, fetchLimit);
+		Long serverVersion = lastServerVersion;
+		TaskMetadataExample metadataExample = taskMetadataExample;
+
+		List<String> taskIdentifiers = taskMetadataMapper.selectManyIds(metadataExample, 0, fetchLimit);
 		
 		if (taskIdentifiers != null && !taskIdentifiers.isEmpty()) {
-			taskMetadataExample = new TaskMetadataExample();
-			taskMetadataExample.createCriteria().andIdentifierEqualTo(taskIdentifiers.get(taskIdentifiers.size() - 1));
-			List<TaskMetadata> taskMetaDataList = taskMetadataMapper.selectByExample(taskMetadataExample);
-			
-			lastServerVersion = taskMetaDataList != null && !taskMetaDataList.isEmpty()
+			metadataExample = new TaskMetadataExample();
+			metadataExample.createCriteria().andIdentifierEqualTo(taskIdentifiers.get(taskIdentifiers.size() - 1));
+			List<TaskMetadata> taskMetaDataList = taskMetadataMapper.selectByExample(metadataExample);
+
+			serverVersion = taskMetaDataList != null && !taskMetaDataList.isEmpty()
 			        ? taskMetaDataList.get(0).getServerVersion()
 			        : 0;
 			
 		}
 		
-		return Pair.of(taskIdentifiers, lastServerVersion);
+		return Pair.of(taskIdentifiers, serverVersion);
 	}
 	
 	/**

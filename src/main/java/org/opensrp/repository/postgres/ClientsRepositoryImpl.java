@@ -5,8 +5,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
-import org.opensrp.domain.postgres.*;
+import org.opensrp.domain.postgres.ClientExample;
+import org.opensrp.domain.postgres.ClientMetadata;
+import org.opensrp.domain.postgres.ClientMetadataExample;
 import org.opensrp.domain.postgres.ClientMetadataExample.Criteria;
+import org.opensrp.domain.postgres.CustomClient;
+import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
@@ -646,20 +650,22 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	private Pair<List<String>, Long> getClientListLongPair(int limit, Long lastServerVersion,
 	        ClientMetadataExample example) {
+		Long serverVersion = lastServerVersion;
+		ClientMetadataExample clientMetadataExample = example;
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
 		
-		List<String> clientIdentifiers = clientMetadataMapper.selectManyIds(example, 0, fetchLimit);
+		List<String> clientIdentifiers = clientMetadataMapper.selectManyIds(clientMetadataExample, 0, fetchLimit);
 		
 		if (clientIdentifiers != null && !clientIdentifiers.isEmpty()) {
-			example = new ClientMetadataExample();
-			example.createCriteria().andDocumentIdEqualTo(clientIdentifiers.get(clientIdentifiers.size() - 1));
-			List<ClientMetadata> clientMetaDataList = clientMetadataMapper.selectByExample(example);
-			
-			lastServerVersion = clientMetaDataList != null && !clientMetaDataList.isEmpty()
+			clientMetadataExample = new ClientMetadataExample();
+			clientMetadataExample.createCriteria().andDocumentIdEqualTo(clientIdentifiers.get(clientIdentifiers.size() - 1));
+			List<ClientMetadata> clientMetaDataList = clientMetadataMapper.selectByExample(clientMetadataExample);
+
+			serverVersion = clientMetaDataList != null && !clientMetaDataList.isEmpty()
 			        ? clientMetaDataList.get(0).getServerVersion()
 			        : 0;
 		}
-		return Pair.of(clientIdentifiers, lastServerVersion);
+		return Pair.of(clientIdentifiers, serverVersion);
 	}
 	
 	@Override

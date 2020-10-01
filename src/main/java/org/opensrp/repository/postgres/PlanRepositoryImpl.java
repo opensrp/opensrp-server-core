@@ -183,6 +183,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             PlanExample planExample = new PlanExample();
             PlanExample.Criteria criteria = planExample.createCriteria();
             criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
+            planExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 
             if (isDeleted) {
                 criteria.andDateDeletedIsNotNull();
@@ -203,18 +204,20 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
 
     private Pair<List<String>, Long> getPlanListLongPair(int limit, Long lastServerVersion, PlanExample planExample) {
-        planExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
-        List<String> planIdentifiers = planMapper.selectManyIds(planExample, 0, limit);
+        Long serverVersion = lastServerVersion;
+        PlanExample example = planExample;
+
+        List<String> planIdentifiers = planMapper.selectManyIds(example, 0, limit);
 
         if (planIdentifiers != null && !planIdentifiers.isEmpty()) {
-            planExample = new PlanExample();
-            planExample.createCriteria().andIdentifierEqualTo(planIdentifiers.get(planIdentifiers.size() - 1));
-            List<Plan> plans = planMapper.selectByExample(planExample);
+            example = new PlanExample();
+            example.createCriteria().andIdentifierEqualTo(planIdentifiers.get(planIdentifiers.size() - 1));
+            List<Plan> plans = planMapper.selectByExample(example);
 
-            lastServerVersion = plans != null && !plans.isEmpty() ? plans.get(0).getServerVersion() : 0;
+            serverVersion = plans != null && !plans.isEmpty() ? plans.get(0).getServerVersion() : 0;
         }
 
-        return Pair.of(planIdentifiers, lastServerVersion);
+        return Pair.of(planIdentifiers, serverVersion);
     }
 
 

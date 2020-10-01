@@ -500,19 +500,21 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	
 	private Pair<List<String>, Long> getEventListLongPair(int limit, Long lastServerVersion, EventMetadataExample example) {
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
-		
-		List<String> eventIdentifiers = eventMetadataMapper.selectManyIds(example, 0, fetchLimit);
+
+		Long serverVersion = lastServerVersion;
+		EventMetadataExample eventMetadataExample = example;
+		List<String> eventIdentifiers = eventMetadataMapper.selectManyIds(eventMetadataExample, 0, fetchLimit);
 		
 		if (eventIdentifiers != null && !eventIdentifiers.isEmpty()) {
-			example = new EventMetadataExample();
-			example.createCriteria().andDocumentIdEqualTo(eventIdentifiers.get(eventIdentifiers.size() - 1));
-			List<EventMetadata> eventMetaDataList = eventMetadataMapper.selectByExample(example);
-			
-			lastServerVersion = eventMetaDataList != null && !eventMetaDataList.isEmpty()
+			eventMetadataExample = new EventMetadataExample();
+			eventMetadataExample.createCriteria().andDocumentIdEqualTo(eventIdentifiers.get(eventIdentifiers.size() - 1));
+			List<EventMetadata> eventMetaDataList = eventMetadataMapper.selectByExample(eventMetadataExample);
+
+			serverVersion = eventMetaDataList != null && !eventMetaDataList.isEmpty()
 			        ? eventMetaDataList.get(0).getServerVersion()
 			        : 0;
 		}
-		return Pair.of(eventIdentifiers, lastServerVersion);
+		return Pair.of(eventIdentifiers, serverVersion);
 	}
 	
 	@Override
