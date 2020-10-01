@@ -68,5 +68,23 @@ public class IdentifierSourceRepositoryTest extends BaseRepositoryTest  {
 		assertNotNull(updatedIdentifierSource);
 		assertEquals(updatedIdentifierSource.getIdentifier(), "UpdatedTest-1");
 	}
-	
+
+	@Test
+	public void testUpdateIdSourceWithSequenceValue() {
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setIdentifier("Test-1");
+		identifierSource.setBaseCharacterSet("012345");
+		identifierSource.setFirstIdentifierBase("2000000");
+		identifierSource.setMinLength(7);
+		identifierSource.setMaxLength(10);
+
+		identifierSourceRepository.add(identifierSource);
+		assertEquals(2, identifierSourceRepository.getAll().size());
+		IdentifierSource addedIdentifierSource = identifierSourceRepository.findByIdentifier("Test-1");
+		identifierSourceRepository.updateIdSourceWithSequenceValue(addedIdentifierSource, 1234l);
+		IdentifierSource updatedIdentifierSource = identifierSourceRepository.findByIdentifier("Test-1");
+		assertNotNull(updatedIdentifierSource);
+		assertEquals(new Long(1234), updatedIdentifierSource.getSequenceValue());
+	}
+
 }
