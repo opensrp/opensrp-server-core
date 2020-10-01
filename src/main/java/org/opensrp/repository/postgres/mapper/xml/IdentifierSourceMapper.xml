@@ -18,6 +18,7 @@
     <result column="min_length" jdbcType="INTEGER" property="minLength" />
     <result column="max_length" jdbcType="INTEGER" property="maxLength" />
     <result column="regex_format" jdbcType="VARCHAR" property="regexFormat" />
+    <result column="sequence_value" jdbcType="BIGINT" property="sequenceValue" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -94,7 +95,7 @@
       This element was generated on Fri May 08 15:20:02 PKT 2020.
     -->
     id, identifier, description, identifier_validator_algorithm, base_character_set, 
-    first_identifier_base, prefix, suffix, min_length, max_length, regex_format
+    first_identifier_base, prefix, suffix, min_length, max_length, regex_format, sequence_value
   </sql>
   <select id="selectByExample" parameterType="org.opensrp.domain.postgres.IdentifierSourceExample" resultMap="BaseResultMap">
     <!--
@@ -155,13 +156,13 @@
     insert into core.identifier_source (id, identifier, description, 
       identifier_validator_algorithm, base_character_set, 
       first_identifier_base, prefix, suffix, 
-      min_length, max_length, regex_format
-      )
+      min_length, max_length, regex_format, 
+      sequence_value)
     values (#{id,jdbcType=BIGINT}, #{identifier,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
       #{identifierValidatorAlgorithm,jdbcType=VARCHAR}, #{baseCharacterSet,jdbcType=VARCHAR}, 
       #{firstIdentifierBase,jdbcType=VARCHAR}, #{prefix,jdbcType=VARCHAR}, #{suffix,jdbcType=VARCHAR}, 
-      #{minLength,jdbcType=INTEGER}, #{maxLength,jdbcType=INTEGER}, #{RegexFormat,jdbcType=VARCHAR}
-      )
+      #{minLength,jdbcType=INTEGER}, #{maxLength,jdbcType=INTEGER}, #{regexFormat,jdbcType=VARCHAR}, 
+      #{sequenceValue,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.IdentifierSource">
     <!--
@@ -204,6 +205,9 @@
       <if test="regexFormat != null">
         regex_format,
       </if>
+      <if test="sequenceValue != null">
+        sequence_value,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -238,6 +242,9 @@
       </if>
       <if test="regexFormat != null">
         #{regexFormat,jdbcType=VARCHAR},
+      </if>
+      <if test="sequenceValue != null">
+        #{sequenceValue,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -293,6 +300,9 @@
       <if test="record.regexFormat != null">
         regex_format = #{record.regexFormat,jdbcType=VARCHAR},
       </if>
+      <if test="record.sequenceValue != null">
+        sequence_value = #{record.sequenceValue,jdbcType=BIGINT},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -315,7 +325,8 @@
       suffix = #{record.suffix,jdbcType=VARCHAR},
       min_length = #{record.minLength,jdbcType=INTEGER},
       max_length = #{record.maxLength,jdbcType=INTEGER},
-      regex_format = #{record.regexFormat,jdbcType=VARCHAR}
+      regex_format = #{record.regexFormat,jdbcType=VARCHAR},
+      sequence_value = #{record.sequenceValue,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -358,6 +369,9 @@
       <if test="regexFormat != null">
         regex_format = #{regexFormat,jdbcType=VARCHAR},
       </if>
+      <if test="sequenceValue != null">
+        sequence_value = #{sequenceValue,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -377,7 +391,8 @@
       suffix = #{suffix,jdbcType=VARCHAR},
       min_length = #{minLength,jdbcType=INTEGER},
       max_length = #{maxLength,jdbcType=INTEGER},
-      regex_format = #{regexFormat,jdbcType=VARCHAR}
+      regex_format = #{regexFormat,jdbcType=VARCHAR},
+      sequence_value = #{sequenceValue,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

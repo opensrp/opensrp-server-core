@@ -9,4 +9,6 @@ public interface IdentifierSourceRepository extends BaseRepository<IdentifierSou
 
 	void update(IdentifierSource identifierSource);
 
+	void updateIdSourceWithSequenceValue(IdentifierSource identifierSource, Long sequenceValue);
+
 }
