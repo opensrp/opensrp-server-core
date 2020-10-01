@@ -27,6 +27,7 @@ import java.util.UUID;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.MatcherAssert;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.domain.LocationDetail;
 import org.smartregister.domain.Client;
@@ -809,7 +810,38 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("90397", structureIds.get(0));
 		assertEquals(1542376382851l, idsModel.getRight().longValue());
 	}
-	
+
+	@Test
+	public void testFindAllStructureIdsShouldFilterBetweenFromAndToDate() {
+		String date1 = "2020-09-25T10:00:00+0300";
+		String date2 = "2020-09-27T10:00:00+0300";
+
+		Pair<List<String>, Long> idsModel = locationRepository.findAllStructureIds(0l, 2,
+				new DateTime(date1).toDate(), new DateTime(date2).toDate());
+		List<String> structureIds = idsModel.getLeft();
+		assertEquals(2, structureIds.size());
+	}
+
+	@Test
+	public void testFindAllStructureIdsShouldFilterFromDateAsMinimumDate() {
+		String date2 = "2020-09-26T10:00:00+0300";
+
+		Pair<List<String>, Long> idsModel = locationRepository.findAllStructureIds(0l, 2,
+				new DateTime(date2).toDate(), null);
+		List<String> structureIds = idsModel.getLeft();
+		assertEquals(1, structureIds.size());
+	}
+
+	@Test
+	public void testFindAllStructureIdsShouldFilterToDateAsMaximumDate() {
+		String date3 = "2020-09-27T10:00:00+0300";
+
+		Pair<List<String>, Long> idsModel = locationRepository.findAllStructureIds(0l, 2,
+				null, new DateTime(date3).toDate());
+		List<String> structureIds = idsModel.getLeft();
+		assertEquals(2, structureIds.size());
+	}
+
 	@Test
 	public void testSearchlLocationsWithFilters() {
 		LocationTagMap locationTagMap = new LocationTagMap();

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
@@ -667,6 +668,33 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		List<QuestionnaireResponse> questionnaireResponses = eventsRepository.findEventsByEntityIdAndPlan("4355345345431","plan-id-12345");
 		assertEquals(1,questionnaireResponses.size());
 		assertEquals(event.getFormSubmissionId(),questionnaireResponses.get(0).getId());
+	}
+
+	@Test
+	public void testFindIdsByEventTypeShouldFilterBetweenFromDateToDate(){
+		String date1 = "2018-03-19T17:27:29";
+		String date2 = "2019-11-14T17:39:37";
+
+		Pair<List<String>, Long> listLongPair = eventsRepository.findIdsByEventType("",false,0L,10,
+				new DateTime(date1).toDate(), new DateTime(date2).toDate());
+		assertEquals(10, listLongPair.getLeft().size());
+	}
+
+	@Test
+	public void testFindIdsByEventTypeShouldFilterFromDateAsMinimumDate(){
+		String date1 = "2019-11-14T18:57:36";
+
+		Pair<List<String>, Long> listLongPair = eventsRepository.findIdsByEventType("",false,0L,10,
+				new DateTime(date1).toDate(), null);
+		assertEquals(2, listLongPair.getLeft().size());
+	}
+
+	@Test
+	public void testFindIdsByEventTypeShouldFilterToDateAsMaximumDate(){
+		String date1 = "2018-03-19T17:26:00";
+		Pair<List<String>, Long> listLongPair = eventsRepository.findIdsByEventType("",false,0L,10,
+				null, new DateTime(date1).toDate());
+		assertTrue(listLongPair.getLeft().isEmpty());
 	}
 	
 }

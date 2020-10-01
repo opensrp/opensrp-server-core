@@ -701,6 +701,38 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void testGetAllIdsShouldFilterBetweenFromDateAndToDate() {
+		String date1 = "2019-09-25T10:00:00+0300";
+		String date2 = "2019-09-29T10:00:00+0300";
+
+		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 10,
+				false, new DateTime(date1).toDate(), new DateTime(date2).toDate());
+		List<String> clientIds = idsModel.getLeft();
+		assertEquals(5, clientIds.size());
+	}
+
+	@Test
+	public void testGetAllIdsShouldFilterFromDateAsMinimumDate() {
+		String date1 = "2019-09-25T10:00:00+0300";
+
+		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 10,
+				false, new DateTime(date1).toDate(), null);
+		List<String> clientIds = idsModel.getLeft();
+		assertEquals(10, clientIds.size());
+	}
+
+	@Test
+	public void testGetAllIdsShouldFilterToDateAsMaximumDate() {
+		String date1 = "2019-09-24T10:00:00+0300";
+
+		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 10,
+				false, null, new DateTime(date1).toDate());
+		List<String> clientIds = idsModel.getLeft();
+		assertEquals(0, clientIds.size());
+	}
+
+
+	@Test
 	public void testFindByClientTypeAndLocationId() {
 		Client client = new Client("f67823b0-378e-4a35-93fc-bb00def74e24").withLocationId("location-1");
 		client.setClientType("Client-type-1");
