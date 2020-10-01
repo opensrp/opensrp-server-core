@@ -88,6 +88,8 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             return;
         }
 
+        pgPlan.setDateEdited(new Date());
+
         int rowsAffected = planMapper.updateByPrimaryKey(pgPlan);
         if (rowsAffected < 1) {
             return;
