@@ -466,8 +466,8 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	
 	@Override
 	public Pair<List<String>, Long> findIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit,
-	        Long minTime, Long maxTime) {
-		if (minTime == null && maxTime == null) {
+	        Date fromDate, Date toDate) {
+		if (fromDate == null && toDate == null) {
 			return findIdsByEventType(eventType, isDeleted, serverVersion, limit);
 		} else {
 			Long lastServerVersion = null;
@@ -486,12 +486,12 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 				criteria.andDateDeletedIsNull();
 			}
 			
-			if (minTime != null && maxTime != null) {
-				criteria.andDateCreatedBetween(new Date(minTime), new Date(maxTime));
-			} else if (minTime != null) {
-				criteria.andDateCreatedGreaterThanOrEqualTo(new Date(minTime));
+			if (fromDate != null && toDate != null) {
+				criteria.andDateCreatedBetween(fromDate, toDate);
+			} else if (fromDate != null) {
+				criteria.andDateCreatedGreaterThanOrEqualTo(fromDate);
 			} else {
-				criteria.andDateCreatedLessThanOrEqualTo(new Date(maxTime));
+				criteria.andDateCreatedLessThanOrEqualTo(toDate);
 			}
 			
 			return getEventListLongPair(limit, lastServerVersion, example);

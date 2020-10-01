@@ -173,8 +173,8 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
 
     @Override
-    public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted, Long minTime, Long maxTime) {
-        if (maxTime == null && minTime == null) {
+    public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted, Date fromDate, Date toDate) {
+        if (toDate == null && fromDate == null) {
             return findAllIds(serverVersion, limit, isDeleted);
         } else {
             Long lastServerVersion = null;
@@ -188,12 +188,12 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
                 criteria.andDateDeletedIsNull();
             }
 
-            if (maxTime != null && minTime != null) {
-                criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
-            } else if(minTime!=null){
-                criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
+            if (toDate != null && fromDate != null) {
+                criteria.andDateCreatedBetween(fromDate, toDate);
+            } else if(fromDate !=null){
+                criteria.andDateCreatedGreaterThanOrEqualTo(fromDate);
             } else{
-                criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
+                criteria.andDateCreatedLessThanOrEqualTo(toDate);
             }
 
             return getPlanListLongPair(limit, lastServerVersion, planExample);

@@ -6,6 +6,7 @@ import static org.smartregister.domain.LocationProperty.PropertyStatus.PENDING_R
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -260,12 +261,12 @@ public class PhysicalLocationService {
 	 * 
 	 * @param serverVersion
 	 * @param limit
-	 * @param minTime
-	 * @param maxTime
+	 * @param fromDate
+	 * @param toDate
 	 * @return
 	 */
-	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit, Long minTime, Long maxTime) {
-		return locationRepository.findAllStructureIds(serverVersion, limit, minTime, maxTime);
+	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit, Date fromDate, Date toDate) {
+		return locationRepository.findAllStructureIds(serverVersion, limit, fromDate, toDate);
 	}
 	
 	/**
@@ -317,12 +318,12 @@ public class PhysicalLocationService {
 	 * 
 	 * @param serverVersion
 	 * @param limit
-	 * @param minTime
-	 * @param maxTime
+	 * @param fromDate
+	 * @param toDate
 	 * @return
 	 */
-	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit, Long minTime, Long maxTime) {
-		return locationRepository.findAllLocationIds(serverVersion, limit, minTime, maxTime);
+	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit, Date fromDate, Date toDate) {
+		return locationRepository.findAllLocationIds(serverVersion, limit, fromDate, toDate);
 	}
 	
 	public List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {

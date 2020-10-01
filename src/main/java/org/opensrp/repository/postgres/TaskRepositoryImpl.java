@@ -145,8 +145,8 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 	
 	@Override
-	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Long minTime, Long maxTime) {
-		if (maxTime == null && minTime == null) {
+	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Date fromDate, Date toDate) {
+		if (toDate == null && fromDate == null) {
 			return findAllIds(serverVersion, limit);
 		} else {
 			Long lastServerVersion = null;
@@ -155,12 +155,12 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 			criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
 			taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 			
-			if (maxTime != null && minTime != null) {
-				criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
-			} else if (minTime != null) {
-				criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
+			if (toDate != null && fromDate != null) {
+				criteria.andDateCreatedBetween(fromDate, toDate);
+			} else if (fromDate != null) {
+				criteria.andDateCreatedGreaterThanOrEqualTo(fromDate);
 			} else {
-				criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
+				criteria.andDateCreatedLessThanOrEqualTo(toDate);
 			}
 			
 			return getTaskListLongPair(limit, lastServerVersion, taskMetadataExample);
@@ -323,6 +323,10 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		taskMetadata.setServerVersion(entity.getServerVersion());
 		taskMetadata.setOwner(entity.getOwner());
 		taskMetadata.setCode(entity.getCode());
+
+		if(id != null) {
+			taskMetadata.setDateEdited(new Date());
+		}
 		return taskMetadata;
 	}
 	

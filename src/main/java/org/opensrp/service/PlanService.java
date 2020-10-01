@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -225,13 +226,13 @@ public class PlanService {
 	 * @param serverVersion
 	 * @param limit
 	 * @param isDeleted
-	 * @param minTime
-	 * @param maxTime
+	 * @param fromDate
+	 * @param toDate
 	 * @return
 	 */
-	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted, Long minTime,
-	        Long maxTime) {
-		return planRepository.findAllIds(serverVersion, limit, isDeleted, minTime, maxTime);
+	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted, Date fromDate,
+	        Date toDate) {
+		return planRepository.findAllIds(serverVersion, limit, isDeleted, fromDate, toDate);
 	}
 	
 	/**

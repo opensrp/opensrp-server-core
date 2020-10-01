@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -395,10 +396,20 @@ public class EventService {
 	        int limit) {
 		return allEvents.findIdsByEventType(eventType, isDeleted, serverVersion, limit);
 	}
-	
+
+	/**
+	 * overrides {@link #findAllIdsByEventType(String, boolean, Long, int)} by adding date filters
+	 * @param eventType
+	 * @param isDeleted
+	 * @param serverVersion
+	 * @param limit
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
 	public Pair<List<String>, Long> findAllIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit,
-	        Long minTime, Long maxTime) {
-		return allEvents.findIdsByEventType(eventType, isDeleted, serverVersion, limit, minTime, maxTime);
+	        Date fromDate, Date toDate) {
+		return allEvents.findIdsByEventType(eventType, isDeleted, serverVersion, limit, fromDate, toDate);
 	}
 	
 	/**

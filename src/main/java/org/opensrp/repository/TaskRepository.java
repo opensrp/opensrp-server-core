@@ -1,5 +1,6 @@
 package org.opensrp.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,11 +26,11 @@ public interface TaskRepository extends BaseRepository<Task>, TaskDao {
 	 * overloads {@link #findAllIds(Long, int)} by adding date/time filters
 	 * @param serverVersion
 	 * @param limit
-	 * @param minTime
-	 * @param maxTime
+	 * @param fromDate
+	 * @param toDate
 	 * @return
 	 */
-	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Long minTime, Long maxTime);
+	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, Date fromDate, Date toDate);
 
 	/**
 	 *  This method searches for tasks ordered by serverVersion ascending

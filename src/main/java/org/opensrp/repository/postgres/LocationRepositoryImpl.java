@@ -380,8 +380,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 	
 	@Override
-	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit, Long minTime, Long maxTime) {
-		if (minTime == null && maxTime == null) {
+	public Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit, Date fromDate, Date toDate) {
+		if (fromDate == null && toDate == null) {
 			return findAllStructureIds(serverVersion, limit);
 		} else {
 			Long lastServerVersion = null;
@@ -389,12 +389,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 			StructureMetadataExample.Criteria criteria = structureMetadataExample.createCriteria();
 			criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
-			if (maxTime != null && minTime != null) {
-				criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
-			} else if (minTime != null) {
-				criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
+			if (toDate != null && fromDate != null) {
+				criteria.andDateCreatedBetween(fromDate, toDate);
+			} else if (fromDate != null) {
+				criteria.andDateCreatedGreaterThanOrEqualTo(fromDate);
 			} else {
-				criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
+				criteria.andDateCreatedLessThanOrEqualTo(toDate);
 			}
 			
 			return getStructuresListLongPair(limit, lastServerVersion, structureMetadataExample);
@@ -503,8 +503,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 	
 	@Override
-	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit, Long minTime, Long maxTime) {
-		if (minTime == null && maxTime == null) {
+	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit, Date fromDate, Date toDate) {
+		if (fromDate == null && toDate == null) {
 			return findAllLocationIds(serverVersion, limit);
 		} else {
 			Long lastServerVersion = null;
@@ -512,12 +512,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			LocationMetadataExample.Criteria criteria = locationMetadataExample.createCriteria();
 			criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
 			locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
-			if (maxTime != null && minTime != null) {
-				criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
-			} else if (minTime != null) {
-				criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
+			if (toDate != null && fromDate != null) {
+				criteria.andDateCreatedBetween(fromDate, toDate);
+			} else if (fromDate != null) {
+				criteria.andDateCreatedGreaterThanOrEqualTo(fromDate);
 			} else {
-				criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
+				criteria.andDateCreatedLessThanOrEqualTo(toDate);
 			}
 			return getLocationListLongPair(limit, lastServerVersion, locationMetadataExample);
 		}
@@ -754,6 +754,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			locationMetadata.setVersion(entity.getProperties().getVersion());
 		}
 		locationMetadata.setServerVersion(entity.getServerVersion());
+
+		if(id != null){
+			locationMetadata.setDateEdited(new Date());
+		}
 		return locationMetadata;
 	}
 	
@@ -771,6 +775,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 			}
 		}
 		structureMetadata.setServerVersion(entity.getServerVersion());
+
+		if(id != null){
+			structureMetadata.setDateEdited(new Date());
+		}
 		return structureMetadata;
 	}
 	

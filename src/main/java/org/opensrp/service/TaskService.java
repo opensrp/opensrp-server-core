@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -135,12 +136,12 @@ public class TaskService {
 	 * 
 	 * @param serverVersion
 	 * @param limit
-	 * @param minTime
-	 * @param maxTime
+	 * @param fromDate
+	 * @param toDate
 	 * @return
 	 */
-	public Pair<List<String>, Long> findAllTaskIds(Long serverVersion, int limit, Long minTime, Long maxTime) {
-		return taskRepository.findAllIds(serverVersion, limit, minTime, maxTime);
+	public Pair<List<String>, Long> findAllTaskIds(Long serverVersion, int limit, Date fromDate, Date toDate) {
+		return taskRepository.findAllIds(serverVersion, limit, fromDate, toDate);
 	}
 	
 	/**

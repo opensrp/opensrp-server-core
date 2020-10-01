@@ -1,6 +1,7 @@
 package org.opensrp.repository;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -65,13 +66,13 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	 * overloads {@link #findIdsByEventType(String, boolean, Long, int)} by adding date/time filters
 	 * @param serverVersion
 	 * @param limit
-	 * @param minTime
-	 * @param maxTime
+	 * @param fromDate
+	 * @param toDate
 	 * @return
 	 */
 	Pair<List<String>, Long> findIdsByEventType(String eventType, boolean isDeleted,
 												Long serverVersion, int limit,
-												Long minTime, Long maxTime);
+												Date fromDate, Date toDate);
 
 	/**Updates an event
 	 * @param entity the event to be updated

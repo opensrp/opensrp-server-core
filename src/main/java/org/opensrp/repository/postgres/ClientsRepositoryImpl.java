@@ -377,7 +377,11 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 			clientMetadata.setFirstName(client.getFirstName());
 			clientMetadata.setMiddleName(client.getMiddleName());
 			clientMetadata.setLastName(client.getLastName());
-			
+
+			if(clientId != null){
+				clientMetadata.setDateEdited(new Date());
+			}
+
 			String relationalId = null;
 			Map<String, List<String>> relationShips = client.getRelationships();
 			if (relationShips != null && !relationShips.isEmpty()) {
@@ -613,9 +617,9 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
-	public Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived, Long minTime,
-	        Long maxTime) {
-		if (maxTime == null && minTime == null) {
+	public Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived, Date fromDate,
+	        Date toDate) {
+		if (toDate == null && fromDate == null) {
 			return findAllIds(serverVersion, limit, isArchived);
 		} else {
 			Long lastServerVersion = null;
@@ -628,12 +632,12 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 				criteria.andDateDeletedIsNull();
 			}
 			
-			if (maxTime != null && minTime != null) {
-				criteria.andCreatedAtBetween(new Date(minTime), new Date(maxTime));
-			} else if (minTime != null) {
-				criteria.andCreatedAtGreaterThanOrEqualTo(new Date(minTime));
+			if (toDate != null && fromDate != null) {
+				criteria.andDateCreatedBetween(fromDate, toDate);
+			} else if (fromDate != null) {
+				criteria.andDateCreatedGreaterThanOrEqualTo(fromDate);
 			} else {
-				criteria.andCreatedAtLessThanOrEqualTo(new Date(maxTime));
+				criteria.andDateCreatedLessThanOrEqualTo(toDate);
 			}
 			
 			return getClientListLongPair(limit, lastServerVersion, example);

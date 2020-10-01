@@ -351,13 +351,13 @@ public class ClientService {
 	 * overloads {@link #findAllIds(long, int, boolean)} by adding date/time filters
 	 * @param serverVersion
 	 * @param limit
-	 * @param minTime
-	 * @param maxTime
+	 * @param fromDate
+	 * @param toDate
 	 * @return
 	 */
-	public Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived, Long minTime,
-	        Long maxTime) {
-		return allClients.findAllIds(serverVersion, limit, isArchived, minTime, maxTime);
+	public Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived, Date fromDate,
+	        Date toDate) {
+		return allClients.findAllIds(serverVersion, limit, isArchived, fromDate, toDate);
 	}
 	
 	public List<Client> findByClientTypeAndLocationId(String clientType, String locationId) {
