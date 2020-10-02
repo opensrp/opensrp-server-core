@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Test;
 import org.smartregister.domain.Task;
 import org.smartregister.domain.Task.TaskStatus;
@@ -234,21 +235,24 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 	public void testFindAllIdsShouldFilterBetweenFromAndToDate(){
 		String date1 = "2020-09-25T10:00:00+0300";
 		String date3 = "2020-09-27T10:00:00+0300";
-		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l,2, new DateTime(date1).toDate(), new DateTime(date3).toDate());
+		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l,2,
+				new DateTime(date1, DateTimeZone.UTC).toDate(), new DateTime(date3, DateTimeZone.UTC).toDate());
 		assertEquals(2, idsModel.getLeft().size());
 	}
 
 	@Test
 	public void testFindAllIdsShouldFilterFromDateAsMinimumDate(){
 		String date2 = "2020-09-26T10:00:00+0300";
-		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l,2, new DateTime(date2).toDate(), null);
+		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l,2,
+				new DateTime(date2, DateTimeZone.UTC).toDate(), null);
 		assertEquals(1, idsModel.getLeft().size());
 	}
 
 	@Test
 	public void testFindAllIdsShouldFilterFromToDateAsMaximumDate(){
 		String date1 = "2020-09-25T10:00:00+0300";
-		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l,2, null, new DateTime(date1).toDate());
+		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l,2,
+				null, new DateTime(date1, DateTimeZone.UTC).toDate());
 		assertEquals(1, idsModel.getLeft().size());
 	}
 
