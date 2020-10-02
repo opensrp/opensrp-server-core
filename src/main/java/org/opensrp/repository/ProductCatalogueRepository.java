@@ -13,4 +13,6 @@ public interface ProductCatalogueRepository extends BaseRepository<ProductCatalo
 
 	void safeRemove(Long id);
 
+	ProductCatalogue getProductCatalogueByName(String productName);
+
 }

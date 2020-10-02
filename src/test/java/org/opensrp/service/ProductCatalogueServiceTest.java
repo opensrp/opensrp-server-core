@@ -6,7 +6,6 @@ import org.opensrp.domain.ProductCatalogue;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.search.ProductCatalogueSearchBean;
-import org.opensrp.util.ProductType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -62,8 +61,7 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 		productCatalogueService.update(productCatalogue);
 		ProductCatalogue updatedProductCatalogue = productCatalogueService.getProductCatalogue(1l);
 		assertEquals("Updated Product Name", updatedProductCatalogue.getProductName());
-		assertEquals(ProductType.CONSUMEABLE.name(), updatedProductCatalogue.getProductType().name());
-	}
+		}
 
 	@Test
 	public void testDeleteProductCatalogueById() {
@@ -81,9 +79,7 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 		ProductCatalogue productCatalogue = new ProductCatalogue();
 		ArrayList<String> sections = new ArrayList<>();
 		sections.add("Health");
-		productCatalogue.setSections(sections);
 		productCatalogue.setProductName("Product A");
-		productCatalogue.setProductType(ProductType.CONSUMEABLE);
 		productCatalogue.setAvailability("available");
 		productCatalogue.setCondition("good condition");
 		productCatalogue.setAppropriateUsage("staff is trained to use it appropriately");

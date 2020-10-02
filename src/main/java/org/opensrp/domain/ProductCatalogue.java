@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.opensrp.util.ProductType;
 
 import java.util.ArrayList;
 
@@ -20,9 +19,9 @@ public class ProductCatalogue {
 
 	private String productName;
 
-	private ProductType productType;
+	private Boolean isAttractiveItem;
 
-	private ArrayList<String> sections;
+	private String serialId;
 
 	private String availability;
 

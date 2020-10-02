@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.opensrp.domain.ProductCatalogue;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.search.ProductCatalogueSearchBean;
-import org.opensrp.util.ProductType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -72,7 +71,6 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 	public void testGetById() {
 		ProductCatalogue productCatalogue = productCatalogueRepository.getById(1l);
 		assertEquals("Midwifery Kit", productCatalogue.getProductName());
-		assertEquals(ProductType.CONSUMEABLE.name(), productCatalogue.getProductType().name());
 	}
 
 	@Test
@@ -82,7 +80,6 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean);
 		assertEquals(1,productCatalogues.size());
 		assertEquals("Midwifery Kit", productCatalogues.get(0).getProductName());
-		assertEquals(ProductType.CONSUMEABLE.name(), productCatalogues.get(0).getProductType().name());
 
 	}
 
@@ -90,9 +87,7 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 		ProductCatalogue productCatalogue = new ProductCatalogue();
 		ArrayList<String> sections = new ArrayList<>();
 		sections.add("Health");
-		productCatalogue.setSections(sections);
 		productCatalogue.setProductName("Product A");
-		productCatalogue.setProductType(ProductType.CONSUMEABLE);
 		productCatalogue.setAvailability("available");
 		productCatalogue.setCondition("good condition");
 		productCatalogue.setAppropriateUsage("staff is trained to use it appropriately");

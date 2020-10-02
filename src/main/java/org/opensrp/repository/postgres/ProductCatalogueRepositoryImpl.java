@@ -103,9 +103,6 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 			criteria.andUniqueIdEqualTo(productCatalogue.getUniqueId());
 		} else {
 			criteria.andProductNameEqualTo(productCatalogue.getProductName());
-			if (productCatalogue.getProductType() != null) {
-				criteria.andTypeEqualTo(productCatalogue.getProductType().name());
-			}
 		}
 
 		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = customProductCatalogueMapper
@@ -150,6 +147,15 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 		customProductCatalogueMapper.deleteByPrimaryKey(uniqueId);
 	}
 
+	@Override
+	public ProductCatalogue getProductCatalogueByName(String productName) {
+		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
+		productCatalogueExample.createCriteria().andProductNameEqualTo(productName);
+		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = customProductCatalogueMapper
+				.selectOne(productCatalogueExample);
+		return convert(pgProductCatalogue);
+	}
+
 	private List<ProductCatalogue> convert(List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues) {
 		if (productCatalogues == null || productCatalogues.isEmpty()) {
 			return new ArrayList<>();
@@ -185,8 +191,6 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 		pgProductCatalogue.setUniqueId(primaryKey);
 		pgProductCatalogue.setJson(productCatalogue);
 		pgProductCatalogue.setProductName(productCatalogue.getProductName());
-		pgProductCatalogue.setType(
-				productCatalogue.getProductType() != null ? productCatalogue.getProductType().name() : null);
 		pgProductCatalogue.setServerVersion(productCatalogue.getServerVersion());
 
 		return pgProductCatalogue;
@@ -203,10 +207,6 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 
 		if (StringUtils.isNotEmpty(productCatalogueSearchBean.getProductName()))
 			criteria.andProductNameEqualTo(productCatalogueSearchBean.getProductName());
-
-		if (productCatalogueSearchBean.getProductType() != null && StringUtils
-				.isNotEmpty(productCatalogueSearchBean.getProductType().name()))
-			criteria.andTypeEqualTo(productCatalogueSearchBean.getProductType().name());
 
 		if (productCatalogueSearchBean.getUniqueId() != null && productCatalogueSearchBean.getUniqueId() != 0)
 			criteria.andUniqueIdEqualTo(productCatalogueSearchBean.getUniqueId());

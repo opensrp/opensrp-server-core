@@ -60,25 +60,28 @@ public class ProductCatalogueService {
 	}
 
 	public List<ProductCatalogue> getProductCatalogues(ProductCatalogueSearchBean productCatalogueSearchBean) {
-		if (StringUtils.isBlank(productCatalogueSearchBean.getProductName()) && (productCatalogueSearchBean.getProductType() == null ||
-				(productCatalogueSearchBean.getProductType() != null
-				&& StringUtils.isBlank(productCatalogueSearchBean.getProductType().name()))) && productCatalogueSearchBean.getUniqueId() == 0
+		if (StringUtils.isBlank(productCatalogueSearchBean.getProductName()) &&
+				productCatalogueSearchBean.getUniqueId() == 0
 				&& productCatalogueSearchBean.getServerVersion() == null) {
 			return findAllSupplyCatalogs();
-		}
-		else {
+		} else {
 			return productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean);
 		}
+	}
+
+	public ProductCatalogue getProductCatalogueByName(String productName) {
+		return productCatalogueRepository.getProductCatalogueByName(productName);
 	}
 
 	private void validateFields(ProductCatalogue productCatalogue) {
 		if (StringUtils.isBlank(productCatalogue.getProductName())) {
 			throw new IllegalArgumentException("Product Name was not specified");
-		} else if (productCatalogue.getProductType() != null && StringUtils.isBlank(
-				productCatalogue.getProductType().name())) {
-			throw new IllegalArgumentException("Supply Product Type was not specified");
-		} else if (productCatalogue.getSections() == null || productCatalogue.getSections().size() == 0) {
-			throw new IllegalArgumentException("Unicef sections was not specified");
+		} else if (productCatalogue.getIsAttractiveItem() == null) {
+			throw new IllegalArgumentException("Is attractive item selection was not made");
+		} else if (productCatalogue.getIsAttractiveItem() == true) {
+			if (productCatalogue.getSerialId() == null) {
+				throw new IllegalArgumentException("Serial Id was not specified");
+			}
 		} else if (StringUtils.isBlank(productCatalogue.getAvailability())) {
 			throw new IllegalArgumentException("The availability text was not specified");
 		} else if (StringUtils.isBlank(productCatalogue.getCondition())) {
