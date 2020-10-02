@@ -1,6 +1,8 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.smartregister.domain.PlanDefinition;
@@ -38,6 +40,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
     @Override
     protected Set<String> getDatabaseScripts() {
         Set<String> scripts = new HashSet<>();
+        scripts.add("plan.sql");
         return scripts;
     }
 
@@ -63,7 +66,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(plans.size(), 2);
+        assertEquals(6, plans.size());
 
         Set<String> ids = new HashSet<>();
         ids.add("identifier_1");
@@ -121,7 +124,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(plans.size(), 1);
+        assertEquals(5, plans.size());
 
         Set<String> ids = new HashSet<>();
         ids.add("identifier_4");
@@ -182,7 +185,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(plans.size(), 2);
+        assertEquals(6,plans.size());
 
         Set<String> ids = new HashSet<>();
         ids.add("identifier_6");
@@ -212,12 +215,11 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(plans.size(), 2);
+        assertEquals(6, plans.size());
 
         planRepository.safeRemove(plan);
         plans = planRepository.getAll();
-        assertEquals(plans.size(), 1);
-        assertEquals(planRepository.getAll().get(0).getIdentifier(), "identifier_7");
+        assertEquals(5, plans.size());
     }
 
     @Test
@@ -258,7 +260,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(2l, null,false);
-        assertEquals(plans.size(), 2);
+        assertEquals(2, plans.size());
         testIfAllIdsExists(plans, ids);
     }
 
@@ -369,16 +371,16 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(plans.size(), 1);
+        assertEquals(5, plans.size());
 
         List<String> fields = new ArrayList<>();
         fields.add("identifier");
         fields.add("name");
 
         plans = planRepository.getPlansByIdsReturnOptionalFields(Collections.singletonList("identifier_7"), fields,false);
-        assertEquals(plans.size(), 1);
+        assertEquals(1, plans.size());
         assertEquals("identifier_7", plans.get(0).getIdentifier());
-        assertEquals("Focus Investigation", planRepository.getAll().get(0).getName());
+        assertEquals("Focus Investigation", plans.get(0).getName());
         assertEquals(null, plans.get(0).getVersion());
         assertEquals(null, plans.get(0).getTitle());
         assertEquals(null, plans.get(0).getStatus());
@@ -457,7 +459,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 1, false);
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(2l, 1, false);
 
         List<String> planids = planIdsObject.getLeft();
         assertEquals(1, planids.size());
@@ -489,7 +491,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 10, false);
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(2l, 10, false);
 
         List<String> planids = planIdsObject.getLeft();
         assertEquals(2, planids.size());
@@ -497,6 +499,34 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         assertEquals("identifier_6", planids.get(0));
         assertEquals("identifier_7", planids.get(1));
         assertEquals(1235l, planIdsObject.getRight().longValue());
+    }
+
+    @Test
+    public void testGetAllIdsShouldFilterBetweenFromDateAndToDate() {
+        String date1 = "2019-09-25T10:00:00+0300";
+        String date2 = "2019-09-29T10:00:00+0300";
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0L, 3, false,
+                new DateTime(date1, DateTimeZone.UTC).toDate(), new DateTime(date2,DateTimeZone.UTC).toDate());
+        List<String> planids = planIdsObject.getLeft();
+        assertEquals(3, planids.size());
+    }
+
+    @Test
+    public void testGetAllIdsShouldFilterFromDateAsMinimumDate() {
+        String date1 = "2019-09-24T10:00:00+0300";
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0L, 3, false,
+                new DateTime(date1, DateTimeZone.UTC).toDate(), null);
+        List<String> planids = planIdsObject.getLeft();
+        assertEquals(3, planids.size());
+    }
+
+    @Test
+    public void testGetAllIdsShouldFilterToDateAsMaximumDate() {
+        String date1 = "2019-09-26T11:00:00+0300";
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0L, 3, false,
+                null, new DateTime(date1, DateTimeZone.UTC).toDate());
+        List<String> planids = planIdsObject.getLeft();
+        assertEquals(1, planids.size());
     }
 
     @Test
