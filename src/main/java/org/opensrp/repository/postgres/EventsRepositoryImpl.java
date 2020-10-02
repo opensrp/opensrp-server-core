@@ -500,7 +500,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	
 	private Pair<List<String>, Long> getEventListLongPair(int limit, Long lastServerVersion, EventMetadataExample example) {
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
-
+		
 		Long serverVersion = lastServerVersion;
 		EventMetadataExample eventMetadataExample = example;
 		List<String> eventIdentifiers = eventMetadataMapper.selectManyIds(eventMetadataExample, 0, fetchLimit);
@@ -509,7 +509,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 			eventMetadataExample = new EventMetadataExample();
 			eventMetadataExample.createCriteria().andDocumentIdEqualTo(eventIdentifiers.get(eventIdentifiers.size() - 1));
 			List<EventMetadata> eventMetaDataList = eventMetadataMapper.selectByExample(eventMetadataExample);
-
+			
 			serverVersion = eventMetaDataList != null && !eventMetaDataList.isEmpty()
 			        ? eventMetaDataList.get(0).getServerVersion()
 			        : 0;

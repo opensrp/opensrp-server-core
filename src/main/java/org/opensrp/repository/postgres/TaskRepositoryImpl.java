@@ -172,14 +172,14 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
 		Long serverVersion = lastServerVersion;
 		TaskMetadataExample metadataExample = taskMetadataExample;
-
+		
 		List<String> taskIdentifiers = taskMetadataMapper.selectManyIds(metadataExample, 0, fetchLimit);
 		
 		if (taskIdentifiers != null && !taskIdentifiers.isEmpty()) {
 			metadataExample = new TaskMetadataExample();
 			metadataExample.createCriteria().andIdentifierEqualTo(taskIdentifiers.get(taskIdentifiers.size() - 1));
 			List<TaskMetadata> taskMetaDataList = taskMetadataMapper.selectByExample(metadataExample);
-
+			
 			serverVersion = taskMetaDataList != null && !taskMetaDataList.isEmpty()
 			        ? taskMetaDataList.get(0).getServerVersion()
 			        : 0;
@@ -325,8 +325,8 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		taskMetadata.setServerVersion(entity.getServerVersion());
 		taskMetadata.setOwner(entity.getOwner());
 		taskMetadata.setCode(entity.getCode());
-
-		if(id != null) {
+		
+		if (id != null) {
 			taskMetadata.setDateEdited(new Date());
 		}
 		return taskMetadata;
