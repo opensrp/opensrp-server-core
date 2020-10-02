@@ -522,7 +522,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testGetAllIdsShouldFilterToDateAsMaximumDate() {
-        String date1 = "2019-09-26T11:00:00+0300";
+        String date1 = "2019-09-27T09:00:00+0300";
         Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0L, 3, false,
                 null, new DateTime(date1, DateTimeZone.UTC).toDate());
         List<String> planids = planIdsObject.getLeft();
