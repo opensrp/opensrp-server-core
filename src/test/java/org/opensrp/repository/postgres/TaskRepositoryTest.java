@@ -250,10 +250,10 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testFindAllIdsShouldFilterFromToDateAsMaximumDate(){
-		String date1 = "2020-09-25T10:00:00+0300";
+		String date1 = "2020-09-27T10:00:00+0300";
 		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l,2,
 				null, new DateTime(date1, DateTimeZone.UTC).toDate());
-		assertEquals(1, idsModel.getLeft().size());
+		assertEquals(2, idsModel.getLeft().size());
 	}
 
 	@Test
