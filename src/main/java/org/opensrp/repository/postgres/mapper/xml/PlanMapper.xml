@@ -9,7 +9,7 @@
     -->
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="identifier" jdbcType="VARCHAR" property="identifier" />
-    <result column="json" jdbcType="OTHER" property="json" />
+    <result column="json" jdbcType="OTHER" property="json" typeHandler="org.opensrp.repository.postgres.handler.PlanTypeHandler" />
     <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted" />
     <result column="server_version" jdbcType="BIGINT" property="serverVersion" />
     <result column="experimental" jdbcType="BIT" property="experimental" />
@@ -45,6 +45,25 @@
                 </when>
               </choose>
             </foreach>
+            <foreach collection="criteria.jsonCriteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler} and #{criterion.secondValue,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
           </trim>
         </if>
       </foreach>
@@ -75,6 +94,25 @@
                   and ${criterion.condition}
                   <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
                     #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.jsonCriteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler} and #{criterion.secondValue,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler}
                   </foreach>
                 </when>
               </choose>
@@ -151,7 +189,7 @@
     insert into core.plan (id, identifier, json, 
       date_deleted, server_version, experimental, 
       date_created, date_edited)
-    values (#{id,jdbcType=BIGINT}, #{identifier,jdbcType=VARCHAR}, #{json,jdbcType=OTHER}, 
+    values (#{id,jdbcType=BIGINT}, #{identifier,jdbcType=VARCHAR}, #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler},
       #{dateDeleted,jdbcType=TIMESTAMP}, #{serverVersion,jdbcType=BIGINT}, #{experimental,jdbcType=BIT}, 
       #{dateCreated,jdbcType=TIMESTAMP}, #{dateEdited,jdbcType=TIMESTAMP})
   </insert>
@@ -196,7 +234,7 @@
         #{identifier,jdbcType=VARCHAR},
       </if>
       <if test="json != null">
-        #{json,jdbcType=OTHER},
+        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler},
       </if>
       <if test="dateDeleted != null">
         #{dateDeleted,jdbcType=TIMESTAMP},
@@ -241,7 +279,7 @@
         identifier = #{record.identifier,jdbcType=VARCHAR},
       </if>
       <if test="record.json != null">
-        json = #{record.json,jdbcType=OTHER},
+        json = #{record.json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler},
       </if>
       <if test="record.dateDeleted != null">
         date_deleted = #{record.dateDeleted,jdbcType=TIMESTAMP},
@@ -272,7 +310,7 @@
     update core.plan
     set id = #{record.id,jdbcType=BIGINT},
       identifier = #{record.identifier,jdbcType=VARCHAR},
-      json = #{record.json,jdbcType=OTHER},
+      json = #{record.json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler},
       date_deleted = #{record.dateDeleted,jdbcType=TIMESTAMP},
       server_version = #{record.serverVersion,jdbcType=BIGINT},
       experimental = #{record.experimental,jdbcType=BIT},
@@ -294,7 +332,7 @@
         identifier = #{identifier,jdbcType=VARCHAR},
       </if>
       <if test="json != null">
-        json = #{json,jdbcType=OTHER},
+        json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler},
       </if>
       <if test="dateDeleted != null">
         date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
@@ -322,7 +360,7 @@
     -->
     update core.plan
     set identifier = #{identifier,jdbcType=VARCHAR},
-      json = #{json,jdbcType=OTHER},
+      json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler},
       date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
       server_version = #{serverVersion,jdbcType=BIGINT},
       experimental = #{experimental,jdbcType=BIT},

@@ -155,19 +155,49 @@ public class PlanExample {
      * @mbg.generated Wed Sep 30 15:22:34 EAT 2020
      */
     protected abstract static class GeneratedCriteria {
+        protected List<Criterion> jsonCriteria;
+        protected List<Criterion> allCriteria;
         protected List<Criterion> criteria;
 
         protected GeneratedCriteria() {
             super();
             criteria = new ArrayList<>();
+            jsonCriteria = new ArrayList<>();
+        }
+
+        public List<Criterion> getJsonCriteria() {
+            return jsonCriteria;
+        }
+
+        protected void addJsonCriterion(String condition, Object value, String property) {
+            if (value == null) {
+                throw new IllegalArgumentException("Value for " + property + " cannot be null");
+            }
+            jsonCriteria
+                    .add(new Criterion(condition, value, "org.opensrp.repository.postgres.handler.PlanTypeHandler"));
+            allCriteria = null;
+        }
+
+        protected void addJsonCriterion(String condition, Object value1, Object value2, String property) {
+            if (value1 == null || value2 == null) {
+                throw new IllegalArgumentException("Between values for " + property + " cannot be null");
+            }
+            jsonCriteria.add(new Criterion(condition, value1, value2,
+                    "org.opensrp.repository.postgres.handler.PlanTypeHandler"));
+            allCriteria = null;
         }
 
         public boolean isValid() {
-            return criteria.size() > 0;
+            return criteria.size() > 0 || jsonCriteria.size() > 0;
         }
 
         public List<Criterion> getAllCriteria() {
-            return criteria;
+            if (allCriteria == null) {
+                allCriteria = new ArrayList<>();
+                allCriteria.addAll(criteria);
+                allCriteria.addAll(jsonCriteria);
+            }
+            return allCriteria;
         }
 
         public List<Criterion> getCriteria() {
