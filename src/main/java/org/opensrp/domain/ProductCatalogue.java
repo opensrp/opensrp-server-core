@@ -30,7 +30,5 @@ public class ProductCatalogue {
 
 	private Integer accountabilityPeriod;
 
-	private String photoPath;
-
 	private Long serverVersion;
 }
