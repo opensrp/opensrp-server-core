@@ -78,10 +78,8 @@ public class ProductCatalogueService {
 			throw new IllegalArgumentException("Product Name was not specified");
 		} else if (productCatalogue.getIsAttractiveItem() == null) {
 			throw new IllegalArgumentException("Is attractive item selection was not made");
-		} else if (productCatalogue.getIsAttractiveItem() == true) {
-			if (productCatalogue.getSerialId() == null) {
-				throw new IllegalArgumentException("Serial Id was not specified");
-			}
+		} else if (productCatalogue.getIsAttractiveItem() && StringUtils.isBlank(productCatalogue.getMaterialNumber())) {
+			throw new IllegalArgumentException("Material Number was not specified");
 		} else if (StringUtils.isBlank(productCatalogue.getAvailability())) {
 			throw new IllegalArgumentException("The availability text was not specified");
 		} else if (StringUtils.isBlank(productCatalogue.getCondition())) {

@@ -61,7 +61,15 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 		productCatalogueService.update(productCatalogue);
 		ProductCatalogue updatedProductCatalogue = productCatalogueService.getProductCatalogue(1l);
 		assertEquals("Updated Product Name", updatedProductCatalogue.getProductName());
-		}
+	}
+
+	@Test
+	public void testGetProductCatalogueByName() {
+		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogueByName("Midwifery Kit");
+		assertEquals(new Long(1l), productCatalogue.getUniqueId());
+		assertEquals(true, productCatalogue.getIsAttractiveItem());
+		assertEquals("AX-123", productCatalogue.getMaterialNumber());
+	}
 
 	@Test
 	public void testDeleteProductCatalogueById() {
@@ -77,9 +85,9 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 
 	private ProductCatalogue createProductCatalogue() {
 		ProductCatalogue productCatalogue = new ProductCatalogue();
-		ArrayList<String> sections = new ArrayList<>();
-		sections.add("Health");
 		productCatalogue.setProductName("Product A");
+		productCatalogue.setIsAttractiveItem(Boolean.TRUE);
+		productCatalogue.setMaterialNumber("MT-123");
 		productCatalogue.setAvailability("available");
 		productCatalogue.setCondition("good condition");
 		productCatalogue.setAppropriateUsage("staff is trained to use it appropriately");

@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.ArrayList;
 
 @Getter
 @Setter
@@ -21,7 +20,7 @@ public class ProductCatalogue {
 
 	private Boolean isAttractiveItem;
 
-	private String serialId;
+	private String materialNumber;
 
 	private String availability;
 
