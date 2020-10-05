@@ -19,14 +19,12 @@ import java.io.IOException;
 public class SafetyNetService {
 
 	@Value("#{opensrp['safetynet.apikey']}")
-	private static String safetyNetAPIKey;
+	private String safetyNetAPIKey;
+
+	private static final String SAFETYNET_BASEURL = "https://www.googleapis.com/androidcheck/v1/attestations/verify";
 
 	private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
-
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
-	private static final String URL =
-			"https://www.googleapis.com/androidcheck/v1/attestations/verify?key="
-					+ safetyNetAPIKey;
 
 	public static class VerificationRequest {
 		public VerificationRequest(String signedAttestation) {
@@ -45,8 +43,7 @@ public class SafetyNetService {
 		public String error;
 	}
 
-	private static VerificationResponse onlineVerify(VerificationRequest request) {
-		// Prepare a request to the Device Verification API and set a parser for JSON data.
+	private VerificationResponse onlineVerify(VerificationRequest request) {
 		HttpRequestFactory requestFactory =
 				HTTP_TRANSPORT.createRequestFactory(new HttpRequestInitializer() {
 					@Override
@@ -54,13 +51,13 @@ public class SafetyNetService {
 						request.setParser(new JsonObjectParser(JSON_FACTORY));
 					}
 				});
+
+		String URL = SAFETYNET_BASEURL + "?key=" + safetyNetAPIKey;
 		GenericUrl url = new GenericUrl(URL);
 		HttpRequest httpRequest;
 		try {
-			// Post the request with the verification statement to the API.
 			httpRequest = requestFactory.buildPostRequest(url, new JsonHttpContent(JSON_FACTORY,
 					request));
-			// Parse the returned data as a verification response.
 			return httpRequest.execute().parseAs(VerificationResponse.class);
 		} catch (IOException e) {
 			System.err.println(
@@ -75,9 +72,6 @@ public class SafetyNetService {
 	 * Extracts the data part from a JWS signature.
 	 */
 	private static byte[] extractJwsData(String jws) {
-		// The format of a JWS is:
-		// <Base64url encoded header>.<Base64url encoded JSON data>.<Base64url encoded signature>
-		// Split the JWS into the 3 parts and return the JSON data part.
 		String[] parts = jws.split("[.]");
 		if (parts.length != 3) {
 			System.err.println("Failure: Illegal JWS signature format. The JWS consists of "
@@ -87,8 +81,7 @@ public class SafetyNetService {
 		return Base64.decodeBase64(parts[1]);
 	}
 
-	private static AttestationStatement parseAndVerify(String signedAttestationStatment) {
-		// Send the signed attestation statement to the API for verification.
+	public AttestationStatement parseAndVerify(String signedAttestationStatment) {
 		VerificationRequest request = new VerificationRequest(signedAttestationStatment);
 		VerificationResponse response = onlineVerify(request);
 		if (response == null) {
