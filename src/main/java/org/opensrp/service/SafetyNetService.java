@@ -31,12 +31,12 @@ public class SafetyNetService {
 	private static final JsonFactory JSON_FACTORY = new JacksonFactory();
 
 	public static class VerificationRequest {
+		@Key
+		public String signedAttestation;
+
 		public VerificationRequest(String signedAttestation) {
 			this.signedAttestation = signedAttestation;
 		}
-
-		@Key
-		public String signedAttestation;
 	}
 
 	public static class VerificationResponse {
