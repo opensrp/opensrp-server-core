@@ -70,7 +70,7 @@ public class EventService {
 	}
 	
 	public Event findByFormSubmissionId(String formSubmissionId) {
-		return allEvents.findByFormSubmissionId(formSubmissionId);
+		return allEvents.findByFormSubmissionId(formSubmissionId,false);
 	}
 	
 	public List<Event> findEventsBy(EventSearchBean eventSearchBean) {
@@ -138,7 +138,7 @@ public class EventService {
 				 event = findById(eventId);
 			}
 			if (event == null && StringUtils.isNotEmpty(formSubmissionId)) {
-				return findByFormSubmissionId(formSubmissionId);
+				return allEvents.findByFormSubmissionId(formSubmissionId,true);
 			}
 		}
 		catch (Exception e) {
@@ -161,6 +161,7 @@ public class EventService {
 		}
 		
 		event.setDateCreated(DateTime.now());
+		event.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.add(event);
 		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
 		if (isPlanEvaluationEnabled && planIdentifier != null) {
@@ -269,12 +270,13 @@ public class EventService {
 			event.setId(existingEvent.getId());
 			event.setRevision(existingEvent.getRevision());
 			event.setDateEdited(DateTime.now());
-			event.setServerVersion(0l);
+			event.setServerVersion(allEvents.getNextServerVersion());
 			event.setRevision(existingEvent.getRevision());
 			allEvents.update(event);
 			
 		} else {
 			event.setDateCreated(DateTime.now());
+			event.setServerVersion(allEvents.getNextServerVersion());
 			allEvents.add(event);
 			
 		}
@@ -290,7 +292,7 @@ public class EventService {
 		}
 		
 		updatedEvent.setDateEdited(DateTime.now());
-		
+		updatedEvent.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.update(updatedEvent);
 	}
 	
@@ -320,6 +322,7 @@ public class EventService {
 			}
 			
 			original.setDateEdited(DateTime.now());
+			original.setServerVersion(allEvents.getNextServerVersion());
 			allEvents.update(original);
 			return original;
 		}

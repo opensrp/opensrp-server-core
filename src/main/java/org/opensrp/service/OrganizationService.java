@@ -143,15 +143,15 @@ public class OrganizationService {
 	 * Gets the locations and Plans assigned to an organization
 	 * 
 	 * @param identifier the organization identifier
-	 * 
+	 * @param returnFutureAssignments flag to control if future assignments are returned
 	 * @return the assigned locations and plans
 	 */
-	public List<AssignedLocations> findAssignedLocationsAndPlans(String identifier) {
+	public List<AssignedLocations> findAssignedLocationsAndPlans(String identifier,boolean returnFutureAssignments) {
 		validateIdentifier(identifier);
 		Organization organization = getOrganization(identifier);
 		if (organization == null)
 			throw new IllegalArgumentException("Organization not found");
-		return organizationRepository.findAssignedLocations(organization.getId());
+		return organizationRepository.findAssignedLocations(organization.getId(),returnFutureAssignments);
 
 	}
 
@@ -159,12 +159,22 @@ public class OrganizationService {
 	 * Gets the locations and Plans assigned to a list of organizations
 	 * 
 	 * @param organizationIds the organization ids
+	 * @param returnFutureAssignments flag to control if future assignments are returned
+	 * @return the assigned locations and plans
+	 */
+	public List<AssignedLocations> findAssignedLocationsAndPlans(List<Long> organizationIds, boolean returnFutureAssignments) {
+		return organizationRepository.findAssignedLocations(organizationIds,returnFutureAssignments);
+
+	}
+	
+	/**
+	 * Gets the active locations and Plans assigned to a list of organizations
 	 * 
+	 * @param organizationIds the organization ids
 	 * @return the assigned locations and plans
 	 */
 	public List<AssignedLocations> findAssignedLocationsAndPlans(List<Long> organizationIds) {
-		return organizationRepository.findAssignedLocations(organizationIds);
-
+		return findAssignedLocationsAndPlans(organizationIds,false);
 	}
 
 	/**
@@ -227,4 +237,5 @@ public class OrganizationService {
 	public Integer findOrganizationCount(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findOrganizationCount(organizationSearchBean);
 	}
+
 }

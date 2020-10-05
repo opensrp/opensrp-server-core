@@ -22,6 +22,7 @@ import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.LocationMetadata;
 import org.opensrp.domain.postgres.LocationMetadataExample;
+import org.opensrp.domain.postgres.LocationMetadataExample.Criteria;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureFamilyDetails;
 import org.opensrp.domain.postgres.StructureMetadata;
@@ -42,6 +43,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation> implements LocationRepository {
+	
+	private static final String LOCATION_SEQUENCE="core.location_server_version_seq"; 
+	private static final String STRUCTURE_SEQUENCE="core.structure_server_version_seq"; 
 	
 	@Autowired
 	private CustomLocationMapper locationMapper;
@@ -341,14 +345,17 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
+	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids,Long serverVersion) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		if (ids == null || ids.isEmpty()) {
 			return null;
 		}
 		
-		locationMetadataExample.createCriteria().andGeojsonIdIn(ids)
+		Criteria criteria = locationMetadataExample.createCriteria().andGeojsonIdIn(ids)
 		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
+		if(serverVersion!=null) {
+			criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
+		}
 		
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
 		    returnGeometry, 0, DEFAULT_FETCH_SIZE);
@@ -432,7 +439,6 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		}
 		
 		int limit = Math.abs(pageSize);
-		limit = limit < FETCH_SIZE_LIMIT ? limit : FETCH_SIZE_LIMIT;
 		List<Location> locations = locationMetadataMapper.selectWithChildren(locationMetadataExample, returnGeometry,
 		    identifiers, 0, limit);
 		return convert(locations);
@@ -558,6 +564,19 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria()
 		        .andNameIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(locationNames, ",")))
+		        .andServerVersionGreaterThanOrEqualTo(serverVersion)
+		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
+		return locationMetadataMapper.countByExample(locationMetadataExample);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public long countLocationsByIds(List<String> locationIds, long serverVersion) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria()
+		        .andGeojsonIdIn(locationIds)
 		        .andServerVersionGreaterThanOrEqualTo(serverVersion)
 		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		return locationMetadataMapper.countByExample(locationMetadataExample);
@@ -793,5 +812,15 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
 		return locations.stream().map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
 		        .collect(Collectors.toList());
+	}
+
+	@Override
+	protected String getSequenceName() {
+		return LOCATION_SEQUENCE;
+	}
+	
+	@Override
+	public long getStructureNextServerVersion() {
+		return getNextServerVersion(STRUCTURE_SEQUENCE);
 	}
 }

@@ -16,7 +16,7 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	
 	Event findById(String id);
 	
-	Event findByFormSubmissionId(String formSubmissionId);
+	Event findByFormSubmissionId(String formSubmissionId, boolean includeArchived);
 	
 	List<Event> findByBaseEntityId(String baseEntityId);
 	

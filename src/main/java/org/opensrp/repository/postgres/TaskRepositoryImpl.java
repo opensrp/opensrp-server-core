@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements TaskRepository {
-
+	
+	private static final String SEQUENCE="core.task_server_version_seq"; 
+	
 	@Autowired
 	private CustomTaskMapper taskMapper;
 
@@ -305,16 +307,17 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 
 	@Override
 	public void saveTask(Task task, QuestionnaireResponse questionnaireResponse) {
-          add(task);
+		task.setServerVersion(getNextServerVersion());
+		add(task);
 	}
 
 	@Override
-	public boolean checkIfTaskExists(String baseEntityId, String planIdentifier, String code) {
+	public boolean checkIfTaskExists(String baseEntityId,String jurisdiction, String planIdentifier, String code) {
 		List<String> statuses = new ArrayList<>();
 		statuses.add("Cancelled");
 		statuses.add("Archived");
 
-		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, planIdentifier, code,statuses);
+		int taskCount = taskMetadataMapper.countTasksByEntityIdAndPlanIdentifierAndCode(baseEntityId, jurisdiction,planIdentifier, code,statuses);
 		return taskCount >= 1;
 	}
 
@@ -326,13 +329,15 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public Task getTaskByEntityId(String identifier) {
+	public Task getTaskByIdentifier(String identifier) {
 		return get(identifier);
 	}
 
 	@Override
-	public void updateTask(Task task) {
+	public Task updateTask(Task task) {
+		task.setServerVersion(getNextServerVersion());
 		update(task);
+		return get(task.getIdentifier());
 	}
 
 
@@ -341,6 +346,11 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 				.stream()
 				.map(task -> TaskConverter.convertTasktoFihrResource(task))
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	protected String getSequenceName() {
+		return SEQUENCE;
 	}
 
 

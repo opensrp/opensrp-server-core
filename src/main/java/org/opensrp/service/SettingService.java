@@ -1,5 +1,10 @@
 package org.opensrp.service;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.TreeNode;
@@ -12,12 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class SettingService {
@@ -42,30 +41,6 @@ public class SettingService {
 		return settingRepository.findSettings(settingQueryBean, treeNodeHashMap);
 	}
 
-	/**
-	 * Used to add the server version to payloads
-	 */
-	public void addServerVersion() {
-		try {
-			List<SettingConfiguration> settingConfigurations = settingRepository.findByEmptyServerVersion();
-			logger.info("RUNNING addServerVersion settings size: " + settingConfigurations.size());
-			long currentTimeMillis = System.currentTimeMillis();
-			for (SettingConfiguration settingConfiguration : settingConfigurations) {
-				try {
-					Thread.sleep(1);
-					settingConfiguration.setServerVersion(currentTimeMillis);
-					settingRepository.update(settingConfiguration);
-					currentTimeMillis += 1;
-				}
-				catch (InterruptedException e) {
-					logger.error(e.getMessage());
-				}
-			}
-		}
-		catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
-	}
 
 	/**
 	 * Used by the v1 setting endpoint to create the settings configuration {@link SettingConfiguration} & save the settings
@@ -81,10 +56,10 @@ public class SettingService {
 					.readValue(jsonSettingConfiguration, SettingConfiguration.class);
 		}
 		catch (IOException e) {
-			e.printStackTrace();
+			logger.error("error reading json ",e);
 		}
 
-		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		settingConfigurations.setServerVersion(settingRepository.getNextServerVersion());
 		settingConfigurations.setV1Settings(true);
 
 		SettingConfiguration existingConfiguration = null;
@@ -132,7 +107,7 @@ public class SettingService {
 		String settingsResponse = null;
 
 		if (setting != null) {
-			setting.setServerVersion(Calendar.getInstance().getTimeInMillis());
+			setting.setServerVersion(settingRepository.getNextServerVersion());
 			settingsResponse = settingRepository.addOrUpdate(setting);
 		}
 
