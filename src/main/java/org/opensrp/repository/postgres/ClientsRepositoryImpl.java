@@ -137,7 +137,9 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		if (!allowArchived) {
 			criteria.andDateDeletedIsNull();
 		}
-		clientMetadata.setId(clientMetadataMapper.selectByExample(clientMetadataExample).get(0).getId());
+		ClientMetadata metadata = clientMetadataMapper.selectByExample(clientMetadataExample).get(0);
+		clientMetadata.setId(metadata.getId());
+		clientMetadata.setDateCreated(metadata.getDateCreated());
 		clientMetadataMapper.updateByPrimaryKey(clientMetadata);
 	}
 	

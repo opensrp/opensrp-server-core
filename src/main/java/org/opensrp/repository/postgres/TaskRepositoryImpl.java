@@ -97,7 +97,9 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
 		taskMetadataExample.createCriteria().andTaskIdEqualTo(id);
-		taskMetadata.setId(taskMetadataMapper.selectByExample(taskMetadataExample).get(0).getId());
+		TaskMetadata metadata = taskMetadataMapper.selectByExample(taskMetadataExample).get(0);
+		taskMetadata.setId(metadata.getId());
+		taskMetadata.setDateCreated(metadata.getDateCreated());
 		taskMetadataMapper.updateByPrimaryKey(taskMetadata);
 		
 	}

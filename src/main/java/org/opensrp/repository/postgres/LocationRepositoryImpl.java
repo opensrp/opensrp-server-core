@@ -166,7 +166,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andLocationIdEqualTo(id);
-		locationMetadata.setId(locationMetadataMapper.selectByExample(locationMetadataExample).get(0).getId());
+		LocationMetadata metadata = locationMetadataMapper.selectByExample(locationMetadataExample).get(0);
+		locationMetadata.setId(metadata.getId());
+		locationMetadata.setDateCreated(metadata.getDateCreated());
 		locationMetadataMapper.updateByPrimaryKey(locationMetadata);
 		saveLocationTag(entity, pgLocation.getId(), true);
 	}
@@ -185,7 +187,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andStructureIdEqualTo(id);
-		structureMetadata.setId(structureMetadataMapper.selectByExample(structureMetadataExample).get(0).getId());
+		StructureMetadata metadata = structureMetadataMapper.selectByExample(structureMetadataExample).get(0);
+		structureMetadata.setId(metadata.getId());
+		structureMetadata.setDateCreated(metadata.getDateCreated());
 		structureMetadataMapper.updateByPrimaryKey(structureMetadata);
 	}
 	
