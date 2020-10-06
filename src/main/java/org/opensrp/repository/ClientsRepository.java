@@ -1,6 +1,7 @@
 package org.opensrp.repository;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -100,6 +101,16 @@ public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	 * @return a list of client ids and last server version
 	 */
 	Pair<List<String>, Long>  findAllIds(long serverVersion, int limit, boolean isArchived);
+
+	/**
+	 * overloads {@link #findAllIds(long, int, boolean)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
+	Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived, Date fromDate, Date toDate);
 
 	List<Client> findByClientTypeAndLocationId(String clientType, String locationId);
 	
