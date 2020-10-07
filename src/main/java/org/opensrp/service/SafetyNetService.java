@@ -47,7 +47,7 @@ public class SafetyNetService {
 		public String error;
 	}
 
-	private VerificationResponse onlineVerify(VerificationRequest request) {
+	public VerificationResponse onlineVerify(VerificationRequest request) {
 		HttpRequestFactory requestFactory =
 				HTTP_TRANSPORT.createRequestFactory(new HttpRequestInitializer() {
 					@Override
