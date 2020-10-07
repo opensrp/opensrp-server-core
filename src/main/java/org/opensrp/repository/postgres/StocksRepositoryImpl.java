@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Stock;
+import org.opensrp.domain.postgres.StockExample;
 import org.opensrp.domain.postgres.StockMetadata;
 import org.opensrp.domain.postgres.StockMetadataExample;
 import org.opensrp.repository.StocksRepository;
@@ -175,7 +176,57 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	public List<Stock> findAllStocks() {
 		return getAll();
 	}
-	
+
+	@Override
+	public Stock findByIdentifierAndServicePointId(String identifier, String locationId) {
+		return convert(stockMapper.selectByIdentifierAndLocationId(identifier,locationId));
+	}
+
+	@Override
+	public Stock getById(Long id) {
+		StockExample stockExample = new StockExample();
+		stockExample.createCriteria().andIdEqualTo(id);
+
+		List<org.opensrp.domain.postgres.Stock> stocks = stockMapper.selectByExample(stockExample);
+
+		return isEmptyList(stocks) ? null : convert(stocks.get(0));
+	}
+
+	@Override
+	public void delete(Long stockId) {
+		if (stockId == null) {
+			return;
+		}
+
+		Stock stock = getById(stockId);
+		org.opensrp.domain.postgres.Stock pgStock = convert(stock, stockId);
+		Date dateDeleted = new Date();
+		if (pgStock == null) {
+			return;
+		}
+
+		pgStock.setDateDeleted(dateDeleted);
+		StockMetadata stockMetadata = findStockMetaDataByStockId(stockId);
+		stockMetadata.setDateDeleted(dateDeleted);
+		int rowsAffected = stockMetadataMapper.updateByPrimaryKey(stockMetadata);
+		if (rowsAffected < 1) {
+			return;
+		}
+
+		stockMapper.updateByPrimaryKeySelective(pgStock);
+	}
+
+	@Override
+	public List<Stock> findStocksByLocationId(String locationId) {
+		StockSearchBean stockSearchBean = new StockSearchBean();
+		stockSearchBean.setLocationId(locationId);
+		return findStocks(stockSearchBean);
+	}
+
+	public StockMetadata findStockMetaDataByStockId(Long stockId) {
+		return stockMetadataMapper.selectByStockId(stockId);
+	}
+
 	@Override
 	protected Long retrievePrimaryKey(Stock entity) {
 		if (entity == null || entity.getId() == null) {
