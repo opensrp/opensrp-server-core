@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,11 +16,13 @@ import org.opensrp.search.StockSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import static org.opensrp.util.Utils.isEmptyList;
+
 @Repository("stocksRepositoryPostgres")
 public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements StocksRepository {
-	
-	private static final String SEQUENCE="core.stock_server_version_seq"; 
-	
+
+	private static final String SEQUENCE="core.stock_server_version_seq";
+
 	@Autowired
 	private CustomStockMapper stockMapper;
 	
@@ -235,7 +238,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		metadata.setStockId(id);
 		metadata.setDocumentId(entity.getId());
 		metadata.setProviderId(entity.getProviderid());
-		//metadata.setLocationId(entity.get);
+		metadata.setLocationId(entity.getLocationId());
 		metadata.setServerVersion(entity.getServerVersion());
 		return metadata;
 	}

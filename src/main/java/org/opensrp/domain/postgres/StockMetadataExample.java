@@ -2,6 +2,7 @@ package org.opensrp.domain.postgres;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Date;
 
 public class StockMetadataExample {
 	
@@ -723,6 +724,66 @@ public class StockMetadataExample {
 		
 		public Criteria andTeamIdNotBetween(String value1, String value2) {
 			addCriterion("team_id not between", value1, value2, "teamId");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedIsNull() {
+			addCriterion("date_deleted is null");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedIsNotNull() {
+			addCriterion("date_deleted is not null");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedEqualTo(Date value) {
+			addCriterion("date_deleted =", value, "dateDeleted");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedNotEqualTo(Date value) {
+			addCriterion("date_deleted <>", value, "dateDeleted");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedGreaterThan(Date value) {
+			addCriterion("date_deleted >", value, "dateDeleted");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedGreaterThanOrEqualTo(Date value) {
+			addCriterion("date_deleted >=", value, "dateDeleted");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedLessThan(Date value) {
+			addCriterion("date_deleted <", value, "dateDeleted");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedLessThanOrEqualTo(Date value) {
+			addCriterion("date_deleted <=", value, "dateDeleted");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedIn(List<Date> values) {
+			addCriterion("date_deleted in", values, "dateDeleted");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedNotIn(List<Date> values) {
+			addCriterion("date_deleted not in", values, "dateDeleted");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedBetween(Date value1, Date value2) {
+			addCriterion("date_deleted between", value1, value2, "dateDeleted");
+			return (Criteria) this;
+		}
+
+		public Criteria andDateDeletedNotBetween(Date value1, Date value2) {
+			addCriterion("date_deleted not between", value1, value2, "dateDeleted");
 			return (Criteria) this;
 		}
 	}

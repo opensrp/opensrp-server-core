@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.opensrp.domain.Stock;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
@@ -25,6 +26,9 @@ public class StockServiceTest extends BaseRepositoryTest {
 	@Autowired
 	@Qualifier("stocksRepositoryPostgres")
 	private StocksRepository stocksRepository;
+
+	@Mock
+	private ProductCatalogueService productCatalogueService;
 	
 	@Override
 	protected Set<String> getDatabaseScripts() {
@@ -36,7 +40,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 	@Override
 	public void populateDatabase() throws SQLException {
 		super.populateDatabase();
-		stockService = new StockService(stocksRepository);
+		stockService = new StockService(stocksRepository, productCatalogueService);
 		Stock stock1 = new Stock(Long.parseLong("123"), "VT", "TT", "4-2", 10, Long.parseLong("20062017"), "TF",
 		        Long.parseLong("20062017"), Long.parseLong("12345"));
 		Stock stock2 = new Stock(Long.parseLong("123"), "VT", "TT", "4-2", 10, Long.parseLong("20062017"), "TF",
