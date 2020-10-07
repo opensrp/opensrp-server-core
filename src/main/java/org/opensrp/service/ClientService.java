@@ -1,22 +1,17 @@
 package org.opensrp.service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONException;
-import org.smartregister.domain.Address;
-import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.util.Utils;
+import org.smartregister.domain.Address;
+import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +64,7 @@ public class ClientService {
 	}
 	
 	public List<Client> findByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean,
-	                                   DateTime lastEditFrom, DateTime lastEditTo) {
+	        DateTime lastEditFrom, DateTime lastEditTo) {
 		clientSearchBean.setLastEditFrom(lastEditFrom);
 		clientSearchBean.setLastEditTo(lastEditTo);
 		
@@ -124,8 +119,8 @@ public class ClientService {
 		for (String idt : client.getIdentifiers().keySet()) {
 			List<Client> cl = allClients.findAllByIdentifier(client.getIdentifier(idt));
 			if (cl.size() > 1) {
-				throw new IllegalArgumentException("Multiple clients with identifier type " + idt + " and ID "
-				        + client.getIdentifier(idt) + " exist.");
+				throw new IllegalArgumentException(
+				        "Multiple clients with identifier type " + idt + " and ID " + client.getIdentifier(idt) + " exist.");
 			} else if (cl.size() != 0) {
 				return cl.get(0);
 			}
@@ -174,8 +169,8 @@ public class ClientService {
 				throw new IllegalArgumentException("No client found with given list of identifiers. Consider adding new!");
 			}
 			
-			original = (Client) Utils.getMergedJSON(original, updatedClient,
-			    Arrays.asList(Client.class.getDeclaredFields()), Client.class);
+			original = (Client) Utils.getMergedJSON(original, updatedClient, Arrays.asList(Client.class.getDeclaredFields()),
+			    Client.class);
 			
 			for (Address a : updatedClient.getAddresses()) {
 				if (original.getAddress(a.getAddressType()) == null) {
@@ -200,7 +195,7 @@ public class ClientService {
 		catch (JSONException | JsonProcessingException | SecurityException e) {
 			throw new RuntimeException(e);
 		}
-	
+		
 	}
 	
 	public List<Client> findByServerVersion(long serverVersion, Integer limit) {
@@ -275,12 +270,12 @@ public class ClientService {
 	}
 	
 	public HouseholdClient findTotalCountHouseholdByCriteria(ClientSearchBean clientSearchBean,
-	                                                         AddressSearchBean addressSearchBean) {
+	        AddressSearchBean addressSearchBean) {
 		return allClients.findTotalCountHouseholdByCriteria(clientSearchBean, addressSearchBean);
 	}
 	
 	public List<Client> getHouseholdList(List<String> ids, String clientType, AddressSearchBean addressSearchBean,
-	                                     ClientSearchBean searchBean, List<Client> clients) {
+	        ClientSearchBean searchBean, List<Client> clients) {
 		Map<String, HouseholdClient> householdClients = getMemberCountHouseholdHeadProviderByClients(ids, clientType);
 		
 		List<Client> clientList = new ArrayList<Client>();
@@ -312,12 +307,12 @@ public class ClientService {
 	}
 	
 	public HouseholdClient findTotalCountAllClientsByCriteria(ClientSearchBean clientSearchBean,
-	                                                          AddressSearchBean addressSearchBean) {
+	        AddressSearchBean addressSearchBean) {
 		return allClients.findCountAllClientsByCriteria(clientSearchBean, addressSearchBean);
 	}
 	
 	public List<Client> findHouseholdByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean,
-	                                            DateTime lastEditFrom, DateTime lastEditTo) {
+	        DateTime lastEditFrom, DateTime lastEditTo) {
 		clientSearchBean.setLastEditFrom(lastEditFrom);
 		clientSearchBean.setLastEditTo(lastEditTo);
 		return allClients.findHouseholdByCriteria(clientSearchBean, addressSearchBean);
@@ -339,7 +334,7 @@ public class ClientService {
 	public int findCountChildByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
 		return allClients.findCountChildByCriteria(clientSearchBean, addressSearchBean);
 	}
-
+	
 	/**
 	 * This method searches for client ids paginated by server version
 	 *
@@ -352,10 +347,23 @@ public class ClientService {
 		return allClients.findAllIds(serverVersion, limit, isArchived);
 	}
 
-	public List<Client> findByClientTypeAndLocationId(String clientType, String locationId) {
-		return allClients.findByClientTypeAndLocationId(clientType,locationId);
+	/**
+	 * overloads {@link #findAllIds(long, int, boolean)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
+	public Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived, Date fromDate,
+	        Date toDate) {
+		return allClients.findAllIds(serverVersion, limit, isArchived, fromDate, toDate);
 	}
-
+	
+	public List<Client> findByClientTypeAndLocationId(String clientType, String locationId) {
+		return allClients.findByClientTypeAndLocationId(clientType, locationId);
+	}
+	
 	/**
 	 * This method searches for client using an id
 	 *
@@ -365,7 +373,7 @@ public class ClientService {
 	public Client findById(String id) {
 		return allClients.findById(id);
 	}
-
+	
 	/**
 	 * @return
 	 */

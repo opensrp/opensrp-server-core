@@ -3,6 +3,7 @@ package org.opensrp.repository;
 import org.apache.commons.lang3.tuple.Pair;
 import org.smartregister.domain.PlanDefinition;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,6 +57,17 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 * @return a list of plan Ids  and the last server version
 	 */
 	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted);
+
+	/**
+	 * overloads {@link #findAllIds(Long, int, boolean)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param isDeleted
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
+	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted, Date fromDate, Date toDate);
 
 	/** Gets the plans using the plan identifiers and whose server version is greater than or equal to server version
 	 * @param planIdentifiers the plan identifiers
