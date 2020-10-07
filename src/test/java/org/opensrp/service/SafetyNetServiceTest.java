@@ -14,7 +14,8 @@ import java.io.ByteArrayInputStream;
 import java.lang.reflect.Method;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 
 public class SafetyNetServiceTest {
 
