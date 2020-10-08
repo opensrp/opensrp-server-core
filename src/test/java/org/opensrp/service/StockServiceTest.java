@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,12 +10,15 @@ import org.joda.time.DateTime;
 import org.joda.time.Minutes;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
+import org.opensrp.domain.Inventory;
 import org.opensrp.domain.Stock;
+import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import static org.junit.Assert.assertEquals;
 
 /**
  * Integration Tests for {@link StockService}.
@@ -27,19 +31,24 @@ public class StockServiceTest extends BaseRepositoryTest {
 	@Qualifier("stocksRepositoryPostgres")
 	private StocksRepository stocksRepository;
 
-	@Mock
+	@Autowired
+	@Qualifier("productCatalogueRepositoryPostgres")
+	private ProductCatalogueRepository productCatalogueRepository;
+
 	private ProductCatalogueService productCatalogueService;
 	
 	@Override
 	protected Set<String> getDatabaseScripts() {
 		Set<String> scripts = new HashSet<>();
 		scripts.add("stock.sql");
+		scripts.add("product_catalogue.sql");
 		return scripts;
 	}
 	
 	@Override
 	public void populateDatabase() throws SQLException {
 		super.populateDatabase();
+		productCatalogueService = new ProductCatalogueService(productCatalogueRepository);
 		stockService = new StockService(stocksRepository, productCatalogueService);
 		Stock stock1 = new Stock(Long.parseLong("123"), "VT", "TT", "4-2", 10, Long.parseLong("20062017"), "TF",
 		        Long.parseLong("20062017"), Long.parseLong("12345"));
@@ -115,5 +124,39 @@ public class StockServiceTest extends BaseRepositoryTest {
 		List<Stock> fecthedListAll = stockService.getAll();
 		Assert.assertEquals(17, fecthedListAll.size());
 	}
-	
+
+	@Test
+	public void testAddInventory() {
+		Inventory inventory = createInventory();
+		stockService.addInventory(inventory, "John");
+		List<Stock> stockList = stockService.getStocksByServicePointId("loc-1");
+		assertEquals(1, stockList.size());
+	}
+
+	@Test
+	public void testUpdate() {
+		Inventory inventory = createInventory();
+		stockService.addInventory(inventory, "John");
+		Stock stock = stockService.findByIdentifierAndServicePointId("1", "loc-1");
+		assertEquals("XYZ", stock.getDonor());
+		inventory.setDonor("ABC");
+		stockService.updateInventory(inventory, "John");
+		Stock updatedStock = stockService.findByIdentifierAndServicePointId("1", "loc-1");
+		assertEquals("ABC", updatedStock.getDonor());
+	}
+
+	private Inventory createInventory() {
+		Date delieryDate = new Date(2020, 1, 1);
+		Inventory inventory = new Inventory();
+		inventory.setProductName("Midwifery Kit");
+		inventory.setUnicefSection("Health Department");
+		inventory.setDeliveryDate(delieryDate);
+		inventory.setDonor("XYZ");
+		inventory.setPoNumber(123);
+		inventory.setSerialNumber("AX-12");
+		inventory.setServicePointId("loc-1");
+		inventory.setQuantity(4);
+		return inventory;
+	}
+
 }
