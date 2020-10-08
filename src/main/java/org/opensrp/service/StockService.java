@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Inventory;
 import org.opensrp.domain.ProductCatalogue;
@@ -130,6 +131,8 @@ public class StockService {
 		if(inventory == null) {
 			return;
 		}
+		validateFields(inventory);
+
 		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogueByName(inventory.getProductName());
 		if(productCatalogue == null) {
 			throw new IllegalArgumentException(
@@ -150,6 +153,7 @@ public class StockService {
 	}
 
 	public void updateInventory(Inventory inventory, String userName) {
+		validateFields(inventory);
 		Stock stock = convertInventoryToStock(inventory, userName);
 		ProductCatalogue productCatalogue = inventory != null ? productCatalogueService.getProductCatalogueByName(inventory.getProductName()) : null;
 		if(productCatalogue == null || inventory == null) {
@@ -214,6 +218,8 @@ public class StockService {
 	private void validateFields(Inventory inventory) {
 		if (inventory.getQuantity() < 1) {
 			throw new IllegalArgumentException("Quantity can not be less than 1");
+		} else if (StringUtils.isBlank(inventory.getProductName())) {
+			throw new IllegalArgumentException("Product Name not specified");
 		} else {
 			logger.info("All validations on fields passed");
 		}
