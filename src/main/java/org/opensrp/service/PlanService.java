@@ -207,7 +207,17 @@ public class PlanService {
 	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit, boolean experimental) {
 		return getPlanRepository().getAllPlans(serverVersion, limit, experimental);
 	}
-	
+
+	/**
+	 * counts all plans
+	 * @param serverVersion
+	 * @param experimental
+	 * @return
+	 */
+	public Long countAllPlans(Long serverVersion, boolean experimental) {
+		return getPlanRepository().countAllPlans(serverVersion, experimental);
+	}
+
 	/**
 	 * This method searches for all location ids
 	 *
