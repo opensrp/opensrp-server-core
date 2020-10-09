@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -313,6 +315,13 @@ public class PlanServiceTest {
 		verify(planRepository).countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 		verify(organizationService).findAssignedLocationsAndPlans(organizationIds);
 		assertEquals(2, plans.longValue());
+	}
+
+	@Test
+	public void testCountAllShouldInvokeCorrectMethod() {
+		doReturn(1l).when(planRepository).countAllPlans(anyLong(), eq(true));
+		planService.countAllPlans(0l, true);
+		verify(planRepository, times(1)).countAllPlans(eq(0l), eq(true));
 	}
 
 }
