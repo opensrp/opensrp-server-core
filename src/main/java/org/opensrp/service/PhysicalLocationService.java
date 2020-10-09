@@ -508,5 +508,23 @@ public class PhysicalLocationService {
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
 		return locationTree;
 	}
+
+	/**
+	 * counts all locations
+	 * @param serverVersion
+	 * @return
+	 */
+	public Long countAllLocations(Long serverVersion){
+		return locationRepository.countAllLocations(serverVersion);
+	}
+
+	/**
+	 * counts all structures
+	 * @param serverVersion
+	 * @return
+	 */
+	public Long countAllStructures(Long serverVersion){
+		return locationRepository.countAllStructures(serverVersion);
+	}
 	
 }

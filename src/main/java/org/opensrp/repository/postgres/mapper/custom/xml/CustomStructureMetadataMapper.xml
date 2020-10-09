@@ -111,6 +111,17 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
+	<select id="countMany"
+			resultType="long">
+		select
+		count(sm.id)
+		from core.structure_metadata sm
+		join core.structure s on sm.structure_id = s.id
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
+
 	<select id="selectManyIds"	resultType="java.lang.String">
 		select
 		<if test="example.distinct">

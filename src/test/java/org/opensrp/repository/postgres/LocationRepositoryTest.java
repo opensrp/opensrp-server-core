@@ -1141,5 +1141,17 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(0,locationRepository.countLocationsByIds( Arrays.asList("373412"), 0l));
 		
 	}
+
+	@Test
+	public void testCountAllStructuresShouldReturnCorrectValue() {
+		Long count = locationRepository.countAllStructures(0l);
+		assertEquals(Long.valueOf(2), count);
+	}
+
+	@Test
+	public void testCountAllLocationsShouldReturnCorrectValue() {
+		Long count = locationRepository.countAllLocations(0l);
+		assertEquals(Long.valueOf(2), count);
+	}
 	
 }

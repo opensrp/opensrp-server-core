@@ -51,6 +51,16 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
+	<select id="countMany"
+			resultType="long">
+		select
+		count(p.id)
+		from core.plan p
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
+
 	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Plan"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
     insert into core.plan

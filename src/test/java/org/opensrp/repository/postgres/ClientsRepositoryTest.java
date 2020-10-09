@@ -764,4 +764,10 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		}
 	}
 
+	@Test
+	public void testCountAllClientsShouldReturnCorrectValue() {
+		Long count = clientsRepository.countAll(0l);
+		assertEquals(Long.valueOf(21), count);
+	}
+
 }

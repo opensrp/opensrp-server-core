@@ -201,6 +201,10 @@ public class ClientService {
 	public List<Client> findByServerVersion(long serverVersion, Integer limit) {
 		return allClients.findByServerVersion(serverVersion, limit);
 	}
+
+	public Long countAll(long serverVersion) {
+		return allClients.countAll(serverVersion);
+	}
 	
 	public List<Client> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar) {
 		return allClients.notInOpenMRSByServerVersion(serverVersion, calendar);

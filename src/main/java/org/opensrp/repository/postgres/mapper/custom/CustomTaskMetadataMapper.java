@@ -19,4 +19,6 @@ public interface CustomTaskMetadataMapper extends TaskMetadataMapper {
 
 	int countTasksByEntityIdAndPlanIdentifierAndCode(@Param("baseEntityId") String baseEntityId, @Param("jurisdiction") String jurisdiction ,@Param("planIdentifier") String planIdentifier, @Param("code") String code,
 			@Param("statuses") List<String> statuses);
+
+	Long countMany(@Param("example") TaskMetadataExample taskMetadataExample);
 }

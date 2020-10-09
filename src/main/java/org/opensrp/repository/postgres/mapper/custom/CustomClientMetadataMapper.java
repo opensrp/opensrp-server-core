@@ -63,4 +63,6 @@ public interface CustomClientMetadataMapper extends ClientMetadataMapper {
 			@Param("limit") int limit);
 
 	List<Client> selectByLocationIdOfType(@Param("clientType") String clientType, @Param("locationId") String locationId);
+
+	Long countMany(@Param("example") ClientMetadataExample clientMetadataExample);
 }

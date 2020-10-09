@@ -49,6 +49,14 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	List<PlanDefinition> getAllPlans(Long serverVersion, int limit, boolean experimental);
 
 	/**
+	 * counts all plans
+	 * @param serverVersion
+	 * @param experimental
+	 * @return
+	 */
+	Long countAllPlans(Long serverVersion, boolean experimental);
+
+	/**
 	 * This method fetches all plan Ids
 	 *
 	 * @param serverVersion

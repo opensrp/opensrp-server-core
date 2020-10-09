@@ -110,7 +110,17 @@
 			order by cm.${example.orderByClause}
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
-	</select>	
+	</select>
+
+	<select id="countMany"
+			resultType="long">
+		select
+		count(*)
+		<include refid="Base_Table_List" />
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
 	
 	<select id="selectByName"
 		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
