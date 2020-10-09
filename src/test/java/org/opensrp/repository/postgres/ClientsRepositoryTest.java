@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Test;
 import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
@@ -701,6 +702,37 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void testGetAllIdsShouldFilterBetweenFromDateAndToDate() {
+		String date1 = "2019-09-24T10:00:00+0300";
+		String date2 = "2019-10-01T10:00:00+0300";
+		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 10,
+				false, new DateTime(date1, DateTimeZone.UTC).toDate(), new DateTime(date2, DateTimeZone.UTC).toDate());
+		List<String> clientIds = idsModel.getLeft();
+		assertEquals(6, clientIds.size());
+	}
+
+	@Test
+	public void testGetAllIdsShouldFilterFromDateAsMinimumDate() {
+		String date1 = "2019-09-25T10:00:00+0300";
+
+		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 10,
+				false, new DateTime(date1, DateTimeZone.UTC).toDate(), null);
+		List<String> clientIds = idsModel.getLeft();
+		assertEquals(10, clientIds.size());
+	}
+
+	@Test
+	public void testGetAllIdsShouldFilterToDateAsMaximumDate() {
+		String date1 = "2019-09-24T10:00:00+0300";
+
+		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 10,
+				false, null, new DateTime(date1, DateTimeZone.UTC).toDate());
+		List<String> clientIds = idsModel.getLeft();
+		assertEquals(0, clientIds.size());
+	}
+
+
+	@Test
 	public void testFindByClientTypeAndLocationId() {
 		Client client = new Client("f67823b0-378e-4a35-93fc-bb00def74e24").withLocationId("location-1");
 		client.setClientType("Client-type-1");
@@ -730,6 +762,12 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 			assertTrue(client.getServerVersion() >= 1521003136406l);
 			assertTrue(expectedIds.contains(client.getId()));
 		}
+	}
+
+	@Test
+	public void testCountAllClientsShouldReturnCorrectValue() {
+		Long count = clientsRepository.countAll(0l);
+		assertEquals(Long.valueOf(21), count);
 	}
 
 }

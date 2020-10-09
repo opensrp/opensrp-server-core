@@ -1,19 +1,16 @@
 package org.opensrp.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
-/**
- * Created by Vincent Karuri on 06/05/2019
- */
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
-import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
+import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -51,29 +48,29 @@ public class PlanService {
 		return getPlanRepository().getAllPlans(experimental);
 	}
 	
-	public void addOrUpdatePlan(PlanDefinition plan,String username) {
+	public void addOrUpdatePlan(PlanDefinition plan, String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(System.currentTimeMillis());
 		if (getPlan(plan.getIdentifier()) != null) {
-			updatePlan(plan,username);
+			updatePlan(plan, username);
 		} else {
-			addPlan(plan,username);
+			addPlan(plan, username);
 		}
 	}
-
+	
 	@CachePut(value = "plans", key = "#plan.identifier")
-	public PlanDefinition addPlan(PlanDefinition plan,String username) {
+	public PlanDefinition addPlan(PlanDefinition plan, String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		plan.setServerVersion(planRepository.getNextServerVersion());
 		getPlanRepository().add(plan);
-		taskGenerator.processPlanEvaluation(plan, null,username);
+		taskGenerator.processPlanEvaluation(plan, null, username);
 		return plan;
 	}
-
+	
 	@CachePut(value = "plans", key = "#plan.identifier")
 	public PlanDefinition updatePlan(PlanDefinition plan, String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
@@ -82,31 +79,32 @@ public class PlanService {
 		PlanDefinition existing = getPlan(plan.getIdentifier());
 		plan.setServerVersion(planRepository.getNextServerVersion());
 		getPlanRepository().update(plan);
-		taskGenerator.processPlanEvaluation(plan, existing,username);
+		taskGenerator.processPlanEvaluation(plan, existing, username);
 		return plan;
 	}
-
+	
 	@Cacheable(value = "plans", key = "#identifier")
 	public PlanDefinition getPlan(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
 	}
 	
 	public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion,
-	        List<String> operationalAreaIds,boolean experimental) {
-		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds, experimental);
+	        List<String> operationalAreaIds, boolean experimental) {
+		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds,
+		    experimental);
 	}
 	
 	/**
-	 * This method searches for plans using a list of provided plan identifiers and returns a subset
-	 * of fields determined by the list of provided fields If no plan identifier(s) are provided the
-	 * method returns all available plans If no fields are provided the method returns all the
-	 * available fields
+	 * This method searches for plans using a list of provided plan identifiers and returns a subset of
+	 * fields determined by the list of provided fields If no plan identifier(s) are provided the method
+	 * returns all available plans If no fields are provided the method returns all the available fields
 	 *
 	 * @param ids list of plan identifiers
 	 * @param fields list of fields to return
 	 * @return plan definitions whose identifiers match the provided params
 	 */
-	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields, boolean experimental) {
+	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields,
+	        boolean experimental) {
 		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields, experimental);
 	}
 	
@@ -117,7 +115,8 @@ public class PlanService {
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans matching the above
 	 */
-	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion, boolean experimental) {
+	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion,
+	        boolean experimental) {
 		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 		        .findAssignedLocationsAndPlans(organizationIds);
@@ -153,7 +152,8 @@ public class PlanService {
 	 * @param serverVersion the server version to filter plans with
 	 * @return the plans a user has access to
 	 */
-	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion, boolean experimental) {
+	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion,
+	        boolean experimental) {
 		
 		List<Long> organizationIds = getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
@@ -177,8 +177,7 @@ public class PlanService {
 	}
 	
 	/**
-	 * Gets the organization ids that a user is assigned to according to the plan location
-	 * assignment
+	 * Gets the organization ids that a user is assigned to according to the plan location assignment
 	 *
 	 * @param username the username of user
 	 * @return the organization ids a user is assigned to
@@ -208,7 +207,17 @@ public class PlanService {
 	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit, boolean experimental) {
 		return getPlanRepository().getAllPlans(serverVersion, limit, experimental);
 	}
-	
+
+	/**
+	 * counts all plans
+	 * @param serverVersion
+	 * @param experimental
+	 * @return
+	 */
+	public Long countAllPlans(Long serverVersion, boolean experimental) {
+		return getPlanRepository().countAllPlans(serverVersion, experimental);
+	}
+
 	/**
 	 * This method searches for all location ids
 	 *
@@ -219,6 +228,21 @@ public class PlanService {
 	 */
 	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted) {
 		return planRepository.findAllIds(serverVersion, limit, isDeleted);
+	}
+	
+	/**
+	 * overloads {@link #findAllIds(Long, int, boolean)} by adding date/time filters
+	 * 
+	 * @param serverVersion
+	 * @param limit
+	 * @param isDeleted
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
+	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted, Date fromDate,
+	        Date toDate) {
+		return planRepository.findAllIds(serverVersion, limit, isDeleted, fromDate, toDate);
 	}
 	
 	/**
@@ -243,8 +267,8 @@ public class PlanService {
 	}
 	
 	/**
-	 * Gets the count of plans that a user has access to according to the plan location assignment
-	 * that have server version >= the server version param
+	 * Gets the count of plans that a user has access to according to the plan location assignment that
+	 * have server version >= the server version param
 	 *
 	 * @param username the username of user
 	 * @param serverVersion the server version to filter plans with
