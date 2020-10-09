@@ -203,6 +203,16 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0, limit);
 		return convert(tasks);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countAllTasks(Long serverVersion) {
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		taskMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		return taskMetadataMapper.countMany(taskMetadataExample);
+	}
 	
 	@Override
 	public List<Task> getTasksByPlanAndOwner(String plan, String owner, long serverVersion) {

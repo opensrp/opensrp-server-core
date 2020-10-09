@@ -376,4 +376,10 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertFalse(taskExists);
 	}
 
+	@Test
+	public void testCountAllTasksShouldReturnCorrectValue(){
+		Long count = taskRepository.countAllTasks(1000l);
+		assertEquals(Long.valueOf(2), count);
+	}
+
 }

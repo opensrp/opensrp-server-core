@@ -492,6 +492,17 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		    returnGeometry, 0, limit);
 		return convert(locations);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countAllLocations(Long serverVersion) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion)
+				.andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
+		return locationMetadataMapper.countMany(locationMetadataExample);
+	}
 	
 	/**
 	 * {@inheritDoc}
@@ -505,6 +516,16 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		List<Location> locations = structureMetadataMapper.selectManyByProperties(structureMetadataExample, null,
 		    returnGeometry, 0, limit);
 		return convert(locations);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countAllStructures(Long serverVersion) {
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		structureMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+		return structureMetadataMapper.countMany(structureMetadataExample);
 	}
 	
 	/**
