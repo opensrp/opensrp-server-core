@@ -42,6 +42,13 @@ public interface TaskRepository extends BaseRepository<Task>, TaskDao {
 	List<Task> getAllTasks(Long serverVersion, int limit);
 
 	/**
+	 * Count all tasks
+	 * @param serverVersion
+	 * @return
+	 */
+	Long countAllTasks(Long serverVersion);
+
+	/**
 	 * This method is used to return a list of tasks based on the provided parameters
 	 * @param plan plan identifier for the task
 	 * @param owner the username of the person who initiated the task

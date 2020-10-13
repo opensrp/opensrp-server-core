@@ -190,4 +190,13 @@ public class TaskService {
 	public Long countTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
 		return taskRepository.countTasksByPlanAndOwner(plan, owner, serverVersion);
 	}
+
+	/**
+	 * Count all tasks
+	 * @param serverVersion
+	 * @return
+	 */
+	public Long countAllTasks(long serverVersion){
+		return taskRepository.countAllTasks(serverVersion);
+	}
 }

@@ -123,6 +123,13 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit);
 
 	/**
+	 * counts all locations
+	 * @param serverVersion
+	 * @return
+	 */
+	Long countAllLocations(Long serverVersion);
+
+	/**
 	 * This method searches for structures ordered by serverVersion ascending
 	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
@@ -131,6 +138,13 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return list of structures
 	 */
 	List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit);
+
+	/**
+	 * count all structures
+	 * @param serverVersion
+	 * @return
+	 */
+	Long countAllStructures(Long serverVersion);
 
 	/**
 	 * This method fetches all location Ids

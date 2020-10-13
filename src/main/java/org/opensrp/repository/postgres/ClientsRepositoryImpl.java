@@ -306,6 +306,16 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		    pageLimit);
 		return convert(clients);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Long countAll(long serverVersion) {
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull();
+		return clientMetadataMapper.countMany(clientMetadataExample);
+	}
 	
 	@Override
 	public List<Client> findByFieldValue(String field, List<String> ids) {

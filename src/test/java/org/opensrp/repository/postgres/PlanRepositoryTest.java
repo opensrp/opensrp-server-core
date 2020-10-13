@@ -613,4 +613,21 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
     }
 
+    @Test
+    public void testCountAllPlanShouldReturnCorrectValue(){
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("x_identifier_1");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("x_operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1000l);
+        planRepository.add(plan);
+        Long count = planRepository.countAllPlans(1000l, false);
+        assertNotNull(count);
+        assertEquals(Long.valueOf(1), count);
+    }
+
 }

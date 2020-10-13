@@ -160,6 +160,16 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
      * {@inheritDoc}
      */
     @Override
+    public Long countAllPlans(Long serverVersion, boolean experimental) {
+        PlanExample planExample = new PlanExample();
+        planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull().andExperimentalEqualTo(experimental);
+        return planMapper.countMany(planExample);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted) {
         Long lastServerVersion = null;
         PlanExample planExample = new PlanExample();

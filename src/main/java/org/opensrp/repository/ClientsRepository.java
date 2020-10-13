@@ -61,7 +61,9 @@ public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	 * @return
 	 */
 	List<Client> findByServerVersion(long serverVersion, Integer limit);
-	
+
+	Long countAll(long serverVersion);
+
 	List<Client> findByFieldValue(String field, List<String> ids);
 	
 	List<Client> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar);
