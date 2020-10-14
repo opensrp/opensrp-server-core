@@ -270,6 +270,17 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 	}
 	
 	@Test
+	public void testGetShouldGetLocationTagById() {
+		LocationTag locationTag1 = initTestLocationTag1();
+		locationTagRepository.add(locationTag1);
+
+	   LocationTag locationTag = locationTagRepository.getLocationTagByPrimaryKey(Long.valueOf(1));
+		assertNotNull(locationTag);
+		assertEquals("Country", locationTag.getName());
+		assertEquals(true, locationTag.getActive());
+	}
+	
+	@Test
 	public void testGetShouldGetLocationTagByLocationTagExample() {
 		
 		LocationTag locationTag3 = initTestLocationTag3();
@@ -290,6 +301,7 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		locationTag.setName("Country");
 		locationTag.setDescription("first label tag name");
 		locationTag.setActive(true);
+		locationTag.setId(Long.valueOf(1));
 		return locationTag;
 	}
 	
@@ -298,6 +310,7 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		locationTag.setName("Ward");
 		locationTag.setDescription("first label tag name");
 		locationTag.setActive(true);
+		locationTag.setId(Long.valueOf(2));
 		return locationTag;
 	}
 	
@@ -306,6 +319,7 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		locationTag.setName("Division");
 		locationTag.setDescription("second label tag name");
 		locationTag.setActive(true);
+		locationTag.setId(Long.valueOf(3));
 		return locationTag;
 	}
 	
@@ -314,6 +328,7 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		locationTag.setName("district");
 		locationTag.setDescription("third label tag name");
 		locationTag.setActive(true);
+		locationTag.setId(Long.valueOf(4));
 		return locationTag;
 	}
 	
@@ -322,6 +337,7 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 		locationTag.setName("upazila");
 		locationTag.setDescription("fourth label tag name");
 		locationTag.setActive(true);
+		locationTag.setId(Long.valueOf(5));
 		return locationTag;
 	}
 	
