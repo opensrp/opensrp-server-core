@@ -18,17 +18,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.AppStateToken;
-import org.opensrp.repository.PlanRepository;
-import org.smartregister.domain.Client;
-import org.smartregister.domain.Event;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
+import org.opensrp.repository.PlanRepository;
 import org.opensrp.service.ClientService;
 import org.opensrp.service.ConfigService;
 import org.opensrp.service.ErrorTraceService;
@@ -37,6 +34,8 @@ import org.opensrp.service.TaskGenerator;
 import org.opensrp.service.formSubmission.handler.EventsHandler;
 import org.opensrp.service.formSubmission.handler.EventsRouter;
 import org.opensrp.service.formSubmission.handler.IHandlerMapper;
+import org.smartregister.domain.Client;
+import org.smartregister.domain.Event;
 
 public class EventListenerTest {
 	
@@ -75,12 +74,11 @@ public class EventListenerTest {
 	
 	@Before
 	public void setUp() {
-		when(configService.registerAppStateToken(any(AllConstants.Config.class), Matchers.anyObject(), anyString(),
+		when(configService.registerAppStateToken(any(AllConstants.Config.class), any(), anyString(),
 		    anyBoolean())).thenReturn(new AppStateToken("token", 01l, 02l));
-		eventsRouter = new EventsRouter(handlerMapper, "/schedules/schedule-configs");
-		eventService = new EventService(allEvents, clientService, taskGenerator, planRepository);
-		eventsListener = new EventsListener(eventsRouter, configService, allEvents, eventService, errorTraceService,
-		        allClients);
+		eventsRouter = spy(new EventsRouter(handlerMapper, "/schedules/schedule-configs"));
+		eventService = spy(new EventService(allEvents, clientService, taskGenerator, planRepository));
+		eventsListener = new EventsListener(eventsRouter, configService,  eventService, errorTraceService);
 	}
 	
 	@Test
@@ -94,10 +92,8 @@ public class EventListenerTest {
 		    new Event().withIdentifier(AllConstants.Client.ZEIR_ID.toUpperCase(), "2").withEventType("Vaccination"),
 		    new Event());
 		
-		when(allClients.findByEmptyServerVersion()).thenReturn(clients, Collections.<Client> emptyList());
 		when(configService.getAppStateTokenByName(AllConstants.Config.EVENTS_PARSER_LAST_PROCESSED_EVENT))
 		        .thenReturn(new AppStateToken("token", 1l, 0l));
-		when(allEvents.findByEmptyServerVersion()).thenReturn(events, Collections.EMPTY_LIST);
 		when(allEvents.findByServerVersion(1l)).thenReturn(events);
 		when(clientService.findAllByIdentifier(AllConstants.Client.ZEIR_ID.toUpperCase(), "2")).thenReturn(clients);
 		when(allEvents.findByBaseEntityAndType("222", "Birth Registration")).thenReturn(events);
@@ -109,12 +105,11 @@ public class EventListenerTest {
 		
 		spyEventListener.processEvent();
 		
-		InOrder inOrder = inOrder(allClients, allEvents, eventHandler);
+		InOrder inOrder = inOrder(eventService, eventsRouter, eventHandler);
 		clients.get(0).setServerVersion(System.currentTimeMillis());
 		events.get(0).setServerVersion(System.currentTimeMillis());
-		inOrder.verify(allClients).update(clients.get(0),true);
-		inOrder.verify(allEvents).update(events.get(0),true);
-		//inOrder.verify(eventHandler, atLeastOnce()).handle(eq(events.get(0)), any(JSONObject.class), eq("BCG"));
+		inOrder.verify(eventService).processOutOfArea(events.get(0),events.get(0).getProviderId());
+		inOrder.verify(eventsRouter).route(events.get(0));
 		
 	}
 	

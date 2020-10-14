@@ -27,6 +27,10 @@ public class LocationTagService {
 	public List<LocationTag> getAllLocationTags() {
 		return getLocationTagRepository().getAll();
 	}
+
+	public LocationTag getLocationTagById(String id) {
+		return getLocationTagRepository().getLocationTagByPrimaryKey(Long.valueOf(id));
+	}
 	
 	public LocationTag addOrUpdateLocationTag(LocationTag locationTag) {
 		if (StringUtils.isBlank(locationTag.getName())) {

@@ -68,6 +68,22 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 	}
 
 	@Override
+	public void updateIdSourceWithSequenceValue(IdentifierSource identifierSource, Long sequenceValue) {
+		if (identifierSource == null) {
+			return;
+		}
+		Long id = retrievePrimaryKey(identifierSource);
+
+		if (id == null) { //Identifier Source doesn't not exist
+			return;
+		}
+
+		org.opensrp.domain.postgres.IdentifierSource pgIdentifierSource = convert(identifierSource, id);
+		pgIdentifierSource.setSequenceValue(sequenceValue);
+		customIdentifierSourceMapper.updateByPrimaryKey(pgIdentifierSource);
+	}
+
+	@Override
 	public List<IdentifierSource> getAll() {
 		IdentifierSourceExample identifierSourceExample = new IdentifierSourceExample();
 		identifierSourceExample.createCriteria().andIdentifierIsNotNull();
@@ -141,6 +157,7 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 		convertedIdentifierSource.setMinLength(identifierSource.getMinLength());
 		convertedIdentifierSource.setMaxLength(identifierSource.getMaxLength());
 		convertedIdentifierSource.setRegexFormat(identifierSource.getRegexFormat());
+		convertedIdentifierSource.setSequenceValue(identifierSource.getSequenceValue());
 
 		return convertedIdentifierSource;
 	}
@@ -163,7 +180,9 @@ public class IdentifierSourceRepositoryImpl extends BaseRepositoryImpl<Identifie
 		pgIdentifierSource.setMinLength(identifierSource.getMinLength());
 		pgIdentifierSource.setMaxLength(identifierSource.getMaxLength());
 		pgIdentifierSource.setRegexFormat(identifierSource.getRegexFormat());
+		pgIdentifierSource.setSequenceValue(identifierSource.getSequenceValue());
 
 		return pgIdentifierSource;
 	}
+
 }

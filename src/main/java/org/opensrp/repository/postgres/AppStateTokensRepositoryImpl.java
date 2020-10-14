@@ -99,5 +99,11 @@ public class AppStateTokensRepositoryImpl implements AppStateTokensRepository {
 		mapper.deleteByExample(new AppStateTokenExample());
 		
 	}
+
+	@Override
+	public long getNextServerVersion() {
+		throw new UnsupportedOperationException();
+	}
+
 	
 }

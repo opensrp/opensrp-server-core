@@ -1,5 +1,6 @@
 package org.opensrp.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -49,5 +50,8 @@ public class IdentifierSource {
 
 	@JsonProperty
 	private String regexFormat;
+
+	@JsonIgnore
+	private Long sequenceValue;
 
 }
