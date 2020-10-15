@@ -86,7 +86,6 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 
 		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
 		productCatalogueExample.createCriteria().andUniqueIdEqualTo(uniqueId);
-		//		int rowsAffected = customProductCatalogueMapper.deleteByExample(productCatalogueExample);
 		int rowsAffected = customProductCatalogueMapper.deleteByPrimaryKey(uniqueId);
 		if (rowsAffected < 1) {
 			return;

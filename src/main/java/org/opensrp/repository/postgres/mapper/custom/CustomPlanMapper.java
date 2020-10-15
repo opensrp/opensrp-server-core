@@ -21,4 +21,6 @@ public interface CustomPlanMapper extends PlanMapper {
 
 	List<String> selectManyIds(@Param("example") PlanExample planExample, @Param("offset") int offset,
 							   @Param("limit") int limit);
+
+	Long countMany(@Param("example") PlanExample planExample);
 }

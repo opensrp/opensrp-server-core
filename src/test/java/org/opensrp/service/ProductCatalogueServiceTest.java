@@ -9,7 +9,6 @@ import org.opensrp.search.ProductCatalogueSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,7 +36,7 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testFindAllSupplyCatalogs() {
+	public void testFindAllProductCatalogs() {
 		ProductCatalogueSearchBean productCatalogueSearchBean = new ProductCatalogueSearchBean();
 		productCatalogueSearchBean.setProductName("");
 		productCatalogueSearchBean.setUniqueId(0l);
@@ -50,7 +49,7 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 	public void testAdd() {
 		ProductCatalogue productCatalogue = createProductCatalogue();
 		productCatalogueService.add(productCatalogue);
-		List<ProductCatalogue> productCatalogues = productCatalogueService.findAllSupplyCatalogs();
+		List<ProductCatalogue> productCatalogues = productCatalogueService.findAllProductCatalogues();
 		assertEquals(2, productCatalogues.size());
 	}
 
@@ -74,7 +73,7 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testDeleteProductCatalogueById() {
 		productCatalogueService.deleteProductCatalogueById(1l);
-		List<ProductCatalogue> productCatalogues = productCatalogueService.findAllSupplyCatalogs();
+		List<ProductCatalogue> productCatalogues = productCatalogueService.findAllProductCatalogues();
 		assertEquals(0, productCatalogues.size());
 	}
 

@@ -23,7 +23,7 @@ public class ProductCatalogueService {
 		this.productCatalogueRepository = productCatalogueRepository;
 	}
 
-	public List<ProductCatalogue> findAllSupplyCatalogs() {
+	public List<ProductCatalogue> findAllProductCatalogues() {
 		return productCatalogueRepository.getAll();
 	}
 
@@ -63,7 +63,7 @@ public class ProductCatalogueService {
 		if (StringUtils.isBlank(productCatalogueSearchBean.getProductName()) &&
 				productCatalogueSearchBean.getUniqueId() == 0
 				&& productCatalogueSearchBean.getServerVersion() == null) {
-			return findAllSupplyCatalogs();
+			return findAllProductCatalogues();
 		} else {
 			return productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean);
 		}
