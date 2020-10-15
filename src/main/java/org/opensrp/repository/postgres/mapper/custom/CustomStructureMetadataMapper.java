@@ -27,4 +27,5 @@ public interface CustomStructureMetadataMapper extends StructureMetadataMapper {
 
 	List<StructureCount> findStructureCountsForLocation(@Param("locationIdentifiers") Set<String> locationIdentifiers);
 
+	Long countMany(@Param("example") StructureMetadataExample structureMetadataExample);
 }

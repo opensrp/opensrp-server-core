@@ -1,6 +1,7 @@
 package org.opensrp.repository;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,6 +95,16 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit);
 
 	/**
+	 * overloads {@link #findAllStructureIds(Long, int)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
+	Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit, Date fromDate, Date toDate);
+
+	/**
 	 * This method searches for location identifier and name using a plan identifier.
 	 *
 	 * @param planIdentifier identifier of the plan
@@ -112,6 +123,13 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit);
 
 	/**
+	 * counts all locations
+	 * @param serverVersion
+	 * @return
+	 */
+	Long countAllLocations(Long serverVersion);
+
+	/**
 	 * This method searches for structures ordered by serverVersion ascending
 	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
@@ -122,6 +140,13 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit);
 
 	/**
+	 * count all structures
+	 * @param serverVersion
+	 * @return
+	 */
+	Long countAllStructures(Long serverVersion);
+
+	/**
 	 * This method fetches all location Ids
 	 *
 	 * @param serverVersion
@@ -129,6 +154,16 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return a list of location Ids
 	 */
 	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit);
+
+	/**
+	 * overloads {@link #findAllLocationIds(Long, int)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
+	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit, Date fromDate, Date toDate);
 	
 	List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean);
 

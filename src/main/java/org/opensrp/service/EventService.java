@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,14 +13,14 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
-import org.opensrp.repository.PlanRepository;
-import org.smartregister.domain.Event;
-import org.smartregister.domain.Obs;
 import org.opensrp.repository.EventsRepository;
+import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.EventSearchBean;
 import org.opensrp.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartregister.domain.Event;
+import org.smartregister.domain.Obs;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,16 +34,17 @@ public class EventService {
 	private final EventsRepository allEvents;
 	
 	private ClientService clientService;
-
+	
 	private TaskGenerator taskGenerator;
-
+	
 	private PlanRepository planRepository;
-
+	
 	@Value("#{opensrp['plan.evaluation.enabled'] ?: false}")
-	private boolean isPlanEvaluationEnabled ;
+	private boolean isPlanEvaluationEnabled;
 	
 	@Autowired
-	public EventService(EventsRepository allEvents, ClientService clientService, TaskGenerator taskGenerator, PlanRepository planRepository) {
+	public EventService(EventsRepository allEvents, ClientService clientService, TaskGenerator taskGenerator,
+	    PlanRepository planRepository) {
 		this.allEvents = allEvents;
 		this.clientService = clientService;
 		this.taskGenerator = taskGenerator;
@@ -70,7 +72,7 @@ public class EventService {
 	}
 	
 	public Event findByFormSubmissionId(String formSubmissionId) {
-		return allEvents.findByFormSubmissionId(formSubmissionId,false);
+		return allEvents.findByFormSubmissionId(formSubmissionId, false);
 	}
 	
 	public List<Event> findEventsBy(EventSearchBean eventSearchBean) {
@@ -109,12 +111,13 @@ public class EventService {
 	
 	/**
 	 * Find an event using the event Id
+	 * 
 	 * @param eventId the if for the event
 	 * @return an event matching the eventId
 	 */
 	public Event findById(String eventId) {
 		try {
-			if (StringUtils.isEmpty(eventId) ) {
+			if (StringUtils.isEmpty(eventId)) {
 				return null;
 			}
 			return allEvents.findById(eventId);
@@ -127,18 +130,19 @@ public class EventService {
 	
 	/**
 	 * Find an event using an event Id or form Submission Id
+	 * 
 	 * @param eventId the if for the event
 	 * @param formSubmissionId form submission id for the events
 	 * @return an event matching the eventId or formsubmission id
 	 */
 	public Event findByIdOrFormSubmissionId(String eventId, String formSubmissionId) {
-		Event event=null;
-		try {	
-			if(StringUtils.isNotEmpty(eventId)) {
-				 event = findById(eventId);
+		Event event = null;
+		try {
+			if (StringUtils.isNotEmpty(eventId)) {
+				event = findById(eventId);
 			}
 			if (event == null && StringUtils.isNotEmpty(formSubmissionId)) {
-				return allEvents.findByFormSubmissionId(formSubmissionId,true);
+				return allEvents.findByFormSubmissionId(formSubmissionId, true);
 			}
 		}
 		catch (Exception e) {
@@ -146,7 +150,7 @@ public class EventService {
 		}
 		return event;
 	}
-
+	
 	public synchronized Event addEvent(Event event, String username) {
 		Event e = find(event);
 		if (e != null) {
@@ -166,18 +170,18 @@ public class EventService {
 		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
 		if (isPlanEvaluationEnabled && planIdentifier != null) {
 			PlanDefinition plan = planRepository.get(planIdentifier);
-			if(plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null ||
-					plan.getEffectivePeriod().getEnd().isAfter(new DateTime().toLocalDate())))
-			taskGenerator.processPlanEvaluation(plan, username, event);
+			if (plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
+			        || plan.getEffectivePeriod().getEnd().isAfter(new DateTime().toLocalDate())))
+				taskGenerator.processPlanEvaluation(plan, username, event);
 		}
 		return event;
 	}
 	
 	/**
-	 * An out of area event is used to record services offered outside a client's catchment area.
-	 * The event usually will have a client unique identifier(ZEIR_ID) as the only way to identify
-	 * the client.This method finds the client based on the identifier and assigns a basentityid to
-	 * the event
+	 * An out of area event is used to record services offered outside a client's catchment area. The
+	 * event usually will have a client unique identifier(ZEIR_ID) as the only way to identify the
+	 * client.This method finds the client based on the identifier and assigns a basentityid to the
+	 * event
 	 *
 	 * @param event
 	 * @return
@@ -265,7 +269,7 @@ public class EventService {
 	}
 	
 	public synchronized Event addorUpdateEvent(Event event) {
-		Event existingEvent = findByIdOrFormSubmissionId(event.getId(),event.getFormSubmissionId());
+		Event existingEvent = findByIdOrFormSubmissionId(event.getId(), event.getFormSubmissionId());
 		if (existingEvent != null) {
 			event.setId(existingEvent.getId());
 			event.setRevision(existingEvent.getRevision());
@@ -378,10 +382,9 @@ public class EventService {
 	public List<Event> findByProviderAndEntityType(String provider) {
 		return allEvents.findByProvider(provider);
 	}
-
+	
 	/**
-	 * This method searches for event ids filtered by eventType
-	 * and the date they were deleted
+	 * This method searches for event ids filtered by eventType and the date they were deleted
 	 *
 	 * @param eventType used to filter the event ids
 	 * @param isDeleted whether to return deleted event ids
@@ -389,16 +392,33 @@ public class EventService {
 	 * @param limit upper limit on number of tasks ids to fetch
 	 * @return a list of event ids
 	 */
-	public Pair<List<String>, Long> findAllIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit) {
+	public Pair<List<String>, Long> findAllIdsByEventType(String eventType, boolean isDeleted, Long serverVersion,
+	        int limit) {
 		return allEvents.findIdsByEventType(eventType, isDeleted, serverVersion, limit);
 	}
 
 	/**
+	 * overrides {@link #findAllIdsByEventType(String, boolean, Long, int)} by adding date filters
+	 * @param eventType
+	 * @param isDeleted
+	 * @param serverVersion
+	 * @param limit
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
+	public Pair<List<String>, Long> findAllIdsByEventType(String eventType, boolean isDeleted, Long serverVersion, int limit,
+	        Date fromDate, Date toDate) {
+		return allEvents.findIdsByEventType(eventType, isDeleted, serverVersion, limit, fromDate, toDate);
+	}
+	
+	/**
 	 * This method is used to return a count of locations based on the provided parameters
+	 * 
 	 * @param eventSearchBean object containing params to search by
 	 * @return returns a count of events matching the passed parameters
 	 */
-	public Long countEvents(EventSearchBean eventSearchBean){
+	public Long countEvents(EventSearchBean eventSearchBean) {
 		return allEvents.countEvents(eventSearchBean);
 	};
 }
