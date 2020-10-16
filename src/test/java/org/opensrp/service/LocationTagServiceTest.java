@@ -61,7 +61,17 @@ public class LocationTagServiceTest {
 		assertEquals("Country", actutalLocationTag.get(0).getName());
 		
 	}
-	
+
+	@Test
+	public void testGetLocationTagByLocationTagIdWithoutTheLocationExample() {
+		when(locationTagRepository.getLocationTagByPrimaryKey(1L)).thenReturn(initTestLocationTag());
+
+		LocationTag actutalLocationTag = locationTagService.getLocationTagById("1");
+		verify(locationTagRepository).getLocationTagByPrimaryKey(1L);
+		assertEquals("Country", actutalLocationTag.getName());
+		assertEquals("1", actutalLocationTag.getId() + "");
+	}
+
 	@Test
 	public void testGetLocationTagByLocationTagId() {
 		List<LocationTag> expectedLocationTags = new ArrayList<>();
