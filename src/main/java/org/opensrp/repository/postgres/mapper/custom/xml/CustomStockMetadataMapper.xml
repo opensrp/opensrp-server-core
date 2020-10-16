@@ -89,6 +89,8 @@
 		<where>
 			<trim  prefixOverrides="and">
 				sm.date_deleted is null
+				and (json->> 'accountabilityEndDate' is null or json->>'accountabilityEndDate' >= #{todayDate,jdbcType=DATE} )
+
 			<if test="searchBean.providerId != null">
 				and sm.provider_id = #{searchBean.providerId,jdbcType=VARCHAR}
 			</if>

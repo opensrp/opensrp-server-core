@@ -1,5 +1,6 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -20,7 +21,7 @@ public interface CustomStockMetadataMapper extends StockMetadataMapper {
 	        @Param("limit") int limit);
 	
 	List<Stock> selectManyBySearchBean(@Param("searchBean") StockSearchBean searchBean,
-	        @Param("orderByClause") String orderByClause, @Param("offset") int offset, @Param("limit") int limit);
+	        @Param("todayDate") Date todayDate, @Param("orderByClause") String orderByClause, @Param("offset") int offset, @Param("limit") int limit);
 
 	StockMetadata selectByStockId(Long stockId);
 	

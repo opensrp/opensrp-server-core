@@ -163,7 +163,8 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	@Override
 	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int limit) {
 		String orderByClause = getOrderByClause(sortBy, sortOrder);
-		return convert(stockMetadataMapper.selectManyBySearchBean(searchBean, orderByClause, 0, limit));
+		Date date = new Date();
+		return convert(stockMetadataMapper.selectManyBySearchBean(searchBean, date, orderByClause, 0, limit));
 		
 	}
 	
