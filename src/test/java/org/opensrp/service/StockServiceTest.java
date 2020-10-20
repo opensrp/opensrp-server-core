@@ -18,8 +18,6 @@ import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import static org.junit.Assert.assertEquals;
-
 /**
  * Integration Tests for {@link StockService}.
  */
@@ -34,8 +32,6 @@ public class StockServiceTest extends BaseRepositoryTest {
 	@Autowired
 	@Qualifier("productCatalogueRepositoryPostgres")
 	private ProductCatalogueRepository productCatalogueRepository;
-
-	private ProductCatalogueService productCatalogueService;
 	
 	@Override
 	protected Set<String> getDatabaseScripts() {
@@ -48,6 +44,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 	@Override
 	public void populateDatabase() throws SQLException {
 		super.populateDatabase();
+		ProductCatalogueService productCatalogueService;
 		productCatalogueService = new ProductCatalogueService(productCatalogueRepository);
 		stockService = new StockService(stocksRepository, productCatalogueService);
 		Stock stock1 = new Stock(Long.parseLong("123"), "VT", "TT", "4-2", 10, Long.parseLong("20062017"), "TF",
@@ -130,7 +127,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		Inventory inventory = createInventory();
 		stockService.addInventory(inventory, "John");
 		List<Stock> stockList = stockService.getStocksByServicePointId("loc-1");
-		assertEquals(1, stockList.size());
+		Assert.assertEquals(1, stockList.size());
 	}
 
 	@Test
@@ -138,11 +135,11 @@ public class StockServiceTest extends BaseRepositoryTest {
 		Inventory inventory = createInventory();
 		stockService.addInventory(inventory, "John");
 		Stock stock = stockService.findByIdentifierAndServicePointId("1", "loc-1");
-		assertEquals("XYZ", stock.getDonor());
+		Assert.assertEquals("XYZ", stock.getDonor());
 		inventory.setDonor("ABC");
 		stockService.updateInventory(inventory, "John");
 		Stock updatedStock = stockService.findByIdentifierAndServicePointId("1", "loc-1");
-		assertEquals("ABC", updatedStock.getDonor());
+		Assert.assertEquals("ABC", updatedStock.getDonor());
 	}
 
 	private Inventory createInventory() {
