@@ -19,6 +19,8 @@ public class StockSearchBean {
 	private String dateUpdated;
 	
 	private Long serverVersion;
+
+	private String locationId;
 	
 	public String getIdentifier() {
 		return identifier;
@@ -91,5 +93,12 @@ public class StockSearchBean {
 	public void setServerVersion(Long serverVersion) {
 		this.serverVersion = serverVersion;
 	}
-	
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
 }

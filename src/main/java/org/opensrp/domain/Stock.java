@@ -8,6 +8,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.smartregister.domain.BaseDataObject;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Stock extends BaseDataObject {
 	
@@ -37,7 +41,25 @@ public class Stock extends BaseDataObject {
 	
 	@JsonProperty
 	private long version;
-	
+
+	@JsonProperty
+	private Date deliveryDate;
+
+	@JsonProperty
+	private Date accountabilityEndDate;
+
+	@JsonProperty
+	private String donor;
+
+	@JsonProperty
+	private String serialNumber;
+
+	@JsonProperty
+	private String locationId;
+
+	@JsonProperty
+	private Map<String, String> customProperties = new HashMap();
+
 	public Stock() {
 		this.version = System.currentTimeMillis();
 	}
@@ -54,7 +76,25 @@ public class Stock extends BaseDataObject {
 		this.date_updated = date_updated;
 		this.version = version;
 	}
-	
+
+	public Stock(Long identifier, String vaccine_type_id, String transaction_type, String providerid, int value,
+			StockObjectMetadata stockObjectMetadata, Inventory inventory) {
+		this.identifier = identifier;
+		this.vaccine_type_id = vaccine_type_id;
+		this.transaction_type = transaction_type;
+		this.providerid = providerid;
+		this.value = value;
+		this.date_created = stockObjectMetadata.getDate_created();
+		this.to_from = stockObjectMetadata.getTo_from();
+		this.date_updated = stockObjectMetadata.getDate_updated();
+		this.version = stockObjectMetadata.getVersion();
+		this.deliveryDate = inventory.getDeliveryDate();
+		this.donor = inventory.getDonor();
+		this.serialNumber = inventory.getSerialNumber();
+		this.locationId = inventory.getServicePointId();
+		// TODO : accountabilityDate to be computed later and also set customProperties
+	}
+
 	public Long getIdentifier() {
 		return identifier;
 	}
@@ -126,7 +166,55 @@ public class Stock extends BaseDataObject {
 	public void setVersion(long version) {
 		this.version = version;
 	}
-	
+
+	public Date getDeliveryDate() {
+		return deliveryDate;
+	}
+
+	public void setDeliveryDate(Date deliveryDate) {
+		this.deliveryDate = deliveryDate;
+	}
+
+	public Date getAccountabilityEndDate() {
+		return accountabilityEndDate;
+	}
+
+	public void setAccountabilityEndDate(Date accountabilityEndDate) {
+		this.accountabilityEndDate = accountabilityEndDate;
+	}
+
+	public String getDonor() {
+		return donor;
+	}
+
+	public void setDonor(String donor) {
+		this.donor = donor;
+	}
+
+	public String getSerialNumber() {
+		return serialNumber;
+	}
+
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
+	}
+
+	public String getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(String locationId) {
+		this.locationId = locationId;
+	}
+
+	public Map<String, String> getCustomProperties() {
+		return customProperties;
+	}
+
+	public void setCustomProperties(Map<String, String> customProperties) {
+		this.customProperties = customProperties;
+	}
+
 	@Override
 	public final boolean equals(Object o) {
 		return EqualsBuilder.reflectionEquals(this, o, "id", "revision");
