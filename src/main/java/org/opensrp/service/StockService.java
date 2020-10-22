@@ -11,9 +11,10 @@ import org.opensrp.domain.ProductCatalogue;
 import org.opensrp.domain.Stock;
 import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.dto.FailedRecordSummary;
-import org.opensrp.dto.InventoryValidationResult;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.search.StockSearchBean;
+import org.opensrp.util.Donor;
+import org.opensrp.util.UNICEFSection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartregister.domain.PhysicalLocation;
@@ -209,37 +210,45 @@ public class StockService {
 	  return allStocks.findStocksByLocationId(servicePointId);
 	}
 
-	public CsvBulkImportDataSummary convertandPersistInventorydata(List<Map<String, String>> csvStocks , String userName) {
+	public CsvBulkImportDataSummary convertandPersistInventorydata(List<Map<String, String>> csvStocks, String userName) {
 		int rowCount = 0;
 		CsvBulkImportDataSummary csvBulkImportDataSummary = new CsvBulkImportDataSummary();
 		FailedRecordSummary failedRecordSummary;
 		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
 		Inventory inventory;
-		InventoryValidationResult inventoryValidationResult = new InventoryValidationResult();
 		Integer totalRows = csvStocks.size();
 		Integer rowsProcessed = 0;
 
-		for (Map<String, String> csvdata : csvStocks) {
-			try {
-				rowCount++;
-				inventoryValidationResult = validateInventoryData(csvdata);
-				if (inventoryValidationResult != null && inventoryValidationResult.getValidationPassed()) {
+		try {
+			failedRecordSummaries = validateInventoryData(csvStocks);
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		String productId;
+
+		if (failedRecordSummaries.size() == 0) {
+			for (Map<String, String> csvdata : csvStocks) {
+				try {
+					rowCount++;
 					inventory = createInventoryObject(csvdata);
-					addInventory(inventory, userName);
+					productId = getValueFromMap(PRODUCT_ID, csvdata);
+					Stock existingStock = findByIdentifierAndServicePointId(String.valueOf(productId),
+							inventory.getServicePointId());
+					if (existingStock == null)
+						addInventory(inventory, userName);
+					else
+						updateInventory(inventory, userName);
 					rowsProcessed++;
-				} else {
+				}
+				catch (Exception e) {
 					failedRecordSummary = new FailedRecordSummary();
 					failedRecordSummary.setRowNumber(rowCount);
-					failedRecordSummary.setReasonOfFailure(inventoryValidationResult.getComment());
+					failedRecordSummary.setReasonOfFailure(
+							"Exception occurred while converting and persisting of Stock data : " + e.getMessage());
 					failedRecordSummaries.add(failedRecordSummary);
 				}
-			}
-			catch (Exception e) {
-				failedRecordSummary = new FailedRecordSummary();
-				failedRecordSummary.setRowNumber(rowCount);
-				failedRecordSummary.setReasonOfFailure(
-						"Exception occurred while converting and persisting of Stock data : " + e.getMessage());
-				failedRecordSummaries.add(failedRecordSummary);
 			}
 		}
 
@@ -250,75 +259,86 @@ public class StockService {
 
 	}
 
-	private InventoryValidationResult validateInventoryData(Map<String, String> csvdata) throws ParseException {
-		String locationId = getValueFromMap(SERVICE_POINT_ID, csvdata);
-		String productCatalogId = getValueFromMap(PRODUCT_ID, csvdata);
-		String deliveryDateInString = getValueFromMap(DELIVERY_DATE, csvdata);
-		String section = getValueFromMap(UNICEF_SECTION, csvdata);
-		String poNumber = getValueFromMap(PO_NUMBER, csvdata);
-		String serialNumber = getValueFromMap(SERIAL_NUMBER, csvdata);
-		String quantity = getValueFromMap(QUANTITY, csvdata);
-		ProductCatalogue productCatalogue;
-		PhysicalLocation physicalLocation;
-		Date deliveryDate;
+	private List<FailedRecordSummary> validateInventoryData(List<Map<String, String>> csvRows) throws ParseException {
 
-		InventoryValidationResult inventoryValidationResult = new InventoryValidationResult();
-		if (locationId == null || productCatalogId == null || deliveryDateInString == null || section == null
-				|| poNumber == null) {
-			logger.error("Required fields are missing");
-			inventoryValidationResult.setComment("Required fields are missing");
-			inventoryValidationResult.setValidationPassed(Boolean.FALSE);
-			return inventoryValidationResult;
-			//			return false;
+		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
+		FailedRecordSummary failedRecordSummary;
+		int rowNumber = 0;
+		for (Map<String, String> csvdata : csvRows) {
+			rowNumber++;
+			String locationId = getValueFromMap(SERVICE_POINT_ID, csvdata);
+			String productCatalogId = getValueFromMap(PRODUCT_ID, csvdata);
+			String deliveryDateInString = getValueFromMap(DELIVERY_DATE, csvdata);
+			String section = getValueFromMap(UNICEF_SECTION, csvdata);
+			String poNumber = getValueFromMap(PO_NUMBER, csvdata);
+			String serialNumber = getValueFromMap(SERIAL_NUMBER, csvdata);
+			String quantity = getValueFromMap(QUANTITY, csvdata);
+			String donor = getValueFromMap(DONOR, csvdata);
+			ProductCatalogue productCatalogue;
+			PhysicalLocation physicalLocation;
+			Date deliveryDate;
+			productCatalogue = productCatalogId != null ?
+					productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId)) :
+					null;
+			physicalLocation = locationId != null ? physicalLocationService.getLocation(locationId, true) : null;
+			deliveryDate = deliveryDateInString != null ? convertStringToDate(deliveryDateInString) : null;
 
-		}
-		productCatalogue = productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId));
-		if (productCatalogue != null && productCatalogue.getIsAttractiveItem() && serialNumber == null) {
-			logger.error("Serial Number is missing");
-			inventoryValidationResult.setComment("Serial Number is missing");
-			inventoryValidationResult.setValidationPassed(Boolean.FALSE);
-			return inventoryValidationResult;
-			//			return false;
-		} else {
-			if (productCatalogue == null) {
+			if (locationId == null || productCatalogId == null || deliveryDateInString == null || section == null
+					|| poNumber == null) {
+				logger.error("Required fields are missing");
+				failedRecordSummary = new FailedRecordSummary();
+				failedRecordSummary.setReasonOfFailure("Required fields are missing");
+				failedRecordSummary.setRowNumber(rowNumber);
+				failedRecordSummaries.add(failedRecordSummary);
+			} else if (productCatalogue != null && productCatalogue.getIsAttractiveItem() && serialNumber == null) {
+				logger.error("Serial Number is missing");
+				failedRecordSummary = new FailedRecordSummary();
+				failedRecordSummary.setReasonOfFailure("Serial Number is missing");
+				failedRecordSummary.setRowNumber(rowNumber);
+				failedRecordSummaries.add(failedRecordSummary);
+			} else if (productCatalogue == null) {
 				logger.error("Product Catalog does not exists against this Id");
-				inventoryValidationResult.setComment("Product Catalog does not exists against this Id");
-				inventoryValidationResult.setValidationPassed(Boolean.FALSE);
-				return inventoryValidationResult;
-				//				return false;
+				failedRecordSummary = new FailedRecordSummary();
+				failedRecordSummary.setReasonOfFailure("Product Catalog does not exists against this Id");
+				failedRecordSummary.setRowNumber(rowNumber);
+				failedRecordSummaries.add(failedRecordSummary);
+			} else if (physicalLocation == null) {
+				logger.error("Physical Location does not exists against this Id");
+				failedRecordSummary = new FailedRecordSummary();
+				failedRecordSummary.setReasonOfFailure("Physical Location does not exists against this Id");
+				failedRecordSummary.setRowNumber(rowNumber);
+				failedRecordSummaries.add(failedRecordSummary);
+			} else if (deliveryDate.getTime() > new Date().getTime()) {
+				logger.error("Delivery Date can not be of future");
+				failedRecordSummary = new FailedRecordSummary();
+				failedRecordSummary.setReasonOfFailure("Delivery Date can not be of future");
+				failedRecordSummary.setRowNumber(rowNumber);
+				failedRecordSummaries.add(failedRecordSummary);
+			} else if (quantity != null && Integer.valueOf(quantity) < 1) {
+				logger.error("Quantity can not be less than 1");
+				failedRecordSummary = new FailedRecordSummary();
+				failedRecordSummary.setReasonOfFailure("Quantity can not be less than 1");
+				failedRecordSummary.setRowNumber(rowNumber);
+				failedRecordSummaries.add(failedRecordSummary);
+			} else if (!UNICEFSection.containsString(section)) {
+				logger.error("Selected UNICEF section is not among the list");
+				failedRecordSummary = new FailedRecordSummary();
+				failedRecordSummary.setReasonOfFailure("Selected UNICEF section is not among the list");
+				failedRecordSummary.setRowNumber(rowNumber);
+				failedRecordSummaries.add(failedRecordSummary);
+			} else if (donor != null && !Donor.containsString(donor)) {
+				logger.error("Selected donor is not among the list");
+				failedRecordSummary = new FailedRecordSummary();
+				failedRecordSummary.setReasonOfFailure("Selected donor is not among the list");
+				failedRecordSummary.setRowNumber(rowNumber);
+				failedRecordSummaries.add(failedRecordSummary);
+			}
+			//TODO : Add whole number validation for PO number
+			else {
+				logger.info("All validations passed");
 			}
 		}
-
-		physicalLocation = physicalLocationService.getLocation(locationId, true);
-		if (physicalLocation == null) {
-			logger.error("Physical Location does not exists against this Id");
-			inventoryValidationResult.setComment("Physical Location does not exists against this Id");
-			inventoryValidationResult.setValidationPassed(Boolean.FALSE);
-			return inventoryValidationResult;
-			//			return false;
-		}
-
-		deliveryDate = convertStringToDate(deliveryDateInString);
-		if (deliveryDate.getTime() > new Date().getTime()) {
-			logger.error("Delivery Date can not be of future");
-			inventoryValidationResult.setComment("Delivery Date can not be of future");
-			inventoryValidationResult.setValidationPassed(Boolean.FALSE);
-			return inventoryValidationResult;
-			//			return false;
-		}
-
-		if (quantity != null && Integer.valueOf(quantity) < 1) {
-			logger.error("Quantity can not be less than 1");
-			inventoryValidationResult.setComment("Quantity can not be less than 1");
-			inventoryValidationResult.setValidationPassed(Boolean.FALSE);
-			return inventoryValidationResult;
-			//			return false;
-		}
-		inventoryValidationResult.setValidationPassed(Boolean.TRUE);
-		inventoryValidationResult.setComment("All validations passed");
-		return inventoryValidationResult;
-		//		return true;
-
+		return failedRecordSummaries;
 	}
 
 	private Inventory createInventoryObject(Map<String, String> data) throws ParseException {
