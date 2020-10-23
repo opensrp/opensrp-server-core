@@ -251,7 +251,6 @@ public class StockService {
 		int rowNumber = 0;
 		List<String> validationErrors;
 		for (Map<String, String> csvdata : csvRows) {
-			validationErrors = new ArrayList<>();
 			failedRecordSummary = new FailedRecordSummary();
 			rowNumber++;
 			String locationId = getValueFromMap(SERVICE_POINT_ID, csvdata);
@@ -262,52 +261,8 @@ public class StockService {
 			String serialNumber = getValueFromMap(SERIAL_NUMBER, csvdata);
 			String quantity = getValueFromMap(QUANTITY, csvdata);
 			String donor = getValueFromMap(DONOR, csvdata);
-			ProductCatalogue productCatalogue;
-			PhysicalLocation physicalLocation;
-			Date deliveryDate;
-			productCatalogue = productCatalogId != null ?
-					productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId)) :
-					null;
-			physicalLocation = locationId != null ? physicalLocationService.getLocation(locationId, true) : null;
-			deliveryDate = deliveryDateInString != null ? convertStringToDate(deliveryDateInString) : null;
 
-			if (locationId == null || productCatalogId == null || deliveryDateInString == null || section == null
-					|| poNumber == null) {
-				logger.error(MISSING_REQUIRED_FIELDS);
-				validationErrors.add(MISSING_REQUIRED_FIELDS);
-			}
-			if (productCatalogue != null && productCatalogue.getIsAttractiveItem() && serialNumber == null) {
-				logger.error(MISSING_SERIAL_NUMBER);
-				validationErrors.add(MISSING_SERIAL_NUMBER);
-			}
-			if (productCatalogue == null) {
-				logger.error(PRODUCT_CATALOG_DOES_NOT_EXISTS);
-				validationErrors.add(PRODUCT_CATALOG_DOES_NOT_EXISTS);
-			}
-			if (physicalLocation == null) {
-				logger.error(SERVICE_POINT_DOES_NOT_EXISTS);
-				validationErrors.add(SERVICE_POINT_DOES_NOT_EXISTS);
-			}
-			if (deliveryDate.getTime() > new Date().getTime()) {
-				logger.error(INVALID_DELIVERY_DATE);
-				validationErrors.add(INVALID_DELIVERY_DATE);
-			} else if (quantity != null && isWholeNumber(quantity) && Integer.valueOf(quantity) < 1) {
-				logger.error(INVALID_QUANTITY);
-				validationErrors.add(INVALID_QUANTITY);
-			}
-			if (!UNICEFSection.containsString(section)) {
-				logger.error(INVALID_UNICEF_SECTION);
-				validationErrors.add(INVALID_UNICEF_SECTION);
-			}
-			if (donor != null && !Donor.containsString(donor)) {
-				logger.error(INVALID_DONOR);
-				validationErrors.add(INVALID_DONOR);
-			}
-
-			if(!isWholeNumber(poNumber)) {
-				logger.error(INVALID_PO_NUMBER);
-				validationErrors.add(INVALID_PO_NUMBER);
-			}
+			validationErrors = getValidationErrors(locationId,productCatalogId,deliveryDateInString,section,poNumber,serialNumber,donor,quantity);
 
 			if(validationErrors.size() > 0) {
 				failedRecordSummary.setRowNumber(rowNumber);
@@ -405,6 +360,60 @@ public class StockService {
 		catch (NumberFormatException numberFormatException) {
 			return false;
 		}
+	}
 
+	private List<String> getValidationErrors(String locationId, String productCatalogId, String deliveryDateInString,
+			String section, String poNumber,
+			String serialNumber, String donor, String quantity)
+			throws ParseException {
+		List<String> validationErrors = new ArrayList<>();
+		ProductCatalogue productCatalogue;
+		PhysicalLocation physicalLocation;
+		Date deliveryDate;
+		productCatalogue = productCatalogId != null ?
+				productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId)) :
+				null;
+		physicalLocation = locationId != null ? physicalLocationService.getLocation(locationId, true) : null;
+		deliveryDate = deliveryDateInString != null ? convertStringToDate(deliveryDateInString) : null;
+
+		if (locationId == null || productCatalogId == null || deliveryDateInString == null || section == null
+				|| poNumber == null) {
+			logger.error(MISSING_REQUIRED_FIELDS);
+			validationErrors.add(MISSING_REQUIRED_FIELDS);
+		}
+		if (productCatalogue != null && productCatalogue.getIsAttractiveItem() && serialNumber == null) {
+			logger.error(MISSING_SERIAL_NUMBER);
+			validationErrors.add(MISSING_SERIAL_NUMBER);
+		}
+		if (productCatalogue == null) {
+			logger.error(PRODUCT_CATALOG_DOES_NOT_EXISTS);
+			validationErrors.add(PRODUCT_CATALOG_DOES_NOT_EXISTS);
+		}
+		if (physicalLocation == null) {
+			logger.error(SERVICE_POINT_DOES_NOT_EXISTS);
+			validationErrors.add(SERVICE_POINT_DOES_NOT_EXISTS);
+		}
+		if (deliveryDate.getTime() > new Date().getTime()) {
+			logger.error(INVALID_DELIVERY_DATE);
+			validationErrors.add(INVALID_DELIVERY_DATE);
+		} else if (quantity != null && isWholeNumber(quantity) && Integer.valueOf(quantity) < 1) {
+			logger.error(INVALID_QUANTITY);
+			validationErrors.add(INVALID_QUANTITY);
+		}
+		if (!UNICEFSection.containsString(section)) {
+			logger.error(INVALID_UNICEF_SECTION);
+			validationErrors.add(INVALID_UNICEF_SECTION);
+		}
+		if (donor != null && !Donor.containsString(donor)) {
+			logger.error(INVALID_DONOR);
+			validationErrors.add(INVALID_DONOR);
+		}
+
+		if (!isWholeNumber(poNumber)) {
+			logger.error(INVALID_PO_NUMBER);
+			validationErrors.add(INVALID_PO_NUMBER);
+		}
+
+		return validationErrors;
 	}
 }
