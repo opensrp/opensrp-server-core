@@ -32,6 +32,10 @@ public class StockServiceTest extends BaseRepositoryTest {
 	@Autowired
 	@Qualifier("productCatalogueRepositoryPostgres")
 	private ProductCatalogueRepository productCatalogueRepository;
+
+	private ProductCatalogueService productCatalogueService;
+
+	private PhysicalLocationService physicalLocationService;
 	
 	@Override
 	protected Set<String> getDatabaseScripts() {
@@ -44,9 +48,9 @@ public class StockServiceTest extends BaseRepositoryTest {
 	@Override
 	public void populateDatabase() throws SQLException {
 		super.populateDatabase();
-		ProductCatalogueService productCatalogueService;
 		productCatalogueService = new ProductCatalogueService(productCatalogueRepository);
-		stockService = new StockService(stocksRepository, productCatalogueService);
+		physicalLocationService = new PhysicalLocationService();
+		stockService = new StockService(stocksRepository, productCatalogueService, physicalLocationService);
 		Stock stock1 = new Stock(Long.parseLong("123"), "VT", "TT", "4-2", 10, Long.parseLong("20062017"), "TF",
 		        Long.parseLong("20062017"), Long.parseLong("12345"));
 		Stock stock2 = new Stock(Long.parseLong("123"), "VT", "TT", "4-2", 10, Long.parseLong("20062017"), "TF",
