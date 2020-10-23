@@ -21,6 +21,8 @@ import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static org.opensrp.util.constants.InventoryConstants.*;
+
 @Service
 public class StockService {
 	
@@ -31,24 +33,6 @@ public class StockService {
 	private PhysicalLocationService physicalLocationService;
 
 	private static Logger logger = LoggerFactory.getLogger(StockService.class.toString());
-
-	private static final String SERVICE_POINT_ID = "service_point_id";
-
-	private static final String PRODUCT_ID = "product_id";
-
-	private static final String QUANTITY = "quantity";
-
-	private static final String DELIVERY_DATE = "delivery_date";
-
-	private static final String UNICEF_SECTION = "unicef_section";
-
-	private static final String SERIAL_NUMBER = "serial_number";
-
-	private static final String DONOR = "donor";
-
-	private static final String PO_NUMBER = "po_number";
-
-	private static final String PRODUCT_NAME = "product_name";
 
 	@Autowired
 	public StockService(StocksRepository allStocks, ProductCatalogueService productCatalogueService, PhysicalLocationService physicalLocationService) {
@@ -223,7 +207,7 @@ public class StockService {
 			failedRecordSummaries = validateInventoryData(csvStocks);
 		}
 		catch (ParseException e) {
-			e.printStackTrace();
+			logger.error("Exception occurred : " + e.getMessage(), e);
 		}
 
 		String productId;
@@ -244,9 +228,10 @@ public class StockService {
 				}
 				catch (Exception e) {
 					failedRecordSummary = new FailedRecordSummary();
+					List<String> validationError = new ArrayList<>();
 					failedRecordSummary.setRowNumber(rowCount);
-					failedRecordSummary.setReasonOfFailure(
-							"Exception occurred while converting and persisting of Stock data : " + e.getMessage());
+					validationError.add("Exception occurred while converting and persisting of Stock data : " + e.getMessage());
+					failedRecordSummary.setReasonOfFailure(validationError);
 					failedRecordSummaries.add(failedRecordSummary);
 				}
 			}
@@ -264,7 +249,10 @@ public class StockService {
 		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
 		FailedRecordSummary failedRecordSummary;
 		int rowNumber = 0;
+		List<String> validationErrors;
 		for (Map<String, String> csvdata : csvRows) {
+			validationErrors = new ArrayList<>();
+			failedRecordSummary = new FailedRecordSummary();
 			rowNumber++;
 			String locationId = getValueFromMap(SERVICE_POINT_ID, csvdata);
 			String productCatalogId = getValueFromMap(PRODUCT_ID, csvdata);
@@ -285,57 +273,46 @@ public class StockService {
 
 			if (locationId == null || productCatalogId == null || deliveryDateInString == null || section == null
 					|| poNumber == null) {
-				logger.error("Required fields are missing");
-				failedRecordSummary = new FailedRecordSummary();
-				failedRecordSummary.setReasonOfFailure("Required fields are missing");
-				failedRecordSummary.setRowNumber(rowNumber);
-				failedRecordSummaries.add(failedRecordSummary);
-			} else if (productCatalogue != null && productCatalogue.getIsAttractiveItem() && serialNumber == null) {
-				logger.error("Serial Number is missing");
-				failedRecordSummary = new FailedRecordSummary();
-				failedRecordSummary.setReasonOfFailure("Serial Number is missing");
-				failedRecordSummary.setRowNumber(rowNumber);
-				failedRecordSummaries.add(failedRecordSummary);
-			} else if (productCatalogue == null) {
-				logger.error("Product Catalog does not exists against this Id");
-				failedRecordSummary = new FailedRecordSummary();
-				failedRecordSummary.setReasonOfFailure("Product Catalog does not exists against this Id");
-				failedRecordSummary.setRowNumber(rowNumber);
-				failedRecordSummaries.add(failedRecordSummary);
-			} else if (physicalLocation == null) {
-				logger.error("Physical Location does not exists against this Id");
-				failedRecordSummary = new FailedRecordSummary();
-				failedRecordSummary.setReasonOfFailure("Physical Location does not exists against this Id");
-				failedRecordSummary.setRowNumber(rowNumber);
-				failedRecordSummaries.add(failedRecordSummary);
-			} else if (deliveryDate.getTime() > new Date().getTime()) {
-				logger.error("Delivery Date can not be of future");
-				failedRecordSummary = new FailedRecordSummary();
-				failedRecordSummary.setReasonOfFailure("Delivery Date can not be of future");
-				failedRecordSummary.setRowNumber(rowNumber);
-				failedRecordSummaries.add(failedRecordSummary);
-			} else if (quantity != null && Integer.valueOf(quantity) < 1) {
-				logger.error("Quantity can not be less than 1");
-				failedRecordSummary = new FailedRecordSummary();
-				failedRecordSummary.setReasonOfFailure("Quantity can not be less than 1");
-				failedRecordSummary.setRowNumber(rowNumber);
-				failedRecordSummaries.add(failedRecordSummary);
-			} else if (!UNICEFSection.containsString(section)) {
-				logger.error("Selected UNICEF section is not among the list");
-				failedRecordSummary = new FailedRecordSummary();
-				failedRecordSummary.setReasonOfFailure("Selected UNICEF section is not among the list");
-				failedRecordSummary.setRowNumber(rowNumber);
-				failedRecordSummaries.add(failedRecordSummary);
-			} else if (donor != null && !Donor.containsString(donor)) {
-				logger.error("Selected donor is not among the list");
-				failedRecordSummary = new FailedRecordSummary();
-				failedRecordSummary.setReasonOfFailure("Selected donor is not among the list");
-				failedRecordSummary.setRowNumber(rowNumber);
-				failedRecordSummaries.add(failedRecordSummary);
+				logger.error(MISSING_REQUIRED_FIELDS);
+				validationErrors.add(MISSING_REQUIRED_FIELDS);
 			}
-			//TODO : Add whole number validation for PO number
-			else {
-				logger.info("All validations passed");
+			if (productCatalogue != null && productCatalogue.getIsAttractiveItem() && serialNumber == null) {
+				logger.error(MISSING_SERIAL_NUMBER);
+				validationErrors.add(MISSING_SERIAL_NUMBER);
+			}
+			if (productCatalogue == null) {
+				logger.error(PRODUCT_CATALOG_DOES_NOT_EXISTS);
+				validationErrors.add(PRODUCT_CATALOG_DOES_NOT_EXISTS);
+			}
+			if (physicalLocation == null) {
+				logger.error(SERVICE_POINT_DOES_NOT_EXISTS);
+				validationErrors.add(SERVICE_POINT_DOES_NOT_EXISTS);
+			}
+			if (deliveryDate.getTime() > new Date().getTime()) {
+				logger.error(INVALID_DELIVERY_DATE);
+				validationErrors.add(INVALID_DELIVERY_DATE);
+			} else if (quantity != null && isWholeNumber(quantity) && Integer.valueOf(quantity) < 1) {
+				logger.error(INVALID_QUANTITY);
+				validationErrors.add(INVALID_QUANTITY);
+			}
+			if (!UNICEFSection.containsString(section)) {
+				logger.error(INVALID_UNICEF_SECTION);
+				validationErrors.add(INVALID_UNICEF_SECTION);
+			}
+			if (donor != null && !Donor.containsString(donor)) {
+				logger.error(INVALID_DONOR);
+				validationErrors.add(INVALID_DONOR);
+			}
+
+			if(!isWholeNumber(poNumber)) {
+				logger.error(INVALID_PO_NUMBER);
+				validationErrors.add(INVALID_PO_NUMBER);
+			}
+
+			if(validationErrors.size() > 0) {
+				failedRecordSummary.setRowNumber(rowNumber);
+				failedRecordSummary.setReasonOfFailure(validationErrors);
+				failedRecordSummaries.add(failedRecordSummary);
 			}
 		}
 		return failedRecordSummaries;
@@ -418,5 +395,16 @@ public class StockService {
 	private Date convertStringToDate(String stringDate) throws ParseException {
 		return (stringDate != null) ? new SimpleDateFormat("dd/MM/yyyy").parse(stringDate) : null;
 	}
-	
+
+	private Boolean isWholeNumber(String number) {
+		try {
+			Integer parsedNumber = Integer.parseInt(number);
+			logger.info("Parsed Integer is : " + parsedNumber);
+			return true;
+		}
+		catch (NumberFormatException numberFormatException) {
+			return false;
+		}
+
+	}
 }
