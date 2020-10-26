@@ -288,17 +288,9 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
     private boolean isExistingPractitionerRole(Long organizationId, Long practitionerId, String code,
             org.opensrp.domain.postgres.PractitionerRole practitionerRole) {
         if (organizationId != null && practitionerId != null) {
-            return (practitionerRole.getPractitionerId().equals(practitionerId) &&
-                    practitionerRole.getOrganizationId().equals(organizationId) &&
-                    practitionerRole.getCode().equals(code))
-                    ||
-                    (practitionerRole.getPractitionerId().equals(practitionerId) &&
-                            practitionerRole.getOrganizationId().equals(organizationId) &&
-                            practitionerRole.getCode() == null)
-                    ||
-                    (practitionerRole.getPractitionerId().equals(practitionerId) &&
-                            practitionerRole.getOrganizationId().equals(organizationId) &&
-                            practitionerRole.getCode() != code);
+            return practitionerRole.getPractitionerId().equals(practitionerId)
+                    && practitionerRole.getOrganizationId().equals(organizationId)
+                    && (practitionerRole.getCode() == null || practitionerRole.getCode().equals(code));
         }
         return false;
     }

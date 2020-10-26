@@ -67,12 +67,11 @@ public class ImportBulkDataService {
 		CodeSystem type;
 		List<Code> codes;
 		Code code;
-		Set<AssignedLocations> assignedLocations;
-		AssignedLocations assignedLocation;
 
 		String locationId = "";
 		String planId = "";
 		String organizationName = "";
+		Organization existingOrganization;
 		try {
 			for (Map<String, String> csvdata : csvOrganizations) {
 				rowCount++;
@@ -93,28 +92,20 @@ public class ImportBulkDataService {
 					organization.setType(type);
 					organization.setActive(Boolean.TRUE);
 
-					assignedLocations = new HashSet<>();
-					assignedLocation = new AssignedLocations();
-					assignedLocation.setOrganizationId(organizationIdentifier);
-					assignedLocation.setToDate(new Date());
-
 					organizationName = getValueFromMap(ORGANIZATION_NAME_KEY, csvdata);
 					organization.setName(organizationName);
 
 					locationId = getValueFromMap(LOCATION_ID_KEY, csvdata);
-					assignedLocation.setJurisdictionId(locationId);
 
 					planId = getValueFromMap(PLAN_ID_KEY, csvdata);
-					assignedLocation.setPlanId(planId);
-
-					assignedLocations.add(assignedLocation);
-					organization.setAssignedLocations(assignedLocations);
-
-					organizationService.addOrganization(organization); // as it can not be edited
-					organizationService
-							.assignLocationAndPlan(organizationIdentifier, locationId, planId, new Date(),
-									null);  //handles update case as well
-					rowsProcessed++;
+					existingOrganization = organizationService.findOrganizationByName(organizationName);
+					if (existingOrganization == null) {
+						organizationService.addOrganization(organization); // as it can not be edited
+						organizationService
+								.assignLocationAndPlan(organizationIdentifier, locationId, planId, new Date(),
+										null);  //handles update case as well
+						rowsProcessed++;
+					}
 				} else {
 					failedRecordSummary = getFailedRecordSummaryObject(rowCount,
 							"Validation failed, provided location name mismatches with the system");

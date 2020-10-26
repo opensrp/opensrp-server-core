@@ -119,7 +119,7 @@ public class PractitionerService {
 	}
 
 	public Long getPractitionerIdByIdentifier(String identifier) {
-		org.opensrp.domain.postgres.Practitioner pgPractitioner = practitionerRepository.getPractitioner(identifier) ;
+		org.opensrp.domain.postgres.Practitioner pgPractitioner = getPgPractitioner(identifier);
 		return pgPractitioner != null ? pgPractitioner.getId() : null;
 	}
 }
