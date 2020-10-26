@@ -23,6 +23,8 @@ public class InventoryConstants {
 
 	public static final String MISSING_REQUIRED_FIELDS = "Required field(s) are missing (service point ID, product ID, UNICEF section, delivery date, and/or PO number)";
 
+	public static final String MISSING_REQUIRED_FIELDS_V2 = "Required field(s) are missing (service point ID, product Name, UNICEF section, delivery date, and/or PO number)";
+
 	public static final String MISSING_SERIAL_NUMBER = "Serial Number is required for attractive items";
 
 	public static final String PRODUCT_CATALOG_DOES_NOT_EXISTS = "Product ID does not exist in product catalogue";
