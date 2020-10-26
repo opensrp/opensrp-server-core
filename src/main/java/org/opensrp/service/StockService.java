@@ -382,24 +382,4 @@ public class StockService {
 	private String getValueFromMap(String key, Map<String, String> map) {
 		return map.get(key);
 	}
-
-//	private List<String> getValidationErrors(String locationId, String productCatalogId, String deliveryDateInString,
-//			String section, String poNumber,
-//			String serialNumber, String donor, String quantity)
-//			throws ParseException {
-//		List<String> validationErrors = new ArrayList<>();
-//		ProductCatalogue productCatalogue;
-//		PhysicalLocation physicalLocation;
-//		Date deliveryDate;
-//		productCatalogue = productCatalogId != null ?
-//				productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId)) :
-//				null;
-//		physicalLocation = locationId != null ? physicalLocationService.getLocation(locationId, true) : null;
-//
-//		String error = null;
-//
-//		error =  validateRequiredFields(locationId, productCatalogId, deliveryDateInString, section, poNumber);
-//
-//		return validationErrors;
-//	}
 }
