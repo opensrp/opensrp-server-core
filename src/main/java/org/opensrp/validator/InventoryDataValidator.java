@@ -3,7 +3,6 @@ package org.opensrp.validator;
 import org.opensrp.domain.ProductCatalogue;
 import org.opensrp.service.PhysicalLocationService;
 import org.opensrp.service.ProductCatalogueService;
-import org.opensrp.service.StockService;
 import org.opensrp.util.Donor;
 import org.opensrp.util.UNICEFSection;
 import org.slf4j.Logger;
