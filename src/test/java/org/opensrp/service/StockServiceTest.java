@@ -25,11 +25,22 @@ import org.smartregister.utils.PropertiesConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static org.opensrp.util.constants.InventoryConstants.*;
+
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyLong;
+
+import static org.opensrp.util.constants.InventoryConstants.PRODUCT_ID;
+import static org.opensrp.util.constants.InventoryConstants.SERVICE_POINT_ID;
+import static org.opensrp.util.constants.InventoryConstants.PRODUCT_NAME;
+import static org.opensrp.util.constants.InventoryConstants.DELIVERY_DATE;
+import static org.opensrp.util.constants.InventoryConstants.QUANTITY;
+import static org.opensrp.util.constants.InventoryConstants.PO_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.SERIAL_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.UNICEF_SECTION;
+import static org.opensrp.util.constants.InventoryConstants.DONOR;
 
 /**
  * Integration Tests for {@link StockService}.
@@ -149,28 +160,29 @@ public class StockServiceTest extends BaseRepositoryTest {
 		Assert.assertEquals(17, fecthedListAll.size());
 	}
 
-//	@Test
-//	public void testAddInventory() {
-//		Inventory inventory = createInventory();
-//		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
-//		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
-//		stockService.addInventory(inventory, "John");
-//		List<Stock> stockList = stockService.getStocksByServicePointId("loc-1");
-//		Assert.assertEquals(1, stockList.size());
-//	}
+	@Test
+	public void testAddInventory() {
+		Inventory inventory = createInventory();
+		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
+		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		stockService.addInventory(inventory, "John");
+		List<Stock> stockList = stockService.getStocksByServicePointId("loc-1");
+		Assert.assertEquals(1, stockList.size());
+	}
 
-//	@Test
-//	public void testUpdate() {
-//		Inventory inventory = createInventory();
-//		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
-//		stockService.addInventory(inventory, "John");
-//		inventory.setDonor("ABC");
-//		Stock stock = stockService.findByIdentifierAndServicePointId("1","loc-1");
-//		inventory.setStockId(stock.getId());
-//		stockService.updateInventory(inventory, "John");
-//		Stock updatedStock = stockService.findByIdentifierAndServicePointId("1", "loc-1");
-//		assertEquals("ABC", updatedStock.getDonor());
-//	}
+	@Test
+	public void testUpdate() {
+		Inventory inventory = createInventory();
+		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
+		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		stockService.addInventory(inventory, "John");
+		inventory.setDonor("BMGF");
+		Stock stock = stockService.findByIdentifierAndServicePointId("1","loc-1");
+		inventory.setStockId(stock.getId());
+		stockService.updateInventory(inventory, "John");
+		Stock updatedStock = stockService.findByIdentifierAndServicePointId("1", "loc-1");
+		Assert.assertEquals("BMGF", updatedStock.getDonor());
+	}
 
 	@Test
 	public void testConvertandPersistInventorydataWithValidationErrors() {
@@ -190,7 +202,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		when(productCatalogueService.getProductCatalogue(anyLong())).thenReturn(createProductCatalogue());
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.convertandPersistInventorydata(csvStocks, "Test user");
-		assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
+		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 	}
 
 
@@ -212,16 +224,16 @@ public class StockServiceTest extends BaseRepositoryTest {
 		when(productCatalogueService.getProductCatalogue(anyLong())).thenReturn(createProductCatalogue());
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.convertandPersistInventorydata(csvStocks, "Test user");
-		assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
+		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 	}
 
 	private Inventory createInventory() {
-		Date delveryDate = new Date(2020, 1, 1);
+		Date deliveryDate = new Date();
 		Inventory inventory = new Inventory();
 		inventory.setProductName("Midwifery Kit");
-		inventory.setUnicefSection("Health Department");
-		inventory.setDeliveryDate(delveryDate);
-		inventory.setDonor("XYZ");
+		inventory.setUnicefSection("Health");
+		inventory.setDeliveryDate(deliveryDate);
+		inventory.setDonor("ADB");
 		inventory.setPoNumber(123);
 		inventory.setSerialNumber("AX-12");
 		inventory.setServicePointId("loc-1");

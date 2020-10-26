@@ -1,10 +1,8 @@
 package org.opensrp.service;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Inventory;
 import org.opensrp.domain.ProductCatalogue;
@@ -22,7 +20,23 @@ import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static org.opensrp.util.constants.InventoryConstants.*;
+import static org.opensrp.util.constants.InventoryConstants.PRODUCT_ID;
+import static org.opensrp.util.constants.InventoryConstants.SERVICE_POINT_ID;
+import static org.opensrp.util.constants.InventoryConstants.PRODUCT_NAME;
+import static org.opensrp.util.constants.InventoryConstants.DELIVERY_DATE;
+import static org.opensrp.util.constants.InventoryConstants.QUANTITY;
+import static org.opensrp.util.constants.InventoryConstants.PO_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.SERIAL_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.UNICEF_SECTION;
+import static org.opensrp.util.constants.InventoryConstants.DONOR;
+import static org.opensrp.util.constants.InventoryConstants.MISSING_REQUIRED_FIELDS_V2;
+import static org.opensrp.util.constants.InventoryConstants.MISSING_SERIAL_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_DELIVERY_DATE;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_DONOR;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_UNICEF_SECTION;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_QUANTITY;
+import static org.opensrp.util.constants.InventoryConstants.SERVICE_POINT_DOES_NOT_EXISTS;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_PO_NUMBER;
 import static org.opensrp.validator.InventoryDataValidator.convertStringToDate;
 import static org.opensrp.validator.InventoryDataValidator.isWholeNumber;
 

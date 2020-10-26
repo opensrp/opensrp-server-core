@@ -14,11 +14,19 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.opensrp.util.constants.InventoryConstants.*;
+import static org.opensrp.util.constants.InventoryConstants.MISSING_SERIAL_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_DELIVERY_DATE;
 import static org.opensrp.util.constants.InventoryConstants.INVALID_DONOR;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_UNICEF_SECTION;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_QUANTITY;
+import static org.opensrp.util.constants.InventoryConstants.SERVICE_POINT_DOES_NOT_EXISTS;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_PO_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.PRODUCT_CATALOG_DOES_NOT_EXISTS;
+import static org.opensrp.util.constants.InventoryConstants.MISSING_REQUIRED_FIELDS;
 
 @Component
 public class InventoryDataValidator {
@@ -31,15 +39,16 @@ public class InventoryDataValidator {
 
 	private List<String> validationErrors;
 
+	private static Logger logger = LoggerFactory.getLogger(InventoryDataValidator.class.toString());
+
 	public InventoryDataValidator(List<String> validationErrors) {
 		this.validationErrors = validationErrors;
 	}
 
-	private static Logger logger = LoggerFactory.getLogger(StockService.class.toString());
-
 	public List<String> getValidationErrors(String locationId, String productCatalogId, String deliveryDateInString,
 			String section, String poNumber, String serialNumber, String quantity, String donor)
 			throws ParseException {
+		validationErrors = new ArrayList<>();
 		Date deliveryDate = deliveryDateInString != null ? convertStringToDate(deliveryDateInString) : null;
 		ProductCatalogue productCatalogue;
 		PhysicalLocation physicalLocation;
