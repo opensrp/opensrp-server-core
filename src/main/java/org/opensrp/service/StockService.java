@@ -147,7 +147,8 @@ public class StockService {
 			throw new IllegalArgumentException(
 					"Invalid Product Name was selected");
 		}
-		Stock existingStock = findByIdentifierAndServicePointId(String.valueOf(productCatalogue.getUniqueId()),inventory.getServicePointId());
+
+		Stock existingStock = inventory.getStockId() != null ? getById(inventory.getStockId()) : null;
 		if (existingStock != null) {
 			throw new IllegalArgumentException(
 					"A stock already exists with given id. Consider updating data.[" + existingStock.getId() + "]");
@@ -163,13 +164,11 @@ public class StockService {
 
 	public void updateInventory(Inventory inventory, String userName) {
 		validateFields(inventory);
-		Stock stock = convertInventoryToStock(inventory, userName);
-		ProductCatalogue productCatalogue = inventory != null ? productCatalogueService.getProductCatalogueByName(inventory.getProductName()) : null;
-		if(productCatalogue == null || inventory == null) {
+		if(inventory.getStockId() == null) {
 			return;
 		}
-		Stock existingStock = findByIdentifierAndServicePointId(String.valueOf(productCatalogue.getUniqueId()),inventory.getServicePointId());
-
+		Stock stock = convertInventoryToStock(inventory, userName);
+		Stock existingStock = getById(inventory.getStockId());
 		if (existingStock == null) {
 			throw new IllegalArgumentException(
 					"Stock to be updated is not an existing and persisting domain object. Update database object instead of new pojo");
@@ -210,20 +209,12 @@ public class StockService {
 			logger.error("Exception occurred : " + e.getMessage(), e);
 		}
 
-		String productId;
-
 		if (failedRecordSummaries.size() == 0) {
 			for (Map<String, String> csvdata : csvStocks) {
 				try {
 					rowCount++;
 					inventory = createInventoryObject(csvdata);
-					productId = getValueFromMap(PRODUCT_ID, csvdata);
-					Stock existingStock = findByIdentifierAndServicePointId(String.valueOf(productId),
-							inventory.getServicePointId());
-					if (existingStock == null)
-						addInventory(inventory, userName);
-					else
-						updateInventory(inventory, userName);
+					addInventory(inventory, userName);
 					rowsProcessed++;
 				}
 				catch (Exception e) {
@@ -325,6 +316,9 @@ public class StockService {
 		customProperties.put("UNICEF section", inventory.getUnicefSection());
 		customProperties.put("PO Number", String.valueOf(inventory.getPoNumber()));
 		stock.setCustomProperties(customProperties);
+		if(inventory.getStockId() != null) {
+			stock.setId(inventory.getStockId());
+		}
 		return stock;
 	}
 
