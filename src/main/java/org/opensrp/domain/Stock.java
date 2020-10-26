@@ -78,24 +78,21 @@ public class Stock extends BaseDataObject {
 	}
 
 	public Stock(Long identifier, String vaccine_type_id, String transaction_type, String providerid, int value,
-			Long date_created, String to_from, Long date_updated, long version, Date deliveryDate,
-			Date accountabilityEndDate, String donor, String serialNumber, String locationId,
-			Map<String, String> customProperties) {
+			StockObjectMetadata stockObjectMetadata, Inventory inventory) {
 		this.identifier = identifier;
 		this.vaccine_type_id = vaccine_type_id;
 		this.transaction_type = transaction_type;
 		this.providerid = providerid;
 		this.value = value;
-		this.date_created = date_created;
-		this.to_from = to_from;
-		this.date_updated = date_updated;
-		this.version = version;
-		this.deliveryDate = deliveryDate;
-		this.accountabilityEndDate = accountabilityEndDate;
-		this.donor = donor;
-		this.serialNumber = serialNumber;
-		this.locationId = locationId;
-		this.customProperties = customProperties;
+		this.date_created = stockObjectMetadata.getDate_created();
+		this.to_from = stockObjectMetadata.getTo_from();
+		this.date_updated = stockObjectMetadata.getDate_updated();
+		this.version = stockObjectMetadata.getVersion();
+		this.deliveryDate = inventory.getDeliveryDate();
+		this.donor = inventory.getDonor();
+		this.serialNumber = inventory.getSerialNumber();
+		this.locationId = inventory.getServicePointId();
+		// TODO : accountabilityDate to be computed later and also set customProperties
 	}
 
 	public Long getIdentifier() {
