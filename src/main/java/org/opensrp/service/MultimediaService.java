@@ -80,6 +80,15 @@ public class MultimediaService {
 		return fileManager.retrieveFile(filePath);
 	}
 
+	public void deleteMultimedia(Multimedia multimedia) {
+		if (multimedia == null) {
+			return;
+		}
+
+		multimediaRepository.safeRemove(multimedia);
+
+	}
+
 	@Autowired
 	@Qualifier("multimedia.file.manager")
 	public void setFileManager(MultimediaFileManager fileManager) {

@@ -3,6 +3,15 @@
 <mapper
 	namespace="org.opensrp.repository.postgres.mapper.custom.CustomStockMapper">
 
+	<sql id="Base_Column_List">
+		id, json
+	</sql>
+
+	<sql id="Base_Table_List">
+		from core.identifier_source i
+	</sql>
+
+
 	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Stock"
 		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		insert into core.stock
@@ -23,4 +32,17 @@
 			</if>
 		</trim>
 	</insert>
+
+	<select id="selectByIdentifierAndLocationId" parameterType="map"
+			resultMap="org.opensrp.repository.postgres.mapper.StockMapper.BaseResultMap">
+		SELECT
+		<include refid="Base_Column_List"/>
+		FROM core.stock
+		WHERE json ->> 'identifier' = #{identifier,jdbcType=VARCHAR}
+		AND
+		json ->> 'locationId' = #{locationId,jdbcType=VARCHAR}
+		AND
+		date_deleted is null
+	</select>
+
 </mapper>

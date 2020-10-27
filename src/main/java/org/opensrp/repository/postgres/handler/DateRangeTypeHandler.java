@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
@@ -26,8 +27,13 @@ public class DateRangeTypeHandler extends BaseTypeHandler implements TypeHandler
 	
 	private static final Logger logger = LoggerFactory.getLogger(DateRangeTypeHandler.class);
 	
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	private SimpleDateFormat dateFormat;
 	
+	public DateRangeTypeHandler() {
+		dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+	}
+
 	@Override
 	public void setParameter(PreparedStatement ps, int i, DateRange parameter, JdbcType jdbcType) throws SQLException {
 		try {
