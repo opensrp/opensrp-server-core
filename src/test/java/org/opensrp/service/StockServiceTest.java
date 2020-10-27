@@ -163,7 +163,11 @@ public class StockServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testAddInventory() {
 		Inventory inventory = createInventory();
+		List<String> donorsList = createDonorList();
+		List<String> sectionsList = createSectionsList();
 		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
+		when(inventoryDataValidator.getValidDonors()).thenReturn(donorsList);
+		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(sectionsList);
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
 		stockService.addInventory(inventory, "John");
 		List<Stock> stockList = stockService.getStocksByServicePointId("loc-1");
@@ -173,11 +177,15 @@ public class StockServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testUpdate() {
 		Inventory inventory = createInventory();
+		List<String> donorsList = createDonorList();
+		List<String> sectionsList = createSectionsList();
+		when(inventoryDataValidator.getValidDonors()).thenReturn(donorsList);
+		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(sectionsList);
 		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
 		stockService.addInventory(inventory, "John");
 		inventory.setDonor("BMGF");
-		Stock stock = stockService.findByIdentifierAndServicePointId("1","loc-1");
+		Stock stock = stockService.findByIdentifierAndServicePointId("1", "loc-1");
 		inventory.setStockId(stock.getId());
 		stockService.updateInventory(inventory, "John");
 		Stock updatedStock = stockService.findByIdentifierAndServicePointId("1", "loc-1");
@@ -259,6 +267,63 @@ public class StockServiceTest extends BaseRepositoryTest {
 		PhysicalLocation parentLocation = gson.fromJson(parentJson, PhysicalLocation.class);
 		parentLocation.setJurisdiction(true);
 		return parentLocation;
+	}
+
+	private List<String> createDonorList() {
+		List<String> donors = new ArrayList<>();
+		donors.add("ADB");
+		donors.add("NatCom Belgium");
+		donors.add("BMGF");
+		donors.add("Govt of Canada");
+		donors.add("NatCom Canada");
+		donors.add("NatCom Denmark");
+		donors.add("ECW");
+		donors.add("End Violence Fund");
+		donors.add("ECHO ");
+		donors.add("EC ");
+		donors.add("NatCom Finland ");
+		donors.add("Govt of France ");
+		donors.add("NatCom France ");
+		donors.add("GAVI ");
+		donors.add("NatCom Germany ");
+		donors.add("Govt of Germany");
+		donors.add("NatCom Iceland");
+		donors.add("NatCom Italy");
+		donors.add("Govt of Japan");
+		donors.add("NatCom Japan");
+		donors.add("NatCom Luxembourg");
+		donors.add("Monaco");
+		donors.add("NatCom Netherlands");
+		donors.add("Govt of Norway");
+		donors.add("NatCom Norway");
+		donors.add("Nutrition Intl");
+		donors.add("NatCom Poland");
+		donors.add("Govt of Korea");
+		donors.add("NatCom Spain");
+		donors.add("NatCom Sweden");
+		donors.add("NatCom Switzerland");
+		donors.add("Govt of UK");
+		donors.add("NatCom UK");
+		donors.add("NatCom USA");
+		donors.add("OFDA");
+		donors.add("CDC");
+		donors.add("USAID");
+		donors.add("USAID FFP");
+		donors.add("World Bank");
+		return donors;
+	}
+
+	List<String> createSectionsList() {
+		List<String> sections = new ArrayList<>();
+		sections.add("Health");
+		sections.add("WASH");
+		sections.add("Nutrition");
+		sections.add("Education");
+		sections.add("Child Protection");
+		sections.add("Social Policy");
+		sections.add("C4D");
+		sections.add("DRR");
+		return sections;
 	}
 
 
