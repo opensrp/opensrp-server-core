@@ -114,7 +114,7 @@ public class ImportBulkDataService {
 		}
 		catch (Exception e) {
 			logger.error("Exception occurred while persisting organization and assignment data : " + e.getMessage(), e);
-			failedRecordSummary = getFailedRecordSummaryObject(rowCount, "Exception occurred due to : " + e.getMessage());
+			failedRecordSummary = getFailedRecordSummaryObject(rowCount, "Unknown error occurred");
 			failedRecordSummaries.add(failedRecordSummary);
 		}
 
@@ -197,7 +197,7 @@ public class ImportBulkDataService {
 				logger.error(
 						"Exception occurred while persisting practitioner and pratitioner role data : " + e.getMessage() , e);
 				failedRecordSummaries
-						.add(getFailedRecordSummaryObject(rowCount, "Exception occurred due to : " + e.getMessage()));
+						.add(getFailedRecordSummaryObject(rowCount, "Unknown error occurred"));
 			}
 		}
 		csvBulkImportDataSummary.setNumberOfRowsProcessed(rowsProcessed);
