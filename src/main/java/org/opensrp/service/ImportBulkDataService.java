@@ -100,11 +100,11 @@ public class ImportBulkDataService {
 					existingOrganization = organizationService.findOrganizationByName(organizationName);
 					if (existingOrganization == null) {
 						organizationService.addOrganization(organization); // as it can not be edited
-						organizationService
-								.assignLocationAndPlan(organizationIdentifier, locationId, planId, new Date(),
-										null);  //handles update case as well
-						rowsProcessed++;
 					}
+					organizationService
+							.assignLocationAndPlan(organizationIdentifier, locationId, planId, new Date(),
+									null);  //handles update case as well
+					rowsProcessed++;
 				} else {
 					failedRecordSummary = getFailedRecordSummaryObject(rowCount,
 							"Validation failed, provided location name mismatches with the system");
