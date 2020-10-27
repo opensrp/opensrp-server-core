@@ -11,8 +11,6 @@ import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.dto.FailedRecordSummary;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.search.StockSearchBean;
-import org.opensrp.util.Donor;
-import org.opensrp.util.UNICEFSection;
 import org.opensrp.validator.InventoryDataValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -363,6 +361,10 @@ public class StockService {
 		PhysicalLocation physicalLocation = inventory.getServicePointId() != null ?
 				physicalLocationService.getLocation(inventory.getServicePointId(), true) :
 				null;
+
+		List<String> donors = inventoryDataValidator.getValidDonors();
+		List<String> unicefSections = inventoryDataValidator.getValidUnicefSections();
+
 		Date deliveryDate = inventory.getDeliveryDate();
 		if (inventory.getServicePointId() == null || inventory.getDeliveryDate() == null
 				|| inventory.getProductName() == null
@@ -374,9 +376,9 @@ public class StockService {
 			throw new IllegalArgumentException(INVALID_DELIVERY_DATE);
 		} else if (!isWholeNumber(String.valueOf(inventory.getQuantity())) || inventory.getQuantity() < 1) {
 			throw new IllegalArgumentException(INVALID_QUANTITY);
-		} else if (!UNICEFSection.containsString(inventory.getUnicefSection())) {
+		} else if (!unicefSections.contains(inventory.getUnicefSection())) {
 			throw new IllegalArgumentException(INVALID_UNICEF_SECTION);
-		} else if (inventory.getDonor() != null && !Donor.containsString(inventory.getDonor())) {
+		} else if (inventory.getDonor() != null && !donors.contains(inventory.getDonor())) {
 			throw new IllegalArgumentException(INVALID_DONOR);
 		} else if (!isWholeNumber(String.valueOf(inventory.getPoNumber()))) {
 			throw new IllegalArgumentException(INVALID_PO_NUMBER);

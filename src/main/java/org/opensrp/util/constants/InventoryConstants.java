@@ -41,4 +41,8 @@ public class InventoryConstants {
 
 	public static final String INVALID_PO_NUMBER = "PO Number should be a whole number";
 
+	public static final String SETTINGS_CONFIGURATION_SECTIONS_IDENTIFIER = "inventory_unicef_sections";
+
+	public static final String SETTINGS_CONFIGURATION_DONOR_IDENTIFIER = "inventory_donors";
+
 }
