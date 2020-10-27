@@ -150,4 +150,25 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
+	<select id="selectPlansBySearchBean" resultMap="org.opensrp.repository.postgres.mapper.PlanMapper.BaseResultMap">
+		select
+		<include
+				refid="org.opensrp.repository.postgres.mapper.PlanMapper.Base_Column_List" />
+		from core.plan p
+		<where>
+			<trim prefixOverrides="and">
+				<if test="searchBean.planStatus != null">
+					and json->>'status' = #{searchBean.planStatus,jdbcType=VARCHAR}
+				</if>
+				<if test="searchBean.isExperimental != null">
+					p.experimental = #{searchBean.isExperimental,jdbcType=BIT}
+				</if>
+			</trim>
+		</where>
+		<if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
+			order by ${searchBean.orderByFieldName} ${searchBean.orderByType}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
 </mapper>
