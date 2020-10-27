@@ -232,6 +232,12 @@ public class StockService {
 		}
 		catch (ParseException e) {
 			logger.error("Exception occurred : " + e.getMessage(), e);
+			failedRecordSummary = new FailedRecordSummary();
+			List<String> validationError = new ArrayList<>();
+			failedRecordSummary.setRowNumber(rowCount);
+			validationError.add("Unknown error occurred");
+			failedRecordSummary.setReasonOfFailure(validationError);
+			failedRecordSummaries.add(failedRecordSummary);
 		}
 
 		if (failedRecordSummaries.size() == 0) {
@@ -246,7 +252,7 @@ public class StockService {
 					failedRecordSummary = new FailedRecordSummary();
 					List<String> validationError = new ArrayList<>();
 					failedRecordSummary.setRowNumber(rowCount);
-					validationError.add("Exception occurred while converting and persisting of Stock data : " + e.getMessage());
+					validationError.add("Unknown error occurred");
 					failedRecordSummary.setReasonOfFailure(validationError);
 					failedRecordSummaries.add(failedRecordSummary);
 				}
