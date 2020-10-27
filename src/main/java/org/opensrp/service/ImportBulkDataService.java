@@ -1,6 +1,5 @@
 package org.opensrp.service;
 
-import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.Practitioner;
 import org.opensrp.domain.PractitionerRole;
