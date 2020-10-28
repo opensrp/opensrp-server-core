@@ -238,4 +238,8 @@ public class OrganizationService {
 		return organizationRepository.findOrganizationCount(organizationSearchBean);
 	}
 
+	public Organization findOrganizationByName(String organizationName) {
+		return organizationRepository.findOrganizationByName(organizationName);
+	}
+
 }

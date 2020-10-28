@@ -312,5 +312,16 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	public int findOrganizationCount(OrganizationSearchBean organizationSearchBean) {
 		return organizationMapper.selectOrganizationCount(organizationSearchBean);
 	}
-	
+
+	@Override
+	public Organization findOrganizationByName(String name) {
+		if (StringUtils.isBlank(name)) {
+			return null;
+		}
+		OrganizationExample example = new OrganizationExample();
+		example.createCriteria().andNameEqualTo(name).andDateDeletedIsNull();
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectByExample(example);
+		return organizations.isEmpty() ? null : convert(organizations.get(0));
+	}
+
 }

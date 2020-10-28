@@ -72,4 +72,6 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	List<Organization> findSearchOrganizations(OrganizationSearchBean organizationSearchBean);
 	
 	int findOrganizationCount(OrganizationSearchBean organizationSearchBean);
+
+	Organization findOrganizationByName(String name);
 }
