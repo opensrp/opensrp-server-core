@@ -17,7 +17,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.opensrp.util.constants.InventoryConstants.*;
+import static org.opensrp.util.constants.InventoryConstants.MISSING_SERIAL_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_DELIVERY_DATE;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_DONOR;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_UNICEF_SECTION;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_QUANTITY;
+import static org.opensrp.util.constants.InventoryConstants.SERVICE_POINT_DOES_NOT_EXISTS;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_PO_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.PRODUCT_CATALOG_DOES_NOT_EXISTS;
+import static org.opensrp.util.constants.InventoryConstants.MISSING_REQUIRED_FIELDS;
+import static org.opensrp.util.constants.InventoryConstants.SETTINGS_CONFIGURATION_DONOR_IDENTIFIER;
+import static org.opensrp.util.constants.InventoryConstants.SETTINGS_CONFIGURATION_SECTIONS_IDENTIFIER;
+
 
 @Component
 public class InventoryDataValidator {
@@ -124,7 +135,7 @@ public class InventoryDataValidator {
 	}
 
 	private void validateDonor(String donor) {
-		if (donor != null && !donor.contains(donor)) {
+		if (donor != null && !validDonors.contains(donor)) {
 			logger.error(INVALID_DONOR);
 			validationErrors.add(INVALID_DONOR);
 		}

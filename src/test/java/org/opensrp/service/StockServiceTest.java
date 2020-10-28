@@ -313,7 +313,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		return donors;
 	}
 
-	List<String> createSectionsList() {
+	private List<String> createSectionsList() {
 		List<String> sections = new ArrayList<>();
 		sections.add("Health");
 		sections.add("WASH");
