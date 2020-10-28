@@ -126,7 +126,7 @@ public class ImportBulkDataServiceTest {
 		assertEquals(1, csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 		assertEquals(new Integer(1), csvBulkImportDataSummary.getFailedRecordSummaryList().get(0).getRowNumber());
 		assertEquals(LOCATION_VALIDATION_FAILED,
-				csvBulkImportDataSummary.getFailedRecordSummaryList().get(0).getReasonOfFailure());
+				csvBulkImportDataSummary.getFailedRecordSummaryList().get(0).getReasonOfFailure().get(0));
 	}
 
 	@Test
@@ -192,7 +192,7 @@ public class ImportBulkDataServiceTest {
 		assertEquals(1, csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 		assertEquals(new Integer(1), csvBulkImportDataSummary.getFailedRecordSummaryList().get(0).getRowNumber());
 		assertEquals(ORGANIZATION_NOT_FOUND,
-				csvBulkImportDataSummary.getFailedRecordSummaryList().get(0).getReasonOfFailure());
+				csvBulkImportDataSummary.getFailedRecordSummaryList().get(0).getReasonOfFailure().get(0));
 	}
 
 	@Test
@@ -228,7 +228,7 @@ public class ImportBulkDataServiceTest {
 		assertEquals(1, csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 		assertEquals(new Integer(1), csvBulkImportDataSummary.getFailedRecordSummaryList().get(0).getRowNumber());
 		assertEquals(ORGANIZATION_NAME_MISMATCH_ERROR,
-				csvBulkImportDataSummary.getFailedRecordSummaryList().get(0).getReasonOfFailure());
+				csvBulkImportDataSummary.getFailedRecordSummaryList().get(0).getReasonOfFailure().get(0));
 	}
 
 }
