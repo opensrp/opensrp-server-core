@@ -17,4 +17,7 @@ public interface PractitionerRoleRepository extends BaseRepository<PractitionerR
     void safeRemove(String identifier);
 
     void safeRemove(Long organizationId, Long practitionerId);
+
+    void assignPractitionerRole(Long organizationId,Long practitionerId, String practitionerIdentifier, String code,
+            PractitionerRole practitionerRole);
 }
