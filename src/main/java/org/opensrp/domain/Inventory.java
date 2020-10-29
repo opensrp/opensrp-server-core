@@ -17,6 +17,9 @@ import java.util.Date;
 public class Inventory {
 
 	@JsonProperty
+	private String stockId;
+
+	@JsonProperty
 	private String productName;
 
 	@JsonProperty

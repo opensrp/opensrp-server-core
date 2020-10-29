@@ -277,8 +277,10 @@ public class ImportBulkDataService {
 
 	private FailedRecordSummary getFailedRecordSummaryObject(int rowNumber, String reasonOfFailure) {
 		FailedRecordSummary failedRecordSummary = new FailedRecordSummary();
+		List<String> failureReasons = new ArrayList<>();
 		failedRecordSummary.setRowNumber(rowNumber);
-		failedRecordSummary.setReasonOfFailure(reasonOfFailure);
+		failureReasons.add(reasonOfFailure);
+		failedRecordSummary.setReasonOfFailure(failureReasons);
 		return failedRecordSummary;
 	}
 }

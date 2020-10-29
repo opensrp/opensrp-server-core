@@ -3,6 +3,7 @@ package org.opensrp.repository;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.TreeNode;
 import org.opensrp.domain.postgres.Settings;
+import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
@@ -33,4 +34,6 @@ public interface SettingRepository extends BaseRepository<SettingConfiguration> 
 	void delete(Long settingId);
 
 	String addSettings(SettingConfiguration entity);
+
+	List<SettingsAndSettingsMetadataJoined> findSettingsAndSettingsMetadataByIdentifier(String identifier);
 }
