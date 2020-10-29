@@ -738,4 +738,12 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	protected String getSequenceName() {
 		return SEQUENCE;
 	}
+
+	@Override
+	public List<SettingsAndSettingsMetadataJoined> findSettingsAndSettingsMetadataByIdentifier(String identifier) {
+		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
+		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
+		criteria.andIdentifierEqualTo(identifier);
+		return settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE);
+	}
 }

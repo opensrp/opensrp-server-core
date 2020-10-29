@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.TreeNode;
+import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
@@ -123,6 +124,10 @@ public class SettingService {
 		if (id != null) {
 			settingRepository.delete(id);
 		}
+	}
+
+	public List<SettingsAndSettingsMetadataJoined> findSettingsByIdentifier(String identifier) {
+		return settingRepository.findSettingsAndSettingsMetadataByIdentifier(identifier);
 	}
 
 }

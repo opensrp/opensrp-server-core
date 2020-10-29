@@ -100,6 +100,8 @@ public class ImportBulkDataService {
 					existingOrganization = organizationService.findOrganizationByName(organizationName);
 					if (existingOrganization == null) {
 						organizationService.addOrganization(organization); // as it can not be edited
+					}else {
+						organizationIdentifier=existingOrganization.getIdentifier();
 					}
 					organizationService
 							.assignLocationAndPlan(organizationIdentifier, locationId, planId, new Date(),
@@ -275,8 +277,10 @@ public class ImportBulkDataService {
 
 	private FailedRecordSummary getFailedRecordSummaryObject(int rowNumber, String reasonOfFailure) {
 		FailedRecordSummary failedRecordSummary = new FailedRecordSummary();
+		List<String> failureReasons = new ArrayList<>();
 		failedRecordSummary.setRowNumber(rowNumber);
-		failedRecordSummary.setReasonOfFailure(reasonOfFailure);
+		failureReasons.add(reasonOfFailure);
+		failedRecordSummary.setReasonOfFailure(failureReasons);
 		return failedRecordSummary;
 	}
 }
