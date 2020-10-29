@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.smartregister.domain.PlanDefinition;
 
+import java.util.List;
+import java.util.Map;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,6 +32,8 @@ public class PlanSearchBean {
 	private FieldName orderByFieldName = FieldName.id;
 
 	private PlanDefinition.PlanStatus planStatus;
+
+	private Map<String,String> useContexts;
 
 	private boolean isExperimental;
 
