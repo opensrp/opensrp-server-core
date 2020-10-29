@@ -154,8 +154,11 @@
 		select
 		<include
 				refid="org.opensrp.repository.postgres.mapper.PlanMapper.Base_Column_List"/>
-		from core.plan p,
+		from core.plan p
+		<if test="searchBean.useContexts != null">
+		,
 		LATERAL (SELECT jsonb_array_elements(p.json -> 'useContext') useContext) useContexts
+		</if>
 		<where>
 			<trim prefixOverrides="and">
 				<if test="searchBean.planStatus != null">
