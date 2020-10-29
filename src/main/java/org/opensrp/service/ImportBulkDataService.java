@@ -100,6 +100,8 @@ public class ImportBulkDataService {
 					existingOrganization = organizationService.findOrganizationByName(organizationName);
 					if (existingOrganization == null) {
 						organizationService.addOrganization(organization); // as it can not be edited
+					}else {
+						organizationIdentifier=existingOrganization.getIdentifier();
 					}
 					organizationService
 							.assignLocationAndPlan(organizationIdentifier, locationId, planId, new Date(),
