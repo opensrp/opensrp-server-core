@@ -229,11 +229,11 @@ public class StockService {
 			failedRecordSummaries = validateInventoryData(csvStocks);
 		}
 		catch (ParseException e) {
-			logger.error("Exception occurred : " + e.getMessage(), e);
+			logger.error("Parse Exception occurred : " + e.getMessage(), e);
 			failedRecordSummary = new FailedRecordSummary();
 			List<String> validationError = new ArrayList<>();
 			failedRecordSummary.setRowNumber(rowCount);
-			validationError.add("Unknown error occurred");
+			validationError.add("Parse Exception occurred");
 			failedRecordSummary.setReasonOfFailure(validationError);
 			failedRecordSummaries.add(failedRecordSummary);
 		}
