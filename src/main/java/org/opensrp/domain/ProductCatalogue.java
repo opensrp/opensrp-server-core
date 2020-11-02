@@ -30,7 +30,7 @@ public class ProductCatalogue {
 
 	private Integer accountabilityPeriod;
 
-	private String photoURL;
+	private String photoURL = "";
 
 	private Long serverVersion;
 }
