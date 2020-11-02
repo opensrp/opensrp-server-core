@@ -60,6 +60,7 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 		productCatalogueService.update(productCatalogue);
 		ProductCatalogue updatedProductCatalogue = productCatalogueService.getProductCatalogue(1l);
 		assertEquals("Updated Product Name", updatedProductCatalogue.getProductName());
+		assertEquals("", updatedProductCatalogue.getPhotoURL());
 	}
 
 	@Test
