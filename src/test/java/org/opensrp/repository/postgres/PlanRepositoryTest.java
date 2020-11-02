@@ -16,13 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 
 /**
  * Created by Vincent Karuri on 03/05/2019
@@ -658,6 +652,39 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
         List<PlanDefinition> planDefinitions = planRepository.getAllPlans(planSearchBean);
         assertEquals(1l, planDefinitions.size());
+    }
+
+    @Test
+    public void testGetAllPlansWithUseContextParam() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("test-identifier");
+        plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
+
+        List<PlanDefinition.UseContext> useContextList = new ArrayList<>();
+        PlanDefinition.UseContext useContext = new PlanDefinition.UseContext();
+        useContext.setCode("interventionType");
+        useContext.setValueCodableConcept("FI");
+        useContextList.add(useContext);
+        plan.setUseContext(useContextList);
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("x_operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1000l);
+        plan.setExperimental(true);
+        planRepository.add(plan);
+
+        PlanSearchBean planSearchBean = new PlanSearchBean();
+        Map<String, String> useContextSearchBean = new HashMap<>();
+        useContextSearchBean.put("interventionType", "FI");
+        planSearchBean.setUseContexts(useContextSearchBean);
+        planSearchBean.setExperimental(true);
+
+        List<PlanDefinition> planDefinitions = planRepository.getAllPlans(planSearchBean);
+        assertEquals(1l, planDefinitions.size());
+        assertEquals(1l, planDefinitions.get(0).getUseContext().size());
     }
 
 }
