@@ -66,7 +66,7 @@ public class PlanServiceTest {
 	public void testGetAllPlansShouldCallRepositoryGetAllMethod() {
 		PlanSearchBean planSearchBean = new PlanSearchBean();
 		planService.getAllPlans(planSearchBean);
-		verify(planRepository).getAllPlans(any(PlanSearchBean.class));
+		verify(planRepository).getAllPlans(planSearchBean);
 	}
 	
 	@Test

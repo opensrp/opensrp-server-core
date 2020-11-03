@@ -652,6 +652,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
         List<PlanDefinition> planDefinitions = planRepository.getAllPlans(planSearchBean);
         assertEquals(1l, planDefinitions.size());
+        assertEquals("test-identifier", planDefinitions.get(0).getIdentifier());
     }
 
     @Test
@@ -685,6 +686,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         List<PlanDefinition> planDefinitions = planRepository.getAllPlans(planSearchBean);
         assertEquals(1l, planDefinitions.size());
         assertEquals(1l, planDefinitions.get(0).getUseContext().size());
+        assertEquals("test-identifier", planDefinitions.get(0).getIdentifier());
     }
 
 }
