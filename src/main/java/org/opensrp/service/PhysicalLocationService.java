@@ -527,7 +527,7 @@ public class PhysicalLocationService {
 		return locationRepository.countAllStructures(serverVersion);
 	}
 
-	public LocationTree buildLocationHeirarchyWithParentLocation(String locationId) {
+	public LocationTree buildLocationHeirarchyWithAncestors(String locationId) {
 		LocationTree locationTree = new LocationTree();
 		Set<LocationDetail> locationDetails = locationRepository.findLocationWithAncestors(locationId);
 		locationTree.buildTreeFromList(getLocations(locationDetails, true));
