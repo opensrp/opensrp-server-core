@@ -913,7 +913,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public Set<LocationDetail> findLocationWithParents(String locationId) {
-		return locationMetadataMapper.selectLocationWithDirectParents(locationId);
+	public Set<LocationDetail> findLocationWithAncestors(String locationId) {
+		return locationMetadataMapper.selectLocationTreeWithAncestors(locationId);
 	}
 }

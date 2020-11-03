@@ -410,7 +410,7 @@
 
 	</select>
 
-    <select id="selectLocationWithDirectParents"
+    <select id="selectLocationTreeWithAncestors"
             resultMap="DetailsResultMap">
 
 		SELECT lm.geojson_id identifier,
@@ -443,9 +443,6 @@
 		SELECT location_id, level FROM locations
 		) record
 		on lm.location_id = record.location_id
-        AND (record.level = (l.json->'properties'->>'geographicLevel')::int - 1
-        or
-        record.level = (l.json->'properties'->>'geographicLevel')::int)
 		GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id, geographic_level, record.level
 
 		order by record.level DESC

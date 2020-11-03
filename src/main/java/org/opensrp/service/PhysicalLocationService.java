@@ -529,7 +529,7 @@ public class PhysicalLocationService {
 
 	public LocationTree buildLocationHeirarchyWithParentLocation(String locationId) {
 		LocationTree locationTree = new LocationTree();
-		Set<LocationDetail> locationDetails = locationRepository.findLocationWithParents(locationId);
+		Set<LocationDetail> locationDetails = locationRepository.findLocationWithAncestors(locationId);
 		locationTree.buildTreeFromList(getLocations(locationDetails, true));
 		return locationTree;
 	}

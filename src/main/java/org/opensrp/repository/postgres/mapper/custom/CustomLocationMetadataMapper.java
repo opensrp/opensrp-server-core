@@ -53,6 +53,6 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 
 	Long countMany(@Param("example")LocationMetadataExample locationMetadataExample);
 
-	LinkedHashSet<LocationDetail> selectLocationWithDirectParents(@Param("locationId") String locationId);
+	LinkedHashSet<LocationDetail> selectLocationTreeWithAncestors(@Param("locationId") String locationId);
 
 }

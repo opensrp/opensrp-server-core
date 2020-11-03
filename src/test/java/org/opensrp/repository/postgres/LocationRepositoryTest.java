@@ -1155,9 +1155,33 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testFindLocationWithParents() {
-		Set<LocationDetail> locations = locationRepository.findLocationWithParents("3736");
+	public void testFindsLocationWithAncestors() {
+		Set<LocationDetail> locations = locationRepository.findLocationWithAncestors("3735");
 		assertEquals(2, locations.size());
+
+		for (LocationDetail location : locations) {
+			MatcherAssert.assertThat(location.getIdentifier(), either(is("3734")).or(is("3735")));
+		}
+
+		locations = locationRepository.findLocationWithAncestors("3734");
+		assertEquals(1, locations.size());
+
+		String uuid = UUID.randomUUID().toString();
+		PhysicalLocation physicalLocation = createLocation(uuid);
+		physicalLocation.setId("21");
+		physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
+		locationRepository.add(physicalLocation);
+
+		locations = locationRepository.findLocationWithAncestors("3735");
+		assertEquals(3, locations.size());
+
+		PhysicalLocation physicalLocation1 = createLocation(uuid);
+		physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
+		locationRepository.add(physicalLocation1);
+
+		locations = locationRepository.findLocationWithAncestors("3735");
+		assertEquals(3, locations.size());
+
 	}
 	
 }
