@@ -526,5 +526,12 @@ public class PhysicalLocationService {
 	public Long countAllStructures(Long serverVersion){
 		return locationRepository.countAllStructures(serverVersion);
 	}
+
+	public LocationTree buildLocationHeirarchyWithParentLocation(String locationId) {
+		LocationTree locationTree = new LocationTree();
+		Set<LocationDetail> locationDetails = locationRepository.findLocationWithParents(locationId);
+		locationTree.buildTreeFromList(getLocations(locationDetails, true));
+		return locationTree;
+	}
 	
 }

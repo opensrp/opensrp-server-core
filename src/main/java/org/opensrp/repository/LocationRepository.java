@@ -268,4 +268,6 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return number of records
 	 */
 	long countLocationsByIds(List<String> locationIds, long serverVersion);
+
+	Set<LocationDetail> findLocationWithParents(String locationId);
 }

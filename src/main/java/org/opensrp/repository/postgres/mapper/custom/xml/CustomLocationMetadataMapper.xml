@@ -410,4 +410,46 @@
 
 	</select>
 
+    <select id="selectLocationWithDirectParents"
+            resultMap="DetailsResultMap">
+
+		SELECT lm.geojson_id identifier,
+		lm."name",
+		lm.parent_id,
+		'false' voided,
+		lm.location_id,
+		l.json->'properties'->>'geographicLevel' geographic_level,
+		record.level,
+        string_agg(lt."name", ',') tags
+
+		FROM core.location_metadata lm
+		INNER join core.location l on l.id = lm.location_id
+		LEFT join core.location_tag_map ltm ON ltm.location_id = lm.location_id
+		LEFT join core.location_tag lt ON lt.id = ltm.location_tag_id
+		JOIN
+		(
+		WITH RECURSIVE locations
+		AS
+		(
+		SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id,
+		(l.json->'properties'->>'geographicLevel')::int as level
+		FROM core.location_metadata lm1 INNER join core.location l on l.id = lm1.location_id
+		 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}  AND lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
+		UNION
+		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id, level-1 as level
+		FROM locations lm1
+		INNER JOIN core.location_metadata lm2 ON lm2.geojson_id = lm1.parent_id AND lm2.status IN ('ACTIVE', 'PENDING_REVIEW')
+		)
+		SELECT location_id, level FROM locations
+		) record
+		on lm.location_id = record.location_id
+        AND (record.level = (l.json->'properties'->>'geographicLevel')::int - 1
+        or
+        record.level = (l.json->'properties'->>'geographicLevel')::int)
+		GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id, geographic_level, record.level
+
+		order by record.level DESC
+
+	</select>
+
 </mapper>
