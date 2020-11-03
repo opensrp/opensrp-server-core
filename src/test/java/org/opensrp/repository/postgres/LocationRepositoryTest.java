@@ -1153,5 +1153,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		Long count = locationRepository.countAllLocations(0l);
 		assertEquals(Long.valueOf(2), count);
 	}
+
+	@Test
+	public void testFindLocationWithParents() {
+		Set<LocationDetail> locations = locationRepository.findLocationWithParents("3736");
+		assertEquals(2, locations.size());
+	}
 	
 }
