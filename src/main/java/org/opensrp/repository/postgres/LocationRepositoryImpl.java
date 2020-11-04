@@ -911,9 +911,4 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public long getStructureNextServerVersion() {
 		return getNextServerVersion(STRUCTURE_SEQUENCE);
 	}
-
-	@Override
-	public Set<LocationDetail> findLocationWithAncestors(String locationId) {
-		return locationMetadataMapper.selectLocationTreeWithAncestors(locationId);
-	}
 }

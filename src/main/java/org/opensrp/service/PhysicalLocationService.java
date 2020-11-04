@@ -527,11 +527,11 @@ public class PhysicalLocationService {
 		return locationRepository.countAllStructures(serverVersion);
 	}
 
-	public LocationTree buildLocationHeirarchyWithAncestors(String locationId) {
-		LocationTree locationTree = new LocationTree();
-		Set<LocationDetail> locationDetails = locationRepository.findLocationWithAncestors(locationId);
-		locationTree.buildTreeFromList(getLocations(locationDetails, true));
-		return locationTree;
+	public Set<LocationDetail> buildLocationHeirarchyWithAncestors(String locationId) {
+		Set<String> locationIds = new HashSet<>();
+		locationIds.add(locationId);
+		Set<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(locationIds);
+		return locationDetails;
 	}
 	
 }
