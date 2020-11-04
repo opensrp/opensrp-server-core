@@ -57,10 +57,11 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 	public void testUpdate() {
 		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogue(1l);
 		productCatalogue.setProductName("Updated Product Name");
+		productCatalogue.setPhotoURL("http://localhost:8080/opensrp/multimedia/media/1");
 		productCatalogueService.update(productCatalogue);
 		ProductCatalogue updatedProductCatalogue = productCatalogueService.getProductCatalogue(1l);
 		assertEquals("Updated Product Name", updatedProductCatalogue.getProductName());
-		assertEquals("", updatedProductCatalogue.getPhotoURL());
+		assertEquals("http://localhost:8080/opensrp/multimedia/media/1", updatedProductCatalogue.getPhotoURL());
 	}
 
 	@Test
