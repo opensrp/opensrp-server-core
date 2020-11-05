@@ -131,7 +131,7 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 		StockSearchBean searchBean = new StockSearchBean();
 		
 		searchBean.setStockTypeId("1");
-		List<Stock> stocks = stocksRepository.findStocks(searchBean, BaseEntity.SERVER_VERSIOIN, "asc", 5);
+		List<Stock> stocks = stocksRepository.findStocks(searchBean, BaseEntity.SERVER_VERSIOIN, "asc",0, 5);
 		assertEquals(5, stocks.size());
 		long previousVersion = 0;
 		for (Stock stock : stocks) {
