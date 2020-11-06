@@ -3,10 +3,7 @@ package org.opensrp.queue;
 import javax.annotation.PostConstruct;
 
 import org.opensrp.queue.sender.MessageSender;
-import org.opensrp.repository.ClientsRepository;
-import org.opensrp.repository.EventsRepository;
-import org.opensrp.repository.LocationRepository;
-import org.opensrp.repository.TaskRepository;
+import org.opensrp.repository.*;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
@@ -34,12 +31,15 @@ public class QueueHelper implements QueuingHelper {
 	
 	@Autowired
 	private EventsRepository eventsRepository;
+
+	@Autowired
+	private StocksRepository stocksRepository;
 	
 	private String username;
 	
 	@PostConstruct
 	public void init() {
-		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
+		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository, stocksRepository);
 	}
 	
 	@Override

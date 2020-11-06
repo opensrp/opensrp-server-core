@@ -2,10 +2,10 @@ package org.opensrp.repository;
 
 import java.util.List;
 
-import org.opensrp.domain.Stock;
+import org.smartregister.domain.Stock;
 import org.opensrp.search.StockSearchBean;
 
-public interface StocksRepository extends BaseRepository<Stock> {
+public interface StocksRepository extends BaseRepository<Stock>, StockDao {
 	
 	List<Stock> findAllByProviderid(String providerid);
 	

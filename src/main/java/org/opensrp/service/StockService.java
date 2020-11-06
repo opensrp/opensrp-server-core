@@ -4,9 +4,9 @@ import java.text.ParseException;
 import java.util.*;
 
 import org.joda.time.DateTime;
-import org.opensrp.domain.Inventory;
+import org.smartregister.domain.Inventory;
 import org.opensrp.domain.ProductCatalogue;
-import org.opensrp.domain.Stock;
+import org.smartregister.domain.Stock;
 import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.dto.FailedRecordSummary;
 import org.opensrp.repository.StocksRepository;

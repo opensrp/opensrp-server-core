@@ -1,5 +1,7 @@
 package org.opensrp.search;
 
+import java.util.List;
+
 public class StockSearchBean {
 	
 	private String identifier;
@@ -20,7 +22,7 @@ public class StockSearchBean {
 	
 	private Long serverVersion;
 
-	private String locationId;
+	private List<String> locationIds;
 	
 	public String getIdentifier() {
 		return identifier;
@@ -94,11 +96,11 @@ public class StockSearchBean {
 		this.serverVersion = serverVersion;
 	}
 
-	public String getLocationId() {
-		return locationId;
+	public List<String> getLocationIds() {
+		return locationIds;
 	}
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
+	public void setLocationIds(List<String> locationIds) {
+		this.locationIds = locationIds;
 	}
 }

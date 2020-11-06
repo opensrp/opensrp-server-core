@@ -11,7 +11,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
-import org.opensrp.domain.Stock;
+import org.smartregister.domain.Stock;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.search.StockSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;

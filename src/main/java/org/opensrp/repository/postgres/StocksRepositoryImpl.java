@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.Stock;
+import org.opensrp.service.PhysicalLocationService;
+import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.Stock;
 import org.opensrp.domain.postgres.StockExample;
 import org.opensrp.domain.postgres.StockMetadata;
 import org.opensrp.domain.postgres.StockMetadataExample;
@@ -29,6 +31,9 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	
 	@Autowired
 	private CustomStockMetadataMapper stockMetadataMapper;
+
+	@Autowired
+	private PhysicalLocationService physicalLocationService;
 	
 	@Override
 	public Stock get(String id) {
@@ -220,7 +225,9 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	@Override
 	public List<Stock> findStocksByLocationId(String locationId) {
 		StockSearchBean stockSearchBean = new StockSearchBean();
-		stockSearchBean.setLocationId(locationId);
+		List<String> locationIds = new ArrayList<>();
+		locationIds.add(locationId);
+		stockSearchBean.setLocationIds(locationIds);
 		return findStocks(stockSearchBean);
 	}
 
@@ -299,5 +306,26 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	protected String getSequenceName() {
 		return SEQUENCE;
 	}
-	
+
+	@Override
+	public List<Stock> findInventoryItemsInAJurisdiction(String jurisdictionId) {
+        List<PhysicalLocation> childLocations =
+		        physicalLocationService.findStructuresByProperties(false, jurisdictionId, null);
+        List<String> servicePointIds = new ArrayList<>();
+        for(PhysicalLocation physicalLocation : childLocations) {
+        	servicePointIds.add(physicalLocation.getId());
+        }
+
+		return null;
+	}
+
+	@Override
+	public List<Stock> findInventoryInAServicePoint(String servicePointId) {
+		return findStocksByLocationId(servicePointId);
+	}
+
+	@Override
+	public List<Stock> findStockById(String s) {
+		return null;
+	}
 }
