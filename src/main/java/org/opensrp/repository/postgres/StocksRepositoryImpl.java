@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.service.PhysicalLocationService;
+import org.opensrp.repository.LocationRepository;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.Stock;
 import org.opensrp.domain.postgres.StockExample;
@@ -33,8 +33,8 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	private CustomStockMetadataMapper stockMetadataMapper;
 
 	@Autowired
-	private PhysicalLocationService physicalLocationService;
-	
+	private LocationRepository locationRepository;
+
 	@Override
 	public Stock get(String id) {
 		if (StringUtils.isBlank(id)) {
@@ -309,14 +309,16 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 
 	@Override
 	public List<Stock> findInventoryItemsInAJurisdiction(String jurisdictionId) {
-        List<PhysicalLocation> childLocations =
-		        physicalLocationService.findStructuresByProperties(false, jurisdictionId, null);
-        List<String> servicePointIds = new ArrayList<>();
-        for(PhysicalLocation physicalLocation : childLocations) {
-        	servicePointIds.add(physicalLocation.getId());
-        }
+		List<PhysicalLocation> childLocations =
+				locationRepository.findStructuresByProperties(false, jurisdictionId, null);
+		List<String> servicePointIds = new ArrayList<>();
+		for (PhysicalLocation physicalLocation : childLocations) {
+			servicePointIds.add(physicalLocation.getId());
+		}
 
-		return null; //TODO
+		StockSearchBean stockSearchBean = new StockSearchBean();
+		stockSearchBean.setLocationIds(servicePointIds);
+		return findStocks(stockSearchBean);
 	}
 
 	@Override

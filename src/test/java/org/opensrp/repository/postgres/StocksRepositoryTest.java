@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Date;
 
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
@@ -26,6 +27,9 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 	@Override
 	protected Set<String> getDatabaseScripts() {
 		Set<String> scripts = new HashSet<String>();
+		scripts.add("location.sql");
+		scripts.add("structure.sql");
+		scripts.add("location_tag.sql");
 		scripts.add("stock.sql");
 		return scripts;
 	}
@@ -207,5 +211,33 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 		assertEquals(14, stocks.size());
 		for (Stock stock : stocks)
 			assertNotEquals("05934ae338431f28bf6793b241b2df09", stock.getId());
+	}
+
+	@Test
+	public void testFindInventoryItemsInAJurisdiction() {
+        Stock stock = createInventoryStockObject("90397");
+        stocksRepository.add(stock);
+		List<Stock> inventoryItems = stocksRepository.findInventoryItemsInAJurisdiction("3734");
+		assertEquals(1,inventoryItems.size());
+		assertEquals(new Long(12345l), inventoryItems.get(0).getIdentifier());
+	}
+
+	@Test
+	public void testFindInventoryInAServicePoint() {
+		Stock stock = createInventoryStockObject("3734");
+		stocksRepository.add(stock);
+		List<Stock> inventoryItems = stocksRepository.findInventoryInAServicePoint("3734");
+		assertEquals(1,inventoryItems.size());
+		assertEquals(new Long(12345l), inventoryItems.get(0).getIdentifier());
+	}
+
+	private Stock createInventoryStockObject(String locationId) {
+		Stock stock = new Stock();
+		stock.setIdentifier(12345l);
+		stock.setTransaction_type("Inventory");
+		stock.setLocationId(locationId);
+		Date accountabilityEndDate = new Date(2025,11,12);
+		stock.setAccountabilityEndDate(accountabilityEndDate);
+		return stock;
 	}
 }
