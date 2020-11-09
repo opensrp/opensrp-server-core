@@ -316,7 +316,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
         	servicePointIds.add(physicalLocation.getId());
         }
 
-		return null;
+		return null; //TODO
 	}
 
 	@Override
@@ -324,8 +324,4 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		return findStocksByLocationId(servicePointId);
 	}
 
-	@Override
-	public List<Stock> findStockById(String s) {
-		return null;
-	}
 }

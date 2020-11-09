@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.smartregister.domain.Stock;
 import org.opensrp.search.StockSearchBean;
+import org.smartregister.pathevaluator.dao.StockDao;
 
 public interface StocksRepository extends BaseRepository<Stock>, StockDao {
 	

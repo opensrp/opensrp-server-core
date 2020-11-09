@@ -3,7 +3,11 @@ package org.opensrp.queue;
 import javax.annotation.PostConstruct;
 
 import org.opensrp.queue.sender.MessageSender;
-import org.opensrp.repository.*;
+import org.opensrp.repository.ClientsRepository;
+import org.opensrp.repository.EventsRepository;
+import org.opensrp.repository.LocationRepository;
+import org.opensrp.repository.TaskRepository;
+import org.opensrp.repository.StocksRepository;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.pathevaluator.PathEvaluatorLibrary;
