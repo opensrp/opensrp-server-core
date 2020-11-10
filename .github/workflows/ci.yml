@@ -22,6 +22,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+
     - name: Setup Postgres
       uses: harmon758/postgresql-action@v1
       with:
@@ -29,12 +30,15 @@ jobs:
         postgresql db:       'opensrp_test'
         postgresql user:     'opensrp_admin'
         postgresql password: 'admin'
+    - name: Configure Postgres repository
+      run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list"
+
+    - name: Install PostGIS packages
+      run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "apt-get -y update && apt-get -y install postgresql-client-10 postgresql-10-postgis-2.4 postgresql-10-postgis-2.4-scripts"
+ 
     - name: Install Posgres client
       run: sudo apt-get install postgresql-client-10
-    - name: Configure PostGIS packages
-      run: docker ps && docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list"
-    - name: Install PostGIS packages
-      run: docker ps && docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "apt-get -y update && apt-get -y install postgresql-client-10 postgresql-10-postgis-2.4 postgresql-10-postgis-2.4-scripts"
+      
     - name: Create PostGIS extension
       run: psql -p 5432 -c "create extension postgis" -U opensrp_admin -d opensrp_test -h localhost
       env:
@@ -59,13 +63,16 @@ jobs:
            
     - name: Run Unit tests with Maven
       run: mvn -B clean test jacoco:report --file pom.xml --no-transfer-progress
+ 
     - name: Set Branch name Environment variable 
       env:
         BRANCH_NAME_OR_REF: ${{ github.head_ref || github.ref }}
       run: echo "BRANCH_NAME=${BRANCH_NAME_OR_REF#refs/heads/}" >> $GITHUB_ENV
+ 
     - name: Set PR Number Environment variable 
       run: |
         echo "PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")" >> $GITHUB_ENV
+
     - name: Upload coveralls report
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
