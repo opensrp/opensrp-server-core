@@ -32,7 +32,7 @@ jobs:
     - name: Install Posgres client
       run: sudo apt-get install postgresql-client-10
     - name: Install PostGIS packages
-      run: docker ps && docker exec -it `docker ps -q --filter ancestor=postgres:11`  sudo apt-get install postgresql-11-postgis
+      run: docker ps && docker exec -u 0 `docker ps -q --filter ancestor=postgres:11` bash -c  "apt-get install postgresql-11-postgis"
     - name: Create PostGIS extension
       run: psql -p 5432 -c "create extension postgis" -U opensrp_admin -d opensrp_test -h localhost
       env:
