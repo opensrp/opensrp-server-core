@@ -29,17 +29,13 @@ jobs:
     - name: Configure Couchdb admin user
       run: |
          curl -X PUT http://localhost:5984/_config/admins/rootuser -d '"adminpass"'
-    - name: Setup Postgres
-      uses: harmon758/postgresql-action@v1
+    - name: Setup Postgres with Postgis
+      uses: huaxk/postgresql-action@v1
       with:
         postgresql version:  '11'  # See https://hub.docker.com/_/postgres for available versions
         postgresql db:       'opensrp_test'
         postgresql user:     'opensrp_admin'
         postgresql password: 'admin'
-    - name: Install Posgres client
-      run: sudo apt-get install postgresql-client-10
-    - name: Create PostGIS extension
-      run: psql -p 5433 -c "create extension postgis" -U postgres -d opensrp_test -h postgres
     - name: Run Unit tests with Maven
       run: mvn -B clean test jacoco:report --file pom.xml --no-transfer-progress
     - name: Set Branch name Environment variable 
