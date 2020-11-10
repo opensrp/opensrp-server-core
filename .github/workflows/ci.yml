@@ -36,11 +36,10 @@ jobs:
         postgresql db:       'opensrp_test'
         postgresql user:     'opensrp_admin'
         postgresql password: 'admin'
+    - name: Install Posgres client
+      run: sudo apt-get install postgresql-client-10
     - name: Create PostGIS extension
-      uses: akanieski/setup-postgres-cli@v1
-      with:
-        password: 'admin'
-        command: psql -p 5433 -c "create extension postgis" -U postgres -d opensrp_test
+      run: psql -p 5433 -c "create extension postgis" -U postgres -d opensrp_test
     - name: Run Unit tests with Maven
       run: mvn -B clean test jacoco:report --file pom.xml --no-transfer-progress
     - name: Set Branch name Environment variable 
