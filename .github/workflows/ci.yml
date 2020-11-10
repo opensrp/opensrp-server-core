@@ -32,7 +32,9 @@ jobs:
     - name: Install Posgres client
       run: sudo apt-get install postgresql-client-10
     - name: Create PostGIS extension
-      run: psql -p 5432 -c "create extension postgis" -U postgres -d opensrp_test -h localhost 
+      run: psql -p 5432 -c "create extension postgis" -U opensrp_admin -d opensrp_test -h localhost
+      env:
+        PGPASSWORD: 'admin'
     - name: Setup rabbitmq
       uses: getong/rabbitmq-action@v1.2
       with:
