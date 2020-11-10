@@ -36,6 +36,25 @@ jobs:
         postgresql db:       'opensrp_test'
         postgresql user:     'opensrp_admin'
         postgresql password: 'admin'
+        
+    - name: Setup rabbitmq
+      uses: getong/rabbitmq-action@v1.2
+      with:
+       rabbitmq version: '3.8.2-management-alpine'
+       host port: 5672
+       rabbitmq user: 'guest'
+       rabbitmq password: 'guest'
+       rabbitmq vhost: 'localhost'
+       
+    - name: Show running services
+      run: sudo netstat -tuplen # listing all the port for debug purpose.
+      
+    - name: Configure migrations
+      run: chmod +x configs/assets/migrations/run_mybatis_migrations.sh && sudo ./configs/assets/migrations/run_mybatis_migrations.sh
+      
+    - name: Create multimedia dir
+      run: sudo mkdir -p /opt/multimedia && id
+           
     - name: Run Unit tests with Maven
       run: mvn -B clean test jacoco:report --file pom.xml --no-transfer-progress
     - name: Set Branch name Environment variable 
