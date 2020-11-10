@@ -44,7 +44,7 @@ jobs:
        host port: 5672
        rabbitmq user: 'guest'
        rabbitmq password: 'guest'
-       rabbitmq vhost: 'localhost'
+       rabbitmq vhost: '/'
        
     - name: Show running services
       run: sudo netstat -tuplen # listing all the port for debug purpose.
