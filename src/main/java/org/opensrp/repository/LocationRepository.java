@@ -57,6 +57,18 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 			Map<String, String> properties);
 
 	/**
+	 * This methods searches for structures using the parentId and location properties
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param parentId string the parent id of the structure being searched
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @param limit upper limit on number of structures to fetch
+	 * @return structures matching the params
+	 */
+	List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
+			Map<String, String> properties, int limit);
+
+	/**
 	 * This methods searches for locations using a list of provided location ids.
 	 * It returns the Geometry optionally if @param returnGeometry is set to true.
 	 * @param returnGeometry boolean which controls if geometry is returned
