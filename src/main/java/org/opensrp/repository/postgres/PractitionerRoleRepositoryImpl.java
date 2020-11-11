@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.PractitionerRole;
 import org.opensrp.domain.PractitionerRoleCode;
@@ -9,6 +10,7 @@ import org.opensrp.domain.postgres.PractitionerRoleExample;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerRoleMapper;
+import org.opensrp.search.PractitionerRoleSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -285,6 +287,14 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
 
     }
 
+    @Override
+    public List<PractitionerRole> getAllPractitionerRoles(PractitionerRoleSearchBean practitionerRoleSearchBean) {
+        Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(practitionerRoleSearchBean);
+        PractitionerRoleExample practitionerRoleExample = new PractitionerRoleExample();
+        List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoleList = practitionerRoleMapper.selectMany(practitionerRoleExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+        return convert(pgPractitionerRoleList);
+    }
+
     private boolean isExistingPractitionerRole(Long organizationId, Long practitionerId, String code,
             org.opensrp.domain.postgres.PractitionerRole practitionerRole) {
         if (organizationId != null && practitionerId != null) {
@@ -293,5 +303,22 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
                     && (practitionerRole.getCode() == null || practitionerRole.getCode().equals(code));
         }
         return false;
+    }
+
+    private Pair<Integer, Integer> getPageSizeAndOffset(PractitionerRoleSearchBean practitionerRoleSearchBean) {
+
+        Integer pageSize;
+        Integer offset = 0;
+        if (practitionerRoleSearchBean.getPageSize() == null || practitionerRoleSearchBean.getPageSize() == 0) {
+            pageSize = DEFAULT_FETCH_SIZE;
+        } else {
+            pageSize = practitionerRoleSearchBean.getPageSize();
+        }
+
+        if (practitionerRoleSearchBean.getPageNumber() != null && practitionerRoleSearchBean.getPageNumber() != 0) {
+            offset = (practitionerRoleSearchBean.getPageNumber() - 1) * pageSize;
+        }
+
+        return Pair.of(pageSize, offset);
     }
 }

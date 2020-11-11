@@ -1,6 +1,7 @@
 package org.opensrp.repository;
 
 import org.opensrp.domain.Practitioner;
+import org.opensrp.search.PractitionerSearchBean;
 
 import java.util.List;
 
@@ -25,4 +26,6 @@ public interface PractitionerRepository extends BaseRepository<Practitioner> {
 	 * @return practitioner
 	 */
 	Practitioner getPractitionerByUsername(String username);
+
+	List<Practitioner> getAllPractitioners(PractitionerSearchBean practitionerSearchBean);
 }

@@ -11,6 +11,7 @@ import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.postgres.OrganizationLocation;
 import org.opensrp.domain.postgres.OrganizationLocationExample.Criteria;
 import org.opensrp.repository.postgres.mapper.OrganizationLocationMapper;
+import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 
 /**
  * @author Samuel Githengi created on 09/09/19
@@ -23,8 +24,9 @@ public interface CustomOrganizationLocationMapper extends OrganizationLocationMa
 	 * @param organizationId
 	 * @return
 	 */
-	List<AssignedLocations> findAssignedlocationsAndPlans(@Param("oredCriteria") List<Criteria> oredCriteria,
-			@Param("orderByClause") String orderByClause, @Param("toDate") Date toDate);
+	List<AssignedLocations> findAssignedlocationsAndPlans(@Param("searchBean") AssignedLocationAndPlanSearchBean searchBean,
+			@Param("offset") int offset, @Param("limit") int limit, @Param("oredCriteria") List<Criteria> oredCriteria,
+			@Param("toDate") Date toDate);
 
 	/**
 	 * Gets the locations and plans assigned to an organization valid until now

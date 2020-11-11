@@ -5,6 +5,8 @@ import org.opensrp.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerExample;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerMapper;
+import org.opensrp.search.PractitionerSearchBean;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -185,6 +187,15 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
     }
 
     @Override
+    public List<Practitioner> getAllPractitioners(PractitionerSearchBean practitionerSearchBean) {
+        Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(practitionerSearchBean);
+        PractitionerExample practitionerExample = new PractitionerExample();
+        practitionerExample.createCriteria().andDateDeletedIsNull();
+        List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+        return convert(pgPractitionerList);
+    }
+
+    @Override
     protected Long retrievePrimaryKey(Practitioner practitioner) {
         Object uniqueId = getUniqueField(practitioner);
         if (uniqueId == null) {
@@ -240,5 +251,23 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         }
         return practitioners;
     }
+
+    private Pair<Integer, Integer> getPageSizeAndOffset(PractitionerSearchBean practitionerSearchBean) {
+
+        Integer pageSize;
+        Integer offset = 0;
+        if (practitionerSearchBean.getPageSize() == null || practitionerSearchBean.getPageSize() == 0) {
+            pageSize = DEFAULT_FETCH_SIZE;
+        } else {
+            pageSize = practitionerSearchBean.getPageSize();
+        }
+
+        if (practitionerSearchBean.getPageNumber() != null && practitionerSearchBean.getPageNumber() != 0) {
+            offset = (practitionerSearchBean.getPageNumber() - 1) * pageSize;
+        }
+
+        return Pair.of(pageSize, offset);
+    }
+
 
 }

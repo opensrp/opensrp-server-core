@@ -12,6 +12,7 @@ import org.opensrp.domain.Organization;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
+import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,8 +34,8 @@ public class OrganizationService {
 	 * 
 	 * @return all organizations
 	 */
-	public List<Organization> getAllOrganizations() {
-		return organizationRepository.getAll();
+	public List<Organization> getAllOrganizations(OrganizationSearchBean organizationSearchBean) {
+		return organizationRepository.getAllOrganizations(organizationSearchBean);
 	}
 
 	/**
@@ -146,12 +147,17 @@ public class OrganizationService {
 	 * @param returnFutureAssignments flag to control if future assignments are returned
 	 * @return the assigned locations and plans
 	 */
-	public List<AssignedLocations> findAssignedLocationsAndPlans(String identifier,boolean returnFutureAssignments) {
-		validateIdentifier(identifier);
-		Organization organization = getOrganization(identifier);
+	public List<AssignedLocations> findAssignedLocationsAndPlans(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
+		Organization organization = null;
+		if(assignedLocationAndPlanSearchBean != null && assignedLocationAndPlanSearchBean.getOrganizationIdentifier() != null) {
+			validateIdentifier(assignedLocationAndPlanSearchBean.getOrganizationIdentifier());
+			organization = getOrganization(assignedLocationAndPlanSearchBean.getOrganizationIdentifier());
+		}
 		if (organization == null)
 			throw new IllegalArgumentException("Organization not found");
-		return organizationRepository.findAssignedLocations(organization.getId(),returnFutureAssignments);
+
+		assignedLocationAndPlanSearchBean.setOrganizationId(organization.getId());
+		return organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 
 	}
 
@@ -184,16 +190,17 @@ public class OrganizationService {
 	 *
 	 * @return the assigned locations and plans
 	 */
-	public List<AssignedLocations> findAssignedLocationsAndPlansByPlanIdentifier(String planIdentifier) {
-		if (StringUtils.isBlank(planIdentifier))
+	public List<AssignedLocations> findAssignedLocationsAndPlansByPlanIdentifier(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
+		if (assignedLocationAndPlanSearchBean != null && StringUtils.isBlank(assignedLocationAndPlanSearchBean.getPlanIdentifier()))
 			throw new IllegalArgumentException("PlanIdentifier Identifier not specified");
 
-		Long planId = planRepository.retrievePrimaryKey(planIdentifier);
+		Long planId = planRepository.retrievePrimaryKey(assignedLocationAndPlanSearchBean.getPlanIdentifier());
 
         if (planId == null)
             throw new IllegalArgumentException("Plan not found");
 
-		return organizationRepository.findAssignedLocationsByPlanId(planId);
+        assignedLocationAndPlanSearchBean.setPlanId(planId);
+		return organizationRepository.findAssignedLocationsByPlanId(assignedLocationAndPlanSearchBean);
 
 	}
 

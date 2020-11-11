@@ -18,6 +18,7 @@ import org.opensrp.domain.postgres.OrganizationLocationExample.Criteria;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper;
+import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -181,15 +182,19 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 	
 	@Override
-	public List<AssignedLocations> findAssignedLocations(Long organizationId, boolean returnFutureAssignments) {
+	public List<AssignedLocations> findAssignedLocations(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
 		Date currentDate = new LocalDate().toDate();
 		OrganizationLocationExample example = new OrganizationLocationExample();
-		Criteria criteria = example.createCriteria().andOrganizationIdEqualTo(organizationId);
-		if (!returnFutureAssignments) {
-			criteria.andFromDateLessThanOrEqualTo(currentDate);
+		Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffsetForAssignedLocAndPlans(assignedLocationAndPlanSearchBean);
+		if(assignedLocationAndPlanSearchBean != null && assignedLocationAndPlanSearchBean.getOrganizationId() != null) {
+			Criteria criteria = example.createCriteria()
+					.andOrganizationIdEqualTo(assignedLocationAndPlanSearchBean.getOrganizationId());
+			if (!assignedLocationAndPlanSearchBean.isReturnFutureAssignments()) {
+				criteria.andFromDateLessThanOrEqualTo(currentDate);
+			}
 		}
-		return organizationLocationMapper.findAssignedlocationsAndPlans(example.getOredCriteria(),
-		    example.getOrderByClause(), currentDate);
+		return organizationLocationMapper.findAssignedlocationsAndPlans(assignedLocationAndPlanSearchBean, pageSizeAndOffset.getRight() , pageSizeAndOffset.getLeft(), example.getOredCriteria(),
+				currentDate);
 	}
 	
 	@Override
@@ -197,17 +202,22 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		Date currentDate = new LocalDate().toDate();
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		example.createCriteria().andOrganizationIdIn(organizationIds).andFromDateLessThanOrEqualTo(currentDate);
-		return organizationLocationMapper.findAssignedlocationsAndPlans(example.getOredCriteria(),
-		    example.getOrderByClause(), currentDate);
+		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		Pair<Integer,Integer> pageSizeAndOffset = getPageSizeAndOffsetForAssignedLocAndPlans(assignedLocationAndPlanSearchBean);
+		return organizationLocationMapper.findAssignedlocationsAndPlans(assignedLocationAndPlanSearchBean,
+				pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft(), example.getOredCriteria(),currentDate);
 	}
 	
 	@Override
-	public List<AssignedLocations> findAssignedLocationsByPlanId(Long planId) {
+	public List<AssignedLocations> findAssignedLocationsByPlanId(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
 		Date currentDate = new LocalDate().toDate();
 		OrganizationLocationExample example = new OrganizationLocationExample();
-		example.createCriteria().andPlanIdEqualTo(planId).andFromDateLessThanOrEqualTo(currentDate);
-		return organizationLocationMapper.findAssignedlocationsAndPlans(example.getOredCriteria(),
-		    example.getOrderByClause(), currentDate);
+		Pair<Integer,Integer> pageSizeAndOffset = getPageSizeAndOffsetForAssignedLocAndPlans(assignedLocationAndPlanSearchBean);
+		if(assignedLocationAndPlanSearchBean != null  && assignedLocationAndPlanSearchBean.getPlanId() != null) {
+			example.createCriteria().andPlanIdEqualTo(assignedLocationAndPlanSearchBean.getPlanId()).andFromDateLessThanOrEqualTo(currentDate);
+		}
+		return organizationLocationMapper.findAssignedlocationsAndPlans(assignedLocationAndPlanSearchBean, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft(),
+				example.getOredCriteria(),currentDate);
 	}
 	
 	@Override
@@ -322,6 +332,32 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		example.createCriteria().andNameEqualTo(name).andDateDeletedIsNull();
 		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectByExample(example);
 		return organizations.isEmpty() ? null : convert(organizations.get(0));
+	}
+
+	@Override
+	public List<Organization> getAllOrganizations(OrganizationSearchBean organizationSearchBean) {
+		Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(organizationSearchBean);
+		OrganizationExample example = new OrganizationExample();
+		example.createCriteria().andDateDeletedIsNull();
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectMany(example, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+		return convert(organizations);
+	}
+
+	private Pair<Integer, Integer> getPageSizeAndOffsetForAssignedLocAndPlans(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
+
+		Integer pageSize = 0;
+		Integer offset = 0;
+		if (assignedLocationAndPlanSearchBean.getPageSize() == null || assignedLocationAndPlanSearchBean.getPageSize() == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		} else {
+			pageSize = assignedLocationAndPlanSearchBean.getPageSize();
+		}
+
+		if (assignedLocationAndPlanSearchBean.getPageNumber() != null && assignedLocationAndPlanSearchBean.getPageNumber() != 0) {
+			offset = (assignedLocationAndPlanSearchBean.getPageNumber() - 1) * pageSize;
+		}
+
+		return Pair.of(pageSize, offset);
 	}
 
 }

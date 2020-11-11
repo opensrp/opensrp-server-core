@@ -32,6 +32,7 @@ import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.PractitionerRoleRepository;
+import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
 import org.opensrp.search.OrganizationSearchBean.FieldName;
 import org.opensrp.search.OrganizationSearchBean.OrderByType;
@@ -174,8 +175,11 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		Date toDate = calendar.getTime();
 		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
 		    "7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, toDate);
-		
-		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(organization.getId(), true);
+
+		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setOrganizationId(organization.getId());
+		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(true);
+		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 		assertEquals(1, assignedLocations.size());
 		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", assignedLocations.get(0).getJurisdictionId());
 		assertEquals("9d1403a5-756d-517b-91d6-5b19059a69f0", assignedLocations.get(0).getPlanId());
@@ -184,8 +188,11 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		
 		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
 		    "7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, null);
-		
-		assignedLocations = organizationRepository.findAssignedLocations(organization.getId(), true);
+
+		assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(true);
+		assignedLocationAndPlanSearchBean.setOrganizationId(organization.getId());
+		assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 		assertEquals(1, assignedLocations.size());
 		assertNull(assignedLocations.get(0).getToDate());
 		
@@ -229,8 +236,11 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		Date toDate = calendar.getTime();
 		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
 		    "7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, toDate);
-		
-		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(organization.getId(), true);
+
+		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setOrganizationId(organization.getId());
+		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(true);
+		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 		assertEquals(0, assignedLocations.size());
 	}
 	
@@ -248,8 +258,11 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		Date toDate = calendar.getTime();
 		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
 		    "7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, toDate);
-		
-		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(organization.getId(), true);
+
+		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setOrganizationId(organization.getId());
+		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(true);
+		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 		assertEquals(0, assignedLocations.size());
 	}
 	
@@ -267,13 +280,19 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		Date toDate = calendar.getTime();
 		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
 		    "7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, toDate);
-		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(organization.getId(), true);
+		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setOrganizationId(organization.getId());
+		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(true);
+		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 		assertEquals(0, assignedLocations.size());
 		
 		calendar.add(Calendar.YEAR, 1);
 		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
 		    "7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, calendar.getTime());
-		assignedLocations = organizationRepository.findAssignedLocations(organization.getId(), true);
+		assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(true);
+		assignedLocationAndPlanSearchBean.setOrganizationId(organization.getId());
+		assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 		assertEquals(1, assignedLocations.size());
 	}
 	
@@ -292,7 +311,10 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		Date toDate = calendar.getTime();
 		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
 		    "7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, toDate);
-		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(organization.getId(), true);
+		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setOrganizationId(organization.getId());
+		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(true);
+		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 		assertEquals(1, assignedLocations.size());
 		
 		calendar.add(Calendar.DATE, 1);
@@ -301,16 +323,25 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		toDate = calendar.getTime();
 		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
 		    "7f2ae03f-9569-5535-918c-9d976b3ae5f8", 11l, fromDate, toDate);
-		assignedLocations = organizationRepository.findAssignedLocations(organization.getId(), true);
+		assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setOrganizationId(organization.getId());
+		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(true);
+		assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 		assertEquals(2, assignedLocations.size());
 	}
 	
 	@Test
 	public void testFindAssignedLocations() {
-		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(1l, true);
+		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setOrganizationId(1l);
+		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(true);
+		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 		assertEquals(2, assignedLocations.size());
-		
-		assignedLocations = organizationRepository.findAssignedLocations(2l, true);
+
+		assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setOrganizationId(2l);
+		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(true);
+		assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 		assertEquals(1, assignedLocations.size());
 		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", assignedLocations.get(0).getJurisdictionId());
 		assertEquals("7f2ae03f-9569-5535-918c-9d976b3ae5f8", assignedLocations.get(0).getPlanId());
