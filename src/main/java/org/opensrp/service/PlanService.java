@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
+import org.opensrp.search.PlanSearchBean;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
@@ -44,8 +45,8 @@ public class PlanService {
 		return planRepository;
 	}
 	
-	public List<PlanDefinition> getAllPlans(boolean experimental) {
-		return getPlanRepository().getAllPlans(experimental);
+	public List<PlanDefinition> getAllPlans(PlanSearchBean planSearchBean) {
+		return getPlanRepository().getAllPlans(planSearchBean);
 	}
 	
 	public void addOrUpdatePlan(PlanDefinition plan, String username) {

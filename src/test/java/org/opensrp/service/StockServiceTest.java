@@ -18,6 +18,7 @@ import org.opensrp.domain.Stock;
 import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
+import org.opensrp.search.StockSearchBean;
 import org.opensrp.validator.InventoryDataValidator;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
@@ -170,7 +171,10 @@ public class StockServiceTest extends BaseRepositoryTest {
 		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(sectionsList);
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
 		stockService.addInventory(inventory, "John");
-		List<Stock> stockList = stockService.getStocksByServicePointId("loc-1");
+		StockSearchBean stockSearchBean =  new StockSearchBean();
+		stockSearchBean.setLocationId("loc-1");
+		stockSearchBean.setPageNumber(1);
+		List<Stock> stockList = stockService.getStocksByServicePointId(stockSearchBean);
 		Assert.assertEquals(1, stockList.size());
 	}
 
