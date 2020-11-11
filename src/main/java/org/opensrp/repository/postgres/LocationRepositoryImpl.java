@@ -337,14 +337,24 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 */
 	@Override
 	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
-	        Map<String, String> properties) {
+	        Map<String, String> properties, int limit) {
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		if (StringUtils.isNotBlank(parentId)) {
 			structureMetadataExample.createCriteria().andParentIdEqualTo(parentId);
 		}
 		List<Location> locations = structureMetadataMapper.selectManyByProperties(structureMetadataExample, properties,
-		    returnGeometry, 0, DEFAULT_FETCH_SIZE);
+		    returnGeometry, 0, fetchLimit);
 		return convert(locations);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
+			Map<String, String> properties) {
+		return findStructuresByProperties(returnGeometry,parentId,properties,DEFAULT_FETCH_SIZE);
 	}
 	
 	/**
@@ -889,7 +899,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findLocationByJurisdiction(String jurisdiction) {
-		return convertToFHIRLocation(findStructuresByProperties(false, jurisdiction, null));
+		return convertToFHIRLocation(findStructuresByProperties(false, jurisdiction, null, Integer.MAX_VALUE));
 	}
 	
 	@Override
