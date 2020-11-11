@@ -1,7 +1,15 @@
 package org.opensrp.search;
 
 public class StockSearchBean {
-	
+
+	public enum OrderByType {
+		ASC, DESC
+	};
+
+	public enum FieldName {
+		id, identifier, serverVersion
+	};
+
 	private String identifier;
 	
 	private String stockTypeId;
@@ -21,6 +29,18 @@ public class StockSearchBean {
 	private Long serverVersion;
 
 	private String locationId;
+
+	private Integer pageNumber = 0;
+
+	private Integer pageSize = 0;
+
+	private Integer offset;
+
+	private Integer limit;
+
+	private FieldName orderByFieldName;
+
+	private OrderByType orderByType;
 	
 	public String getIdentifier() {
 		return identifier;
@@ -100,5 +120,53 @@ public class StockSearchBean {
 
 	public void setLocationId(String locationId) {
 		this.locationId = locationId;
+	}
+
+	public Integer getPageNumber() {
+		return pageNumber;
+	}
+
+	public void setPageNumber(Integer pageNumber) {
+		this.pageNumber = pageNumber;
+	}
+
+	public Integer getPageSize() {
+		return pageSize;
+	}
+
+	public void setPageSize(Integer pageSize) {
+		this.pageSize = pageSize;
+	}
+
+	public FieldName getOrderByFieldName() {
+		return orderByFieldName;
+	}
+
+	public void setOrderByFieldName(FieldName orderByFieldName) {
+		this.orderByFieldName = orderByFieldName;
+	}
+
+	public OrderByType getOrderByType() {
+		return orderByType;
+	}
+
+	public void setOrderByType(OrderByType orderByType) {
+		this.orderByType = orderByType;
+	}
+
+	public Integer getOffset() {
+		return offset;
+	}
+
+	public void setOffset(Integer offset) {
+		this.offset = offset;
+	}
+
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
 	}
 }
