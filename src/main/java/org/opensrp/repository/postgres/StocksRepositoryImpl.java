@@ -14,6 +14,7 @@ import org.opensrp.repository.StocksRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMetadataMapper;
 import org.opensrp.search.StockSearchBean;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -161,16 +162,21 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	}
 	
 	@Override
-	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int limit) {
+	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int offset, int limit) {
 		String orderByClause = getOrderByClause(sortBy, sortOrder);
 		Date date = new Date();
-		return convert(stockMetadataMapper.selectManyBySearchBean(searchBean, date, orderByClause, 0, limit));
-		
+		return convert(stockMetadataMapper.selectManyBySearchBean(searchBean, date, orderByClause, offset, limit));
+
 	}
 	
 	@Override
 	public List<Stock> findStocks(StockSearchBean searchBean) {
-		return findStocks(searchBean, null, null, DEFAULT_FETCH_SIZE);
+		String sortBy = searchBean.getOrderByFieldName() != null ? searchBean.getOrderByFieldName().name() : null;
+		String sortOrder= searchBean.getOrderByType() != null ? searchBean.getOrderByType().name() : null;
+		Pair<Integer, Integer> pageLimitAndOffSet = getPageSizeAndOffset(searchBean);
+		searchBean.setOffset(pageLimitAndOffSet.getRight());
+		searchBean.setLimit(pageLimitAndOffSet.getLeft());
+		return findStocks(searchBean, sortBy, sortOrder, searchBean.getOffset(), searchBean.getLimit());
 	}
 	
 	@Override
@@ -218,9 +224,10 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	}
 
 	@Override
-	public List<Stock> findStocksByLocationId(String locationId) {
-		StockSearchBean stockSearchBean = new StockSearchBean();
-		stockSearchBean.setLocationId(locationId);
+	public List<Stock> findStocksByLocationId(StockSearchBean stockSearchBean) {
+		Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(stockSearchBean);
+        stockSearchBean.setOffset(pageSizeAndOffset.getRight());
+        stockSearchBean.setLimit(pageSizeAndOffset.getLeft());
 		return findStocks(stockSearchBean);
 	}
 
@@ -298,6 +305,23 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	@Override
 	protected String getSequenceName() {
 		return SEQUENCE;
+	}
+
+	private Pair<Integer, Integer> getPageSizeAndOffset(StockSearchBean stockSearchBean) {
+
+		Integer pageSize;
+		Integer offset = 0;
+		if (stockSearchBean.getPageSize() == null || stockSearchBean.getPageSize() == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		} else {
+			pageSize = stockSearchBean.getPageSize();
+		}
+
+		if (stockSearchBean.getPageNumber() != null && stockSearchBean.getPageNumber() != 0) {
+			offset = (stockSearchBean.getPageNumber() - 1) * pageSize;
+		}
+
+		return Pair.of(pageSize, offset);
 	}
 	
 }
