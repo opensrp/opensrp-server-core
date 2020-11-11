@@ -1,6 +1,7 @@
 package org.opensrp.repository;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.search.PlanSearchBean;
 import org.smartregister.domain.PlanDefinition;
 
 import java.util.Date;
@@ -84,5 +85,5 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 */
 	Long countPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion);
 
-	List<PlanDefinition> getAllPlans(boolean experimental);
+	List<PlanDefinition> getAllPlans(PlanSearchBean planSearchBean);
 }
