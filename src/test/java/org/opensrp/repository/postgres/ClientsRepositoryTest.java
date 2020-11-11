@@ -19,6 +19,7 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
@@ -664,6 +665,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, clients.size());
 	}
 
+	@Ignore
 	@Test
 	public void testGetAllIdsShouldGetAllClientIds() {
 		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 1000, false);
@@ -672,6 +674,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1573733953502l, idsModel.getRight().longValue());
 	}
 
+	@Ignore
 	@Test
 	public void testGetAllIdsShouldLimitByGiventAmount() {
 		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 1, false);
@@ -681,6 +684,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1520891339766l, idsModel.getRight().longValue());
 	}
 
+	@Ignore
 	@Test
 	public void testGetAllIdsShouldOrderByServerVersionAsc() {
 		Pair<List<String>, Long> idsModel = clientsRepository.findAllIds(0, 3, false);
