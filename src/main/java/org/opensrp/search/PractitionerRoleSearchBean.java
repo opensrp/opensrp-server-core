@@ -9,22 +9,6 @@ import lombok.AllArgsConstructor;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PractitionerRoleSearchBean {
-
-	public enum OrderByType {
-		ASC, DESC
-	}
-
-	public enum FieldName {
-		id
-	}
-
-	private Integer pageNumber = 0;
-
-	private Integer pageSize = 0;
-
-	private PractitionerRoleSearchBean.OrderByType orderByType = PractitionerRoleSearchBean.OrderByType.DESC;
-
-	private PractitionerRoleSearchBean.FieldName orderByFieldName = PractitionerRoleSearchBean.FieldName.id;
+public class PractitionerRoleSearchBean extends BaseSearchBean{
 
 }

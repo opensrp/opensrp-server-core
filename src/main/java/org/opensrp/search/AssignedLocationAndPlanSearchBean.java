@@ -9,32 +9,16 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AssignedLocationAndPlanSearchBean {
+public class AssignedLocationAndPlanSearchBean extends BaseSearchBean{
 
-	public enum OrderByType {
-		ASC, DESC
-	}
+	private String planIdentifier;
 
-	public enum FieldName {
-		id
-	}
+	private String organizationIdentifier;
 
-	private Integer pageNumber = 0;
+	private Long planId;
 
-	private Integer pageSize = 0;
+	private Long organizationId;
 
-	private AssignedLocationAndPlanSearchBean.OrderByType orderByType = AssignedLocationAndPlanSearchBean.OrderByType.DESC;
-
-	private AssignedLocationAndPlanSearchBean.FieldName orderByFieldName = AssignedLocationAndPlanSearchBean.FieldName.id;
-
-	String planIdentifier;
-
-	String organizationIdentifier;
-
-	Long planId;
-
-	Long organizationId;
-
-	boolean returnFutureAssignments;
+	private boolean returnFutureAssignments;
 
 }
