@@ -150,4 +150,38 @@
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
+	<select id="selectPlansBySearchBean" resultMap="org.opensrp.repository.postgres.mapper.PlanMapper.BaseResultMap">
+		select
+		<include
+				refid="org.opensrp.repository.postgres.mapper.PlanMapper.Base_Column_List"/>
+		from core.plan p
+		<if test="searchBean.useContexts != null">
+		,
+		LATERAL (SELECT jsonb_array_elements(p.json -> 'useContext') useContext) useContexts
+		</if>
+		<where>
+			<trim prefixOverrides="and">
+				<if test="searchBean.planStatus != null">
+					and json->>'status' = #{searchBean.planStatus,jdbcType=VARCHAR}
+				</if>
+				<if test="searchBean.isExperimental != null">
+					p.experimental = #{searchBean.isExperimental,jdbcType=BIT}
+				</if>
+				<if test="searchBean.useContexts != null">
+					<trim prefix="and ">
+						<foreach collection="searchBean.useContexts" index="key" item="value" separator=" and ">
+							useContexts.useContext ->> 'code' = #{key,jdbcType=VARCHAR}
+							and
+							useContexts.useContext ->> 'valueCodableConcept' = #{value,jdbcType=VARCHAR}
+						</foreach>
+					</trim>
+				</if>
+			</trim>
+		</where>
+		<if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
+			order by ${searchBean.orderByFieldName} ${searchBean.orderByType}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
 </mapper>
