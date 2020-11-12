@@ -154,7 +154,7 @@
             <include refid="Example_Where_Clause" />
         </if>
         <if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
-            order by ${searchBean.orderByFieldName} ${searchBean.orderByType}
+            order by o.${searchBean.orderByFieldName} ${searchBean.orderByType}
         </if>
         LIMIT #{limit} OFFSET #{offset}
     </select>

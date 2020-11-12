@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.opensrp.domain.PractitionerRole;
 import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.repository.PractitionerRoleRepository;
+import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.PractitionerRoleSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -272,15 +273,22 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         PractitionerRole practitionerRole1 = initTestPractitionerRole1();
         practitionerRoleRepository.add(practitionerRole1);
 
+        PractitionerRole practitionerRole2 = initTestPractitionerRole2();
+        practitionerRoleRepository.add(practitionerRole2);
+
         PractitionerRoleSearchBean practitionerRoleSearchBean = PractitionerRoleSearchBean.builder().build();
         List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAllPractitionerRoles(practitionerRoleSearchBean);
         assertNotNull(practitionerRoles);
-        assertEquals(1, practitionerRoles.size());
+        assertEquals(2, practitionerRoles.size());
+        assertEquals("pr2-identifier", practitionerRoles.get(0).getIdentifier());
+        assertEquals("pr1-identifier", practitionerRoles.get(1).getIdentifier());
+
+        practitionerRoleSearchBean = PractitionerRoleSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).build();
+        practitionerRoles = practitionerRoleRepository.getAllPractitionerRoles(practitionerRoleSearchBean);
+        assertNotNull(practitionerRoles);
+        assertEquals(2, practitionerRoles.size());
         assertEquals("pr1-identifier", practitionerRoles.get(0).getIdentifier());
-        assertEquals(true, practitionerRoles.get(0).getActive());
-        assertEquals("org1", practitionerRoles.get(0).getOrganizationIdentifier());
-        assertEquals("p1-identifier", practitionerRoles.get(0).getPractitionerIdentifier());
-        assertEquals("pr1Code", practitionerRoles.get(0).getCode().getText());
+        assertEquals("pr2-identifier", practitionerRoles.get(1).getIdentifier());
     }
 
     private static PractitionerRole initTestPractitionerRole1(){

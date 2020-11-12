@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class BaseSearchBean {
 
 	public enum OrderByType {
@@ -23,8 +22,15 @@ public class BaseSearchBean {
 
 	private Integer pageSize = 0;
 
-	private BaseSearchBean.OrderByType orderByType = BaseSearchBean.OrderByType.DESC;
+	private BaseSearchBean.OrderByType orderByType;
 
-	private BaseSearchBean.FieldName orderByFieldName = BaseSearchBean.FieldName.id;
+	private BaseSearchBean.FieldName orderByFieldName;
 
+	public BaseSearchBean(Integer pageNumber, Integer pageSize, OrderByType orderByType,
+			FieldName orderByFieldName) {
+		this.pageNumber = pageNumber != null ? pageNumber : 0;
+		this.pageSize = pageSize != null ? pageSize : 0;
+		this.orderByType = orderByType != null ? orderByType : BaseSearchBean.OrderByType.DESC;
+		this.orderByFieldName = orderByFieldName != null ? orderByFieldName : BaseSearchBean.FieldName.id;
+	}
 }
