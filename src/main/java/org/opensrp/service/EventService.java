@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
 import org.opensrp.repository.EventsRepository;
@@ -171,7 +172,7 @@ public class EventService {
 		if (isPlanEvaluationEnabled && planIdentifier != null) {
 			PlanDefinition plan = planRepository.get(planIdentifier);
 			if (plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
-			        || plan.getEffectivePeriod().getEnd().isAfter(new DateTime().toLocalDate())))
+			        || plan.getEffectivePeriod().getEnd().isAfter(LocalDate.now().toDate().getTime())))
 				taskGenerator.processPlanEvaluation(plan, username, event);
 		}
 		return event;
