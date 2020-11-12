@@ -191,7 +191,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(practitionerSearchBean);
         PractitionerExample practitionerExample = new PractitionerExample();
         practitionerExample.createCriteria().andDateDeletedIsNull();
-        List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+        List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectManyBySearchBean(practitionerSearchBean,practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
         return convert(pgPractitionerList);
     }
 

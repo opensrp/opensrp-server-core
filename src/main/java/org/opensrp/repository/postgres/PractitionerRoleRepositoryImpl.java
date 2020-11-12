@@ -291,7 +291,7 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
     public List<PractitionerRole> getAllPractitionerRoles(PractitionerRoleSearchBean practitionerRoleSearchBean) {
         Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(practitionerRoleSearchBean);
         PractitionerRoleExample practitionerRoleExample = new PractitionerRoleExample();
-        List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoleList = practitionerRoleMapper.selectMany(practitionerRoleExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+        List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoleList = practitionerRoleMapper.selectManyBySearchBean(practitionerRoleSearchBean, practitionerRoleExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
         return convert(pgPractitionerRoleList);
     }
 

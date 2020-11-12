@@ -339,7 +339,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(organizationSearchBean);
 		OrganizationExample example = new OrganizationExample();
 		example.createCriteria().andDateDeletedIsNull();
-		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectMany(example, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectManyBySearchBean(organizationSearchBean,example, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
 		return convert(organizations);
 	}
 

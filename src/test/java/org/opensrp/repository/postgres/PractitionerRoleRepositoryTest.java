@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.opensrp.domain.PractitionerRole;
 import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.repository.PractitionerRoleRepository;
+import org.opensrp.search.PractitionerRoleSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
@@ -264,6 +265,22 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals(practitionerRole1.getActive(), pgPractitionerRoles.get(0).getActive());
         assertEquals(practitionerRole1.getCode().getText(), pgPractitionerRoles.get(0).getCode());
 
+    }
+
+    @Test
+    public void testGetAllPractitionerRoles() {
+        PractitionerRole practitionerRole1 = initTestPractitionerRole1();
+        practitionerRoleRepository.add(practitionerRole1);
+
+        PractitionerRoleSearchBean practitionerRoleSearchBean = PractitionerRoleSearchBean.builder().build();
+        List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAllPractitionerRoles(practitionerRoleSearchBean);
+        assertNotNull(practitionerRoles);
+        assertEquals(1, practitionerRoles.size());
+        assertEquals("pr1-identifier", practitionerRoles.get(0).getIdentifier());
+        assertEquals(true, practitionerRoles.get(0).getActive());
+        assertEquals("org1", practitionerRoles.get(0).getOrganizationIdentifier());
+        assertEquals("p1-identifier", practitionerRoles.get(0).getPractitionerIdentifier());
+        assertEquals("pr1Code", practitionerRoles.get(0).getCode().getText());
     }
 
     private static PractitionerRole initTestPractitionerRole1(){

@@ -451,7 +451,24 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(3, totalCount);
 		
 	}
-	
+
+	@Test
+	public void testGetAllOrganizations() {
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		assertEquals(3, organizationRepository.getAllOrganizations(organizationSearchBean).size());
+
+		Organization organization = new Organization();
+		organization.setIdentifier(UUID.randomUUID().toString());
+		organization.setName("Ateam");
+		organization.setPartOf(1l);
+		organization.setActive(true);
+		organizationRepository.add(organization);
+
+		assertEquals(4, organizationRepository.getAllOrganizations(organizationSearchBean).size());
+
+	}
+
+
 	private static PractitionerRole initTestPractitionerRole() {
 		PractitionerRole practitionerRole = new PractitionerRole();
 		practitionerRole.setIdentifier("pr3-identifier");
