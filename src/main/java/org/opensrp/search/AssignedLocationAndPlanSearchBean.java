@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Builder;
 
 @Getter
 @Setter
@@ -21,4 +22,15 @@ public class AssignedLocationAndPlanSearchBean extends BaseSearchBean{
 
 	private boolean returnFutureAssignments;
 
+	@Builder
+	public AssignedLocationAndPlanSearchBean(Integer pageNumber, Integer pageSize, OrderByType orderByType,
+			FieldName orderByFieldName, String planIdentifier, String organizationIdentifier,
+			Long planId, Long organizationId, boolean returnFutureAssignments) {
+		super(pageNumber, pageSize, orderByType, orderByFieldName);
+		this.planIdentifier = planIdentifier;
+		this.organizationIdentifier = organizationIdentifier;
+		this.planId = planId;
+		this.organizationId = organizationId;
+		this.returnFutureAssignments = returnFutureAssignments;
+	}
 }
