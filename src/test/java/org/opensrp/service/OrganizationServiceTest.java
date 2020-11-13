@@ -240,14 +240,11 @@ public class OrganizationServiceTest {
 		organization.setId(12l);
 		AssignedLocations assigment = new AssignedLocations("loc1", "plan1");
 		List<AssignedLocations> expected = Collections.singletonList(assigment);
-		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
-		assignedLocationAndPlanSearchBean.setOrganizationIdentifier(identifier);
-		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(false);
 		when(organizationRepository.findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class))).thenReturn(expected);
 		when(organizationRepository.get(identifier)).thenReturn(organization);
 		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlans(identifier,false,null,null,null,null);
 		assertEquals(expected, assigned);
-		verify(organizationRepository).findAssignedLocations(assignedLocationAndPlanSearchBean);
+		verify(organizationRepository).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -274,13 +271,10 @@ public class OrganizationServiceTest {
 		AssignedLocations assigment = new AssignedLocations("loc1", "plan1");
 		List<AssignedLocations> expected = Collections.singletonList(assigment);
 		when(planRepository.retrievePrimaryKey(anyString())).thenReturn(1l);
-		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
-		assignedLocationAndPlanSearchBean.setPlanId(1l);
-		assignedLocationAndPlanSearchBean.setPlanIdentifier(identifier);
-		when(organizationRepository.findAssignedLocationsByPlanId(assignedLocationAndPlanSearchBean)).thenReturn(expected);
+		when(organizationRepository.findAssignedLocationsByPlanId(any(AssignedLocationAndPlanSearchBean.class))).thenReturn(expected);
 		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlansByPlanIdentifier(identifier,null,null,null,null);
 		assertEquals(expected, assigned);
-		verify(organizationRepository).findAssignedLocationsByPlanId(assignedLocationAndPlanSearchBean);
+		verify(organizationRepository).findAssignedLocationsByPlanId(any(AssignedLocationAndPlanSearchBean.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)

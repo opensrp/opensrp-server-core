@@ -276,14 +276,16 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         PractitionerRole practitionerRole2 = initTestPractitionerRole2();
         practitionerRoleRepository.add(practitionerRole2);
 
-        PractitionerRoleSearchBean practitionerRoleSearchBean = (PractitionerRoleSearchBean) BaseSearchBean.builder().build();
+        PractitionerRoleSearchBean practitionerRoleSearchBean = PractitionerRoleSearchBean.builder().
+                orderByType(BaseSearchBean.OrderByType.DESC).
+                orderByFieldName(BaseSearchBean.FieldName.id).build();
         List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAllPractitionerRoles(practitionerRoleSearchBean);
         assertNotNull(practitionerRoles);
         assertEquals(2, practitionerRoles.size());
         assertEquals("pr2-identifier", practitionerRoles.get(0).getIdentifier());
         assertEquals("pr1-identifier", practitionerRoles.get(1).getIdentifier());
 
-        practitionerRoleSearchBean = (PractitionerRoleSearchBean) BaseSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).build();
+        practitionerRoleSearchBean = PractitionerRoleSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).orderByFieldName(BaseSearchBean.FieldName.id).build();
         practitionerRoles = practitionerRoleRepository.getAllPractitionerRoles(practitionerRoleSearchBean);
         assertNotNull(practitionerRoles);
         assertEquals(2, practitionerRoles.size());
