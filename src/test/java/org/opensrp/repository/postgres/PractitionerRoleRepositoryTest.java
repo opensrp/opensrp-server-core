@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.opensrp.domain.PractitionerRole;
 import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.repository.PractitionerRoleRepository;
+import org.opensrp.search.BaseSearchBean;
+import org.opensrp.search.PractitionerRoleSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
@@ -264,6 +266,31 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals(practitionerRole1.getActive(), pgPractitionerRoles.get(0).getActive());
         assertEquals(practitionerRole1.getCode().getText(), pgPractitionerRoles.get(0).getCode());
 
+    }
+
+    @Test
+    public void testGetAllPractitionerRoles() {
+        PractitionerRole practitionerRole1 = initTestPractitionerRole1();
+        practitionerRoleRepository.add(practitionerRole1);
+
+        PractitionerRole practitionerRole2 = initTestPractitionerRole2();
+        practitionerRoleRepository.add(practitionerRole2);
+
+        PractitionerRoleSearchBean practitionerRoleSearchBean = PractitionerRoleSearchBean.builder().
+                orderByType(BaseSearchBean.OrderByType.DESC).
+                orderByFieldName(BaseSearchBean.FieldName.id).build();
+        List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAllPractitionerRoles(practitionerRoleSearchBean);
+        assertNotNull(practitionerRoles);
+        assertEquals(2, practitionerRoles.size());
+        assertEquals("pr2-identifier", practitionerRoles.get(0).getIdentifier());
+        assertEquals("pr1-identifier", practitionerRoles.get(1).getIdentifier());
+
+        practitionerRoleSearchBean = PractitionerRoleSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).orderByFieldName(BaseSearchBean.FieldName.id).build();
+        practitionerRoles = practitionerRoleRepository.getAllPractitionerRoles(practitionerRoleSearchBean);
+        assertNotNull(practitionerRoles);
+        assertEquals(2, practitionerRoles.size());
+        assertEquals("pr1-identifier", practitionerRoles.get(0).getIdentifier());
+        assertEquals("pr2-identifier", practitionerRoles.get(1).getIdentifier());
     }
 
     private static PractitionerRole initTestPractitionerRole1(){

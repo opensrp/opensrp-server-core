@@ -37,7 +37,7 @@ jobs:
       run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "apt-get -y update && apt-get -y install postgresql-client-10 postgresql-10-postgis-2.4 postgresql-10-postgis-2.4-scripts"
  
     - name: Install Posgres client
-      run: sudo apt-get install postgresql-client-10
+      run: sudo apt-get -y update &&  sudo apt-get -y install postgresql-client-10
       
     - name: Create PostGIS extension
       run: psql -p 5432 -c "create extension postgis" -U opensrp_admin -d opensrp_test -h localhost

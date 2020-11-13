@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
+import org.opensrp.search.PractitionerSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -48,10 +50,11 @@ public class PractitionerServiceTest {
     public void testgetAllPractitioners() {
         List<Practitioner> expectedPractitioners = new ArrayList<>();
         expectedPractitioners.add(initTestPractitioner());
-        when(practitionerRepository.getAll()).thenReturn(expectedPractitioners);
+        when(practitionerRepository.getAllPractitioners(any(PractitionerSearchBean.class))).thenReturn(expectedPractitioners);
 
-        List<Practitioner> actutalPractitioners = practitionerService.getAllPractitioners();
-        verify(practitionerRepository).getAll();
+        PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean();
+        List<Practitioner> actutalPractitioners = practitionerService.getAllPractitioners(practitionerSearchBean);
+        verify(practitionerRepository).getAllPractitioners(practitionerSearchBean);
         assertEquals(1, actutalPractitioners.size());
         assertEquals("practitoner-1-identifier", actutalPractitioners.get(0).getIdentifier());
     }
