@@ -183,8 +183,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 	
 	@Override
-	public List<AssignedLocations> findAssignedLocations(
-			AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
+	public List<AssignedLocations> findAssignedLocations(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
 		Date currentDate = new LocalDate().toDate();
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(assignedLocationAndPlanSearchBean);
@@ -196,8 +195,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			criteria.andFromDateLessThanOrEqualTo(currentDate);
 		}
 		if (assignedLocationAndPlanSearchBean != null && assignedLocationAndPlanSearchBean.getPlanId() != null) {
-			example.createCriteria().andPlanIdEqualTo(assignedLocationAndPlanSearchBean.getPlanId());
-			example.createCriteria().andFromDateLessThanOrEqualTo(currentDate);
+			criteria.andPlanIdEqualTo(assignedLocationAndPlanSearchBean.getPlanId());
 		}
 		return organizationLocationMapper
 				.findAssignedlocationsAndPlans(assignedLocationAndPlanSearchBean, pageSizeAndOffset.getRight(),
@@ -216,18 +214,17 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 				pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft(), example.getOredCriteria(),currentDate);
 	}
 
+	/**
+	 * This method is marked as deprecated
+	 * Since, findAssignedLocations(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) has similar signature
+	 *
+	 * Therefore, incorporated the logic to get AssignedLocations by Plan Id in that method
+	 */
+
 	@Deprecated
 	@Override
 	public List<AssignedLocations> findAssignedLocationsByPlanId(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
-		Date currentDate = new LocalDate().toDate();
-		OrganizationLocationExample example = new OrganizationLocationExample();
-		Pair<Integer,Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(assignedLocationAndPlanSearchBean);
-		if(assignedLocationAndPlanSearchBean != null  && assignedLocationAndPlanSearchBean.getPlanId() != null) {
-			example.createCriteria().andPlanIdEqualTo(assignedLocationAndPlanSearchBean.getPlanId());
-		}
-		example.createCriteria().andFromDateLessThanOrEqualTo(currentDate);
-		return organizationLocationMapper.findAssignedlocationsAndPlans(assignedLocationAndPlanSearchBean, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft(),
-				example.getOredCriteria(),currentDate);
+		return findAssignedLocations(assignedLocationAndPlanSearchBean);
 	}
 	
 	@Override
