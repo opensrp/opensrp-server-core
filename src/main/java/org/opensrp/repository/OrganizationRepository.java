@@ -68,6 +68,7 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 *
 	 * @return list of assigned locations and plans
 	 */
+	@Deprecated
 	List<AssignedLocations> findAssignedLocationsByPlanId(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean);
 	
 	List<Organization> findSearchOrganizations(OrganizationSearchBean organizationSearchBean);

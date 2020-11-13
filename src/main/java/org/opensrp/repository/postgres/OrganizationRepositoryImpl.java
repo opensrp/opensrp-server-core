@@ -183,19 +183,26 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 	
 	@Override
-	public List<AssignedLocations> findAssignedLocations(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
+	public List<AssignedLocations> findAssignedLocations(
+			AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
 		Date currentDate = new LocalDate().toDate();
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(assignedLocationAndPlanSearchBean);
-		if(assignedLocationAndPlanSearchBean != null && assignedLocationAndPlanSearchBean.getOrganizationId() != null) {
-			Criteria criteria = example.createCriteria()
-					.andOrganizationIdEqualTo(assignedLocationAndPlanSearchBean.getOrganizationId());
-			if (!assignedLocationAndPlanSearchBean.isReturnFutureAssignments()) {
-				criteria.andFromDateLessThanOrEqualTo(currentDate);
-			}
+		Criteria criteria = example.createCriteria();
+		if (assignedLocationAndPlanSearchBean != null && assignedLocationAndPlanSearchBean.getOrganizationId() != null) {
+			criteria.andOrganizationIdEqualTo(assignedLocationAndPlanSearchBean.getOrganizationId());
 		}
-		return organizationLocationMapper.findAssignedlocationsAndPlans(assignedLocationAndPlanSearchBean, pageSizeAndOffset.getRight() , pageSizeAndOffset.getLeft(), example.getOredCriteria(),
-				currentDate);
+		if (!assignedLocationAndPlanSearchBean.isReturnFutureAssignments()) {
+			criteria.andFromDateLessThanOrEqualTo(currentDate);
+		}
+		if (assignedLocationAndPlanSearchBean != null && assignedLocationAndPlanSearchBean.getPlanId() != null) {
+			example.createCriteria().andPlanIdEqualTo(assignedLocationAndPlanSearchBean.getPlanId());
+			example.createCriteria().andFromDateLessThanOrEqualTo(currentDate);
+		}
+		return organizationLocationMapper
+				.findAssignedlocationsAndPlans(assignedLocationAndPlanSearchBean, pageSizeAndOffset.getRight(),
+						pageSizeAndOffset.getLeft(), example.getOredCriteria(),
+						currentDate);
 	}
 	
 	@Override
@@ -208,7 +215,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		return organizationLocationMapper.findAssignedlocationsAndPlans(assignedLocationAndPlanSearchBean,
 				pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft(), example.getOredCriteria(),currentDate);
 	}
-	
+
+	@Deprecated
 	@Override
 	public List<AssignedLocations> findAssignedLocationsByPlanId(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
 		Date currentDate = new LocalDate().toDate();

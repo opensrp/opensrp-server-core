@@ -211,7 +211,7 @@ public class OrganizationService {
 		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean =
 				AssignedLocationAndPlanSearchBean.builder().pageNumber(pageNumber).pageSize(pageSize).
 						orderByType(orderByTypeEnum).orderByFieldName(fieldName).planId(planId).build();
-		return organizationRepository.findAssignedLocationsByPlanId(assignedLocationAndPlanSearchBean);
+		return organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 
 	}
 
