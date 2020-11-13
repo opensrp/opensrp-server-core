@@ -256,22 +256,4 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         return practitioners;
     }
 
-    private Pair<Integer, Integer> getPageSizeAndOffset(PractitionerSearchBean practitionerSearchBean) {
-
-        Integer pageSize;
-        Integer offset = 0;
-        if (practitionerSearchBean.getPageSize() == null || practitionerSearchBean.getPageSize() == 0) {
-            pageSize = DEFAULT_FETCH_SIZE;
-        } else {
-            pageSize = practitionerSearchBean.getPageSize();
-        }
-
-        if (practitionerSearchBean.getPageNumber() != null && practitionerSearchBean.getPageNumber() != 0) {
-            offset = (practitionerSearchBean.getPageNumber() - 1) * pageSize;
-        }
-
-        return Pair.of(pageSize, offset);
-    }
-
-
 }

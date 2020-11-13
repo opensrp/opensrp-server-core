@@ -309,20 +309,4 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         return false;
     }
 
-    private Pair<Integer, Integer> getPageSizeAndOffset(PractitionerRoleSearchBean practitionerRoleSearchBean) {
-
-        Integer pageSize;
-        Integer offset = 0;
-        if (practitionerRoleSearchBean.getPageSize() == null || practitionerRoleSearchBean.getPageSize() == 0) {
-            pageSize = DEFAULT_FETCH_SIZE;
-        } else {
-            pageSize = practitionerRoleSearchBean.getPageSize();
-        }
-
-        if (practitionerRoleSearchBean.getPageNumber() != null && practitionerRoleSearchBean.getPageNumber() != 0) {
-            offset = (practitionerRoleSearchBean.getPageNumber() - 1) * pageSize;
-        }
-
-        return Pair.of(pageSize, offset);
-    }
 }

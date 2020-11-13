@@ -336,14 +336,14 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         practitionerRepository.add(practitioner1);
         Practitioner practitioner2 = initTestPractitioner2();
         practitionerRepository.add(practitioner2);
-        PractitionerSearchBean practitionerSearchBean = PractitionerSearchBean.builder().build();
+        PractitionerSearchBean practitionerSearchBean = (PractitionerSearchBean) BaseSearchBean.builder().build();
         List<Practitioner> practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
         assertNotNull(practitioners);
         assertEquals(2,practitioners.size());
         assertEquals("practitoner-2-identifier",practitioners.get(0).getIdentifier());
         assertEquals("practitoner-1-identifier",practitioners.get(1).getIdentifier());
 
-        practitionerSearchBean = PractitionerSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).build();
+        practitionerSearchBean = (PractitionerSearchBean) BaseSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).build();
         practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
         assertNotNull(practitioners);
         assertEquals(2,practitioners.size());

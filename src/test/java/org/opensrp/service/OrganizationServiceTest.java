@@ -245,7 +245,7 @@ public class OrganizationServiceTest {
 		assignedLocationAndPlanSearchBean.setReturnFutureAssignments(false);
 		when(organizationRepository.findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class))).thenReturn(expected);
 		when(organizationRepository.get(identifier)).thenReturn(organization);
-		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlans(assignedLocationAndPlanSearchBean);
+		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlans(identifier,false,null,null,null,null);
 		assertEquals(expected, assigned);
 		verify(organizationRepository).findAssignedLocations(assignedLocationAndPlanSearchBean);
 	}
@@ -253,8 +253,7 @@ public class OrganizationServiceTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testFindAssignedLocationsAndPlansOrganitionMissing() {
 		organization.setId(12l);
-		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
-		organizationService.findAssignedLocationsAndPlans(assignedLocationAndPlanSearchBean);
+		organizationService.findAssignedLocationsAndPlans(identifier,false,null,null,null,null);
 		verify(organizationRepository, never()).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 
 	}
@@ -279,15 +278,14 @@ public class OrganizationServiceTest {
 		assignedLocationAndPlanSearchBean.setPlanId(1l);
 		assignedLocationAndPlanSearchBean.setPlanIdentifier(identifier);
 		when(organizationRepository.findAssignedLocationsByPlanId(assignedLocationAndPlanSearchBean)).thenReturn(expected);
-		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlansByPlanIdentifier(assignedLocationAndPlanSearchBean);
+		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlansByPlanIdentifier(identifier,null,null,null,null);
 		assertEquals(expected, assigned);
 		verify(organizationRepository).findAssignedLocationsByPlanId(assignedLocationAndPlanSearchBean);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testFindAssignedLocationsAndPlansByPlanIdentifierWithNullParam() {
-		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
-		organizationService.findAssignedLocationsAndPlansByPlanIdentifier(assignedLocationAndPlanSearchBean);
+		organizationService.findAssignedLocationsAndPlansByPlanIdentifier(null,null,null,null,null);
 		verify(organizationRepository, never()).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 	}
 
@@ -296,7 +294,7 @@ public class OrganizationServiceTest {
 		when(planRepository.retrievePrimaryKey(anyString())).thenReturn(null);
         AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
         assignedLocationAndPlanSearchBean.setPlanIdentifier("plan-id-1");
-		organizationService.findAssignedLocationsAndPlansByPlanIdentifier(assignedLocationAndPlanSearchBean);
+		organizationService.findAssignedLocationsAndPlansByPlanIdentifier("plan-id-1",null,null,null,null);
 		verify(organizationRepository, never()).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 	}
 	

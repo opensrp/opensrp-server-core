@@ -5,6 +5,4 @@ import lombok.Data;
 @Data
 public class PractitionerRoleSearchBean extends BaseSearchBean{
 
-	public PractitionerRoleSearchBean() {
-	}
 }
