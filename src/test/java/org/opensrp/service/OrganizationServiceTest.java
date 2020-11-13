@@ -271,10 +271,10 @@ public class OrganizationServiceTest {
 		AssignedLocations assigment = new AssignedLocations("loc1", "plan1");
 		List<AssignedLocations> expected = Collections.singletonList(assigment);
 		when(planRepository.retrievePrimaryKey(anyString())).thenReturn(1l);
-		when(organizationRepository.findAssignedLocationsByPlanId(any(AssignedLocationAndPlanSearchBean.class))).thenReturn(expected);
+		when(organizationRepository.findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class))).thenReturn(expected);
 		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlansByPlanIdentifier(identifier,null,null,null,null);
 		assertEquals(expected, assigned);
-		verify(organizationRepository).findAssignedLocationsByPlanId(any(AssignedLocationAndPlanSearchBean.class));
+		verify(organizationRepository).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
