@@ -13,6 +13,7 @@ import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.AssignedLocationAndPlanSearchBean;
+import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -147,16 +148,19 @@ public class OrganizationService {
 	 * @param returnFutureAssignments flag to control if future assignments are returned
 	 * @return the assigned locations and plans
 	 */
-	public List<AssignedLocations> findAssignedLocationsAndPlans(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
-		Organization organization = null;
-		if(assignedLocationAndPlanSearchBean != null && assignedLocationAndPlanSearchBean.getOrganizationIdentifier() != null) {
-			validateIdentifier(assignedLocationAndPlanSearchBean.getOrganizationIdentifier());
-			organization = getOrganization(assignedLocationAndPlanSearchBean.getOrganizationIdentifier());
-		}
+	public List<AssignedLocations> findAssignedLocationsAndPlans(String identifier,boolean returnFutureAssignments,
+			Integer pageNumber, Integer pageSize, String orderByType, String orderByFieldName) {
+		validateIdentifier(identifier);
+		Organization organization = getOrganization(identifier);
 		if (organization == null)
 			throw new IllegalArgumentException("Organization not found");
 
-		assignedLocationAndPlanSearchBean.setOrganizationId(organization.getId());
+		BaseSearchBean.OrderByType orderByTypeEnum = orderByType != null ? BaseSearchBean.OrderByType.valueOf(orderByType) : BaseSearchBean.OrderByType.DESC;
+		BaseSearchBean.FieldName fieldName = orderByFieldName != null ? BaseSearchBean.FieldName.valueOf(orderByFieldName) : BaseSearchBean.FieldName.id;
+
+		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = AssignedLocationAndPlanSearchBean.builder()
+				.pageNumber(pageNumber).pageSize(pageSize).orderByType(orderByTypeEnum).orderByFieldName(fieldName)
+				.organizationId(organization.getId()).build();
 		return organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
 
 	}
@@ -190,16 +194,22 @@ public class OrganizationService {
 	 *
 	 * @return the assigned locations and plans
 	 */
-	public List<AssignedLocations> findAssignedLocationsAndPlansByPlanIdentifier(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean) {
-		if (assignedLocationAndPlanSearchBean != null && StringUtils.isBlank(assignedLocationAndPlanSearchBean.getPlanIdentifier()))
+	public List<AssignedLocations> findAssignedLocationsAndPlansByPlanIdentifier(String planIdentifier,
+			Integer pageNumber, Integer pageSize, String orderByType, String orderByFieldName) {
+		if (StringUtils.isBlank(planIdentifier))
 			throw new IllegalArgumentException("PlanIdentifier Identifier not specified");
 
-		Long planId = planRepository.retrievePrimaryKey(assignedLocationAndPlanSearchBean.getPlanIdentifier());
+		Long planId = planRepository.retrievePrimaryKey(planIdentifier);
 
         if (planId == null)
             throw new IllegalArgumentException("Plan not found");
 
-        assignedLocationAndPlanSearchBean.setPlanId(planId);
+        BaseSearchBean.OrderByType orderByTypeEnum = orderByType != null ? BaseSearchBean.OrderByType.valueOf(orderByType) : BaseSearchBean.OrderByType.DESC;
+        BaseSearchBean.FieldName fieldName = orderByFieldName != null ? BaseSearchBean.FieldName.valueOf(orderByFieldName) : BaseSearchBean.FieldName.id;
+
+		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean =
+				AssignedLocationAndPlanSearchBean.builder().pageNumber(pageNumber).pageSize(pageSize).
+						orderByType(orderByTypeEnum).orderByFieldName(fieldName).planId(planId).build();
 		return organizationRepository.findAssignedLocationsByPlanId(assignedLocationAndPlanSearchBean);
 
 	}

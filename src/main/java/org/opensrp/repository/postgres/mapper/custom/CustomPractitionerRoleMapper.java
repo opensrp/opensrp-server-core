@@ -12,6 +12,4 @@ public interface CustomPractitionerRoleMapper extends PractitionerRoleMapper {
     List<PractitionerRole> selectMany(@Param("example") PractitionerRoleExample practitionerRoleExample,
                                       @Param("offset") int offset, @Param("limit") int limit);
 
-    List<PractitionerRole> selectManyBySearchBean(@Param("searchBean") PractitionerRoleSearchBean searchBean, @Param("example") PractitionerRoleExample example, @Param("offset") int offset,
-            @Param("limit") int limit);
 }

@@ -1,12 +1,14 @@
 package org.opensrp.search;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class BaseSearchBean {
 
 	public enum OrderByType {
@@ -25,11 +27,4 @@ public class BaseSearchBean {
 
 	private BaseSearchBean.FieldName orderByFieldName;
 
-	public BaseSearchBean(Integer pageNumber, Integer pageSize, OrderByType orderByType,
-			FieldName orderByFieldName) {
-		this.pageNumber = pageNumber != null ? pageNumber : 0;
-		this.pageSize = pageSize != null ? pageSize : 0;
-		this.orderByType = orderByType != null ? orderByType : BaseSearchBean.OrderByType.DESC;
-		this.orderByFieldName = orderByFieldName != null ? orderByFieldName : BaseSearchBean.FieldName.id;
-	}
 }

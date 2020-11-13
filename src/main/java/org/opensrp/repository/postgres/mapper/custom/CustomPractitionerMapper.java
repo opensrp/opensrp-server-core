@@ -15,7 +15,4 @@ public interface CustomPractitionerMapper extends PractitionerMapper {
     List<Practitioner> selectManyByOrgId(@Param("example") PractitionerExample practitionerExample,
                                          @Param("orgId") long orgId, @Param("offset") int offset, @Param("limit") int limit);
 
-    List<Practitioner> selectManyBySearchBean(@Param("searchBean") PractitionerSearchBean searchBean, @Param("example") PractitionerExample practitionerExample,
-            @Param("offset") int offset, @Param("limit") int limit);
-
 }

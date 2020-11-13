@@ -1,15 +1,14 @@
 package org.opensrp.search;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.Builder;
+import lombok.Data;
+import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class AssignedLocationAndPlanSearchBean extends BaseSearchBean{
 
 	private String planIdentifier;
@@ -22,15 +21,4 @@ public class AssignedLocationAndPlanSearchBean extends BaseSearchBean{
 
 	private boolean returnFutureAssignments;
 
-	@Builder
-	public AssignedLocationAndPlanSearchBean(Integer pageNumber, Integer pageSize, OrderByType orderByType,
-			FieldName orderByFieldName, String planIdentifier, String organizationIdentifier,
-			Long planId, Long organizationId, boolean returnFutureAssignments) {
-		super(pageNumber, pageSize, orderByType, orderByFieldName);
-		this.planIdentifier = planIdentifier;
-		this.organizationIdentifier = organizationIdentifier;
-		this.planId = planId;
-		this.organizationId = organizationId;
-		this.returnFutureAssignments = returnFutureAssignments;
-	}
 }

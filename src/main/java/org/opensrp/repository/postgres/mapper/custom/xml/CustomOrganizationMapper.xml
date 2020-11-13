@@ -141,22 +141,4 @@
 	
 	</select>
 
-    <select id="selectManyBySearchBean"
-            resultMap="org.opensrp.repository.postgres.mapper.OrganizationMapper.BaseResultMap">
-        select
-        <if test="example.distinct">
-            distinct
-        </if>
-        <include
-                refid="org.opensrp.repository.postgres.mapper.OrganizationMapper.Base_Column_List" />
-        from team.organization o
-        <if test="_parameter != null">
-            <include refid="Example_Where_Clause" />
-        </if>
-        <if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
-            order by o.${searchBean.orderByFieldName} ${searchBean.orderByType}
-        </if>
-        LIMIT #{limit} OFFSET #{offset}
-    </select>
-
 </mapper>
