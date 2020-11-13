@@ -4,7 +4,6 @@ import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Practitioner;
 import org.opensrp.domain.postgres.PractitionerExample;
 import org.opensrp.repository.postgres.mapper.PractitionerMapper;
-import org.opensrp.search.PractitionerSearchBean;
 
 import java.util.List;
 
