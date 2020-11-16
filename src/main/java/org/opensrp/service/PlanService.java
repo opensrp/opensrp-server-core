@@ -99,7 +99,6 @@ public class PlanService {
 	}
 	
 	@PreAuthorize("hasPermission(#operationalAreaIds,'Jurisdiction', 'PLAN_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'PLAN_VIEW')")
 	public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion,
 	        List<String> operationalAreaIds,boolean experimental) {
 		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds, experimental);
@@ -129,7 +128,6 @@ public class PlanService {
 	 * @return the plans matching the above
 	 */
 	@PreAuthorize("hasPermission(#organizationIds,'Organization', 'PLAN_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'PLAN_VIEW')")
 	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion, boolean experimental) {
 		
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
@@ -168,7 +166,6 @@ public class PlanService {
 	 * @return the plans a user has access to
 	 */
 	@PreAuthorize("hasPermission(#username,'User', 'PLAN_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'PLAN_VIEW')")
 	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion, boolean experimental) {
 		
 		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
