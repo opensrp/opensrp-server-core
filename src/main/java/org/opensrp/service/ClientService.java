@@ -116,7 +116,7 @@ public class ClientService {
 		return allClients.findByDynamicQuery(query);
 	}
 
-	@PreAuthorize("hasRole('CLIENT_CREATE') and hasPermission(#client,'CLIENT', 'CLIENT_CREATE')")
+	@PreAuthorize("hasPermission(#client,'CLIENT', 'CLIENT_CREATE')")
 	public Client addClient(Client client) {
 		if (client.getBaseEntityId() == null) {
 			throw new RuntimeException("No baseEntityId");
@@ -182,7 +182,7 @@ public class ClientService {
 		return c;
 	}
 
-	@PreAuthorize("hasRole('CLIENT_UPDATE') and hasPermission(#updatedClient,'Client', 'CLIENT_UPDATE')")
+	@PreAuthorize("hasPermission(#updatedClient,'Client', 'CLIENT_UPDATE')")
 	public void updateClient(Client updatedClient) throws JSONException {
 		// If update is on original entity
 		if (updatedClient.isNew()) {
@@ -198,7 +198,7 @@ public class ClientService {
 		allClients.update(updatedClient);
 	}
 
-	@PreAuthorize("hasRole('CLIENT_UPDATE') and hasPermission(#updatedClient,'Client', 'CLIENT_UPDATE')")
+	@PreAuthorize("hasPermission(#updatedClient,'Client', 'CLIENT_UPDATE')")
 	public Client mergeClient(Client updatedClient) {
 		try {
 			Client original = findClient(updatedClient);
@@ -281,7 +281,7 @@ public class ClientService {
 		return client;
 	}
 
-	@PreAuthorize("(hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE'))) and ((hasPermission(#client,'Client','CLIENT_UPDATE')) or (hasPermission(#client,'Client','CLIENT_CREATE')))")
+	@PreAuthorize("hasPermission(#client,'Client','CLIENT_CREATE') and hasPermission(#client,'Client','CLIENT_UPDATE')")
 	public Client addorUpdate(Client client, boolean resetServerVersion) {
 		if (client.getBaseEntityId() == null) {
 			throw new RuntimeException("No baseEntityId");
