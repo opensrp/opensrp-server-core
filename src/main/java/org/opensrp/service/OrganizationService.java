@@ -99,8 +99,7 @@ public class OrganizationService {
 	 * 
 	 * @param organization to add on update
 	 */
-	@PreAuthorize("(hasRole('ORGANIZATION_CREATE') or hasRole('ORGANIZATION_UPDATE')) and"
-			+ "(hasPermission(#organization,'Organization', 'ORGANIZATION_CREATE') or hasPermission(#organization,'Organization', 'ORGANIZATION_UPDATE'))")
+	@PreAuthorize("hasPermission(#organization,'Organization', 'ORGANIZATION_CREATE') or hasPermission(#organization,'Organization', 'ORGANIZATION_UPDATE')")
 	public void addOrUpdateOrganization(Organization organization) {
 		validateIdentifier(organization);
 		Organization entity = organizationRepository.get(organization.getIdentifier());
@@ -117,7 +116,7 @@ public class OrganizationService {
 	 * 
 	 * @param organization to add
 	 */
-	@PreAuthorize("hasRole('ORGANIZATION_CREATE') and hasPermission(#organization,'Organization', 'ORGANIZATION_CREATE')")
+	@PreAuthorize("hasPermission(#organization,'Organization', 'ORGANIZATION_CREATE')")
 	public void addOrganization(Organization organization) {
 		validateIdentifier(organization);
 		organizationRepository.add(organization);
@@ -129,7 +128,7 @@ public class OrganizationService {
 	 * 
 	 * @param organization to update
 	 */
-	@PreAuthorize("hasRole('ORGANIZATION_UPDATE') and hasPermission(#organization,'Organization', 'ORGANIZATION_UPDATE')")
+	@PreAuthorize("hasPermission(#organization,'Organization', 'ORGANIZATION_UPDATE')")
 	public void updateOrganization(Organization organization) {
 		validateIdentifier(organization);
 		organizationRepository.update(organization);
