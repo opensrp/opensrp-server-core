@@ -103,7 +103,7 @@ public class EventService {
 	}
 
 	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostAuthorize("hasPermission(returnObject,'Event', 'EVENT_VIEW')")
+	@preAuthorize("hasPermission(#event,'Event', 'EVENT_VIEW')")
 	public Event find(Event event) {
 		for (String idt : event.getIdentifiers().keySet()) {
 			try {
@@ -162,7 +162,7 @@ public class EventService {
 		return event;
 	}
 
-	@PreAuthorize("hasRole('EVENT_CREATE') and hasPermission(#event,'Event', 'EVENT_CREATE')")
+	@PreAuthorize("hasPermission(#event,'Event', 'EVENT_CREATE')")
 	public synchronized Event addEvent(Event event) {
 		Event e = find(event);
 		if (e != null) {
@@ -272,8 +272,7 @@ public class EventService {
 		return event;
 	}
 
-	@PreAuthorize("(hasRole('EVENT_CREATE') or hasRole('EVENT_UPDATE')) and "
-			+ "(hasPermission(#event,'Event', 'EVENT_CREATE') or hasPermission(#event,'Event', 'EVENT_UPDATE'))")
+	@PreAuthorize("hasPermission(#event,'Event', 'EVENT_CREATE') and hasPermission(#event,'Event', 'EVENT_UPDATE')")
 	public synchronized Event addorUpdateEvent(Event event) {
 		Event existingEvent = findByIdOrFormSubmissionId(event.getId(),event.getFormSubmissionId());
 		if (existingEvent != null) {
@@ -293,7 +292,7 @@ public class EventService {
 		return event;
 	}
 
-	@PreAuthorize("hasRole('EVENT_UPDATE') and hasPermission(#updatedEvent,'Event', 'EVENT_UPDATE')")
+	@PreAuthorize("hasPermission(#updatedEvent,'Event', 'EVENT_UPDATE')")
 	public void updateEvent(Event updatedEvent) {
 		// If update is on original entity
 		if (updatedEvent.isNew()) {
@@ -307,7 +306,7 @@ public class EventService {
 	}
 	
 	//TODO Review and add test cases as well
-	@PreAuthorize("hasRole('EVENT_UPDATE') and hasPermission(#updatedEvent,'Event', 'EVENT_UPDATE')")
+	@PreAuthorize("hasPermission(#updatedEvent,'Event', 'EVENT_UPDATE')")
 	public Event mergeEvent(Event updatedEvent) {
 		try {
 			Event original = find(updatedEvent);
