@@ -9,12 +9,16 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
+import org.opensrp.domain.Practitioner;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * @author Samuel Githengi created on 09/09/19
@@ -27,6 +31,14 @@ public class OrganizationService {
 	private LocationRepository locationRepository;
 
 	private PlanRepository planRepository;
+
+	@Autowired
+	private PractitionerService practitionerService;
+
+	@Resource(name = "redisTemplate")
+	private HashOperations<String, String, List<AssignedLocations>> hashOps;
+
+	private static final String ASSIGNED_LOCATIONS_HASH_KEY = "_assignedLocations";
 
 	@Autowired
 	public OrganizationService(OrganizationRepository organizationRepository, LocationRepository locationRepository,
@@ -139,7 +151,7 @@ public class OrganizationService {
 		Organization organization = getOrganization(identifier);
 		if (organization == null)
 			throw new IllegalArgumentException("Organization not found");
-		
+		revokeFromCache(identifier);
 		organizationRepository.assignLocationAndPlan(organization.getId(), jurisdictionId,
 				locationRepository.retrievePrimaryKey(jurisdictionId, true, 0), planId,
 				planRepository.retrievePrimaryKey(planId), fromDate == null ? new Date() : fromDate, toDate);
@@ -230,6 +242,17 @@ public class OrganizationService {
 
 	public Integer findOrganizationCount(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findOrganizationCount(organizationSearchBean);
+	}
+
+	public void setPractitionerService(PractitionerService practitionerService) {
+		this.practitionerService = practitionerService;
+	}
+
+	private void revokeFromCache(String organizationIdentifier) {
+		List<Practitioner> practitioners = practitionerService.getPractitionersByOrgIdentifier(organizationIdentifier);
+		for (Practitioner practitioner : practitioners) {
+			hashOps.delete(practitioner.getUsername(), ASSIGNED_LOCATIONS_HASH_KEY);
+		}
 	}
 
 }

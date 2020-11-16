@@ -6,14 +6,8 @@ import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
 import static org.smartregister.domain.LocationProperty.PropertyStatus.ACTIVE;
 import static org.smartregister.domain.LocationProperty.PropertyStatus.PENDING_REVIEW;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,11 +26,14 @@ import org.slf4j.LoggerFactory;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+
+import javax.annotation.Resource;
 
 @Service
 public class PhysicalLocationService {
@@ -53,11 +50,27 @@ public class PhysicalLocationService {
 	@Autowired
 	private PractitionerService practitionerService;
 
+	@Resource(name = "redisTemplate")
+	private HashOperations<String, String, List<AssignedLocations>> hashOps;
+
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
+
+	private static final String ASSIGNED_LOCATIONS_HASH_KEY = "_assignedLocations";
+
 	@Autowired
 	public void setLocationRepository(LocationRepository locationRepository) {
 		this.locationRepository = locationRepository;
 	}
-	
+
+	public void setOrganizationService(OrganizationService organizationService) {
+		this.organizationService = organizationService;
+	}
+
+	public void setPractitionerService(PractitionerService practitionerService) {
+		this.practitionerService = practitionerService;
+	}
+
 	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
 		return locationRepository.get(id, returnGeometry);
 	}
@@ -460,13 +473,19 @@ public class PhysicalLocationService {
 		return locationRepository.countLocationsByNames(locationNames, serverVersion);
 	};
 
-	@Cacheable(value= "locationCache", key= "#username")
 	public List<AssignedLocations> getAssignedLocations(String username) {
-		List<Long> organizationIds = practitionerService.getOrganizationsByUserId(username).right;
-		if (isEmptyOrNull(organizationIds)) {
-			return new ArrayList<>();
+		List<AssignedLocations> assignedLocations = new ArrayList<>();
+		if (hashOps.hasKey(username, ASSIGNED_LOCATIONS_HASH_KEY)) {
+			return hashOps.get(username, ASSIGNED_LOCATIONS_HASH_KEY);
+		} else {
+			List<Long> organizationIds = practitionerService.getOrganizationsByUserId(username).right;
+			if (isEmptyOrNull(organizationIds)) {
+				return new ArrayList<>();
+			}
+			assignedLocations = organizationService.findAssignedLocationsAndPlans(organizationIds);
+            persistInRedisCache(assignedLocations, username);
+			return assignedLocations;
 		}
-		return organizationService.findAssignedLocationsAndPlans(organizationIds);
 	}
 
 	private boolean isEmptyOrNull(Collection<? extends Object> collection) {
@@ -507,4 +526,28 @@ public class PhysicalLocationService {
 		return locationTree;
 	}
 
+	private void persistInRedisCache(List<AssignedLocations> assignedLocations, String username) {
+		List<Date> toDates = new ArrayList<>();
+		Boolean toDateExists = false;
+		for (AssignedLocations assignedLocation : assignedLocations) {
+			if (assignedLocation.getToDate() != null) {
+				toDates.add(assignedLocation.getToDate());
+				toDateExists = true;
+			}
+		}
+
+		if (toDateExists) {
+			long expiryTime = Math.abs(findMinimumDate(toDates).getTime() - new Date().getTime());
+			expiryTime = expiryTime / 1000 ;
+			hashOps.put(username, ASSIGNED_LOCATIONS_HASH_KEY, assignedLocations);
+			redisTemplate.expire(username, expiryTime , TimeUnit.SECONDS);
+		}
+	}
+
+	private Date findMinimumDate(List<Date> dates) {
+		if(!isEmptyOrNull(dates)) {
+			return Collections.min(dates);
+		}
+		return null;
+	}
 }

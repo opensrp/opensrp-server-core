@@ -10,11 +10,13 @@ import org.junit.runner.RunWith;
 import org.opensrp.domain.ErrorTrace;
 import org.opensrp.repository.ErrorTraceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
+@ActiveProfiles(profiles = { "jedis"})
 public class AllErrorTraceIntegrationTest {
 	
 	@Autowired
