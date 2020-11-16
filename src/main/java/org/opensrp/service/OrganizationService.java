@@ -144,7 +144,7 @@ public class OrganizationService {
 	 * @param fromDate
 	 * @param toDate
 	 */
-	@PreAuthorize("hasRole('ORGANIZATION_UPDATE')")
+	@PreAuthorize("hasPermission(#identifier,'OrganizationLocation','ORGANIZATION_ASSIGN_LOCATION')")
 	public void assignLocationAndPlan(String identifier, String jurisdictionId, String planId, Date fromDate, Date toDate) {
 		validateIdentifier(identifier);
 		if (StringUtils.isBlank(identifier))
@@ -167,7 +167,8 @@ public class OrganizationService {
 	 * @param identifier the organization identifier
 	 * @return the assigned locations and plans
 	 */
-	@PreAuthorize("hasRole('ORANIZATION_VIEW_LOCATIONS')")  //TODO : CONFIRM? As per the doc
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW_LOCATIONS')")
+	@PostFilter("hasPermission(filterObject, 'OrganizationLocation','ORGANIZATION_VIEW_LOCATIONS')")
 	public List<AssignedLocations> findAssignedLocationsAndPlans(String identifier) {
 		validateIdentifier(identifier);
 		Organization organization = getOrganization(identifier);
@@ -183,7 +184,8 @@ public class OrganizationService {
 	 * @param organizationIds the organization ids
 	 * @return the assigned locations and plans
 	 */
-	@PreAuthorize("hasRole('ORANIZATION_VIEW_LOCATIONS')") //TODO : CONFIRM? As per the doc
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW_LOCATIONS')")
+	@PostFilter("hasPermission(filterObject, 'OrganizationLocation','ORGANIZATION_VIEW_LOCATIONS')")
 	public List<AssignedLocations> findAssignedLocationsAndPlans(List<Long> organizationIds) {
 		return organizationRepository.findAssignedLocations(organizationIds);
 
@@ -195,7 +197,8 @@ public class OrganizationService {
 	 * @param planIdentifier the plan identifier
 	 * @return the assigned locations and plans
 	 */
-	@PreAuthorize("hasRole('ORANIZATION_VIEW_LOCATIONS')") //TODO : CONFIRM? As per the doc
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW_LOCATIONS')") 
+	@PostFilter("hasPermission(filterObject, 'OrganizationLocation','ORGANIZATION_VIEW_LOCATIONS')")
 	public List<AssignedLocations> findAssignedLocationsAndPlansByPlanIdentifier(String planIdentifier) {
 		if (StringUtils.isBlank(planIdentifier))
 			throw new IllegalArgumentException("PlanIdentifier Identifier not specified");
@@ -243,7 +246,7 @@ public class OrganizationService {
 	}
 
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'ORGANIZATION_VIEW')")
+	@PostFilter("hasPermission(filterObject,'Organization', 'ORGANIZATION_VIEW')")
 	public List<Organization> getSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findSearchOrganizations(organizationSearchBean);
 	}
