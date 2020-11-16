@@ -68,7 +68,7 @@ public class OrganizationService {
 	 * @return organization with matching identifier
 	 */
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
-	@PostAuthorize("hasPermission(returnObject,'Organization', 'ORGANIZATION_VIEW')")
+	@PostAuthorize("hasPermission(returnObject, 'ORGANIZATION_VIEW')")
 	public Organization getOrganization(String identifier) {
 		return organizationRepository.get(identifier);
 	}
@@ -80,7 +80,7 @@ public class OrganizationService {
 	 * @return organization with matching identifier
 	 */
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
-	@PostAuthorize("hasPermission(returnObject,'Organization', 'ORGANIZATION_VIEW')")
+	@PostAuthorize("hasPermission(returnObject, ORGANIZATION_VIEW')")
 	public Organization getOrganization(Long id) {
 		return organizationRepository.getByPrimaryKey(id);
 	}
@@ -99,7 +99,7 @@ public class OrganizationService {
 	 * 
 	 * @param organization to add on update
 	 */
-	@PreAuthorize("hasPermission(#organization,'Organization', 'ORGANIZATION_CREATE') or hasPermission(#organization,'Organization', 'ORGANIZATION_UPDATE')")
+	@PreAuthorize("hasPermission(#organization,'Organization', 'ORGANIZATION_CREATE') and hasPermission(#organization,'Organization', 'ORGANIZATION_UPDATE')")
 	public void addOrUpdateOrganization(Organization organization) {
 		validateIdentifier(organization);
 		Organization entity = organizationRepository.get(organization.getIdentifier());
@@ -168,7 +168,7 @@ public class OrganizationService {
 	 * @return the assigned locations and plans
 	 */
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW_LOCATIONS')")
-	@PostFilter("hasPermission(filterObject, 'OrganizationLocation','ORGANIZATION_VIEW_LOCATIONS')")
+	@PostFilter("hasPermission(filterObject ,'ORGANIZATION_VIEW_LOCATIONS')")
 	public List<AssignedLocations> findAssignedLocationsAndPlans(String identifier) {
 		validateIdentifier(identifier);
 		Organization organization = getOrganization(identifier);
@@ -185,7 +185,7 @@ public class OrganizationService {
 	 * @return the assigned locations and plans
 	 */
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW_LOCATIONS')")
-	@PostFilter("hasPermission(filterObject, 'OrganizationLocation','ORGANIZATION_VIEW_LOCATIONS')")
+	@PostFilter("hasPermission(filterObject,'ORGANIZATION_VIEW_LOCATIONS')")
 	public List<AssignedLocations> findAssignedLocationsAndPlans(List<Long> organizationIds) {
 		return organizationRepository.findAssignedLocations(organizationIds);
 
@@ -198,7 +198,7 @@ public class OrganizationService {
 	 * @return the assigned locations and plans
 	 */
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW_LOCATIONS')") 
-	@PostFilter("hasPermission(filterObject, 'OrganizationLocation','ORGANIZATION_VIEW_LOCATIONS')")
+	@PostFilter("hasPermission(filterObject,'ORGANIZATION_VIEW_LOCATIONS')")
 	public List<AssignedLocations> findAssignedLocationsAndPlansByPlanIdentifier(String planIdentifier) {
 		if (StringUtils.isBlank(planIdentifier))
 			throw new IllegalArgumentException("PlanIdentifier Identifier not specified");
@@ -246,7 +246,7 @@ public class OrganizationService {
 	}
 
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
-	@PostFilter("hasPermission(filterObject,'Organization', 'ORGANIZATION_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'ORGANIZATION_VIEW')")
 	public List<Organization> getSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findSearchOrganizations(organizationSearchBean);
 	}

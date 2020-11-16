@@ -37,6 +37,7 @@ public class TaskService {
 		return taskRepository.getAll();
 	}
 
+	@PreAuthorize("hasPermission(#task,'Task', 'TASK_CREATE') and hasPermission(#task,'Task', 'TASK_UPDATE')")
 	public void addOrUpdateTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
@@ -50,7 +51,7 @@ public class TaskService {
 		}
 	}
 
-	@PreAuthorize("hasRole('TASK_CREATE') and hasPermission(#task,'Task', 'TASK_CREATE')")
+	@PreAuthorize("hasPermission(#task,'Task', 'TASK_CREATE')")
 	public Task addTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
@@ -62,7 +63,7 @@ public class TaskService {
 
 	}
 
-	@PreAuthorize("hasRole('TASK_UPDATE') and hasPermission(#task,'Task', 'TASK_UPDATE')")
+	@PreAuthorize("hasPermission(#task,'Task', 'TASK_UPDATE')")
 	public Task updateTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
@@ -73,7 +74,7 @@ public class TaskService {
 	}
 
 	@PreAuthorize("hasRole('TASK_VIEW')")
-	@PostAuthorize("hasPermission(returnObject,'Task', 'TASK_VIEW')")
+	@PostAuthorize("hasPermission(returnObject, 'TASK_VIEW')")
 	public Task getTask(String identifier) {
 		if (StringUtils.isBlank(identifier))
 			return null;
@@ -86,7 +87,7 @@ public class TaskService {
 		return taskRepository.getTasksByPlanAndGroup(task, group, serverVersion);
 	}
 
-	@PreAuthorize("hasRole('TASK_CREATE') or hasRole('TASK_UPDATE')")
+	@PreAuthorize("hasPermission(#tasks,'Task','TASK_CREATE') and hasPermission(#tasks,'Task','TASK_UPDATE')")
 	public Set<String> saveTasks(List<Task> tasks) {
 		Set<String> tasksWithErrors = new HashSet<>();
 		for (Task task : tasks) {
@@ -130,7 +131,7 @@ public class TaskService {
 		return null;
 	}
 
-	@PreAuthorize("hasRole('TASK_UPDATE')")
+	@PreAuthorize("hasPermission(#taskUpdates,'TaskUpdate','TASK_UPDATE')")
 	public List<String> updateTaskStatus(List<TaskUpdate> taskUpdates) {
 		List<String> updatedTaskIds = new ArrayList<>();
 		for (TaskUpdate taskUpdate : taskUpdates) {

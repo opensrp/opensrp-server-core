@@ -32,7 +32,7 @@ public class PractitionerRoleService {
 	}
 
 	@PreAuthorize("hasRole('PRACTITIONER_ROLE_VIEW')")
-	@PostAuthorize("hasPermission(returnObject,'PractitionerRole', 'PRACTITIONER_ROLE_VIEW')")
+	@PostAuthorize("hasPermission(returnObject, 'PRACTITIONER_ROLE_VIEW')")
 	public PractitionerRole getPractitionerRole(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : practitionerRoleRepository.get(identifier);
 	}
@@ -59,7 +59,7 @@ public class PractitionerRoleService {
 		return practitionerRole;
 	}
 
-	@PreAuthorize("hasRole('PRACTITIONER_ROLE_DELETE') and hasPermission(#practitionerRole,'PractitionerRole', 'PRACTITIONER_ROLE_DELETE')")
+	@PreAuthorize("hasPermission(#practitionerRole,'PractitionerRole', 'PRACTITIONER_ROLE_DELETE')")
 	public void deletePractitionerRole(PractitionerRole practitionerRole) {
 		if (StringUtils.isBlank(practitionerRole.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -68,7 +68,7 @@ public class PractitionerRoleService {
 		practitionerRoleRepository.safeRemove(practitionerRole);
 	}
 
-	@PreAuthorize("hasRole('PRACTITIONER_ROLE_DELETE')")
+	@PreAuthorize("hasPermission(#identifier,'PractitionerRole', 'PRACTITIONER_ROLE_DELETE')")
 	public void deletePractitionerRole(String identifier) {
 		if (StringUtils.isBlank(identifier)) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -77,7 +77,7 @@ public class PractitionerRoleService {
 		practitionerRoleRepository.safeRemove(identifier);
 	}
 
-	@PreAuthorize("hasRole('PRACTITIONER_ROLE_DELETE')")
+	@PreAuthorize("hasPermission(#practitionerIdentifier,'PractitionerRole', 'PRACTITIONER_ROLE_DELETE')")
 	public void deletePractitionerRole(String organizationIdentifier, String practitionerIdentifier) {
 		if (StringUtils.isBlank(organizationIdentifier) || StringUtils.isBlank(practitionerIdentifier)) {
 			throw new IllegalArgumentException("Organization Identifier or Practitioner Identifier not specified");
@@ -104,6 +104,8 @@ public class PractitionerRoleService {
 		return practitionerRoleRepository.getRolesForPractitioner(practitionerIdentifier);
 	}
 	
+	@PreAuthorize("hasRole('PRACTITIONER_ROLE_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'PRACTITIONER_ROLE_VIEW')")
 	public List<org.opensrp.domain.postgres.PractitionerRole> getPgRolesForPractitioner(String practitionerIdentifier) {
 		if (StringUtils.isBlank(practitionerIdentifier)) {
 			throw new IllegalArgumentException("Identifier not specified");
