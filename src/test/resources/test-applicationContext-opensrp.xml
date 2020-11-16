@@ -12,6 +12,8 @@
 
 
 	<import resource="test-persistence-postgres.xml"/>
+	
+	<bean class="org.opensrp.config.RedisConfig"/>
 
 	<context:annotation-config />
 
