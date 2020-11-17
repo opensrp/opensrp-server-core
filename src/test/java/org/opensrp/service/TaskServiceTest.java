@@ -116,8 +116,8 @@ public class TaskServiceTest {
 		assertEquals("Spray House", task.getDescription());
 		assertEquals("IRS Visit", task.getFocus());
 		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", task.getForEntity());
-		assertEquals("2018-11-10T2200", task.getExecutionStartDate().toString(dateFormat));
-		assertNull(task.getExecutionEndDate());
+		assertEquals("2018-11-10T2200", task.getExecutionPeriod().getStart().toString(dateFormat));
+		assertNull(task.getExecutionPeriod().getEnd());
 		assertEquals("2018-10-31T0700", task.getAuthoredOn().toString(dateFormat));
 		assertEquals("2018-10-31T0700", task.getLastModified().toString(dateFormat));
 		assertEquals("demouser", task.getOwner());
@@ -183,8 +183,8 @@ public class TaskServiceTest {
 		assertEquals("Spray House", task.getDescription());
 		assertEquals("IRS Visit", task.getFocus());
 		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", task.getForEntity());
-		assertEquals("2018-11-10T2200", task.getExecutionStartDate().toString(dateFormat));
-		assertNull(task.getExecutionEndDate());
+		assertEquals("2018-11-10T2200", task.getExecutionPeriod().getStart().toString(dateFormat));
+		assertNull(task.getExecutionPeriod().getEnd());
 		assertEquals("2018-10-31T0700", task.getAuthoredOn().toString(dateFormat));
 		assertEquals("demouser", task.getOwner());
 		assertEquals(1, task.getNotes().size());

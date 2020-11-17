@@ -15,6 +15,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
 import org.smartregister.domain.Task;
+import org.smartregister.domain.Task.TaskPriority;
 import org.smartregister.domain.Task.TaskStatus;
 import org.opensrp.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +46,8 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Spray House", task.getDescription());
 		assertEquals("IRS Visit", task.getFocus());
 		assertEquals("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc", task.getForEntity());
-		assertEquals("2018-11-10T2200", task.getExecutionStartDate().toString(dateFormat));
-		assertNull(task.getExecutionEndDate());
+		assertEquals("2018-11-10T2200", task.getExecutionPeriod().getStart().toString(dateFormat));
+		assertNull(task.getExecutionPeriod().getEnd());
 		assertEquals("2018-10-31T0700", task.getAuthoredOn().toString(dateFormat));
 		assertEquals("2018-11-12T1550", task.getLastModified().toString(dateFormat));
 		assertEquals("demouser", task.getOwner());
@@ -328,7 +329,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setDescription("Visit Mwangala household");
 		task.setBusinessStatus("Not Visited");
 		task.setStatus(TaskStatus.READY);
-		task.setPriority(3);
+		task.setPriority(TaskPriority.STAT);
 		task.setOwner("testUser");
 		task.setRequester("testUser");
 		taskRepository.add(task);
@@ -343,7 +344,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals(TaskStatus.READY, addedTask.getStatus());
 		assertEquals("testUser", addedTask.getOwner());
 		assertEquals("testUser", addedTask.getRequester());
-		assertEquals(3, addedTask.getPriority());
+		assertEquals(TaskPriority.STAT, addedTask.getPriority());
 	}
 
 	@Test
