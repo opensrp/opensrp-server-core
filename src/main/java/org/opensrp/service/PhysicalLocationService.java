@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
@@ -78,6 +80,7 @@ public class PhysicalLocationService {
 	}
 	
 	@Transactional
+	@CacheEvict(value={"locationTreeFromLocationIdentifiers","locationsWIthChildrenByLocationIds","locationTreeFromLocation"}, allEntries=true)
 	public void add(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -87,6 +90,7 @@ public class PhysicalLocationService {
 	}
 	
 	@Transactional
+	@CacheEvict(value={"locationTreeFromLocationIdentifiers","locationsWIthChildrenByLocationIds","locationTreeFromLocation"}, allEntries=true)
 	public void update(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -240,6 +244,7 @@ public class PhysicalLocationService {
 	 * @param pageSize number of records to be returned
 	 * @return location together with it's children whose id matches the provided param
 	 */
+	@Cacheable(value = "locationsWIthChildrenByLocationIds", key = "#locationIds")
 	public List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> locationIds,
 	        int pageSize) {
 		return locationRepository.findLocationByIdsWithChildren(returnGeometry, locationIds, pageSize);
@@ -343,6 +348,7 @@ public class PhysicalLocationService {
 	 * @param returnTags whether to return loction tags
 	 * @return the location hierarchy/tree of the identifiers
 	 */
+	@Cacheable(value = "locationTreeFromLocationIdentifiers", key = "#identifiers")
 	public LocationTree buildLocationHierachy(Set<String> identifiers, boolean returnStructureCount, boolean returnTags) {
 		LocationTree locationTree = new LocationTree();
 		Set<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers, returnTags);
@@ -501,6 +507,7 @@ public class PhysicalLocationService {
 	 * @param locationId id of the root location
 	 * @return full location hierarchy from passed location plus all of its descendants
 	 */
+	@Cacheable(value = "locationTreeFromLocation", key = "#locationId")
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnTags,
 	        boolean returnStructureCount) {
 		LocationTree locationTree = new LocationTree();
