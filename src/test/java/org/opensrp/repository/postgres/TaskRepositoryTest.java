@@ -41,7 +41,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("2018_IRS-3734", task.getGroupIdentifier());
 		assertEquals(TaskStatus.READY, task.getStatus());
 		assertEquals("Not Visited", task.getBusinessStatus());
-		assertEquals(3, task.getPriority());
+		assertEquals(TaskPriority.ROUTINE, task.getPriority());
 		assertEquals("IRS", task.getCode());
 		assertEquals("Spray House", task.getDescription());
 		assertEquals("IRS Visit", task.getFocus());
@@ -99,6 +99,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setBusinessStatus("Not Visited");
 		task.setStatus(TaskStatus.READY);
 		task.setOwner("worker12");
+		task.setPriority(TaskPriority.URGENT);
 		taskRepository.add(task);
 
 		assertEquals(3, taskRepository.getAll().size());
@@ -109,6 +110,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Not Visited", addedTask.getBusinessStatus());
 		assertEquals(TaskStatus.READY, addedTask.getStatus());
 		assertEquals("worker12", addedTask.getOwner());
+		assertEquals(TaskPriority.URGENT, addedTask.getPriority());
 
 	}
 
