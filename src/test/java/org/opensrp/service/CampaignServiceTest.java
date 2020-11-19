@@ -2,7 +2,7 @@ package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -16,10 +16,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensrp.domain.Campaign;
-import org.smartregister.domain.ExecutionPeriod;
-import org.smartregister.domain.Task.TaskStatus;
 import org.opensrp.repository.CampaignRepository;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.smartregister.domain.Period;
+import org.smartregister.domain.Task.TaskStatus;
 
 @RunWith(PowerMockRunner.class)
 public class CampaignServiceTest {
@@ -141,9 +141,9 @@ public class CampaignServiceTest {
 		campaign.setIdentifier("ITN_2018_S1");
 		campaign.setDescription("ITN for 2018 Season 1");
 		campaign.setStatus(TaskStatus.READY);
-		ExecutionPeriod executionPeriod = new ExecutionPeriod();
-		executionPeriod.setStart(new LocalDate("2018-01-01"));
-		executionPeriod.setStart(new LocalDate("2018-03-31"));
+		Period executionPeriod = new Period();
+		executionPeriod.setStart(new LocalDate("2018-01-01").toDateTimeAtStartOfDay());
+		executionPeriod.setEnd(new LocalDate("2018-03-31").toDateTimeAtStartOfDay());
 		campaign.setExecutionPeriod(executionPeriod);
 		campaign.setOwner("superAdmin23");
 		campaign.setServerVersion(1542115657234l);

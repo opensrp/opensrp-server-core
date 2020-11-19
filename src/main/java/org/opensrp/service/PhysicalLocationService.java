@@ -491,13 +491,27 @@ public class PhysicalLocationService {
 		if (newEntity == null || existingEntity == null) {
 			return false;
 		}
-		JsonElement newGeometryCoordsElement = JsonParser.parseString(newEntity.getGeometry().getCoordinates().toString());
-		JsonElement existingGeometryCoordsElement = JsonParser
-		        .parseString(existingEntity.getGeometry().getCoordinates().toString());
+		JsonElement newGeometryCoordsElement = JsonParser.parseString(geometryCoords(newEntity));
+		JsonElement existingGeometryCoordsElement = JsonParser.parseString(geometryCoords(existingEntity));
 		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
 	}
 
 	@Cacheable(value = "locationTreeFromLocation", key = "#locationId")
+
+	/**
+	 * Returns the geometry coordinates string.
+	 * @param physicalLocation {@link PhysicalLocation}
+	 * @return coordinates {@link String}
+	 */
+	private String geometryCoords(PhysicalLocation physicalLocation) {
+		String geometryCoordinates = "";
+		if (physicalLocation != null && physicalLocation.getGeometry() != null
+				&& physicalLocation.getGeometry().getCoordinates() != null) {
+			geometryCoordinates = physicalLocation.getGeometry().getCoordinates().toString();
+		}
+		return geometryCoordinates;
+	}
+
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnStructureCount) {
 		return buildLocationHierachyFromLocation(locationId, false, returnStructureCount);
 	}

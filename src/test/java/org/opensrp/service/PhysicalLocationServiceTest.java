@@ -14,6 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
+import static org.smartregister.domain.LocationProperty.PropertyStatus.ACTIVE;
+import static org.smartregister.domain.LocationProperty.PropertyStatus.PENDING_REVIEW;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -191,6 +193,7 @@ public class PhysicalLocationServiceTest {
 	public void testAddOrUpdateShouldUpdateLocation() {
 		PhysicalLocation physicalLocation = createLocation();
 		when(locationRepository.get("3734", true)).thenReturn(physicalLocation);
+		when(locationRepository.findLocationByIdentifierAndStatus("3734",Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()), true)).thenReturn(physicalLocation);
 		locationService.addOrUpdate(createLocation());
 		verify(locationRepository).update(argumentCaptor.capture());
 		
