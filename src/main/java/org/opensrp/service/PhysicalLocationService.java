@@ -32,6 +32,7 @@ import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
@@ -80,7 +81,9 @@ public class PhysicalLocationService {
 	}
 	
 	@Transactional
-	@CacheEvict(value={"locationTreeFromLocationIdentifiers","locationsWIthChildrenByLocationIds","locationTreeFromLocation"}, allEntries=true)
+	@Caching(evict = { @CacheEvict("locationTreeFromLocationIdentifiers"),
+			@CacheEvict(value = "locationsWIthChildrenByLocationIds"),
+			@CacheEvict("locationTreeFromLocation") })
 	public void add(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -90,7 +93,9 @@ public class PhysicalLocationService {
 	}
 	
 	@Transactional
-	@CacheEvict(value={"locationTreeFromLocationIdentifiers","locationsWIthChildrenByLocationIds","locationTreeFromLocation"}, allEntries=true)
+	@Caching(evict = { @CacheEvict("locationTreeFromLocationIdentifiers"),
+			@CacheEvict(value = "locationsWIthChildrenByLocationIds"),
+			@CacheEvict("locationTreeFromLocation") })
 	public void update(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -496,7 +501,6 @@ public class PhysicalLocationService {
 		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
 	}
 
-	@Cacheable(value = "locationTreeFromLocation", key = "#locationId")
 
 	/**
 	 * Returns the geometry coordinates string.
@@ -512,6 +516,7 @@ public class PhysicalLocationService {
 		return geometryCoordinates;
 	}
 
+	@Cacheable(value = "locationTreeFromLocation", key = "#locationId")
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnStructureCount) {
 		return buildLocationHierachyFromLocation(locationId, false, returnStructureCount);
 	}
