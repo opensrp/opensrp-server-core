@@ -170,8 +170,9 @@ public class EventService {
 		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
 		if (isPlanEvaluationEnabled && planIdentifier != null) {
 			PlanDefinition plan = planRepository.get(planIdentifier);
-			if (plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
-			        || plan.getEffectivePeriod().getEnd().isAfter(new DateTime().toLocalDate())))
+//			if (plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
+//			        || plan.getEffectivePeriod().getEnd().isAfter(new DateTime().toLocalDate())))
+			//TODO : Discuss with Sam
 				taskGenerator.processPlanEvaluation(plan, username, event);
 		}
 		return event;

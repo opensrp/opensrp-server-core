@@ -496,7 +496,8 @@ public class PhysicalLocationService {
 		        .parseString(existingEntity.getGeometry().getCoordinates().toString());
 		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
 	}
-	
+
+	@Cacheable(value = "locationTreeFromLocation", key = "#locationId")
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnStructureCount) {
 		return buildLocationHierachyFromLocation(locationId, false, returnStructureCount);
 	}
