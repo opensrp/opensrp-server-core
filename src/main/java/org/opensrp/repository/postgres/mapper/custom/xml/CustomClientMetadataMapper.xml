@@ -343,6 +343,12 @@
 		    			</foreach>
 		    			</trim>
 				</if>
+				<if test="clientBean.locations != null">
+					and cm.location_id IN
+					<foreach item="locationId" collection="clientBean.locations" open="(" separator="," close=")">
+						#{locationId}
+					</foreach>
+				</if>
 			</trim>
 		</where>
 		LIMIT #{limit} OFFSET #{offset}
