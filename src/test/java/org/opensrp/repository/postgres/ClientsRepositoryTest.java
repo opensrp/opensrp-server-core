@@ -313,6 +313,9 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		searchBean = new ClientSearchBean();
 		searchBean.setLastEditFrom(new DateTime("2018-03-13T12:57:05.652"));
 		searchBean.setLastEditTo(new DateTime());
+		List<String> locationIds = new ArrayList<>();
+		locationIds.add("123");
+		searchBean.setLocations(locationIds);
 		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
 		
 		addressSearchBean.setAddressType("usual_residence");
