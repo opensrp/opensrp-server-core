@@ -172,7 +172,9 @@ public class StockServiceTest extends BaseRepositoryTest {
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
 		stockService.addInventory(inventory, "John");
 		StockSearchBean stockSearchBean =  new StockSearchBean();
-		stockSearchBean.setLocationId("loc-1");
+		List<String> locations = new ArrayList<>();
+		locations.add("loc-1");
+		stockSearchBean.setLocations(locations);
 		stockSearchBean.setPageNumber(1);
 		List<Stock> stockList = stockService.getStocksByServicePointId(stockSearchBean);
 		Assert.assertEquals(1, stockList.size());

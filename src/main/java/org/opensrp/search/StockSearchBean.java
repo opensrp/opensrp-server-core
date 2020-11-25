@@ -1,5 +1,7 @@
 package org.opensrp.search;
 
+import java.util.List;
+
 public class StockSearchBean {
 
 	public enum OrderByType {
@@ -28,7 +30,7 @@ public class StockSearchBean {
 	
 	private Long serverVersion;
 
-	private String locationId;
+	private List<String> locations;
 
 	private Integer pageNumber = 0;
 
@@ -114,12 +116,12 @@ public class StockSearchBean {
 		this.serverVersion = serverVersion;
 	}
 
-	public String getLocationId() {
-		return locationId;
+	public List<String> getLocations() {
+		return locations;
 	}
 
-	public void setLocationId(String locationId) {
-		this.locationId = locationId;
+	public void setLocations(List<String> locations) {
+		this.locations = locations;
 	}
 
 	public Integer getPageNumber() {
