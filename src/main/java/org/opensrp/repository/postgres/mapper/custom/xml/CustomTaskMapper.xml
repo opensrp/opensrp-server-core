@@ -4,8 +4,13 @@
 	namespace="org.opensrp.repository.postgres.mapper.custom.CustomTaskMapper">
 
 	
-	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Task"
-		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Task">
+		<selectKey keyProperty="id,serverVersion"
+			keyColumn="id,server_version" order="BEFORE"
+			resultType="java.util.Map">
+			SELECT nextVal('core.task_id_seq') as id,
+			nextVal('core.task_server_version_seq') as server_version
+		</selectKey>
 		insert into core.task
 	    <trim prefix="(" suffix=")" suffixOverrides=",">
 	      <if test="id != null">
@@ -14,6 +19,7 @@
 	      <if test="json != null">
 	        json,
 	      </if>
+	      server_version
 	    </trim>
 	    <trim prefix="values (" suffix=")" suffixOverrides=",">
 	      <if test="id != null">
@@ -22,7 +28,18 @@
 	      <if test="json != null">
 	        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.TaskTypeHandler},
 	      </if>
+	       #{serverVersion,jdbcType=BIGINT}
 	    </trim>
 	</insert>
+	
+	<update id="updateByPrimaryKey" parameterType="org.opensrp.domain.postgres.Task">
+ 	<selectKey keyProperty="serverVersion" 	keyColumn="server_version" resultType="long" order="BEFORE">
+    	SELECT nextVal('core.task_server_version_seq')
+  	</selectKey>
+    update core.task
+    set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.TaskTypeHandler},
+      server_version = #{serverVersion,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
 		
 </mapper>
