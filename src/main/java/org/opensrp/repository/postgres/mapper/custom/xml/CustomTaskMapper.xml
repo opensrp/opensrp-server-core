@@ -5,11 +5,11 @@
 
 	
 	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Task">
-		<selectKey keyProperty="id,serverVersion"
-			keyColumn="id,server_version" order="BEFORE"
+		<selectKey keyProperty="id,serverVersion,json"
+			keyColumn="id,server_version,json" order="BEFORE"
 			resultType="java.util.Map">
-			SELECT nextVal('core.task_id_seq') as id,
-			nextVal('core.task_server_version_seq') as server_version
+			SELECT seq.*,jsonb_set(#{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.TaskTypeHandler},'{serverVersion}',to_jsonb(server_version),true) as json 
+			FROM ( SELECT nextVal('core.task_id_seq') as id, nextVal('core.task_server_version_seq') as server_version) seq
 		</selectKey>
 		insert into core.task
 	    <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -26,18 +26,19 @@
 	        #{id,jdbcType=BIGINT},
 	      </if>
 	      <if test="json != null">
-	        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.TaskTypeHandler},
+	      #{json,jdbcType=VARCHAR},
 	      </if>
 	       #{serverVersion,jdbcType=BIGINT}
 	    </trim>
 	</insert>
 	
-	<update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Task">
- 	<selectKey keyProperty="serverVersion" 	keyColumn="server_version" resultType="long" order="BEFORE">
-    	SELECT nextVal('core.task_server_version_seq')
+	<update id="updateByPrimaryKey" parameterType="org.opensrp.domain.postgres.Task">
+ 	<selectKey keyProperty="serverVersion,json" 	keyColumn="server_version,json" resultType="java.util.Map" order="BEFORE">
+ 	SELECT seq.*,jsonb_set(#{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.TaskTypeHandler},'{serverVersion}',to_jsonb(server_version),true) as json
+ 	FROM (SELECT nextVal('core.task_server_version_seq') as server_version) seq
   	</selectKey>
     update core.task
-    set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.TaskTypeHandler},
+    set json = #{json,jdbcType=VARCHAR},
       server_version = #{serverVersion,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
