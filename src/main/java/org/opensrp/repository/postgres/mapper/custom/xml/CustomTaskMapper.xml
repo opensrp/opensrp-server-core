@@ -32,7 +32,7 @@
 	    </trim>
 	</insert>
 	
-	<update id="updateByPrimaryKey" parameterType="org.opensrp.domain.postgres.Task">
+	<update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Task">
  	<selectKey keyProperty="serverVersion" 	keyColumn="server_version" resultType="long" order="BEFORE">
     	SELECT nextVal('core.task_server_version_seq')
   	</selectKey>

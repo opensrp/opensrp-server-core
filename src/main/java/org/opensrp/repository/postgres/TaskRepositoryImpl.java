@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.postgres.TaskMetadata;
 import org.opensrp.domain.postgres.TaskMetadataExample;
@@ -67,7 +68,13 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		
 		int rowsAffected = taskMapper.insertSelectiveAndSetId(pgTask);
 		if (rowsAffected < 1 || pgTask.getId() == null) {
-			return;
+			throw new IllegalStateException();
+		}
+		
+		((Task) pgTask.getJson()).setServerVersion(pgTask.getServerVersion());
+		rowsAffected = taskMapper.updateByPrimaryKey(pgTask);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
 		}
 		
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
@@ -94,9 +101,15 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		}
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
 		
-		int rowsAffected = taskMapper.updateByPrimaryKey(pgTask);
+		int rowsAffected = taskMapper.updateByPrimaryKeyAndGenerateServerVersion(pgTask);
 		if (rowsAffected < 1) {
-			return;
+			throw new IllegalStateException();
+		}
+		
+		((Task) pgTask.getJson()).setServerVersion(pgTask.getServerVersion());
+		rowsAffected = taskMapper.updateByPrimaryKey(pgTask);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
 		}
 		
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
@@ -207,7 +220,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0, limit);
 		return convert(tasks);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
