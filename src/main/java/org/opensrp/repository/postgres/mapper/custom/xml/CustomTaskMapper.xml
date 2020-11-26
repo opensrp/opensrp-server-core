@@ -30,7 +30,7 @@
 	<update id="updateByPrimaryKeyAndGenerateServerVersion"
 		parameterType="org.opensrp.domain.postgres.Task">
 		update core.task
-		set json = #{json,jdbcType=VARCHAR},
+		set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.TaskTypeHandler},
 		server_version = nextVal('core.task_server_version_seq')
 		where id = #{id,jdbcType=BIGINT}
 	</update>
