@@ -70,6 +70,14 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 			throw new IllegalStateException();
 		}
 		
+		long serverVersion = taskMapper.selectServerVersionByPrimaryKey(pgTask.getId());
+		entity.setServerVersion(serverVersion);
+		
+		rowsAffected = taskMapper.updateByPrimaryKeySelective(pgTask);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+		
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
 		
 		taskMetadataMapper.insertSelective(taskMetadata);
@@ -94,7 +102,15 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		}
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
 		
-		int rowsAffected = taskMapper.updateByPrimaryKey(pgTask);
+		int rowsAffected = taskMapper.updateByPrimaryKeyAndGenerateServerVersion(pgTask);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+		
+		long serverVersion = taskMapper.selectServerVersionByPrimaryKey(pgTask.getId());
+		entity.setServerVersion(serverVersion);
+		
+		rowsAffected = taskMapper.updateByPrimaryKeySelective(pgTask);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
 		}

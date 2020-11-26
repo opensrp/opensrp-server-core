@@ -7,4 +7,8 @@ public interface CustomTaskMapper extends TaskMapper {
 	
 	int insertSelectiveAndSetId(Task task);
 	
+	Long selectServerVersionByPrimaryKey(Long id);
+	
+	int updateByPrimaryKeyAndGenerateServerVersion(Task record);
+	
 }

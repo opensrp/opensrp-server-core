@@ -4,13 +4,8 @@
 	namespace="org.opensrp.repository.postgres.mapper.custom.CustomTaskMapper">
 
 	
-	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Task">
-		<selectKey keyProperty="id,serverVersion,json"
-			keyColumn="id,server_version,json" order="BEFORE"
-			resultType="java.util.Map">
-			SELECT seq.*,jsonb_set(#{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.TaskTypeHandler},'{serverVersion}',to_jsonb(server_version),true) as json 
-			FROM ( SELECT nextVal('core.task_id_seq') as id, nextVal('core.task_server_version_seq') as server_version) seq
-		</selectKey>
+	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Task"
+		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		insert into core.task
 	    <trim prefix="(" suffix=")" suffixOverrides=",">
 	      <if test="id != null">
@@ -26,21 +21,24 @@
 	        #{id,jdbcType=BIGINT},
 	      </if>
 	      <if test="json != null">
-	      #{json,jdbcType=VARCHAR},
+	        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.TaskTypeHandler},
 	      </if>
-	       #{serverVersion,jdbcType=BIGINT}
+	      nextVal('core.task_server_version_seq')
 	    </trim>
 	</insert>
-	
-	<update id="updateByPrimaryKey" parameterType="org.opensrp.domain.postgres.Task">
- 	<selectKey keyProperty="serverVersion,json" 	keyColumn="server_version,json" resultType="java.util.Map" order="BEFORE">
- 	SELECT seq.*,jsonb_set(#{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.TaskTypeHandler},'{serverVersion}',to_jsonb(server_version),true) as json
- 	FROM (SELECT nextVal('core.task_server_version_seq') as server_version) seq
-  	</selectKey>
-    update core.task
-    set json = #{json,jdbcType=VARCHAR},
-      server_version = #{serverVersion,jdbcType=BIGINT}
-    where id = #{id,jdbcType=BIGINT}
-  </update>
+
+	<update id="updateByPrimaryKeyAndGenerateServerVersion"
+		parameterType="org.opensrp.domain.postgres.Task">
+		update core.task
+		set json = #{json,jdbcType=VARCHAR},
+		server_version = nextVal('core.task_server_version_seq')
+		where id = #{id,jdbcType=BIGINT}
+	</update>
+
+
+	<select id="selectServerVersionByPrimaryKey"
+		parameterType="java.lang.Long" resultType="long">
+		select server_version from core.task where id = #{id,jdbcType=BIGINT}
+	</select>
 		
 </mapper>

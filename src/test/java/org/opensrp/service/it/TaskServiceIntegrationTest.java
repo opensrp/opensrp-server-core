@@ -39,7 +39,7 @@ public class TaskServiceIntegrationTest extends BaseIntegrationTest {
 	@Test
 	public void testCreateBatchShouldGenerateServerVersionWithCorrectOrder() throws Exception {
 		DbAccessUtils.truncateTable("core.task", openSRPDataSource);
-		List<Task> taskList = getTasks(500);
+		List<Task> taskList = getTasks(200);
 		taskList.parallelStream().forEach(task -> taskService.addOrUpdateTask(task));
 		Thread.sleep(500);
 		List<Task> savedTasks = taskRepository.getTasksByPlanAndGroup("plan1", "oa1", 0l,true);
