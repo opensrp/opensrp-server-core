@@ -9,13 +9,17 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.junit.Test;
 import org.opensrp.BaseIntegrationTest;
+import org.opensrp.repository.TaskRepository;
 import org.opensrp.service.TaskService;
 import org.smartregister.domain.Task;
 import org.smartregister.domain.Task.TaskPriority;
 import org.smartregister.domain.Task.TaskStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.utils.DbAccessUtils;
 
 /**
  * @author Samuel Githengi created on 11/23/20
@@ -25,25 +29,34 @@ public class TaskServiceIntegrationTest extends BaseIntegrationTest {
 	@Autowired
 	private TaskService taskService;
 	
+	@Autowired
+	private TaskRepository taskRepository;
+	
+
+	@Autowired
+	private DataSource openSRPDataSource;
+	
 	@Test
 	public void testCreateBatchShouldGenerateServerVersionWithCorrectOrder() throws Exception {
+		DbAccessUtils.truncateTable("core.task", openSRPDataSource);
 		List<Task> taskList = getTasks(500);
 		taskList.parallelStream().forEach(task -> taskService.addOrUpdateTask(task));
-		Thread.sleep(5000);
-		List<Task> savedTasks = taskService.getTasksByTaskAndGroup("plan1", "oa1", 0l);
+		Thread.sleep(500);
+		List<Task> savedTasks = taskRepository.getTasksByPlanAndGroup("plan1", "oa1", 0l,true);
 		savedTasks.sort(new Comparator<Task>() {
 			
 			public int compare(Task arg0, Task arg1) {
-				return arg0.getIdentifier().compareTo(arg1.getIdentifier());
+				return arg0.getRowid().compareTo(arg1.getRowid());
 			};
 		});
-		long maxServerVersion = 0;
+		long previousServerVersion = savedTasks.get(0).getServerVersion();
 		for (Task task : savedTasks) {
-			if (maxServerVersion > task.getServerVersion()) {
-				maxServerVersion = task.getServerVersion();
-			} else if (maxServerVersion < task.getServerVersion()) {
-				fail("Server version generated in the wrong Order");
+			if (previousServerVersion > task.getServerVersion()) {
+				fail(String.format("Server version generated in the wrong Order. id:%d, Sv: %d, Previous Sv: %d ",
+				    task.getRowid(), task.getServerVersion(), previousServerVersion));
 			}
+			
+			previousServerVersion = task.getServerVersion();
 			
 		}
 	}
