@@ -32,6 +32,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.common.AllConstants.Client;
+import org.opensrp.mappers.ExportEventDataMapper;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
@@ -68,6 +69,9 @@ public class EventServiceTest extends BaseRepositoryTest {
 	private PlanRepository planRepository;
 
 	@Mock
+	private ExportEventDataMapper exportEventDataMapper;
+
+	@Mock
 	private TaskGenerator taskGenerator;
 	
 	private Set<String> scripts = new HashSet<String>();;
@@ -87,7 +91,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	@Before
 	public void setUpPostgresRepository() {
 		initMocks(this);
-		eventService = new EventService(eventsRepository, new ClientService(clientsRepository), taskGenerator, planRepository);
+		eventService = new EventService(eventsRepository, new ClientService(clientsRepository), taskGenerator, planRepository, exportEventDataMapper);
 		ReflectionTestUtils.setField(eventService, "isPlanEvaluationEnabled", true);
 	}
 	

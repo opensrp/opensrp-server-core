@@ -23,6 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.AppStateToken;
+import org.opensrp.mappers.ExportEventDataMapper;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
@@ -64,6 +65,9 @@ public class EventListenerTest {
 	private PlanRepository planRepository;
 
 	@Mock
+	private ExportEventDataMapper exportEventDataMapper;
+
+	@Mock
 	private TaskGenerator taskGenerator;
 	
 	private EventService eventService;
@@ -77,7 +81,7 @@ public class EventListenerTest {
 		when(configService.registerAppStateToken(any(AllConstants.Config.class), any(), anyString(),
 		    anyBoolean())).thenReturn(new AppStateToken("token", 01l, 02l));
 		eventsRouter = spy(new EventsRouter(handlerMapper, "/schedules/schedule-configs"));
-		eventService = spy(new EventService(allEvents, clientService, taskGenerator, planRepository));
+		eventService = spy(new EventService(allEvents, clientService, taskGenerator, planRepository, exportEventDataMapper));
 		eventsListener = new EventsListener(eventsRouter, configService,  eventService, errorTraceService);
 	}
 	
