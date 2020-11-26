@@ -1,5 +1,6 @@
 package org.opensrp.repository.postgres.mapper.custom;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -39,4 +40,7 @@ public interface CustomEventMetadataMapper extends EventMetadataMapper {
 	List<String> selectManyBaseEntityIds(@Param("example") EventMetadataExample example);
 
 	List<Event> selectByBaseEntityIdAndPlanIdentifier(@Param("baseEntityId") String baseEntityId, @Param("planIdentifier") String planIdentifier);
+
+	List<Event> selectByPlanIdentifierAndEventType(@Param("planIdentifier") String planIdentifier, @Param("eventType") String eventType,
+			@Param("fromDate") Date fromDate, @Param("toDate") Date toDate);
 }

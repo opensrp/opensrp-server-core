@@ -19,6 +19,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
+import org.opensrp.service.EventService;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.opensrp.repository.EventsRepository;
@@ -31,6 +32,9 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	@Autowired
 	@Qualifier("eventsRepositoryPostgres")
 	private EventsRepository eventsRepository;
+
+	@Autowired
+	private EventService eventService;
 	
 	@Override
 	protected Set<String> getDatabaseScripts() {
@@ -696,5 +700,11 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 				null, new DateTime(date1).toDate());
 		assertTrue(listLongPair.getLeft().isEmpty());
 	}
-	
+
+	@Test
+	public void testExportEventData() {
+		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("plan-id-1",null,null,null);
+        eventService.exportEventData("plan-id-1",null,null,null);
+	}
+
 }

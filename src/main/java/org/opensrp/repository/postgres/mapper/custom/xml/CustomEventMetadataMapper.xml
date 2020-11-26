@@ -200,4 +200,27 @@
 		em.plan_identifier = #{planIdentifier,jdbcType=VARCHAR}
 	</select>
 
+	<select id="selectByPlanIdentifierAndEventType" parameterType="map"
+			resultMap="BaseEventResultMap">
+		select
+		<include refid="Base_Event_Column_List"/>
+		from core.event_metadata em
+		join core.event e on em.event_id = e.id
+		<where>
+			<if test="planIdentifier != null">
+				em.plan_identifier = #{planIdentifier,jdbcType=VARCHAR}
+			</if>
+
+			<if test="eventType != null">
+				and em.event_type = #{eventType,jdbcType=VARCHAR}
+			</if>
+
+			<if test="toDate != null and fromDate != null">
+				em.date_created between #{fromDate,jdbcType=DATE} and #{toDate,jdbcType=DATE} )
+			</if>
+
+		</where>
+
+	</select>
+
 </mapper>

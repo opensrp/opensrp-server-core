@@ -1,12 +1,6 @@
 package org.opensrp.service;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,6 +8,8 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
+import org.opensrp.dto.ExportEventDataSummary;
+import org.opensrp.mappers.ExportEventDataMapper;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.EventSearchBean;
@@ -39,17 +35,20 @@ public class EventService {
 	private TaskGenerator taskGenerator;
 	
 	private PlanRepository planRepository;
+
+	private ExportEventDataMapper exportEventDataMapper;
 	
 	@Value("#{opensrp['plan.evaluation.enabled'] ?: false}")
 	private boolean isPlanEvaluationEnabled;
 	
 	@Autowired
 	public EventService(EventsRepository allEvents, ClientService clientService, TaskGenerator taskGenerator,
-	    PlanRepository planRepository) {
+	    PlanRepository planRepository, ExportEventDataMapper exportEventDataMapper) {
 		this.allEvents = allEvents;
 		this.clientService = clientService;
 		this.taskGenerator = taskGenerator;
 		this.planRepository = planRepository;
+		this.exportEventDataMapper = exportEventDataMapper;
 	}
 	
 	public List<Event> findAllByIdentifier(String identifier) {
@@ -422,4 +421,20 @@ public class EventService {
 	public Long countEvents(EventSearchBean eventSearchBean) {
 		return allEvents.countEvents(eventSearchBean);
 	};
+
+	public ExportEventDataSummary exportEventData(String planIdentifier, String eventType, Date fromDate, Date toDate) {
+		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents.getEventData(planIdentifier, eventType, fromDate, toDate);
+		ExportEventDataSummary exportEventDataSummary = new ExportEventDataSummary();
+		List<List<Object>> allRows = new ArrayList<>();
+		boolean returnHeader = true;
+		allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(null,eventType,returnHeader));
+
+		for(org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
+			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping((Object) pgEvent.getJson(),eventType,false));
+		}
+		exportEventDataSummary.setRowsData(allRows);
+		exportEventDataSummary.setMissionName("XYZ");
+		return exportEventDataSummary;
+	}
+
 }
