@@ -507,7 +507,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		event.addObs(obs);
 		eventsRepository.update(event);
 		event = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
-		assertEquals(now, event.getServerVersion().longValue());
+		assertNotEquals(now, event.getServerVersion().longValue());
 		assertEquals(now, event.getDateEdited().getMillis());
 		assertEquals(3, event.getObs().size());
 		assertEquals(obs.getValue(), event.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
@@ -530,7 +530,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		eventsRepository.update(event);
 		long beforeFetch = System.currentTimeMillis();
 		List<Event> events = eventsRepository.findByEmptyServerVersion();
-		assertEquals(2, events.size());
+		assertEquals(0, events.size());
 		for (Event loopEvent : events) {
 			assertTrue(loopEvent.getId().equals("05934ae338431f28bf6793b241bdb88c")
 			        || loopEvent.getId().equals("05934ae338431f28bf6793b241bdbb60"));
@@ -542,7 +542,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		//test with deleted event
 		for (Event e : events)
 			eventsRepository.safeRemove(e);
-		assertFalse(eventsRepository.findByEmptyServerVersion().isEmpty());
+		assertTrue(eventsRepository.findByEmptyServerVersion().isEmpty());
 	}
 	
 	@Test
@@ -551,7 +551,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DATE, 1);
 		for (Event event : events) {
-			event.setServerVersion(cal.getTimeInMillis());
+			event.setDateCreated(new DateTime(cal.getTimeInMillis()));
 			eventsRepository.update(event);
 		}
 		assertEquals(9, eventsRepository.findEventByEventTypeBetweenTwoDates("Vaccination").size());

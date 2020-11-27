@@ -70,18 +70,22 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 			throw new IllegalStateException();
 		}
 		
-		long serverVersion = taskMapper.selectServerVersionByPrimaryKey(pgTask.getId());
-		entity.setServerVersion(serverVersion);
-		
-		rowsAffected = taskMapper.updateByPrimaryKeySelective(pgTask);
-		if (rowsAffected < 1) {
-			throw new IllegalStateException();
-		}
+		updateServerVersion(pgTask, entity);
 		
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
 		
 		taskMetadataMapper.insertSelective(taskMetadata);
 		
+	}
+	
+	private void updateServerVersion(org.opensrp.domain.postgres.Task pgTask, Task entity) {
+		long serverVersion = taskMapper.selectServerVersionByPrimaryKey(pgTask.getId());
+		entity.setServerVersion(serverVersion);
+		
+		int rowsAffected = taskMapper.updateByPrimaryKeySelective(pgTask);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
 	}
 	
 	@Override
@@ -107,13 +111,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 			throw new IllegalStateException();
 		}
 		
-		long serverVersion = taskMapper.selectServerVersionByPrimaryKey(pgTask.getId());
-		entity.setServerVersion(serverVersion);
-		
-		rowsAffected = taskMapper.updateByPrimaryKeySelective(pgTask);
-		if (rowsAffected < 1) {
-			throw new IllegalStateException();
-		}
+		updateServerVersion(pgTask, entity);
 	
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
 		taskMetadataExample.createCriteria().andTaskIdEqualTo(id);

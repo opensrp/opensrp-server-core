@@ -69,14 +69,26 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		
 		int rowsAffected = eventMapper.insertSelectiveAndSetId(pgEvent);
 		if (rowsAffected < 1 || pgEvent.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateServerVersion(pgEvent, entity);
 		
 		EventMetadata eventMetadata = createMetadata(entity, pgEvent.getId());
 		if (eventMetadata != null) {
 			eventMetadataMapper.insertSelective(eventMetadata);
 		}
 		
+	}
+	
+	private void updateServerVersion(org.opensrp.domain.postgres.Event pgEvent, Event entity) {
+		long serverVersion = eventMapper.selectServerVersionByPrimaryKey(pgEvent.getId());
+		entity.setServerVersion(serverVersion);
+		
+		int rowsAffected = eventMapper.updateByPrimaryKeySelective(pgEvent);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
 	}
 	
 	@Override
@@ -102,14 +114,16 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 			return;
 		}
 		
-		EventMetadata eventMetadata = createMetadata(entity, id);
-		if (eventMetadata == null) {
-			return;
+		int rowsAffected = eventMapper.updateByPrimaryKeyAndGenerateServerVersion(pgEvent);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
 		}
 		
-		int rowsAffected = eventMapper.updateByPrimaryKey(pgEvent);
-		if (rowsAffected < 1) {
-			return;
+		updateServerVersion(pgEvent, entity);
+		
+		EventMetadata eventMetadata = createMetadata(entity, id);
+		if (eventMetadata == null) {
+			throw new IllegalStateException();
 		}
 		
 		EventMetadataExample eventMetadataExample = new EventMetadataExample();
@@ -431,7 +445,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		calendar.set(Calendar.MILLISECOND, 0);
 		EventMetadataExample example = new EventMetadataExample();
 		example.createCriteria().andEventTypeEqualTo(eventType)
-		        .andServerVersionBetween(calendar.getTimeInMillis(), System.currentTimeMillis()).andDateDeletedIsNull();
+		        .andDateCreatedBetween(calendar.getTime(),new Date()).andDateDeletedIsNull();
 		return convert(eventMetadataMapper.selectManyWithRowBounds(example, 0, DEFAULT_FETCH_SIZE));
 	}
 	
