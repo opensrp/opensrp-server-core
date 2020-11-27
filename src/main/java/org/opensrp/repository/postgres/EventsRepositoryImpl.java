@@ -24,6 +24,7 @@ import org.smartregister.converters.EventConverter;
 import org.smartregister.domain.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 
@@ -48,6 +49,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		return convert(pgEvent);
 	}
 	
+	@Transactional
 	@Override
 	public void add(Event entity) {
 		if (entity == null || entity.getBaseEntityId() == null) {
@@ -96,6 +98,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		update(entity, false);
 	}
 	
+	@Transactional
 	@Override
 	public void update(Event entity, boolean allowArchived) {
 		if (entity == null || entity.getBaseEntityId() == null) {

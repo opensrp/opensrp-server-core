@@ -431,15 +431,11 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		client.setServerVersion(0l);
 		clientsRepository.update(client);
 		
-		client = clientsRepository.findByEmptyServerVersion().get(0);
-		assertEquals("94f3e8fb-2f05-4fca-8119-2b593d1962eb", client.getBaseEntityId());
-		assertEquals("Fith", client.getFirstName());
-		assertEquals("2018-03-01", client.getBirthdate().toLocalDate().toString());
-		assertEquals("218224-4", client.getIdentifier("ZEIR_ID"));
+		assertTrue(clientsRepository.findByEmptyServerVersion().isEmpty());
 		
 		//test deleted clients
 		clientsRepository.safeRemove(client);
-		assertFalse(clientsRepository.findByEmptyServerVersion().isEmpty());
+		assertTrue(clientsRepository.findByEmptyServerVersion().isEmpty());
 		
 	}
 

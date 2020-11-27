@@ -1,6 +1,17 @@
 package org.opensrp.repository.postgres;
 
-import com.ibm.fhir.model.resource.Patient;
+import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
@@ -23,18 +34,9 @@ import org.smartregister.converters.ClientConverter;
 import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static org.opensrp.common.AllConstants.BaseEntity.BASE_ENTITY_ID;
+import com.ibm.fhir.model.resource.Patient;
 
 @Repository("clientsRepositoryPostgres")
 public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements ClientsRepository {
@@ -68,6 +70,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	@Override
+	@Transactional
 	public void add(Client entity) {
 		if (entity == null || entity.getBaseEntityId() == null) {
 			return;
@@ -89,12 +92,24 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		
 		int rowsAffected = clientMapper.insertSelectiveAndSetId(pgClient);
 		if (rowsAffected < 1 || pgClient.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateServerVersion(pgClient, entity);
 		
 		ClientMetadata clientMetadata = createMetadata(entity, pgClient.getId());
 		if (clientMetadata != null) {
 			clientMetadataMapper.insertSelective(clientMetadata);
+		}
+	}
+	
+	private void updateServerVersion(org.opensrp.domain.postgres.Client pgClient, Client entity) {
+		long serverVersion = clientMapper.selectServerVersionByPrimaryKey(pgClient.getId());
+		entity.setServerVersion(serverVersion);
+		
+		int rowsAffected = clientMapper.updateByPrimaryKeySelective(pgClient);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
 		}
 	}
 	
@@ -103,6 +118,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		update(entity, false);
 	}
 	
+	@Transactional
 	@Override
 	public void update(Client entity, boolean allowArchived) {
 		if (entity == null || entity.getBaseEntityId() == null) {
@@ -121,14 +137,16 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 			return;
 		}
 		
-		ClientMetadata clientMetadata = createMetadata(entity, id);
-		if (clientMetadata == null) {
-			return;
+		int rowsAffected = clientMapper.updateByPrimaryKeyAndGenerateServerVersion(pgClient);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
 		}
 		
-		int rowsAffected = clientMapper.updateByPrimaryKey(pgClient);
-		if (rowsAffected < 1) {
-			return;
+		updateServerVersion(pgClient, entity);
+		
+		ClientMetadata clientMetadata = createMetadata(entity, id);
+		if (clientMetadata == null) {
+			throw new IllegalStateException();
 		}
 		
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
@@ -346,7 +364,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	}
 	
 	// Private Methods
-	protected List<Client> convert(List<org.opensrp.domain.postgres.Client> clients) {
+	@Override
+	public List<Client> convert(List<org.opensrp.domain.postgres.Client> clients) {
 		if (clients == null || clients.isEmpty()) {
 			return new ArrayList<>();
 		}
