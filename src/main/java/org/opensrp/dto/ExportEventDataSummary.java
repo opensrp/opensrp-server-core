@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ExportEventDataSummary {
 
-	List<List<Object>> rowsData;
+	private List<List<Object>> rowsData;
 
-	String missionName;
+	private String missionName;
 }

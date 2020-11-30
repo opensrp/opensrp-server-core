@@ -215,8 +215,12 @@
 				and em.event_type = #{eventType,jdbcType=VARCHAR}
 			</if>
 
-			<if test="toDate != null and fromDate != null">
-				em.date_created between #{fromDate,jdbcType=DATE} and #{toDate,jdbcType=DATE} )
+			<if test="fromDate != null">
+				and em.date_created >= #{fromDate,jdbcType=DATE}
+			</if>
+
+			<if test="toDate != null">
+				and em.date_created &lt;= #{toDate,jdbcType=DATE}
 			</if>
 
 		</where>

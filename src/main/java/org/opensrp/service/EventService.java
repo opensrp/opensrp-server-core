@@ -423,14 +423,20 @@ public class EventService {
 	};
 
 	public ExportEventDataSummary exportEventData(String planIdentifier, String eventType, Date fromDate, Date toDate) {
-		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents.getEventData(planIdentifier, eventType, fromDate, toDate);
+		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents
+				.getEventData(planIdentifier, eventType, fromDate, toDate);
 		ExportEventDataSummary exportEventDataSummary = new ExportEventDataSummary();
 		List<List<Object>> allRows = new ArrayList<>();
 		boolean returnHeader = true;
-		allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(null,eventType,returnHeader));
+		Map<String, String> columnNamesAndLabels = exportEventDataMapper.getColumnNamesAndLabelsByEventType(eventType);
+		boolean settingsExist = columnNamesAndLabels != null && columnNamesAndLabels.size() > 0 ? true : false;
 
-		for(org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
-			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping((Object) pgEvent.getJson(),eventType,false));
+		if (settingsExist)
+			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(null, eventType, returnHeader, settingsExist));
+
+		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
+			allRows.add(exportEventDataMapper
+					.getExportEventDataAfterMapping((Object) pgEvent.getJson(), eventType, false, settingsExist));
 		}
 		exportEventDataSummary.setRowsData(allRows);
 		exportEventDataSummary.setMissionName("XYZ");
