@@ -13,10 +13,7 @@ import org.smartregister.utils.DateTimeTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.opensrp.util.constants.EventDataExportConstants.*;
 
@@ -26,20 +23,10 @@ public class ExportEventDataMapper {
 	@Autowired
 	private SettingService settingService;
 
-//	private static Map<String, String> eventTypeToSettingsIdentifier = new HashMap<>();
-
 	private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
 
 	private static Logger logger = LoggerFactory.getLogger(ExportEventDataMapper.class.toString());
-
-//	static {
-//		eventTypeToSettingsIdentifier.put(EVENT_LOOKS_GOOD, SETTINGS_CONFIGURATION_EVENT_TYPE_LOOKS_GOOD);
-//		eventTypeToSettingsIdentifier.put(EVENT_FLAG_PROBLEM, SETTINGS_CONFIGURATION_EVENT_TYPE_FLAG_PROBLEM);
-//		eventTypeToSettingsIdentifier.put(EVENT_FIX_PROBLEM, SETTINGS_CONFIGURATION_EVENT_TYPE_FIX_PROBLEM);
-//		eventTypeToSettingsIdentifier.put(EVENT_RECORDS_GPS, SETTINGS_CONFIGURATION_EVENT_TYPE_RECORDS_GPS);
-//		eventTypeToSettingsIdentifier.put(EVENT_SERVICE_POINT_CHECK, SETTINGS_CONFIGURATION_EVENT_TYPE_SERVICE_POINT_CHECK);
-//	}
 
 	public List<Object> getExportEventDataAfterMapping(Object jsonObject, String eventType, boolean returnHeader,
 			boolean isSettingsExists) {
@@ -52,13 +39,14 @@ public class ExportEventDataMapper {
 
 		List<Object> headerData = new ArrayList<>();
 		List<Object> rowData = new ArrayList<>();
-		if (columnNamesAndLabels != null && returnHeader && isSettingsExists) {
+		if (columnNamesAndLabels != null && columnNamesAndLabels.size() > 0 && returnHeader && isSettingsExists) {
 			for (Map.Entry<String, String> columnNameAndLabel : columnNamesAndLabels.entrySet()) {
 				headerData.add(columnNameAndLabel.getKey());
 			}
 			return headerData;
 		} else if (columnNamesAndLabels != null && !returnHeader && isSettingsExists) {
 			for (Map.Entry<String, String> columnNameAndLabel : columnNamesAndLabels.entrySet()) {
+				// TODO : What if the key does not exists
 				Object fieldValue = JsonPath.read(json, columnNameAndLabel.getValue());
 				rowData.add(fieldValue);
 			}
@@ -69,21 +57,26 @@ public class ExportEventDataMapper {
 				Object fieldValue = obs.getValues();
 				rowData.add(fieldValue);
 			}
-		} else { //for header
-			Event event = gson.fromJson(json, Event.class);
-			for (Obs obs : event.getObs()) {
-				Object fieldValue = obs.getFormSubmissionField();
-				rowData.add(fieldValue);
+			return rowData;
+		} else { //for header without settings configurations
+			Event event = null;
+			if (json != "") {
+				event = gson.fromJson(json, Event.class);
+				for (Obs obs : event.getObs()) {
+					Object fieldValue = obs.getFormSubmissionField();
+					rowData.add(fieldValue);
+				}
+				return rowData;
 			}
+			return null;
 		}
-		return null;
 	}
 
 	public Map<String, String> getColumnNamesAndLabelsByEventType(String eventType) {
 
 		String settingsConfigurationIdentifier = getSettingsConfigurationIdentifierByEventType(eventType);
 
-		Map<String, String> columnsLabelsAndKeys = new HashMap<>();
+		Map<String, String> columnsLabelsAndKeys = new LinkedHashMap<>();
 		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = settingService
 				.findSettingsByIdentifier(settingsConfigurationIdentifier);
 
@@ -102,8 +95,6 @@ public class ExportEventDataMapper {
 
 	private String getSettingsConfigurationIdentifierByEventType(String eventType) {
 
-//		return eventTypeToSettingsIdentifier.get(eventType);
-
 		Map<String, String> eventTypeToSettingsConfigurationsIdentifier = new HashMap<>();
 		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = settingService
 				.findSettingsByIdentifier(SETTINGS_CONFIGURATION_EVENT_TYPE_TO_SETTINGS_IDENTIFIER);
@@ -113,13 +104,14 @@ public class ExportEventDataMapper {
 				if (settingsAndSettingsMetadataJoined.getSettingsMetadata() != null
 						&& settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingKey() != null
 						&& settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue() != null) {
-					eventTypeToSettingsConfigurationsIdentifier.put(settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingKey(),
-							settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue());
+					eventTypeToSettingsConfigurationsIdentifier
+							.put(settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingKey(),
+									settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue());
 				}
 			}
 		}
 
-		if(eventTypeToSettingsConfigurationsIdentifier != null && eventTypeToSettingsConfigurationsIdentifier.size() > 0) {
+		if (eventTypeToSettingsConfigurationsIdentifier != null && eventTypeToSettingsConfigurationsIdentifier.size() > 0) {
 			return eventTypeToSettingsConfigurationsIdentifier.get(eventType);
 		}
 		return null;

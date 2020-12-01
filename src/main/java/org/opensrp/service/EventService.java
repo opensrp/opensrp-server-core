@@ -9,7 +9,6 @@ import org.joda.time.LocalDate;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
 import org.opensrp.dto.ExportEventDataSummary;
-import org.opensrp.mappers.ExportEventDataMapper;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.EventSearchBean;
@@ -431,15 +430,23 @@ public class EventService {
 		Map<String, String> columnNamesAndLabels = exportEventDataMapper.getColumnNamesAndLabelsByEventType(eventType);
 		boolean settingsExist = columnNamesAndLabels != null && columnNamesAndLabels.size() > 0 ? true : false;
 
-		if (settingsExist)
-			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(null, eventType, returnHeader, settingsExist));
+		if(settingsExist)
+		allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(null, eventType, returnHeader, settingsExist)); //for header row
+
+		//TODO: Assumption : All pgEvents would have similar obs fields to include as a header
+		else
+			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(pgEvents != null && pgEvents.get(0) != null ? pgEvents.get(0).getJson() : "", eventType, returnHeader, settingsExist)); //for header row
 
 		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
 			allRows.add(exportEventDataMapper
 					.getExportEventDataAfterMapping((Object) pgEvent.getJson(), eventType, false, settingsExist));
 		}
+
 		exportEventDataSummary.setRowsData(allRows);
-		exportEventDataSummary.setMissionName("XYZ");
+
+		PlanDefinition plan = planIdentifier != null ? planRepository.get(planIdentifier) : null;
+		if (plan != null)
+			exportEventDataSummary.setMissionName(plan.getName());
 		return exportEventDataSummary;
 	}
 
