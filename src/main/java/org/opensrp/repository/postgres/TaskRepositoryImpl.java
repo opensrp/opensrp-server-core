@@ -13,6 +13,7 @@ import org.opensrp.domain.postgres.TaskMetadataExample;
 import org.opensrp.repository.TaskRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomTaskMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomTaskMetadataMapper;
+import org.opensrp.search.TaskSearchBean;
 import org.smartregister.converters.TaskConverter;
 import org.smartregister.domain.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
+
+import static org.opensrp.util.RepositoryUtil.getPageSizeAndOffset;
 
 @Repository
 public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements TaskRepository {
@@ -386,7 +389,20 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		update(task);
 		return get(task.getIdentifier());
 	}
-	
+
+
+	@Override
+	public List<Task> getTasksBySearchBean(TaskSearchBean taskSearchBean) {
+		Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(taskSearchBean);
+		return taskMetadataMapper.selectTasksBySearchBean(taskSearchBean, pageSizeAndOffset.getRight(),
+				pageSizeAndOffset.getLeft());
+	}
+
+	@Override
+	public int getTaskCount(TaskSearchBean taskSearchBean) {
+		return taskMetadataMapper.selectTaskCount(taskSearchBean);
+	}
+
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
 		return tasks.stream().map(task -> TaskConverter.convertTasktoFihrResource(task)).collect(Collectors.toList());
 	}
