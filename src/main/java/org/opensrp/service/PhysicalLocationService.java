@@ -81,9 +81,7 @@ public class PhysicalLocationService {
 	}
 	
 	@Transactional
-	@Caching(evict = { @CacheEvict("locationTreeFromLocationIdentifiers"),
-			@CacheEvict(value = "locationsWIthChildrenByLocationIds"),
-			@CacheEvict("locationTreeFromLocation") })
+    @CacheEvict(value = {"locationsWIthChildrenByLocationIds","locationTreeFromLocation","locationTreeFromLocationIdentifiers"}, allEntries = true)
 	public void add(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -93,9 +91,7 @@ public class PhysicalLocationService {
 	}
 	
 	@Transactional
-	@Caching(evict = { @CacheEvict("locationTreeFromLocationIdentifiers"),
-			@CacheEvict(value = "locationsWIthChildrenByLocationIds"),
-			@CacheEvict("locationTreeFromLocation") })
+	@CacheEvict(value = {"locationsWIthChildrenByLocationIds","locationTreeFromLocation","locationTreeFromLocationIdentifiers"}, allEntries = true)
 	public void update(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");

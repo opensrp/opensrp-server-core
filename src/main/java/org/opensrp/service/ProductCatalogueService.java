@@ -33,11 +33,13 @@ public class ProductCatalogueService {
 
 	public void add(ProductCatalogue productCatalogue) {
 		validateFields(productCatalogue);
+		productCatalogue.setServerVersion(productCatalogueRepository.getNextServerVersion());
 		productCatalogueRepository.add(productCatalogue);
 	}
 
 	public void update(ProductCatalogue productCatalogue) {
 		validateFields(productCatalogue);
+		productCatalogue.setServerVersion(productCatalogueRepository.getNextServerVersion());
 		productCatalogueRepository.update(productCatalogue);
 	}
 
@@ -82,10 +84,6 @@ public class ProductCatalogueService {
 			throw new IllegalArgumentException("Material Number was not specified");
 		} else if (StringUtils.isBlank(productCatalogue.getAvailability())) {
 			throw new IllegalArgumentException("The availability text was not specified");
-		} else if (StringUtils.isBlank(productCatalogue.getCondition())) {
-			throw new IllegalArgumentException("The condition text was not specified");
-		} else if (StringUtils.isBlank(productCatalogue.getAppropriateUsage())) {
-			throw new IllegalArgumentException("The product approprate usage text was not specified");
 		} else if (productCatalogue.getAccountabilityPeriod() == null) {
 			throw new IllegalArgumentException("Accountability period was not specified");
 		} else {
