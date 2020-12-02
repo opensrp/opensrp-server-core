@@ -15,6 +15,7 @@ import org.opensrp.domain.postgres.ReportMetadataExample.Criteria;
 import org.opensrp.repository.ReportsRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomReportMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomReportMetadataMapper;
+import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -39,6 +40,16 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 		return convert(pgReport);
 	}
 	
+	private void updateServerVersion(org.opensrp.domain.postgres.Report pgReport, Report entity) {
+		long serverVersion = reportMapper.selectServerVersionByPrimaryKey(pgReport.getId());
+		entity.setServerVersion(serverVersion);
+		
+		int rowsAffected = reportMapper.updateByPrimaryKeySelective(pgReport);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
 	@Override
 	public void add(Report entity) {
 		if (entity == null) {
@@ -61,8 +72,10 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 		int rowsAffected = reportMapper.insertSelectiveAndSetId(pgReport);
 		logger.info("rowsAffected, pgReport.getId():" + rowsAffected + "," + pgReport.getId());
 		if (rowsAffected < 1 || pgReport.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateServerVersion(pgReport, entity);
 		
 		ReportMetadata reportMetadata = createMetadata(entity, pgReport.getId());
 		if (reportMetadata != null) {
@@ -88,13 +101,17 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 			return;
 		}
 		
-		ReportMetadata reportMetadata = createMetadata(entity, id);
-		if (reportMetadata == null) {
+	
+		
+		int rowsAffected = reportMapper.updateByPrimaryKeyAndGenerateServerVersion(pgReport);
+		if (rowsAffected < 1) {
 			return;
 		}
 		
-		int rowsAffected = reportMapper.updateByPrimaryKey(pgReport);
-		if (rowsAffected < 1) {
+		updateServerVersion(pgReport, entity);
+		
+		ReportMetadata reportMetadata = createMetadata(entity, id);
+		if (reportMetadata == null) {
 			return;
 		}
 		

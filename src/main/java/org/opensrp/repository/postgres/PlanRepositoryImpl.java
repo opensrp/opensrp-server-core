@@ -2,6 +2,7 @@ package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.domain.Report;
 import org.opensrp.domain.postgres.Plan;
 import org.opensrp.domain.postgres.PlanExample;
 import org.opensrp.domain.postgres.PlanMetadata;
@@ -48,6 +49,16 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         return isEmptyList(plan) ? null : plan.get(0);
     }
+    
+    private void updateServerVersion(org.opensrp.domain.postgres.Plan pgPlan, PlanDefinition entity) {
+		long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
+		entity.setServerVersion(serverVersion);
+		
+		int rowsAffected = planMapper.updateByPrimaryKeySelective(pgPlan);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
 
     @Override
     public void add(PlanDefinition plan) {
@@ -67,8 +78,11 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         int rowsAffected = planMapper.insertSelectiveAndSetId(pgPlan);
         if (rowsAffected < 1) {
-            return;
+            throw new IllegalStateException();
         }
+        
+       updateServerVersion(pgPlan, plan);
+       
         insertPlanMetadata(plan, pgPlan.getId());
     }
 
@@ -91,11 +105,13 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         pgPlan.setDateEdited(new Date());
 
-        int rowsAffected = planMapper.updateByPrimaryKey(pgPlan);
+        int rowsAffected = planMapper.updateByPrimaryKeyAndGenerateServerVersion(pgPlan);
         if (rowsAffected < 1) {
             return;
         }
 
+        updateServerVersion(pgPlan, plan);
+        
         updatePlanMetadata(plan, pgPlan.getId());
     }
 

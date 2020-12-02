@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationTagMap;
+import org.opensrp.domain.Report;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
@@ -97,6 +98,27 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 	}
 	
+	private void updateLocationServerVersion(org.opensrp.domain.postgres.Location pgLocation, PhysicalLocation entity) {
+		long serverVersion = locationMapper.selectServerVersionByPrimaryKey(pgLocation.getId());
+		entity.setServerVersion(serverVersion);
+		
+		int rowsAffected = locationMapper.updateByPrimaryKeySelective(pgLocation);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
+	private void updateStructureServerVersion(org.opensrp.domain.postgres.Structure pgStructure, PhysicalLocation entity) {
+		long serverVersion = structureMapper.selectServerVersionByPrimaryKey(pgStructure.getId());
+		entity.setServerVersion(serverVersion);
+		
+		int rowsAffected = structureMapper.updateByPrimaryKeySelective(pgStructure);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
+	
 	private void addLocation(PhysicalLocation entity) {
 		
 		Location pgLocation = convert(entity, null);
@@ -107,8 +129,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		int rowsAffected = locationMapper.insertSelectiveAndSetId(pgLocation);
 		
 		if (rowsAffected < 1 || pgLocation.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateLocationServerVersion(pgLocation, entity);
 		
 		LocationMetadata locationMetadata = createMetadata(entity, pgLocation.getId());
 		
@@ -125,8 +149,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		int rowsAffected = structureMapper.insertSelectiveAndSetId(pgStructure);
 		if (rowsAffected < 1 || pgStructure.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateStructureServerVersion(pgStructure, entity);
 		
 		StructureMetadata structureMetadata = createStructureMetadata(entity, pgStructure.getId());
 		
@@ -157,12 +183,17 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		if (pgLocation == null) {
 			return;
 		}
-		LocationMetadata locationMetadata = createMetadata(entity, pgLocation.getId());
 		
-		int rowsAffected = locationMapper.updateByPrimaryKey(pgLocation);
+		
+		int rowsAffected = locationMapper.updateByPrimaryKeyAndGenerateServerVersion(pgLocation);
 		if (rowsAffected < 1) {
 			return;
 		}
+		
+		updateLocationServerVersion(pgLocation, entity);
+		
+		
+		LocationMetadata locationMetadata = createMetadata(entity, pgLocation.getId());
 		
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andLocationIdEqualTo(id);
@@ -178,12 +209,16 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		if (pgStructure == null) {
 			return;
 		}
-		StructureMetadata structureMetadata = createStructureMetadata(entity, pgStructure.getId());
 		
-		int rowsAffected = structureMapper.updateByPrimaryKey(pgStructure);
+		
+		int rowsAffected = structureMapper.updateByPrimaryKeyAndGenerateServerVersion(pgStructure);
 		if (rowsAffected < 1) {
 			return;
 		}
+		
+		updateStructureServerVersion(pgStructure, entity);
+		
+		StructureMetadata structureMetadata = createStructureMetadata(entity, pgStructure.getId());
 		
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andStructureIdEqualTo(id);

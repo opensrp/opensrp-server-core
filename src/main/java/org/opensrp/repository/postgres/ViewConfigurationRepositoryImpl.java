@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.ViewConfigurationMetadata;
 import org.opensrp.domain.postgres.ViewConfigurationMetadataExample;
 import org.opensrp.domain.viewconfiguration.ViewConfiguration;
@@ -27,6 +28,16 @@ public class ViewConfigurationRepositoryImpl extends BaseRepositoryImpl<ViewConf
 	@Override
 	public ViewConfiguration get(String id) {
 		return convert(viewConfigurationMetadataMapper.selectByDocumentId(id));
+	}
+	
+	private void updateServerVersion(org.opensrp.domain.postgres.ViewConfiguration pgViewConfiguration, ViewConfiguration entity) {
+		long serverVersion = viewConfigurationMapper.selectServerVersionByPrimaryKey(pgViewConfiguration.getId());
+		entity.setServerVersion(serverVersion);
+		
+		int rowsAffected = viewConfigurationMapper.updateByPrimaryKeySelective(pgViewConfiguration);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
 	}
 	
 	@Override
@@ -79,14 +90,18 @@ public class ViewConfigurationRepositoryImpl extends BaseRepositoryImpl<ViewConf
 			return;
 		}
 		
-		ViewConfigurationMetadata metadata = createMetadata(entity, id);
-		if (metadata == null) {
+		
+		
+		int rowsAffected = viewConfigurationMapper.updateByPrimaryKeyAndGenerateServerVersion(pgViewConfiguration);
+		if (rowsAffected < 1) {
 			return;
 		}
 		
-		int rowsAffected = viewConfigurationMapper.updateByPrimaryKey(pgViewConfiguration);
-		if (rowsAffected < 1) {
-			return;
+		updateServerVersion(pgViewConfiguration, entity);
+		
+		ViewConfigurationMetadata metadata = createMetadata(entity, id);
+		if (metadata == null) {
+			throw new IllegalStateException();
 		}
 		
 		ViewConfigurationMetadataExample metadataExample = new ViewConfigurationMetadataExample();

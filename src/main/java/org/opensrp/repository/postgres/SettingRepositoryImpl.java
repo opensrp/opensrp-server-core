@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.TreeNode;
+import org.opensrp.domain.Report;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.domain.postgres.SettingsMetadata;
@@ -70,6 +71,16 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 		return findSetting(settingQueryBean, null);
 	}
+	
+	private void updateServerVersion(org.opensrp.domain.postgres.Settings pgSettings, SettingConfiguration entity) {
+		long serverVersion = settingMapper.selectServerVersionByPrimaryKey(pgSettings.getId());
+		entity.setServerVersion(serverVersion);
+		
+		int rowsAffected = settingMapper.updateByPrimaryKeySelective(pgSettings);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
 
 	@Override
 	public void add(SettingConfiguration entity) {
@@ -98,11 +109,12 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return;
 		}
 
-		int rowsAffected = settingMapper.updateByPrimaryKey(pgSetting);
+		int rowsAffected = settingMapper.updateByPrimaryKeyAndGenerateServerVersion(pgSetting);
 		if (rowsAffected < 1) {
 			return;
 		}
 
+		updateServerVersion(pgSetting, entity);
 		entity.setSettings(settings);// re-inject settings block
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
 		settingMetadataMapper.updateMany(metadata);
@@ -521,6 +533,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			if (rowsAffected < 1 || pgSettings.getId() == null) {
 				return null;
 			}
+			
+			updateServerVersion(pgSettings, entity);
 		} else {
 			settings = entity.getSettings();
 			pgSettings = convert(entity, id);
