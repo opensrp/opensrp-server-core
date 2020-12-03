@@ -38,10 +38,10 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 
 	@Test
 	public void testUpdate() {
-		ProductCatalogue productCatalogue = productCatalogueRepository.getById(1l);
+		ProductCatalogue productCatalogue = productCatalogueRepository.getById(1l, "http://localhost:8080/opensrp");
 		productCatalogue.setProductName("Updated product name");
 		productCatalogueRepository.update(productCatalogue);
-		ProductCatalogue updated = productCatalogueRepository.getById(1l);
+		ProductCatalogue updated = productCatalogueRepository.getById(1l, "http://localhost:8080/opensrp");
 		assertNotNull(updated);
 		assertEquals("Updated product name", updated.getProductName());
 	}
@@ -54,7 +54,7 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 
 	@Test
 	public void testSafeRemove() {
-		ProductCatalogue productCatalogue = productCatalogueRepository.getById(1l);
+		ProductCatalogue productCatalogue = productCatalogueRepository.getById(1l, "http://localhost:8080/opensrp");
 		productCatalogueRepository.safeRemove(productCatalogue);
 		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getAll();
 		assertEquals(0, productCatalogues.size());
@@ -69,7 +69,7 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 
 	@Test
 	public void testGetById() {
-		ProductCatalogue productCatalogue = productCatalogueRepository.getById(1l);
+		ProductCatalogue productCatalogue = productCatalogueRepository.getById(1l, "http://localhost:8080/opensrp");
 		assertEquals("Midwifery Kit", productCatalogue.getProductName());
 	}
 
@@ -77,7 +77,7 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 	public void testGetProductCataloguesBySearchBean(){
 		ProductCatalogueSearchBean productCatalogueSearchBean = new ProductCatalogueSearchBean();
 		productCatalogueSearchBean.setUniqueId(1l);
-		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean);
+		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean, "http://localhost:8080/opensrp");
 		assertEquals(1,productCatalogues.size());
 		assertEquals("Midwifery Kit", productCatalogues.get(0).getProductName());
 
