@@ -22,6 +22,7 @@
 			<if test="json != null">
 				json,
 			</if>
+			server_version
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="id != null">
@@ -30,6 +31,7 @@
 			<if test="json != null">
 				#{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.StockTypeHandler},
 			</if>
+			nextVal('core.structure_server_version_seq')
 		</trim>
 	</insert>
 
