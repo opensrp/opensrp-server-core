@@ -186,7 +186,9 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 		ProductCatalogue productCatalogue = (ProductCatalogue) pgProductCatalogue.getJson();
 		productCatalogue.setUniqueId(pgProductCatalogue.getUniqueId());
 		String photoUrl = productCatalogue.getPhotoURL();
-		productCatalogue.setPhotoURL(baseUrl + photoUrl);
+		if(!StringUtils.isBlank(photoUrl)) {
+			productCatalogue.setPhotoURL(baseUrl + photoUrl);
+		}
 		return productCatalogue;
 	}
 
