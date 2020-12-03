@@ -32,7 +32,7 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 	public void testAdd() {
 		ProductCatalogue productCatalogue = createProductCatalogue();
 		productCatalogueRepository.add(productCatalogue);
-		List<ProductCatalogue> productCatalogueList = productCatalogueRepository.getAll();
+		List<ProductCatalogue> productCatalogueList = productCatalogueRepository.getAll("http://localhost:8080/opensrp");
 		assertEquals(2,productCatalogueList.size());
 	}
 
@@ -48,7 +48,7 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 
 	@Test
 	public void testGetAll() {
-		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getAll();
+		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getAll("http://localhost:8080/opensrp");
 		assertEquals(1,productCatalogues.size());
 	}
 
@@ -56,14 +56,14 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 	public void testSafeRemove() {
 		ProductCatalogue productCatalogue = productCatalogueRepository.getById(1l, "http://localhost:8080/opensrp");
 		productCatalogueRepository.safeRemove(productCatalogue);
-		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getAll();
+		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getAll("http://localhost:8080/opensrp");
 		assertEquals(0, productCatalogues.size());
 	}
 
 	@Test
 	public void testSafeRemoveById() {
 		productCatalogueRepository.safeRemove(1l);
-		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getAll();
+		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getAll("http://localhost:8080/opensrp");
 		assertEquals(0, productCatalogues.size());
 	}
 
