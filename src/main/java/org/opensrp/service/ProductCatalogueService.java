@@ -23,21 +23,23 @@ public class ProductCatalogueService {
 		this.productCatalogueRepository = productCatalogueRepository;
 	}
 
-	public List<ProductCatalogue> findAllProductCatalogues() {
-		return productCatalogueRepository.getAll();
+	public List<ProductCatalogue> findAllProductCatalogues(String baseUrl) {
+		return productCatalogueRepository.getAll(baseUrl);
 	}
 
-	public ProductCatalogue getProductCatalogue(Long uniqueId) {
-		return uniqueId == 0 ? null : productCatalogueRepository.getById(uniqueId);
+	public ProductCatalogue getProductCatalogue(Long uniqueId, String baseUrl) {
+		return uniqueId == 0 ? null : productCatalogueRepository.getById(uniqueId, baseUrl);
 	}
 
 	public void add(ProductCatalogue productCatalogue) {
 		validateFields(productCatalogue);
+		productCatalogue.setServerVersion(productCatalogueRepository.getNextServerVersion());
 		productCatalogueRepository.add(productCatalogue);
 	}
 
 	public void update(ProductCatalogue productCatalogue) {
 		validateFields(productCatalogue);
+		productCatalogue.setServerVersion(productCatalogueRepository.getNextServerVersion());
 		productCatalogueRepository.update(productCatalogue);
 	}
 
@@ -59,13 +61,13 @@ public class ProductCatalogueService {
 
 	}
 
-	public List<ProductCatalogue> getProductCatalogues(ProductCatalogueSearchBean productCatalogueSearchBean) {
+	public List<ProductCatalogue> getProductCatalogues(ProductCatalogueSearchBean productCatalogueSearchBean, String baseUrl) {
 		if (StringUtils.isBlank(productCatalogueSearchBean.getProductName()) &&
 				productCatalogueSearchBean.getUniqueId() == 0
 				&& productCatalogueSearchBean.getServerVersion() == null) {
-			return findAllProductCatalogues();
+			return findAllProductCatalogues(baseUrl);
 		} else {
-			return productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean);
+			return productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean, baseUrl);
 		}
 	}
 
@@ -82,10 +84,6 @@ public class ProductCatalogueService {
 			throw new IllegalArgumentException("Material Number was not specified");
 		} else if (StringUtils.isBlank(productCatalogue.getAvailability())) {
 			throw new IllegalArgumentException("The availability text was not specified");
-		} else if (StringUtils.isBlank(productCatalogue.getCondition())) {
-			throw new IllegalArgumentException("The condition text was not specified");
-		} else if (StringUtils.isBlank(productCatalogue.getAppropriateUsage())) {
-			throw new IllegalArgumentException("The product approprate usage text was not specified");
 		} else if (productCatalogue.getAccountabilityPeriod() == null) {
 			throw new IllegalArgumentException("Accountability period was not specified");
 		} else {

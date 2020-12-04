@@ -71,6 +71,17 @@ public class PractitionerServiceTest {
     }
 
     @Test
+    public void testGetPractitionerByUserId() {
+        Practitioner expectedPractitioner = initTestPractitioner();
+        when(practitionerRepository.get(anyString())).thenReturn(expectedPractitioner);
+
+        Practitioner practitioner = practitionerService.getPractitionerByUserId(expectedPractitioner.getUserId());
+        verify(practitionerRepository).getPractitionerByUserId(anyString());
+        assertNotNull(practitioner);
+        assertEquals("user1", practitioner.getUserId());
+    }
+
+    @Test
     public void testAddOrUpdateShouldCallRepostoryAddMethod() {
         when(practitionerRepository.get(anyString())).thenReturn(null);
         Practitioner practitioner = initTestPractitioner();
@@ -140,18 +151,18 @@ public class PractitionerServiceTest {
         verify(practitionerRepository).getPractitionersByOrgId(anyLong());
 
     }
-    
+
 	@Test
 	public void testGetPractionerByUsername() {
 		String username = "janedoe";
 		Practitioner practitioner = initTestPractitioner();
 		when(practitionerRepository.getPractitionerByUsername(username)).thenReturn(practitioner);
-		
+
 		Practitioner actual = practitionerService.getPractionerByUsername("janedoe");
-		
+
 		verify(practitionerRepository).getPractitionerByUsername(username);
 		assertEquals(practitioner, actual);
-		
+
 	}
 
     private Practitioner initTestPractitioner(){

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
+import org.opensrp.search.TaskSearchBean;
 import org.smartregister.domain.Task;
 import org.smartregister.domain.Task.TaskPriority;
 import org.smartregister.domain.Task.TaskStatus;
@@ -383,6 +385,36 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 	public void testCountAllTasksShouldReturnCorrectValue(){
 		Long count = taskRepository.countAllTasks(1000l);
 		assertEquals(Long.valueOf(2), count);
+	}
+
+	@Test
+	public void testGetTasksBySearchBean() {
+		TaskSearchBean taskSearchBean = new TaskSearchBean();
+		taskSearchBean.setPlanIdentifier("IRS_2018_S1");
+		List<String> groupIdentifiers = new ArrayList<>();
+		groupIdentifiers.add("2018_IRS-3734");
+		taskSearchBean.setGroupIdentifiers(groupIdentifiers);
+		taskSearchBean.setCode("IRS");
+		taskSearchBean.setStatus("Ready");
+		taskSearchBean.setBusinessStatus("Not Visited");
+
+		List<Task> tasks = taskRepository.getTasksBySearchBean(taskSearchBean);
+		assertEquals(1,tasks.size());
+	}
+
+	@Test
+	public void testGetTaskCount() {
+		TaskSearchBean taskSearchBean = new TaskSearchBean();
+		taskSearchBean.setPlanIdentifier("IRS_2018_S1");
+		List<String> groupIdentifiers = new ArrayList<>();
+		groupIdentifiers.add("2018_IRS-3734");
+		taskSearchBean.setGroupIdentifiers(groupIdentifiers);
+		taskSearchBean.setCode("IRS");
+		taskSearchBean.setStatus("Ready");
+		taskSearchBean.setBusinessStatus("Not Visited");
+
+		int count = taskRepository.getTaskCount(taskSearchBean);
+		assertEquals(1,count);
 	}
 
 }

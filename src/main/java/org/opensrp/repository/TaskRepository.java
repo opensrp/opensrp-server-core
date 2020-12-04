@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.search.TaskSearchBean;
 import org.smartregister.domain.Task;
 import org.smartregister.pathevaluator.dao.TaskDao;
 
@@ -73,5 +74,9 @@ public interface TaskRepository extends BaseRepository<Task>, TaskDao {
 	 * @return count of tasks created by the provider username (owner)
 	 */
 	Long countTasksByPlanAndOwner(String plan, String owner, long serverVersion);
+
+	List<Task> getTasksBySearchBean(TaskSearchBean taskSearchBean);
+
+	int getTaskCount(TaskSearchBean searchBean);
 
 }
