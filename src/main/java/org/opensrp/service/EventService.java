@@ -9,6 +9,7 @@ import org.joda.time.LocalDate;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
 import org.opensrp.dto.ExportEventDataSummary;
+import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.EventSearchBean;
@@ -435,7 +436,7 @@ public class EventService {
 
 		//TODO: Assumption : All pgEvents would have similar obs fields to include as a header
 		else
-			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(pgEvents != null && pgEvents.get(0) != null ? pgEvents.get(0).getJson() : "", eventType, returnHeader, settingsExist)); //for header row
+			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(pgEvents != null && pgEvents.size() > 0 && pgEvents.get(0) != null ? pgEvents.get(0).getJson() : "", eventType, returnHeader, settingsExist)); //for header row
 
 		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
 			allRows.add(exportEventDataMapper
@@ -448,6 +449,23 @@ public class EventService {
 		if (plan != null)
 			exportEventDataSummary.setMissionName(plan.getName());
 		return exportEventDataSummary;
+	}
+
+	public List<ExportFlagProblemEventImageMetadata> getImagesMetadataForFlagProblemEvent(String planIdentifier, String eventType, Date fromDate, Date toDate) {
+		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents
+				.getEventData(planIdentifier, eventType, fromDate, toDate);
+
+		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata;
+		List<ExportFlagProblemEventImageMetadata> exportFlagProblemEventImageMetadataList = new ArrayList<>();
+		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
+			exportFlagProblemEventImageMetadata = exportEventDataMapper
+					.getFlagProblemEventImagesMetadata((Object) pgEvent.getJson(), "$.baseEntityId", "$.locationId");
+		exportFlagProblemEventImageMetadataList.add(exportFlagProblemEventImageMetadata);
+		}
+
+//		Map<String, List<String>> servicePointAndImagesMap = new HashMap<>();
+		return exportFlagProblemEventImageMetadataList;
+
 	}
 
 }

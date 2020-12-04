@@ -7,6 +7,7 @@ import org.joda.time.DateTime;
 import org.opensrp.api.domain.Event;
 import org.opensrp.api.domain.Obs;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
+import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartregister.utils.DateTimeTypeConverter;
@@ -71,6 +72,38 @@ public class ExportEventDataMapper {
 			return null;
 		}
 	}
+
+	public ExportFlagProblemEventImageMetadata getFlagProblemEventImagesMetadata(Object jsonObject, String stockIdExpression, String servicePointIdExpression) {
+		String json = "";
+		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata = new ExportFlagProblemEventImageMetadata();
+		if (jsonObject != null) {
+			json = gson.toJson(jsonObject);
+		}
+		String stockId = "";
+		String servicePointId = "";
+		Object fieldValue;
+		fieldValue = JsonPath.read(json, stockIdExpression);
+		stockId = (String) fieldValue;
+		exportFlagProblemEventImageMetadata.setStockId(stockId);
+
+		fieldValue = JsonPath.read(json, servicePointIdExpression);
+		servicePointId = (String) fieldValue;
+		exportFlagProblemEventImageMetadata.setServicePointId(servicePointId);
+		return exportFlagProblemEventImageMetadata;
+
+	}
+//
+//	public Map<String, List<String>> getImagesDataAgainstServicePoint(List<ExportFlagProblemEventImagesMetadata> exportFlagProblemEventImagesMetadataList) {
+//		Map<String, List<String>> servicePointAndImagesMap = new HashMap<>();
+//		List<String> uniqueServicePoints = new ArrayList<>();
+//		for(ExportFlagProblemEventImagesMetadata exportFlagProblemEventImagesMetadata : exportFlagProblemEventImagesMetadataList) {
+//           if(!uniqueServicePoints.contains(exportFlagProblemEventImagesMetadata.getServicePointId())) {
+//           	uniqueServicePoints.add(exportFlagProblemEventImagesMetadata.getServicePointId());
+//           }
+//		}
+//
+//		return servicePointAndImagesMap;
+//	}
 
 	public Map<String, String> getColumnNamesAndLabelsByEventType(String eventType) {
 
