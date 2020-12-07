@@ -5,7 +5,7 @@ import java.util.*;
 
 import org.joda.time.DateTime;
 import org.smartregister.domain.Inventory;
-import org.opensrp.domain.ProductCatalogue;
+import org.smartregister.domain.ProductCatalogue;
 import org.smartregister.domain.Stock;
 import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.dto.FailedRecordSummary;

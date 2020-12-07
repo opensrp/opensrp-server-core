@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
+import org.opensrp.domain.postgres.PgStockAndProductDetails;
 import org.opensrp.domain.postgres.Stock;
 import org.opensrp.domain.postgres.StockMetadata;
 import org.opensrp.domain.postgres.StockMetadataExample;
@@ -24,5 +25,6 @@ public interface CustomStockMetadataMapper extends StockMetadataMapper {
 	        @Param("todayDate") Date todayDate, @Param("orderByClause") String orderByClause, @Param("offset") int offset, @Param("limit") int limit);
 
 	StockMetadata selectByStockId(Long stockId);
-	
+
+	List<PgStockAndProductDetails> selectManyStockAndProductDetailsByServicePointId(@Param("locations") List<String> locations);
 }

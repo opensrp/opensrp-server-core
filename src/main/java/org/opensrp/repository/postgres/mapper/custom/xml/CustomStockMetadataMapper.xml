@@ -2,9 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper
 	namespace="org.opensrp.repository.postgres.mapper.custom.CustomStockMetadataMapper">
+	<resultMap id="StockAndProductDetails" type="org.opensrp.domain.postgres.PgStockAndProductDetails">
+		<association property="stock" javaType="org.opensrp.domain.postgres.Stock" column="id"
+					 resultMap="org.opensrp.repository.postgres.mapper.StockMapper.BaseResultMap">
+		</association>
+		<association property="productCatalogue" javaType="org.opensrp.domain.postgres.ProductCatalogue" column="unique_id"
+					 resultMap="org.opensrp.repository.postgres.mapper.ProductCatalogueMapper.BaseResultMap">
+		</association>
+	</resultMap>
+
 
 	<sql id="Base_Column_List">
 		s.id, s.json
+	</sql>
+
+	<sql id="Stock_And_Product_Details_Column_List">
+	 stock.id, stock.json , stock.date_deleted, productCatalogue.unique_id, productCatalogue.product_name, productCatalogue.json AS product_catalogue_json, productCatalogue.server_version
 	</sql>
 
 	<sql id="Base_Table_List">
@@ -139,5 +152,24 @@
         SELECT * FROM core.stock_metadata
         	where stock_id = #{stockId,jdbcType=BIGINT}
     </select>
+
+	<select id="selectManyStockAndProductDetailsByServicePointId" resultMap="StockAndProductDetails">
+		select
+		<include refid="Stock_And_Product_Details_Column_List" />
+        from core.stock stock join core.product_catalogue productCatalogue
+		on
+		CAST(NULLIF( stock.json->> 'identifier', '') as numeric) = productCatalogue.unique_id
+		<where>
+			<trim  prefixOverrides="and">
+
+				<if test="locations != null">
+					and stock.json ->> 'locationId' IN
+					<foreach item="item" index="index" collection="locations" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>
+			</trim>
+		</where>
+	</select>
 
 </mapper>

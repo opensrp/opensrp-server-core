@@ -390,6 +390,10 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		return get(task.getIdentifier());
 	}
 
+	@Override
+	public List<com.ibm.fhir.model.resource.Task> findTasksByJurisdiction(String s) {
+		return null;
+	}
 
 	@Override
 	public List<Task> getTasksBySearchBean(TaskSearchBean taskSearchBean) {

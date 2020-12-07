@@ -1,6 +1,5 @@
 package org.opensrp.validator;
 
-import org.opensrp.domain.ProductCatalogue;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.service.PhysicalLocationService;
 import org.opensrp.service.ProductCatalogueService;
@@ -8,6 +7,7 @@ import org.opensrp.service.SettingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.ProductCatalogue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

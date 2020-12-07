@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import com.ibm.fhir.model.resource.Basic;
+import com.ibm.fhir.model.resource.SupplyDelivery;
 import org.apache.commons.lang3.StringUtils;
+import org.smartregister.domain.ProductCatalogue;
+import org.smartregister.domain.StockAndProductDetails;
 import org.opensrp.repository.LocationRepository;
 import org.smartregister.converters.StockConverter;
 import org.smartregister.domain.PhysicalLocation;
@@ -334,7 +335,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 
 
 	@Override
-	public List<Basic> findInventoryItemsInAJurisdiction(String jurisdictionId) {
+	public List<SupplyDelivery> findInventoryItemsInAJurisdiction(String jurisdictionId) {
 		List<PhysicalLocation> childLocations =
 				locationRepository.findStructuresByProperties(false, jurisdictionId, null);
 		List<String> servicePointIds = new ArrayList<>();
@@ -343,18 +344,73 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		}
 
 		StockSearchBean stockSearchBean = new StockSearchBean();
-		stockSearchBean.setLocationIds(servicePointIds);
-		return convertToFHIR(findStocks(stockSearchBean));
+		stockSearchBean.setLocations(servicePointIds);
+//		return convertToFHIR(findStocks(stockSearchBean));
+		return null;
+
+	}
+
+
+	@Override
+	public List<SupplyDelivery> findInventoryInAServicePoint(String servicePointId) {
+		StockSearchBean stockSearchBean = new StockSearchBean();
+		List<String> locations = new ArrayList<>();
+		locations.add(servicePointId);
+		stockSearchBean.setLocations(locations);
+//		return convertToFHIR(findStocksByLocationId(stockSearchBean));
+		return null;
+	}
+
+	private List<StockAndProductDetails> convertStockAndProductDetails(List<org.opensrp.domain.postgres.PgStockAndProductDetails> stockAndProductDetails) {
+		if (stockAndProductDetails == null || stockAndProductDetails.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		List<StockAndProductDetails> convertedStocksAndProductDetails = new ArrayList<>();
+		for (org.opensrp.domain.postgres.PgStockAndProductDetails stockAndProductDetail : stockAndProductDetails) {
+			StockAndProductDetails convertedStocksAndProductDetail = convert(stockAndProductDetail);
+			if (convertedStocksAndProductDetail != null) {
+				convertedStocksAndProductDetails.add(convertedStocksAndProductDetail);
+			}
+		}
+		return convertedStocksAndProductDetails;
+	}
+
+	private StockAndProductDetails convert(org.opensrp.domain.postgres.PgStockAndProductDetails pgStockAndProductDetails) {
+		StockAndProductDetails stockAndProductDetails = new StockAndProductDetails();
+		Stock stock = convert(pgStockAndProductDetails.getStock());
+		ProductCatalogue productCatalogue = convert(pgStockAndProductDetails.getProductCatalogue(), "");
+		stockAndProductDetails.setStock(stock);
+		stockAndProductDetails.setProductCatalogue(productCatalogue);
+		return stockAndProductDetails;
+	}
+
+	private ProductCatalogue convert(org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue, String baseUrl) {
+		if (pgProductCatalogue == null || pgProductCatalogue.getJson() == null || !(pgProductCatalogue
+				.getJson() instanceof ProductCatalogue)) {
+			return null;
+		}
+		ProductCatalogue productCatalogue = (ProductCatalogue) pgProductCatalogue.getJson();
+		productCatalogue.setUniqueId(pgProductCatalogue.getUniqueId());
+		String photoUrl = productCatalogue.getPhotoURL();
+		if(!StringUtils.isBlank(photoUrl)) {
+			productCatalogue.setPhotoURL(baseUrl + photoUrl);
+		}
+		return productCatalogue;
 	}
 
 	@Override
-	public List<Basic> findInventoryInAServicePoint(String servicePointId) {
-		return convertToFHIR(findStocksByLocationId(servicePointId));
+	public List<StockAndProductDetails> getInventoryWithProductDetails(String servicePointId) {
+		List<String> locations = new ArrayList<>();
+		locations.add(servicePointId);
+		return convertStockAndProductDetails(stockMetadataMapper.selectManyStockAndProductDetailsByServicePointId(locations));
 	}
 
-	private List<Basic> convertToFHIR(List<Stock> stocks) {
-		return stocks.stream().map(client -> StockConverter.convertStockToBasicResource(client))
-				.collect(Collectors.toList());
-	}
+
+
+//	private List<SupplyDelivery> convertToFHIR(List<StockAndProductDetails> stockAndProductDetails) {
+//		return stockAndProductDetails.stream().map(client -> StockConverter.convertStockToSupplyDeliveryResource(stockAndProductDetails))
+//				.collect(Collectors.toList());
+//	}
 
 }

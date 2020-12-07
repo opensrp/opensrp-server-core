@@ -235,7 +235,7 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 
 	@Override
 	public ProductCatalogue getProductCatalogueById(Long uniqueId) {
-		return getById(uniqueId);
+		return getById(uniqueId, "");
 	}
 
 }
