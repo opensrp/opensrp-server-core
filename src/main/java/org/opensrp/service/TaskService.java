@@ -113,29 +113,7 @@ public class TaskService {
 		}
 		return tasksWithErrors;
 	}
-
-
-	@PreAuthorize("hasRole('TASK_VIEW') and hasRole('TASK_UPDATE')")
-	public void addServerVersion() {
-		try {
-			List<Task> tasks = taskRepository.findByEmptyServerVersion();
-			logger.info("RUNNING addServerVersion tasks size: " + tasks.size());
-			long currentTimeMillis = System.currentTimeMillis();
-			for (Task task : tasks) {
-				try {
-					Thread.sleep(1);
-					task.setServerVersion(currentTimeMillis);
-					taskRepository.update(task);
-					currentTimeMillis += 1;
-				} catch (InterruptedException e) {
-					logger.error(e.getMessage());
-				}
-			}
-		} catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
-	}
-
+	
 	@PreAuthorize("hasPermission(#taskUpdates,'TaskUpdate','TASK_UPDATE')")
 	public List<String> updateTaskStatus(List<TaskUpdate> taskUpdates) {
 		List<String> updatedTaskIds = new ArrayList<>();

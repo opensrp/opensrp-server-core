@@ -113,14 +113,6 @@ public class PractitionerService {
 	}
 	
 	/**
-	 * <<<<<<< HEAD ======= Gets practitioners in an organization
-	 * 
-	 * @param organizationId the identifier for organization
-	 * @return practitioners in an organization
-	 */
-
-	
-	/**
 	 * Gets the organization ids that a user is assigned to according to the plan location
 	 * assignment
 	 *

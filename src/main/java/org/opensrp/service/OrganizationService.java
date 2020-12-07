@@ -19,10 +19,10 @@ import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 
 /**

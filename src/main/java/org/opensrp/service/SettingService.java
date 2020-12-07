@@ -46,9 +46,9 @@ public class SettingService {
 
 
 	/**
-	 * Used by the v1 setting endpoint to create the settings configuration {@link SETTINGS_VIEW} & save the settings
+	 * Used by the v1 setting endpoint to create the settings configuration {@link SettingConfiguration} & save the settings
 	 *
-	 * @param jsonSETTINGS_VIEW {@link String} -- the string representation of the settings configuration
+	 * @param jsonSettingConfiguration {@link String} -- the string representation of the settings configuration
 	 * @return
 	 */
 	@PreAuthorize("hasRole('SETTINGS_VIEW_CREATE') or hasRole('SETTINGS_VIEW_UPDATE')")

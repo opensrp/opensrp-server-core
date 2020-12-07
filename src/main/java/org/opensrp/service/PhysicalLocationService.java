@@ -173,37 +173,7 @@ public class PhysicalLocationService {
 			throw new IllegalArgumentException("parentId not specified");
 		return locationRepository.findStructuresByParentAndServerVersion(parentId, serverVersion);
 	}
-
-	@PreAuthorize("hasRole('LOCATION_UPDATE')")
-	public void addServerVersion() {
-		try {
-			List<PhysicalLocation> locations = locationRepository.findByEmptyServerVersion();
-			logger.info("RUNNING addServerVersion Jurisdiction locations size: " + locations.size());
-			setServerVersion(locations, true);
-			List<PhysicalLocation> structures = locationRepository.findStructuresByEmptyServerVersion();
-			logger.info("RUNNING addServerVersion structures size: " + structures.size());
-			setServerVersion(structures, false);
-		}
-		catch (Exception e) {
-			logger.error(e.getMessage(), e);
-		}
-	}
 	
-	private void setServerVersion(List<PhysicalLocation> locations, boolean isJurisdiction) {
-		long currentTimeMillis = System.currentTimeMillis();
-		for (PhysicalLocation location : locations) {
-			try {
-				Thread.sleep(1);
-				location.setServerVersion(currentTimeMillis);
-				location.setJurisdiction(isJurisdiction);
-				locationRepository.update(location);
-				currentTimeMillis += 1;
-			}
-			catch (InterruptedException e) {
-				logger.error(e.getMessage());
-			}
-		}
-	}
 
 	@PreAuthorize("hasRole('LOCATION_CREATE') or hasRole('LOCATION_UPDATE')")
 	public Set<String> saveLocations(List<PhysicalLocation> locations, boolean isJurisdiction) {
@@ -315,15 +285,9 @@ public class PhysicalLocationService {
 	}
 	
 	/**
-<<<<<<< HEAD
-	 * This methods searches for a location and it's children using the provided location Ids
-	 * returns the Geometry optionally if @param returnGeometry is set to true.
-	 *
-=======
 	 * This methods searches for a location and it's children using the provided location Ids returns
 	 * the Geometry optionally if @param returnGeometry is set to true.
 	 * 
->>>>>>> master
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param locationIds location ids
 	 * @param pageSize number of records to be returned
