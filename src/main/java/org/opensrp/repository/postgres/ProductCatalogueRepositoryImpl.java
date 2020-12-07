@@ -2,11 +2,12 @@ package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.ProductCatalogue;
+import org.smartregister.domain.ProductCatalogue;
 import org.opensrp.domain.postgres.ProductCatalogueExample;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomProductCatalogueMapper;
 import org.opensrp.search.ProductCatalogueSearchBean;
+import org.smartregister.pathevaluator.dao.ProductCatalogueDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +18,7 @@ import static org.opensrp.util.Utils.isEmptyList;
 
 @Repository("productCatalogueRepositoryPostgres")
 public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCatalogue>
-		implements ProductCatalogueRepository {
+		implements ProductCatalogueRepository, ProductCatalogueDao {
 
 	@Autowired
 	private CustomProductCatalogueMapper customProductCatalogueMapper;
@@ -215,4 +216,10 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 
 		return criteria;
 	}
+
+	@Override
+	public ProductCatalogue getProductCatalogueById(Long uniqueId) {
+		return getById(uniqueId);
+	}
+
 }

@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import com.ibm.fhir.model.resource.Basic;
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.repository.LocationRepository;
+import org.smartregister.converters.StockConverter;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.Stock;
 import org.opensrp.domain.postgres.StockExample;
@@ -308,7 +311,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	}
 
 	@Override
-	public List<Stock> findInventoryItemsInAJurisdiction(String jurisdictionId) {
+	public List<Basic> findInventoryItemsInAJurisdiction(String jurisdictionId) {
 		List<PhysicalLocation> childLocations =
 				locationRepository.findStructuresByProperties(false, jurisdictionId, null);
 		List<String> servicePointIds = new ArrayList<>();
@@ -318,12 +321,17 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 
 		StockSearchBean stockSearchBean = new StockSearchBean();
 		stockSearchBean.setLocationIds(servicePointIds);
-		return findStocks(stockSearchBean);
+		return convertToFHIR(findStocks(stockSearchBean));
 	}
 
 	@Override
-	public List<Stock> findInventoryInAServicePoint(String servicePointId) {
-		return findStocksByLocationId(servicePointId);
+	public List<Basic> findInventoryInAServicePoint(String servicePointId) {
+		return convertToFHIR(findStocksByLocationId(servicePointId));
+	}
+
+	private List<Basic> convertToFHIR(List<Stock> stocks) {
+		return stocks.stream().map(client -> StockConverter.convertStockToBasicResource(client))
+				.collect(Collectors.toList());
 	}
 
 }

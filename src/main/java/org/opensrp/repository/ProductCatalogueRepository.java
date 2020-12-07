@@ -1,6 +1,6 @@
 package org.opensrp.repository;
 
-import org.opensrp.domain.ProductCatalogue;
+import org.smartregister.domain.ProductCatalogue;
 import org.opensrp.search.ProductCatalogueSearchBean;
 
 import java.util.List;

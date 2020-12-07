@@ -7,7 +7,7 @@ import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.opensrp.domain.ProductCatalogue;
+import org.smartregister.domain.ProductCatalogue;
 import org.opensrp.util.DateTypeConverter;
 import org.postgresql.util.PGobject;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
