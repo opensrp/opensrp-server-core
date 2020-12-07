@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
+import org.smartregister.domain.PlanDefinition;
 import org.opensrp.repository.PlanRepository;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +24,19 @@ public class PlanService {
 
 	private PractitionerService practitionerService;
 
+	private PractitionerRoleService practitionerRoleService;
+
 	private OrganizationService organizationService;
 
 	private TaskGenerator taskGenerator;
 
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
-	    OrganizationService organizationService, TaskGenerator taskGenerator) {
-
+			OrganizationService organizationService, TaskGenerator taskGenerator) {
 		this.planRepository = planRepository;
-		this.practitionerService=practitionerService;
+		this.organizationService = organizationService;
+		this.practitionerService = practitionerService;
+		this.practitionerRoleService = practitionerRoleService;
 		this.organizationService = organizationService;
 		this.taskGenerator = taskGenerator;
 	}
@@ -40,7 +44,7 @@ public class PlanService {
 	public PlanRepository getPlanRepository() {
 		return planRepository;
 	}
-	
+
 	@PreAuthorize("hasRole('PLAN_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'PLAN_VIEW')")
 	public List<PlanDefinition> getAllPlans(boolean experimental) {
@@ -73,7 +77,7 @@ public class PlanService {
 		taskGenerator.processPlanEvaluation(plan, null,username);
 		return plan;
 	}
-	
+
 	/* @formatter:off */
 	@PreAuthorize("hasPermission(#plan,'PlanDefinition', 'PLAN_UPDATE') ")
 	/* @formatter:on */
@@ -111,7 +115,7 @@ public class PlanService {
 	 * @return plan definitions whose identifiers match the provided params
 	 */
 	@PreAuthorize("hasRole('PLAN_VIEW')")
-	@PostAuthorize("hasPermission(returnObject,'PlanDefinition', 'PLAN_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'PLAN_VIEW')")
 	public List<PlanDefinition> getPlansByIdsReturnOptionalFields(List<String> ids, List<String> fields, boolean experimental) {
 		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields, experimental);
 	}
@@ -162,7 +166,8 @@ public class PlanService {
 	 * @return the plans a user has access to
 	 */
 	@PreAuthorize("hasPermission(#username,'User', 'PLAN_VIEW')")
-	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion, boolean experimental) {		
+	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion, boolean experimental) {
+		
 		List<Long> organizationIds = practitionerService.getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
 			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion, experimental);
@@ -192,8 +197,8 @@ public class PlanService {
 	 * @param limit upper limit on number of plans to fetch
 	 * @return list of plan identifiers
 	 */
-
 	@PreAuthorize("hasRole('PLAN_ADMIN')")
+	@PostFilter("hasPermission(filterObject, 'PLAN_VIEW')")
 	public List<PlanDefinition> getAllPlans(Long serverVersion, int limit, boolean experimental) {
 		return getPlanRepository().getAllPlans(serverVersion, limit, experimental);
 	}

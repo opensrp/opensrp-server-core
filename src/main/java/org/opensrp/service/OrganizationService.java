@@ -15,6 +15,9 @@ import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.OrganizationSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.stereotype.Service;
 
@@ -53,6 +56,8 @@ public class OrganizationService {
 	 * 
 	 * @return all organizations
 	 */
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'ORGANIZATION_VIEW')")
 	public List<Organization> getAllOrganizations() {
 		return organizationRepository.getAll();
 	}
@@ -62,6 +67,8 @@ public class OrganizationService {
 	 *
 	 * @return all organizations
 	 */
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'ORGANIZATION_VIEW')")
 	public List<Organization> selectOrganizationsEncompassLocations(String location_id) {
 		return organizationRepository.selectOrganizationsEncompassLocations(location_id, new Date());
 	}
@@ -72,6 +79,8 @@ public class OrganizationService {
 	 * @param identifier
 	 * @return organization with matching identifier
 	 */
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
+	@PostAuthorize("hasPermission(returnObject, 'ORGANIZATION_VIEW')")
 	public Organization getOrganization(String identifier) {
 		return organizationRepository.get(identifier);
 	}
@@ -82,6 +91,8 @@ public class OrganizationService {
 	 * @param identifier
 	 * @return organization with matching identifier
 	 */
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
+	@PostAuthorize("hasPermission(returnObject, ORGANIZATION_VIEW')")
 	public Organization getOrganization(Long id) {
 		return organizationRepository.getByPrimaryKey(id);
 	}
@@ -100,6 +111,7 @@ public class OrganizationService {
 	 * 
 	 * @param organization to add on update
 	 */
+	@PreAuthorize("hasPermission(#organization,'Organization', 'ORGANIZATION_CREATE') and hasPermission(#organization,'Organization', 'ORGANIZATION_UPDATE')")
 	public void addOrUpdateOrganization(Organization organization) {
 		validateIdentifier(organization);
 		Organization entity = organizationRepository.get(organization.getIdentifier());
@@ -116,6 +128,7 @@ public class OrganizationService {
 	 * 
 	 * @param organization to add
 	 */
+	@PreAuthorize("hasPermission(#organization,'Organization', 'ORGANIZATION_CREATE')")
 	public void addOrganization(Organization organization) {
 		validateIdentifier(organization);
 		organizationRepository.add(organization);
@@ -127,6 +140,7 @@ public class OrganizationService {
 	 * 
 	 * @param organization to update
 	 */
+	@PreAuthorize("hasPermission(#organization,'Organization', 'ORGANIZATION_UPDATE')")
 	public void updateOrganization(Organization organization) {
 		validateIdentifier(organization);
 		organizationRepository.update(organization);
@@ -142,6 +156,7 @@ public class OrganizationService {
 	 * @param fromDate
 	 * @param toDate
 	 */
+	@PreAuthorize("hasPermission(#identifier,'OrganizationLocation','ORGANIZATION_ASSIGN_LOCATION')")
 	public void assignLocationAndPlan(String identifier, String jurisdictionId, String planId, Date fromDate, Date toDate) {
 		validateIdentifier(identifier);
 		if (StringUtils.isBlank(identifier))
@@ -153,8 +168,8 @@ public class OrganizationService {
 			throw new IllegalArgumentException("Organization not found");
 		revokeFromCache(identifier);
 		organizationRepository.assignLocationAndPlan(organization.getId(), jurisdictionId,
-				locationRepository.retrievePrimaryKey(jurisdictionId, true, 0), planId,
-				planRepository.retrievePrimaryKey(planId), fromDate == null ? new Date() : fromDate, toDate);
+		    locationRepository.retrievePrimaryKey(jurisdictionId, true, 0), planId, planRepository.retrievePrimaryKey(planId),
+		    fromDate == null ? new Date() : fromDate, toDate);
 
 	}
 
@@ -164,6 +179,8 @@ public class OrganizationService {
 	 * @param identifier the organization identifier
 	 * @return the assigned locations and plans
 	 */
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW_LOCATIONS')")
+	@PostFilter("hasPermission(filterObject ,'ORGANIZATION_VIEW_LOCATIONS')")
 	public List<AssignedLocations> findAssignedLocationsAndPlans(String identifier) {
 		validateIdentifier(identifier);
 		Organization organization = getOrganization(identifier);
@@ -179,6 +196,8 @@ public class OrganizationService {
 	 * @param organizationIds the organization ids
 	 * @return the assigned locations and plans
 	 */
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW_LOCATIONS')")
+	@PostFilter("hasPermission(filterObject,'ORGANIZATION_VIEW_LOCATIONS')")
 	public List<AssignedLocations> findAssignedLocationsAndPlans(List<Long> organizationIds) {
 		return organizationRepository.findAssignedLocations(organizationIds);
 
@@ -190,6 +209,8 @@ public class OrganizationService {
 	 * @param planIdentifier the plan identifier
 	 * @return the assigned locations and plans
 	 */
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW_LOCATIONS')") 
+	@PostFilter("hasPermission(filterObject,'ORGANIZATION_VIEW_LOCATIONS')")
 	public List<AssignedLocations> findAssignedLocationsAndPlansByPlanIdentifier(String planIdentifier) {
 		if (StringUtils.isBlank(planIdentifier))
 			throw new IllegalArgumentException("PlanIdentifier Identifier not specified");
@@ -236,6 +257,8 @@ public class OrganizationService {
 		this.planRepository = planRepository;
 	}
 
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'ORGANIZATION_VIEW')")
 	public List<Organization> getSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findSearchOrganizations(organizationSearchBean);
 	}

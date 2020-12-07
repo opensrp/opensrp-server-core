@@ -3,13 +3,14 @@ package org.opensrp.service;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.TreeNode;
 import org.opensrp.domain.setting.Setting;
-import org.opensrp.domain.setting.SettingConfiguration;
+import org.opensrp.domain.setting.SETTINGS_VIEW;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.repository.postgres.handler.SettingTypeHandler;
 import org.opensrp.search.SettingSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -35,7 +36,8 @@ public class SettingService {
 	 * @param settingQueryBean {@link SettingSearchBean} -- has the required parameters for the search
 	 * @return
 	 */
-	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean,
+	@PreAuthorize("hasRole('SETTINGS_VIEW_VIEW')")
+	public List<SETTINGS_VIEW> findSettings(SettingSearchBean settingQueryBean,
 			Map<String, TreeNode<String, Location>> treeNodeHashMap) {
 		return settingRepository.findSettings(settingQueryBean, treeNodeHashMap);
 	}
@@ -45,14 +47,14 @@ public class SettingService {
 	 */
 	public void addServerVersion() {
 		try {
-			List<SettingConfiguration> settingConfigurations = settingRepository.findByEmptyServerVersion();
-			logger.info("RUNNING addServerVersion settings size: " + settingConfigurations.size());
+			List<SETTINGS_VIEW> SETTINGS_VIEWs = settingRepository.findByEmptyServerVersion();
+			logger.info("RUNNING addServerVersion settings size: " + SETTINGS_VIEWs.size());
 			long currentTimeMillis = System.currentTimeMillis();
-			for (SettingConfiguration settingConfiguration : settingConfigurations) {
+			for (SETTINGS_VIEW SETTINGS_VIEW : SETTINGS_VIEWs) {
 				try {
 					Thread.sleep(1);
-					settingConfiguration.setServerVersion(currentTimeMillis);
-					settingRepository.update(settingConfiguration);
+					SETTINGS_VIEW.setServerVersion(currentTimeMillis);
+					settingRepository.update(SETTINGS_VIEW);
 					currentTimeMillis += 1;
 				}
 				catch (InterruptedException e) {
@@ -66,33 +68,34 @@ public class SettingService {
 	}
 
 	/**
-	 * Used by the v1 setting endpoint to create the settings configuration {@link SettingConfiguration} & save the settings
+	 * Used by the v1 setting endpoint to create the settings configuration {@link SETTINGS_VIEW} & save the settings
 	 *
-	 * @param jsonSettingConfiguration {@link String} -- the string representation of the settings configuration
+	 * @param jsonSETTINGS_VIEW {@link String} -- the string representation of the settings configuration
 	 * @return
 	 */
-	public synchronized String saveSetting(String jsonSettingConfiguration) {
+	@PreAuthorize("hasRole('SETTINGS_VIEW_CREATE') or hasRole('SETTINGS_VIEW_UPDATE')")
+	public synchronized String saveSetting(String jsonSETTINGS_VIEW) {
 		SettingTypeHandler settingTypeHandler = new SettingTypeHandler();
-		SettingConfiguration settingConfigurations = null;
+		SETTINGS_VIEW SETTINGS_VIEWs = null;
 		try {
-			settingConfigurations = settingTypeHandler.mapper
-					.readValue(jsonSettingConfiguration, SettingConfiguration.class);
+			SETTINGS_VIEWs = settingTypeHandler.mapper
+					.readValue(jsonSETTINGS_VIEW, SETTINGS_VIEW.class);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		settingConfigurations.setServerVersion(Calendar.getInstance().getTimeInMillis());
-		settingConfigurations.setV1Settings(true);
+		SETTINGS_VIEWs.setServerVersion(Calendar.getInstance().getTimeInMillis());
+		SETTINGS_VIEWs.setV1Settings(true);
 
-		if (settingConfigurations.getId() != null && settingRepository.get(settingConfigurations.getId()) != null) {
-			settingRepository.update(settingConfigurations);
+		if (SETTINGS_VIEWs.getId() != null && settingRepository.get(SETTINGS_VIEWs.getId()) != null) {
+			settingRepository.update(SETTINGS_VIEWs);
 
 		} else {
-			settingRepository.add(settingConfigurations);
+			settingRepository.add(SETTINGS_VIEWs);
 		}
 
-		return settingConfigurations.getIdentifier();
+		return SETTINGS_VIEWs.getIdentifier();
 
 	}
 
@@ -101,6 +104,7 @@ public class SettingService {
 	 *
 	 * @param setting {@link Setting}
 	 */
+	@PreAuthorize("hasRole('SETTINGS_VIEW_CREATE') or hasRole('SETTINGS_VIEW_UPDATE')")
 	public void addOrUpdateSettings(Setting setting) {
 		if (setting != null) {
 			setting.setServerVersion(Calendar.getInstance().getTimeInMillis());
@@ -113,6 +117,7 @@ public class SettingService {
 	 *
 	 * @param id {@link Long} -- settings id
 	 */
+	@PreAuthorize("hasRole('SETTINGS_VIEW_DELETE')")
 	public void deleteSetting(Long id) {
 		if (id != null) {
 			settingRepository.delete(id);

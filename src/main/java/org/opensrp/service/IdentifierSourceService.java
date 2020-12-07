@@ -23,6 +23,7 @@ public class IdentifierSourceService {
 		this.identifierSourceRepository = identifierSourceRepository;
 	}
 
+	@PreAuthorize("hasRole('IDENTIFIERSOURCE_VIEW')")
 	public List<IdentifierSource> findAllIdentifierSources() {
 		return identifierSourceRepository.getAll();
 	}

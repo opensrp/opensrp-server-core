@@ -18,6 +18,7 @@ import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'Client', 'CLIENT_VIEW')")
 	public Client getByBaseEntityId(String baseEntityId) {
 		return allClients.findByBaseEntityId(baseEntityId);
 	}
@@ -115,7 +116,7 @@ public class ClientService {
 		return allClients.findByDynamicQuery(query);
 	}
 
-	@PreAuthorize("hasRole('CLIENT_CREATE')")
+	@PreAuthorize("hasPermission(#client,'CLIENT', 'CLIENT_CREATE')")
 	public Client addClient(Client client) {
 		if (client.getBaseEntityId() == null) {
 			throw new RuntimeException("No baseEntityId");
@@ -139,6 +140,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'Client', 'CLIENT_VIEW')")
 	public Client findClient(Client client) {
 		// find by auto assigned entity id
 		Client c = allClients.findByBaseEntityId(client.getBaseEntityId());
@@ -161,7 +163,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
+	@PostAuthorize("hasPermission(filterObject, 'Client' , 'CLIENT_VIEW')")
 	public Client find(String uniqueId) {
 		// find by document id
 		Client c = allClients.findByBaseEntityId(uniqueId);
@@ -180,7 +182,7 @@ public class ClientService {
 		return c;
 	}
 
-	@PreAuthorize("hasRole('CLIENT_UPDATE')")
+	@PreAuthorize("hasPermission(#updatedClient,'Client', 'CLIENT_UPDATE')")
 	public void updateClient(Client updatedClient) throws JSONException {
 		// If update is on original entity
 		if (updatedClient.isNew()) {
@@ -195,7 +197,8 @@ public class ClientService {
 		updatedClient.setDateEdited(DateTime.now());
 		allClients.update(updatedClient);
 	}
-	
+
+	@PreAuthorize("hasPermission(#updatedClient,'Client', 'CLIENT_UPDATE')")
 	public Client mergeClient(Client updatedClient) {
 		try {
 			Client original = findClient(updatedClient);
@@ -238,21 +241,25 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar) {
 		return allClients.notInOpenMRSByServerVersion(serverVersion, calendar);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByFieldValue(String field, List<String> ids) {
 		return allClients.findByFieldValue(field, ids);
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByFieldValue(String id) {
 		return allClients.findByRelationShip(id);
 	}
 
-	@PreAuthorize("hasRole('CLIENT_CREATE')")
+	@PreAuthorize("(hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE'))) and"
+			+ " (hasPermission(#client,'Client','CLIENT_CREATE') or hasPermission(#client,'Client','CLIENT_UPDATE'))")
 	public Client addorUpdate(Client client) {
 		if (client.getBaseEntityId() == null) {
 			throw new RuntimeException("No baseEntityId");
@@ -274,7 +281,7 @@ public class ClientService {
 		return client;
 	}
 
-	@PreAuthorize("hasRole('CLIENT_CREATE')")
+	@PreAuthorize("hasPermission(#client,'Client','CLIENT_CREATE') and hasPermission(#client,'Client','CLIENT_UPDATE')")
 	public Client addorUpdate(Client client, boolean resetServerVersion) {
 		if (client.getBaseEntityId() == null) {
 			throw new RuntimeException("No baseEntityId");
@@ -314,6 +321,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> getHouseholdList(List<String> ids, String clientType, AddressSearchBean addressSearchBean,
 	                                     ClientSearchBean searchBean, List<Client> clients) {
 		Map<String, HouseholdClient> householdClients = getMemberCountHouseholdHeadProviderByClients(ids, clientType);
@@ -356,6 +364,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findHouseholdByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean,
 	                                            DateTime lastEditFrom, DateTime lastEditTo) {
 		clientSearchBean.setLastEditFrom(lastEditFrom);
@@ -365,6 +374,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllANCByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
 		return allClients.findANCByCriteria(clientSearchBean, addressSearchBean);
 	}
@@ -375,6 +385,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllChildByCriteria(ClientSearchBean clientSearchBean, AddressSearchBean addressSearchBean) {
 		return allClients.findChildByCriteria(clientSearchBean, addressSearchBean);
 	}
@@ -396,6 +407,8 @@ public class ClientService {
 		return allClients.findAllIds(serverVersion, limit, isArchived);
 	}
 
+	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByClientTypeAndLocationId(String clientType, String locationId) {
 		return allClients.findByClientTypeAndLocationId(clientType,locationId);
 	}

@@ -6,16 +6,26 @@ import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
 import static org.smartregister.domain.LocationProperty.PropertyStatus.ACTIVE;
 import static org.smartregister.domain.LocationProperty.PropertyStatus.PENDING_REVIEW;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.AssignedLocations;
-
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
@@ -28,12 +38,11 @@ import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-
-import javax.annotation.Resource;
 
 @Service
 public class PhysicalLocationService {
@@ -62,7 +71,7 @@ public class PhysicalLocationService {
 	public void setLocationRepository(LocationRepository locationRepository) {
 		this.locationRepository = locationRepository;
 	}
-
+	
 	public void setOrganizationService(OrganizationService organizationService) {
 		this.organizationService = organizationService;
 	}
@@ -71,22 +80,27 @@ public class PhysicalLocationService {
 		this.practitionerService = practitionerService;
 	}
 
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
 		return locationRepository.get(id, returnGeometry);
 	}
 
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public PhysicalLocation getLocation(String id, boolean returnGeometry, int version) {
 		return locationRepository.get(id, returnGeometry, version);
 	}
 
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public PhysicalLocation getStructure(String id, boolean returnGeometry) {
 		return locationRepository.getStructure(id, returnGeometry);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> getAllLocations() {
 		return locationRepository.getAll();
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_CREATE') or hasRole('LOCATION_UPDATE')")
 	public void addOrUpdate(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -98,14 +112,16 @@ public class PhysicalLocationService {
 			update(physicalLocation);
 		}
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_CREATE')")
 	public void add(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
 		physicalLocation.setServerVersion(null);
 		locationRepository.add(physicalLocation);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_UPDATE')")
 	public void update(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -130,21 +146,25 @@ public class PhysicalLocationService {
 		}
 
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {
 		return locationRepository.findLocationsByServerVersion(serverVersion);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationsByNames(String locationNames, long serverVersion) {
 		return locationRepository.findLocationsByNames(locationNames, serverVersion);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {
 		if (StringUtils.isBlank(parentId))
 			throw new IllegalArgumentException("parentId not specified");
 		return locationRepository.findStructuresByParentAndServerVersion(parentId, serverVersion);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_UPDATE')")
 	public void addServerVersion() {
 		try {
 			List<PhysicalLocation> locations = locationRepository.findByEmptyServerVersion();
@@ -174,7 +194,8 @@ public class PhysicalLocationService {
 			}
 		}
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_CREATE') or hasRole('LOCATION_UPDATE')")
 	public Set<String> saveLocations(List<PhysicalLocation> locations, boolean isJurisdiction) {
 		Set<String> locationsWithErrors = new HashSet<>();
 		for (PhysicalLocation location : locations) {
@@ -207,6 +228,7 @@ public class PhysicalLocationService {
 	 * @see org.opensrp.repository.LocationRepository#findLocationsByProperties(boolean, String,
 	 *      Map)
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId,
 	        Map<String, String> properties) {
 		return locationRepository.findLocationsByProperties(returnGeometry, parentId, properties);
@@ -224,6 +246,7 @@ public class PhysicalLocationService {
 	 * @see org.opensrp.repository.LocationRepository#findStructuresByProperties(boolean, String,
 	 *      Map)
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
 	        Map<String, String> properties) {
 		return locationRepository.findStructuresByProperties(returnGeometry, parentId, properties);
@@ -237,6 +260,7 @@ public class PhysicalLocationService {
 	 * @param ids list of location ids
 	 * @return jurisdictions whose ids match the provided params
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
 		return locationRepository.findLocationsByIds(returnGeometry, ids);
 	}
@@ -250,6 +274,7 @@ public class PhysicalLocationService {
 	 * @param ids list of location ids
 	 * @return jurisdictions whose ids match the provided params
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationsByIdsOrParentIds(boolean returnGeometry, List<String> ids) {
 		return locationRepository.findLocationsByIdsOrParentIds(returnGeometry, ids);
 	}
@@ -263,6 +288,7 @@ public class PhysicalLocationService {
 	 * @param pageSize number of records to be returned
 	 * @return location together with it's children whose id matches the provided param
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id, int pageSize) {
 		return locationRepository.findLocationByIdWithChildren(returnGeometry, id, pageSize);
 	}
@@ -310,6 +336,7 @@ public class PhysicalLocationService {
 	 * @param limit upper limit on number of jurisdictions to fetch
 	 * @return list of jurisdictions
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit) {
 		return locationRepository.findAllLocations(returnGeometry, serverVersion, limit);
 	};
@@ -321,6 +348,7 @@ public class PhysicalLocationService {
 	 * @param limit upper limit on number of structures to fetch
 	 * @return list of structures
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit) {
 		return locationRepository.findAllStructures(returnGeometry, serverVersion, limit);
 	};
@@ -335,7 +363,8 @@ public class PhysicalLocationService {
 	public Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit) {
 		return locationRepository.findAllLocationIds(serverVersion, limit);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
 		return locationRepository.searchLocations(locationSearchBean);
 	}
