@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.opensrp.domain.Organization;
+import org.opensrp.domain.Practitioner;
 import org.opensrp.domain.PractitionerRole;
 import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.repository.PractitionerRepository;
@@ -41,7 +42,7 @@ public class PractitionerRoleServiceTest {
     private OrganizationService organizationService;
 
 	@Mock
-    private PractitionerRepository practitionerRepository;
+    private PractitionerService practitionerService;
 
    
     @Test
@@ -132,17 +133,14 @@ public class PractitionerRoleServiceTest {
     @Test
     public void testDeleteByOrganizationAndPractitionerShouldCallRepostorySafeRemoveMethod() {
 
-        when(practitionerRoleRepository.getPractitionerRole(anyLong(), anyLong() ))
-                .thenReturn(Collections.singletonList(new org.opensrp.domain.postgres.PractitionerRole()));
-
         Organization organization = new Organization();
         organization.setId(1l);
         when(organizationService.getOrganization(anyString())).thenReturn(organization);
 
-        org.opensrp.domain.postgres.Practitioner pgPractitioner = new org.opensrp.domain.postgres.Practitioner();
-        pgPractitioner.setId(2l);
-
-        when(practitionerRepository.getPractitioner(anyString())).thenReturn(pgPractitioner);
+       org.opensrp.domain.postgres.Practitioner pgPractitioner = new org.opensrp.domain.postgres.Practitioner();
+       pgPractitioner.setId(1l);
+       
+        when(practitionerService.getPgPractitioner(anyString())).thenReturn(pgPractitioner);
 
         PractitionerRole practitionerRole = initTestPractitionerRole();
         practitionerRoleService.deletePractitionerRole(practitionerRole.getIdentifier(), practitionerRole.getOrganizationIdentifier());
