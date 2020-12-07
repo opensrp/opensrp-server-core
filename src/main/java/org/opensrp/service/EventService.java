@@ -24,6 +24,7 @@ import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,13 +68,13 @@ public class EventService {
 	}
 
 	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'Event', 'EVENT_VIEW')")
 	public Event getById(String id) {
 		return allEvents.findById(id);
 	}
 
 	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'Event', 'EVENT_VIEW')")
 	public Event getByBaseEntityAndFormSubmissionId(String baseEntityId, String formSubmissionId) {
 		return allEvents.findByBaseEntityAndFormSubmissionId(baseEntityId, formSubmissionId);
 	}
@@ -85,7 +86,7 @@ public class EventService {
 	}
 
 	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'Event', 'EVENT_VIEW')")
 	public Event findByFormSubmissionId(String formSubmissionId) {
 		return allEvents.findByFormSubmissionId(formSubmissionId, false);
 	}
@@ -105,7 +106,7 @@ public class EventService {
 	private static Logger logger = LoggerFactory.getLogger(EventService.class.toString());
 
 	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'Event', 'EVENT_VIEW')")
 	public Event find(String uniqueId) {
 		try {
 			List<Event> el = allEvents.findAllByIdentifier(uniqueId);
@@ -116,8 +117,7 @@ public class EventService {
 		}
 	}
 
-	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
+	@PreAuthorize("hasPermission(#event,'Event', 'EVENT_VIEW')")
 	public Event find(Event event) {
 		for (String idt : event.getIdentifiers().keySet()) {
 			try {
@@ -139,7 +139,7 @@ public class EventService {
 	 * @return an event matching the eventId
 	 */
 	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'Event', 'EVENT_VIEW')")
 	public Event findById(String eventId) {
 		try {
 			if (StringUtils.isEmpty(eventId)) {
@@ -161,7 +161,7 @@ public class EventService {
 	 * @return an event matching the eventId or formsubmission id
 	 */
 	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'Event', 'EVENT_VIEW')")
 	public Event findByIdOrFormSubmissionId(String eventId, String formSubmissionId) {
 		Event event = null;
 		try {
@@ -178,7 +178,7 @@ public class EventService {
 		return event;
 	}
 
-	@PreAuthorize("hasRole('EVENT_CREATE')")
+	@PreAuthorize("hasPermission(#event,'Event', 'EVENT_CREATE')")
 	public synchronized Event addEvent(Event event, String username) {
 		Event e = find(event);
 		if (e != null) {
@@ -296,7 +296,7 @@ public class EventService {
 		return event;
 	}
 
-	@PreAuthorize("hasRole('EVENT_CREATE')")
+	@PreAuthorize("hasPermission(#event,'Event', 'EVENT_CREATE') and hasPermission(#event,'Event', 'EVENT_UPDATE')")
 	public synchronized Event addorUpdateEvent(Event event) {
 		Event existingEvent = findByIdOrFormSubmissionId(event.getId(), event.getFormSubmissionId());
 		if (existingEvent != null) {
@@ -317,7 +317,7 @@ public class EventService {
 		return event;
 	}
 
-	@PreAuthorize("hasRole('EVENT_UPDATE')")
+	@PreAuthorize("hasPermission(#updatedEvent,'Event', 'EVENT_UPDATE')")
 	public void updateEvent(Event updatedEvent) {
 		// If update is on original entity
 		if (updatedEvent.isNew()) {
@@ -331,6 +331,7 @@ public class EventService {
 	}
 	
 	//TODO Review and add test cases as well
+	@PreAuthorize("hasPermission(#updatedEvent,'Event', 'EVENT_UPDATE')")
 	public Event mergeEvent(Event updatedEvent) {
 		try {
 			Event original = find(updatedEvent);

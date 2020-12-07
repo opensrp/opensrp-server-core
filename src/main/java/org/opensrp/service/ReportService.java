@@ -8,6 +8,7 @@ import org.opensrp.repository.ReportsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,23 +22,28 @@ public class ReportService {
 	public ReportService(ReportsRepository allReports) {
 		this.allReports = allReports;
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public List<Report> findAllByIdentifier(String identifier) {
 		return allReports.findAllByIdentifier(identifier);
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public List<Report> findByServerVersion(long serverVersion) {
 		return allReports.findByServerVersion(serverVersion);
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public Report getById(String id) {
 		return allReports.findById(id);
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public List<Report> getAll() {
 		return allReports.getAll();
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public Report find(String uniqueId) {
 		List<Report> reportList = allReports.findAllByIdentifier(uniqueId);
 		if (reportList.size() > 1) {
@@ -47,7 +53,8 @@ public class ReportService {
 		}
 		return null;
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public Report find(Report report) {
 		for (String idt : report.getIdentifiers().keySet()) {
 			List<Report> reportList = allReports.findAllByIdentifier(report.getIdentifier(idt));
@@ -60,7 +67,8 @@ public class ReportService {
 		}
 		return null;
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public Report findById(String reportId) {
 		try {
 			if (reportId == null || reportId.isEmpty()) {
@@ -105,7 +113,8 @@ public class ReportService {
 		updatedReport.setServerVersion(allReports.getNextServerVersion());
 		allReports.update(updatedReport);
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_CREATE') or hasRole('REPORT_UPDATE')")
 	public synchronized Report addorUpdateReport(Report report) {
 		Report existingReport = findById(report.getId());
 		if (existingReport != null) {
@@ -123,7 +132,8 @@ public class ReportService {
 		
 		return report;
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public Report getByBaseEntityAndFormSubmissionId(String baseEntityId, String formSubmissionId) {
 		List<Report> reportList = allReports.findByBaseEntityAndFormSubmissionId(baseEntityId, formSubmissionId);
 		if (reportList.size() > 1) {
@@ -135,16 +145,19 @@ public class ReportService {
 		}
 		return reportList.get(0);
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public List<Report> findByBaseEntityId(String baseEntityId) {
 		return allReports.findByBaseEntityId(baseEntityId);
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public List<Report> findReports(String team, String providerId, String locationId, Long serverVersion, String sortBy,
 	        String sortOrder, int limit) {
 		return allReports.findReports(team, providerId, locationId, null, serverVersion, sortBy, sortOrder, limit);
 	}
-	
+
+	@PreAuthorize("hasRole('REPORT_VIEW')")
 	public List<Report> findReports(String team, String providerId, String locationId, String baseEntityId,
 	        Long serverVersion, String sortBy, String sortOrder, int limit) {
 		return allReports.findReports(team, providerId, locationId, baseEntityId, serverVersion, sortBy, sortOrder, limit);

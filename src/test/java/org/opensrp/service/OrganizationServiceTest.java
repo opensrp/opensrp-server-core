@@ -322,6 +322,7 @@ public class OrganizationServiceTest {
 		assertEquals(expected, organizations);
 	}
 
+
 	private Practitioner initTestPractitioner(){
 		Practitioner practitioner = new Practitioner();
 		practitioner.setIdentifier("practitoner-1-identifier");
@@ -332,3 +333,4 @@ public class OrganizationServiceTest {
 		return practitioner;
 	}
 }
+
