@@ -39,7 +39,7 @@ public class SettingService {
 	@PreAuthorize("hasRole('SETTINGS_VIEW_VIEW')")
 	public List<SETTINGS_VIEW> findSettings(SettingSearchBean settingQueryBean,
 			Map<String, TreeNode<String, Location>> treeNodeHashMap) {
-		return settingRepository.findSettings(settingQueryBean,treeNodeHashMap);
+		return settingRepository.findSettings(settingQueryBean, treeNodeHashMap);
 	}
 
 	/**
@@ -107,6 +107,7 @@ public class SettingService {
 	@PreAuthorize("hasRole('SETTINGS_VIEW_CREATE') or hasRole('SETTINGS_VIEW_UPDATE')")
 	public void addOrUpdateSettings(Setting setting) {
 		if (setting != null) {
+			setting.setServerVersion(Calendar.getInstance().getTimeInMillis());
 			settingRepository.addOrUpdate(setting);
 		}
 	}

@@ -188,7 +188,18 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(clientMetadataExample);
 		return convert(pgClient);
 	}
-	
+
+	@Override
+	public Client findById(String id) {
+		if (StringUtils.isBlank(id)) {
+			return null;
+		}
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andDocumentIdEqualTo(id).andDateDeletedIsNull();
+		org.opensrp.domain.postgres.Client pgClient = clientMetadataMapper.selectOne(clientMetadataExample);
+		return convert(pgClient);
+	}
+
 	@Override
 	public List<Client> findAllClients() {
 		return getAll();
@@ -278,16 +289,19 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		    DEFAULT_FETCH_SIZE);
 		return convert(clients);
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public List<Client> findByServerVersion(long serverVersion) {
+	public List<Client> findByServerVersion(long serverVersion, Integer limit) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
-		clientMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion + 1)
+		clientMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion)
 		        .andDateDeletedIsNull();
-		clientMetadataExample.setOrderByClause("server_version ASC");
-		
+		clientMetadataExample.setOrderByClause(this.getOrderByClause(SERVER_VERSION, ASCENDING));
+		Integer pageLimit = limit == null ? DEFAULT_FETCH_SIZE : limit;
 		List<org.opensrp.domain.postgres.Client> clients = clientMetadataMapper.selectMany(clientMetadataExample, 0,
-		    DEFAULT_FETCH_SIZE);
+				pageLimit);
 		return convert(clients);
 	}
 	

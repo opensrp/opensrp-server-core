@@ -5,9 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,20 +14,12 @@ import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,13 +29,20 @@ import org.mockito.Mockito;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.api.util.TreeNode;
-import org.opensrp.domain.StructureCount;
-import org.smartregister.domain.Geometry.GeometryType;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyInt;
+import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.LocationDetail;
+import org.opensrp.domain.StructureCount;
+import org.opensrp.domain.Practitioner;
+import org.powermock.reflect.Whitebox;
+import org.smartregister.domain.Geometry.GeometryType;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.LocationProperty.PropertyStatus;
 import org.smartregister.domain.PhysicalLocation;
-import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.search.LocationSearchBean;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -54,6 +50,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.gson.JsonArray;
 import org.smartregister.utils.PropertiesConverter;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({ "com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*", "org.w3c.*" })
@@ -62,11 +60,19 @@ public class PhysicalLocationServiceTest {
 	private PhysicalLocationService locationService;
 	
 	private LocationRepository locationRepository;
-	
+
+	private HashOperations<String,String,List<AssignedLocations>> hashOps;
+
+	private RedisTemplate<String, String> redisTemplate;
+
+	private PractitionerService practitionerService;
+
+	private OrganizationService organizationService;
+
 	private ArgumentCaptor<PhysicalLocation> argumentCaptor = ArgumentCaptor.forClass(PhysicalLocation.class);
 
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(LocationProperty.class, new PropertiesConverter())
-			.setDateFormat("yyyy-MM-dd'T'HHmm").create();
+	        .setDateFormat("yyyy-MM-dd'T'HHmm").create();
 
 	public static String structureJson = "{\"type\":\"Feature\",\"id\":\"90397\",\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[[[32.5978597,-14.1699446],[32.5978956,-14.1699609],[32.5978794,-14.1699947],[32.5978434,-14.1699784],[32.5978597,-14.1699446]]]},\"properties\":{\"uid\":\"41587456-b7c8-4c4e-b433-23a786f742fc\",\"code\":\"21384443\",\"type\":\"Residential Structure\",\"status\":\"Active\",\"parentId\":\"3734\",\"geographicLevel\":5,\"effectiveStartDate\":\"2017-01-10T0000\",\"version\":0}}";
 
@@ -75,8 +81,16 @@ public class PhysicalLocationServiceTest {
 	@Before
 	public void setUp() {
 		locationRepository = mock(LocationRepository.class);
+		practitionerService = mock(PractitionerService.class);
+		organizationService = mock(OrganizationService.class);
 		locationService = new PhysicalLocationService();
 		locationService.setLocationRepository(locationRepository);
+		locationService.setOrganizationService(organizationService);
+		locationService.setPractitionerService(practitionerService);
+		hashOps = mock(HashOperations.class);
+		redisTemplate = mock(RedisTemplate.class);
+		Whitebox.setInternalState(locationService,"hashOps",hashOps);
+		Whitebox.setInternalState(locationService,"redisTemplate",redisTemplate);
 	}
 
 	@Test
@@ -90,7 +104,7 @@ public class PhysicalLocationServiceTest {
 	
 	@Test
 	public void testGetLocationWithVersion() {
-		when(locationRepository.get("3734", true,0)).thenReturn(createLocation());
+		when(locationRepository.get("3734", true, 0)).thenReturn(createLocation());
 		PhysicalLocation parentLocation = locationService.getLocation("3734", true, 0);
 		verify(locationRepository).get("3734", true, 0);
 		verifyLocationData(parentLocation);
@@ -109,7 +123,7 @@ public class PhysicalLocationServiceTest {
 
 		assertFalse(parentLocation.getGeometry().getCoordinates().isJsonNull());
 		JsonArray coordinates = parentLocation.getGeometry().getCoordinates().get(0).getAsJsonArray().get(0)
-				.getAsJsonArray();
+		        .getAsJsonArray();
 		assertEquals(267, coordinates.size());
 
 		JsonArray coordinate1 = coordinates.get(0).getAsJsonArray();
@@ -570,8 +584,7 @@ public class PhysicalLocationServiceTest {
 	}
 	
 	private PhysicalLocation createLocation() {
-		PhysicalLocation parentLocation = gson.fromJson(parentJson,
-		    PhysicalLocation.class);
+		PhysicalLocation parentLocation = gson.fromJson(parentJson, PhysicalLocation.class);
 		parentLocation.setJurisdiction(true);
 		return parentLocation;
 	}
@@ -694,18 +707,17 @@ public class PhysicalLocationServiceTest {
 
 		Set<LocationDetail> locationDetails = new HashSet<>();
 
-		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
-				.tags("Country").build();
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1").tags("Country").build();
 		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
-				.tags("Province").build();
+		        .tags("Province").build();
 		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
-				.tags("Province").build();
+		        .tags("Province").build();
 		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
-				.tags("District").build();
+		        .tags("District").build();
 		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
-				.tags("District").build();
+		        .tags("District").build();
 		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
-				.tags("District").build();
+		        .tags("District").build();
 
 		locationDetails.add(country);
 		locationDetails.add(province1);
@@ -756,20 +768,20 @@ public class PhysicalLocationServiceTest {
 		String locationId = "1";
 		Set<LocationDetail> locationDetails = new LinkedHashSet<>();
 
-		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
-				.tags("Country").geographicLevel(0).build();
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1").tags("Country")
+		        .geographicLevel(0).build();
 		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
-				.tags("Province").geographicLevel(1).build();
+		        .tags("Province").geographicLevel(1).build();
 		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
-				.tags("Province").geographicLevel(1).build();
+		        .tags("Province").geographicLevel(1).build();
 		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
-				.tags("District").geographicLevel(2).build();
+		        .tags("District").geographicLevel(2).build();
 		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
-				.tags("District").geographicLevel(2).build();
+		        .tags("District").geographicLevel(2).build();
 		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
-				.tags("District").geographicLevel(2).build();
+		        .tags("District").geographicLevel(2).build();
 		LocationDetail district4 = LocationDetail.builder().name("District 4").id(8l).identifier("123").parentId("12")
-				.tags("District").geographicLevel(2).build(); // Test what happens when child location has no structures
+		        .tags("District").geographicLevel(2).build(); // Test what happens when child location has no structures
 
 		// records are ordered by level in the db query
 		locationDetails.add(district4);
@@ -798,7 +810,6 @@ public class PhysicalLocationServiceTest {
 		structureCounts.add(structureCountD1);
 		structureCounts.add(structureCountD2);
 		structureCounts.add(structureCountD3);
-
 
 		when(locationRepository.findStructureCountsForLocation(locationIdentifiers)).thenReturn(structureCounts);
 
@@ -840,18 +851,18 @@ public class PhysicalLocationServiceTest {
 	public void testBuildLocationHierarchy() {
 		Set<LocationDetail> locationDetails = new HashSet<>();
 
-		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
-				.tags("Country").geographicLevel(0).build();
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1").tags("Country")
+		        .geographicLevel(0).build();
 		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
-				.tags("Province").geographicLevel(1).build();
+		        .tags("Province").geographicLevel(1).build();
 		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
-				.tags("Province").geographicLevel(1).build();
+		        .tags("Province").geographicLevel(1).build();
 		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
-				.tags("District").geographicLevel(2).build();
+		        .tags("District").geographicLevel(2).build();
 		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
-				.tags("District").geographicLevel(2).build();
+		        .tags("District").geographicLevel(2).build();
 		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
-				.tags("District").geographicLevel(2).build();
+		        .tags("District").geographicLevel(2).build();
 
 		locationDetails.add(country);
 		locationDetails.add(province1);
@@ -905,20 +916,20 @@ public class PhysicalLocationServiceTest {
 	public void testBuildLocationHierarchyWithStructureCounts() {
 		Set<LocationDetail> locationDetails = new LinkedHashSet<>();
 
-		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1")
-				.tags("Country").geographicLevel(0).build();
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1").tags("Country")
+		        .geographicLevel(0).build();
 		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
-				.tags("Province").geographicLevel(1).build();
+		        .tags("Province").geographicLevel(1).build();
 		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
-				.tags("Province").geographicLevel(1).build();
+		        .tags("Province").geographicLevel(1).build();
 		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
-				.tags("District").geographicLevel(2).build();
+		        .tags("District").geographicLevel(2).build();
 		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
-				.tags("District").geographicLevel(2).build();
+		        .tags("District").geographicLevel(2).build();
 		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
-				.tags("District").geographicLevel(2).build();
+		        .tags("District").geographicLevel(2).build();
 		LocationDetail district4 = LocationDetail.builder().name("District 4").id(8l).identifier("123").parentId("12")
-				.tags("District").geographicLevel(2).build(); // Test what happens when child not has no structures
+		        .tags("District").geographicLevel(2).build(); // Test what happens when child not has no structures
 
 		// records are ordered by level in the db query
 		locationDetails.add(district4);
@@ -947,7 +958,6 @@ public class PhysicalLocationServiceTest {
 		structureCounts.add(structureCountD1);
 		structureCounts.add(structureCountD2);
 		structureCounts.add(structureCountD3);
-
 
 		when(locationRepository.findStructureCountsForLocation(locationIdentifiers)).thenReturn(structureCounts);
 
@@ -985,7 +995,8 @@ public class PhysicalLocationServiceTest {
 		assertEquals(8, district3Node.getNode().getAttribute(STRUCTURE_COUNT));
 	}
 
-	private void verifyLocationData(TreeNode<String, Location> node, LocationDetail locationDetail, LocationDetail parentLD, int geographicLevel, boolean hasChildren ) {
+	private void verifyLocationData(TreeNode<String, Location> node, LocationDetail locationDetail, LocationDetail parentLD,
+	        int geographicLevel, boolean hasChildren) {
 		assertNotNull(node);
 		assertEquals(locationDetail.getIdentifier(), node.getId());
 		assertEquals(locationDetail.getName(), node.getLabel());
@@ -994,6 +1005,62 @@ public class PhysicalLocationServiceTest {
 		}
 		assertEquals(parentLD.getIdentifier(), node.getParent());
 		assertEquals(geographicLevel, node.getNode().getAttribute("geographicLevel"));
+	}
+
+	@Test
+	public void testGetAssignedLocationsFromCache() {
+		AssignedLocations assigment = new AssignedLocations("loc1", "plan1");
+		List<AssignedLocations> expected = Collections.singletonList(assigment);
+		when(hashOps.hasKey(anyString(), any(Object.class))).thenReturn(Boolean.TRUE);
+		when(hashOps.get(anyString(), any(Object.class))).thenReturn(expected);
+		List<AssignedLocations> actual = locationService.getAssignedLocations("testUser");
+		assertEquals(expected.size(),actual.size());
+		assertEquals(expected.get(0).getPlanId(),"plan1");
+		assertEquals(expected.get(0).getJurisdictionId(),"loc1");
+	}
+
+	@Test
+	public void testGetAssignedLocationsFromDb() {
+		AssignedLocations assigment1 = new AssignedLocations("loc1", "plan1");
+		assigment1.setToDate(new Date());
+		AssignedLocations assigment2 = new AssignedLocations("loc2", "plan2");
+		assigment2.setToDate(new Date());
+		List<AssignedLocations> expected = new ArrayList<>();
+		expected.add(assigment1);
+		expected.add(assigment2);
+		List<Long> expectedOrganizationIds = Collections.singletonList(1234l);
+		Practitioner practitioner = new Practitioner();
+		ImmutablePair<Practitioner, List<Long>> practitionerListImmutablePair = new ImmutablePair<>(practitioner,expectedOrganizationIds);
+		when(hashOps.hasKey(anyString(), any(Object.class))).thenReturn(Boolean.FALSE);
+		when(practitionerService.getOrganizationsByUserId(anyString())).thenReturn(practitionerListImmutablePair);
+		when(organizationService.findAssignedLocationsAndPlans(any(List.class))).thenReturn(expected);
+		when(redisTemplate.expire(anyString(),any(long.class),any(TimeUnit.class))).thenReturn(Boolean.TRUE);
+
+		List<AssignedLocations> actual = locationService.getAssignedLocations("testUser");
+		assertEquals(expected.size(),actual.size());
+		assertEquals(expected.get(0).getPlanId(),"plan1");
+		assertEquals(expected.get(1).getPlanId(),"plan2");
+		assertEquals(expected.get(0).getJurisdictionId(),"loc1");
+		assertEquals(expected.get(1).getJurisdictionId(),"loc2");
+	}
+
+	@Test
+	public void testfindLocationByIdWithChildren() {
+		List<PhysicalLocation> expected = new ArrayList<>();
+		expected.add(createLocation());
+		when(locationRepository.findLocationByIdWithChildren(false, "1332232", 1000)).thenReturn(expected);
+		assertEquals(expected, locationService.findLocationByIdWithChildren(false, "1332232", 1000));
+		verify(locationRepository).findLocationByIdWithChildren(false, "1332232", 1000);
+	}
+
+	@Test
+	public void testfindLocationByIdsWithChildren() {
+		List<PhysicalLocation> expected = new ArrayList<>();
+		expected.add(createLocation());
+		Set<String> ids = new HashSet<>(Arrays.asList("123","23435463","9888787"));
+		when(locationRepository.findLocationByIdsWithChildren(false, ids, 1000)).thenReturn(expected);
+		assertEquals(expected, locationService.findLocationByIdsWithChildren(false, ids, 1000));
+		verify(locationRepository).findLocationByIdsWithChildren(false, ids, 1000);
 	}
 
 }

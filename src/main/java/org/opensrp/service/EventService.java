@@ -12,6 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
+import org.opensrp.repository.PlanRepository;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.opensrp.repository.EventsRepository;
@@ -19,10 +20,12 @@ import org.opensrp.search.EventSearchBean;
 import org.opensrp.util.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,11 +36,20 @@ public class EventService {
 	private final EventsRepository allEvents;
 	
 	private ClientService clientService;
-	
+
+	private TaskGenerator taskGenerator;
+
+	private PlanRepository planRepository;
+
+	@Value("#{opensrp['plan.evaluation.enabled'] ?: false}")
+	private boolean isPlanEvaluationEnabled ;
+
 	@Autowired
-	public EventService(EventsRepository allEvents, ClientService clientService) {
+	public EventService(EventsRepository allEvents, ClientService clientService, TaskGenerator taskGenerator, PlanRepository planRepository) {
 		this.allEvents = allEvents;
 		this.clientService = clientService;
+		this.taskGenerator = taskGenerator;
+		this.planRepository = planRepository;
 	}
 
 	@PreAuthorize("hasRole('EVENT_VIEW')")
@@ -102,8 +114,7 @@ public class EventService {
 		}
 	}
 
-	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@preAuthorize("hasPermission(#event,'Event', 'EVENT_VIEW')")
+	@PreAuthorize("hasPermission(#event,'Event', 'EVENT_VIEW')")
 	public Event find(Event event) {
 		for (String idt : event.getIdentifiers().keySet()) {
 			try {
@@ -163,7 +174,7 @@ public class EventService {
 	}
 
 	@PreAuthorize("hasPermission(#event,'Event', 'EVENT_CREATE')")
-	public synchronized Event addEvent(Event event) {
+	public synchronized Event addEvent(Event event, String username) {
 		Event e = find(event);
 		if (e != null) {
 			throw new IllegalArgumentException(
@@ -178,6 +189,13 @@ public class EventService {
 		
 		event.setDateCreated(DateTime.now());
 		allEvents.add(event);
+		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
+		if (isPlanEvaluationEnabled && planIdentifier != null) {
+			PlanDefinition plan = planRepository.get(planIdentifier);
+			if(plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null ||
+					plan.getEffectivePeriod().getEnd().isAfter(new DateTime().toLocalDate())))
+			taskGenerator.processPlanEvaluation(plan, username, event);
+		}
 		return event;
 	}
 	
@@ -190,7 +208,7 @@ public class EventService {
 	 * @param event
 	 * @return
 	 */
-	public synchronized Event processOutOfArea(Event event) {
+	public synchronized Event processOutOfArea(Event event, String username) {
 		try {
 			final String BIRTH_REGISTRATION_EVENT = "Birth Registration";
 			final String GROWTH_MONITORING_EVENT = "Growth Monitoring";
@@ -255,7 +273,7 @@ public class EventService {
 						        .withFormSubmissionId(UUID.randomUUID().toString()).withDateCreated(event.getDateCreated());
 						
 						newEvent.setObs(event.getObs());
-						addEvent(newEvent);
+						addEvent(newEvent, username);
 					}
 				}
 				//Legacy code only picked the first item so we break
