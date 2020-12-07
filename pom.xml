@@ -5,7 +5,7 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>2.7.21-SNAPSHOT</version>
+	<version>2.8.9-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>http://github.com/OpenSRP/opensrp-server-core</url>
@@ -22,9 +22,9 @@
 		<nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
 
 		<opensrp.common.version>2.0.3-SNAPSHOT</opensrp.common.version>
-		<opensrp.api.version>1.0.1</opensrp.api.version>
+		<opensrp.api.version>1.0.4-SNAPSHOT</opensrp.api.version>
 		<opensrp.interface.version>2.0.1-SNAPSHOT</opensrp.interface.version>
-		<opensrp.plan.evaluator.version>0.1.7-SNAPSHOT</opensrp.plan.evaluator.version>
+		<opensrp.plan.evaluator.version>1.0.4-SNAPSHOT</opensrp.plan.evaluator.version>
 		<jackson.version>2.10.2</jackson.version>
 		<powermock.version>2.0.5</powermock.version>
 		<lombok.version>1.18.12</lombok.version>
@@ -280,9 +280,9 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
-		    <groupId>com.google.code.gson</groupId>
-		    <artifactId>gson</artifactId>
-		    <version>2.8.6</version>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.6</version>
 		</dependency>
 
 		<dependency>
@@ -290,6 +290,17 @@
 			<artifactId>lombok</artifactId>
 			<version>${lombok.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>2.0.1.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>6.0.13.Final</version>
 		</dependency>
 
 		<!-- Test dependencies -->
@@ -324,10 +335,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.mockito</groupId>
-		    <artifactId>mockito-core</artifactId>
-		    <version>3.3.0</version>
-		    <scope>test</scope>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>3.3.0</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>

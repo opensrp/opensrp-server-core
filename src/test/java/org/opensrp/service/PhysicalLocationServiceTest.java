@@ -14,6 +14,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
+import static org.smartregister.domain.LocationProperty.PropertyStatus.ACTIVE;
+import static org.smartregister.domain.LocationProperty.PropertyStatus.PENDING_REVIEW;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -191,6 +193,7 @@ public class PhysicalLocationServiceTest {
 	public void testAddOrUpdateShouldUpdateLocation() {
 		PhysicalLocation physicalLocation = createLocation();
 		when(locationRepository.get("3734", true)).thenReturn(physicalLocation);
+		when(locationRepository.findLocationByIdentifierAndStatus("3734",Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()), true)).thenReturn(physicalLocation);
 		locationService.addOrUpdate(createLocation());
 		verify(locationRepository).update(argumentCaptor.capture());
 		
@@ -1001,5 +1004,44 @@ public class PhysicalLocationServiceTest {
 		assertEquals(expected, locationService.findLocationByIdsWithChildren(false, ids, 1000));
 		verify(locationRepository).findLocationByIdsWithChildren(false, ids, 1000);
 	}
-	
+
+	@Test
+	public void testBuildLocationHeirarchyWithAncestors() {
+		Set<String> locationIds = new HashSet<>();
+		String locationId = "1";
+		locationIds.add(locationId);
+
+		Set<LocationDetail> locationDetails = new HashSet<>();
+
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1").tags("Country").build();
+		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
+				.tags("Province").build();
+		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
+				.tags("Province").build();
+		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
+				.tags("District").build();
+		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
+				.tags("District").build();
+		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
+				.tags("District").build();
+
+		locationDetails.add(country);
+		locationDetails.add(province1);
+		locationDetails.add(province2);
+		locationDetails.add(district1);
+		locationDetails.add(district2);
+		locationDetails.add(district3);
+
+		when(locationRepository.findParentLocationsInclusive(locationIds)).thenReturn(locationDetails);
+
+		Set<LocationDetail> locationDetailsSet = locationService.buildLocationHeirarchyWithAncestors(locationId);
+
+		verify(locationRepository).findParentLocationsInclusive(locationIds);
+		assertNotNull(locationDetailsSet);
+		assertEquals(6, locationDetailsSet.size());
+		LocationDetail actuallocationDetail = locationDetailsSet.iterator().next();
+		assertEquals("Province 1", actuallocationDetail.getName());
+		assertEquals("Province", actuallocationDetail.getTags());
+	}
+
 }

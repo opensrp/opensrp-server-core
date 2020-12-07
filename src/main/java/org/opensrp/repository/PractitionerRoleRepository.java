@@ -1,6 +1,7 @@
 package org.opensrp.repository;
 
 import org.opensrp.domain.PractitionerRole;
+import org.opensrp.search.PractitionerRoleSearchBean;
 
 import java.util.List;
 
@@ -20,4 +21,6 @@ public interface PractitionerRoleRepository extends BaseRepository<PractitionerR
 
     void assignPractitionerRole(Long organizationId,Long practitionerId, String practitionerIdentifier, String code,
             PractitionerRole practitionerRole);
+
+    List<PractitionerRole> getAllPractitionerRoles(PractitionerRoleSearchBean practitionerRoleSearchBean);
 }

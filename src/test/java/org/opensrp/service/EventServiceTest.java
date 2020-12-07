@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE;
@@ -24,32 +26,30 @@ import org.joda.time.LocalDate;
 import org.joda.time.Minutes;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.common.AllConstants.Client;
-import org.opensrp.repository.PlanRepository;
-import org.smartregister.domain.Event;
-import org.smartregister.domain.Obs;
-import org.smartregister.domain.ExecutionPeriod;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
+import org.opensrp.repository.PlanRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.repository.postgres.EventsRepositoryImpl;
 import org.opensrp.repository.postgres.handler.BaseTypeHandler;
 import org.opensrp.util.DateTimeDeserializer;
+import org.smartregister.domain.Event;
+import org.smartregister.domain.Obs;
+import org.smartregister.domain.Period;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import org.springframework.test.util.ReflectionTestUtils;
 
 public class EventServiceTest extends BaseRepositoryTest {
 
@@ -203,8 +203,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("plan-id-1");
 		plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
-		ExecutionPeriod executionPeriod = new ExecutionPeriod();
-		executionPeriod.setEnd(new LocalDate().plusYears(2));
+		Period executionPeriod = new Period();
+		executionPeriod.setEnd(new LocalDate().plusYears(2).toDateTimeAtStartOfDay());
 		plan.setEffectivePeriod(executionPeriod);
 
 		when(planRepository.get("plan-id-1")).thenReturn(plan);

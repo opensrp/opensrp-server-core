@@ -66,7 +66,7 @@ public class InventoryDataValidator {
 		ProductCatalogue productCatalogue;
 		PhysicalLocation physicalLocation;
 		productCatalogue = productCatalogId != null ?
-				productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId)) :
+				productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId), "") :
 				null;
 		physicalLocation = locationId != null ? physicalLocationService.getLocation(locationId, true) : null;
 

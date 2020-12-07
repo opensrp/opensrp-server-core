@@ -37,7 +37,7 @@
         select
         <include
                 refid="org.opensrp.repository.postgres.mapper.PractitionerMapper.Base_Column_List" />
-        from team.practitioner
+        from team.practitioner p
         <if test="_parameter != null">
             <include refid="Example_Where_Clause" />
         </if>

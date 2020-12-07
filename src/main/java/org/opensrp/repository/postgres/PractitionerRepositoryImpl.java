@@ -5,6 +5,9 @@ import org.opensrp.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerExample;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerMapper;
+import org.opensrp.search.PractitionerSearchBean;
+import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.util.RepositoryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -182,6 +185,18 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 
         return  isEmptyList(practitionerList) ? null : convert(practitionerList.get(0));
 
+    }
+
+    @Override
+    public List<Practitioner> getAllPractitioners(PractitionerSearchBean practitionerSearchBean) {
+        Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean);
+        PractitionerExample practitionerExample = new PractitionerExample();
+        practitionerExample.createCriteria().andDateDeletedIsNull();
+        if(practitionerSearchBean.getOrderByFieldName() != null && practitionerSearchBean.getOrderByType() != null) {
+            practitionerExample.setOrderByClause(practitionerSearchBean.getOrderByFieldName() + " " + practitionerSearchBean.getOrderByType());
+        }
+        List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+        return convert(pgPractitionerList);
     }
 
     @Override

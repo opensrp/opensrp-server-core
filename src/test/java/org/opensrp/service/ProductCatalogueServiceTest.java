@@ -41,7 +41,7 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 		productCatalogueSearchBean.setProductName("");
 		productCatalogueSearchBean.setUniqueId(0l);
 		List<ProductCatalogue> productCatalogueList = productCatalogueService
-				.getProductCatalogues(productCatalogueSearchBean);
+				.getProductCatalogues(productCatalogueSearchBean, "http://localhost:8080/opensrp");
 		assertEquals(1, productCatalogueList.size());
 	}
 
@@ -49,17 +49,19 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 	public void testAdd() {
 		ProductCatalogue productCatalogue = createProductCatalogue();
 		productCatalogueService.add(productCatalogue);
-		List<ProductCatalogue> productCatalogues = productCatalogueService.findAllProductCatalogues();
+		List<ProductCatalogue> productCatalogues = productCatalogueService.findAllProductCatalogues("http://localhost:8080/opensrp");
 		assertEquals(2, productCatalogues.size());
 	}
 
 	@Test
 	public void testUpdate() {
-		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogue(1l);
+		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogue(1l, "http://localhost:8080/opensrp");
 		productCatalogue.setProductName("Updated Product Name");
+		productCatalogue.setPhotoURL("/multimedia/media/1");
 		productCatalogueService.update(productCatalogue);
-		ProductCatalogue updatedProductCatalogue = productCatalogueService.getProductCatalogue(1l);
+		ProductCatalogue updatedProductCatalogue = productCatalogueService.getProductCatalogue(1l, "http://localhost:8080/opensrp");
 		assertEquals("Updated Product Name", updatedProductCatalogue.getProductName());
+		assertEquals("http://localhost:8080/opensrp/multimedia/media/1", updatedProductCatalogue.getPhotoURL());
 	}
 
 	@Test
@@ -73,7 +75,7 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testDeleteProductCatalogueById() {
 		productCatalogueService.deleteProductCatalogueById(1l);
-		List<ProductCatalogue> productCatalogues = productCatalogueService.findAllProductCatalogues();
+		List<ProductCatalogue> productCatalogues = productCatalogueService.findAllProductCatalogues("http://localhost:8080/opensrp");
 		assertEquals(0, productCatalogues.size());
 	}
 

@@ -9,6 +9,7 @@ import org.opensrp.domain.postgres.PlanMetadataExample;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMetadataMapper;
+import org.opensrp.search.PlanSearchBean;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -358,15 +359,32 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
 
     @Override
-    public List<PlanDefinition> getAllPlans(boolean experimental) {
-        PlanExample planExample = new PlanExample();
-        planExample.createCriteria().andDateDeletedIsNull().andExperimentalEqualTo(experimental);
-        List<Plan> plans = planMapper.selectMany(planExample, 0, DEFAULT_FETCH_SIZE);
+    public List<PlanDefinition> getAllPlans(PlanSearchBean planSearchBean) {
+        Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(planSearchBean);
+        List<Plan> plans = planMapper.selectPlansBySearchBean(planSearchBean, pageSizeAndOffset.getRight(),
+                pageSizeAndOffset.getLeft());
         return convert(plans);
     }
 
     @Override
     protected String getSequenceName() {
         return SEQUENCE;
+    }
+
+    private Pair<Integer, Integer> getPageSizeAndOffset(PlanSearchBean planSearchBean) {
+
+        Integer pageSize;
+        Integer offset = 0;
+        if (planSearchBean.getPageSize() == null || planSearchBean.getPageSize() == 0) {
+            pageSize = DEFAULT_FETCH_SIZE;
+        } else {
+            pageSize = planSearchBean.getPageSize();
+        }
+
+        if (planSearchBean.getPageNumber() != null && planSearchBean.getPageNumber() != 0) {
+            offset = (planSearchBean.getPageNumber() - 1) * pageSize;
+        }
+
+        return Pair.of(pageSize, offset);
     }
 }

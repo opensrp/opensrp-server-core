@@ -13,7 +13,7 @@ import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.opensrp.domain.Campaign;
 import org.opensrp.repository.CampaignRepository;
-import org.smartregister.domain.ExecutionPeriod;
+import org.smartregister.domain.Period;
 import org.smartregister.domain.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -84,9 +84,9 @@ public class CampaignRepositoryTest extends BaseRepositoryTest {
 		Campaign campaign = new Campaign();
 		campaign.setIdentifier("ITN_2018_S1");
 		campaign.setDescription("ITN for 2018 Season 1");
-		ExecutionPeriod executionPeriod = new ExecutionPeriod();
-		executionPeriod.setStart(new LocalDate("2018-01-01"));
-		executionPeriod.setStart(new LocalDate("2018-03-31"));
+		Period executionPeriod = new Period();
+		executionPeriod.setStart(new LocalDate("2018-01-01").toDateTimeAtStartOfDay());
+		executionPeriod.setEnd(new LocalDate("2018-03-31").toDateTimeAtStartOfDay());
 		campaign.setExecutionPeriod(executionPeriod);
 		campaign.setOwner("superAdmin");
 		campaignRepository.add(campaign);
@@ -122,9 +122,9 @@ public class CampaignRepositoryTest extends BaseRepositoryTest {
 	public void testEdit() {
 		Campaign campaign = campaignRepository.get("IRS_2018_S2");
 		campaign.setDescription("Sprap season 2 2018");
-		ExecutionPeriod executionPeriod = new ExecutionPeriod();
-		executionPeriod.setStart(new LocalDate("2018-04-01"));
-		executionPeriod.setEnd(new LocalDate("2018-06-30"));
+		Period executionPeriod = new Period();
+		executionPeriod.setStart(new LocalDate("2018-04-01").toDateTimeAtStartOfDay());
+		executionPeriod.setEnd(new LocalDate("2018-06-30").toDateTimeAtStartOfDay());
 		campaign.setExecutionPeriod(executionPeriod);
 		campaignRepository.update(campaign);
 

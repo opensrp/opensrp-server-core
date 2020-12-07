@@ -8,6 +8,7 @@ import org.opensrp.domain.Organization;
 import org.opensrp.domain.PractitionerRole;
 import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.repository.PractitionerRoleRepository;
+import org.opensrp.search.PractitionerRoleSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
@@ -51,10 +52,11 @@ public class PractitionerRoleServiceTest {
     public void testGetAllPractitionerRoles() {
         List<PractitionerRole> expectedPractitionerRoles = new ArrayList<>();
         expectedPractitionerRoles.add(initTestPractitionerRole());
-        when(practitionerRoleRepository.getAll()).thenReturn(expectedPractitionerRoles);
+        when(practitionerRoleRepository.getAllPractitionerRoles(any(PractitionerRoleSearchBean.class))).thenReturn(expectedPractitionerRoles);
 
-        List<PractitionerRole> actutalPractitionerRoles = practitionerRoleService.getAllPractitionerRoles();
-        verify(practitionerRoleRepository).getAll();
+        PractitionerRoleSearchBean practitionerRoleSearchBean = new PractitionerRoleSearchBean();
+        List<PractitionerRole> actutalPractitionerRoles = practitionerRoleService.getAllPractitionerRoles(practitionerRoleSearchBean);
+        verify(practitionerRoleRepository).getAllPractitionerRoles(practitionerRoleSearchBean);
         assertEquals(1, actutalPractitionerRoles.size());
         assertEquals("pr1-identifier", actutalPractitionerRoles.get(0).getIdentifier());
     }

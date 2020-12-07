@@ -9,6 +9,7 @@ import org.opensrp.domain.Organization;
 import org.opensrp.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PractitionerRepository;
+import org.opensrp.search.PractitionerSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,8 +52,8 @@ public class PractitionerService {
 		return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().getPractitioner(identifier);
 	}
 
-	public List<Practitioner> getAllPractitioners() {
-		return getPractitionerRepository().getAll();
+	public List<Practitioner> getAllPractitioners(PractitionerSearchBean practitionerSearchBean) {
+		return getPractitionerRepository().getAllPractitioners(practitionerSearchBean);
 	}
 
 	public Practitioner addOrUpdatePractitioner(Practitioner practitioner) {

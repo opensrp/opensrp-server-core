@@ -23,6 +23,8 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 	@Autowired
 	private CustomProductCatalogueMapper customProductCatalogueMapper;
 
+	private static final String SEQUENCE = "core.product_catalogue_server_version_seq";
+
 	@Override
 	public ProductCatalogue get(String id) {
 		throw new NotImplementedException();
@@ -67,11 +69,16 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 
 	@Override
 	public List<ProductCatalogue> getAll() {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public List<ProductCatalogue> getAll(String baseUrl) {
 		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
 		productCatalogueExample.createCriteria().andUniqueIdIsNotNull();
 		List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues = customProductCatalogueMapper
 				.selectMany(productCatalogueExample, 0, DEFAULT_FETCH_SIZE);
-		return convert(productCatalogues);
+		return convert(productCatalogues, baseUrl);
 	}
 
 	@Override
@@ -122,22 +129,22 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 	}
 
 	@Override
-	public ProductCatalogue getById(Long uniqueId) {
+	public ProductCatalogue getById(Long uniqueId, String baseUrl) {
 		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
 		productCatalogueExample.createCriteria().andUniqueIdEqualTo(uniqueId);
 
 		List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues = customProductCatalogueMapper
 				.selectByExample(productCatalogueExample);
 
-		return isEmptyList(productCatalogues) ? null : convert(productCatalogues.get(0));
+		return isEmptyList(productCatalogues) ? null : convert(productCatalogues.get(0), baseUrl);
 	}
 
 	@Override
-	public List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean) {
+	public List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean, String baseUrl) {
 		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
 		populateProductCatalogueSearchCriteria(productCatalogueSearchBean,
 				productCatalogueExample);
-		return convert(customProductCatalogueMapper.selectMany(productCatalogueExample, 0, DEFAULT_FETCH_SIZE));
+		return convert(customProductCatalogueMapper.selectMany(productCatalogueExample, 0, DEFAULT_FETCH_SIZE), baseUrl);
 	}
 
 	@Override
@@ -153,17 +160,17 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 		productCatalogueExample.createCriteria().andProductNameEqualTo(productName);
 		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = customProductCatalogueMapper
 				.selectOne(productCatalogueExample);
-		return convert(pgProductCatalogue);
+		return convert(pgProductCatalogue, "");
 	}
 
-	private List<ProductCatalogue> convert(List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues) {
+	private List<ProductCatalogue> convert(List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues, String baseUrl) {
 		if (productCatalogues == null || productCatalogues.isEmpty()) {
 			return new ArrayList<>();
 		}
 
 		List<ProductCatalogue> convertedProductCatalogues = new ArrayList<>();
 		for (org.opensrp.domain.postgres.ProductCatalogue productCatalogue : productCatalogues) {
-			ProductCatalogue convertedProductCatalogue = convert(productCatalogue);
+			ProductCatalogue convertedProductCatalogue = convert(productCatalogue, baseUrl);
 			if (convertedProductCatalogue != null) {
 				convertedProductCatalogues.add(convertedProductCatalogue);
 			}
@@ -172,13 +179,17 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 		return convertedProductCatalogues;
 	}
 
-	private ProductCatalogue convert(org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue) {
+	private ProductCatalogue convert(org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue, String baseUrl) {
 		if (pgProductCatalogue == null || pgProductCatalogue.getJson() == null || !(pgProductCatalogue
 				.getJson() instanceof ProductCatalogue)) {
 			return null;
 		}
 		ProductCatalogue productCatalogue = (ProductCatalogue) pgProductCatalogue.getJson();
 		productCatalogue.setUniqueId(pgProductCatalogue.getUniqueId());
+		String photoUrl = productCatalogue.getPhotoURL();
+		if(!StringUtils.isBlank(photoUrl)) {
+			productCatalogue.setPhotoURL(baseUrl + photoUrl);
+		}
 		return productCatalogue;
 	}
 
@@ -215,6 +226,11 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 			throw new IllegalArgumentException("Atleast one search filter must be specified");
 
 		return criteria;
+	}
+
+	@Override
+	protected String getSequenceName() {
+		return SEQUENCE;
 	}
 
 	@Override

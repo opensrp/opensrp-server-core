@@ -1,5 +1,7 @@
 package org.opensrp.service;
 
+import java.util.Collections;
+
 import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Before;
@@ -8,10 +10,8 @@ import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.smartregister.domain.ExecutionPeriod;
+import org.smartregister.domain.Period;
 import org.smartregister.domain.PlanDefinition;
-
-import java.util.Collections;
 
 public class TaskGeneratorTest {
 
@@ -32,8 +32,8 @@ public class TaskGeneratorTest {
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("plan-id-1");
 		plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
-		ExecutionPeriod executionPeriod = new ExecutionPeriod();
-		executionPeriod.setEnd(new LocalDate().plusYears(2));
+		Period executionPeriod = new Period();
+		executionPeriod.setEnd(new LocalDate().plusYears(2).toDateTimeAtStartOfDay());
 		plan.setEffectivePeriod(executionPeriod);
 		PlanDefinition.UseContext useContext = new PlanDefinition.UseContext();
 		useContext.setCode("taskGenerationStatus");
@@ -52,8 +52,8 @@ public class TaskGeneratorTest {
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("plan-id-1");
 		plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
-		ExecutionPeriod executionPeriod = new ExecutionPeriod();
-		executionPeriod.setEnd(new LocalDate().plusYears(2));
+		Period executionPeriod = new Period();
+		executionPeriod.setEnd(new LocalDate().plusYears(2).toDateTimeAtStartOfDay());
 		plan.setEffectivePeriod(executionPeriod);
 		PlanDefinition.UseContext useContext = new PlanDefinition.UseContext();
 		useContext.setCode("taskGenerationStatus");

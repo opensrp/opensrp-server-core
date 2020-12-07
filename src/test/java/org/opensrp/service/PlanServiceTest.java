@@ -25,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.domain.AssignedLocations;
+import org.opensrp.search.PlanSearchBean;
 import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
@@ -63,8 +64,9 @@ public class PlanServiceTest {
 	
 	@Test
 	public void testGetAllPlansShouldCallRepositoryGetAllMethod() {
-		planService.getAllPlans(false);
-		verify(planRepository).getAllPlans(eq(false));
+		PlanSearchBean planSearchBean = new PlanSearchBean();
+		planService.getAllPlans(planSearchBean);
+		verify(planRepository).getAllPlans(planSearchBean);
 	}
 	
 	@Test

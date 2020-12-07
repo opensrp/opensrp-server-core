@@ -18,6 +18,7 @@ import org.smartregister.domain.Stock;
 import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
+import org.opensrp.search.StockSearchBean;
 import org.opensrp.validator.InventoryDataValidator;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
@@ -170,7 +171,12 @@ public class StockServiceTest extends BaseRepositoryTest {
 		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(sectionsList);
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
 		stockService.addInventory(inventory, "John");
-		List<Stock> stockList = stockService.getStocksByServicePointId("loc-1");
+		StockSearchBean stockSearchBean =  new StockSearchBean();
+		List<String> locations = new ArrayList<>();
+		locations.add("loc-1");
+		stockSearchBean.setLocations(locations);
+		stockSearchBean.setPageNumber(1);
+		List<Stock> stockList = stockService.getStocksByServicePointId(stockSearchBean);
 		Assert.assertEquals(1, stockList.size());
 	}
 
@@ -207,7 +213,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		csvRow.put(PO_NUMBER, "897");
 		csvStocks.add(csvRow);
 
-		when(productCatalogueService.getProductCatalogue(anyLong())).thenReturn(createProductCatalogue());
+		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.convertandPersistInventorydata(csvStocks, "Test user");
 		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
@@ -229,7 +235,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		csvRow.put(PO_NUMBER, "897");
 		csvStocks.add(csvRow);
 
-		when(productCatalogueService.getProductCatalogue(anyLong())).thenReturn(createProductCatalogue());
+		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.convertandPersistInventorydata(csvStocks, "Test user");
 		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());

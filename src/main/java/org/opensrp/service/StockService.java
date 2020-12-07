@@ -73,7 +73,7 @@ public class StockService {
 	}
 	
 	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int limit) {
-		return allStocks.findStocks(searchBean, sortBy, sortOrder, limit);
+		return allStocks.findStocks(searchBean, sortBy, sortOrder, 0, limit);
 	}
 	
 	public List<Stock> findStocks(StockSearchBean searchBean) {
@@ -212,8 +212,8 @@ public class StockService {
 		}
 	}
 
-	public List<Stock> getStocksByServicePointId(String servicePointId) {
-	  return allStocks.findStocksByLocationId(servicePointId);
+	public List<Stock> getStocksByServicePointId(StockSearchBean stockSearchBean) {
+	  return allStocks.findStocksByLocationId(stockSearchBean);
 	}
 
 	public CsvBulkImportDataSummary convertandPersistInventorydata(List<Map<String, String>> csvStocks, String userName) {
@@ -309,7 +309,7 @@ public class StockService {
 		int poNumber = Integer.valueOf(poNumberFromCsv);
 
 		Long productId = Long.valueOf(productCatalogId);
-		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogue(productId);
+		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogue(productId, "");
 		String productCatalogueName = productCatalogue != null ? productCatalogue.getProductName() : productName;
 
 		inventory.setProductName(productCatalogueName);
