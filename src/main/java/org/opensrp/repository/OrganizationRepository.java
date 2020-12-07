@@ -2,6 +2,7 @@ package org.opensrp.repository;
 
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
+import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
 
 import java.util.Date;
@@ -39,17 +40,20 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 * organization
 	 * 
 	 * @param organizationId Id of organization
+	 * @param returnFutureAssignments flag to control if future assignments are returned
+	 * @return assigned plans and locations
 	 */
-	List<AssignedLocations> findAssignedLocations(Long organizationId);
+	List<AssignedLocations> findAssignedLocations(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean);
 
 	/**
 	 * Gets the plans and jurisdictions that an organization is assigned to a list
 	 * organizations
 	 * 
 	 * @param organizationIds
-	 * @return
+	 * @param returnFutureAssignments flag to control if future assignments are returned
+	 * @return assigned plans and locations
 	 */
-	List<AssignedLocations> findAssignedLocations(List<Long> organizationIds);
+	List<AssignedLocations> findAssignedLocations(List<Long> organizationIds,boolean returnFutureAssignments);
 
 	/**
 	 * @param id
@@ -64,9 +68,14 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 *
 	 * @return list of assigned locations and plans
 	 */
-	List<AssignedLocations> findAssignedLocationsByPlanId(Long planId);
+	@Deprecated
+	List<AssignedLocations> findAssignedLocationsByPlanId(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean);
 	
 	List<Organization> findSearchOrganizations(OrganizationSearchBean organizationSearchBean);
 	
 	int findOrganizationCount(OrganizationSearchBean organizationSearchBean);
+
+	Organization findOrganizationByName(String name);
+
+	List<Organization> getAllOrganizations(OrganizationSearchBean organizationSearchBean);
 }

@@ -2,6 +2,7 @@ package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -20,6 +21,7 @@ import org.mockito.Mock;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
+import org.opensrp.search.PractitionerSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
@@ -38,17 +40,18 @@ public class PractitionerServiceTest {
 
     @Before
     public void setUp() {
-        practitionerService = new PractitionerService(practitionerRepository,practitionerRoleService,organizationService);
+        practitionerService = new PractitionerService(practitionerRepository,practitionerRoleService);
     }
 
     @Test
     public void testgetAllPractitioners() {
         List<Practitioner> expectedPractitioners = new ArrayList<>();
         expectedPractitioners.add(initTestPractitioner());
-        when(practitionerRepository.getAll()).thenReturn(expectedPractitioners);
+        when(practitionerRepository.getAllPractitioners(any(PractitionerSearchBean.class))).thenReturn(expectedPractitioners);
 
-        List<Practitioner> actutalPractitioners = practitionerService.getAllPractitioners();
-        verify(practitionerRepository).getAll();
+        PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean();
+        List<Practitioner> actutalPractitioners = practitionerService.getAllPractitioners(practitionerSearchBean);
+        verify(practitionerRepository).getAllPractitioners(practitionerSearchBean);
         assertEquals(1, actutalPractitioners.size());
         assertEquals("practitoner-1-identifier", actutalPractitioners.get(0).getIdentifier());
     }
@@ -116,21 +119,14 @@ public class PractitionerServiceTest {
     }
 
     @Test
-    public void testGetPractitionersByOrgIdentifier() {
+    public void testGetPractitionersByOrgId() {
 
         Practitioner practitioner = initTestPractitioner();
         when(practitionerRepository.getPractitionersByOrgId(anyLong()))
                 .thenReturn(Collections.singletonList(practitioner));
 
-        Organization organization = new Organization();
-        organization.setId(1l);
-        organization.setIdentifier("org1");
-        when(organizationService.getOrganization("org1")).thenReturn(organization);
+        practitionerService.getPractitionersByOrgId(1l);
 
-        practitionerService.getPractitionersByOrgIdentifier("org1");
-
-        verify(organizationService).validateIdentifier(anyString());
-        verify(organizationService).getOrganization(anyString());
         verify(practitionerRepository).getPractitionersByOrgId(anyLong());
 
     }

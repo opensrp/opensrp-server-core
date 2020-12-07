@@ -1,8 +1,11 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opensrp.search.PlanSearchBean;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Jurisdiction;
 import org.opensrp.repository.PlanRepository;
@@ -13,13 +16,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import java.util.*;
 
 /**
  * Created by Vincent Karuri on 03/05/2019
@@ -38,6 +35,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
     @Override
     protected Set<String> getDatabaseScripts() {
         Set<String> scripts = new HashSet<>();
+        scripts.add("plan.sql");
         return scripts;
     }
 
@@ -63,7 +61,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(plans.size(), 2);
+        assertEquals(6, plans.size());
 
         Set<String> ids = new HashSet<>();
         ids.add("identifier_1");
@@ -121,7 +119,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(plans.size(), 1);
+        assertEquals(5, plans.size());
 
         Set<String> ids = new HashSet<>();
         ids.add("identifier_4");
@@ -182,7 +180,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(plans.size(), 2);
+        assertEquals(6,plans.size());
 
         Set<String> ids = new HashSet<>();
         ids.add("identifier_6");
@@ -212,12 +210,11 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(plans.size(), 2);
+        assertEquals(6, plans.size());
 
         planRepository.safeRemove(plan);
         plans = planRepository.getAll();
-        assertEquals(plans.size(), 1);
-        assertEquals(planRepository.getAll().get(0).getIdentifier(), "identifier_7");
+        assertEquals(5, plans.size());
     }
 
     @Test
@@ -258,7 +255,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(2l, null,false);
-        assertEquals(plans.size(), 2);
+        assertEquals(2, plans.size());
         testIfAllIdsExists(plans, ids);
     }
 
@@ -369,16 +366,16 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(plans.size(), 1);
+        assertEquals(5, plans.size());
 
         List<String> fields = new ArrayList<>();
         fields.add("identifier");
         fields.add("name");
 
         plans = planRepository.getPlansByIdsReturnOptionalFields(Collections.singletonList("identifier_7"), fields,false);
-        assertEquals(plans.size(), 1);
+        assertEquals(1, plans.size());
         assertEquals("identifier_7", plans.get(0).getIdentifier());
-        assertEquals("Focus Investigation", planRepository.getAll().get(0).getName());
+        assertEquals("Focus Investigation", plans.get(0).getName());
         assertEquals(null, plans.get(0).getVersion());
         assertEquals(null, plans.get(0).getTitle());
         assertEquals(null, plans.get(0).getStatus());
@@ -457,7 +454,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 1, false);
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(2l, 1, false);
 
         List<String> planids = planIdsObject.getLeft();
         assertEquals(1, planids.size());
@@ -489,7 +486,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(1235l);
         planRepository.add(plan);
 
-        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0l, 10, false);
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(2l, 10, false);
 
         List<String> planids = planIdsObject.getLeft();
         assertEquals(2, planids.size());
@@ -497,6 +494,34 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         assertEquals("identifier_6", planids.get(0));
         assertEquals("identifier_7", planids.get(1));
         assertEquals(1235l, planIdsObject.getRight().longValue());
+    }
+
+    @Test
+    public void testGetAllIdsShouldFilterBetweenFromDateAndToDate() {
+        String date1 = "2019-09-25T10:00:00+0300";
+        String date2 = "2019-09-29T10:00:00+0300";
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0L, 3, false,
+                new DateTime(date1, DateTimeZone.UTC).toDate(), new DateTime(date2,DateTimeZone.UTC).toDate());
+        List<String> planids = planIdsObject.getLeft();
+        assertEquals(3, planids.size());
+    }
+
+    @Test
+    public void testGetAllIdsShouldFilterFromDateAsMinimumDate() {
+        String date1 = "2019-09-24T10:00:00+0300";
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0L, 3, false,
+                new DateTime(date1, DateTimeZone.UTC).toDate(), null);
+        List<String> planids = planIdsObject.getLeft();
+        assertEquals(3, planids.size());
+    }
+
+    @Test
+    public void testGetAllIdsShouldFilterToDateAsMaximumDate() {
+        String date1 = "2019-09-27T09:00:00+0300";
+        Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0L, 3, false,
+                null, new DateTime(date1, DateTimeZone.UTC).toDate());
+        List<String> planids = planIdsObject.getLeft();
+        assertEquals(1, planids.size());
     }
 
     @Test
@@ -581,6 +606,87 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_70"), 0l);
         assertEquals(0,plans.longValue());
 
+    }
+
+    @Test
+    public void testCountAllPlanShouldReturnCorrectValue(){
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("x_identifier_1");
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("x_operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1000l);
+        planRepository.add(plan);
+        Long count = planRepository.countAllPlans(1000l, false);
+        assertNotNull(count);
+        assertEquals(Long.valueOf(1), count);
+    }
+
+    @Test
+    public void testGetAllPlansWithoutPageNumberParam() {
+        PlanSearchBean planSearchBean = new PlanSearchBean();
+        List<PlanDefinition> planDefinitions = planRepository.getAllPlans(planSearchBean);
+        assertEquals(4l, planDefinitions.size());
+    }
+
+    @Test
+    public void testGetAllPlansWithExperimentalParam() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("test-identifier");
+        plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("x_operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1000l);
+        plan.setExperimental(true);
+        planRepository.add(plan);
+
+        PlanSearchBean planSearchBean = new PlanSearchBean();
+        planSearchBean.setExperimental(true);
+
+        List<PlanDefinition> planDefinitions = planRepository.getAllPlans(planSearchBean);
+        assertEquals(1l, planDefinitions.size());
+        assertEquals("test-identifier", planDefinitions.get(0).getIdentifier());
+    }
+
+    @Test
+    public void testGetAllPlansWithUseContextParam() {
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("test-identifier");
+        plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
+
+        List<PlanDefinition.UseContext> useContextList = new ArrayList<>();
+        PlanDefinition.UseContext useContext = new PlanDefinition.UseContext();
+        useContext.setCode("interventionType");
+        useContext.setValueCodableConcept("FI");
+        useContextList.add(useContext);
+        plan.setUseContext(useContextList);
+
+        List<Jurisdiction> jurisdictions = new ArrayList<>();
+        Jurisdiction jurisdiction = new Jurisdiction();
+        jurisdiction.setCode("x_operation_area_2");
+        jurisdictions.add(jurisdiction);
+        plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1000l);
+        plan.setExperimental(true);
+        planRepository.add(plan);
+
+        PlanSearchBean planSearchBean = new PlanSearchBean();
+        Map<String, String> useContextSearchBean = new HashMap<>();
+        useContextSearchBean.put("interventionType", "FI");
+        planSearchBean.setUseContexts(useContextSearchBean);
+        planSearchBean.setExperimental(true);
+
+        List<PlanDefinition> planDefinitions = planRepository.getAllPlans(planSearchBean);
+        assertEquals(1l, planDefinitions.size());
+        assertEquals(1l, planDefinitions.get(0).getUseContext().size());
+        assertEquals("test-identifier", planDefinitions.get(0).getIdentifier());
     }
 
 }

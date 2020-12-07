@@ -117,6 +117,12 @@ public class IdentifierSourceServiceTest extends BaseRepositoryTest {
 		identifierSourceService.add(identifierSource);
 	}
 
-
+	@Test
+	public void testSaveSequenceValue() {
+		IdentifierSource identifierSource = identifierSourceService.findByIdentifier("Test Identifier");
+		identifierSourceService.saveSequenceValue(identifierSource,1234l);
+		IdentifierSource updatedIdentifierSource = identifierSourceService.findByIdentifier("Test Identifier");
+		assertEquals(new Long(1234),updatedIdentifierSource.getSequenceValue());
+	}
 	
 }

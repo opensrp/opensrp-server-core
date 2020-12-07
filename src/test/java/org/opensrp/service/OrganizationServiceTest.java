@@ -9,12 +9,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.never;
-import static org.powermock.api.mockito.PowerMockito.mock;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,13 +30,14 @@ import org.mockito.Mockito;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.Practitioner;
-import org.powermock.reflect.Whitebox;
-import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
+import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
+import org.smartregister.domain.PhysicalLocation;
 import org.springframework.data.redis.core.HashOperations;
 
 /**
@@ -74,9 +80,10 @@ public class OrganizationServiceTest {
 	@Test
 	public void testGetAllOrganizations() {
 		List<Organization> expected = Collections.singletonList(organization);
-		when(organizationRepository.getAll()).thenReturn(expected);
-		List<Organization> organizations = organizationService.getAllOrganizations();
-		verify(organizationRepository).getAll();
+		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
+		when(organizationRepository.getAllOrganizations(any(OrganizationSearchBean.class))).thenReturn(expected);
+		List<Organization> organizations = organizationService.getAllOrganizations(organizationSearchBean);
+		verify(organizationRepository).getAllOrganizations(organizationSearchBean);
 		assertEquals(expected, organizations);
 	}
 
@@ -158,12 +165,13 @@ public class OrganizationServiceTest {
 		Long locationId = 123l;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
+
 		List<Practitioner> practitioners = new ArrayList<>();
 		practitioners.add(initTestPractitioner());
-		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
+		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, null, null);
-		when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
+		//when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
 		Date date = new Date();
 		verify(organizationRepository).assignLocationAndPlan(eq(1233l), eq(jurisdictionIdentifier), eq(locationId),
 		    eq(planIdentifier), eq(planId), dateCaptor.capture(), dateCaptor.capture());
@@ -192,9 +200,9 @@ public class OrganizationServiceTest {
 		location.setId(jurisdictionIdentifier);
 		List<Practitioner> practitioners = new ArrayList<>();
 		practitioners.add(initTestPractitioner());
-		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
+		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
-		when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
+		//when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
 		Date dateFrom = new Date();
 		Date dateTo = null;
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, dateFrom, dateTo);
@@ -214,9 +222,9 @@ public class OrganizationServiceTest {
 		location.setId(jurisdictionIdentifier);
 		List<Practitioner> practitioners = new ArrayList<>();
 		practitioners.add(initTestPractitioner());
-		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true,0)).thenReturn(locationId);
+		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
-		when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
+		//when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
 		Date dateFrom = new Date();
 		Date dateTo = null;
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, dateFrom, dateTo);
@@ -248,18 +256,18 @@ public class OrganizationServiceTest {
 		organization.setId(12l);
 		AssignedLocations assigment = new AssignedLocations("loc1", "plan1");
 		List<AssignedLocations> expected = Collections.singletonList(assigment);
-		when(organizationRepository.findAssignedLocations(12l)).thenReturn(expected);
+		when(organizationRepository.findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class))).thenReturn(expected);
 		when(organizationRepository.get(identifier)).thenReturn(organization);
-		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlans(identifier);
+		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlans(identifier,false,null,null,null,null);
 		assertEquals(expected, assigned);
-		verify(organizationRepository).findAssignedLocations(12l);
+		verify(organizationRepository).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testFindAssignedLocationsAndPlansOrganitionMissing() {
 		organization.setId(12l);
-		organizationService.findAssignedLocationsAndPlans(identifier);
-		verify(organizationRepository, never()).findAssignedLocations(anyLong());
+		organizationService.findAssignedLocationsAndPlans(identifier,false,null,null,null,null);
+		verify(organizationRepository, never()).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 
 	}
 
@@ -268,10 +276,10 @@ public class OrganizationServiceTest {
 		List<Long> organizationIds = Arrays.asList(12l, 34l, 45l);
 		AssignedLocations assigment = new AssignedLocations("loc1", "plan1");
 		List<AssignedLocations> expected = Collections.singletonList(assigment);
-		when(organizationRepository.findAssignedLocations(organizationIds)).thenReturn(expected);
+		when(organizationRepository.findAssignedLocations(organizationIds,false)).thenReturn(expected);
 		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlans(organizationIds);
 		assertEquals(expected, assigned);
-		verify(organizationRepository).findAssignedLocations(organizationIds);
+		verify(organizationRepository).findAssignedLocations(organizationIds,false);
 	}
 
 	@Test
@@ -279,24 +287,25 @@ public class OrganizationServiceTest {
 		AssignedLocations assigment = new AssignedLocations("loc1", "plan1");
 		List<AssignedLocations> expected = Collections.singletonList(assigment);
 		when(planRepository.retrievePrimaryKey(anyString())).thenReturn(1l);
-		when(organizationRepository.findAssignedLocationsByPlanId(1l)).thenReturn(expected);
-		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlansByPlanIdentifier(identifier);
+		when(organizationRepository.findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class))).thenReturn(expected);
+		List<AssignedLocations> assigned = organizationService.findAssignedLocationsAndPlansByPlanIdentifier(identifier,null,null,null,null);
 		assertEquals(expected, assigned);
-		verify(organizationRepository).findAssignedLocationsByPlanId(1l);
+		verify(organizationRepository).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testFindAssignedLocationsAndPlansByPlanIdentifierWithNullParam() {
-		organizationService.findAssignedLocationsAndPlansByPlanIdentifier(null);
-		verify(organizationRepository, never()).findAssignedLocations(anyLong());
+		organizationService.findAssignedLocationsAndPlansByPlanIdentifier(null,null,null,null,null);
+		verify(organizationRepository, never()).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testFindAssignedLocationsAndPlansByPlanIdentifierMissingPlan() {
 		when(planRepository.retrievePrimaryKey(anyString())).thenReturn(null);
-
-		organizationService.findAssignedLocationsAndPlansByPlanIdentifier("plan-id-1");
-		verify(organizationRepository, never()).findAssignedLocations(anyLong());
+        AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+        assignedLocationAndPlanSearchBean.setPlanIdentifier("plan-id-1");
+		organizationService.findAssignedLocationsAndPlansByPlanIdentifier("plan-id-1",null,null,null,null);
+		verify(organizationRepository, never()).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 	}
 
 	@Test

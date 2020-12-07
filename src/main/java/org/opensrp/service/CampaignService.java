@@ -3,7 +3,6 @@ package org.opensrp.service;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
 import org.opensrp.domain.Campaign;
 import org.opensrp.repository.CampaignRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +28,9 @@ public class CampaignService {
 	public void addOrUpdateCampaign(Campaign campaign) {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		campaign.setServerVersion(System.currentTimeMillis());
 		if (getCampaign(campaign.getIdentifier()) != null) {
 			updateCampaign(campaign);
 		} else {
-			campaign.setAuthoredOn(new DateTime());
 			addCampaign(campaign);
 		}
 	}
@@ -42,7 +39,7 @@ public class CampaignService {
 	public Campaign addCampaign(Campaign campaign) {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		campaign.setServerVersion(System.currentTimeMillis());
+		campaign.setServerVersion(campaignRepository.getNextServerVersion());
 		campaignRepository.add(campaign);
 		return campaign;
 	}
@@ -51,7 +48,7 @@ public class CampaignService {
 	public Campaign updateCampaign(Campaign campaign) {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		campaign.setServerVersion(System.currentTimeMillis());
+		campaign.setServerVersion(campaignRepository.getNextServerVersion());
 		campaignRepository.update(campaign);
 		return campaign;
 	}

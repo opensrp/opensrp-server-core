@@ -41,7 +41,16 @@ public class IdentifierSourceService {
 	@PreAuthorize("hasRole('IDENTIFIERSOURCE_UPDATE')")
 	public void update(IdentifierSource identifierSource) {
 		validateFields(identifierSource);
+		IdentifierSource idSource = findByIdentifier(identifierSource.getIdentifier());
+		if (idSource == null) {
+			return;
+		}
+		identifierSource.setSequenceValue(idSource.getSequenceValue());
 		identifierSourceRepository.update(identifierSource);
+	}
+
+	public void saveSequenceValue(IdentifierSource identifierSource, Long sequenceValue) {
+     identifierSourceRepository.updateIdSourceWithSequenceValue(identifierSource,sequenceValue);
 	}
 
 	private void validateFields(IdentifierSource identifierSource) {

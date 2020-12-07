@@ -1,8 +1,10 @@
 package org.opensrp.repository;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.search.PlanSearchBean;
 import org.smartregister.domain.PlanDefinition;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,6 +50,14 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	List<PlanDefinition> getAllPlans(Long serverVersion, int limit, boolean experimental);
 
 	/**
+	 * counts all plans
+	 * @param serverVersion
+	 * @param experimental
+	 * @return
+	 */
+	Long countAllPlans(Long serverVersion, boolean experimental);
+
+	/**
 	 * This method fetches all plan Ids
 	 *
 	 * @param serverVersion
@@ -57,6 +67,17 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 */
 	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted);
 
+	/**
+	 * overloads {@link #findAllIds(Long, int, boolean)} by adding date/time filters
+	 * @param serverVersion
+	 * @param limit
+	 * @param isDeleted
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
+	Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted, Date fromDate, Date toDate);
+
 	/** Gets the plans using the plan identifiers and whose server version is greater than or equal to server version
 	 * @param planIdentifiers the plan identifiers
 	 * @param serverVersion
@@ -64,5 +85,5 @@ public interface PlanRepository extends BaseRepository<PlanDefinition> {
 	 */
 	Long countPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion);
 
-	List<PlanDefinition> getAllPlans(boolean experimental);
+	List<PlanDefinition> getAllPlans(PlanSearchBean planSearchBean);
 }

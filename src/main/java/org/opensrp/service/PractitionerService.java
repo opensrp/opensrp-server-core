@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.opensrp.domain.Organization;
 import org.opensrp.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PractitionerRepository;
+import org.opensrp.search.PractitionerSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -21,14 +21,11 @@ public class PractitionerService {
 	
 	private PractitionerRoleService practitionerRoleService;
 	
-	private OrganizationService organizationService;
-	
 	@Autowired
 	public PractitionerService(PractitionerRepository practitionerRepository,
-	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService) {
+	    PractitionerRoleService practitionerRoleService) {
 		this.practitionerRepository = practitionerRepository;
 		this.practitionerRoleService = practitionerRoleService;
-		this.organizationService = organizationService;
 	}
 	
 	public PractitionerRepository getPractitionerRepository() {
@@ -43,8 +40,8 @@ public class PractitionerService {
 		return StringUtils.isBlank(identifier) ? null : getPractitionerRepository().getPractitioner(identifier);
 	}
 	
-	public List<Practitioner> getAllPractitioners() {
-		return getPractitionerRepository().getAll();
+	public List<Practitioner> getAllPractitioners(PractitionerSearchBean practitionerSearchBean) {
+		return getPractitionerRepository().getAllPractitioners(practitionerSearchBean);
 	}
 	
 	public Practitioner addOrUpdatePractitioner(Practitioner practitioner) {
@@ -101,24 +98,6 @@ public class PractitionerService {
 	}
 	
 	/**
-	 * Gets practitioners in an organization
-	 * 
-	 * @param organizationId the identifier for organization
-	 * @return practitioners in an organization
-	 */
-	
-	public List<Practitioner> getPractitionersByOrgIdentifier(String organizationIdentifier) {
-		organizationService.validateIdentifier(organizationIdentifier);
-		Organization organization = organizationService.getOrganization(organizationIdentifier);
-		
-		if (organization == null) {
-			throw new IllegalArgumentException("Organization does not exist");
-		}
-		
-		return getPractitionerRepository().getPractitionersByOrgId(organization.getId());
-	}
-	
-	/**
 	 * Gets the organization ids that a user is assigned to according to the plan location
 	 * assignment
 	 *
@@ -154,4 +133,12 @@ public class PractitionerService {
 		return null;
 	}
 	
+	public Long getPractitionerIdByIdentifier(String identifier) {
+		org.opensrp.domain.postgres.Practitioner pgPractitioner = getPgPractitioner(identifier);
+		return pgPractitioner != null ? pgPractitioner.getId() : null;
+	}
+	
+	public List<Practitioner> getPractitionersByOrgId(Long orgId){
+		return practitionerRepository.getPractitionersByOrgId(orgId);
+	}
 }

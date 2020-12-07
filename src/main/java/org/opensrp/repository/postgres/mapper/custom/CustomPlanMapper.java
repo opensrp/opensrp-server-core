@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.Plan;
 import org.opensrp.domain.postgres.PlanExample;
 import org.opensrp.repository.postgres.mapper.PlanMapper;
+import org.opensrp.search.PlanSearchBean;
 
 /**
  * Created by Vincent Karuri on 02/05/2019
@@ -21,4 +22,10 @@ public interface CustomPlanMapper extends PlanMapper {
 
 	List<String> selectManyIds(@Param("example") PlanExample planExample, @Param("offset") int offset,
 							   @Param("limit") int limit);
+
+	Long countMany(@Param("example") PlanExample planExample);
+
+	List<Plan> selectPlansBySearchBean(@Param("searchBean") PlanSearchBean searchBean,
+			@Param("offset") int offset, @Param("limit") int limit);
+
 }

@@ -18,18 +18,20 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.PractitionerRole;
 import org.opensrp.domain.PractitionerRoleCode;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.PractitionerRoleRepository;
+import org.opensrp.search.PractitionerRoleSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 public class PractitionerRoleServiceTest {
 
-	@Mock
+	@InjectMocks
     private PractitionerRoleService practitionerRoleService;
 
 	@Mock
@@ -41,19 +43,16 @@ public class PractitionerRoleServiceTest {
 	@Mock
     private PractitionerRepository practitionerRepository;
 
-    @Before
-    public void setUp() {
-        practitionerRoleService = new PractitionerRoleService(practitionerRoleRepository,practitionerRepository,organizationService);
-    }
-
+   
     @Test
     public void testGetAllPractitionerRoles() {
         List<PractitionerRole> expectedPractitionerRoles = new ArrayList<>();
         expectedPractitionerRoles.add(initTestPractitionerRole());
-        when(practitionerRoleRepository.getAll()).thenReturn(expectedPractitionerRoles);
+        when(practitionerRoleRepository.getAllPractitionerRoles(any(PractitionerRoleSearchBean.class))).thenReturn(expectedPractitionerRoles);
 
-        List<PractitionerRole> actutalPractitionerRoles = practitionerRoleService.getAllPractitionerRoles();
-        verify(practitionerRoleRepository).getAll();
+        PractitionerRoleSearchBean practitionerRoleSearchBean = new PractitionerRoleSearchBean();
+        List<PractitionerRole> actutalPractitionerRoles = practitionerRoleService.getAllPractitionerRoles(practitionerRoleSearchBean);
+        verify(practitionerRoleRepository).getAllPractitionerRoles(practitionerRoleSearchBean);
         assertEquals(1, actutalPractitionerRoles.size());
         assertEquals("pr1-identifier", actutalPractitionerRoles.get(0).getIdentifier());
     }

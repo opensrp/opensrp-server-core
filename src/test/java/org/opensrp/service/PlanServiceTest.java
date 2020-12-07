@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -23,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.domain.AssignedLocations;
+import org.opensrp.search.PlanSearchBean;
 import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
@@ -56,13 +59,14 @@ public class PlanServiceTest {
 
 	@Before
 	public void setUp() {
-		planService = new PlanService(planRepository, practitionerService, organizationService,taskGenerator);
+		planService = new PlanService(planRepository, practitionerService,practitionerRoleService, organizationService,taskGenerator);
 	}
 	
 	@Test
 	public void testGetAllPlansShouldCallRepositoryGetAllMethod() {
-		planService.getAllPlans(false);
-		verify(planRepository).getAllPlans(eq(false));
+		PlanSearchBean planSearchBean = new PlanSearchBean();
+		planService.getAllPlans(planSearchBean);
+		verify(planRepository).getAllPlans(planSearchBean);
 	}
 	
 	@Test
@@ -314,6 +318,13 @@ public class PlanServiceTest {
 		//verify(planRepository).countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 		verify(organizationService).findAssignedLocationsAndPlans(organizationIds);
 		assertEquals(2, plans.longValue());
+	}
+
+	@Test
+	public void testCountAllShouldInvokeCorrectMethod() {
+		doReturn(1l).when(planRepository).countAllPlans(anyLong(), eq(true));
+		planService.countAllPlans(0l, true);
+		verify(planRepository, times(1)).countAllPlans(eq(0l), eq(true));
 	}
 
 }

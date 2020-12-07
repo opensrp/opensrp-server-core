@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
+import static org.smartregister.domain.LocationProperty.PropertyStatus.ACTIVE;
+import static org.smartregister.domain.LocationProperty.PropertyStatus.PENDING_REVIEW;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -205,6 +207,7 @@ public class PhysicalLocationServiceTest {
 	public void testAddOrUpdateShouldUpdateLocation() {
 		PhysicalLocation physicalLocation = createLocation();
 		when(locationRepository.get("3734", true)).thenReturn(physicalLocation);
+		when(locationRepository.findLocationByIdentifierAndStatus("3734",Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()), true)).thenReturn(physicalLocation);
 		locationService.addOrUpdate(createLocation());
 		verify(locationRepository).update(argumentCaptor.capture());
 		
@@ -281,9 +284,10 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testAdd() {
 		PhysicalLocation expected = createStructure();
+		when(locationRepository.getStructureNextServerVersion()).thenReturn(12l);
 		locationService.add(expected);
 		verify(locationRepository).add(argumentCaptor.capture());
-		assertNull(argumentCaptor.getValue().getServerVersion());
+		assertEquals(12,argumentCaptor.getValue().getServerVersion().longValue());
 		
 		PhysicalLocation structure = argumentCaptor.getValue();
 		
@@ -304,11 +308,11 @@ public class PhysicalLocationServiceTest {
 	
 	@Test
 	public void testUpdate() {
-		
+		when(locationRepository.getNextServerVersion()).thenReturn(15l);
 		PhysicalLocation expected = createLocation();
 		locationService.update(expected);
 		verify(locationRepository).update(argumentCaptor.capture());
-		assertNull(argumentCaptor.getValue().getServerVersion());
+		assertEquals(15,argumentCaptor.getValue().getServerVersion().longValue());
 		
 		PhysicalLocation parentLocation = argumentCaptor.getValue();
 		assertEquals("3734", parentLocation.getId());
@@ -422,33 +426,9 @@ public class PhysicalLocationServiceTest {
 	}
 	
 	@Test
-	public void testAddServerVersion() {
-		
-		List<PhysicalLocation> expectedLocations = new ArrayList<>();
-		expectedLocations.add(createLocation());
-		
-		List<PhysicalLocation> expectedStructures = new ArrayList<>();
-		expectedStructures.add(createStructure());
-		
-		when(locationRepository.findByEmptyServerVersion()).thenReturn(expectedLocations);
-		when(locationRepository.findStructuresByEmptyServerVersion()).thenReturn(expectedStructures);
-		
-		long now = System.currentTimeMillis();
-		locationService.addServerVersion();
-		
-		verify(locationRepository).findByEmptyServerVersion();
-		verify(locationRepository).findStructuresByEmptyServerVersion();
-		
-		verify(locationRepository, times(2)).update(argumentCaptor.capture());
-		assertEquals(2, argumentCaptor.getAllValues().size());
-		for (PhysicalLocation location : argumentCaptor.getAllValues())
-			assertTrue(location.getServerVersion() >= now);
-		
-	}
-	
-	@Test
 	public void testSaveLocations() {
-		
+		when(locationRepository.getNextServerVersion()).thenReturn(15l);
+		when(locationRepository.getStructureNextServerVersion()).thenReturn(150l);
 		List<PhysicalLocation> expectedLocations = new ArrayList<>();
 		PhysicalLocation physicalLocation = createStructure();
 		physicalLocation.setId("12323");
@@ -463,7 +443,7 @@ public class PhysicalLocationServiceTest {
 		verify(locationRepository, times(1)).update(argumentCaptor.capture());
 		for (PhysicalLocation location : argumentCaptor.getAllValues()) {
 			assertTrue(location.isJurisdiction());
-			assertNull(location.getServerVersion());
+			assertTrue(location.getServerVersion() >= 15l);
 		}
 		
 	}
@@ -520,9 +500,22 @@ public class PhysicalLocationServiceTest {
 		List<PhysicalLocation> expectedLocations = Collections.singletonList(createLocation());
 		
 		List<String> locationIds = new ArrayList<>();
-		when(locationRepository.findLocationsByIds(true, locationIds)).thenReturn(expectedLocations);
+		when(locationRepository.findLocationsByIds(true, locationIds,null)).thenReturn(expectedLocations);
 		List<PhysicalLocation> locations = locationService.findLocationsByIds(true, locationIds);
-		verify(locationRepository).findLocationsByIds(true, locationIds);
+		verify(locationRepository).findLocationsByIds(true, locationIds,null);
+		assertEquals(1, locations.size());
+		assertEquals(expectedLocations, locations);
+		
+	}
+	@Test
+	public void testFindLocationsByIdWithServerVersion() {
+		List<PhysicalLocation> expectedLocations = Collections.singletonList(createLocation());
+		
+		List<String> locationIds = Arrays.asList("id1","Id2");
+		long serverVersion=1234;
+		when(locationRepository.findLocationsByIds(true, locationIds,serverVersion)).thenReturn(expectedLocations);
+		List<PhysicalLocation> locations = locationService.findLocationsByIds(true, locationIds,serverVersion);
+		verify(locationRepository).findLocationsByIds(true, locationIds,serverVersion);
 		assertEquals(1, locations.size());
 		assertEquals(expectedLocations, locations);
 		
@@ -1062,5 +1055,45 @@ public class PhysicalLocationServiceTest {
 		assertEquals(expected, locationService.findLocationByIdsWithChildren(false, ids, 1000));
 		verify(locationRepository).findLocationByIdsWithChildren(false, ids, 1000);
 	}
+
+	@Test
+	public void testBuildLocationHeirarchyWithAncestors() {
+		Set<String> locationIds = new HashSet<>();
+		String locationId = "1";
+		locationIds.add(locationId);
+
+		Set<LocationDetail> locationDetails = new HashSet<>();
+
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1").tags("Country").build();
+		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
+				.tags("Province").build();
+		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
+				.tags("Province").build();
+		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
+				.tags("District").build();
+		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
+				.tags("District").build();
+		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
+				.tags("District").build();
+
+		locationDetails.add(country);
+		locationDetails.add(province1);
+		locationDetails.add(province2);
+		locationDetails.add(district1);
+		locationDetails.add(district2);
+		locationDetails.add(district3);
+
+		when(locationRepository.findParentLocationsInclusive(locationIds)).thenReturn(locationDetails);
+
+		Set<LocationDetail> locationDetailsSet = locationService.buildLocationHeirarchyWithAncestors(locationId);
+
+		verify(locationRepository).findParentLocationsInclusive(locationIds);
+		assertNotNull(locationDetailsSet);
+		assertEquals(6, locationDetailsSet.size());
+		LocationDetail actuallocationDetail = locationDetailsSet.iterator().next();
+		assertEquals("Province 1", actuallocationDetail.getName());
+		assertEquals("Province", actuallocationDetail.getTags());
+	}
+
 
 }

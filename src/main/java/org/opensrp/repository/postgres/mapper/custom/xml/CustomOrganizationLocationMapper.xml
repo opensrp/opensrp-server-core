@@ -26,7 +26,11 @@
 		left join core.location_metadata l on l.location_id=ol.location_id
 		inner join team.organization org on org.id=ol.organization_id
 		<include refid="org.opensrp.repository.postgres.mapper.OrganizationLocationMapper.Example_Where_Clause" />
-		and ( ol.to_date is null  OR ol.to_date  <![CDATA[ >= ]]> #{toDate,jdbcType=TIMESTAMP} )	
+		and ( ol.to_date is null  OR ol.to_date  <![CDATA[ > ]]> #{toDate,jdbcType=TIMESTAMP} )
+		<if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
+			order by ol.${searchBean.orderByFieldName} ${searchBean.orderByType}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
 	</select>
 	
 	

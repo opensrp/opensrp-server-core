@@ -23,7 +23,10 @@
 	<context:component-scan base-package="org.opensrp.scheduler" />  -->
 	<context:component-scan base-package="org.opensrp.form" />
 	<context:component-scan base-package="org.opensrp.generator" />
-	<context:component-scan base-package="org.opensrp.config" />
+	<context:component-scan base-package="org.opensrp.config"/>
+	<context:component-scan base-package="org.opensrp.queue"/>
+	<context:component-scan base-package="org.opensrp.validator"/>
+
 	<context:component-scan base-package="org.opensrp.service">
 		<!--These classes are excluded to enable the context load. This is because
 			EventsListener has EventsRouter as a dependency, problem is that IHandlerMapper

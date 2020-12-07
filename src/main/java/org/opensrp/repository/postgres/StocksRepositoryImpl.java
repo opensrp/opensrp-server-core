@@ -1,23 +1,30 @@
 package org.opensrp.repository.postgres;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Stock;
+import org.opensrp.domain.postgres.StockExample;
 import org.opensrp.domain.postgres.StockMetadata;
 import org.opensrp.domain.postgres.StockMetadataExample;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMetadataMapper;
 import org.opensrp.search.StockSearchBean;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import static org.opensrp.util.Utils.isEmptyList;
+
 @Repository("stocksRepositoryPostgres")
 public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements StocksRepository {
-	
+
+	private static final String SEQUENCE="core.stock_server_version_seq";
+
 	@Autowired
 	private CustomStockMapper stockMapper;
 	
@@ -155,22 +162,79 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	}
 	
 	@Override
-	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int limit) {
+	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int offset, int limit) {
 		String orderByClause = getOrderByClause(sortBy, sortOrder);
-		return convert(stockMetadataMapper.selectManyBySearchBean(searchBean, orderByClause, 0, limit));
-		
+		Date date = new Date();
+		return convert(stockMetadataMapper.selectManyBySearchBean(searchBean, date, orderByClause, offset, limit));
+
 	}
 	
 	@Override
 	public List<Stock> findStocks(StockSearchBean searchBean) {
-		return findStocks(searchBean, null, null, DEFAULT_FETCH_SIZE);
+		String sortBy = searchBean.getOrderByFieldName() != null ? searchBean.getOrderByFieldName().name() : null;
+		String sortOrder= searchBean.getOrderByType() != null ? searchBean.getOrderByType().name() : null;
+		Pair<Integer, Integer> pageLimitAndOffSet = getPageSizeAndOffset(searchBean);
+		searchBean.setOffset(pageLimitAndOffSet.getRight());
+		searchBean.setLimit(pageLimitAndOffSet.getLeft());
+		return findStocks(searchBean, sortBy, sortOrder, searchBean.getOffset(), searchBean.getLimit());
 	}
 	
 	@Override
 	public List<Stock> findAllStocks() {
 		return getAll();
 	}
-	
+
+	@Override
+	public Stock findByIdentifierAndServicePointId(String identifier, String locationId) {
+		return convert(stockMapper.selectByIdentifierAndLocationId(identifier,locationId));
+	}
+
+	@Override
+	public Stock getById(Long id) {
+		StockExample stockExample = new StockExample();
+		stockExample.createCriteria().andIdEqualTo(id);
+
+		List<org.opensrp.domain.postgres.Stock> stocks = stockMapper.selectByExample(stockExample);
+
+		return isEmptyList(stocks) ? null : convert(stocks.get(0));
+	}
+
+	@Override
+	public void delete(Long stockId) {
+		if (stockId == null) {
+			return;
+		}
+
+		Stock stock = getById(stockId);
+		org.opensrp.domain.postgres.Stock pgStock = convert(stock, stockId);
+		Date dateDeleted = new Date();
+		if (pgStock == null) {
+			return;
+		}
+
+		pgStock.setDateDeleted(dateDeleted);
+		StockMetadata stockMetadata = findStockMetaDataByStockId(stockId);
+		stockMetadata.setDateDeleted(dateDeleted);
+		int rowsAffected = stockMetadataMapper.updateByPrimaryKey(stockMetadata);
+		if (rowsAffected < 1) {
+			return;
+		}
+
+		stockMapper.updateByPrimaryKeySelective(pgStock);
+	}
+
+	@Override
+	public List<Stock> findStocksByLocationId(StockSearchBean stockSearchBean) {
+		Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(stockSearchBean);
+        stockSearchBean.setOffset(pageSizeAndOffset.getRight());
+        stockSearchBean.setLimit(pageSizeAndOffset.getLeft());
+		return findStocks(stockSearchBean);
+	}
+
+	public StockMetadata findStockMetaDataByStockId(Long stockId) {
+		return stockMetadataMapper.selectByStockId(stockId);
+	}
+
 	@Override
 	protected Long retrievePrimaryKey(Stock entity) {
 		if (entity == null || entity.getId() == null) {
@@ -233,9 +297,31 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		metadata.setStockId(id);
 		metadata.setDocumentId(entity.getId());
 		metadata.setProviderId(entity.getProviderid());
-		//metadata.setLocationId(entity.get);
+		metadata.setLocationId(entity.getLocationId());
 		metadata.setServerVersion(entity.getServerVersion());
 		return metadata;
+	}
+
+	@Override
+	protected String getSequenceName() {
+		return SEQUENCE;
+	}
+
+	private Pair<Integer, Integer> getPageSizeAndOffset(StockSearchBean stockSearchBean) {
+
+		Integer pageSize;
+		Integer offset = 0;
+		if (stockSearchBean.getPageSize() == null || stockSearchBean.getPageSize() == 0) {
+			pageSize = DEFAULT_FETCH_SIZE;
+		} else {
+			pageSize = stockSearchBean.getPageSize();
+		}
+
+		if (stockSearchBean.getPageNumber() != null && stockSearchBean.getPageNumber() != 0) {
+			offset = (stockSearchBean.getPageNumber() - 1) * pageSize;
+		}
+
+		return Pair.of(pageSize, offset);
 	}
 	
 }

@@ -13,6 +13,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opensrp.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
+import org.opensrp.search.BaseSearchBean;
+import org.opensrp.search.PractitionerSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PractitionerRepositoryTest extends BaseRepositoryTest{
@@ -326,6 +328,30 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
             ids.remove(practitioner.getIdentifier());
         }
         return ids.size() == 0;
+    }
+
+    @Test
+    public void testGetAllPractitioners() {
+        Practitioner practitioner1 = initTestPractitioner1();
+        practitionerRepository.add(practitioner1);
+        Practitioner practitioner2 = initTestPractitioner2();
+        practitionerRepository.add(practitioner2);
+        PractitionerSearchBean practitionerSearchBean = PractitionerSearchBean.builder().
+                orderByType(BaseSearchBean.OrderByType.DESC).
+                orderByFieldName(BaseSearchBean.FieldName.id).build();
+        List<Practitioner> practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
+        assertNotNull(practitioners);
+        assertEquals(2,practitioners.size());
+        assertEquals("practitoner-2-identifier",practitioners.get(0).getIdentifier());
+        assertEquals("practitoner-1-identifier",practitioners.get(1).getIdentifier());
+
+        practitionerSearchBean = PractitionerSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).
+                orderByFieldName(BaseSearchBean.FieldName.id).build();
+        practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
+        assertNotNull(practitioners);
+        assertEquals(2,practitioners.size());
+        assertEquals("practitoner-1-identifier",practitioners.get(0).getIdentifier());
+        assertEquals("practitoner-2-identifier",practitioners.get(1).getIdentifier());
     }
 
 }

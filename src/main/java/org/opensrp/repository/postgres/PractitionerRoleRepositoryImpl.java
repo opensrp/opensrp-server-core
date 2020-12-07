@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.PractitionerRole;
 import org.opensrp.domain.PractitionerRoleCode;
@@ -9,6 +10,8 @@ import org.opensrp.domain.postgres.PractitionerRoleExample;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerRoleMapper;
+import org.opensrp.search.PractitionerRoleSearchBean;
+import org.opensrp.util.RepositoryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -265,4 +268,45 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         Long practitionerId = organization != null ? organization.getId() : null;
         return practitionerId;
     }
+
+    @Override
+    public void assignPractitionerRole(Long organizationId, Long practitionerId, String practitionerIdentifier, String code,
+            PractitionerRole practitionerRole) {
+        List<org.opensrp.domain.postgres.PractitionerRole> practitionerRoles = getPgRolesForPractitioner(
+                practitionerIdentifier);
+        for (org.opensrp.domain.postgres.PractitionerRole pgPractitionerRole : practitionerRoles) {
+            if (isExistingPractitionerRole(organizationId, practitionerId, code, pgPractitionerRole)) {
+                pgPractitionerRole.setActive(Boolean.TRUE);
+                pgPractitionerRole.setCode(code);
+                PractitionerRoleExample example = new PractitionerRoleExample();
+                example.createCriteria().andIdEqualTo(pgPractitionerRole.getId());
+                practitionerRoleMapper.updateByExample(pgPractitionerRole, example);
+                return;
+            }
+        }
+        add(practitionerRole);
+
+    }
+
+    @Override
+    public List<PractitionerRole> getAllPractitionerRoles(PractitionerRoleSearchBean practitionerRoleSearchBean) {
+        Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerRoleSearchBean);
+        PractitionerRoleExample practitionerRoleExample = new PractitionerRoleExample();
+        if(practitionerRoleSearchBean.getOrderByFieldName() != null && practitionerRoleSearchBean.getOrderByType() != null) {
+            practitionerRoleExample.setOrderByClause(practitionerRoleSearchBean.getOrderByFieldName() + " " + practitionerRoleSearchBean.getOrderByType());
+        }
+        List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoleList = practitionerRoleMapper.selectMany(practitionerRoleExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+        return convert(pgPractitionerRoleList);
+    }
+
+    private boolean isExistingPractitionerRole(Long organizationId, Long practitionerId, String code,
+            org.opensrp.domain.postgres.PractitionerRole practitionerRole) {
+        if (organizationId != null && practitionerId != null) {
+            return practitionerRole.getPractitionerId().equals(practitionerId)
+                    && practitionerRole.getOrganizationId().equals(organizationId)
+                    && (practitionerRole.getCode() == null || practitionerRole.getCode().equals(code));
+        }
+        return false;
+    }
+
 }

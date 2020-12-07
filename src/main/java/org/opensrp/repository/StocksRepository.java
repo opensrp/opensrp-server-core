@@ -13,10 +13,18 @@ public interface StocksRepository extends BaseRepository<Stock> {
 	
 	public Stock findById(String id);
 	
-	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int limit);
+	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int offset, int limit);
 	
 	public List<Stock> findStocks(StockSearchBean searchBean);
 	
 	public List<Stock> findAllStocks();
+
+	public Stock findByIdentifierAndServicePointId(String identifier, String locationId);
+
+	Stock getById(Long id);
+
+	void delete(Long stockId);
+
+	public List<Stock> findStocksByLocationId(StockSearchBean stockSearchBean);
 	
 }
