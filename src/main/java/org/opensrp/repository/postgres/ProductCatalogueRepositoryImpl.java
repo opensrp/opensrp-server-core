@@ -7,7 +7,6 @@ import org.opensrp.domain.postgres.ProductCatalogueExample;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomProductCatalogueMapper;
 import org.opensrp.search.ProductCatalogueSearchBean;
-import org.smartregister.pathevaluator.dao.ProductCatalogueDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +17,7 @@ import static org.opensrp.util.Utils.isEmptyList;
 
 @Repository("productCatalogueRepositoryPostgres")
 public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCatalogue>
-		implements ProductCatalogueRepository, ProductCatalogueDao {
+		implements ProductCatalogueRepository {
 
 	@Autowired
 	private CustomProductCatalogueMapper customProductCatalogueMapper;
@@ -232,10 +231,4 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 	protected String getSequenceName() {
 		return SEQUENCE;
 	}
-
-	@Override
-	public ProductCatalogue getProductCatalogueById(Long uniqueId) {
-		return getById(uniqueId, "");
-	}
-
 }

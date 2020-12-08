@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import com.ibm.fhir.model.resource.Bundle;
 import com.ibm.fhir.model.resource.SupplyDelivery;
 import org.apache.commons.lang3.StringUtils;
 import org.smartregister.domain.ProductCatalogue;
@@ -335,7 +337,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 
 
 	@Override
-	public List<SupplyDelivery> findInventoryItemsInAJurisdiction(String jurisdictionId) {
+	public List<Bundle> findInventoryItemsInAJurisdiction(String jurisdictionId) {
 		List<PhysicalLocation> childLocations =
 				locationRepository.findStructuresByProperties(false, jurisdictionId, null);
 		List<String> servicePointIds = new ArrayList<>();
@@ -343,22 +345,16 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 			servicePointIds.add(physicalLocation.getId());
 		}
 
-		StockSearchBean stockSearchBean = new StockSearchBean();
-		stockSearchBean.setLocations(servicePointIds);
-//		return convertToFHIR(findStocks(stockSearchBean));
-		return null;
+		return convertToFHIR(getInventoryWithProductDetails(servicePointIds));
 
 	}
 
 
 	@Override
-	public List<SupplyDelivery> findInventoryInAServicePoint(String servicePointId) {
-		StockSearchBean stockSearchBean = new StockSearchBean();
+	public List<Bundle> findInventoryInAServicePoint(String servicePointId) {
 		List<String> locations = new ArrayList<>();
 		locations.add(servicePointId);
-		stockSearchBean.setLocations(locations);
-//		return convertToFHIR(findStocksByLocationId(stockSearchBean));
-		return null;
+		return convertToFHIR(getInventoryWithProductDetails(locations));
 	}
 
 	private List<StockAndProductDetails> convertStockAndProductDetails(List<org.opensrp.domain.postgres.PgStockAndProductDetails> stockAndProductDetails) {
@@ -400,17 +396,14 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	}
 
 	@Override
-	public List<StockAndProductDetails> getInventoryWithProductDetails(String servicePointId) {
-		List<String> locations = new ArrayList<>();
-		locations.add(servicePointId);
+	public List<StockAndProductDetails> getInventoryWithProductDetails(List<String> locations) {
 		return convertStockAndProductDetails(stockMetadataMapper.selectManyStockAndProductDetailsByServicePointId(locations));
 	}
 
 
-
-//	private List<SupplyDelivery> convertToFHIR(List<StockAndProductDetails> stockAndProductDetails) {
-//		return stockAndProductDetails.stream().map(client -> StockConverter.convertStockToSupplyDeliveryResource(stockAndProductDetails))
-//				.collect(Collectors.toList());
-//	}
+	private List<Bundle> convertToFHIR(List<StockAndProductDetails> stockAndProductDetails) {
+		return stockAndProductDetails.stream().map(stockAndProductDetail -> StockConverter.convertStockToBundleResource(stockAndProductDetail))
+				.collect(Collectors.toList());
+	}
 
 }

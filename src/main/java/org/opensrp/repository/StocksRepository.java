@@ -29,6 +29,6 @@ public interface StocksRepository extends BaseRepository<Stock>, StockDao {
 
 	public List<Stock> findStocksByLocationId(StockSearchBean stockSearchBean);
 
-	public List<StockAndProductDetails> getInventoryWithProductDetails(String servicePointId);
+	public List<StockAndProductDetails> getInventoryWithProductDetails(List<String> locations);
 	
 }
