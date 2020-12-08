@@ -5,10 +5,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Date;
+import java.util.*;
 
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
@@ -228,7 +225,9 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 	public void testFindInventoryInAServicePoint() {
 		Stock stock = createInventoryStockObject("3734");
 		stocksRepository.add(stock);
-		List<StockAndProductDetails> inventoryItems = stocksRepository.getInventoryWithProductDetails("3734");
+		List<String> locations = new ArrayList<>();
+		locations.add("3734");
+		List<StockAndProductDetails> inventoryItems = stocksRepository.getInventoryWithProductDetails(locations);
 		assertEquals(1,inventoryItems.size());
 	}
 

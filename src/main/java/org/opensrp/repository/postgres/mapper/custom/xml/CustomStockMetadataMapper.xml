@@ -162,7 +162,7 @@
 		<where>
 			<trim  prefixOverrides="and">
 
-				<if test="locations != null">
+				<if test="locations != null and locations.size() > 0">
 					and stock.json ->> 'locationId' IN
 					<foreach item="item" index="index" collection="locations" open="(" separator="," close=")">
 						#{item}
