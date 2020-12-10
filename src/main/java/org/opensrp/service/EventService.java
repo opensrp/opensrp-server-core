@@ -289,7 +289,7 @@ public class EventService {
 		return event;
 	}
 	
-	public void updateEvent(Event updatedEvent) {
+	public void updateEvent(Event updatedEvent, String username) {
 		// If update is on original entity
 		if (updatedEvent.isNew()) {
 			throw new IllegalArgumentException(
@@ -299,6 +299,13 @@ public class EventService {
 		updatedEvent.setDateEdited(DateTime.now());
 		updatedEvent.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.update(updatedEvent);
+		String planIdentifier = updatedEvent.getDetails() != null ? updatedEvent.getDetails().get("planIdentifier") : null;
+		if (isPlanEvaluationEnabled && planIdentifier != null) {
+			PlanDefinition plan = planRepository.get(planIdentifier);
+			if (plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
+					|| plan.getEffectivePeriod().getEnd().isAfter(LocalDate.now().toDateTimeAtStartOfDay())))
+				taskGenerator.processPlanEvaluation(plan, username, updatedEvent);
+		}
 	}
 	
 	//TODO Review and add test cases as well

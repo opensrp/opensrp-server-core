@@ -1,5 +1,7 @@
 package org.opensrp.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.slf4j.Logger;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
@@ -75,7 +77,9 @@ public class RabbitMQConfig {
 
 	@Bean
 	public MessageConverter jsonMessageConverter() {
-		return new Jackson2JsonMessageConverter();
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JodaModule());
+		return new Jackson2JsonMessageConverter(objectMapper);
 	}
 
 	@Bean

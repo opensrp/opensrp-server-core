@@ -402,7 +402,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		addObjectToRepository(Collections.singletonList(getEvent()), allEvents);
 		Event expectedEvent = allEvents.getAll().get(0);
 		
-		eventService.updateEvent(expectedEvent);
+		eventService.updateEvent(expectedEvent, username);
 		
 		List<Event> dbEvents = eventService.getAll();
 		assertEquals(1, dbEvents.size());
@@ -413,7 +413,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 	public void shouldThrowExceptionIfNewEventInUpdate() {
 		Event event = getEvent();
 		
-		eventService.updateEvent(event);
+		eventService.updateEvent(event, username);
 	}
 	
 	@Test

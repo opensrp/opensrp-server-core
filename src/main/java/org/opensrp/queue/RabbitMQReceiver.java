@@ -3,7 +3,7 @@ package org.opensrp.queue;
 import com.ibm.fhir.model.format.Format;
 import com.ibm.fhir.model.parser.FHIRParser;
 import com.ibm.fhir.model.parser.exception.FHIRParserException;
-import com.ibm.fhir.model.resource.DomainResource;
+import com.ibm.fhir.model.resource.Resource;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.LocationRepository;
@@ -87,7 +87,7 @@ public class RabbitMQReceiver {
 					resourceEvaluatorMessage.getResource().getBytes(StandardCharsets.UTF_8)) : null;
 			try {
 				if (stream != null) {
-					DomainResource resource = fhirParser.parse(stream);
+					Resource resource = fhirParser.parse(stream);
 					logger.info("Resource id is : " + resource.getId());
 					if (resource != null && resourceEvaluatorMessage != null
 							&& resourceEvaluatorMessage.getAction() != null

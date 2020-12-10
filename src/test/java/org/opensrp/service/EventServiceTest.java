@@ -338,7 +338,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		Event event = new Event().withBaseEntityId("435534534543").withEventType("Growth Monitoring")
 		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs);
 		
-		eventService.updateEvent(event);
+		eventService.updateEvent(event, username);
 	}
 	
 	@Test
@@ -347,7 +347,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		Event event = eventService.findById("05934ae338431f28bf6793b24177a1dc");
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		event.withIdentifier(OPENMRS_UUID_IDENTIFIER_TYPE, "62242n-223423-2332").addObs(obs);
-		eventService.updateEvent(event);
+		eventService.updateEvent(event, username);
 		
 		Event updatedEvent = eventService.findById(event.getId());
 		assertEquals(0, Minutes.minutesBetween(timebeforeUpdate, updatedEvent.getDateEdited()).getMinutes());
