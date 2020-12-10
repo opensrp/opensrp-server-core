@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.ibm.fhir.model.resource.Bundle;
-import com.ibm.fhir.model.resource.SupplyDelivery;
 import org.apache.commons.lang3.StringUtils;
 import org.smartregister.domain.ProductCatalogue;
 import org.smartregister.domain.StockAndProductDetails;
