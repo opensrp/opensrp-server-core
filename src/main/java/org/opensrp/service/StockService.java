@@ -359,7 +359,7 @@ public class StockService {
 
 	private void validateFields(Inventory inventory) {
 		PhysicalLocation physicalLocation = inventory.getServicePointId() != null ?
-				physicalLocationService.getLocation(inventory.getServicePointId(), true) :
+				physicalLocationService.getStructure(inventory.getServicePointId(), true) :
 				null;
 
 		List<String> donors = inventoryDataValidator.getValidDonors();

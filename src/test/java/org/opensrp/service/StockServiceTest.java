@@ -169,7 +169,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
 		when(inventoryDataValidator.getValidDonors()).thenReturn(donorsList);
 		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(sectionsList);
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(physicalLocationService.getStructure(anyString(), anyBoolean())).thenReturn(createLocation());
 		stockService.addInventory(inventory, "John");
 		StockSearchBean stockSearchBean =  new StockSearchBean();
 		List<String> locations = new ArrayList<>();
@@ -188,7 +188,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		when(inventoryDataValidator.getValidDonors()).thenReturn(donorsList);
 		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(sectionsList);
 		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(physicalLocationService.getStructure(anyString(), anyBoolean())).thenReturn(createLocation());
 		stockService.addInventory(inventory, "John");
 		inventory.setDonor("BMGF");
 		Stock stock = stockService.findByIdentifierAndServicePointId("1", "loc-1");
