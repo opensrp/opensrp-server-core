@@ -309,7 +309,7 @@ public class StockService {
 		int poNumber = Integer.valueOf(poNumberFromCsv);
 
 		Long productId = Long.valueOf(productCatalogId);
-		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogue(productId);
+		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogue(productId, "");
 		String productCatalogueName = productCatalogue != null ? productCatalogue.getProductName() : productName;
 
 		inventory.setProductName(productCatalogueName);

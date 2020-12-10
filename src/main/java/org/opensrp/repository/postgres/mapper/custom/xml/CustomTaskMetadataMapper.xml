@@ -106,4 +106,46 @@
 			<include refid="Example_Where_Clause" />
 		</if>
 	</select>
+
+	<sql id="query">
+		from core.task_metadata tm
+		join core.task t on tm.task_id = t.id
+		<where>
+			<if test="searchBean.planIdentifier != null">
+				tm.plan_identifier = #{searchBean.planIdentifier,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.groupIdentifiers != null">
+				and tm.group_identifier IN
+				<foreach item="item" index="index" collection="searchBean.groupIdentifiers" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+			<if test="searchBean.code != null">
+				and tm.code = #{searchBean.code,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.status != null">
+				and t.json ->> 'status' = #{searchBean.status,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.businessStatus != null">
+				and t.json ->> 'businessStatus' = #{searchBean.businessStatus,jdbcType=VARCHAR}
+			</if>
+		</where>
+
+	</sql>
+
+	<select id="selectTasksBySearchBean" resultMap="org.opensrp.repository.postgres.mapper.TaskMapper.BaseResultMap">
+		select
+		<include refid="Base_Column_List"/>
+		<include refid="query"/>
+		<if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
+			order by ${searchBean.orderByFieldName} ${searchBean.orderByType}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
+	<select id="selectTaskCount" resultType="Integer">
+		select count(distinct t.id)
+		<include refid="query"/>
+
+	</select>
 </mapper>
