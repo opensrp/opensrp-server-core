@@ -95,7 +95,7 @@
       <if test="dateDeleted != null">
         #{dateDeleted,jdbcType=TIMESTAMP},
       </if>
-       nextVal('core.plan_server_version_seq')
+       nextVal('core.plan_server_version_seq'),
 	   <if test="experimental != null">
 			#{experimental,jdbcType=BIT},
 	   </if>

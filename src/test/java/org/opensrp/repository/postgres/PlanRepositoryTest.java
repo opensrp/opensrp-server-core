@@ -12,6 +12,7 @@ import org.opensrp.repository.PlanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -555,7 +556,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         assertEquals(1, planids.size());
 
         assertEquals("identifier_7", planids.get(0));
-        assertEquals(1235l, planIdsObject.getRight().longValue());
+        assertNotEquals(1235l, planIdsObject.getRight().longValue());
     }
 
 
