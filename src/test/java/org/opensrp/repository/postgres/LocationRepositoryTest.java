@@ -460,10 +460,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertTrue(locations.get(0).getServerVersion() >= 1l);
 		
 		locations.get(0).setServerVersion(null);
+		locations.get(0).setJurisdiction(true);
 		locationRepository.update(locations.get(0));
 		
 		locations = locationRepository.findLocationsByServerVersion(1l);
-		assertTrue(locations.isEmpty());
+		assertEquals(1,locations.size());
 		
 	}
 	
@@ -489,7 +490,8 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.update(locations.get(0));
 		
 		locations = locationRepository.findStructuresByParentAndServerVersion("3734", 0l);
-		assertTrue(locations.isEmpty());
+		assertEquals(1, locations.size());
+		assertTrue(locations.get(0).getServerVersion() > 1542376382851l);
 	}
 	
 	@Test
@@ -520,8 +522,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.update(location);
 		
 		locations = locationRepository.findStructuresByEmptyServerVersion();
-		assertEquals(1, locations.size());
-		assertEquals("90397", locations.get(0).getId());
+		assertEquals(0, locations.size());
 		
 	}
 	
