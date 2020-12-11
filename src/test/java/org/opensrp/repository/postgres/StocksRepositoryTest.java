@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.*;
 
+import com.ibm.fhir.model.resource.Bundle;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
 import org.smartregister.domain.StockAndProductDetails;
@@ -212,17 +213,26 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 			assertNotEquals("05934ae338431f28bf6793b241b2df09", stock.getId());
 	}
 
-//	@Test
-//	public void testFindInventoryItemsInAJurisdiction() {
-//        Stock stock = createInventoryStockObject("90397");
-//        stocksRepository.add(stock);
-//		List<Stock> inventoryItems = stocksRepository.findInventoryItemsInAJurisdiction("3734");
-//		assertEquals(1,inventoryItems.size());
-//		assertEquals(new Long(12345l), inventoryItems.get(0).getIdentifier());
-//	}
+	@Test
+	public void testFindInventoryItemsInAJurisdiction() {
+        Stock stock = createInventoryStockObject("90397");
+        stocksRepository.add(stock);
+		List<Bundle> bundles = stocksRepository.findInventoryItemsInAJurisdiction("3734");
+		assertEquals(1,bundles.size());
+		assertEquals(2, bundles.get(0).getEntry().size());
+	}
 
 	@Test
 	public void testFindInventoryInAServicePoint() {
+		Stock stock = createInventoryStockObject("90397");
+		stocksRepository.add(stock);
+		List<Bundle> bundles = stocksRepository.findInventoryInAServicePoint("90397");
+		assertEquals(1,bundles.size());
+		assertEquals(2, bundles.get(0).getEntry().size());
+	}
+
+	@Test
+	public void testGetInventoryWithProductDetails() {
 		Stock stock = createInventoryStockObject("3734");
 		stocksRepository.add(stock);
 		List<String> locations = new ArrayList<>();

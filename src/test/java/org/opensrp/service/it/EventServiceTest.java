@@ -373,7 +373,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 	public void shouldAddIfNewEntityInAddOrUpdate() {
 		Event expectedEvent = getEvent();
 		
-		Event actualEvent = eventService.addorUpdateEvent(expectedEvent);
+		Event actualEvent = eventService.addorUpdateEvent(expectedEvent, username);
 		
 		List<Event> dbEvents = eventService.getAll();
 		assertEquals(1, dbEvents.size());
@@ -387,7 +387,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		addObjectToRepository(Collections.singletonList(getEvent()), allEvents);
 		Event expectedEvent = allEvents.getAll().get(0);
 		
-		Event actualEvent = eventService.addorUpdateEvent(expectedEvent);
+		Event actualEvent = eventService.addorUpdateEvent(expectedEvent, username);
 		
 		List<Event> dbEvents = eventService.getAll();
 		assertEquals(1, dbEvents.size());

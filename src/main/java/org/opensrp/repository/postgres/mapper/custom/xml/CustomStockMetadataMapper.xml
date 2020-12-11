@@ -7,7 +7,7 @@
 					 resultMap="org.opensrp.repository.postgres.mapper.StockMapper.BaseResultMap">
 		</association>
 		<association property="productCatalogue" javaType="org.opensrp.domain.postgres.ProductCatalogue" column="unique_id"
-					 resultMap="org.opensrp.repository.postgres.mapper.ProductCatalogueMapper.BaseResultMap">
+					 resultMap="org.opensrp.repository.postgres.mapper.ProductCatalogueMapper.CustomResultMap">
 		</association>
 	</resultMap>
 

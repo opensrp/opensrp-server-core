@@ -269,7 +269,7 @@ public class EventService {
 		return event;
 	}
 	
-	public synchronized Event addorUpdateEvent(Event event) {
+	public synchronized Event addorUpdateEvent(Event event, String username) {
 		Event existingEvent = findByIdOrFormSubmissionId(event.getId(), event.getFormSubmissionId());
 		if (existingEvent != null) {
 			event.setId(existingEvent.getId());
@@ -284,6 +284,14 @@ public class EventService {
 			event.setServerVersion(allEvents.getNextServerVersion());
 			allEvents.add(event);
 			
+		}
+
+		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
+		if (isPlanEvaluationEnabled && planIdentifier != null) {
+			PlanDefinition plan = planRepository.get(planIdentifier);
+			if (plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
+					|| plan.getEffectivePeriod().getEnd().isAfter(LocalDate.now().toDateTimeAtStartOfDay())))
+				taskGenerator.processPlanEvaluation(plan, username, event);
 		}
 		
 		return event;

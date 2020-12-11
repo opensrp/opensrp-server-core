@@ -263,7 +263,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		Event event = new Event().withBaseEntityId("435534534543").withEventType("Growth Monitoring")
 		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs);
 		
-		eventService.addorUpdateEvent(event);
+		eventService.addorUpdateEvent(event, username);
 		
 		Event updatedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
 		assertEquals("435534534543", updatedEvent.getBaseEntityId());
@@ -274,7 +274,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		event.setTeam("ATeam");
 		event.setProviderId("tester11");
 		event.setLocationId("321312-fsff-2328");
-		eventService.addorUpdateEvent(event);
+		eventService.addorUpdateEvent(event, username);
 		
 		updatedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
 		assertEquals("ATeam", updatedEvent.getTeam());
@@ -287,7 +287,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		event = new Event().withBaseEntityId("2423nj-sdfsd-sf2dfsd-2399d").withEventType("Vaccination")
 		        .withFormSubmissionId("hshj2342_jsjs-jhjsdfds-23").withEventDate(new DateTime()).withObs(obs);
 		event.setDateVoided(new DateTime());
-		eventService.addorUpdateEvent(event);
+		eventService.addorUpdateEvent(event, username);
 		assertNull(eventService.findByFormSubmissionId(event.getFormSubmissionId()));
 	}
 	
@@ -302,7 +302,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		dateTimeModule.addDeserializer(DateTime.class, new DateTimeDeserializer());
 		mapper.registerModule(dateTimeModule);
 		String jsonString = mapper.writeValueAsString(event);
-		eventService.addorUpdateEvent(event);
+		eventService.addorUpdateEvent(event, username);
 		
 		Event updatedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
 		String eventId = updatedEvent.getId();
@@ -316,7 +316,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		originalEventWithoutId.setTeam("ATeam");
 		originalEventWithoutId.setProviderId("tester11");
 		originalEventWithoutId.setLocationId("321312-fsff-2328");
-		eventService.addorUpdateEvent(originalEventWithoutId);
+		eventService.addorUpdateEvent(originalEventWithoutId, username);
 		
 		updatedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
 		assertEquals(eventId, updatedEvent.getId());
