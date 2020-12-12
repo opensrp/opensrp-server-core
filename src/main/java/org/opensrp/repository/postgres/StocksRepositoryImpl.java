@@ -344,8 +344,10 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 			servicePointIds.add(physicalLocation.getId());
 		}
 
-		return convertToFHIR(getInventoryWithProductDetails(servicePointIds));
-
+		if(servicePointIds != null && servicePointIds.size() > 0) {
+			return convertToFHIR(getInventoryWithProductDetails(servicePointIds));
+		}
+		return convertToFHIR(new ArrayList<>());
 	}
 
 

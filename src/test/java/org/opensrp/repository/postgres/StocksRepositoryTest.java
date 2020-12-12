@@ -133,8 +133,9 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindStocksWithOrder() {
 		StockSearchBean searchBean = new StockSearchBean();
-		
+		List<String> locations = new ArrayList<>();
 		searchBean.setStockTypeId("1");
+		searchBean.setLocations(locations);
 		List<Stock> stocks = stocksRepository.findStocks(searchBean, BaseEntity.SERVER_VERSIOIN, "asc",0, 5);
 		assertEquals(5, stocks.size());
 		long previousVersion = 0;
@@ -220,6 +221,14 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 		List<Bundle> bundles = stocksRepository.findInventoryItemsInAJurisdiction("3734");
 		assertEquals(1,bundles.size());
 		assertEquals(2, bundles.get(0).getEntry().size());
+	}
+
+	@Test
+	public void testFindInventoryItemsInAJurisdictionWithNoServicePoint() {
+		Stock stock = createInventoryStockObject("90397");
+		stocksRepository.add(stock);
+		List<Bundle> bundles = stocksRepository.findInventoryItemsInAJurisdiction("3730");
+		assertEquals(0,bundles.size());
 	}
 
 	@Test
