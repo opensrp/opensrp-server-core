@@ -172,4 +172,21 @@
 		</where>
 	</select>
 
+	<select id="selectStockAndProductDetailsByStockId" resultMap="StockAndProductDetails">
+		select
+		<include refid="Stock_And_Product_Details_Column_List"/>
+		from core.stock_metadata sm
+		join core.stock stock on sm.stock_id = stock.id
+		join core.product_catalogue productCatalogue
+		on
+		CAST(NULLIF( stock.json->> 'identifier', '') as numeric) = productCatalogue.unique_id
+		<where>
+			<trim prefixOverrides="and">
+				<if test="documentId != null">
+					sm.document_id = #{documentId,jdbcType=VARCHAR}
+				</if>
+			</trim>
+		</where>
+	</select>
+
 </mapper>

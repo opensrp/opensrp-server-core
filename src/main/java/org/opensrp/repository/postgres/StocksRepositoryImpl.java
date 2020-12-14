@@ -1,9 +1,6 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.ibm.fhir.model.resource.Bundle;
@@ -358,6 +355,11 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		return convertToFHIR(getInventoryWithProductDetails(locations));
 	}
 
+	@Override
+	public List<Bundle> getStockById(String stockId) {
+		return convertToFHIR(getInventoryWithProductDetailsByStockId(stockId));
+	}
+
 	private List<StockAndProductDetails> convertStockAndProductDetails(List<org.opensrp.domain.postgres.PgStockAndProductDetails> stockAndProductDetails) {
 		if (stockAndProductDetails == null || stockAndProductDetails.isEmpty()) {
 			return new ArrayList<>();
@@ -401,6 +403,10 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		return convertStockAndProductDetails(stockMetadataMapper.selectManyStockAndProductDetailsByServicePointId(locations));
 	}
 
+	@Override
+	public List<StockAndProductDetails> getInventoryWithProductDetailsByStockId(String stockId) {
+		return convertStockAndProductDetails(stockMetadataMapper.selectStockAndProductDetailsByStockId(stockId));
+	}
 
 	private List<Bundle> convertToFHIR(List<StockAndProductDetails> stockAndProductDetails) {
 		return stockAndProductDetails.stream().map(stockAndProductDetail -> StockConverter.convertStockToBundleResource(stockAndProductDetail))

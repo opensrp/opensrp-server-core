@@ -250,6 +250,34 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1,inventoryItems.size());
 	}
 
+	@Test
+	public void testGetInventoryWithProductDetailsByStockId() {
+		Stock stock = createInventoryStockObject("3734");
+		stocksRepository.add(stock);
+		List<String> locations = new ArrayList<>();
+		locations.add("3734");
+		StockSearchBean stockSearchBean = new StockSearchBean();
+		stockSearchBean.setLocations(locations);
+		List<Stock> stocks = stocksRepository.findStocksByLocationId(stockSearchBean);
+		List<StockAndProductDetails> inventoryItems = stocksRepository.getInventoryWithProductDetailsByStockId(stocks.get(0).getId());
+		assertEquals(1,inventoryItems.size());
+	}
+
+
+	@Test
+	public void testGetStockById() {
+		Stock stock = createInventoryStockObject("3734");
+		stocksRepository.add(stock);
+		List<String> locations = new ArrayList<>();
+		locations.add("3734");
+		StockSearchBean stockSearchBean = new StockSearchBean();
+		stockSearchBean.setLocations(locations);
+		List<Stock> stocks = stocksRepository.findStocksByLocationId(stockSearchBean);
+		List<Bundle> bundles = stocksRepository.getStockById(stocks.get(0).getId());
+		assertEquals(1,bundles.size());
+		assertEquals(2, bundles.get(0).getEntry().size());
+	}
+
 	private Stock createInventoryStockObject(String locationId) {
 		Stock stock = new Stock();
 		stock.setIdentifier(1l);

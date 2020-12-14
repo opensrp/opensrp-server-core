@@ -27,4 +27,6 @@ public interface CustomStockMetadataMapper extends StockMetadataMapper {
 	StockMetadata selectByStockId(Long stockId);
 
 	List<PgStockAndProductDetails> selectManyStockAndProductDetailsByServicePointId(@Param("locations") List<String> locations);
+
+	List<PgStockAndProductDetails> selectStockAndProductDetailsByStockId(@Param("documentId") String documentId);
 }
