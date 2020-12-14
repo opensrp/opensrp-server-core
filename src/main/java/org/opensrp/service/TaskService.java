@@ -11,6 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
+import org.opensrp.search.TaskSearchBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartregister.domain.Task;
@@ -198,5 +199,13 @@ public class TaskService {
 	 */
 	public Long countAllTasks(long serverVersion){
 		return taskRepository.countAllTasks(serverVersion);
+	}
+
+	public List<Task> getTasksBySearchBean(TaskSearchBean taskSearchBean) {
+		return taskRepository.getTasksBySearchBean(taskSearchBean);
+	}
+
+	public int findTaskCountBySearchBean(TaskSearchBean taskSearchBean) {
+		return taskRepository.getTaskCount(taskSearchBean);
 	}
 }

@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.opensrp.search.TaskSearchBean;
 import org.smartregister.domain.Task;
 import org.smartregister.domain.Task.TaskPriority;
 import org.smartregister.domain.Task.TaskStatus;
@@ -240,4 +241,27 @@ public class TaskServiceTest {
 		verify(taskRepository).countTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 15421904649873l);
 		assertEquals(7, tasks.longValue());
 	}
+
+	@Test
+	public void testGetTasksBySearchBean() {
+		List<Task> tasks = new ArrayList<>();
+		tasks.add(initializeTask());
+		TaskSearchBean taskSearchBean = new TaskSearchBean();
+		taskSearchBean.setPlanIdentifier("IRS_2018_S1");
+		when(taskRepository.getTasksBySearchBean(any(TaskSearchBean.class))).thenReturn(tasks);
+		List<Task> result = taskService.getTasksBySearchBean(taskSearchBean);
+		verify(taskRepository).getTasksBySearchBean(taskSearchBean);
+		assertEquals(1, result.size());
+	}
+
+	@Test
+	public void testFindTaskCountBySearchBean() {
+		TaskSearchBean taskSearchBean = new TaskSearchBean();
+		taskSearchBean.setPlanIdentifier("IRS_2018_S1");
+		when(taskRepository.getTaskCount(any(TaskSearchBean.class))).thenReturn(1);
+		int count = taskService.findTaskCountBySearchBean(taskSearchBean);
+		verify(taskRepository).getTaskCount(taskSearchBean);
+		assertEquals(1, count);
+	}
+
 }
