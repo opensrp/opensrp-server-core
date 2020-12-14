@@ -2,7 +2,7 @@ package org.opensrp.service;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.opensrp.domain.ProductCatalogue;
+import org.smartregister.domain.ProductCatalogue;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.search.ProductCatalogueSearchBean;

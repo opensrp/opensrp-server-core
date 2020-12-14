@@ -2,7 +2,7 @@ package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.ProductCatalogue;
+import org.smartregister.domain.ProductCatalogue;
 import org.opensrp.domain.postgres.ProductCatalogueExample;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomProductCatalogueMapper;

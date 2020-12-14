@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -415,6 +416,11 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 
 		int count = taskRepository.getTaskCount(taskSearchBean);
 		assertEquals(1,count);
+	}
+
+	@Test(expected = NotImplementedException.class)
+	public void testFindTasksByJurisdiction() {
+		taskRepository.findTasksByJurisdiction("123");
 	}
 
 }

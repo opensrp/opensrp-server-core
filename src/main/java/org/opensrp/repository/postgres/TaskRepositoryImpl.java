@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.postgres.TaskMetadata;
@@ -390,6 +391,10 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		return get(task.getIdentifier());
 	}
 
+	@Override
+	public List<com.ibm.fhir.model.resource.Task> findTasksByJurisdiction(String s) {
+		throw new NotImplementedException();
+	}
 
 	@Override
 	public List<Task> getTasksBySearchBean(TaskSearchBean taskSearchBean) {

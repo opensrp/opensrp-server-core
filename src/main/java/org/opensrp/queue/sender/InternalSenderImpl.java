@@ -7,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import com.ibm.fhir.model.resource.Resource;
 import org.opensrp.queue.PlanEvaluatorMessage;
 import org.opensrp.queue.QueueHelper;
 import org.opensrp.queue.ResourceEvaluatorMessage;
@@ -54,7 +55,7 @@ public class InternalSenderImpl implements MessageSender {
 		InputStream stream = new ByteArrayInputStream(resourceMessage.getResource().getBytes(StandardCharsets.UTF_8));
 		PlanEvaluator planEvaluator = new PlanEvaluator(resourceMessage.getUsername(),queueHelper);
 		try {
-			DomainResource domainResource = FHIRParser.parser(Format.JSON).parse(stream);
+			Resource domainResource = FHIRParser.parser(Format.JSON).parse(stream);
 			if (domainResource != null && resourceMessage != null && resourceMessage.getAction() != null) {
 				planEvaluator.evaluateResource(domainResource, resourceMessage.getQuestionnaireResponse(),
 				    resourceMessage.getAction(), resourceMessage.getPlanIdentifier(), resourceMessage.getJurisdictionCode(),
