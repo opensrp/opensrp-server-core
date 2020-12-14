@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -14,5 +15,5 @@ import java.util.List;
 public class ExportImagesSummary {
 
 	List<ExportFlagProblemEventImageMetadata>  exportFlagProblemEventImageMetadataList;
-	List<String> servicePointIds;
+	Set<String> servicePointIds;
 }

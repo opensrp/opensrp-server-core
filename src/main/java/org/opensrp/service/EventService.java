@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
 import org.opensrp.dto.ExportEventDataSummary;
 import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
+import org.opensrp.dto.ExportImagesSummary;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.EventSearchBean;
@@ -451,20 +452,29 @@ public class EventService {
 		return exportEventDataSummary;
 	}
 
-	public List<ExportFlagProblemEventImageMetadata> getImagesMetadataForFlagProblemEvent(String planIdentifier, String eventType, Date fromDate, Date toDate) {
+	public ExportImagesSummary getImagesMetadataForFlagProblemEvent(String planIdentifier, String eventType, Date fromDate, Date toDate) {
 		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents
 				.getEventData(planIdentifier, eventType, fromDate, toDate);
 
+		Set<String> servicePointIds = new HashSet<>();
+		String servicePointId;
+		ExportImagesSummary exportImagesSummary = new ExportImagesSummary();
 		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata;
 		List<ExportFlagProblemEventImageMetadata> exportFlagProblemEventImageMetadataList = new ArrayList<>();
 		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
 			exportFlagProblemEventImageMetadata = exportEventDataMapper
 					.getFlagProblemEventImagesMetadata((Object) pgEvent.getJson(), "$.baseEntityId", "$.locationId");
 		exportFlagProblemEventImageMetadataList.add(exportFlagProblemEventImageMetadata);
+		servicePointId = exportFlagProblemEventImageMetadata.getServicePointId();
+		if(servicePointId != null && !servicePointIds.contains(servicePointId)) {
+			servicePointIds.add(servicePointId);
+		}
 		}
 
 //		Map<String, List<String>> servicePointAndImagesMap = new HashMap<>();
-		return exportFlagProblemEventImageMetadataList;
+		exportImagesSummary.setExportFlagProblemEventImageMetadataList(exportFlagProblemEventImageMetadataList);
+		exportImagesSummary.setServicePointIds(servicePointIds);
+		return exportImagesSummary;
 
 	}
 
