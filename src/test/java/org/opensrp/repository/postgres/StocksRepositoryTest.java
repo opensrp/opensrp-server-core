@@ -5,13 +5,13 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import com.ibm.fhir.model.resource.Bundle;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
-import org.opensrp.domain.Stock;
+import org.smartregister.domain.StockAndProductDetails;
+import org.smartregister.domain.Stock;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.search.StockSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,11 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 	@Override
 	protected Set<String> getDatabaseScripts() {
 		Set<String> scripts = new HashSet<String>();
+		scripts.add("location.sql");
+		scripts.add("structure.sql");
+		scripts.add("location_tag.sql");
 		scripts.add("stock.sql");
+		scripts.add("product_catalogue.sql");
 		return scripts;
 	}
 	
@@ -129,8 +133,9 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindStocksWithOrder() {
 		StockSearchBean searchBean = new StockSearchBean();
-		
+		List<String> locations = new ArrayList<>();
 		searchBean.setStockTypeId("1");
+		searchBean.setLocations(locations);
 		List<Stock> stocks = stocksRepository.findStocks(searchBean, BaseEntity.SERVER_VERSIOIN, "asc",0, 5);
 		assertEquals(5, stocks.size());
 		long previousVersion = 0;
@@ -207,5 +212,79 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 		assertEquals(14, stocks.size());
 		for (Stock stock : stocks)
 			assertNotEquals("05934ae338431f28bf6793b241b2df09", stock.getId());
+	}
+
+	@Test
+	public void testFindInventoryItemsInAJurisdiction() {
+        Stock stock = createInventoryStockObject("90397");
+        stocksRepository.add(stock);
+		List<Bundle> bundles = stocksRepository.findInventoryItemsInAJurisdiction("3734");
+		assertEquals(1,bundles.size());
+		assertEquals(2, bundles.get(0).getEntry().size());
+	}
+
+	@Test
+	public void testFindInventoryItemsInAJurisdictionWithNoServicePoint() {
+		Stock stock = createInventoryStockObject("90397");
+		stocksRepository.add(stock);
+		List<Bundle> bundles = stocksRepository.findInventoryItemsInAJurisdiction("3730");
+		assertEquals(0,bundles.size());
+	}
+
+	@Test
+	public void testFindInventoryInAServicePoint() {
+		Stock stock = createInventoryStockObject("90397");
+		stocksRepository.add(stock);
+		List<Bundle> bundles = stocksRepository.findInventoryInAServicePoint("90397");
+		assertEquals(1,bundles.size());
+		assertEquals(2, bundles.get(0).getEntry().size());
+	}
+
+	@Test
+	public void testGetInventoryWithProductDetails() {
+		Stock stock = createInventoryStockObject("3734");
+		stocksRepository.add(stock);
+		List<String> locations = new ArrayList<>();
+		locations.add("3734");
+		List<StockAndProductDetails> inventoryItems = stocksRepository.getInventoryWithProductDetails(locations);
+		assertEquals(1,inventoryItems.size());
+	}
+
+	@Test
+	public void testGetInventoryWithProductDetailsByStockId() {
+		Stock stock = createInventoryStockObject("3734");
+		stocksRepository.add(stock);
+		List<String> locations = new ArrayList<>();
+		locations.add("3734");
+		StockSearchBean stockSearchBean = new StockSearchBean();
+		stockSearchBean.setLocations(locations);
+		List<Stock> stocks = stocksRepository.findStocksByLocationId(stockSearchBean);
+		List<StockAndProductDetails> inventoryItems = stocksRepository.getInventoryWithProductDetailsByStockId(stocks.get(0).getId());
+		assertEquals(1,inventoryItems.size());
+	}
+
+
+	@Test
+	public void testGetStockById() {
+		Stock stock = createInventoryStockObject("3734");
+		stocksRepository.add(stock);
+		List<String> locations = new ArrayList<>();
+		locations.add("3734");
+		StockSearchBean stockSearchBean = new StockSearchBean();
+		stockSearchBean.setLocations(locations);
+		List<Stock> stocks = stocksRepository.findStocksByLocationId(stockSearchBean);
+		List<Bundle> bundles = stocksRepository.getStockById(stocks.get(0).getId());
+		assertEquals(1,bundles.size());
+		assertEquals(2, bundles.get(0).getEntry().size());
+	}
+
+	private Stock createInventoryStockObject(String locationId) {
+		Stock stock = new Stock();
+		stock.setIdentifier(1l);
+		stock.setTransaction_type("Inventory");
+		stock.setLocationId(locationId);
+		Date accountabilityEndDate = new Date(2025,11,12);
+		stock.setAccountabilityEndDate(accountabilityEndDate);
+		return stock;
 	}
 }

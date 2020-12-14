@@ -168,13 +168,7 @@ public class EventService {
 		event.setDateCreated(DateTime.now());
 		event.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.add(event);
-		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
-		if (isPlanEvaluationEnabled && planIdentifier != null) {
-			PlanDefinition plan = planRepository.get(planIdentifier);
-			if (plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
-			        || plan.getEffectivePeriod().getEnd().isAfter(LocalDate.now().toDateTimeAtStartOfDay())))
-				taskGenerator.processPlanEvaluation(plan, username, event);
-		}
+		triggerPlanEvaluation(event, username);
 		return event;
 	}
 	
@@ -269,7 +263,7 @@ public class EventService {
 		return event;
 	}
 	
-	public synchronized Event addorUpdateEvent(Event event) {
+	public synchronized Event addorUpdateEvent(Event event, String username) {
 		Event existingEvent = findByIdOrFormSubmissionId(event.getId(), event.getFormSubmissionId());
 		if (existingEvent != null) {
 			event.setId(existingEvent.getId());
@@ -285,11 +279,13 @@ public class EventService {
 			allEvents.add(event);
 			
 		}
+
+		triggerPlanEvaluation(event, username);
 		
 		return event;
 	}
 	
-	public void updateEvent(Event updatedEvent) {
+	public void updateEvent(Event updatedEvent, String username) {
 		// If update is on original entity
 		if (updatedEvent.isNew()) {
 			throw new IllegalArgumentException(
@@ -299,6 +295,7 @@ public class EventService {
 		updatedEvent.setDateEdited(DateTime.now());
 		updatedEvent.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.update(updatedEvent);
+		triggerPlanEvaluation(updatedEvent, username);
 	}
 	
 	//TODO Review and add test cases as well
@@ -422,4 +419,14 @@ public class EventService {
 	public Long countEvents(EventSearchBean eventSearchBean) {
 		return allEvents.countEvents(eventSearchBean);
 	};
+
+	private void triggerPlanEvaluation(Event event, String username) {
+		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
+		if (isPlanEvaluationEnabled && planIdentifier != null) {
+			PlanDefinition plan = planRepository.get(planIdentifier);
+			if (plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
+					|| plan.getEffectivePeriod().getEnd().isAfter(LocalDate.now().toDateTimeAtStartOfDay())))
+				taskGenerator.processPlanEvaluation(plan, username, event);
+		}
+	}
 }
