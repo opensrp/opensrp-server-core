@@ -3,6 +3,7 @@ package org.opensrp.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.JsonPathException;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -48,12 +49,16 @@ public class ExportEventDataMapper {
 			}
 			return headerData;
 		} else if (columnNamesAndLabels != null && !returnHeader && isSettingsExists) {
-			JSONObject eventJsonObject = new JSONObject(json);
 			for (Map.Entry<String, String> columnNameAndLabel : columnNamesAndLabels.entrySet()) {
 				// TODO : What if the key does not exists
-
-				Object fieldValue = JsonPath.read(json, columnNameAndLabel.getValue());
-				rowData.add(fieldValue);
+                try {
+	                Object fieldValue = JsonPath.read(json, columnNameAndLabel.getValue());
+	                rowData.add(fieldValue);
+                }
+                catch (JsonPathException jsonPathException) {
+                	logger.error("Key does not exists ", jsonPathException.getMessage());
+	                rowData.add(null);
+                }
 			}
 			return rowData;
 		} else if (columnNamesAndLabels != null && !returnHeader && !isSettingsExists) {
@@ -65,7 +70,7 @@ public class ExportEventDataMapper {
 			return rowData;
 		} else { //for header without settings configurations
 			Event event = null;
-			if (json != "") {
+			if (!json.equals("")) {
 				event = gson.fromJson(json, Event.class);
 				for (Obs obs : event.getObs()) {
 					Object fieldValue = obs.getFormSubmissionField();

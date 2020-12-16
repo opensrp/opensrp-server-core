@@ -479,7 +479,6 @@ public class EventService {
 		}
 		}
 
-//		Map<String, List<String>> servicePointAndImagesMap = new HashMap<>();
 		exportImagesSummary.setExportFlagProblemEventImageMetadataList(exportFlagProblemEventImageMetadataList);
 		exportImagesSummary.setServicePointIds(servicePointIds);
 		return exportImagesSummary;
