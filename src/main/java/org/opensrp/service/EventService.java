@@ -460,8 +460,7 @@ public class EventService {
 	}
 
 	public ExportImagesSummary getImagesMetadataForFlagProblemEvent(String planIdentifier, String eventType, Date fromDate, Date toDate) {
-		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents
-				.getEventData(planIdentifier, eventType, fromDate, toDate);
+		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents.getEventData(planIdentifier, eventType, fromDate, toDate);
 
 		Set<String> servicePointIds = new HashSet<>();
 		String servicePointId;
@@ -471,10 +470,12 @@ public class EventService {
 		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
 			exportFlagProblemEventImageMetadata = exportEventDataMapper
 					.getFlagProblemEventImagesMetadata((Object) pgEvent.getJson(), "$.baseEntityId", "$.locationId");
-		exportFlagProblemEventImageMetadataList.add(exportFlagProblemEventImageMetadata);
-		servicePointId = exportFlagProblemEventImageMetadata.getServicePointId();
-		if(servicePointId != null && !servicePointIds.contains(servicePointId)) {
-			servicePointIds.add(servicePointId);
+		if(exportFlagProblemEventImageMetadata != null) {
+			exportFlagProblemEventImageMetadataList.add(exportFlagProblemEventImageMetadata);
+			servicePointId = exportFlagProblemEventImageMetadata.getServicePointId();
+			if(servicePointId != null && !servicePointIds.contains(servicePointId)) {
+				servicePointIds.add(servicePointId);
+			}
 		}
 		}
 

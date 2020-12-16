@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jayway.jsonpath.JsonPath;
 import org.joda.time.DateTime;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.opensrp.api.domain.Event;
 import org.opensrp.api.domain.Obs;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
@@ -46,8 +48,10 @@ public class ExportEventDataMapper {
 			}
 			return headerData;
 		} else if (columnNamesAndLabels != null && !returnHeader && isSettingsExists) {
+			JSONObject eventJsonObject = new JSONObject(json);
 			for (Map.Entry<String, String> columnNameAndLabel : columnNamesAndLabels.entrySet()) {
 				// TODO : What if the key does not exists
+
 				Object fieldValue = JsonPath.read(json, columnNameAndLabel.getValue());
 				rowData.add(fieldValue);
 			}
@@ -79,31 +83,23 @@ public class ExportEventDataMapper {
 		if (jsonObject != null) {
 			json = gson.toJson(jsonObject);
 		}
-		String stockId = "";
-		String servicePointId = "";
-		Object fieldValue;
-		fieldValue = JsonPath.read(json, stockIdExpression);
-		stockId = (String) fieldValue;
-		exportFlagProblemEventImageMetadata.setStockId(stockId);
+		JSONObject eventJsonObject = new JSONObject(json);
+		if(checkIfImageExists(eventJsonObject)) {
+			String stockId = "";
+			String servicePointId = "";
+			Object fieldValue;
+			fieldValue = JsonPath.read(json, stockIdExpression);
+			stockId = (String) fieldValue;
+			exportFlagProblemEventImageMetadata.setStockId(stockId);
 
-		fieldValue = JsonPath.read(json, servicePointIdExpression);
-		servicePointId = (String) fieldValue;
-		exportFlagProblemEventImageMetadata.setServicePointId(servicePointId);
-		return exportFlagProblemEventImageMetadata;
+			fieldValue = JsonPath.read(json, servicePointIdExpression);
+			servicePointId = (String) fieldValue;
+			exportFlagProblemEventImageMetadata.setServicePointId(servicePointId);
+			return exportFlagProblemEventImageMetadata;
+		}
+		return null;
 
 	}
-//
-//	public Map<String, List<String>> getImagesDataAgainstServicePoint(List<ExportFlagProblemEventImagesMetadata> exportFlagProblemEventImagesMetadataList) {
-//		Map<String, List<String>> servicePointAndImagesMap = new HashMap<>();
-//		List<String> uniqueServicePoints = new ArrayList<>();
-//		for(ExportFlagProblemEventImagesMetadata exportFlagProblemEventImagesMetadata : exportFlagProblemEventImagesMetadataList) {
-//           if(!uniqueServicePoints.contains(exportFlagProblemEventImagesMetadata.getServicePointId())) {
-//           	uniqueServicePoints.add(exportFlagProblemEventImagesMetadata.getServicePointId());
-//           }
-//		}
-//
-//		return servicePointAndImagesMap;
-//	}
 
 	public Map<String, String> getColumnNamesAndLabelsByEventType(String eventType) {
 
@@ -148,5 +144,22 @@ public class ExportEventDataMapper {
 			return eventTypeToSettingsConfigurationsIdentifier.get(eventType);
 		}
 		return null;
+	}
+
+	private boolean checkIfImageExists(JSONObject jsonObject) {
+		JSONArray obsArray = jsonObject.optJSONArray("obs");
+		JSONObject properties ;
+		if(obsArray != null) {
+			for(int i = 0; i < obsArray.length(); i++) {
+				if(obsArray.get(i) != null) {
+					properties = (JSONObject) obsArray.get(i);
+					if(properties.has("formSubmissionField") && (properties.get("formSubmissionField").equals("not_good") ||
+							properties.get("formSubmissionField").equals("misuse"))) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }
