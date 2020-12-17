@@ -52,7 +52,6 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 	@Override
 	protected Set<String> getDatabaseScripts() {
 		scripts.add("event.sql");
-		scripts.add("client.sql");
 		return scripts;
 	}
 
