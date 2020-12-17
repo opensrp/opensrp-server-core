@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,6 +37,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.common.AllConstants.Client;
 import org.opensrp.dto.ExportEventDataSummary;
+import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
+import org.opensrp.dto.ExportImagesSummary;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
@@ -536,7 +539,23 @@ public class EventServiceTest extends BaseRepositoryTest {
 
 	@Test
 	public void testGetImagesMetadataForFlagProblemEvent() {
+		eventsRepository.add(createFlagProblemEvent());
+		when(exportEventDataMapper.getFlagProblemEventImagesMetadata(anyObject(), anyString(),anyString(),anyString())).thenReturn(createExportFlagProblemEventImageMetadata());
+		ExportImagesSummary exportImagesSummary = eventService.getImagesMetadataForFlagProblemEvent("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
+		assertNotNull(exportImagesSummary);
+		assertEquals("ddcaf383-882e-448b-b701-8b72cb0d4d7a", exportImagesSummary.getExportFlagProblemEventImageMetadataList().get(0).getStockId());
+		assertEquals("EPP Ambodisatrana 2", exportImagesSummary.getExportFlagProblemEventImageMetadataList().get(0).getServicePointName());
+		assertEquals("Midwifery Kit", exportImagesSummary.getExportFlagProblemEventImageMetadataList().get(0).getProductName());
 
+		assertEquals(1, exportImagesSummary.getServicePoints().size());
+		assertTrue(exportImagesSummary.getServicePoints().contains("EPP Ambodisatrana 2"));
 	}
-	
+
+	private ExportFlagProblemEventImageMetadata createExportFlagProblemEventImageMetadata() {
+		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata = new ExportFlagProblemEventImageMetadata();
+		exportFlagProblemEventImageMetadata.setProductName("Midwifery Kit");
+		exportFlagProblemEventImageMetadata.setStockId("ddcaf383-882e-448b-b701-8b72cb0d4d7a");
+		exportFlagProblemEventImageMetadata.setServicePointName("EPP Ambodisatrana 2");
+		return exportFlagProblemEventImageMetadata;
+	}
 }
