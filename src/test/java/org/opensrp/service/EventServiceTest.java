@@ -4,15 +4,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE;
+import static org.opensrp.repository.postgres.EventsRepositoryTest.createFlagProblemEvent;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
@@ -232,7 +241,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		
 		outOfAreaEvent = eventService.processOutOfArea(event, username);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(21, eventService.getAll().size());
+		assertEquals(20, eventService.getAll().size());
 		
 		//Test with card identifier type
 		event = new Event().withEventType("Out of Area Service").withProviderId("tester112")
@@ -241,7 +250,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event, username);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(21, eventService.getAll().size());
+		assertEquals(20, eventService.getAll().size());
 		
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		event = new Event().withEventType("Out of Area Service - Growth Monitoring")
@@ -251,7 +260,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event, username);
 		assertEquals(event, outOfAreaEvent);
 		
-		assertEquals(22, eventService.getAll().size());
+		assertEquals(21, eventService.getAll().size());
 		
 	}
 	
@@ -391,7 +400,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		List<String> actualEventIds = eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
-		assertEquals(21, actualEventIds.size());
+		assertEquals(20, actualEventIds.size());
 	}
 	
 	@Test
@@ -481,7 +490,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		List<String> actualEventIds = eventIdsModel.getLeft();
 
 		assertNotNull(actualEventIds);
-		assertEquals(21, actualEventIds.size());
+		assertEquals(20, actualEventIds.size());
 		assertEquals("05934ae338431f28bf6793b2417696bf", actualEventIds.get(0));
 		assertEquals("34166bde-2d40-4cb9-aec7-d8e4feb47c53", actualEventIds.get(19));
 		assertEquals(1573736256054l, eventIdsModel.getRight().longValue());
@@ -493,6 +502,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		List<Object> rowData = new ArrayList<>();
 		rowData.add("location_name");
 		rowData.add("location_id");
+		eventsRepository.add(createFlagProblemEvent());
 		when(exportEventDataMapper
 				.getExportEventDataAfterMapping(any(Object.class), anyString(), anyBoolean(), anyBoolean()))
 				.thenReturn(rowData);
@@ -503,7 +513,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testExportEventDataWitSettingsConfigured() {
+	public void testExportEventDataWithSettingsConfigured() {
+		eventsRepository.add(createFlagProblemEvent());
 		List<Object> rowData = new ArrayList<>();
 		rowData.add("location_name");
 		rowData.add("location_id");

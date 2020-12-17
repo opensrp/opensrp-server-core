@@ -19,7 +19,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static org.opensrp.util.constants.EventDataExportConstants.*;
+import static org.opensrp.util.constants.EventDataExportConstants.OBS;
+import static org.opensrp.util.constants.EventDataExportConstants.FORM_SUBMISSION_FIELD;
+import static org.opensrp.util.constants.EventDataExportConstants.NOT_GOOD;
+import static org.opensrp.util.constants.EventDataExportConstants.MISUSE;
+import static org.opensrp.util.constants.EventDataExportConstants.SETTINGS_CONFIGURATION_EVENT_TYPE_TO_SETTINGS_IDENTIFIER;
 
 @Component
 public class ExportEventDataMapper {

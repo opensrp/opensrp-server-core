@@ -10,21 +10,21 @@ import org.mockito.Mock;
 import org.opensrp.api.domain.Event;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.domain.postgres.SettingsMetadata;
+import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.smartregister.utils.DateTimeTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.opensrp.repository.postgres.EventsRepositoryTest.createFlagProblemEvent;
 import static org.opensrp.util.constants.EventDataExportConstants.SETTINGS_CONFIGURATION_EVENT_TYPE_TO_SETTINGS_IDENTIFIER;
 
 public class ExportEventDataMapperTest extends BaseRepositoryTest  {
@@ -59,6 +59,7 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 
 	@Test
 	public void testGetExportEventDataAfterMappingForHeaderWithoutSettings() {
+		eventsRepository.add(createFlagProblemEvent());
 		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
 		String json = "";
 		if (events != null  && events.get(0) != null && events.get(0).getJson() != null) {
@@ -76,6 +77,7 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 
 	@Test
 	public void testGetExportEventDataAfterMappingForRowDataWithoutSettings() {
+		eventsRepository.add(createFlagProblemEvent());
 		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
 		String json = "";
 		if (events != null  && events.get(0) != null && events.get(0).getJson() != null) {
@@ -93,6 +95,7 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 
 	@Test
 	public void testGetExportEventDataAfterMappingForHeaderWithSettings() {
+		eventsRepository.add(createFlagProblemEvent());
 		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
 		when(settingService.findSettingsByIdentifier(SETTINGS_CONFIGURATION_EVENT_TYPE_TO_SETTINGS_IDENTIFIER)).thenReturn(createSettingsMetaDataAgainstIdentfier());
 		doReturn(createSettingsConfigurations()).when(settingService).findSettingsByIdentifier("event_type_flag_problem");
@@ -104,6 +107,7 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 
 	@Test
 	public void testGetExportEventDataAfterMappingForRowDataWithSettings() {
+		eventsRepository.add(createFlagProblemEvent());
 		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
 		when(settingService.findSettingsByIdentifier(SETTINGS_CONFIGURATION_EVENT_TYPE_TO_SETTINGS_IDENTIFIER)).thenReturn(createSettingsMetaDataAgainstIdentfier());
 		doReturn(createSettingsConfigurations()).when(settingService).findSettingsByIdentifier("event_type_flag_problem");
@@ -115,7 +119,13 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 
 	@Test
 	public void testGetFlagProblemEventImagesMetadata() {
-
+		eventsRepository.add(createFlagProblemEvent());
+		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
+		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata = exportEventDataMapper.getFlagProblemEventImagesMetadata(events.get(0).getJson(),"$.baseEntityId", "$.details.locationName", "$.details.productName");
+	    assertNotNull(exportFlagProblemEventImageMetadata);
+	    assertEquals("ddcaf383-882e-448b-b701-8b72cb0d4d7a", exportFlagProblemEventImageMetadata.getStockId());
+	    assertEquals("EPP Ambodisatrana 2", exportFlagProblemEventImageMetadata.getServicePointName());
+	    assertEquals("Midwifery Kit", exportFlagProblemEventImageMetadata.getProductName());
 	}
 
 
