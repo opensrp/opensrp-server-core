@@ -15,5 +15,5 @@ import java.util.Set;
 public class ExportImagesSummary {
 
 	private List<ExportFlagProblemEventImageMetadata>  exportFlagProblemEventImageMetadataList;
-	private Set<String> servicePointIds;
+	private Set<String> servicePoints;
 }

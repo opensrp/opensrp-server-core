@@ -424,7 +424,7 @@ public class EventService {
 		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
 		if (isPlanEvaluationEnabled && planIdentifier != null) {
 			PlanDefinition plan = planRepository.get(planIdentifier);
-			if (plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
+			if (plan != null && plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
 					|| plan.getEffectivePeriod().getEnd().isAfter(LocalDate.now().toDateTimeAtStartOfDay())))
 				taskGenerator.processPlanEvaluation(plan, username, event);
 		}
@@ -439,12 +439,15 @@ public class EventService {
 		Map<String, String> columnNamesAndLabels = exportEventDataMapper.getColumnNamesAndLabelsByEventType(eventType);
 		boolean settingsExist = columnNamesAndLabels != null && columnNamesAndLabels.size() > 0 ? true : false;
 
-		if(settingsExist)
-		allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(null, eventType, returnHeader, settingsExist)); //for header row
+		if (settingsExist)
+			allRows.add(exportEventDataMapper
+					.getExportEventDataAfterMapping(null, eventType, returnHeader, settingsExist)); //for header row
 
-		//TODO: Assumption : All pgEvents would have similar obs fields to include as a header
+			//Assumption : All pgEvents would have similar obs fields to include as a header
 		else
-			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(pgEvents != null && pgEvents.size() > 0 && pgEvents.get(0) != null ? pgEvents.get(0).getJson() : "", eventType, returnHeader, settingsExist)); //for header row
+			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(
+					pgEvents != null && pgEvents.size() > 0 && pgEvents.get(0) != null ? pgEvents.get(0).getJson() : "",
+					eventType, returnHeader, settingsExist)); //for header row
 
 		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
 			allRows.add(exportEventDataMapper
@@ -459,28 +462,31 @@ public class EventService {
 		return exportEventDataSummary;
 	}
 
-	public ExportImagesSummary getImagesMetadataForFlagProblemEvent(String planIdentifier, String eventType, Date fromDate, Date toDate) {
-		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents.getEventData(planIdentifier, eventType, fromDate, toDate);
+	public ExportImagesSummary getImagesMetadataForFlagProblemEvent(String planIdentifier, String eventType, Date fromDate,
+			Date toDate) {
+		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents
+				.getEventData(planIdentifier, eventType, fromDate, toDate);
 
-		Set<String> servicePointIds = new HashSet<>();
-		String servicePointId;
+		Set<String> servicePoints = new HashSet<>();
+		String servicePointName;
 		ExportImagesSummary exportImagesSummary = new ExportImagesSummary();
 		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata;
 		List<ExportFlagProblemEventImageMetadata> exportFlagProblemEventImageMetadataList = new ArrayList<>();
 		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
 			exportFlagProblemEventImageMetadata = exportEventDataMapper
-					.getFlagProblemEventImagesMetadata((Object) pgEvent.getJson(), "$.baseEntityId", "$.locationId");
-		if(exportFlagProblemEventImageMetadata != null) {
-			exportFlagProblemEventImageMetadataList.add(exportFlagProblemEventImageMetadata);
-			servicePointId = exportFlagProblemEventImageMetadata.getServicePointId();
-			if(servicePointId != null && !servicePointIds.contains(servicePointId)) {
-				servicePointIds.add(servicePointId);
+					.getFlagProblemEventImagesMetadata((Object) pgEvent.getJson(), "$.baseEntityId",
+							"$.details.locationName", "$.details.productName");
+			if (exportFlagProblemEventImageMetadata != null) {
+				exportFlagProblemEventImageMetadataList.add(exportFlagProblemEventImageMetadata);
+				servicePointName = exportFlagProblemEventImageMetadata.getServicePointName();
+				if (servicePointName != null && !servicePoints.contains(servicePointName)) {
+					servicePoints.add(servicePointName);
+				}
 			}
-		}
 		}
 
 		exportImagesSummary.setExportFlagProblemEventImageMetadataList(exportFlagProblemEventImageMetadataList);
-		exportImagesSummary.setServicePointIds(servicePointIds);
+		exportImagesSummary.setServicePoints(servicePoints);
 		return exportImagesSummary;
 
 	}

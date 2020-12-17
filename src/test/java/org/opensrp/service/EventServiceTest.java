@@ -4,8 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -13,12 +12,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
@@ -32,6 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.common.AllConstants.Client;
+import org.opensrp.dto.ExportEventDataSummary;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
@@ -237,7 +232,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		
 		outOfAreaEvent = eventService.processOutOfArea(event, username);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(20, eventService.getAll().size());
+		assertEquals(21, eventService.getAll().size());
 		
 		//Test with card identifier type
 		event = new Event().withEventType("Out of Area Service").withProviderId("tester112")
@@ -246,7 +241,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event, username);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(20, eventService.getAll().size());
+		assertEquals(21, eventService.getAll().size());
 		
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		event = new Event().withEventType("Out of Area Service - Growth Monitoring")
@@ -256,7 +251,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event, username);
 		assertEquals(event, outOfAreaEvent);
 		
-		assertEquals(21, eventService.getAll().size());
+		assertEquals(22, eventService.getAll().size());
 		
 	}
 	
@@ -396,7 +391,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		List<String> actualEventIds = eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
-		assertEquals(20, actualEventIds.size());
+		assertEquals(21, actualEventIds.size());
 	}
 	
 	@Test
@@ -486,10 +481,50 @@ public class EventServiceTest extends BaseRepositoryTest {
 		List<String> actualEventIds = eventIdsModel.getLeft();
 
 		assertNotNull(actualEventIds);
-		assertEquals(20, actualEventIds.size());
+		assertEquals(21, actualEventIds.size());
 		assertEquals("05934ae338431f28bf6793b2417696bf", actualEventIds.get(0));
 		assertEquals("34166bde-2d40-4cb9-aec7-d8e4feb47c53", actualEventIds.get(19));
 		assertEquals(1573736256054l, eventIdsModel.getRight().longValue());
+
+	}
+
+	@Test
+	public void testExportEventDataWithoutSettingsConfigured() {
+		List<Object> rowData = new ArrayList<>();
+		rowData.add("location_name");
+		rowData.add("location_id");
+		when(exportEventDataMapper
+				.getExportEventDataAfterMapping(any(Object.class), anyString(), anyBoolean(), anyBoolean()))
+				.thenReturn(rowData);
+		ExportEventDataSummary exportEventDataSummary = eventService
+				.exportEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
+		assertNotNull(exportEventDataSummary);
+		assertEquals(2, exportEventDataSummary.getRowsData().size());
+	}
+
+	@Test
+	public void testExportEventDataWitSettingsConfigured() {
+		List<Object> rowData = new ArrayList<>();
+		rowData.add("location_name");
+		rowData.add("location_id");
+		Map<String, String> settingsConfigsMap = new HashMap<>();
+		settingsConfigsMap.put("Location id","$.locationId");
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("identifier");
+
+		when(planRepository.get(anyString())).thenReturn(plan);
+		when(exportEventDataMapper.getColumnNamesAndLabelsByEventType(anyString())).thenReturn(settingsConfigsMap);
+		when(exportEventDataMapper
+				.getExportEventDataAfterMapping(any(Object.class), anyString(), anyBoolean(), anyBoolean()))
+				.thenReturn(rowData);
+		ExportEventDataSummary exportEventDataSummary = eventService
+				.exportEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
+		assertNotNull(exportEventDataSummary);
+		assertEquals(2, exportEventDataSummary.getRowsData().size());
+	}
+
+	@Test
+	public void testGetImagesMetadataForFlagProblemEvent() {
 
 	}
 	

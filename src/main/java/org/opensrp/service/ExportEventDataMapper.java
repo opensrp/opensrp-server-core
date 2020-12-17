@@ -50,15 +50,14 @@ public class ExportEventDataMapper {
 			return headerData;
 		} else if (columnNamesAndLabels != null && !returnHeader && isSettingsExists) {
 			for (Map.Entry<String, String> columnNameAndLabel : columnNamesAndLabels.entrySet()) {
-				// TODO : What if the key does not exists
-                try {
-	                Object fieldValue = JsonPath.read(json, columnNameAndLabel.getValue());
-	                rowData.add(fieldValue);
-                }
-                catch (JsonPathException jsonPathException) {
-                	logger.error("Key does not exists ", jsonPathException.getMessage());
-	                rowData.add(null);
-                }
+				try {
+					Object fieldValue = JsonPath.read(json, columnNameAndLabel.getValue());
+					rowData.add(fieldValue);
+				}
+				catch (JsonPathException jsonPathException) {
+					logger.error("Key does not exists ", jsonPathException.getMessage());
+					rowData.add(null);
+				}
 			}
 			return rowData;
 		} else if (columnNamesAndLabels != null && !returnHeader && !isSettingsExists) {
@@ -82,24 +81,31 @@ public class ExportEventDataMapper {
 		}
 	}
 
-	public ExportFlagProblemEventImageMetadata getFlagProblemEventImagesMetadata(Object jsonObject, String stockIdExpression, String servicePointIdExpression) {
+	public ExportFlagProblemEventImageMetadata getFlagProblemEventImagesMetadata(Object jsonObject, String stockIdExpression,
+			String servicePointNameExpression, String productNameExpression) {
 		String json = "";
 		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata = new ExportFlagProblemEventImageMetadata();
 		if (jsonObject != null) {
 			json = gson.toJson(jsonObject);
 		}
 		JSONObject eventJsonObject = new JSONObject(json);
-		if(checkIfImageExists(eventJsonObject)) {
+		if (checkIfImageExists(eventJsonObject)) {
 			String stockId = "";
-			String servicePointId = "";
+			String servicePointName = "";
+			String productName = "";
 			Object fieldValue;
 			fieldValue = JsonPath.read(json, stockIdExpression);
 			stockId = (String) fieldValue;
 			exportFlagProblemEventImageMetadata.setStockId(stockId);
 
-			fieldValue = JsonPath.read(json, servicePointIdExpression);
-			servicePointId = (String) fieldValue;
-			exportFlagProblemEventImageMetadata.setServicePointId(servicePointId);
+			fieldValue = JsonPath.read(json, servicePointNameExpression);
+			servicePointName = (String) fieldValue;
+			exportFlagProblemEventImageMetadata.setServicePointName(servicePointName);
+
+			fieldValue = JsonPath.read(json, productNameExpression);
+			productName = (String) fieldValue;
+			exportFlagProblemEventImageMetadata.setProductName(productName);
+			
 			return exportFlagProblemEventImageMetadata;
 		}
 		return null;
@@ -152,14 +158,14 @@ public class ExportEventDataMapper {
 	}
 
 	private boolean checkIfImageExists(JSONObject jsonObject) {
-		JSONArray obsArray = jsonObject.optJSONArray("obs");
-		JSONObject properties ;
-		if(obsArray != null) {
-			for(int i = 0; i < obsArray.length(); i++) {
-				if(obsArray.get(i) != null) {
+		JSONArray obsArray = jsonObject.optJSONArray(OBS);
+		JSONObject properties;
+		if (obsArray != null) {
+			for (int i = 0; i < obsArray.length(); i++) {
+				if (obsArray.get(i) != null) {
 					properties = (JSONObject) obsArray.get(i);
-					if(properties.has("formSubmissionField") && (properties.get("formSubmissionField").equals("not_good") ||
-							properties.get("formSubmissionField").equals("misuse"))) {
+					if (properties.has(FORM_SUBMISSION_FIELD) && (properties.get(FORM_SUBMISSION_FIELD).equals(NOT_GOOD) ||
+							properties.get(FORM_SUBMISSION_FIELD).equals(MISUSE))) {
 						return true;
 					}
 				}

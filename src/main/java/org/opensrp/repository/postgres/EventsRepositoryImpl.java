@@ -526,6 +526,15 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		return eventMetadataMapper.selectManyBaseEntityIds(example);
 	}
 
+	/**
+	 *
+	 * @param planIdentifier
+	 * @param eventType
+	 * @param fromDate
+	 * @param toDate
+	 * @return
+	 */
+
 	@Override
 	public List<org.opensrp.domain.postgres.Event> getEventData(String planIdentifier, String eventType, Date fromDate,
 			Date toDate) {

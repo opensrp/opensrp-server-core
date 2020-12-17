@@ -12,5 +12,6 @@ import lombok.Setter;
 public class ExportFlagProblemEventImageMetadata {
 
 	private String stockId;
-	private String servicePointId;
+	private String servicePointName;
+	private String productName;
 }

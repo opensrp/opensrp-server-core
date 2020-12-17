@@ -1,11 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -25,6 +19,8 @@ import org.opensrp.repository.EventsRepository;
 import org.opensrp.search.EventSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import static org.junit.Assert.*;
 
 public class EventsRepositoryTest extends BaseRepositoryTest {
 	
@@ -695,6 +691,14 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		Pair<List<String>, Long> listLongPair = eventsRepository.findIdsByEventType("",false,0L,10,
 				null, new DateTime(date1).toDate());
 		assertTrue(listLongPair.getLeft().isEmpty());
+	}
+
+	@Test
+	public void testGetEventData(){
+		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
+		assertNotNull(events);
+		assertEquals(1, events.size());
+		assertEquals(new Long(26), events.get(0).getId());
 	}
 
 }
