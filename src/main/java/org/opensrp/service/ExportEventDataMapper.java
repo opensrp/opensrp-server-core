@@ -29,7 +29,7 @@ public class ExportEventDataMapper {
 	@Autowired
 	private SettingService settingService;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
 	private static Logger logger = LoggerFactory.getLogger(ExportEventDataMapper.class.toString());
 
@@ -99,18 +99,29 @@ public class ExportEventDataMapper {
 				fieldValue = JsonPath.read(json, stockIdExpression);
 				stockId = (String) fieldValue;
 				exportFlagProblemEventImageMetadata.setStockId(stockId);
+			}
+			catch (JsonPathException jsonPathException) {
+				logger.error("Key does not exist" + jsonPathException.getMessage());
+			}
 
+			try {
 				fieldValue = JsonPath.read(json, servicePointNameExpression);
-				servicePointName = fieldValue != null ? (String) fieldValue : "";
+				servicePointName = (String) fieldValue;
 				exportFlagProblemEventImageMetadata.setServicePointName(servicePointName);
+			}
+			catch (JsonPathException jsonPathException) {
+				logger.error("Key does not exist" + jsonPathException.getMessage());
+			}
 
+			try {
 				fieldValue = JsonPath.read(json, productNameExpression);
 				productName = (String) fieldValue;
 				exportFlagProblemEventImageMetadata.setProductName(productName);
 			}
 			catch (JsonPathException jsonPathException) {
-				logger.error("Key does not exist" +  jsonPathException.getMessage());
+				logger.error("Key does not exist" + jsonPathException.getMessage());
 			}
+
 			return exportFlagProblemEventImageMetadata;
 		}
 		return null;
