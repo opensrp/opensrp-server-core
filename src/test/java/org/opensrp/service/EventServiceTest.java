@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -501,7 +502,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testExportEventDataWithoutSettingsConfigured() {
+	public void testExportEventDataWithoutSettingsConfigured() throws JsonProcessingException {
 		List<Object> rowData = new ArrayList<>();
 		rowData.add("location_name");
 		rowData.add("location_id");
@@ -516,7 +517,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testExportEventDataWithSettingsConfigured() {
+	public void testExportEventDataWithSettingsConfigured() throws JsonProcessingException {
 		eventsRepository.add(createFlagProblemEvent());
 		List<Object> rowData = new ArrayList<>();
 		rowData.add("location_name");
@@ -538,7 +539,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testGetImagesMetadataForFlagProblemEvent() {
+	public void testGetImagesMetadataForFlagProblemEvent() throws JsonProcessingException {
 		eventsRepository.add(createFlagProblemEvent());
 		when(exportEventDataMapper.getFlagProblemEventImagesMetadata(anyObject(), anyString(),anyString(),anyString())).thenReturn(createExportFlagProblemEventImageMetadata());
 		ExportImagesSummary exportImagesSummary = eventService.getImagesMetadataForFlagProblemEvent("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);

@@ -1,10 +1,9 @@
 package org.opensrp.service;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.JsonPathException;
-import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opensrp.api.domain.Event;
@@ -13,7 +12,6 @@ import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.smartregister.utils.DateTimeTypeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,18 +29,17 @@ public class ExportEventDataMapper {
 	@Autowired
 	private SettingService settingService;
 
-	private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-			.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
+    ObjectMapper objectMapper = new ObjectMapper();
 
 	private static Logger logger = LoggerFactory.getLogger(ExportEventDataMapper.class.toString());
 
 	public List<Object> getExportEventDataAfterMapping(Object jsonObject, String eventType, boolean returnHeader,
-			boolean isSettingsExists) {
+			boolean isSettingsExists) throws JsonProcessingException {
 		Map<String, String> columnNamesAndLabels = getColumnNamesAndLabelsByEventType(eventType);
 
 		String json = "";
 		if (jsonObject != null) {
-			json = gson.toJson(jsonObject);
+			json = objectMapper.writeValueAsString(jsonObject);
 		}
 
 		List<Object> headerData = new ArrayList<>();
@@ -65,7 +62,7 @@ public class ExportEventDataMapper {
 			}
 			return rowData;
 		} else if (columnNamesAndLabels != null && !returnHeader && !isSettingsExists) {
-			Event event = gson.fromJson(json, Event.class);
+			Event event = objectMapper.readValue(json, Event.class);
 			for (Obs obs : event.getObs()) {
 				Object fieldValue = obs.getValues();
 				rowData.add(fieldValue);
@@ -74,7 +71,7 @@ public class ExportEventDataMapper {
 		} else { //for header without settings configurations
 			Event event = null;
 			if (!json.equals("")) {
-				event = gson.fromJson(json, Event.class);
+				event = objectMapper.readValue(json, Event.class);
 				for (Obs obs : event.getObs()) {
 					Object fieldValue = obs.getFormSubmissionField();
 					rowData.add(fieldValue);
@@ -86,11 +83,11 @@ public class ExportEventDataMapper {
 	}
 
 	public ExportFlagProblemEventImageMetadata getFlagProblemEventImagesMetadata(Object jsonObject, String stockIdExpression,
-			String servicePointNameExpression, String productNameExpression) {
+			String servicePointNameExpression, String productNameExpression) throws JsonProcessingException {
 		String json = "";
 		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata = new ExportFlagProblemEventImageMetadata();
 		if (jsonObject != null) {
-			json = gson.toJson(jsonObject);
+			json = objectMapper.writeValueAsString(jsonObject);
 		}
 		JSONObject eventJsonObject = new JSONObject(json);
 		if (checkIfImageExists(eventJsonObject)) {
@@ -98,18 +95,22 @@ public class ExportEventDataMapper {
 			String servicePointName = "";
 			String productName = "";
 			Object fieldValue;
-			fieldValue = JsonPath.read(json, stockIdExpression);
-			stockId = (String) fieldValue;
-			exportFlagProblemEventImageMetadata.setStockId(stockId);
+			try {
+				fieldValue = JsonPath.read(json, stockIdExpression);
+				stockId = (String) fieldValue;
+				exportFlagProblemEventImageMetadata.setStockId(stockId);
 
-			fieldValue = JsonPath.read(json, servicePointNameExpression);
-			servicePointName = (String) fieldValue;
-			exportFlagProblemEventImageMetadata.setServicePointName(servicePointName);
+				fieldValue = JsonPath.read(json, servicePointNameExpression);
+				servicePointName = fieldValue != null ? (String) fieldValue : "";
+				exportFlagProblemEventImageMetadata.setServicePointName(servicePointName);
 
-			fieldValue = JsonPath.read(json, productNameExpression);
-			productName = (String) fieldValue;
-			exportFlagProblemEventImageMetadata.setProductName(productName);
-			
+				fieldValue = JsonPath.read(json, productNameExpression);
+				productName = (String) fieldValue;
+				exportFlagProblemEventImageMetadata.setProductName(productName);
+			}
+			catch (JsonPathException jsonPathException) {
+				logger.error("Key does not exist" +  jsonPathException.getMessage());
+			}
 			return exportFlagProblemEventImageMetadata;
 		}
 		return null;

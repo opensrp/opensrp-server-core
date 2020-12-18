@@ -430,9 +430,9 @@ public class EventService {
 		}
 	}
 
-	public ExportEventDataSummary exportEventData(String planIdentifier, String eventType, Date fromDate, Date toDate) {
-		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents
-				.getEventData(planIdentifier, eventType, fromDate, toDate);
+	public ExportEventDataSummary exportEventData(String planIdentifier, String eventType, Date fromDate, Date toDate)
+			throws JsonProcessingException {
+		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents.getEventData(planIdentifier, eventType, fromDate, toDate);
 		ExportEventDataSummary exportEventDataSummary = new ExportEventDataSummary();
 		List<List<Object>> allRows = new ArrayList<>();
 		boolean returnHeader = true;
@@ -463,7 +463,7 @@ public class EventService {
 	}
 
 	public ExportImagesSummary getImagesMetadataForFlagProblemEvent(String planIdentifier, String eventType, Date fromDate,
-			Date toDate) {
+			Date toDate) throws JsonProcessingException {
 		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents
 				.getEventData(planIdentifier, eventType, fromDate, toDate);
 

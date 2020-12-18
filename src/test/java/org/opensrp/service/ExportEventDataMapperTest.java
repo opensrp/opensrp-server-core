@@ -1,5 +1,6 @@
 package org.opensrp.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.joda.time.DateTime;
@@ -57,7 +58,7 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 
 
 	@Test
-	public void testGetExportEventDataAfterMappingForHeaderWithoutSettings() {
+	public void testGetExportEventDataAfterMappingForHeaderWithoutSettings() throws JsonProcessingException {
 		eventsRepository.add(createFlagProblemEvent());
 		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
 		String json = "";
@@ -75,7 +76,7 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 	}
 
 	@Test
-	public void testGetExportEventDataAfterMappingForRowDataWithoutSettings() {
+	public void testGetExportEventDataAfterMappingForRowDataWithoutSettings() throws JsonProcessingException {
 		eventsRepository.add(createFlagProblemEvent());
 		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
 		String json = "";
@@ -93,7 +94,7 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 	}
 
 	@Test
-	public void testGetExportEventDataAfterMappingForHeaderWithSettings() {
+	public void testGetExportEventDataAfterMappingForHeaderWithSettings() throws JsonProcessingException {
 		eventsRepository.add(createFlagProblemEvent());
 		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
 		when(settingService.findSettingsByIdentifier(SETTINGS_CONFIGURATION_EVENT_TYPE_TO_SETTINGS_IDENTIFIER)).thenReturn(createSettingsMetaDataAgainstIdentfier());
@@ -105,7 +106,7 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 	}
 
 	@Test
-	public void testGetExportEventDataAfterMappingForRowDataWithSettings() {
+	public void testGetExportEventDataAfterMappingForRowDataWithSettings() throws JsonProcessingException {
 		eventsRepository.add(createFlagProblemEvent());
 		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
 		when(settingService.findSettingsByIdentifier(SETTINGS_CONFIGURATION_EVENT_TYPE_TO_SETTINGS_IDENTIFIER)).thenReturn(createSettingsMetaDataAgainstIdentfier());
@@ -117,7 +118,7 @@ public class ExportEventDataMapperTest extends BaseRepositoryTest  {
 	}
 
 	@Test
-	public void testGetFlagProblemEventImagesMetadata() {
+	public void testGetFlagProblemEventImagesMetadata() throws JsonProcessingException {
 		eventsRepository.add(createFlagProblemEvent());
 		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
 		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata = exportEventDataMapper.getFlagProblemEventImagesMetadata(events.get(0).getJson(),"$.baseEntityId", "$.details.locationName", "$.details.productName");
