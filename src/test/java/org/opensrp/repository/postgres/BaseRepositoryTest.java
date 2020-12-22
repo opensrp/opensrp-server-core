@@ -58,7 +58,7 @@ public abstract class BaseRepositoryTest {
 		}
 	}
 
-	private void truncateTables() {
+	protected void truncateTables() {
 		for (String tableName : tableNames) {
 			DbAccessUtils.truncateTable(tableName, openSRPDataSource);
 		}
