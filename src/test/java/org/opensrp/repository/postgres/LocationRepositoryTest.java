@@ -491,7 +491,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		locations = locationRepository.findStructuresByParentAndServerVersion("3734", 0l);
 		assertEquals(1, locations.size());
-		assertTrue(locations.get(0).getServerVersion() > 1542376382851l);
+		assertTrue(locations.get(0).getServerVersion() > 0);
 	}
 	
 	@Test

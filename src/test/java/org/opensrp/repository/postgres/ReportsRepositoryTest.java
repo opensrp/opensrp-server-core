@@ -2,6 +2,7 @@ package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -61,7 +62,8 @@ public class ReportsRepositoryTest extends BaseRepositoryTest {
 		
 		Report updateReport = reportsRepository.get("cd09a3d4-01d9-485c-a1c5-a2eb078a61be");
 		assertEquals("asads-asdas7676-ggas", updateReport.getBaseEntityId());
-		assertEquals(1522827820l, updateReport.getServerVersion().longValue());
+		assertNotEquals(1522827820l, updateReport.getServerVersion().longValue());
+		assertNotNull(updateReport.getServerVersion());
 		assertEquals(6, updateReport.getDuration());
 		
 	}

@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -196,7 +197,8 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		assertEquals("Rustus", updatedClient.getMiddleName());
 		assertEquals(ClientsRepositoryImpl.REVISION_PREFIX + 2, updatedClient.getRevision());
 		assertTrue(timeBeforeUpdate.isBefore(updatedClient.getDateEdited()));
-		assertEquals(existingServerVesion, updatedClient.getServerVersion().longValue());
+		assertNotEquals(existingServerVesion, updatedClient.getServerVersion().longValue());
+		assertNotNull(updatedClient.getServerVersion());
 		
 		clientService.addorUpdate(savedClient, true);
 		assertEquals(existingServerVesion+1,clientService.find(savedClient.getBaseEntityId()).getServerVersion().longValue());

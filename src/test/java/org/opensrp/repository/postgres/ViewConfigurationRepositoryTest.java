@@ -144,21 +144,15 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		viewConfigurationRepository.update(view);
 		
 		List<ViewConfiguration> views = viewConfigurationRepository.findByEmptyServerVersion();
-		assertEquals(1, views.size());
-		assertEquals("lang_sw", views.get(0).getIdentifier());
-		assertEquals("d243bc5737fb389e52601cb850299541", views.get(0).getId());
+		assertEquals(0, views.size());
+
 		
 		ViewConfiguration view2 = viewConfigurationRepository.get("3a065d7c3354eb2bc23c8a3bc303ba20");
 		view2.setServerVersion(0l);
 		viewConfigurationRepository.update(view2);
 		
 		views = viewConfigurationRepository.findByEmptyServerVersion();
-		assertEquals(2, views.size());
-		
-		for (ViewConfiguration v : views) {
-			assertTrue(v.getIdentifier().equals(view.getIdentifier()) || v.getIdentifier().equals(view2.getIdentifier()));
-			assertTrue(v.getId().equals(view.getId()) || v.getId().equals(view2.getId()));
-		}
+		assertEquals(0, views.size());
 		
 	}
 	
