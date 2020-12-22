@@ -29,8 +29,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
     @BeforeClass
     public static void bootStrap() {
-        tableNames.add("core.plan");
-        tableNames.add("core.plan_metadata");
+        tableNames=Arrays.asList("core.plan","core.plan_metadata");
     }
 
     @Override
