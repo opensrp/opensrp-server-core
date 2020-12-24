@@ -446,12 +446,11 @@ public class EventService {
 			//Assumption : All pgEvents would have similar obs fields to include as a header
 		else
 			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(
-					pgEvents != null && pgEvents.size() > 0 && pgEvents.get(0) != null ? pgEvents.get(0).getJson() : "",
-					eventType, returnHeader, settingsExist)); //for header row
+					pgEvents.size() > 0 ? pgEvents.get(0).getJson() : "", eventType, returnHeader, settingsExist)); //for header row
 
 		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
 			allRows.add(exportEventDataMapper
-					.getExportEventDataAfterMapping((Object) pgEvent.getJson(), eventType, false, settingsExist));
+					.getExportEventDataAfterMapping(pgEvent.getJson(), eventType, false, settingsExist));
 		}
 
 		exportEventDataSummary.setRowsData(allRows);

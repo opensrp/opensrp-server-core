@@ -1,6 +1,8 @@
 package org.opensrp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.JsonPathException;
@@ -30,6 +32,7 @@ public class ExportEventDataMapper {
 	private SettingService settingService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
+
 
 	private static Logger logger = LoggerFactory.getLogger(ExportEventDataMapper.class.toString());
 
@@ -73,7 +76,7 @@ public class ExportEventDataMapper {
 			if (!json.equals("")) {
 				event = objectMapper.readValue(json, Event.class);
 				for (Obs obs : event.getObs()) {
-					Object fieldValue = obs.getFormSubmissionField();
+					Object fieldValue = obs.getFormSubmissionField() != null ? obs.getFormSubmissionField() : obs.getFieldCode();
 					rowData.add(fieldValue);
 				}
 				return rowData;
