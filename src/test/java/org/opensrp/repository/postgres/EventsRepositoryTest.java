@@ -709,7 +709,6 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 
 	public static Event createFlagProblemEvent() {
 		Event event = new Event();
-//		event.setType("Event");
 		event.setBaseEntityId("ddcaf383-882e-448b-b701-8b72cb0d4d7a");
 		event.setEventDate(new DateTime());
 		event.setEventType("flag_problem");

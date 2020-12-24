@@ -12,6 +12,7 @@ import org.opensrp.api.domain.Event;
 import org.opensrp.api.domain.Obs;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
+import org.opensrp.repository.postgres.handler.BaseTypeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ public class ExportEventDataMapper {
 	@Autowired
 	private SettingService settingService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = BaseTypeHandler.createObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 
 
 	private static Logger logger = LoggerFactory.getLogger(ExportEventDataMapper.class.toString());
