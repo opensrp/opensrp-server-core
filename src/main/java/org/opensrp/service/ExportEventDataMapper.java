@@ -42,7 +42,7 @@ public class ExportEventDataMapper {
 		Map<String, String> columnNamesAndLabels = getColumnNamesAndLabelsByEventType(eventType);
 
 		String json = "";
-		if (jsonObject != null) {
+		if (jsonObject != null && !jsonObject.equals("")) {
 			json = objectMapper.writeValueAsString(jsonObject);
 		}
 
@@ -66,12 +66,16 @@ public class ExportEventDataMapper {
 			}
 			return rowData;
 		} else if (columnNamesAndLabels != null && !returnHeader && !isSettingsExists) {
-			Event event = objectMapper.readValue(json, Event.class);
-			for (Obs obs : event.getObs()) {
-				Object fieldValue = obs.getValues();
-				rowData.add(fieldValue);
+			Event event = null;
+			if(!json.equals("")) {
+				event = objectMapper.readValue(json, Event.class);
+				for (Obs obs : event.getObs()) {
+					Object fieldValue = obs.getValues();
+					rowData.add(fieldValue);
+				}
+				return rowData;
 			}
-			return rowData;
+			return null;
 		} else { //for header without settings configurations
 			Event event = null;
 			if (!json.equals("")) {

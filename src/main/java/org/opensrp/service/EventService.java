@@ -439,14 +439,18 @@ public class EventService {
 		Map<String, String> columnNamesAndLabels = exportEventDataMapper.getColumnNamesAndLabelsByEventType(eventType);
 		boolean settingsExist = columnNamesAndLabels != null && columnNamesAndLabels.size() > 0 ? true : false;
 
-		if (settingsExist)
+		if (settingsExist) {
 			allRows.add(exportEventDataMapper
 					.getExportEventDataAfterMapping(null, eventType, returnHeader, settingsExist)); //for header row
+		}
 
 			//Assumption : All pgEvents would have similar obs fields to include as a header
-		else
+		else {
+			if(exportEventDataMapper.getExportEventDataAfterMapping(
+					pgEvents.size() > 0 ? pgEvents.get(0).getJson() : "", eventType, returnHeader, settingsExist) != null)
 			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(
 					pgEvents.size() > 0 ? pgEvents.get(0).getJson() : "", eventType, returnHeader, settingsExist)); //for header row
+		}
 
 		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
 			allRows.add(exportEventDataMapper
