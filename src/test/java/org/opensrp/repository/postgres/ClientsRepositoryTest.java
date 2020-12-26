@@ -331,7 +331,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		searchBean = new ClientSearchBean();
 		searchBean.setLocations(locationIds);
 		addressSearchBean = new AddressSearchBean();
-		assertEquals(22, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+		assertEquals(1, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
 
 		//test deleted clients
 		for (Client client : clientsRepository.findByCriteria(searchBean, addressSearchBean))
