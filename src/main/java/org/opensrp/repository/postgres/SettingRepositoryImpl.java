@@ -504,7 +504,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		Settings pgSettings;
 
 		if (id == null) {
-			if (entity.getId() == null) {
+			if (entity.getId() == null || entity.getId().isEmpty()) {
 				entity.setId(UUID.randomUUID().toString());
 			}
 
