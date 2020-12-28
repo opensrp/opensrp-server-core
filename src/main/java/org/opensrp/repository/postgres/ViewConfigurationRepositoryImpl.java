@@ -39,7 +39,7 @@ public class ViewConfigurationRepositoryImpl extends BaseRepositoryImpl<ViewConf
 			return;
 		}
 		
-		if (entity.getId() == null)
+		if (entity.getId() == null || entity.getId().isEmpty())
 			entity.setId(UUID.randomUUID().toString());
 		setRevision(entity);
 		

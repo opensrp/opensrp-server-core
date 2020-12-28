@@ -58,7 +58,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 			return;
 		}
 		
-		if (entity.getId() == null)
+		if (entity.getId() == null || entity.getId().isEmpty())
 			entity.setId(UUID.randomUUID().toString());
 		setRevision(entity);
 		

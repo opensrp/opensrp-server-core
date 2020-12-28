@@ -58,7 +58,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 			throw new IllegalArgumentException("Event exists");
 		}
 		
-		if (entity.getId() == null)
+		if (entity.getId() == null || entity.getId().isEmpty())
 			entity.setId(UUID.randomUUID().toString());
 		setRevision(entity);
 		
