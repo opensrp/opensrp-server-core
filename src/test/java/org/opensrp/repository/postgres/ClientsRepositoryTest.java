@@ -39,6 +39,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	protected Set<String> getDatabaseScripts() {
 		Set<String> scripts = new HashSet<String>();
 		scripts.add("client.sql");
+		scripts.add("event.sql");
 		return scripts;
 	}
 	
