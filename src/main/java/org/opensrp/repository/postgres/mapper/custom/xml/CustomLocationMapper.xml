@@ -14,6 +14,9 @@
 	      <if test="json != null">
 	        json,
 	      </if>
+			<if test="geometry != null">
+				geometry,
+			</if>
 	    </trim>
 	    <trim prefix="values (" suffix=")" suffixOverrides=",">
 	      <if test="id != null">
@@ -22,6 +25,9 @@
 	      <if test="json != null">
 	        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
 	      </if>
+			<if test="geometry != null">
+				ST_GeomFromGeoJSON(#{geometry,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.GeometryTypeHandler})
+			</if>
 	    </trim>
 	</insert>
 		
