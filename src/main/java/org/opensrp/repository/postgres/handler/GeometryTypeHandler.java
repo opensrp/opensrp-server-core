@@ -22,7 +22,7 @@ public class GeometryTypeHandler extends BaseTypeHandler implements TypeHandler<
 				PGobject jsonObject = new PGobject();
 				jsonObject.setType("jsonb");
 				jsonObject.setValue(jsonString);
-				ps.setObject(i, jsonObject, JdbcType.OTHER.TYPE_CODE);
+				ps.setObject(i, jsonObject, jdbcType.TYPE_CODE);
 			}
 		}
 		catch (Exception e) {

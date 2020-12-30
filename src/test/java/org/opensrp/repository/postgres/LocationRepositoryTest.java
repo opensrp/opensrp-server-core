@@ -553,6 +553,10 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		physicalLocation.setType("Feature");
 		Geometry geometry = new Geometry();
 		geometry.setType(GeometryType.POLYGON);
+		JsonArray jsonArray = new JsonArray();
+		jsonArray.add(102.70283890000002);
+		jsonArray.add(12.099235999999967);
+		geometry.setCoordinates(jsonArray);
 		physicalLocation.setGeometry(geometry);
 		LocationProperty properties = new LocationProperty();
 		properties.setStatus(PropertyStatus.ACTIVE);

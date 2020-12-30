@@ -183,8 +183,8 @@
     -->
     insert into core.structure (id, json, 
       geometry)
-    values (#{id,jdbcType=BIGINT}, #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler}, 
-      #{geometry,jdbcType=OTHER})
+    values (#{id,jdbcType=BIGINT}, #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
+    ST_GeomFromGeoJSON(#{geometry,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.GeometryTypeHandler}))
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.Structure">
     <!--
@@ -212,7 +212,7 @@
         #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
       </if>
       <if test="geometry != null">
-        #{geometry,jdbcType=OTHER},
+        ST_GeomFromGeoJSON(#{geometry,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.GeometryTypeHandler})
       </if>
     </trim>
   </insert>
@@ -242,7 +242,7 @@
         json = #{record.json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
       </if>
       <if test="record.geometry != null">
-        geometry = #{record.geometry,jdbcType=OTHER},
+        geometry = ST_GeomFromGeoJSON(#{record.geometry,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.GeometryTypeHandler}),
       </if>
     </set>
     <if test="_parameter != null">
@@ -258,7 +258,7 @@
     update core.structure
     set id = #{record.id,jdbcType=BIGINT},
       json = #{record.json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
-      geometry = #{record.geometry,jdbcType=OTHER}
+      geometry = ST_GeomFromGeoJSON(#{record.geometry,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.GeometryTypeHandler})
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -275,7 +275,7 @@
         json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
       </if>
       <if test="geometry != null">
-        geometry = #{geometry,jdbcType=OTHER},
+        geometry = ST_GeomFromGeoJSON(#{geometry,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.GeometryTypeHandler}),
       </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
@@ -288,7 +288,7 @@
     -->
     update core.structure
     set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
-      geometry = #{geometry,jdbcType=OTHER}
+      geometry = ST_GeomFromGeoJSON(#{geometry,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.GeometryTypeHandler})
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

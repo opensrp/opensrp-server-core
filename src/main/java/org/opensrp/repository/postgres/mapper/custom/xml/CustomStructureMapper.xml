@@ -26,7 +26,7 @@
 	        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
 	      </if>
 			<if test="geometry != null">
-				#{geometry,jdbcType=OTHER},
+				ST_GeomFromGeoJSON(#{geometry,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.GeometryTypeHandler}),
 			</if>
 	    </trim>
 	</insert>
