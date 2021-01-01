@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Iterator;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
@@ -939,10 +940,20 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		Set<String> identifiers = Collections.singleton("3735");
 		Set<LocationDetail> locations = locationRepository.findParentLocationsInclusive(identifiers);
 		assertEquals(2, locations.size());
-		for (LocationDetail l : locations) {
-			MatcherAssert.assertThat(l.getIdentifier(), either(is("3734")).or(is("3735")));
-		}
-		
+		Iterator<LocationDetail> it = locations.iterator();
+		LocationDetail locationDetail = it.next();
+		MatcherAssert.assertThat(locationDetail.getIdentifier(), is("3735"));
+		assertEquals("Dhaka", locationDetail.getName());
+		assertEquals("3734", locationDetail.getParentId());
+		assertEquals(2l, locationDetail.getId().longValue());
+
+		locationDetail = it.next();
+		MatcherAssert.assertThat(locationDetail.getIdentifier(), is("3734"));
+		assertEquals("Bangladesh", locationDetail.getName());
+		assertEquals("21", locationDetail.getParentId());
+		assertEquals(1l, locationDetail.getId().longValue());
+
+
 		assertEquals(2, locationRepository.findParentLocationsInclusive(new HashSet<>(Arrays.asList("3735", "21"))).size());
 		
 		//Location without a parent
@@ -1050,11 +1061,20 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		Set<LocationDetail> locations = locationRepository.findLocationWithDescendants("3734", false);
 		
 		assertEquals(2, locations.size());
-		
-		for (LocationDetail location : locations) {
-			MatcherAssert.assertThat(location.getIdentifier(), either(is("3734")).or(is("3735")));
-		}
-		
+
+		Iterator<LocationDetail> it = locations.iterator();
+		LocationDetail location = it.next();
+		MatcherAssert.assertThat(location.getIdentifier(), is("3735"));
+		assertEquals("Dhaka", location.getName());
+		assertEquals("3734", location.getParentId());
+		assertEquals(2l, location.getId().longValue());
+
+		location = it.next();
+		MatcherAssert.assertThat(location.getIdentifier(), is("3734"));
+		assertEquals("Bangladesh", location.getName());
+		assertEquals("21", location.getParentId());
+		assertEquals(1l, location.getId().longValue());
+
 		locations = locationRepository.findLocationWithDescendants("3735", true);
 		assertEquals(1, locations.size());
 		LocationDetail actualLocationdetail = locations.iterator().next();
