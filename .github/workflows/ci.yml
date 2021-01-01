@@ -34,7 +34,7 @@ jobs:
       run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list"
 
     - name: Install PostGIS packages
-      run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "apt-get -y update && apt-get -y install postgresql-client-10 postgresql-10-postgis-2.4 postgresql-10-postgis-2.4-scripts libjson-c-dev"
+      run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "apt-get -y update && apt-get -y install postgresql-client-10 postgresql-10-postgis-2.4 postgresql-10-postgis-2.4-scripts"
  
     - name: Install Posgres client
       run: sudo apt-get -y update &&  sudo apt-get -y install postgresql-client-10
