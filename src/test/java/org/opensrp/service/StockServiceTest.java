@@ -214,7 +214,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		csvStocks.add(csvRow);
 
 		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(physicalLocationService.getLocation(anyString(), anyBoolean(), anyBoolean())).thenReturn(createLocation());
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.convertandPersistInventorydata(csvStocks, "Test user");
 		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 	}
@@ -236,7 +236,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		csvStocks.add(csvRow);
 
 		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(physicalLocationService.getLocation(anyString(), anyBoolean(), anyBoolean())).thenReturn(createLocation());
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.convertandPersistInventorydata(csvStocks, "Test user");
 		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 	}

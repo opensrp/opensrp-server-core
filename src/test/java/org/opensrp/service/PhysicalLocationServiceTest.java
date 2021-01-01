@@ -83,9 +83,9 @@ public class PhysicalLocationServiceTest {
 	
 	@Test
 	public void testGetLocation() {
-		when(locationRepository.get("3734", true)).thenReturn(createLocation());
-		PhysicalLocation parentLocation = locationService.getLocation("3734", true);
-		verify(locationRepository).get("3734", true);
+		when(locationRepository.get("3734", true, false)).thenReturn(createLocation());
+		PhysicalLocation parentLocation = locationService.getLocation("3734", true, false);
+		verify(locationRepository).get("3734", true, false);
 		verifyLocationData(parentLocation);
 		
 	}
@@ -192,7 +192,7 @@ public class PhysicalLocationServiceTest {
 	@Test
 	public void testAddOrUpdateShouldUpdateLocation() {
 		PhysicalLocation physicalLocation = createLocation();
-		when(locationRepository.get("3734", true)).thenReturn(physicalLocation);
+		when(locationRepository.get("3734", true, false)).thenReturn(physicalLocation);
 		when(locationRepository.findLocationByIdentifierAndStatus("3734",Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()), true)).thenReturn(physicalLocation);
 		locationService.addOrUpdate(createLocation());
 		verify(locationRepository).update(argumentCaptor.capture());
@@ -422,7 +422,7 @@ public class PhysicalLocationServiceTest {
 		expectedLocations.add(createStructure());
 		expectedLocations.add(createStructure());
 		
-		when(locationRepository.get("12323", true)).thenReturn(physicalLocation);
+		when(locationRepository.get("12323", true, false)).thenReturn(physicalLocation);
 		locationService.saveLocations(expectedLocations, true);
 		
 		verify(locationRepository, times(2)).add(argumentCaptor.capture());
