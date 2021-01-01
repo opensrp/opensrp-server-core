@@ -1,7 +1,8 @@
 package org.opensrp.repository.postgres.handler;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.type.*;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.TypeHandler;
 import org.postgresql.util.PGobject;
 import org.smartregister.domain.Geometry;
 
