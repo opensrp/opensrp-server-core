@@ -123,11 +123,9 @@ public class ReportService {
 			report.setDateEdited(DateTime.now());
 			report.setRevision(existingReport.getRevision());
 			allReports.update(report);
-
 		} else {
 			report.setDateCreated(DateTime.now());
 			allReports.add(report);
-
 		}
 
 		return report;
