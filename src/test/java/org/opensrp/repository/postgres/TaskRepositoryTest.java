@@ -166,14 +166,13 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 
 	}
 
-	@Test
+	@Test(expected = IllegalStateException.class)
 	public void testEditNonExistingObject() {
 		Task task = taskRepository.get("iyr-998njoo");
 
 		taskRepository.safeRemove(task);
 
 		taskRepository.update(task);
-		assertNull(taskRepository.get("iyr-998njoo"));
 
 	}
 
