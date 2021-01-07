@@ -123,7 +123,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		Location pgLocation = convert(entity, null);
 		if (pgLocation == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = locationMapper.insertSelectiveAndSetId(pgLocation);
@@ -144,7 +144,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		Structure pgStructure = convertStructure(entity, null);
 		if (pgStructure == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = structureMapper.insertSelectiveAndSetId(pgStructure);
@@ -181,7 +181,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private void updateLocation(PhysicalLocation entity, Long id) {
 		Location pgLocation = convert(entity, id);
 		if (pgLocation == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		
@@ -207,7 +207,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private void updateStructure(PhysicalLocation entity, Long id) {
 		Structure pgStructure = convertStructure(entity, id);
 		if (pgStructure == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		
