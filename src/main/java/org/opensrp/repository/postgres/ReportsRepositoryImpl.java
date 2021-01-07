@@ -15,7 +15,6 @@ import org.opensrp.domain.postgres.ReportMetadataExample.Criteria;
 import org.opensrp.repository.ReportsRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomReportMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomReportMetadataMapper;
-import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

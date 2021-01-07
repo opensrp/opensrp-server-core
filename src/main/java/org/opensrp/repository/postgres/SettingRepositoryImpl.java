@@ -1,14 +1,23 @@
 package org.opensrp.repository.postgres;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.opensrp.util.Utils.isEmptyList;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.TreeNode;
-import org.opensrp.domain.Report;
 import org.opensrp.domain.postgres.Settings;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.domain.postgres.SettingsMetadata;
@@ -28,18 +37,8 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.sql.DataSource;
-
-import static org.opensrp.util.Utils.isEmptyList;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository("settingRepositoryPostgres")
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
@@ -72,7 +71,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return findSetting(settingQueryBean, null);
 	}
 	
-	private void updateServerVersion(org.opensrp.domain.postgres.Settings pgSettings, SettingConfiguration entity) {
+	private void updateServerVersion(Settings pgSettings, SettingConfiguration entity) {
 		long serverVersion = settingMapper.selectServerVersionByPrimaryKey(pgSettings.getId());
 		entity.setServerVersion(serverVersion);
 		

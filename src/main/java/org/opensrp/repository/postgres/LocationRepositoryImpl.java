@@ -18,7 +18,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationTagMap;
-import org.opensrp.domain.Report;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
@@ -98,7 +97,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 	}
 	
-	private void updateLocationServerVersion(org.opensrp.domain.postgres.Location pgLocation, PhysicalLocation entity) {
+	private void updateLocationServerVersion(Location pgLocation, PhysicalLocation entity) {
 		long serverVersion = locationMapper.selectServerVersionByPrimaryKey(pgLocation.getId());
 		entity.setServerVersion(serverVersion);
 		
@@ -108,7 +107,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		}
 	}
 	
-	private void updateStructureServerVersion(org.opensrp.domain.postgres.Structure pgStructure, PhysicalLocation entity) {
+	private void updateStructureServerVersion(Structure pgStructure, PhysicalLocation entity) {
 		long serverVersion = structureMapper.selectServerVersionByPrimaryKey(pgStructure.getId());
 		entity.setServerVersion(serverVersion);
 		
