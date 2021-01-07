@@ -62,7 +62,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		
 		org.opensrp.domain.postgres.Task pgTask = convert(entity, null);
 		if (pgTask == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = taskMapper.insertSelectiveAndSetId(pgTask);
@@ -97,12 +97,12 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		
 		Long id = retrievePrimaryKey(entity);
 		if (id == null) { // Task does not exist
-			return;
+			throw new IllegalStateException();
 		}
 		
 		org.opensrp.domain.postgres.Task pgTask = convert(entity, id);
 		if (pgTask == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
 		

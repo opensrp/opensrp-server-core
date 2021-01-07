@@ -87,7 +87,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		
 		org.opensrp.domain.postgres.Client pgClient = convert(entity, null);
 		if (pgClient == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = clientMapper.insertSelectiveAndSetId(pgClient);
@@ -127,14 +127,14 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		
 		Long id = retrievePrimaryKey(entity, allowArchived);
 		if (id == null) { // Client not added
-			return;
+			throw new IllegalStateException();
 		}
 		
 		setRevision(entity);
 		
 		org.opensrp.domain.postgres.Client pgClient = convert(entity, id);
 		if (pgClient == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = clientMapper.updateByPrimaryKeyAndGenerateServerVersion(pgClient);

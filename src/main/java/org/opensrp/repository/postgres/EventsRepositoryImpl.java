@@ -66,7 +66,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		
 		org.opensrp.domain.postgres.Event pgEvent = convert(entity, null);
 		if (pgEvent == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = eventMapper.insertSelectiveAndSetId(pgEvent);
@@ -102,19 +102,19 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	@Override
 	public void update(Event entity, boolean allowArchived) {
 		if (entity == null || entity.getBaseEntityId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		Long id = retrievePrimaryKey(entity, allowArchived);
 		if (id == null) { // Event not added
-			return;
+			throw new IllegalStateException();
 		}
 		
 		setRevision(entity);
 		
 		org.opensrp.domain.postgres.Event pgEvent = convert(entity, id);
 		if (pgEvent == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = eventMapper.updateByPrimaryKeyAndGenerateServerVersion(pgEvent);
