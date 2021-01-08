@@ -11,6 +11,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opensrp.domain.viewconfiguration.LoginConfiguration;
 import org.opensrp.domain.viewconfiguration.View;
@@ -65,6 +68,7 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, savedViews.size());
 		assertEquals(1, savedViews.get(0).getViews().size());
 		assertEquals("faq", savedViews.get(0).getViews().get(0).getIdentifier());
+		MatcherAssert.assertThat(savedViews,Matchers.contains(Matchers.hasProperty("serverVersion",Matchers.greaterThan(0l))));
 	}
 	
 	@Test
@@ -77,11 +81,14 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		view.setMetadata(configuration);
 		viewConfigurationRepository.update(view);
 		
-		LoginConfiguration updatedView = (LoginConfiguration) viewConfigurationRepository
-		        .get("92141b17040021a7ce326194ff0029f7").getMetadata();
-		assertEquals("fr_cn", updatedView.getLanguage());
-		assertEquals("http://localhost:98778/test.jpg", updatedView.getLogoUrl());
-		assertFalse(updatedView.getShowPasswordCheckbox());
+		
+		ViewConfiguration updatedView =viewConfigurationRepository
+		        .get("92141b17040021a7ce326194ff0029f7");
+		LoginConfiguration updatedConfiguration = (LoginConfiguration) updatedView.getMetadata();
+		assertEquals("fr_cn", updatedConfiguration.getLanguage());
+		assertEquals("http://localhost:98778/test.jpg", updatedConfiguration.getLogoUrl());
+		assertFalse(updatedConfiguration.getShowPasswordCheckbox());
+		MatcherAssert.assertThat(updatedView.getServerVersion(), Matchers.greaterThan(view.getServerVersion()));
 		
 	}
 	

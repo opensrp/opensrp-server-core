@@ -3,6 +3,8 @@ package org.opensrp.repository.postgres;
 import com.google.gson.Gson;
 
 import org.apache.commons.io.IOUtils;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
@@ -189,6 +191,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		assertEquals(expectedSettingConfiguration.getId(), actualSettingConfiguration.getId());
 		assertEquals(expectedSettingConfiguration.getIdentifier(), actualSettingConfiguration.getIdentifier());
 		verifySettingsAreSame(settingMap, actualSettingConfiguration.getSettings());
+		MatcherAssert.assertThat(actualSettingConfiguration.getServerVersion(), Matchers.greaterThan(0l));
 
 		// update
 		settings.clear();
@@ -230,14 +233,16 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		expectedSettingConfiguration.setSettings(settings);
 
 		settingRepository.update(expectedSettingConfiguration);
-		actualSettingConfiguration = settingRepository.get("test_id");
-		assertNotNull(actualSettingConfiguration);
+		SettingConfiguration updatedSettingConfiguration = settingRepository.get("test_id");
+		assertNotNull(updatedSettingConfiguration);
 		assertEquals(3, actualSettingConfiguration.getSettings().size());
-		assertEquals(expectedSettingConfiguration.getTeam(), actualSettingConfiguration.getTeam());
-		assertEquals(expectedSettingConfiguration.getId(), actualSettingConfiguration.getId());
+		assertEquals(expectedSettingConfiguration.getTeam(), updatedSettingConfiguration.getTeam());
+		assertEquals(expectedSettingConfiguration.getId(), updatedSettingConfiguration.getId());
 		assertEquals(expectedSettingConfiguration.getTeamId(), "test_team_40");
 		assertEquals(expectedSettingConfiguration.getIdentifier(), "test_identifier_40");
 		verifySettingsAreSame(settingMap, expectedSettingConfiguration.getSettings());
+		MatcherAssert.assertThat(updatedSettingConfiguration.getServerVersion(), Matchers.greaterThan(actualSettingConfiguration.getServerVersion()));
+		
 	}
 
 	@Test
@@ -279,6 +284,8 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		List<Setting> actualSettings = settings.get(0).getSettings();
 		assertNotNull(actualSettings);
 		verifySettingsAreSame(expectedSettings, actualSettings);
+		MatcherAssert.assertThat(settings,
+		    Matchers.contains(Matchers.hasProperty("serverVersion", Matchers.greaterThan(0l))));
 	}
 
 	@Test

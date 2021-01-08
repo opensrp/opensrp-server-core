@@ -163,6 +163,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         result = planRepository.get("identifier_5");
         assertEquals(result.getIdentifier(), "identifier_5");
         assertEquals(result.getJurisdiction().get(0).getCode(), "operation_area_2");
+        MatcherAssert.assertThat(result.getServerVersion(), Matchers.greaterThan(plan.getServerVersion()));
     }
 
     @Test

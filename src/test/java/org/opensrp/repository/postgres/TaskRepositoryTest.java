@@ -157,6 +157,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Non Residential", updatedTask.getBusinessStatus());
 		assertEquals(TaskStatus.FAILED, updatedTask.getStatus());
 		assertEquals(now, updatedTask.getLastModified());
+		MatcherAssert.assertThat(updatedTask.getServerVersion(), Matchers.greaterThan(task.getServerVersion()));
 	}
 
 	@Test

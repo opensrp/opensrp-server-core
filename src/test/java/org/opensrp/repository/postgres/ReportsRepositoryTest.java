@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.domain.Report;
@@ -48,6 +50,8 @@ public class ReportsRepositoryTest extends BaseRepositoryTest {
 		assertEquals("3453535sdfs", reports.get(0).getLocationId());
 		assertEquals("MONTHLY", report.getReportType());
 		assertNull(report.getHia2Indicators());
+		MatcherAssert.assertThat(reports,
+		    Matchers.contains(Matchers.hasProperty("serverVersion", Matchers.greaterThan(0l))));
 		
 	}
 	
@@ -65,6 +69,7 @@ public class ReportsRepositoryTest extends BaseRepositoryTest {
 		assertNotEquals(1522827820l, updateReport.getServerVersion().longValue());
 		assertNotNull(updateReport.getServerVersion());
 		assertEquals(6, updateReport.getDuration());
+		MatcherAssert.assertThat(updateReport.getServerVersion(), Matchers.greaterThan(report.getServerVersion()));
 		
 	}
 	

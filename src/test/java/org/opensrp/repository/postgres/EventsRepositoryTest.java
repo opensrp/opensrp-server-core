@@ -508,11 +508,13 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		        "Date_Reaction");
 		event.addObs(obs);
 		eventsRepository.update(event);
-		event = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
-		assertNotEquals(now, event.getServerVersion().longValue());
-		assertEquals(now, event.getDateEdited().getMillis());
-		assertEquals(3, event.getObs().size());
-		assertEquals(obs.getValue(), event.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		
+		Event updatedEvent = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
+		assertNotEquals(now, updatedEvent.getServerVersion().longValue());
+		assertEquals(now, updatedEvent.getDateEdited().getMillis());
+		assertEquals(3, updatedEvent.getObs().size());
+		assertEquals(obs.getValue(), updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		MatcherAssert.assertThat(updatedEvent.getServerVersion(), Matchers.greaterThan(event.getServerVersion()));
 		
 		//test update with voided date deletes event
 		event.setDateVoided(new DateTime());

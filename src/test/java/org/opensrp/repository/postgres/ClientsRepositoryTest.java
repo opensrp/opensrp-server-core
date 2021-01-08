@@ -99,6 +99,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Hummel", updatedClient.getFirstName());
 		assertEquals("Basialis", updatedClient.getLastName());
 		assertEquals("09876-98", client.getIdentifier("ZEIR_ID"));
+		MatcherAssert.assertThat(updatedClient.getServerVersion(), Matchers.greaterThan(client.getServerVersion()));
 		
 		//test update with voided date deletes client
 		updatedClient.setDateVoided(new DateTime());

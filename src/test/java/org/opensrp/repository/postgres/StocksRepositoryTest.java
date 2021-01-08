@@ -8,6 +8,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.*;
 
 import com.ibm.fhir.model.resource.Bundle;
+
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
 import org.smartregister.domain.StockAndProductDetails;
@@ -57,6 +60,7 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 		assertEquals("tester1", stocks.get(0).getProviderid());
 		assertEquals(31, stock.getValue());
 		assertEquals("VC1", stock.getVaccine_type_id());
+		MatcherAssert.assertThat(stocks, Matchers.contains(Matchers.hasProperty("serverVersion",Matchers.greaterThan(0l))));
 	}
 	
 	@Test
@@ -70,6 +74,7 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 		Stock updatedStock = stocksRepository.get("05934ae338431f28bf6793b241b2daa6");
 		assertEquals(now, updatedStock.getDate_updated().longValue());
 		assertEquals(23, stock.getValue());
+		MatcherAssert.assertThat(updatedStock.getServerVersion(), Matchers.greaterThan(stock.getServerVersion()));
 		
 	}
 	

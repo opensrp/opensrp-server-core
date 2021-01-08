@@ -269,6 +269,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
 		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
 		assertEquals(0, updatedLocation.getProperties().getVersion());
+		MatcherAssert.assertThat(updatedLocation.getServerVersion(), Matchers.greaterThan(physicalLocation.getServerVersion()));
 		
 		assertNull(locationRepository.getStructure("3734", true));
 		
@@ -368,6 +369,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(updatedStructure);
 		assertEquals("12121", updatedStructure.getProperties().getCode());
 		assertEquals("11", updatedStructure.getProperties().getParentId());
+		MatcherAssert.assertThat(updatedStructure.getServerVersion(), Matchers.greaterThan(structure.getServerVersion()));
 		
 		assertNull(locationRepository.get("90397"));
 		
