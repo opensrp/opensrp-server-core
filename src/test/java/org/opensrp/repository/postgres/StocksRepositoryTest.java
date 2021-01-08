@@ -69,12 +69,13 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 		long now = System.currentTimeMillis();
 		stock.setDate_updated(now);
 		stock.setValue(23);
+		long serverVersion=stock.getServerVersion();
 		stocksRepository.update(stock);
 		
 		Stock updatedStock = stocksRepository.get("05934ae338431f28bf6793b241b2daa6");
 		assertEquals(now, updatedStock.getDate_updated().longValue());
 		assertEquals(23, stock.getValue());
-		MatcherAssert.assertThat(updatedStock.getServerVersion(), Matchers.greaterThan(stock.getServerVersion()));
+		MatcherAssert.assertThat(updatedStock.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 	}
 	

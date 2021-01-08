@@ -1,6 +1,19 @@
 package org.opensrp.repository.postgres;
 
-import com.google.gson.Gson;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
 import org.hamcrest.MatcherAssert;
@@ -20,20 +33,7 @@ import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import com.google.gson.Gson;
 
 public class SettingRepositoryTest extends BaseRepositoryTest {
 
@@ -192,6 +192,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		assertEquals(expectedSettingConfiguration.getIdentifier(), actualSettingConfiguration.getIdentifier());
 		verifySettingsAreSame(settingMap, actualSettingConfiguration.getSettings());
 		MatcherAssert.assertThat(actualSettingConfiguration.getServerVersion(), Matchers.greaterThan(0l));
+		long serverVersion=actualSettingConfiguration.getServerVersion();
 
 		// update
 		settings.clear();
@@ -241,7 +242,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		assertEquals(expectedSettingConfiguration.getTeamId(), "test_team_40");
 		assertEquals(expectedSettingConfiguration.getIdentifier(), "test_identifier_40");
 		verifySettingsAreSame(settingMap, expectedSettingConfiguration.getSettings());
-		MatcherAssert.assertThat(updatedSettingConfiguration.getServerVersion(), Matchers.greaterThan(actualSettingConfiguration.getServerVersion()));
+		MatcherAssert.assertThat(updatedSettingConfiguration.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 	}
 

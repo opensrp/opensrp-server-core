@@ -84,7 +84,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             throw new IllegalStateException();
         }
         
-       updateServerVersion(pgPlan, plan);
+        updateServerVersion(pgPlan, plan);
        
         insertPlanMetadata(plan, pgPlan.getId());
     }

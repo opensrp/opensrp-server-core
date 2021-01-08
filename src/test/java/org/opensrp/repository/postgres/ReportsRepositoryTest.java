@@ -61,7 +61,7 @@ public class ReportsRepositoryTest extends BaseRepositoryTest {
 		report.setBaseEntityId("asads-asdas7676-ggas");
 		report.setServerVersion(1522827820l);
 		report.setDuration(6);
-		
+		long serverVersion=report.getServerVersion();
 		reportsRepository.update(report);
 		
 		Report updateReport = reportsRepository.get("cd09a3d4-01d9-485c-a1c5-a2eb078a61be");
@@ -69,7 +69,7 @@ public class ReportsRepositoryTest extends BaseRepositoryTest {
 		assertNotEquals(1522827820l, updateReport.getServerVersion().longValue());
 		assertNotNull(updateReport.getServerVersion());
 		assertEquals(6, updateReport.getDuration());
-		MatcherAssert.assertThat(updateReport.getServerVersion(), Matchers.greaterThan(report.getServerVersion()));
+		MatcherAssert.assertThat(updateReport.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 	}
 	

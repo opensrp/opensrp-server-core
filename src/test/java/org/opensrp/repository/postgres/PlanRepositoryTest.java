@@ -1,5 +1,20 @@
 package org.opensrp.repository.postgres;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -7,20 +22,11 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opensrp.search.PlanSearchBean;
-import org.smartregister.domain.PlanDefinition;
-import org.smartregister.domain.Jurisdiction;
 import org.opensrp.repository.PlanRepository;
+import org.opensrp.search.PlanSearchBean;
+import org.smartregister.domain.Jurisdiction;
+import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.util.*;
 
 /**
  * Created by Vincent Karuri on 03/05/2019
@@ -71,9 +77,9 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         ids.add("identifier_2");
         assertTrue(testIfAllIdsExists(plans, ids));
         
-        MatcherAssert.assertThat( plans, Matchers.contains(
-        	Matchers.hasProperty("serverVersion", Matchers.greaterThan(0l))
-        ));
+        for(PlanDefinition pl:plans) {
+        	 MatcherAssert.assertThat(pl.getServerVersion(),Matchers.greaterThan(0l));
+        }
     }
 
     @Test
@@ -158,12 +164,14 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         jurisdiction.setCode("operation_area_2");
         jurisdictions.add(jurisdiction);
         plan.setJurisdiction(jurisdictions);
+        plan.setServerVersion(1l);
+        Long serverVersion=plan.getServerVersion();
         planRepository.update(plan);
 
         result = planRepository.get("identifier_5");
         assertEquals(result.getIdentifier(), "identifier_5");
         assertEquals(result.getJurisdiction().get(0).getCode(), "operation_area_2");
-        MatcherAssert.assertThat(result.getServerVersion(), Matchers.greaterThan(plan.getServerVersion()));
+        MatcherAssert.assertThat(result.getServerVersion(), Matchers.greaterThan(serverVersion));
     }
 
     @Test

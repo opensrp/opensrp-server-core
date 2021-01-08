@@ -1,7 +1,6 @@
 package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -23,11 +22,11 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
+import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -93,13 +92,14 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		client.setFirstName("Hummel");
 		client.setLastName("Basialis");
 		client.withIdentifier("ZEIR_ID", "09876-98");
+		long serverVersion=client.getServerVersion();
 		clientsRepository.update(client);
 		
 		Client updatedClient = clientsRepository.get(client.getId());
 		assertEquals("Hummel", updatedClient.getFirstName());
 		assertEquals("Basialis", updatedClient.getLastName());
 		assertEquals("09876-98", client.getIdentifier("ZEIR_ID"));
-		MatcherAssert.assertThat(updatedClient.getServerVersion(), Matchers.greaterThan(client.getServerVersion()));
+		MatcherAssert.assertThat(updatedClient.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 		//test update with voided date deletes client
 		updatedClient.setDateVoided(new DateTime());

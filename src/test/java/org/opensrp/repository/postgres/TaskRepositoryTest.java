@@ -1,11 +1,10 @@
 package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,17 +13,16 @@ import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
-import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
+import org.opensrp.repository.TaskRepository;
 import org.opensrp.search.TaskSearchBean;
 import org.smartregister.domain.Task;
 import org.smartregister.domain.Task.TaskPriority;
 import org.smartregister.domain.Task.TaskStatus;
-import org.opensrp.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class TaskRepositoryTest extends BaseRepositoryTest {
@@ -150,6 +148,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setBusinessStatus("Non Residential");
 		DateTime now = new DateTime();
 		task.setLastModified(now);
+		long serverVersion=task.getServerVersion();
 		taskRepository.update(task);
 
 		Task updatedTask = taskRepository.get("iyr-998njoo");
@@ -157,7 +156,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Non Residential", updatedTask.getBusinessStatus());
 		assertEquals(TaskStatus.FAILED, updatedTask.getStatus());
 		assertEquals(now, updatedTask.getLastModified());
-		MatcherAssert.assertThat(updatedTask.getServerVersion(), Matchers.greaterThan(task.getServerVersion()));
+		MatcherAssert.assertThat(updatedTask.getServerVersion(), Matchers.greaterThan(serverVersion));
 	}
 
 	@Test

@@ -258,6 +258,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		physicalLocation.getProperties().setEffectiveStartDate(effectiveStartDate);
 		physicalLocation.getProperties().setEffectiveEndDate(effectiveEndDate);
 		physicalLocation.setJurisdiction(true);
+		long serverVersion=physicalLocation.getServerVersion();
 		locationRepository.update(physicalLocation);
 		assertNull(locationRepository.get("3734"));
 		PhysicalLocation updatedLocation = locationRepository.get("3734", true, 0);
@@ -269,7 +270,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
 		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
 		assertEquals(0, updatedLocation.getProperties().getVersion());
-		MatcherAssert.assertThat(updatedLocation.getServerVersion(), Matchers.greaterThan(physicalLocation.getServerVersion()));
+		MatcherAssert.assertThat(updatedLocation.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 		assertNull(locationRepository.getStructure("3734", true));
 		
@@ -362,6 +363,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		PhysicalLocation structure = locationRepository.getStructure("90397", true);
 		structure.getProperties().setCode("12121");
 		structure.getProperties().setParentId("11");
+		long serverVersion=structure.getServerVersion();
 		locationRepository.update(structure);
 		
 		PhysicalLocation updatedStructure = locationRepository.getStructure("90397", true);
@@ -369,7 +371,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(updatedStructure);
 		assertEquals("12121", updatedStructure.getProperties().getCode());
 		assertEquals("11", updatedStructure.getProperties().getParentId());
-		MatcherAssert.assertThat(updatedStructure.getServerVersion(), Matchers.greaterThan(structure.getServerVersion()));
+		MatcherAssert.assertThat(updatedStructure.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 		assertNull(locationRepository.get("90397"));
 		

@@ -507,6 +507,8 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		Obs obs = new Obs("concept", "text", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "25-Apr-2017", null,
 		        "Date_Reaction");
 		event.addObs(obs);
+		event.setServerVersion(1);
+		long serverVersion=event.getServerVersion();
 		eventsRepository.update(event);
 		
 		Event updatedEvent = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
@@ -514,7 +516,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		assertEquals(now, updatedEvent.getDateEdited().getMillis());
 		assertEquals(3, updatedEvent.getObs().size());
 		assertEquals(obs.getValue(), updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
-		MatcherAssert.assertThat(updatedEvent.getServerVersion(), Matchers.greaterThan(event.getServerVersion()));
+		MatcherAssert.assertThat(updatedEvent.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 		//test update with voided date deletes event
 		event.setDateVoided(new DateTime());

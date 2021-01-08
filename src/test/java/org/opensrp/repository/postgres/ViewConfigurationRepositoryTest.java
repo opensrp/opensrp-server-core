@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hamcrest.Matcher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
@@ -79,6 +78,7 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		configuration.setLanguage("fr_cn");
 		configuration.setLogoUrl("http://localhost:98778/test.jpg");
 		view.setMetadata(configuration);
+		long serverVersion=view.getServerVersion();
 		viewConfigurationRepository.update(view);
 		
 		
@@ -88,7 +88,7 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("fr_cn", updatedConfiguration.getLanguage());
 		assertEquals("http://localhost:98778/test.jpg", updatedConfiguration.getLogoUrl());
 		assertFalse(updatedConfiguration.getShowPasswordCheckbox());
-		MatcherAssert.assertThat(updatedView.getServerVersion(), Matchers.greaterThan(view.getServerVersion()));
+		MatcherAssert.assertThat(updatedView.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 	}
 	
