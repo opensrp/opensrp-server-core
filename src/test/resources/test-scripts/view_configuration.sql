@@ -19,3 +19,6 @@ INSERT INTO core.view_configuration_metadata (id, view_configuration_id, documen
 (3, 3, '3a065d7c3354eb2bc23c8a3bc303ba20', 'positive_register', 1516605871345),
 (4, 4, '3a065d7c3354eb2bc23c8a3bc303ef62', 'positive_register_header', 1516614392971),
 (5, 5, 'd243bc5737fb389e52601cb850299541', 'lang_sw', 1515152954118);
+
+
+SELECT setval('core.view_config_server_version_seq',(SELECT max(json->>'serverVersion')::bigint+1 FROM core.view_configuration));

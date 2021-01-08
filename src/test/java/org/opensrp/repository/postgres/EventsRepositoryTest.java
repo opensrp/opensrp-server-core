@@ -502,7 +502,6 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	public void testUpdate() {
 		Event event = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
 		long now = System.currentTimeMillis();
-		event.setServerVersion(now);
 		event.setDateEdited(new DateTime(now));
 		Obs obs = new Obs("concept", "text", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "25-Apr-2017", null,
 		        "Date_Reaction");

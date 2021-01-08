@@ -27,3 +27,5 @@ VALUES ('3735','909734c-1ba5-556d-8b16-71266397b8b9',3);
 
 INSERT INTO core.plan_metadata (operational_area_id,identifier, plan_id)
 VALUES ('3735','0004c-1ba5-556d-8b16-71266397b8b9',4);
+
+SELECT setval('core.plan_server_version_seq',(SELECT max(json->>'serverVersion')::bigint+1 FROM core.plan));

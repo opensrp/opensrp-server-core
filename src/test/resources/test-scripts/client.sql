@@ -57,4 +57,4 @@ INSERT INTO core.client_metadata (id, client_id, document_id, base_entity_id, re
 
 
 
-
+SELECT setval('core.client_server_version_seq',(SELECT max(json->>'serverVersion')::bigint+1 FROM core.client));
