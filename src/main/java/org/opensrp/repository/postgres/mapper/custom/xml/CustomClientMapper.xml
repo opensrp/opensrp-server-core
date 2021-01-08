@@ -27,14 +27,14 @@
 			<if test="dateDeleted != null">
 		        #{dateDeleted,jdbcType=TIMESTAMP},
 		     </if>
-			nextVal('core.event_server_version_seq')
+			nextVal('core.client_server_version_seq')
 		</trim>
 	</insert>
 	<update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Client">
 	    update core.client
 	    set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ClientTypeHandler},
 	      date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
-	      server_version = nextVal('core.event_server_version_seq')
+	      server_version = nextVal('core.client_server_version_seq')
 	    where id = #{id,jdbcType=BIGINT}
     </update>
   	<select id="selectServerVersionByPrimaryKey"

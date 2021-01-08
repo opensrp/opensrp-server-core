@@ -28,7 +28,7 @@
 	</insert>
 	
 	<update id="updateByPrimaryKeyAndGenerateServerVersion"
-		parameterType="org.opensrp.domain.postgres.Task">
+		parameterType="org.opensrp.domain.postgres.Location">
 		update core.location
     	set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
     	server_version=nextVal('core.location_server_version_seq')
