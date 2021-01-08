@@ -1,23 +1,21 @@
 package org.opensrp.repository.postgres;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.smartregister.domain.ProductCatalogue;
-import org.smartregister.domain.Task;
-import org.opensrp.domain.postgres.ProductCatalogueExample;
-import org.opensrp.repository.ProductCatalogueRepository;
-import org.opensrp.repository.postgres.mapper.custom.CustomProductCatalogueMapper;
-import org.opensrp.search.ProductCatalogueSearchBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
+import static org.opensrp.util.Utils.isEmptyList;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import static org.opensrp.util.Utils.isEmptyList;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
+import org.opensrp.domain.postgres.ProductCatalogueExample;
+import org.opensrp.repository.ProductCatalogueRepository;
+import org.opensrp.repository.postgres.mapper.custom.CustomProductCatalogueMapper;
+import org.opensrp.search.ProductCatalogueSearchBean;
+import org.smartregister.domain.ProductCatalogue;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 @Repository("productCatalogueRepositoryPostgres")
 public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCatalogue>
