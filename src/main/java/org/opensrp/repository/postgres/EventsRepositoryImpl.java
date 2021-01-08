@@ -86,7 +86,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	private void updateServerVersion(org.opensrp.domain.postgres.Event pgEvent, Event entity) {
 		long serverVersion = eventMapper.selectServerVersionByPrimaryKey(pgEvent.getId());
 		entity.setServerVersion(serverVersion);
-		
+		pgEvent.setJson(entity);
 		int rowsAffected = eventMapper.updateByPrimaryKeySelective(pgEvent);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();

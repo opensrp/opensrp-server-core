@@ -74,7 +74,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	private void updateServerVersion(Settings pgSettings, SettingConfiguration entity) {
 		long serverVersion = settingMapper.selectServerVersionByPrimaryKey(pgSettings.getId());
 		entity.setServerVersion(serverVersion);
-		
+		pgSettings.setJson(entity);
 		int rowsAffected = settingMapper.updateByPrimaryKeySelective(pgSettings);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();

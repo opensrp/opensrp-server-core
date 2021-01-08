@@ -42,7 +42,7 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 	private void updateServerVersion(org.opensrp.domain.postgres.Report pgReport, Report entity) {
 		long serverVersion = reportMapper.selectServerVersionByPrimaryKey(pgReport.getId());
 		entity.setServerVersion(serverVersion);
-		
+		pgReport.setJson(entity);
 		int rowsAffected = reportMapper.updateByPrimaryKeySelective(pgReport);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();

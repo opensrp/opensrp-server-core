@@ -81,7 +81,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	private void updateServerVersion(org.opensrp.domain.postgres.Task pgTask, Task entity) {
 		long serverVersion = taskMapper.selectServerVersionByPrimaryKey(pgTask.getId());
 		entity.setServerVersion(serverVersion);
-		
+		pgTask.setJson(entity);
 		int rowsAffected = taskMapper.updateByPrimaryKeySelective(pgTask);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();

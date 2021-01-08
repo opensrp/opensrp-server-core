@@ -56,7 +56,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     private void updateServerVersion(Plan pgPlan, PlanDefinition entity) {
 		long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
 		entity.setServerVersion(serverVersion);
-		
+		pgPlan.setJson(entity);
 		int rowsAffected = planMapper.updateByPrimaryKeySelective(pgPlan);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();

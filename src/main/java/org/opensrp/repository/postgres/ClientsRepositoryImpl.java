@@ -106,7 +106,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	private void updateServerVersion(org.opensrp.domain.postgres.Client pgClient, Client entity) {
 		long serverVersion = clientMapper.selectServerVersionByPrimaryKey(pgClient.getId());
 		entity.setServerVersion(serverVersion);
-		
+		pgClient.setJson(entity);
 		int rowsAffected = clientMapper.updateByPrimaryKeySelective(pgClient);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
