@@ -3,6 +3,7 @@ package org.opensrp.repository.postgres;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
 
@@ -13,6 +14,9 @@ import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.Matcher;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -114,6 +118,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals(TaskStatus.READY, addedTask.getStatus());
 		assertEquals("worker12", addedTask.getOwner());
 		assertEquals(TaskPriority.URGENT, addedTask.getPriority());
+		MatcherAssert.assertThat(addedTask.getServerVersion(), Matchers.greaterThan(5l));
 
 	}
 

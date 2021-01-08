@@ -27,6 +27,7 @@ import java.util.UUID;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -164,6 +165,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		assertNotNull(savedLocation);
 		assertEquals("Feature", savedLocation.getType());
+		MatcherAssert.assertThat(savedLocation.getServerVersion(), Matchers.greaterThan(5l));
 		
 		assertNull(locationRepository.getStructure("223232", true));
 		
@@ -210,6 +212,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(GeometryType.POLYGON, savedLocation.getGeometry().getType());
 		assertEquals(PropertyStatus.ACTIVE, savedLocation.getProperties().getStatus());
 		assertEquals(uuid, savedLocation.getProperties().getUid());
+		MatcherAssert.assertThat(savedLocation.getServerVersion(), Matchers.greaterThan(5l));
 		
 		assertNull(locationRepository.get("121212"));
 		

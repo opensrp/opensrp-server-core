@@ -16,6 +16,8 @@ import java.util.HashMap;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
@@ -590,6 +592,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Growth Monitoring", event.getEventType());
 		assertEquals(1, event.getObs().size());
 		assertEquals("3.5", event.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		MatcherAssert.assertThat(event.getServerVersion(), Matchers.greaterThan(5l));
 		
 		//test if an event with voided date add event as deleted
 		event = new Event().withBaseEntityId("2423nj-sdfsd-sf2dfsd-2399d").withEventType("Vaccination")
@@ -597,6 +600,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		event.setDateVoided(new DateTime());
 		eventsRepository.add(event);
 		assertNull(eventsRepository.findByFormSubmissionId(event.getFormSubmissionId(),false));
+	
 		
 	}
 	

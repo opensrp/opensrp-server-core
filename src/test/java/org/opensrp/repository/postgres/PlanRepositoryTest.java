@@ -1,6 +1,8 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.BeforeClass;
@@ -15,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.util.*;
@@ -67,6 +70,10 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         ids.add("identifier_1");
         ids.add("identifier_2");
         assertTrue(testIfAllIdsExists(plans, ids));
+        
+        MatcherAssert.assertThat( plans, Matchers.contains(
+        	Matchers.hasProperty("serverVersion", Matchers.greaterThan(0l))
+        ));
     }
 
     @Test

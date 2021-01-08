@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Ignore;
@@ -81,6 +83,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		client.withDateVoided(new DateTime());
 		clientsRepository.add(client);
 		assertNull(clientsRepository.findByBaseEntityId(client.getBaseEntityId()));
+		MatcherAssert.assertThat(savedClient.getServerVersion(), Matchers.greaterThan(5l));
 		
 	}
 	
