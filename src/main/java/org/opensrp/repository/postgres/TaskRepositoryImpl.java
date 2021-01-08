@@ -388,7 +388,6 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	
 	@Override
 	public void saveTask(Task task, QuestionnaireResponse questionnaireResponse) {
-		task.setServerVersion(getNextServerVersion());
 		add(task);
 	}
 	
@@ -417,7 +416,6 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	
 	@Override
 	public Task updateTask(Task task) {
-		task.setServerVersion(getNextServerVersion());
 		update(task);
 		return get(task.getIdentifier());
 	}

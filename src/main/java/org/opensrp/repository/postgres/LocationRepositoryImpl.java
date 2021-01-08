@@ -45,10 +45,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation> implements LocationRepository {
 	
-	private static final String LOCATION_SEQUENCE = "core.location_server_version_seq";
-	
-	private static final String STRUCTURE_SEQUENCE = "core.structure_server_version_seq";
-	
 	@Autowired
 	private CustomLocationMapper locationMapper;
 	
@@ -944,15 +940,5 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
 		return locations.stream().map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
 		        .collect(Collectors.toList());
-	}
-	
-	@Override
-	protected String getSequenceName() {
-		return LOCATION_SEQUENCE;
-	}
-	
-	@Override
-	public long getStructureNextServerVersion() {
-		return getNextServerVersion(STRUCTURE_SEQUENCE);
 	}
 }

@@ -32,7 +32,6 @@ import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
@@ -85,8 +84,6 @@ public class PhysicalLocationService {
 	public void add(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
-		physicalLocation.setServerVersion(physicalLocation.isJurisdiction() ? locationRepository.getNextServerVersion()
-		        : locationRepository.getStructureNextServerVersion());
 		locationRepository.add(physicalLocation);
 	}
 	
@@ -95,8 +92,6 @@ public class PhysicalLocationService {
 	public void update(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
-		physicalLocation.setServerVersion(physicalLocation.isJurisdiction() ? locationRepository.getNextServerVersion()
-		        : locationRepository.getStructureNextServerVersion());
 		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndStatus(physicalLocation.getId(),
 		    Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()), true);
 		boolean locationHasNoUpdates = isGeometryCoordsEqual(physicalLocation, existingEntity);
@@ -105,8 +100,6 @@ public class PhysicalLocationService {
 		} else {
 			//make existing location inactive
 			existingEntity.getProperties().setStatus(LocationProperty.PropertyStatus.INACTIVE);
-			existingEntity.setServerVersion(physicalLocation.isJurisdiction() ? locationRepository.getNextServerVersion()
-			        : locationRepository.getStructureNextServerVersion());
 			locationRepository.update(existingEntity);
 			
 			// create new location

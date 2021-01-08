@@ -483,7 +483,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingConfiguration.setIdentifier(setting.getIdentifier());
 		settingConfiguration.setType(setting.getType());
 		settingConfiguration.setSettings(settings);
-		settingConfiguration.setServerVersion(getNextServerVersion());
 		settingConfiguration.setDocumentId(setting.getDocumentId());
 		if (StringUtils.isNotBlank(setting.getSettingsId())) {
 			settingConfiguration.setId(setting.getSettingsId());

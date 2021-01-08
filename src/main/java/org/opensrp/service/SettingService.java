@@ -60,7 +60,6 @@ public class SettingService {
 			logger.error("error reading json ",e);
 		}
 
-		settingConfigurations.setServerVersion(settingRepository.getNextServerVersion());
 		settingConfigurations.setV1Settings(true);
 
 		SettingConfiguration existingConfiguration = null;
@@ -108,7 +107,6 @@ public class SettingService {
 		String settingsResponse = null;
 
 		if (setting != null) {
-			setting.setServerVersion(settingRepository.getNextServerVersion());
 			settingsResponse = settingRepository.addOrUpdate(setting);
 		}
 

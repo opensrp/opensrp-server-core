@@ -369,10 +369,4 @@ public class ClientService {
 		return allClients.findById(id);
 	}
 	
-	/**
-	 * @return
-	 */
-	public long getNextServerVersion() {
-		return allClients.getNextServerVersion();
-	}
 }

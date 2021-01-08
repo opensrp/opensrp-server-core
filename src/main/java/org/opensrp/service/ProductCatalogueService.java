@@ -33,13 +33,11 @@ public class ProductCatalogueService {
 
 	public void add(ProductCatalogue productCatalogue) {
 		validateFields(productCatalogue);
-		productCatalogue.setServerVersion(productCatalogueRepository.getNextServerVersion());
 		productCatalogueRepository.add(productCatalogue);
 	}
 
 	public void update(ProductCatalogue productCatalogue) {
 		validateFields(productCatalogue);
-		productCatalogue.setServerVersion(productCatalogueRepository.getNextServerVersion());
 		productCatalogueRepository.update(productCatalogue);
 	}
 
