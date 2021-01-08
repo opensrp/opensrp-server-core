@@ -2,7 +2,9 @@ package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.smartregister.domain.ProductCatalogue;
+import org.smartregister.domain.Task;
 import org.opensrp.domain.postgres.ProductCatalogueExample;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomProductCatalogueMapper;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.transaction.Transactional;
 
 import static org.opensrp.util.Utils.isEmptyList;
 
@@ -29,6 +33,7 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 		throw new NotImplementedException();
 	}
 
+	@Transactional
 	@Override
 	public void add(ProductCatalogue entity) {
 
@@ -42,15 +47,29 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 
 		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = convert(entity, null);
 		if (pgProductCatalogue == null) {
-			return;
+			throw new IllegalStateException();
 		}
 
 		int rowsAffected = customProductCatalogueMapper.insertSelectiveAndSetId(pgProductCatalogue);
 		if (rowsAffected < 1 || pgProductCatalogue.getUniqueId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateServerVersion(pgProductCatalogue, entity);
 	}
 
+	private void updateServerVersion(org.opensrp.domain.postgres.ProductCatalogue pgProductCatalog, ProductCatalogue entity) {
+		Long serverVersion = customProductCatalogueMapper.selectServerVersionByPrimaryKey(pgProductCatalog.getUniqueId());
+		entity.setServerVersion(serverVersion);
+		pgProductCatalog.setJson(entity);
+		pgProductCatalog.setServerVersion(serverVersion);
+		int rowsAffected = customProductCatalogueMapper.updateByPrimaryKeySelective(pgProductCatalog);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
+	@Transactional
 	@Override
 	public void update(ProductCatalogue entity) {
 		if (entity == null) {
@@ -59,11 +78,15 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 		Long id = retrievePrimaryKey(entity);
 
 		if (id == null) { //Product Catalogues doesn't not exist
-			return;
+			throw new IllegalStateException();
 		}
 
 		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = convert(entity, id);
-		customProductCatalogueMapper.updateByPrimaryKey(pgProductCatalogue);
+		int rowsAffected = customProductCatalogueMapper.updateByPrimaryKeyAndGenerateServerVersion(pgProductCatalogue);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+		updateServerVersion(pgProductCatalogue, entity);
 	}
 
 	@Override
