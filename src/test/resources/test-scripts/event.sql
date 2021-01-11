@@ -53,5 +53,5 @@ INSERT INTO core.event_metadata (id, event_id, document_id, base_entity_id, form
 (24, 24, 'cfcc0e7e3cef11eab77f2e728ce88125', 'ea1f9439-a663-4073-93b9-6ef2b8bca3c1', '3f66450e-2b66-43da-9b9b-dae5fcedrte2', 1521469045591, null, 'Growth Monitoring', '2017-11-06 19:42:02.327000', 'weight', 'finddemo', '42b88545-7ebb-4e11-8d1a-3d3a924c8af5', null, null, '2018-03-19 17:28:40.268000', '2018-03-19 17:17:16.069000', '2018-03-19T17:17:16.069+03:00'),
 (25, 25, 'd945f800-eeca-415e-b737-e5611e19f706', '0830ce5e-21ff-4f28-8a67-d820f0ff15bc', '49180e06-eed8-40b1-a9ea-c29c8b46c68a', 1573733953534, null, 'Family Member Registration', '2019-11-14 06:00:00', 'ec_family_member', 'tanvir', 'e3170b23-bb22-42a4-875d-35c7f32c28ae', 'mPower', '3def4192-61ec-440d-af0b-d16ee1ecc262', '2019-11-14 18:19:13', null, null);
 
-
+SELECT setval('core.event_server_version_seq',(SELECT max(json->>'serverVersion')::bigint+1 FROM core.event));
 

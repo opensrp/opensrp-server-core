@@ -56,4 +56,4 @@ INSERT INTO core.client_metadata (id, client_id, document_id, base_entity_id, re
 (25, 25, '5bd3e1eb-5cd4-4e8d-9180', '0830ce5e-21ff-4f28-8a67', 'ea0edc48-4752-4ad0-a834-f1f68c7ae310', 1573733955111, '', '1008140', 'Helen Mia', null, 'Hellen', '1982-11-14','','2020-11-14', '2019-10-01T10:00:00');
 
 
-
+SELECT setval('core.client_server_version_seq',(SELECT max(json->>'serverVersion')::bigint+1 FROM core.client));

@@ -100,10 +100,5 @@ public class AppStateTokensRepositoryImpl implements AppStateTokensRepository {
 		
 	}
 
-	@Override
-	public long getNextServerVersion() {
-		throw new UnsupportedOperationException();
-	}
-
 	
 }

@@ -49,7 +49,7 @@ public class AlertsRepositoryImpl extends BaseRepositoryImpl<Alert> implements A
 			return;
 		}
 		
-		if (entity.getId() == null)
+		if (entity.getId() == null || entity.getId().isEmpty())
 			entity.setId(UUID.randomUUID().toString());
 		
 		setRevision(entity);

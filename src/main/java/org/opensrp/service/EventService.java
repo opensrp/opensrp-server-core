@@ -166,7 +166,6 @@ public class EventService {
 		}
 		
 		event.setDateCreated(DateTime.now());
-		event.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.add(event);
 		triggerPlanEvaluation(event, username);
 		return event;
@@ -269,13 +268,11 @@ public class EventService {
 			event.setId(existingEvent.getId());
 			event.setRevision(existingEvent.getRevision());
 			event.setDateEdited(DateTime.now());
-			event.setServerVersion(allEvents.getNextServerVersion());
 			event.setRevision(existingEvent.getRevision());
 			allEvents.update(event);
 			
 		} else {
 			event.setDateCreated(DateTime.now());
-			event.setServerVersion(allEvents.getNextServerVersion());
 			allEvents.add(event);
 			
 		}
@@ -293,7 +290,6 @@ public class EventService {
 		}
 		
 		updatedEvent.setDateEdited(DateTime.now());
-		updatedEvent.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.update(updatedEvent);
 		triggerPlanEvaluation(updatedEvent, username);
 	}
@@ -324,7 +320,6 @@ public class EventService {
 			}
 			
 			original.setDateEdited(DateTime.now());
-			original.setServerVersion(allEvents.getNextServerVersion());
 			allEvents.update(original);
 			return original;
 		}
