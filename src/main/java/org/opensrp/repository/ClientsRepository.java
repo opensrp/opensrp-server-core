@@ -115,5 +115,11 @@ public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	Pair<List<String>, Long> findAllIds(long serverVersion, int limit, boolean isArchived, Date fromDate, Date toDate);
 
 	List<Client> findByClientTypeAndLocationId(String clientType, String locationId);
+
+	/**
+	 * @param clients
+	 * @return
+	 */
+	List<Client> convert(List<org.opensrp.domain.postgres.Client> clients);
 	
 }

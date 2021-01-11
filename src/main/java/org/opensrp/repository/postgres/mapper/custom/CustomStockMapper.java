@@ -11,5 +11,9 @@ public interface CustomStockMapper extends StockMapper {
 
 	Stock selectByIdentifierAndLocationId(@Param("identifier") @NonNull String identifier,
 			@Param("locationId") @NonNull String locationId);
+	
+	Long selectServerVersionByPrimaryKey(Long id);
+	
+	int updateByPrimaryKeyAndGenerateServerVersion(Stock record);
 
 }

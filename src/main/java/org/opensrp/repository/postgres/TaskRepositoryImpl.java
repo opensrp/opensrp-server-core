@@ -62,18 +62,30 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		
 		org.opensrp.domain.postgres.Task pgTask = convert(entity, null);
 		if (pgTask == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = taskMapper.insertSelectiveAndSetId(pgTask);
 		if (rowsAffected < 1 || pgTask.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateServerVersion(pgTask, entity);
 		
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
 		
 		taskMetadataMapper.insertSelective(taskMetadata);
 		
+	}
+	
+	private void updateServerVersion(org.opensrp.domain.postgres.Task pgTask, Task entity) {
+		long serverVersion = taskMapper.selectServerVersionByPrimaryKey(pgTask.getId());
+		entity.setServerVersion(serverVersion);
+		pgTask.setJson(entity);
+		int rowsAffected = taskMapper.updateByPrimaryKeySelective(pgTask);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
 	}
 	
 	@Override
@@ -85,20 +97,22 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		
 		Long id = retrievePrimaryKey(entity);
 		if (id == null) { // Task does not exist
-			return;
+			throw new IllegalStateException();
 		}
 		
 		org.opensrp.domain.postgres.Task pgTask = convert(entity, id);
 		if (pgTask == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		TaskMetadata taskMetadata = createMetadata(entity, pgTask.getId());
 		
-		int rowsAffected = taskMapper.updateByPrimaryKey(pgTask);
+		int rowsAffected = taskMapper.updateByPrimaryKeyAndGenerateServerVersion(pgTask);
 		if (rowsAffected < 1) {
-			return;
+			throw new IllegalStateException();
 		}
 		
+		updateServerVersion(pgTask, entity);
+	
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
 		taskMetadataExample.createCriteria().andTaskIdEqualTo(id);
 		TaskMetadata metadata = taskMetadataMapper.selectByExample(taskMetadataExample).get(0);
@@ -117,6 +131,11 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	
 	@Override
 	public List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion) {
+		return getTasksByPlanAndGroup(plan, group, serverVersion, false);
+	}
+	
+	@Override
+	public List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion, boolean returnPk) {
 		List<String> plans = Arrays.asList(org.apache.commons.lang.StringUtils.split(plan, ","));
 		List<String> groups = Arrays.asList(org.apache.commons.lang.StringUtils.split(group, ","));
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
@@ -125,7 +144,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		taskMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0,
 		    DEFAULT_FETCH_SIZE);
-		return convert(tasks);
+		return convert(tasks,returnPk);
 	}
 	
 	@Override
@@ -207,7 +226,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		List<org.opensrp.domain.postgres.Task> tasks = taskMetadataMapper.selectMany(taskMetadataExample, 0, limit);
 		return convert(tasks);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -297,10 +316,18 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 	
 	private Task convert(org.opensrp.domain.postgres.Task pgTask) {
+		return convert(pgTask,false);
+	}
+	
+	private Task convert(org.opensrp.domain.postgres.Task pgTask, boolean returnPk) {
 		if (pgTask == null || pgTask.getJson() == null || !(pgTask.getJson() instanceof Task)) {
 			return null;
 		}
-		return (Task) pgTask.getJson();
+		Task task=(Task) pgTask.getJson();
+		if(returnPk) {
+			task.setRowid(pgTask.getId());
+		}
+		return task;
 	}
 	
 	private org.opensrp.domain.postgres.Task convert(Task task, Long primaryKey) {
@@ -315,14 +342,18 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		return pgTask;
 	}
 	
-	private List<Task> convert(List<org.opensrp.domain.postgres.Task> tasks) {
+	private List<Task> convert(List<org.opensrp.domain.postgres.Task> tasks){
+		return convert(tasks,false);
+	}
+	
+	private List<Task> convert(List<org.opensrp.domain.postgres.Task> tasks,boolean returnPk) {
 		if (tasks == null || tasks.isEmpty()) {
 			return new ArrayList<>();
 		}
 		
 		List<Task> convertedTasks = new ArrayList<>();
 		for (org.opensrp.domain.postgres.Task task : tasks) {
-			Task convertedTask = convert(task);
+			Task convertedTask = convert(task,returnPk);
 			if (convertedTask != null) {
 				convertedTasks.add(convertedTask);
 			}
@@ -357,7 +388,6 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	
 	@Override
 	public void saveTask(Task task, QuestionnaireResponse questionnaireResponse) {
-		task.setServerVersion(getNextServerVersion());
 		add(task);
 	}
 	
@@ -386,7 +416,6 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	
 	@Override
 	public Task updateTask(Task task) {
-		task.setServerVersion(getNextServerVersion());
 		update(task);
 		return get(task.getIdentifier());
 	}

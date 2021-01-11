@@ -24,6 +24,7 @@ import org.smartregister.converters.EventConverter;
 import org.smartregister.domain.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 
@@ -48,6 +49,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		return convert(pgEvent);
 	}
 	
+	@Transactional
 	@Override
 	public void add(Event entity) {
 		if (entity == null || entity.getBaseEntityId() == null) {
@@ -64,13 +66,15 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		
 		org.opensrp.domain.postgres.Event pgEvent = convert(entity, null);
 		if (pgEvent == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = eventMapper.insertSelectiveAndSetId(pgEvent);
 		if (rowsAffected < 1 || pgEvent.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateServerVersion(pgEvent, entity);
 		
 		EventMetadata eventMetadata = createMetadata(entity, pgEvent.getId());
 		if (eventMetadata != null) {
@@ -79,37 +83,50 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		
 	}
 	
+	private void updateServerVersion(org.opensrp.domain.postgres.Event pgEvent, Event entity) {
+		long serverVersion = eventMapper.selectServerVersionByPrimaryKey(pgEvent.getId());
+		entity.setServerVersion(serverVersion);
+		pgEvent.setJson(entity);
+		int rowsAffected = eventMapper.updateByPrimaryKeySelective(pgEvent);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
 	@Override
 	public void update(Event entity) {
 		update(entity, false);
 	}
 	
+	@Transactional
 	@Override
 	public void update(Event entity, boolean allowArchived) {
 		if (entity == null || entity.getBaseEntityId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		Long id = retrievePrimaryKey(entity, allowArchived);
 		if (id == null) { // Event not added
-			return;
+			throw new IllegalStateException();
 		}
 		
 		setRevision(entity);
 		
 		org.opensrp.domain.postgres.Event pgEvent = convert(entity, id);
 		if (pgEvent == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		int rowsAffected = eventMapper.updateByPrimaryKeyAndGenerateServerVersion(pgEvent);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+		
+		updateServerVersion(pgEvent, entity);
 		
 		EventMetadata eventMetadata = createMetadata(entity, id);
 		if (eventMetadata == null) {
-			return;
-		}
-		
-		int rowsAffected = eventMapper.updateByPrimaryKey(pgEvent);
-		if (rowsAffected < 1) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		EventMetadataExample eventMetadataExample = new EventMetadataExample();
@@ -431,7 +448,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		calendar.set(Calendar.MILLISECOND, 0);
 		EventMetadataExample example = new EventMetadataExample();
 		example.createCriteria().andEventTypeEqualTo(eventType)
-		        .andServerVersionBetween(calendar.getTimeInMillis(), System.currentTimeMillis()).andDateDeletedIsNull();
+		        .andDateCreatedBetween(calendar.getTime(),new Date()).andDateDeletedIsNull();
 		return convert(eventMetadataMapper.selectManyWithRowBounds(example, 0, DEFAULT_FETCH_SIZE));
 	}
 	

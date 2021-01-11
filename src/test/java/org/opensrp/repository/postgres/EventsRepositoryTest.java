@@ -16,6 +16,8 @@ import java.util.HashMap;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
@@ -500,17 +502,20 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	public void testUpdate() {
 		Event event = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
 		long now = System.currentTimeMillis();
-		event.setServerVersion(now);
 		event.setDateEdited(new DateTime(now));
 		Obs obs = new Obs("concept", "text", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "25-Apr-2017", null,
 		        "Date_Reaction");
 		event.addObs(obs);
+		event.setServerVersion(1);
+		long serverVersion=event.getServerVersion();
 		eventsRepository.update(event);
-		event = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
-		assertEquals(now, event.getServerVersion().longValue());
-		assertEquals(now, event.getDateEdited().getMillis());
-		assertEquals(3, event.getObs().size());
-		assertEquals(obs.getValue(), event.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		
+		Event updatedEvent = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
+		assertNotEquals(now, updatedEvent.getServerVersion().longValue());
+		assertEquals(now, updatedEvent.getDateEdited().getMillis());
+		assertEquals(3, updatedEvent.getObs().size());
+		assertEquals(obs.getValue(), updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		MatcherAssert.assertThat(updatedEvent.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 		//test update with voided date deletes event
 		event.setDateVoided(new DateTime());
@@ -530,7 +535,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		eventsRepository.update(event);
 		long beforeFetch = System.currentTimeMillis();
 		List<Event> events = eventsRepository.findByEmptyServerVersion();
-		assertEquals(2, events.size());
+		assertEquals(0, events.size());
 		for (Event loopEvent : events) {
 			assertTrue(loopEvent.getId().equals("05934ae338431f28bf6793b241bdb88c")
 			        || loopEvent.getId().equals("05934ae338431f28bf6793b241bdbb60"));
@@ -542,7 +547,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		//test with deleted event
 		for (Event e : events)
 			eventsRepository.safeRemove(e);
-		assertFalse(eventsRepository.findByEmptyServerVersion().isEmpty());
+		assertTrue(eventsRepository.findByEmptyServerVersion().isEmpty());
 	}
 	
 	@Test
@@ -551,7 +556,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DATE, 1);
 		for (Event event : events) {
-			event.setServerVersion(cal.getTimeInMillis());
+			event.setDateCreated(new DateTime(cal.getTimeInMillis()));
 			eventsRepository.update(event);
 		}
 		assertEquals(9, eventsRepository.findEventByEventTypeBetweenTwoDates("Vaccination").size());
@@ -590,6 +595,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Growth Monitoring", event.getEventType());
 		assertEquals(1, event.getObs().size());
 		assertEquals("3.5", event.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		MatcherAssert.assertThat(event.getServerVersion(), Matchers.greaterThan(5l));
 		
 		//test if an event with voided date add event as deleted
 		event = new Event().withBaseEntityId("2423nj-sdfsd-sf2dfsd-2399d").withEventType("Vaccination")
@@ -597,6 +603,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		event.setDateVoided(new DateTime());
 		eventsRepository.add(event);
 		assertNull(eventsRepository.findByFormSubmissionId(event.getFormSubmissionId(),false));
+	
 		
 	}
 	

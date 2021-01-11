@@ -45,10 +45,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation> implements LocationRepository {
 	
-	private static final String LOCATION_SEQUENCE = "core.location_server_version_seq";
-	
-	private static final String STRUCTURE_SEQUENCE = "core.structure_server_version_seq";
-	
 	@Autowired
 	private CustomLocationMapper locationMapper;
 	
@@ -97,18 +93,41 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 	}
 	
+	private void updateLocationServerVersion(Location pgLocation, PhysicalLocation entity) {
+		long serverVersion = locationMapper.selectServerVersionByPrimaryKey(pgLocation.getId());
+		entity.setServerVersion(serverVersion);
+		pgLocation.setJson(entity);
+		int rowsAffected = locationMapper.updateByPrimaryKeySelective(pgLocation);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
+	private void updateStructureServerVersion(Structure pgStructure, PhysicalLocation entity) {
+		long serverVersion = structureMapper.selectServerVersionByPrimaryKey(pgStructure.getId());
+		entity.setServerVersion(serverVersion);
+		pgStructure.setJson(entity);
+		int rowsAffected = structureMapper.updateByPrimaryKeySelective(pgStructure);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
+	
 	private void addLocation(PhysicalLocation entity) {
 		
 		Location pgLocation = convert(entity, null);
 		if (pgLocation == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = locationMapper.insertSelectiveAndSetId(pgLocation);
 		
 		if (rowsAffected < 1 || pgLocation.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateLocationServerVersion(pgLocation, entity);
 		
 		LocationMetadata locationMetadata = createMetadata(entity, pgLocation.getId());
 		
@@ -120,13 +139,15 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		Structure pgStructure = convertStructure(entity, null);
 		if (pgStructure == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = structureMapper.insertSelectiveAndSetId(pgStructure);
 		if (rowsAffected < 1 || pgStructure.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateStructureServerVersion(pgStructure, entity);
 		
 		StructureMetadata structureMetadata = createStructureMetadata(entity, pgStructure.getId());
 		
@@ -155,14 +176,19 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private void updateLocation(PhysicalLocation entity, Long id) {
 		Location pgLocation = convert(entity, id);
 		if (pgLocation == null) {
-			return;
+			throw new IllegalStateException();
 		}
-		LocationMetadata locationMetadata = createMetadata(entity, pgLocation.getId());
 		
-		int rowsAffected = locationMapper.updateByPrimaryKey(pgLocation);
+		
+		int rowsAffected = locationMapper.updateByPrimaryKeyAndGenerateServerVersion(pgLocation);
 		if (rowsAffected < 1) {
 			return;
 		}
+		
+		updateLocationServerVersion(pgLocation, entity);
+		
+		
+		LocationMetadata locationMetadata = createMetadata(entity, pgLocation.getId());
 		
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		locationMetadataExample.createCriteria().andLocationIdEqualTo(id);
@@ -176,14 +202,18 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private void updateStructure(PhysicalLocation entity, Long id) {
 		Structure pgStructure = convertStructure(entity, id);
 		if (pgStructure == null) {
-			return;
+			throw new IllegalStateException();
 		}
-		StructureMetadata structureMetadata = createStructureMetadata(entity, pgStructure.getId());
 		
-		int rowsAffected = structureMapper.updateByPrimaryKey(pgStructure);
+		
+		int rowsAffected = structureMapper.updateByPrimaryKeyAndGenerateServerVersion(pgStructure);
 		if (rowsAffected < 1) {
 			return;
 		}
+		
+		updateStructureServerVersion(pgStructure, entity);
+		
+		StructureMetadata structureMetadata = createStructureMetadata(entity, pgStructure.getId());
 		
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andStructureIdEqualTo(id);
@@ -910,15 +940,5 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
 		return locations.stream().map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
 		        .collect(Collectors.toList());
-	}
-	
-	@Override
-	protected String getSequenceName() {
-		return LOCATION_SEQUENCE;
-	}
-	
-	@Override
-	public long getStructureNextServerVersion() {
-		return getNextServerVersion(STRUCTURE_SEQUENCE);
 	}
 }

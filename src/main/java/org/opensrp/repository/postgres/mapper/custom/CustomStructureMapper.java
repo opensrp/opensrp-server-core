@@ -13,4 +13,8 @@ public interface CustomStructureMapper extends StructureMapper {
 
 	List<StructureFamilyDetails> selectStructureAndFamilyWithinRadius(@Param("latitude") double latitude,
 			@Param("longitude") double longitude, @Param("radius") double radius);
+	
+	Long selectServerVersionByPrimaryKey(Long id);
+	
+	int updateByPrimaryKeyAndGenerateServerVersion(Structure structure);
 }

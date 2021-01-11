@@ -102,7 +102,6 @@ public class ClientService {
 		}
 		
 		client.setDateCreated(DateTime.now());
-		client.setServerVersion(allClients.getNextServerVersion());
 		allClients.add(client);
 		return client;
 	}
@@ -158,7 +157,6 @@ public class ClientService {
 		}
 		
 		updatedClient.setDateEdited(DateTime.now());
-		updatedClient.setServerVersion(getNextServerVersion());
 		allClients.update(updatedClient);
 	}
 	
@@ -188,7 +186,6 @@ public class ClientService {
 			}
 			
 			original.setDateEdited(DateTime.now());
-			original.setServerVersion(getNextServerVersion());
 			allClients.update(original);
 			return original;
 		}
@@ -227,12 +224,10 @@ public class ClientService {
 			client.setRevision(c.getRevision());
 			client.setId(c.getId());
 			client.setDateEdited(DateTime.now());
-			client.setServerVersion(allClients.getNextServerVersion());
 			client.addIdentifier("OPENMRS_UUID", c.getIdentifier("OPENMRS_UUID"));
 			allClients.update(client);
 			
 		} else {
-			client.setServerVersion(allClients.getNextServerVersion());
 			client.setDateCreated(DateTime.now());
 			allClients.add(client);
 		}
@@ -248,14 +243,10 @@ public class ClientService {
 			client.setRevision(c.getRevision());
 			client.setId(c.getId());
 			client.setDateEdited(DateTime.now());
-			if (resetServerVersion) {
-				client.setServerVersion(allClients.getNextServerVersion());
-			}
 			allClients.update(client);
 			
 		} else {
 			client.setDateCreated(DateTime.now());
-			client.setServerVersion(allClients.getNextServerVersion());
 			allClients.add(client);
 		}
 		return client;
@@ -378,10 +369,4 @@ public class ClientService {
 		return allClients.findById(id);
 	}
 	
-	/**
-	 * @return
-	 */
-	public long getNextServerVersion() {
-		return allClients.getNextServerVersion();
-	}
 }
