@@ -4,11 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
@@ -703,5 +705,49 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 				null, new DateTime(date1).toDate());
 		assertTrue(listLongPair.getLeft().isEmpty());
 	}
-	
+
+	@Test
+	public void testGetEventData(){
+		eventsRepository.add(createFlagProblemEvent());
+		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
+		assertNotNull(events);
+		assertEquals(1, events.size());
+	}
+
+	public static Event createFlagProblemEvent() {
+		Event event = new Event();
+		event.setBaseEntityId("ddcaf383-882e-448b-b701-8b72cb0d4d7a");
+		event.setEventDate(new DateTime());
+		event.setEventType("flag_problem");
+		event.setEntityType("product");
+		event.setFormSubmissionId("78a92332-a918-4fd7-bda5-128c4525f468");
+		event.setLocationId("f3199af5-2eaf-46df-87c9-40d59606a2fb");
+		List<Obs> obs = new ArrayList<>();
+		Obs obsObject = new Obs();
+		obsObject.setFormSubmissionField("flag_problem");
+		obs.add(obsObject);
+		obsObject = new Obs();
+		obsObject.setFormSubmissionField("profile_picture");
+		List<String> values = new ArrayList<>();
+		values.add("  \"\\/storage\\/emulated\\/0\\/Android\\/data\\/org.smartregister.eusm\\/files\\/Pictures\\/JPEG_20201202_181259_6894730935869368202.jpg\"");
+		obs.add(obsObject);
+		obsObject = new Obs();
+		obsObject.setFormSubmissionField("profile_picture");
+		values = new ArrayList<>();
+		values.add("  \"\\/storage\\/emulated\\/0\\/Android\\/data\\/org.smartregister.eusm\\/files\\/Pictures\\/JPEG_20201202_181259_6894730935869368202.jpg\"");
+		obs.add(obsObject);
+		obsObject = new Obs();
+		obsObject.setFormSubmissionField("not_good");
+		values = new ArrayList<>();
+		values.add("Expired");
+		obs.add(obsObject);
+		event.setObs(obs);
+		Map<String, String> details = new HashMap<>();
+		details.put("locationName", "EPP Ambodisatrana 2");
+		details.put("productName", "Midwifery Kit");
+		details.put("planIdentifier", "335ef7a3-7f35-58aa-8263-4419464946d8");
+		event.setDetails(details);
+		return event;
+	}
+
 }

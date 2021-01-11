@@ -318,17 +318,26 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		searchBean = new ClientSearchBean();
 		searchBean.setLastEditFrom(new DateTime("2018-03-13T12:57:05.652"));
 		searchBean.setLastEditTo(new DateTime());
+
+		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+		
+		addressSearchBean.setAddressType("usual_residence");
+		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+		
+		addressSearchBean.setAddressType("usual_residence");
+		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+		Client testClient = new Client("f67823b0-378e-4a35-93fc-bb00def74e2f").withBirthdate(new DateTime("2017-03-31"), true)
+				.withGender("Male").withFirstName("xobili").withLastName("mbangwa");
+		testClient.setLocationId("123");
+		clientsRepository.add(testClient);
 		List<String> locationIds = new ArrayList<>();
 		locationIds.add("123");
 		searchBean.setLocations(locationIds);
-		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
-		
-		addressSearchBean.setAddressType("usual_residence");
-		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
-		
-		addressSearchBean.setAddressType("usual_residence");
-		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
-		
+		searchBean = new ClientSearchBean();
+		searchBean.setLocations(locationIds);
+		addressSearchBean = new AddressSearchBean();
+		assertEquals(1, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+
 		//test deleted clients
 		for (Client client : clientsRepository.findByCriteria(searchBean, addressSearchBean))
 			clientsRepository.safeRemove(client);
