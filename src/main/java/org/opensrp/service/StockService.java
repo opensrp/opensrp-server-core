@@ -327,10 +327,10 @@ public class StockService {
 				productCatalogue.getAccountabilityPeriod());
 		Map<String, String> customProperties = new HashMap<>();
 
-		stock.setIdentifier(productCatalogue.getUniqueId());
+		stock.setIdentifier(String.valueOf(productCatalogue.getUniqueId()));
 		stock.setProviderid(username);
 		stock.setValue(inventory.getQuantity());
-		stock.setTransaction_type("Inventory");
+		stock.setTransactionType("Inventory");
 		stock.setLocationId(inventory.getServicePointId());
 		stock.setDeliveryDate(inventory.getDeliveryDate());
 		stock.setAccountabilityEndDate(accountabilityEndDate);
