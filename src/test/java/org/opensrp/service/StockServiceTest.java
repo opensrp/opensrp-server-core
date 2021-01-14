@@ -164,6 +164,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testAddInventory() {
 		Inventory inventory = createInventory();
+		inventory.setProviderId("test provider");
 		List<String> donorsList = createDonorList();
 		List<String> sectionsList = createSectionsList();
 		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
