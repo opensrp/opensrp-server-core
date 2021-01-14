@@ -6,10 +6,12 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
@@ -20,31 +22,33 @@ import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.smartregister.common.Gender;
-import org.smartregister.domain.Address;
-import org.smartregister.domain.Client;
+import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.opensrp.service.ClientService;
+import org.smartregister.common.Gender;
+import org.smartregister.domain.Address;
+import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
-public class AllClientsIntegrationTest {
+public class AllClientsIntegrationTest extends BaseRepositoryTest{
 	//TODO detailed testign
 	
 	@Autowired
 	private ClientService clientService;
 	
 	@Autowired
-	private ClientsRepositoryImpl ac;
+	private ClientsRepository ac;
 	
 	@Before
 	public void setUp() throws Exception {
+		tableNames=Collections.singletonList("core.client");
 		System.out.println("Removing all data");
-		ac.removeAll();
+		truncateTables();
 		System.out.println("Removed");
 		initMocks(this);
 		
@@ -254,6 +258,11 @@ public class AllClientsIntegrationTest {
 		assertTrue(ce.size() == 2);
 		assertEquals("testclient2", ce.get(0).getBaseEntityId());
 		assertEquals("testclient3", ce.get(1).getBaseEntityId());
+	}
+
+	@Override
+	protected Set<String> getDatabaseScripts() {
+		return null;
 	}
 	
 }

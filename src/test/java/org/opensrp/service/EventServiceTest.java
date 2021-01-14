@@ -6,20 +6,25 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE;
+import static org.opensrp.repository.postgres.EventsRepositoryTest.createFlagProblemEvent;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -32,6 +37,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.common.AllConstants.Client;
+import org.opensrp.dto.ExportEventDataSummary;
+import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
+import org.opensrp.dto.ExportImagesSummary;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
@@ -68,6 +76,9 @@ public class EventServiceTest extends BaseRepositoryTest {
 	private PlanRepository planRepository;
 
 	@Mock
+	private ExportEventDataMapper exportEventDataMapper;
+
+	@Mock
 	private TaskGenerator taskGenerator;
 	
 	private Set<String> scripts = new HashSet<String>();;
@@ -87,7 +98,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 	@Before
 	public void setUpPostgresRepository() {
 		initMocks(this);
-		eventService = new EventService(eventsRepository, new ClientService(clientsRepository), taskGenerator, planRepository);
+		eventService = new EventService(eventsRepository, new ClientService(clientsRepository), taskGenerator, planRepository, exportEventDataMapper);
 		ReflectionTestUtils.setField(eventService, "isPlanEvaluationEnabled", true);
 	}
 	
@@ -489,5 +500,63 @@ public class EventServiceTest extends BaseRepositoryTest {
 		assertEquals(1573736256054l, eventIdsModel.getRight().longValue());
 
 	}
-	
+
+	@Test
+	public void testExportEventDataWithoutSettingsConfigured() throws JsonProcessingException {
+		List<Object> rowData = new ArrayList<>();
+		rowData.add("location_name");
+		rowData.add("location_id");
+		eventsRepository.add(createFlagProblemEvent());
+		when(exportEventDataMapper
+				.getExportEventDataAfterMapping(any(Object.class), anyString(), anyBoolean(), anyBoolean()))
+				.thenReturn(rowData);
+		ExportEventDataSummary exportEventDataSummary = eventService
+				.exportEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
+		assertNotNull(exportEventDataSummary);
+		assertEquals(2, exportEventDataSummary.getRowsData().size());
+	}
+
+	@Test
+	public void testExportEventDataWithSettingsConfigured() throws JsonProcessingException {
+		eventsRepository.add(createFlagProblemEvent());
+		List<Object> rowData = new ArrayList<>();
+		rowData.add("location_name");
+		rowData.add("location_id");
+		Map<String, String> settingsConfigsMap = new HashMap<>();
+		settingsConfigsMap.put("Location id","$.locationId");
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("identifier");
+
+		when(planRepository.get(anyString())).thenReturn(plan);
+		when(exportEventDataMapper.getColumnNamesAndLabelsByEventType(anyString())).thenReturn(settingsConfigsMap);
+		when(exportEventDataMapper
+				.getExportEventDataAfterMapping(any(Object.class), anyString(), anyBoolean(), anyBoolean()))
+				.thenReturn(rowData);
+		ExportEventDataSummary exportEventDataSummary = eventService
+				.exportEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
+		assertNotNull(exportEventDataSummary);
+		assertEquals(2, exportEventDataSummary.getRowsData().size());
+	}
+
+	@Test
+	public void testGetImagesMetadataForFlagProblemEvent() throws JsonProcessingException {
+		eventsRepository.add(createFlagProblemEvent());
+		when(exportEventDataMapper.getFlagProblemEventImagesMetadata(anyObject(), anyString(),anyString(),anyString())).thenReturn(createExportFlagProblemEventImageMetadata());
+		ExportImagesSummary exportImagesSummary = eventService.getImagesMetadataForFlagProblemEvent("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
+		assertNotNull(exportImagesSummary);
+		assertEquals("ddcaf383-882e-448b-b701-8b72cb0d4d7a", exportImagesSummary.getExportFlagProblemEventImageMetadataList().get(0).getStockId());
+		assertEquals("EPP Ambodisatrana 2", exportImagesSummary.getExportFlagProblemEventImageMetadataList().get(0).getServicePointName());
+		assertEquals("Midwifery Kit", exportImagesSummary.getExportFlagProblemEventImageMetadataList().get(0).getProductName());
+
+		assertEquals(1, exportImagesSummary.getServicePoints().size());
+		assertTrue(exportImagesSummary.getServicePoints().contains("EPP Ambodisatrana 2"));
+	}
+
+	private ExportFlagProblemEventImageMetadata createExportFlagProblemEventImageMetadata() {
+		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata = new ExportFlagProblemEventImageMetadata();
+		exportFlagProblemEventImageMetadata.setProductName("Midwifery Kit");
+		exportFlagProblemEventImageMetadata.setStockId("ddcaf383-882e-448b-b701-8b72cb0d4d7a");
+		exportFlagProblemEventImageMetadata.setServicePointName("EPP Ambodisatrana 2");
+		return exportFlagProblemEventImageMetadata;
+	}
 }

@@ -1,12 +1,9 @@
 package org.opensrp.repository.postgres;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opensrp.common.AllConstants.BaseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.smartregister.domain.BaseDataEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 public abstract class BaseRepositoryImpl<T> {
 	
@@ -25,10 +22,6 @@ public abstract class BaseRepositoryImpl<T> {
 	public static String DESCENDING = "desc";
 	
 	protected static Logger logger = LoggerFactory.getLogger(BaseRepositoryImpl.class.toString());
-	
-	@Autowired
-	private JdbcTemplate jdbcTemplate;  
-	  
 	
 	protected abstract Object retrievePrimaryKey(T t);
 	
@@ -54,19 +47,6 @@ public abstract class BaseRepositoryImpl<T> {
 			String[] revision = entity.getRevision().split("-");
 			entity.setRevision((Integer.parseInt(revision[0]) + 1) + "-" + revision[1]);
 		}
-	}
-	
-	public long getNextServerVersion() {
-		return getNextServerVersion(getSequenceName());
-	}
-	
-	public long getNextServerVersion(String sequenceName) {
-		if (StringUtils.isBlank(sequenceName)) {
-			return System.currentTimeMillis();
-		} else {
-			return jdbcTemplate.queryForObject(String.format("SELECT nextval('%s')",sequenceName), Long.class);
-		}
-		
 	}
 	
 }

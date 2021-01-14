@@ -11,6 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opensrp.domain.viewconfiguration.LoginConfiguration;
 import org.opensrp.domain.viewconfiguration.View;
@@ -65,6 +67,7 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, savedViews.size());
 		assertEquals(1, savedViews.get(0).getViews().size());
 		assertEquals("faq", savedViews.get(0).getViews().get(0).getIdentifier());
+		MatcherAssert.assertThat(savedViews,Matchers.contains(Matchers.hasProperty("serverVersion",Matchers.greaterThan(0l))));
 	}
 	
 	@Test
@@ -75,13 +78,17 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		configuration.setLanguage("fr_cn");
 		configuration.setLogoUrl("http://localhost:98778/test.jpg");
 		view.setMetadata(configuration);
+		long serverVersion=view.getServerVersion();
 		viewConfigurationRepository.update(view);
 		
-		LoginConfiguration updatedView = (LoginConfiguration) viewConfigurationRepository
-		        .get("92141b17040021a7ce326194ff0029f7").getMetadata();
-		assertEquals("fr_cn", updatedView.getLanguage());
-		assertEquals("http://localhost:98778/test.jpg", updatedView.getLogoUrl());
-		assertFalse(updatedView.getShowPasswordCheckbox());
+		
+		ViewConfiguration updatedView =viewConfigurationRepository
+		        .get("92141b17040021a7ce326194ff0029f7");
+		LoginConfiguration updatedConfiguration = (LoginConfiguration) updatedView.getMetadata();
+		assertEquals("fr_cn", updatedConfiguration.getLanguage());
+		assertEquals("http://localhost:98778/test.jpg", updatedConfiguration.getLogoUrl());
+		assertFalse(updatedConfiguration.getShowPasswordCheckbox());
+		MatcherAssert.assertThat(updatedView.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 	}
 	
@@ -144,21 +151,15 @@ public class ViewConfigurationRepositoryTest extends BaseRepositoryTest {
 		viewConfigurationRepository.update(view);
 		
 		List<ViewConfiguration> views = viewConfigurationRepository.findByEmptyServerVersion();
-		assertEquals(1, views.size());
-		assertEquals("lang_sw", views.get(0).getIdentifier());
-		assertEquals("d243bc5737fb389e52601cb850299541", views.get(0).getId());
+		assertEquals(0, views.size());
+
 		
 		ViewConfiguration view2 = viewConfigurationRepository.get("3a065d7c3354eb2bc23c8a3bc303ba20");
 		view2.setServerVersion(0l);
 		viewConfigurationRepository.update(view2);
 		
 		views = viewConfigurationRepository.findByEmptyServerVersion();
-		assertEquals(2, views.size());
-		
-		for (ViewConfiguration v : views) {
-			assertTrue(v.getIdentifier().equals(view.getIdentifier()) || v.getIdentifier().equals(view2.getIdentifier()));
-			assertTrue(v.getId().equals(view.getId()) || v.getId().equals(view2.getId()));
-		}
+		assertEquals(0, views.size());
 		
 	}
 	

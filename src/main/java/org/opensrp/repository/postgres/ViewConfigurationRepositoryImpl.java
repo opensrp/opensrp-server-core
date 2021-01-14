@@ -29,6 +29,16 @@ public class ViewConfigurationRepositoryImpl extends BaseRepositoryImpl<ViewConf
 		return convert(viewConfigurationMetadataMapper.selectByDocumentId(id));
 	}
 	
+	private void updateServerVersion(org.opensrp.domain.postgres.ViewConfiguration pgViewConfiguration, ViewConfiguration entity) {
+		long serverVersion = viewConfigurationMapper.selectServerVersionByPrimaryKey(pgViewConfiguration.getId());
+		entity.setServerVersion(serverVersion);
+		pgViewConfiguration.setJson(entity);
+		int rowsAffected = viewConfigurationMapper.updateByPrimaryKeySelective(pgViewConfiguration);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
 	@Override
 	public void add(ViewConfiguration entity) {
 		if (entity == null || entity.getIdentifier() == null) {
@@ -79,14 +89,18 @@ public class ViewConfigurationRepositoryImpl extends BaseRepositoryImpl<ViewConf
 			return;
 		}
 		
-		ViewConfigurationMetadata metadata = createMetadata(entity, id);
-		if (metadata == null) {
+		
+		
+		int rowsAffected = viewConfigurationMapper.updateByPrimaryKeyAndGenerateServerVersion(pgViewConfiguration);
+		if (rowsAffected < 1) {
 			return;
 		}
 		
-		int rowsAffected = viewConfigurationMapper.updateByPrimaryKey(pgViewConfiguration);
-		if (rowsAffected < 1) {
-			return;
+		updateServerVersion(pgViewConfiguration, entity);
+		
+		ViewConfigurationMetadata metadata = createMetadata(entity, id);
+		if (metadata == null) {
+			throw new IllegalStateException();
 		}
 		
 		ViewConfigurationMetadataExample metadataExample = new ViewConfigurationMetadataExample();

@@ -69,62 +69,62 @@ public class SettingsMetadataExampleGeneratedCriteria {
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdIsNull() {
-			addCriterion("sm.id is null");
+			addCriterion("id is null");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdIsNotNull() {
-			addCriterion("sm.id is not null");
+			addCriterion("id is not null");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdEqualTo(Long value) {
-			addCriterion("sm.id =", value, "id");
+			addCriterion("id =", value, "id");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdNotEqualTo(Long value) {
-			addCriterion("sm.id <>", value, "id");
+			addCriterion("id <>", value, "id");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdGreaterThan(Long value) {
-			addCriterion("sm.id >", value, "id");
+			addCriterion("id >", value, "id");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdGreaterThanOrEqualTo(Long value) {
-			addCriterion("sm.id >=", value, "id");
+			addCriterion("id >=", value, "id");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdLessThan(Long value) {
-			addCriterion("sm.id <", value, "id");
+			addCriterion("id <", value, "id");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdLessThanOrEqualTo(Long value) {
-			addCriterion("sm.id <=", value, "id");
+			addCriterion("id <=", value, "id");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdIn(List<Long> values) {
-			addCriterion("sm.id in", values, "id");
+			addCriterion("id in", values, "id");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdNotIn(List<Long> values) {
-			addCriterion("sm.id not in", values, "id");
+			addCriterion("id not in", values, "id");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdBetween(Long value1, Long value2) {
-			addCriterion("sm.id between", value1, value2, "id");
+			addCriterion("id between", value1, value2, "id");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 
 		public SettingsMetadataExampleGeneratedCriteria.Criteria andIdNotBetween(Long value1, Long value2) {
-			addCriterion("sm.id not between", value1, value2, "id");
+			addCriterion("id not between", value1, value2, "id");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
 

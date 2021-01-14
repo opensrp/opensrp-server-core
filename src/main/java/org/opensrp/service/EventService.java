@@ -1,12 +1,6 @@
 package org.opensrp.service;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,6 +8,9 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.json.JSONException;
 import org.opensrp.common.AllConstants.Client;
+import org.opensrp.dto.ExportEventDataSummary;
+import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
+import org.opensrp.dto.ExportImagesSummary;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.EventSearchBean;
@@ -39,17 +36,20 @@ public class EventService {
 	private TaskGenerator taskGenerator;
 	
 	private PlanRepository planRepository;
-	
+
+	private ExportEventDataMapper exportEventDataMapper;
+
 	@Value("#{opensrp['plan.evaluation.enabled'] ?: false}")
 	private boolean isPlanEvaluationEnabled;
 	
 	@Autowired
 	public EventService(EventsRepository allEvents, ClientService clientService, TaskGenerator taskGenerator,
-	    PlanRepository planRepository) {
+	    PlanRepository planRepository, ExportEventDataMapper exportEventDataMapper) {
 		this.allEvents = allEvents;
 		this.clientService = clientService;
 		this.taskGenerator = taskGenerator;
 		this.planRepository = planRepository;
+		this.exportEventDataMapper = exportEventDataMapper;
 	}
 	
 	public List<Event> findAllByIdentifier(String identifier) {
@@ -166,7 +166,6 @@ public class EventService {
 		}
 		
 		event.setDateCreated(DateTime.now());
-		event.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.add(event);
 		triggerPlanEvaluation(event, username);
 		return event;
@@ -279,19 +278,17 @@ public class EventService {
 			event.setId(existingEvent.getId());
 			event.setRevision(existingEvent.getRevision());
 			event.setDateEdited(DateTime.now());
-			event.setServerVersion(allEvents.getNextServerVersion());
 			event.setRevision(existingEvent.getRevision());
 			allEvents.update(event);
 			
 		} else {
 			event.setDateCreated(DateTime.now());
-			event.setServerVersion(allEvents.getNextServerVersion());
 			allEvents.add(event);
 			
 		}
 
 		triggerPlanEvaluation(event, username);
-		
+
 		return event;
 	}
 	
@@ -303,7 +300,6 @@ public class EventService {
 		}
 		
 		updatedEvent.setDateEdited(DateTime.now());
-		updatedEvent.setServerVersion(allEvents.getNextServerVersion());
 		allEvents.update(updatedEvent);
 		triggerPlanEvaluation(updatedEvent, username);
 	}
@@ -334,7 +330,6 @@ public class EventService {
 			}
 			
 			original.setDateEdited(DateTime.now());
-			original.setServerVersion(allEvents.getNextServerVersion());
 			allEvents.update(original);
 			return original;
 		}
@@ -434,9 +429,74 @@ public class EventService {
 		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
 		if (isPlanEvaluationEnabled && planIdentifier != null) {
 			PlanDefinition plan = planRepository.get(planIdentifier);
-			if (plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
+			if (plan != null && plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (plan.getEffectivePeriod().getEnd() == null
 					|| plan.getEffectivePeriod().getEnd().isAfter(LocalDate.now().toDateTimeAtStartOfDay())))
 				taskGenerator.processPlanEvaluation(plan, username, event);
 		}
 	}
+
+	public ExportEventDataSummary exportEventData(String planIdentifier, String eventType, Date fromDate, Date toDate)
+			throws JsonProcessingException {
+		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents.getEventData(planIdentifier, eventType, fromDate, toDate);
+		ExportEventDataSummary exportEventDataSummary = new ExportEventDataSummary();
+		List<List<Object>> allRows = new ArrayList<>();
+		boolean returnHeader = true;
+		Map<String, String> columnNamesAndLabels = exportEventDataMapper.getColumnNamesAndLabelsByEventType(eventType);
+		boolean settingsExist = columnNamesAndLabels != null && columnNamesAndLabels.size() > 0 ? true : false;
+
+		if (settingsExist) {
+			allRows.add(exportEventDataMapper
+					.getExportEventDataAfterMapping(null, eventType, returnHeader, settingsExist)); //for header row
+		}
+
+			//Assumption : All pgEvents would have similar obs fields to include as a header
+		else {
+			if(exportEventDataMapper.getExportEventDataAfterMapping(
+					pgEvents.size() > 0 ? pgEvents.get(0).getJson() : "", eventType, returnHeader, settingsExist) != null)
+			allRows.add(exportEventDataMapper.getExportEventDataAfterMapping(
+					pgEvents.size() > 0 ? pgEvents.get(0).getJson() : "", eventType, returnHeader, settingsExist)); //for header row
+		}
+
+		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
+			allRows.add(exportEventDataMapper
+					.getExportEventDataAfterMapping(pgEvent.getJson(), eventType, false, settingsExist));
+		}
+
+		exportEventDataSummary.setRowsData(allRows);
+
+		PlanDefinition plan = planIdentifier != null ? planRepository.get(planIdentifier) : null;
+		if (plan != null)
+			exportEventDataSummary.setMissionName(plan.getName());
+		return exportEventDataSummary;
+	}
+
+	public ExportImagesSummary getImagesMetadataForFlagProblemEvent(String planIdentifier, String eventType, Date fromDate,
+			Date toDate) throws JsonProcessingException {
+		List<org.opensrp.domain.postgres.Event> pgEvents = allEvents
+				.getEventData(planIdentifier, eventType, fromDate, toDate);
+
+		Set<String> servicePoints = new HashSet<>();
+		String servicePointName;
+		ExportImagesSummary exportImagesSummary = new ExportImagesSummary();
+		ExportFlagProblemEventImageMetadata exportFlagProblemEventImageMetadata;
+		List<ExportFlagProblemEventImageMetadata> exportFlagProblemEventImageMetadataList = new ArrayList<>();
+		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
+			exportFlagProblemEventImageMetadata = exportEventDataMapper
+					.getFlagProblemEventImagesMetadata((Object) pgEvent.getJson(), "$.baseEntityId",
+							"$.details.locationName", "$.details.productName");
+			if (exportFlagProblemEventImageMetadata != null) {
+				exportFlagProblemEventImageMetadataList.add(exportFlagProblemEventImageMetadata);
+				servicePointName = exportFlagProblemEventImageMetadata.getServicePointName();
+				if (servicePointName != null && !servicePoints.contains(servicePointName)) {
+					servicePoints.add(servicePointName);
+				}
+			}
+		}
+
+		exportImagesSummary.setExportFlagProblemEventImageMetadataList(exportFlagProblemEventImageMetadataList);
+		exportImagesSummary.setServicePoints(servicePoints);
+		return exportImagesSummary;
+
+	}
+
 }

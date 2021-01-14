@@ -99,7 +99,6 @@ public class StockService {
 			throw new IllegalArgumentException(
 			        "A stock already exists with given id. Consider updating data.[" + st.getId() + "]");
 		}
-		stock.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.add(stock);
 		return stock;
 	}
@@ -107,12 +106,10 @@ public class StockService {
 	public synchronized Stock addorUpdateStock(Stock stock) {
 		if (stock.getId() != null && getById(stock.getId()) != null) {
 			stock.setDateEdited(DateTime.now());
-			stock.setServerVersion(allStocks.getNextServerVersion());
 			stock.setRevision(getById(stock.getId()).getRevision());
 			allStocks.update(stock);
 		} else {
 			stock.setDateCreated(DateTime.now());
-			stock.setServerVersion(allStocks.getNextServerVersion());
 			allStocks.add(stock);
 		}
 		return stock;
@@ -126,7 +123,6 @@ public class StockService {
 		}
 		
 		updatedStock.setDateEdited(DateTime.now());
-		updatedStock.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.update(updatedStock);
 	}
 	
@@ -146,7 +142,6 @@ public class StockService {
 			throw new IllegalArgumentException("No stock found with given id. Consider adding new!");
 		}
 		original.setDateEdited(DateTime.now());
-		original.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.update(original);
 		return original;
 	}
@@ -181,7 +176,6 @@ public class StockService {
 		if (stock == null) {
 			return;
 		}
-		stock.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.add(stock);
 	}
 
@@ -198,7 +192,6 @@ public class StockService {
 		}
         stock.setId(existingStock.getId());
 		stock.setDateEdited(DateTime.now());
-		stock.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.update(stock);
 	}
 
@@ -334,10 +327,15 @@ public class StockService {
 				productCatalogue.getAccountabilityPeriod());
 		Map<String, String> customProperties = new HashMap<>();
 
-		stock.setIdentifier(productCatalogue.getUniqueId());
-		stock.setProviderid(username);
+		stock.setIdentifier(String.valueOf(productCatalogue.getUniqueId()));
+		if(inventory.getProviderId() != null && !inventory.getProviderId().isBlank()) {
+			stock.setProviderid(inventory.getProviderId());
+		}
+		else {
+			stock.setProviderid(username);
+		}
 		stock.setValue(inventory.getQuantity());
-		stock.setTransaction_type("Inventory");
+		stock.setTransactionType("Inventory");
 		stock.setLocationId(inventory.getServicePointId());
 		stock.setDeliveryDate(inventory.getDeliveryDate());
 		stock.setAccountabilityEndDate(accountabilityEndDate);
