@@ -328,7 +328,12 @@ public class StockService {
 		Map<String, String> customProperties = new HashMap<>();
 
 		stock.setIdentifier(String.valueOf(productCatalogue.getUniqueId()));
-		stock.setProviderid(username);
+		if(inventory.getProviderId() != null && !inventory.getProviderId().isBlank()) {
+			stock.setProviderid(inventory.getProviderId());
+		}
+		else {
+			stock.setProviderid(username);
+		}
 		stock.setValue(inventory.getQuantity());
 		stock.setTransactionType("Inventory");
 		stock.setLocationId(inventory.getServicePointId());
