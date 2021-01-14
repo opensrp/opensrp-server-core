@@ -181,7 +181,7 @@ public class EventService {
 	 * @param event
 	 * @return
 	 */
-	public synchronized Event processOutOfArea(Event event, String username) {
+	public synchronized Event processOutOfArea(Event event) {
 		try {
 			final String BIRTH_REGISTRATION_EVENT = "Birth Registration";
 			final String GROWTH_MONITORING_EVENT = "Growth Monitoring";
@@ -197,6 +197,7 @@ public class EventService {
 			//get events identifiers; 
 			String identifier = event.getIdentifier(Client.ZEIR_ID);
 			if (StringUtils.isBlank(identifier)) {
+				logger.error(String.format("****************************************Missing ZEIR_ID: %s", identifier));
 				return event;
 			}
 			
@@ -209,6 +210,7 @@ public class EventService {
 			                : clientService.findAllByIdentifier(Client.ZEIR_ID.toUpperCase(), identifier);
 			
 			if (clients == null || clients.isEmpty()) {
+				logger.error(String.format("****************************************Client record missing for the ZEIR_ID: %s", identifier));
 				return event;
 			}
 			
@@ -218,6 +220,8 @@ public class EventService {
 				List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);
 				
 				if (existingEvents == null || existingEvents.isEmpty()) {
+					logger.error(String.format("****************************************No Birth Registration event found for "
+							+ "client with ZEIR_ID: %s, for BASE_ENTITY_ID: %s", identifier, client.getBaseEntityId()));
 					return event;
 				}
 				
@@ -227,33 +231,39 @@ public class EventService {
 				//Map<String, String> identifiers = event.getIdentifiers();
 				//event identifiers are unique so removing zeir_id since baseentityid has been found
 				//also out of area service events stick with the providerid so that they can sync back to them for reports generation
-				if (!event.getEventType().startsWith(OUT_OF_AREA_SERVICE)) {
-					event.setProviderId(birthRegEvent.getProviderId());
-					event.setLocationId(birthRegEvent.getLocationId());
-					Map<String, String> details = new HashMap<String, String>();
-					details.put("out_of_catchment_provider_id", event.getProviderId());
-					event.setDetails(details);
-				} else if (event.getEventType().contains(GROWTH_MONITORING_EVENT)
-				        || event.getEventType().contains(VACCINATION_EVENT)) {
-					
-					String eventType = event.getEventType().contains(GROWTH_MONITORING_EVENT) ? GROWTH_MONITORING_EVENT
-					        : event.getEventType().contains(VACCINATION_EVENT) ? VACCINATION_EVENT : null;
-					if (eventType != null) {
-						Event newEvent = new Event();
-						newEvent.withBaseEntityId(event.getBaseEntityId()).withEventType(eventType)
-						        .withEventDate(event.getEventDate()).withEntityType(event.getEntityType())
-						        .withProviderId(birthRegEvent.getProviderId()).withLocationId(birthRegEvent.getLocationId())
-						        .withFormSubmissionId(UUID.randomUUID().toString()).withDateCreated(event.getDateCreated());
-						
-						newEvent.setObs(event.getObs());
-						addEvent(newEvent, username);
+				if (event.getEventType().startsWith(OUT_OF_AREA_SERVICE)) {
+					logger.error("***********************************Processing out of area event***************");
+					if (event.getEventType().contains(GROWTH_MONITORING_EVENT) || event.getEventType().contains(VACCINATION_EVENT)) {
+						String eventType = event.getEventType().contains(GROWTH_MONITORING_EVENT) ? GROWTH_MONITORING_EVENT
+								: event.getEventType().contains(VACCINATION_EVENT) ? VACCINATION_EVENT : null;
+						logger.error(String.format("***********************************Start processing out of area service with  SERVICE_TYPE %s", eventType));
+						if (eventType != null) {
+
+							Event newEvent = new Event();
+							newEvent.withBaseEntityId(event.getBaseEntityId())
+									.withEventType(eventType)
+									.withEventDate(event.getEventDate())
+									.withEntityType(event.getEntityType())
+									.withProviderId(birthRegEvent.getProviderId())
+									.withLocationId(birthRegEvent.getLocationId())
+									.withChildLocationId(birthRegEvent.getChildLocationId())
+									.withFormSubmissionId(UUID.randomUUID().toString())
+									.withDateCreated(event.getDateCreated());
+							Map<String, String> details = new HashMap<String, String>();
+							details.put("out_of_catchment_provider_id", event.getProviderId());
+							newEvent.setDetails(details);
+							newEvent.setObs(event.getObs());
+							newEvent.setTeam(birthRegEvent.getTeam());
+							newEvent.setTeamId(birthRegEvent.getTeamId());
+							addEvent(newEvent, birthRegEvent.getProviderId());
+							logger.error(String.format("***********************************Saved Out of Service event with ID :%s and TYPE %s", newEvent.getFormSubmissionId(), newEvent.getEventType()));
+						}
 					}
 				}
 				//Legacy code only picked the first item so we break
 				if (!isCardId) {
 					break;
 				}
-				
 			}
 		}
 		catch (Exception e) {

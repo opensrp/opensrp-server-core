@@ -220,7 +220,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		populateDatabase();
 		Event event = new Event().withEventType("Vaccination").withProviderId("tester111")
 		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "218229-3");
-		Event outOfAreaEvent = eventService.processOutOfArea(event, username);
+		Event outOfAreaEvent = eventService.processOutOfArea(event);
 		
 		assertNotNull(outOfAreaEvent);
 		assertNotNull(outOfAreaEvent.getDetails());
@@ -232,7 +232,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		event = new Event().withEventType("Out of Area Service").withProviderId("tester111")
 		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "218229-3");
 		
-		outOfAreaEvent = eventService.processOutOfArea(event, username);
+		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
 		assertEquals(20, eventService.getAll().size());
 		
@@ -240,7 +240,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		event = new Event().withEventType("Out of Area Service").withProviderId("tester112")
 		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "c_2182291985");
 		
-		outOfAreaEvent = eventService.processOutOfArea(event, username);
+		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
 		assertEquals(20, eventService.getAll().size());
@@ -250,7 +250,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs)
 		        .withIdentifier(Client.ZEIR_ID, "218229-3");
 		
-		outOfAreaEvent = eventService.processOutOfArea(event, username);
+		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
 		
 		assertEquals(21, eventService.getAll().size());

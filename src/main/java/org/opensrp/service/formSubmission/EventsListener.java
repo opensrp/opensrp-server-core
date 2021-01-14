@@ -67,11 +67,11 @@ public class EventsListener {
 			
 			logger.info(format("Fetched {0} new events found. Export token: {1}", events.size(), version));
 			
-			sort(events, serverVersionComparator());
+			events.sort(Comparator.comparingLong(Event::getVersion));
 			
 			for (Event event : events) {
 				try {
-					event = eventService.processOutOfArea(event, event.getProviderId());
+					event = eventService.processOutOfArea(event);
 					eventsRouter.route(event);
 					configService.updateAppStateToken(AllConstants.Config.EVENTS_PARSER_LAST_PROCESSED_EVENT,
 					    event.getServerVersion());
@@ -100,16 +100,5 @@ public class EventsListener {
 	private long getVersion() {
 		AppStateToken token = configService.getAppStateTokenByName(AllConstants.Config.EVENTS_PARSER_LAST_PROCESSED_EVENT);
 		return token == null ? 0L : token.longValue();
-	}
-	
-	private Comparator<Event> serverVersionComparator() {
-		return new Comparator<Event>() {
-			
-			public int compare(Event firstEvent, Event secondEvent) {
-				long firstTimestamp = firstEvent.getVersion();
-				long secondTimestamp = secondEvent.getVersion();
-				return firstTimestamp == secondTimestamp ? 0 : firstTimestamp < secondTimestamp ? -1 : 1;
-			}
-		};
 	}
 }

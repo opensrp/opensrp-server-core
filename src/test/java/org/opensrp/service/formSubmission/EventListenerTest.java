@@ -108,7 +108,7 @@ public class EventListenerTest {
 		InOrder inOrder = inOrder(eventService, eventsRouter, eventHandler);
 		clients.get(0).setServerVersion(System.currentTimeMillis());
 		events.get(0).setServerVersion(System.currentTimeMillis());
-		inOrder.verify(eventService).processOutOfArea(events.get(0),events.get(0).getProviderId());
+		inOrder.verify(eventService).processOutOfArea(events.get(0));
 		inOrder.verify(eventsRouter).route(events.get(0));
 		
 	}
