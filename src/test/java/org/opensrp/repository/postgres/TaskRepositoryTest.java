@@ -217,8 +217,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		taskRepository.update(task);
 
 		tasks = taskRepository.findByEmptyServerVersion();
-		assertEquals(1, tasks.size());
-		assertEquals("iyr-998njoo", tasks.get(0).getIdentifier());
+		assertEquals(0, tasks.size());
 
 	}
 
