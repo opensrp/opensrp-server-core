@@ -21,8 +21,9 @@ public class SearchService {
 	}
 
 
-	@PreAuthorize("hasRole('CLIENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
+	/*
+	No ACL to allow for global searching
+	 */
 	public List<Client> searchClient(ClientSearchBean clientSearchBean, String firstName, String middleName, String lastName,
 	        Integer limit) {
 		return search.findByCriteria(clientSearchBean, firstName, middleName, lastName, limit);

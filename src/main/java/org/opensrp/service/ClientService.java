@@ -60,8 +60,9 @@ public class ClientService {
 		return allClients.findByRelationshipIdAndDateCreated(relationalId, dateFrom, dateTo);
 	}
 
-	@PreAuthorize("hasRole('CLIENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
+	/*
+	No ACL to allow for global searching
+	 */
 	public List<Client> findByRelationship(String relationalId) {
 		return allClients.findByRelationShip(relationalId);
 	}
@@ -248,8 +249,9 @@ public class ClientService {
 		return allClients.notInOpenMRSByServerVersion(serverVersion, calendar);
 	}
 
-	@PreAuthorize("hasRole('CLIENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
+	/*
+	No ACL to allow for global searching
+	 */
 	public List<Client> findByFieldValue(String field, List<String> ids) {
 		return allClients.findByFieldValue(field, ids);
 	}

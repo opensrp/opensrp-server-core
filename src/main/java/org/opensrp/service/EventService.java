@@ -402,8 +402,9 @@ public class EventService {
 		return allEvents.findEvents(eventSearchBean);
 	}
 
-	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
+	/*
+	No ACL to allow for global searching
+	 */
 	public List<Event> findEventsByConceptAndValue(String concept, String conceptValue) {
 		return allEvents.findByConceptAndValue(concept, conceptValue);
 		
