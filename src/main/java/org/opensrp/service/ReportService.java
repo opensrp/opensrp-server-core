@@ -225,10 +225,10 @@ public class ReportService {
 			put("ECV", null);
 			put("EPNT", null);
 			put("FJaune", null);
-			put("HepBnaissance", null);
+			put("HepB", null);
 			put("IEC", null);
 			put("MAPI", null);
-			put("MenA", null);
+			put("Men_A", null);
 			put("PVH", null);
 			put("Penta", null);
 			put("Pneumo", null);
@@ -262,7 +262,7 @@ public class ReportService {
 			put("Rota", null);
 			put("RR", null);
 			put("VAA", null);
-			put("MenA", null);
+			put("Men_A", null);
 			put("HPV", null);
 			put("Td", null);
 			put("SAB_0_05", null);
@@ -428,7 +428,7 @@ public class ReportService {
 					case "ECV":
 					case "EPNT":
 					case "FJaune":
-					case "HepBnaissance":
+					case "HepB":
 					case "PVH":
 					case "Td-1FAP":
 					case "Td-1FE":
@@ -437,14 +437,8 @@ public class ReportService {
 					case "VAA":
 					case "VPI":
 					case "VitA":
-					case "MenA":
-					case "MAPI":
-						break;
-					case "HepB":
-						code = "HepBnaissance";
-						break;
 					case "Men":
-						code = "MenA";
+					case "MAPI":
 						break;
 					case "Penta": // 1,2,3
 					case "Pneumo": // 1,2,3
@@ -507,13 +501,15 @@ public class ReportService {
 					case "Rota":
 					case "RR":
 					case "VAA":
-					case "MenA":
 					case "HPV":
 					case "Td":
 					case "SAB_0_05":
 					case "SAB_0_5":
 					case "SAB_2":
 					case "SAB_5":
+						break;
+					case "Men":
+						code = "Men_A";
 						break;
 					default:
 						break;
@@ -543,62 +539,63 @@ public class ReportService {
 			return;
 		}
 
-		if (indicatorCode.toLowerCase().indexOf("m_mobile") >= 0) {
+		if (indicatorCode.toLowerCase().indexOf("m_mobile") >= 0
+				|| indicatorCode.toLowerCase().indexOf("m_avmobile") >= 0) {
+
 			values.replace("mobile_m",
 					((int) values.getOrDefault("mobile_m", 0)
 							+ Integer.parseInt(indicator.getValue())));
 			sectionReport.replace(code, values);
-		} else if (indicatorCode.toLowerCase().indexOf("f_mobile") >= 0) {
+		} else if (indicatorCode.toLowerCase().indexOf("f_mobile") >= 0
+				|| indicatorCode.toLowerCase().indexOf("f_avmobile") >= 0) {
+
 			values.replace("mobile_f",
 					((int) values.getOrDefault("mobile_f", 0) + Integer.parseInt(indicator.getValue())));
 			sectionReport.replace(code, values);
-			// TODO: seek clarification & update checks for all subcategories
-			/*
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+		} else if (indicatorCode.indexOf("m_fixe") >= 0) {
 			values.replace("fixed_m",
 					((int) values.getOrDefault("fixed_m", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.indexOf("f_fixe") >= 0) {
 			values.replace("fixed_f",
 					((int) values.getOrDefault("fixed_f", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.equalsIgnoreCase(code)) {
 			values.replace("grand_total",
 					((int) values.getOrDefault("grand_total", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.equalsIgnoreCase(code + "_m")) {
 			values.replace("grand_total_m",
 					((int) values.getOrDefault("grand_total_m", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.equalsIgnoreCase(code + "_f")) {
 			values.replace("grand_total_f",
 					((int) values.getOrDefault("grand_total_f", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.indexOf("horsZone") >= 0) {
 			values.replace("out_of_area_total",
 					((int) values.getOrDefault("out_of_area_total", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.indexOf("m_horsZone") >= 0) {
 			values.replace("out_of_area_m",
 					((int) values.getOrDefault("out_of_area_m", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.indexOf("f_horsZone") >= 0) {
 			values.replace("out_of_area_f",
 					((int) values.getOrDefault("out_of_area_f", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.indexOf("plus12m") >= 0) {
 			values.replace("out_of_tranche_total",
 					((int) values.getOrDefault("out_of_tranche_total", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.indexOf("m_plus12m") >= 0) {
 			values.replace("out_of_tranche_m",
 					((int) values.getOrDefault("out_of_tranche_m", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-		} else if (indicatorCode.indexOf("xxx") >= 0) {
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.indexOf("f_plus12m") >= 0) {
 			values.replace("out_of_tranche_f",
 					((int) values.getOrDefault("out_of_tranche_f", 0) + Integer.parseInt(indicator.getValue())));
-			report.replace(code, values);
-			 */
+			sectionReport.replace(code, values);
 		}
 	}
 
@@ -620,20 +617,27 @@ public class ReportService {
 
 		String indicatorCode = indicator.getIndicatorCode();
 
-		if (indicatorCode.indexOf("Used") >= 0) {
+		if (indicatorCode.indexOf("Beginning_Balance") >= 0) {
+			values.replace("stock_start_of_month",
+					((int) values.getOrDefault("stock_start_of_month", 0) + Integer.parseInt(indicator.getValue())));
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.indexOf("Qty_Received") >= 0) {
+			values.replace("stock_received_during_month",
+					((int) values.getOrDefault("stock_received_during_month", 0) + Integer.parseInt(indicator.getValue())));
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.indexOf("Ending_Balance") >= 0) {
+			values.replace("stock_end_of_month",
+					((int) values.getOrDefault("stock_end_of_month", 0) + Integer.parseInt(indicator.getValue())));
+			sectionReport.replace(code, values);
+		} else if (indicatorCode.indexOf("Used") >= 0) {
 			values.replace("qty_used", ((int) values.getOrDefault("qty_used", 0) + Integer.parseInt(indicator.getValue())));
 			sectionReport.replace(code, values);
 		} else if (indicatorCode.indexOf("Administered") >= 0) {
 			values.replace("qty_administered",
 					((int) values.getOrDefault("qty_administered", 0) + Integer.parseInt(indicator.getValue())));
 			sectionReport.replace(code, values);
-		} else if (indicatorCode.indexOf("Beginning_Balance") >= 0) {
-			values.replace("stock_start_of_month",
-					((int) values.getOrDefault("stock_start_of_month", 0) + Integer.parseInt(indicator.getValue())));
-			sectionReport.replace(code, values);
-		} else if (indicatorCode.indexOf("Ending_Balance") >= 0) {
-			values.replace("stock_end_of_month",
-					((int) values.getOrDefault("stock_end_of_month", 0) + Integer.parseInt(indicator.getValue())));
+		} else if (indicatorCode.indexOf("Lost") >= 0) {
+			values.replace("qty_lost", ((int) values.getOrDefault("qty_lost", 0) + Integer.parseInt(indicator.getValue())));
 			sectionReport.replace(code, values);
 		} else if (indicatorCode.indexOf("Loss_Expired") >= 0) {
 			values.replace("loss_expired",
@@ -654,13 +658,6 @@ public class ReportService {
 		} else if (indicatorCode.indexOf("Loss_of_Use") >= 0) {
 			values.replace("loss_of_use",
 					((int) values.getOrDefault("loss_of_use", 0) + Integer.parseInt(indicator.getValue())));
-			sectionReport.replace(code, values);
-		} else if (indicatorCode.indexOf("Lost") >= 0) {
-			values.replace("qty_lost", ((int) values.getOrDefault("qty_lost", 0) + Integer.parseInt(indicator.getValue())));
-			sectionReport.replace(code, values);
-		} else if (indicatorCode.indexOf("Qty_Received") >= 0) {
-			values.replace("stock_received_during_month",
-					((int) values.getOrDefault("stock_received_during_month", 0) + Integer.parseInt(indicator.getValue())));
 			sectionReport.replace(code, values);
 		} else if (indicatorCode.indexOf("Stockout_Days") >= 0) {
 			values.replace("days_rupture",
@@ -683,6 +680,7 @@ public class ReportService {
 	 */
 	private void processStockIndicator(String code, Hia2Indicator indicator,
 			Map<String, Map<String, Object>> sectionReport) {
+
 		Map<String, Object> values = sectionReport.get(code);
 		String indicatorCode = indicator.getIndicatorCode();
 
