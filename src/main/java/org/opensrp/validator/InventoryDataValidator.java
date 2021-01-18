@@ -62,6 +62,10 @@ public class InventoryDataValidator {
 		this.settingService = settingService;
 	}
 
+   public InventoryDataValidator() {
+
+   }
+
 	public List<String> getValidationErrors(String locationId, String productCatalogId, String deliveryDateInString,
 			String section, String poNumber, String serialNumber, String quantity, String donor)
 			throws ParseException {
