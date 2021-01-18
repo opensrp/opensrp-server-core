@@ -209,12 +209,11 @@ public class StockService {
 	  return allStocks.findStocksByLocationId(stockSearchBean);
 	}
 
-	public CsvBulkImportDataSummary convertandPersistInventorydata(List<Map<String, String>> csvStocks, String userName) {
+	public CsvBulkImportDataSummary validateBulkInventoryData(List<Map<String, String>> csvStocks) {
 		int rowCount = 0;
 		CsvBulkImportDataSummary csvBulkImportDataSummary = new CsvBulkImportDataSummary();
 		FailedRecordSummary failedRecordSummary;
 		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
-		Inventory inventory;
 		Integer totalRows = csvStocks.size();
 		Integer rowsProcessed = 0;
 
@@ -231,22 +230,37 @@ public class StockService {
 			failedRecordSummaries.add(failedRecordSummary);
 		}
 
-		if (failedRecordSummaries.size() == 0) {
-			for (Map<String, String> csvdata : csvStocks) {
-				try {
-					rowCount++;
-					inventory = createInventoryObject(csvdata);
-					addInventory(inventory, userName);
-					rowsProcessed++;
-				}
-				catch (Exception e) {
-					failedRecordSummary = new FailedRecordSummary();
-					List<String> validationError = new ArrayList<>();
-					failedRecordSummary.setRowNumber(rowCount);
-					validationError.add("Unknown error occurred");
-					failedRecordSummary.setReasonOfFailure(validationError);
-					failedRecordSummaries.add(failedRecordSummary);
-				}
+		csvBulkImportDataSummary.setFailedRecordSummaryList(failedRecordSummaries);
+		csvBulkImportDataSummary.setNumberOfCsvRows(totalRows);
+		csvBulkImportDataSummary.setNumberOfRowsProcessed(rowsProcessed);
+		return csvBulkImportDataSummary;
+
+	}
+
+	public CsvBulkImportDataSummary convertandPersistInventorydata(List<Map<String, String>> csvStocks, String userName) {
+
+		int rowCount = 0;
+		CsvBulkImportDataSummary csvBulkImportDataSummary = new CsvBulkImportDataSummary();
+		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
+		Inventory inventory;
+		Integer totalRows = csvStocks.size();
+		Integer rowsProcessed = 0;
+		FailedRecordSummary failedRecordSummary;
+
+		for (Map<String, String> csvdata : csvStocks) {
+			try {
+				rowCount++;
+				inventory = createInventoryObject(csvdata);
+				addInventory(inventory, userName);
+				rowsProcessed++;
+			}
+			catch (Exception e) {
+				failedRecordSummary = new FailedRecordSummary();
+				List<String> validationError = new ArrayList<>();
+				failedRecordSummary.setRowNumber(rowCount);
+				validationError.add("Unknown error occurred" + e.getMessage());
+				failedRecordSummary.setReasonOfFailure(validationError);
+				failedRecordSummaries.add(failedRecordSummary);
 			}
 		}
 

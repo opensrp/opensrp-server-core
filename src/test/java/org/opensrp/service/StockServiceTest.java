@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.*;
 
 import com.google.gson.Gson;
@@ -32,16 +33,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
-
-import static org.opensrp.util.constants.InventoryConstants.PRODUCT_ID;
-import static org.opensrp.util.constants.InventoryConstants.SERVICE_POINT_ID;
-import static org.opensrp.util.constants.InventoryConstants.PRODUCT_NAME;
-import static org.opensrp.util.constants.InventoryConstants.DELIVERY_DATE;
-import static org.opensrp.util.constants.InventoryConstants.QUANTITY;
-import static org.opensrp.util.constants.InventoryConstants.PO_NUMBER;
-import static org.opensrp.util.constants.InventoryConstants.SERIAL_NUMBER;
-import static org.opensrp.util.constants.InventoryConstants.UNICEF_SECTION;
-import static org.opensrp.util.constants.InventoryConstants.DONOR;
+import static org.opensrp.util.constants.InventoryConstants.*;
 
 /**
  * Integration Tests for {@link StockService}.
@@ -199,7 +191,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testConvertandPersistInventorydataWithValidationErrors() {
+	public void testValidateBulkInventoryDataWithValidationErrors() {
 		List<Map<String, String>> csvStocks = new ArrayList<>();
 		Map<String, String> csvRow = new HashMap<>();
 		csvRow.put(SERVICE_POINT_ID, "89879388");
@@ -215,13 +207,34 @@ public class StockServiceTest extends BaseRepositoryTest {
 
 		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
-		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.convertandPersistInventorydata(csvStocks, "Test user");
+		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.validateBulkInventoryData(csvStocks);
+		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
+	}
+
+	@Test
+	public void testValidateBulkInventoryDataWithParseException() throws ParseException {
+		List<Map<String, String>> csvStocks = new ArrayList<>();
+		Map<String, String> csvRow = new HashMap<>();
+		csvRow.put(SERVICE_POINT_ID, "89879388");
+		csvRow.put(PRODUCT_NAME, "Midwifery Kit");
+		csvRow.put(PRODUCT_ID, "990222");
+		csvRow.put(QUANTITY, "-1");
+		csvRow.put(DELIVERY_DATE, "04-08-2020");
+		csvRow.put(UNICEF_SECTION, "WASH");
+		csvRow.put(DONOR, "Gates");
+		csvRow.put(SERIAL_NUMBER, "12345");
+		csvRow.put(PO_NUMBER, "897");
+		csvStocks.add(csvRow);
+
+		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
+		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.validateBulkInventoryData(csvStocks);
 		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 	}
 
 
 	@Test
-	public void testConvertandPersistInventorydata() {
+	public void testConvertandPersistInventorydata() throws ParseException {
 		List<Map<String, String>> csvStocks = new ArrayList<>();
 		Map<String, String> csvRow = new HashMap<>();
 		csvRow.put(SERVICE_POINT_ID, "89879388");
@@ -236,9 +249,13 @@ public class StockServiceTest extends BaseRepositoryTest {
 		csvStocks.add(csvRow);
 
 		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(physicalLocationService.getStructure(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(inventoryDataValidator.getValidDonors()).thenReturn(createDonors());
+		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(createUnicefSections());
+		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.convertandPersistInventorydata(csvStocks, "Test user");
-		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
+		Assert.assertEquals(0,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
+		Assert.assertEquals(csvBulkImportDataSummary.getNumberOfRowsProcessed(), csvBulkImportDataSummary.getNumberOfCsvRows());
 	}
 
 	private Inventory createInventory() {
@@ -253,6 +270,18 @@ public class StockServiceTest extends BaseRepositoryTest {
 		inventory.setServicePointId("loc-1");
 		inventory.setQuantity(4);
 		return inventory;
+	}
+
+	private List<String> createDonors() {
+		List<String> donors = new ArrayList<>();
+		donors.add("ADB");
+		return donors;
+	}
+
+	private List<String> createUnicefSections() {
+		List<String> sections = new ArrayList<>();
+		sections.add("WASH");
+		return sections;
 	}
 
 	private ProductCatalogue createProductCatalogue() {
