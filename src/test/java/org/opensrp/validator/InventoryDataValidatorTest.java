@@ -57,7 +57,7 @@ public class InventoryDataValidatorTest {
 		when(physicalLocationService.getStructure(anyString(),anyBoolean())).thenReturn(null);
 		List<String> validationErrors = inventoryDataValidator.getValidationErrors("90398","1","04-08-2020",
 				"WASH", null, null, "1.8", "test Donor");
-		assertEquals(6, validationErrors.size());
+		assertEquals(7, validationErrors.size());
 		assertEquals(MISSING_REQUIRED_FIELDS, validationErrors.get(0));
 		assertEquals(PRODUCT_CATALOG_DOES_NOT_EXISTS, validationErrors.get(1));
 		assertEquals(SERVICE_POINT_DOES_NOT_EXISTS, validationErrors.get(2));
