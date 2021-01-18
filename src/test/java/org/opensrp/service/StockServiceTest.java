@@ -191,7 +191,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testValidateBulkInventoryDataWithValidationErrors() {
+	public void testValidateBulkInventoryDataWithValidationErrors() throws ParseException {
 		List<Map<String, String>> csvStocks = new ArrayList<>();
 		Map<String, String> csvRow = new HashMap<>();
 		csvRow.put(SERVICE_POINT_ID, "89879388");
@@ -205,33 +205,16 @@ public class StockServiceTest extends BaseRepositoryTest {
 		csvRow.put(PO_NUMBER, "897");
 		csvStocks.add(csvRow);
 
-		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
-		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.validateBulkInventoryData(csvStocks);
-		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
-	}
-
-	@Test
-	public void testValidateBulkInventoryDataWithParseException() throws ParseException {
-		List<Map<String, String>> csvStocks = new ArrayList<>();
-		Map<String, String> csvRow = new HashMap<>();
-		csvRow.put(SERVICE_POINT_ID, "89879388");
-		csvRow.put(PRODUCT_NAME, "Midwifery Kit");
-		csvRow.put(PRODUCT_ID, "990222");
-		csvRow.put(QUANTITY, "-1");
-		csvRow.put(DELIVERY_DATE, "04-08-2020");
-		csvRow.put(UNICEF_SECTION, "WASH");
-		csvRow.put(DONOR, "Gates");
-		csvRow.put(SERIAL_NUMBER, "12345");
-		csvRow.put(PO_NUMBER, "897");
-		csvStocks.add(csvRow);
+		List<String> validationErrors = new ArrayList<>();
+		validationErrors.add(PRODUCT_CATALOG_DOES_NOT_EXISTS);
 
 		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
 		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(inventoryDataValidator.getValidationErrors(anyString(),anyString(),anyString(),anyString(),anyString(),
+				anyString(),anyString(),anyString())).thenReturn(validationErrors);
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.validateBulkInventoryData(csvStocks);
 		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 	}
-
 
 	@Test
 	public void testConvertandPersistInventorydata() throws ParseException {
