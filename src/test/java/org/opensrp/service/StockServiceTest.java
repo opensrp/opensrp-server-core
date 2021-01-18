@@ -183,6 +183,27 @@ public class StockServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void testAddInventoryWithProviderId() {
+		Inventory inventory = createInventory();
+		inventory.setProviderId("test provider");
+		List<String> donorsList = createDonorList();
+		List<String> sectionsList = createSectionsList();
+		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
+		when(inventoryDataValidator.getValidDonors()).thenReturn(donorsList);
+		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(sectionsList);
+		when(physicalLocationService.getStructure(anyString(), anyBoolean())).thenReturn(createLocation());
+		stockService.addInventory(inventory, "John");
+		StockSearchBean stockSearchBean =  new StockSearchBean();
+		List<String> locations = new ArrayList<>();
+		locations.add("loc-1");
+		stockSearchBean.setLocations(locations);
+		stockSearchBean.setPageNumber(1);
+		List<Stock> stockList = stockService.getStocksByServicePointId(stockSearchBean);
+		Assert.assertEquals(1, stockList.size());
+		Assert.assertEquals("test provider", stockList.get(0).getProviderid());
+	}
+
+	@Test
 	public void testUpdate() {
 		Inventory inventory = createInventory();
 		List<String> donorsList = createDonorList();
