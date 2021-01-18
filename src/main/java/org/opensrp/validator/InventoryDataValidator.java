@@ -55,6 +55,13 @@ public class InventoryDataValidator {
 		this.validationErrors = validationErrors;
 	}
 
+	public InventoryDataValidator(PhysicalLocationService physicalLocationService,
+			ProductCatalogueService productCatalogueService, SettingService settingService) {
+		this.physicalLocationService = physicalLocationService;
+		this.productCatalogueService = productCatalogueService;
+		this.settingService = settingService;
+	}
+
 	public List<String> getValidationErrors(String locationId, String productCatalogId, String deliveryDateInString,
 			String section, String poNumber, String serialNumber, String quantity, String donor)
 			throws ParseException {
