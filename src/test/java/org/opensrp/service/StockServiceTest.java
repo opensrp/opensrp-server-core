@@ -33,7 +33,17 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.opensrp.util.constants.InventoryConstants.*;
+
+import static org.opensrp.util.constants.InventoryConstants.PRODUCT_ID;
+import static org.opensrp.util.constants.InventoryConstants.SERVICE_POINT_ID;
+import static org.opensrp.util.constants.InventoryConstants.PRODUCT_NAME;
+import static org.opensrp.util.constants.InventoryConstants.DELIVERY_DATE;
+import static org.opensrp.util.constants.InventoryConstants.QUANTITY;
+import static org.opensrp.util.constants.InventoryConstants.PO_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.SERIAL_NUMBER;
+import static org.opensrp.util.constants.InventoryConstants.UNICEF_SECTION;
+import static org.opensrp.util.constants.InventoryConstants.DONOR;
+import static org.opensrp.util.constants.InventoryConstants.PRODUCT_CATALOG_DOES_NOT_EXISTS;
 
 /**
  * Integration Tests for {@link StockService}.

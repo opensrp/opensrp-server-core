@@ -162,7 +162,7 @@ public class InventoryDataValidator {
 	}
 
 	private void validatePoNumber(String poNumber) {
-		if (!isWholeNumber(poNumber)) {
+		if (poNumber != null && !isWholeNumber(poNumber)) {
 			logger.error(INVALID_PO_NUMBER);
 			validationErrors.add(INVALID_PO_NUMBER);
 		}
