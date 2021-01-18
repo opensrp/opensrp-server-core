@@ -391,7 +391,7 @@ public class EventService {
 	}
 
 	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
+	@PostFilter("hasRole('SUPER_VIEWER') or hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit) {
 		return allEvents.findEvents(eventSearchBean, sortBy, sortOrder, limit);
 	}
