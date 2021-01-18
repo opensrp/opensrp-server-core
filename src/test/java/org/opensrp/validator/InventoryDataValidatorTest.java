@@ -87,19 +87,4 @@ public class InventoryDataValidatorTest {
 		return Collections.singletonList(settingsAndSettingsMetadataJoined);
 	}
 
-	private ProductCatalogue createProductCatalogue() {
-		ProductCatalogue productCatalogue = new ProductCatalogue();
-		productCatalogue.setUniqueId(1l);
-		productCatalogue.setProductName("Product A");
-		productCatalogue.setIsAttractiveItem(Boolean.TRUE);
-		productCatalogue.setMaterialNumber("MT-123");
-		productCatalogue.setAvailability("available");
-		productCatalogue.setCondition("good condition");
-		productCatalogue.setAppropriateUsage("staff is trained to use it appropriately");
-		productCatalogue.setAccountabilityPeriod(1);
-		productCatalogue.setServerVersion(123456l);
-		return productCatalogue;
-	}
-
-
 }
