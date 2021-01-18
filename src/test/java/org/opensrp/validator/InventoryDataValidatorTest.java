@@ -8,7 +8,6 @@ import org.opensrp.domain.postgres.SettingsMetadata;
 import org.opensrp.service.PhysicalLocationService;
 import org.opensrp.service.ProductCatalogueService;
 import org.opensrp.service.SettingService;
-import org.smartregister.domain.ProductCatalogue;
 
 import java.text.ParseException;
 import java.util.Collections;
