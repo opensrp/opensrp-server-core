@@ -196,21 +196,13 @@ public class EventService {
 	 */
 	public synchronized Event processOutOfArea(Event event) {
 		try {
-
-			if (StringUtils.isNotBlank(event.getBaseEntityId())) {
-				return event;
-			}
-
-			//get events identifiers; 
 			String identifier = event.getIdentifier(Client.ZEIR_ID);
-			if (StringUtils.isBlank(identifier)) {
+			if (StringUtils.isNotBlank(event.getBaseEntityId()) || StringUtils.isBlank(identifier) ) {
 				return event;
 			}
-
-			boolean isCardId = identifier.startsWith(CARD_ID_PREFIX);
 
 			List<org.smartregister.domain.Client> clients =
-					isCardId ? clientService
+					identifier.startsWith(CARD_ID_PREFIX) ? clientService
 							.findAllByAttribute(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
 							: getClientByIdentifier(identifier);
 
@@ -220,7 +212,6 @@ public class EventService {
 
 			for (org.smartregister.domain.Client client : clients) {
 
-				//set providerid to the last providerid who served this client in their catchment (assumption)
 				List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);
 
 				if (existingEvents == null || existingEvents.isEmpty()) {
@@ -231,20 +222,14 @@ public class EventService {
 				event.getIdentifiers().remove(Client.ZEIR_ID.toUpperCase());
 				event.setBaseEntityId(client.getBaseEntityId());
 				//Remove identifier since entity id is present, also create new service with the right location and provider
-				if (event.getEventType().startsWith(OUT_OF_AREA_SERVICE)) {
-					if (event.getEventType().contains(GROWTH_MONITORING_EVENT) || event.getEventType()
-							.contains(VACCINATION_EVENT)) {
-						String eventType = event.getEventType().contains(GROWTH_MONITORING_EVENT) ? GROWTH_MONITORING_EVENT
-								: event.getEventType().contains(VACCINATION_EVENT) ? VACCINATION_EVENT : null;
-						if (eventType != null) {
-							Event newEvent = createNewOutOfAreaServiceEvent(event, birthRegEvent, eventType);
-							return addEvent(newEvent, birthRegEvent.getProviderId());
-						}
+				if (event.getEventType().startsWith(OUT_OF_AREA_SERVICE) && (
+						event.getEventType().contains(GROWTH_MONITORING_EVENT) || event.getEventType().contains(VACCINATION_EVENT))) {
+					String eventType = event.getEventType().contains(GROWTH_MONITORING_EVENT) ? GROWTH_MONITORING_EVENT
+							: event.getEventType().contains(VACCINATION_EVENT) ? VACCINATION_EVENT : null;
+					if (eventType != null) {
+						Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, eventType);
+						return addEvent(newEvent, birthRegEvent.getProviderId());
 					}
-				}
-				//Legacy code only picked the first item so we break
-				if (!isCardId) {
-					break;
 				}
 			}
 		}
@@ -255,7 +240,7 @@ public class EventService {
 		return event;
 	}
 
-	private Event createNewOutOfAreaServiceEvent(Event event, Event birthRegEvent, String eventType) {
+	private Event getNewOutOfAreaServiceEvent(Event event, Event birthRegEvent, String eventType) {
 		Event newEvent = new Event();
 		newEvent.withBaseEntityId(event.getBaseEntityId())
 				.withEventType(eventType)
@@ -266,14 +251,13 @@ public class EventService {
 				.withChildLocationId(birthRegEvent.getChildLocationId())
 				.withFormSubmissionId(UUID.randomUUID().toString())
 				.withDateCreated(event.getDateCreated());
-		Map<String, String> details = new HashMap<String, String>();
+		Map<String, String> details = new HashMap<>();
 		details.put(OUT_OF_CATCHMENT_PROVIDER_ID, event.getProviderId());
 		newEvent.setDetails(details);
 		newEvent.setObs(event.getObs());
 		newEvent.setTeam(birthRegEvent.getTeam());
 		newEvent.setTeamId(birthRegEvent.getTeamId());
-		logger.info(String.format("New %s event with created with id %s", newEvent.getEventType(),
-				newEvent.getFormSubmissionId()));
+		logger.info(String.format("New %s event with created with id %s", newEvent.getEventType(), newEvent.getFormSubmissionId()));
 		return newEvent;
 	}
 
