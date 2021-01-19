@@ -524,7 +524,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Override
 	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit, boolean includeInactive) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		LocationMetadataExample.Criteria criteria = new LocationMetadataExample().createCriteria();
+		LocationMetadataExample.Criteria criteria = locationMetadataExample.createCriteria();
 		if(!includeInactive) {
 			criteria.andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		}
