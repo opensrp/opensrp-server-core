@@ -60,9 +60,8 @@ public class ClientService {
 		return allClients.findByRelationshipIdAndDateCreated(relationalId, dateFrom, dateTo);
 	}
 
-	/*
-	No ACL to allow for global searching
-	 */
+	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByRelationship(String relationalId) {
 		return allClients.findByRelationShip(relationalId);
 	}
@@ -249,9 +248,8 @@ public class ClientService {
 		return allClients.notInOpenMRSByServerVersion(serverVersion, calendar);
 	}
 
-	/*
-	No ACL to allow for global searching
-	 */
+	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByFieldValue(String field, List<String> ids) {
 		return allClients.findByFieldValue(field, ids);
 	}
@@ -446,5 +444,22 @@ public class ClientService {
 	 */
 	public long getNextServerVersion() {
 		return allClients.getNextServerVersion();
+	}
+
+
+	/**
+	 * This method is similar to {@link #findByFieldValue(String, List<String>)}. This method however does not enforce ACL
+	 * so that users can search clients globally and not just those within their jurisdiction.
+	 */
+	public List<Client> findGlobalByFieldValue(String field, List<String> ids) {
+		return allClients.findByFieldValue(field, ids);
+	}
+
+	/**
+	 * This method is similar to {@link #findByRelationship(String)}. This method however does not enforce ACL
+	 * so that users can search clients globally and not just those within their jurisdiction.
+	 */
+	public List<Client> findGlobalByRelationship(String relationalId) {
+		return allClients.findByRelationShip(relationalId);
 	}
 }

@@ -402,9 +402,8 @@ public class EventService {
 		return allEvents.findEvents(eventSearchBean);
 	}
 
-	/*
-	No ACL to allow for global searching
-	 */
+	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findEventsByConceptAndValue(String concept, String conceptValue) {
 		return allEvents.findByConceptAndValue(concept, conceptValue);
 		
@@ -475,4 +474,13 @@ public class EventService {
 	public Long countEvents(EventSearchBean eventSearchBean) {
 		return allEvents.countEvents(eventSearchBean);
 	};
+
+	/**
+	 * This method is similar to {@link #findEventsByConceptAndValue(String, String)}. This method however does not enforce ACL
+	 * so that users can search events globally and not just those within their jurisdiction.
+	 */
+	public List<Event> findGlobalEventsByConceptAndValue(String concept, String conceptValue) {
+		return allEvents.findByConceptAndValue(concept, conceptValue);
+
+	}
 }

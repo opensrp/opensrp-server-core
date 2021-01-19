@@ -120,7 +120,7 @@
 			<if test="searchBean.dateUpdated != null">
 				and json->>'date_updated' = #{searchBean.dateUpdated,jdbcType=VARCHAR}
 			</if>
-			<if test="searchBean.locations.size() > 0">
+			<if test="searchBean.locations != null">
 				and sm.location_id IN
 				<foreach item="item" index="index" collection="searchBean.locations" open="(" separator="," close=")">
 					#{item}
