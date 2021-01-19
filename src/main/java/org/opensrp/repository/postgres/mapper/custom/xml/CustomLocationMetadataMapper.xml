@@ -131,12 +131,12 @@
 
 		from core.location_metadata lm
 		join core.location l on lm.location_id = l.id
-		where l.json -> 'locationTags' @> '[{"name": "#{tagName}"}]'
+		where l.json -> 'locationTags' @> '[{"name": "${tagName}"}]'
 
 		<if test="example.orderByClause != null">
 			order by lm.${example.orderByClause}
 		</if>
-		LIMIT #{limit} OFFSET #{offset}
+		limit #{limit} offset #{offset}
 	</select>
 
 	<select id="selectManyWithOptionalGeometry"
