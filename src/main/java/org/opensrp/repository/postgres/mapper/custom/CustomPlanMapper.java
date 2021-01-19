@@ -27,5 +27,9 @@ public interface CustomPlanMapper extends PlanMapper {
 
 	List<Plan> selectPlansBySearchBean(@Param("searchBean") PlanSearchBean searchBean,
 			@Param("offset") int offset, @Param("limit") int limit);
+	
+	Long selectServerVersionByPrimaryKey(Long id);
+	
+	int updateByPrimaryKeyAndGenerateServerVersion(Plan plan);
 
 }

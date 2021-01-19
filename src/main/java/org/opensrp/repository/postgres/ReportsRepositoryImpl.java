@@ -39,6 +39,16 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 		return convert(pgReport);
 	}
 	
+	private void updateServerVersion(org.opensrp.domain.postgres.Report pgReport, Report entity) {
+		long serverVersion = reportMapper.selectServerVersionByPrimaryKey(pgReport.getId());
+		entity.setServerVersion(serverVersion);
+		pgReport.setJson(entity);
+		int rowsAffected = reportMapper.updateByPrimaryKeySelective(pgReport);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
 	@Override
 	public void add(Report entity) {
 		if (entity == null) {
@@ -49,7 +59,7 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 			return;
 		}
 		
-		if (entity.getId() == null)
+		if (entity.getId() == null || entity.getId().isEmpty())
 			entity.setId(UUID.randomUUID().toString());
 		setRevision(entity);
 		
@@ -61,8 +71,10 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 		int rowsAffected = reportMapper.insertSelectiveAndSetId(pgReport);
 		logger.info("rowsAffected, pgReport.getId():" + rowsAffected + "," + pgReport.getId());
 		if (rowsAffected < 1 || pgReport.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateServerVersion(pgReport, entity);
 		
 		ReportMetadata reportMetadata = createMetadata(entity, pgReport.getId());
 		if (reportMetadata != null) {
@@ -88,13 +100,17 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 			return;
 		}
 		
-		ReportMetadata reportMetadata = createMetadata(entity, id);
-		if (reportMetadata == null) {
+	
+		
+		int rowsAffected = reportMapper.updateByPrimaryKeyAndGenerateServerVersion(pgReport);
+		if (rowsAffected < 1) {
 			return;
 		}
 		
-		int rowsAffected = reportMapper.updateByPrimaryKey(pgReport);
-		if (rowsAffected < 1) {
+		updateServerVersion(pgReport, entity);
+		
+		ReportMetadata reportMetadata = createMetadata(entity, id);
+		if (reportMetadata == null) {
 			return;
 		}
 		

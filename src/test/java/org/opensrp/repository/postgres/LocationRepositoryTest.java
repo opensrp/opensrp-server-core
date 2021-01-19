@@ -22,11 +22,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Iterator;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -164,6 +166,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		assertNotNull(savedLocation);
 		assertEquals("Feature", savedLocation.getType());
+		MatcherAssert.assertThat(savedLocation.getServerVersion(), Matchers.greaterThan(5l));
 		
 		assertNull(locationRepository.getStructure("223232", true));
 		
@@ -210,6 +213,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(GeometryType.POLYGON, savedLocation.getGeometry().getType());
 		assertEquals(PropertyStatus.ACTIVE, savedLocation.getProperties().getStatus());
 		assertEquals(uuid, savedLocation.getProperties().getUid());
+		MatcherAssert.assertThat(savedLocation.getServerVersion(), Matchers.greaterThan(5l));
 		
 		assertNull(locationRepository.get("121212"));
 		
@@ -255,6 +259,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		physicalLocation.getProperties().setEffectiveStartDate(effectiveStartDate);
 		physicalLocation.getProperties().setEffectiveEndDate(effectiveEndDate);
 		physicalLocation.setJurisdiction(true);
+		long serverVersion=physicalLocation.getServerVersion();
 		locationRepository.update(physicalLocation);
 		assertNull(locationRepository.get("3734"));
 		PhysicalLocation updatedLocation = locationRepository.get("3734", true, 0);
@@ -266,6 +271,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(effectiveStartDate, updatedLocation.getProperties().getEffectiveStartDate());
 		assertEquals(effectiveEndDate, updatedLocation.getProperties().getEffectiveEndDate());
 		assertEquals(0, updatedLocation.getProperties().getVersion());
+		MatcherAssert.assertThat(updatedLocation.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 		assertNull(locationRepository.getStructure("3734", true));
 		
@@ -358,6 +364,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		PhysicalLocation structure = locationRepository.getStructure("90397", true);
 		structure.getProperties().setCode("12121");
 		structure.getProperties().setParentId("11");
+		long serverVersion=structure.getServerVersion();
 		locationRepository.update(structure);
 		
 		PhysicalLocation updatedStructure = locationRepository.getStructure("90397", true);
@@ -365,6 +372,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(updatedStructure);
 		assertEquals("12121", updatedStructure.getProperties().getCode());
 		assertEquals("11", updatedStructure.getProperties().getParentId());
+		MatcherAssert.assertThat(updatedStructure.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 		assertNull(locationRepository.get("90397"));
 		
@@ -460,10 +468,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertTrue(locations.get(0).getServerVersion() >= 1l);
 		
 		locations.get(0).setServerVersion(null);
+		locations.get(0).setJurisdiction(true);
 		locationRepository.update(locations.get(0));
 		
 		locations = locationRepository.findLocationsByServerVersion(1l);
-		assertTrue(locations.isEmpty());
+		assertEquals(1,locations.size());
 		
 	}
 	
@@ -489,7 +498,8 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.update(locations.get(0));
 		
 		locations = locationRepository.findStructuresByParentAndServerVersion("3734", 0l);
-		assertTrue(locations.isEmpty());
+		assertEquals(1, locations.size());
+		assertTrue(locations.get(0).getServerVersion() > 0);
 	}
 	
 	@Test
@@ -520,8 +530,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		locationRepository.update(location);
 		
 		locations = locationRepository.findStructuresByEmptyServerVersion();
-		assertEquals(1, locations.size());
-		assertEquals("90397", locations.get(0).getId());
+		assertEquals(0, locations.size());
 		
 	}
 	
@@ -939,10 +948,20 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		Set<String> identifiers = Collections.singleton("3735");
 		Set<LocationDetail> locations = locationRepository.findParentLocationsInclusive(identifiers);
 		assertEquals(2, locations.size());
-		for (LocationDetail l : locations) {
-			MatcherAssert.assertThat(l.getIdentifier(), either(is("3734")).or(is("3735")));
-		}
-		
+		Iterator<LocationDetail> it = locations.iterator();
+		LocationDetail locationDetail = it.next();
+		MatcherAssert.assertThat(locationDetail.getIdentifier(), is("3735"));
+		assertEquals("Dhaka", locationDetail.getName());
+		assertEquals("3734", locationDetail.getParentId());
+		assertEquals(2l, locationDetail.getId().longValue());
+
+		locationDetail = it.next();
+		MatcherAssert.assertThat(locationDetail.getIdentifier(), is("3734"));
+		assertEquals("Bangladesh", locationDetail.getName());
+		assertEquals("21", locationDetail.getParentId());
+		assertEquals(1l, locationDetail.getId().longValue());
+
+
 		assertEquals(2, locationRepository.findParentLocationsInclusive(new HashSet<>(Arrays.asList("3735", "21"))).size());
 		
 		//Location without a parent
@@ -1050,11 +1069,20 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		Set<LocationDetail> locations = locationRepository.findLocationWithDescendants("3734", false);
 		
 		assertEquals(2, locations.size());
-		
-		for (LocationDetail location : locations) {
-			MatcherAssert.assertThat(location.getIdentifier(), either(is("3734")).or(is("3735")));
-		}
-		
+
+		Iterator<LocationDetail> it = locations.iterator();
+		LocationDetail location = it.next();
+		MatcherAssert.assertThat(location.getIdentifier(), is("3735"));
+		assertEquals("Dhaka", location.getName());
+		assertEquals("3734", location.getParentId());
+		assertEquals(2l, location.getId().longValue());
+
+		location = it.next();
+		MatcherAssert.assertThat(location.getIdentifier(), is("3734"));
+		assertEquals("Bangladesh", location.getName());
+		assertEquals("21", location.getParentId());
+		assertEquals(1l, location.getId().longValue());
+
 		locations = locationRepository.findLocationWithDescendants("3735", true);
 		assertEquals(1, locations.size());
 		LocationDetail actualLocationdetail = locations.iterator().next();

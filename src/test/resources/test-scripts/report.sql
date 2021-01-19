@@ -20,3 +20,5 @@ INSERT INTO core.report_metadata (id, report_id, document_id, form_submission_id
 (3, 3, 'c57ba49f-34b9-4986-9b87-69f48b1830c5', '88f9fe90-1e45-46b3-8056-e932574dcbd9', null, 1500307579516, 'HIA2', '2017-05-01', 'biddemo', '9e4fc064-d8e7-4fcb-942e-cbcf6524fb24', null, null, '2017-07-17'),
 (4, 4, 'cd09a3d4-01d9-485c-a1c5-a2eb078a61be', 'd78a8105-f808-488a-b67a-0c4c46845194', null, 1500394719661, 'HIA2', '2017-06-01', 'biddemo', '9e4fc064-d8e7-4fcb-942e-cbcf6524fb24', null, null, '2017-07-18'),
 (5, 5, '60ab7d5c-a051-4633-b0b3-f52b701cb261', '03b5d0b8-4f72-4415-9909-ce03b5802c75', '6654kk-mnj45-mmnfgd-l45645', null, 'HIA2', '2017-05-01', 'biddemo', '9e4fc064-d8e7-4fcb-942e-cbcf6524fb24', null, null, '2017-07-19');
+
+SELECT setval('core.report_server_version_seq',(SELECT max(json->>'serverVersion')::bigint+1 FROM core.report));

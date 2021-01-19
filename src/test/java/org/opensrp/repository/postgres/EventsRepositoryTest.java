@@ -4,11 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.Map;
@@ -16,6 +18,8 @@ import java.util.HashMap;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.common.AllConstants.BaseEntity;
@@ -500,17 +504,20 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	public void testUpdate() {
 		Event event = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
 		long now = System.currentTimeMillis();
-		event.setServerVersion(now);
 		event.setDateEdited(new DateTime(now));
 		Obs obs = new Obs("concept", "text", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "25-Apr-2017", null,
 		        "Date_Reaction");
 		event.addObs(obs);
+		event.setServerVersion(1);
+		long serverVersion=event.getServerVersion();
 		eventsRepository.update(event);
-		event = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
-		assertEquals(now, event.getServerVersion().longValue());
-		assertEquals(now, event.getDateEdited().getMillis());
-		assertEquals(3, event.getObs().size());
-		assertEquals(obs.getValue(), event.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		
+		Event updatedEvent = eventsRepository.get("05934ae338431f28bf6793b2419c64fb");
+		assertNotEquals(now, updatedEvent.getServerVersion().longValue());
+		assertEquals(now, updatedEvent.getDateEdited().getMillis());
+		assertEquals(3, updatedEvent.getObs().size());
+		assertEquals(obs.getValue(), updatedEvent.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		MatcherAssert.assertThat(updatedEvent.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 		//test update with voided date deletes event
 		event.setDateVoided(new DateTime());
@@ -530,7 +537,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		eventsRepository.update(event);
 		long beforeFetch = System.currentTimeMillis();
 		List<Event> events = eventsRepository.findByEmptyServerVersion();
-		assertEquals(2, events.size());
+		assertEquals(0, events.size());
 		for (Event loopEvent : events) {
 			assertTrue(loopEvent.getId().equals("05934ae338431f28bf6793b241bdb88c")
 			        || loopEvent.getId().equals("05934ae338431f28bf6793b241bdbb60"));
@@ -542,7 +549,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		//test with deleted event
 		for (Event e : events)
 			eventsRepository.safeRemove(e);
-		assertFalse(eventsRepository.findByEmptyServerVersion().isEmpty());
+		assertTrue(eventsRepository.findByEmptyServerVersion().isEmpty());
 	}
 	
 	@Test
@@ -551,7 +558,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DATE, 1);
 		for (Event event : events) {
-			event.setServerVersion(cal.getTimeInMillis());
+			event.setDateCreated(new DateTime(cal.getTimeInMillis()));
 			eventsRepository.update(event);
 		}
 		assertEquals(9, eventsRepository.findEventByEventTypeBetweenTwoDates("Vaccination").size());
@@ -590,6 +597,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Growth Monitoring", event.getEventType());
 		assertEquals(1, event.getObs().size());
 		assertEquals("3.5", event.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+		MatcherAssert.assertThat(event.getServerVersion(), Matchers.greaterThan(5l));
 		
 		//test if an event with voided date add event as deleted
 		event = new Event().withBaseEntityId("2423nj-sdfsd-sf2dfsd-2399d").withEventType("Vaccination")
@@ -597,6 +605,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		event.setDateVoided(new DateTime());
 		eventsRepository.add(event);
 		assertNull(eventsRepository.findByFormSubmissionId(event.getFormSubmissionId(),false));
+	
 		
 	}
 	
@@ -696,5 +705,49 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 				null, new DateTime(date1).toDate());
 		assertTrue(listLongPair.getLeft().isEmpty());
 	}
-	
+
+	@Test
+	public void testGetEventData(){
+		eventsRepository.add(createFlagProblemEvent());
+		List<org.opensrp.domain.postgres.Event> events = eventsRepository.getEventData("335ef7a3-7f35-58aa-8263-4419464946d8", "flag_problem", null, null);
+		assertNotNull(events);
+		assertEquals(1, events.size());
+	}
+
+	public static Event createFlagProblemEvent() {
+		Event event = new Event();
+		event.setBaseEntityId("ddcaf383-882e-448b-b701-8b72cb0d4d7a");
+		event.setEventDate(new DateTime());
+		event.setEventType("flag_problem");
+		event.setEntityType("product");
+		event.setFormSubmissionId("78a92332-a918-4fd7-bda5-128c4525f468");
+		event.setLocationId("f3199af5-2eaf-46df-87c9-40d59606a2fb");
+		List<Obs> obs = new ArrayList<>();
+		Obs obsObject = new Obs();
+		obsObject.setFormSubmissionField("flag_problem");
+		obs.add(obsObject);
+		obsObject = new Obs();
+		obsObject.setFormSubmissionField("profile_picture");
+		List<String> values = new ArrayList<>();
+		values.add("  \"\\/storage\\/emulated\\/0\\/Android\\/data\\/org.smartregister.eusm\\/files\\/Pictures\\/JPEG_20201202_181259_6894730935869368202.jpg\"");
+		obs.add(obsObject);
+		obsObject = new Obs();
+		obsObject.setFormSubmissionField("profile_picture");
+		values = new ArrayList<>();
+		values.add("  \"\\/storage\\/emulated\\/0\\/Android\\/data\\/org.smartregister.eusm\\/files\\/Pictures\\/JPEG_20201202_181259_6894730935869368202.jpg\"");
+		obs.add(obsObject);
+		obsObject = new Obs();
+		obsObject.setFormSubmissionField("not_good");
+		values = new ArrayList<>();
+		values.add("Expired");
+		obs.add(obsObject);
+		event.setObs(obs);
+		Map<String, String> details = new HashMap<>();
+		details.put("locationName", "EPP Ambodisatrana 2");
+		details.put("productName", "Midwifery Kit");
+		details.put("planIdentifier", "335ef7a3-7f35-58aa-8263-4419464946d8");
+		event.setDetails(details);
+		return event;
+	}
+
 }

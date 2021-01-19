@@ -93,9 +93,7 @@
             <if test="json != null">
                 json,
             </if>
-            <if test="serverVersion != null">
-                server_version,
-            </if>
+            server_version
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="uniqueId != null">
@@ -107,9 +105,7 @@
             <if test="json != null">
                 #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler},
             </if>
-            <if test="serverVersion != null">
-                #{serverVersion,jdbcType=BIGINT},
-            </if>
+            nextVal('core.product_catalogue_server_version_seq')
         </trim>
     </insert>
 
@@ -122,5 +118,16 @@
             <include refid="Example_Where_Clause" />
         </if>
     </select>
+   <update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.ProductCatalogue">
+    update core.product_catalogue
+    set product_name = #{productName,jdbcType=VARCHAR},
+      json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler},
+      server_version = nextVal('core.product_catalogue_server_version_seq')
+    where unique_id = #{uniqueId,jdbcType=BIGINT}
+  </update>
+  <select id="selectServerVersionByPrimaryKey"
+		parameterType="java.lang.Long" resultType="long">
+		select server_version from core.product_catalogue where unique_id = #{uniqueId,jdbcType=BIGINT}
+	</select>
 
 </mapper>

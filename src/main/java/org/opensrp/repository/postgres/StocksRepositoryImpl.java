@@ -1,28 +1,33 @@
 package org.opensrp.repository.postgres;
 
-import java.util.*;
+import static org.opensrp.util.Utils.isEmptyList;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-import com.ibm.fhir.model.resource.Bundle;
 import org.apache.commons.lang3.StringUtils;
-import org.smartregister.domain.ProductCatalogue;
-import org.smartregister.domain.StockAndProductDetails;
-import org.opensrp.repository.LocationRepository;
-import org.smartregister.converters.StockConverter;
-import org.smartregister.domain.PhysicalLocation;
-import org.smartregister.domain.Stock;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.postgres.StockExample;
 import org.opensrp.domain.postgres.StockMetadata;
 import org.opensrp.domain.postgres.StockMetadataExample;
+import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMetadataMapper;
 import org.opensrp.search.StockSearchBean;
-import org.apache.commons.lang3.tuple.Pair;
+import org.smartregister.converters.StockConverter;
+import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.ProductCatalogue;
+import org.smartregister.domain.Stock;
+import org.smartregister.domain.StockAndProductDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.opensrp.util.Utils.isEmptyList;
+import com.ibm.fhir.model.resource.Bundle;
 
 @Repository("stocksRepositoryPostgres")
 public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements StocksRepository {
@@ -48,6 +53,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		return convert(pgStock);
 	}
 	
+	@Transactional
 	@Override
 	public void add(Stock entity) {
 		if (entity == null) {
@@ -58,20 +64,22 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 			return;
 		}
 		
-		if (entity.getId() == null)
+		if (StringUtils.isBlank(entity.getId()))
 			entity.setId(UUID.randomUUID().toString());
 		setRevision(entity);
 		
 		org.opensrp.domain.postgres.Stock pgStock = convert(entity, null);
 		if (pgStock == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = stockMapper.insertSelectiveAndSetId(pgStock);
 		
 		if (rowsAffected < 1 || pgStock.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateServerVersion(pgStock, entity);
 		
 		StockMetadata stockMetadata = createMetadata(entity, pgStock.getId());
 		if (stockMetadata != null) {
@@ -80,6 +88,17 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		
 	}
 	
+	private void updateServerVersion(org.opensrp.domain.postgres.Stock pgStock, Stock entity) {
+		long serverVersion = stockMapper.selectServerVersionByPrimaryKey(pgStock.getId());
+		entity.setServerVersion(serverVersion);
+		pgStock.setJson(entity);
+		int rowsAffected = stockMapper.updateByPrimaryKeySelective(pgStock);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
+	@Transactional
 	@Override
 	public void update(Stock entity) {
 		if (entity == null) {
@@ -88,23 +107,26 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		
 		Long id = retrievePrimaryKey(entity);
 		if (id == null) { // Stock not added
-			return;
+			throw new IllegalStateException();
 		}
 		
 		setRevision(entity);
 		org.opensrp.domain.postgres.Stock pgStock = convert(entity, id);
 		if (pgStock == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+	
+		
+		int rowsAffected = stockMapper.updateByPrimaryKeyAndGenerateServerVersion(pgStock);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+		updateServerVersion(pgStock, entity);
 		
 		StockMetadata stockMetadata = createMetadata(entity, id);
 		if (stockMetadata == null) {
-			return;
-		}
-		
-		int rowsAffected = stockMapper.updateByPrimaryKey(pgStock);
-		if (rowsAffected < 1) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		StockMetadataExample stockMetadataExample = new StockMetadataExample();
