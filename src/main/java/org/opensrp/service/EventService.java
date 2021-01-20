@@ -39,9 +39,13 @@ public class EventService {
 
 	public static final String OUT_OF_AREA_SERVICE = "Out of Area Service";
 
+	public static final String NEW_OUT_OF_AREA_SERVICE = "out_of_area_service";
+
 	public static final String NFC_CARD_IDENTIFIER = "NFC_Card_Identifier";
 
 	public static final String CARD_ID_PREFIX = "c_";
+
+	private static final String OPENSRP_ID = "opensrp_id";
 
 	private final EventsRepository allEvents;
 
@@ -196,7 +200,9 @@ public class EventService {
 	 */
 	public synchronized Event processOutOfArea(Event event) {
 		try {
-			String identifier = event.getIdentifier(Client.ZEIR_ID);
+			String identifier = StringUtils.isBlank(event.getIdentifier(Client.ZEIR_ID)) ?
+					event.getIdentifier(OPENSRP_ID) : event.getIdentifier(Client.ZEIR_ID);
+
 			if (StringUtils.isNotBlank(event.getBaseEntityId()) || StringUtils.isBlank(identifier) ) {
 				return event;
 			}
@@ -217,27 +223,37 @@ public class EventService {
 				if (existingEvents == null || existingEvents.isEmpty()) {
 					return event;
 				}
-
 				Event birthRegEvent = existingEvents.get(0);
-				event.getIdentifiers().remove(Client.ZEIR_ID.toUpperCase());
-				event.setBaseEntityId(client.getBaseEntityId());
-				//Remove identifier since entity id is present, also create new service with the right location and provider
-				if (event.getEventType().startsWith(OUT_OF_AREA_SERVICE) && (
-						event.getEventType().contains(GROWTH_MONITORING_EVENT) || event.getEventType().contains(VACCINATION_EVENT))) {
-					String eventType = event.getEventType().contains(GROWTH_MONITORING_EVENT) ? GROWTH_MONITORING_EVENT
-							: event.getEventType().contains(VACCINATION_EVENT) ? VACCINATION_EVENT : null;
-					if (eventType != null) {
-						Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, eventType);
-						return addEvent(newEvent, birthRegEvent.getProviderId());
-					}
-				}
+				createOutOfCatchmentService(event, client, birthRegEvent);
 			}
 		}
 		catch (Exception e) {
-			logger.error("", e);
+			logger.error("Error processing out of catchment service", e);
 		}
 
 		return event;
+	}
+
+	private void createOutOfCatchmentService(Event event, org.smartregister.domain.Client client, Event birthRegEvent) {
+		event.setBaseEntityId(client.getBaseEntityId());
+
+		//Remove case sensitive identifiers
+		TreeMap<String, String> newIdentifiers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+		newIdentifiers.putAll(event.getIdentifiers());
+		newIdentifiers.remove(Client.ZEIR_ID);
+		newIdentifiers.remove(OPENSRP_ID);
+		event.setIdentifiers(newIdentifiers);
+
+		//Remove identifier since entity id is present, also create new service with the right location and provider
+		if ((event.getEventType().startsWith(OUT_OF_AREA_SERVICE) || event.getEventType().startsWith(NEW_OUT_OF_AREA_SERVICE)) && (
+				event.getEventType().contains(GROWTH_MONITORING_EVENT) || event.getEventType().contains(VACCINATION_EVENT))) {
+			String eventType = event.getEventType().toLowerCase().contains(GROWTH_MONITORING_EVENT.toLowerCase()) ? GROWTH_MONITORING_EVENT
+					: event.getEventType().toLowerCase().contains(VACCINATION_EVENT.toLowerCase()) ? VACCINATION_EVENT : null;
+			if (eventType != null) {
+				Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, eventType);
+				addEvent(newEvent, birthRegEvent.getProviderId());
+			}
+		}
 	}
 
 	private Event getNewOutOfAreaServiceEvent(Event event, Event birthRegEvent, String eventType) {
@@ -257,6 +273,7 @@ public class EventService {
 		newEvent.setObs(event.getObs());
 		newEvent.setTeam(birthRegEvent.getTeam());
 		newEvent.setTeamId(birthRegEvent.getTeamId());
+		newEvent.setIdentifiers(birthRegEvent.getIdentifiers());
 		logger.info(String.format("New %s event with created with id %s", newEvent.getEventType(), newEvent.getFormSubmissionId()));
 		return newEvent;
 	}
