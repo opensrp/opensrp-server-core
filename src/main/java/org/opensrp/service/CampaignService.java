@@ -35,7 +35,6 @@ public class CampaignService {
 	public Campaign addCampaign(Campaign campaign) {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		campaign.setServerVersion(campaignRepository.getNextServerVersion());
 		campaignRepository.add(campaign);
 		return campaign;
 	}
@@ -43,7 +42,6 @@ public class CampaignService {
 	public Campaign updateCampaign(Campaign campaign) {
 		if (StringUtils.isBlank(campaign.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		campaign.setServerVersion(campaignRepository.getNextServerVersion());
 		campaignRepository.update(campaign);
 		return campaign;
 	}

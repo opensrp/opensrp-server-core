@@ -27,4 +27,8 @@ public interface CustomClientMapper extends ClientMapper {
 	        @Param("relationshipId") String relationshipId);
 	
 	List<Client> selectByRelationShip(String relationshipId);
+	
+	Long selectServerVersionByPrimaryKey(Long id);
+	
+	int updateByPrimaryKeyAndGenerateServerVersion(Client record);
 }

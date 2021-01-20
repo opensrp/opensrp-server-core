@@ -13,4 +13,8 @@ public interface CustomReportMapper extends ReportMapper {
 	List<Report> selectByIdentifier(@Param("identifier") String identifier, @Param("offset") int offset,
 	        @Param("limit") int limit);
 	
+	Long selectServerVersionByPrimaryKey(Long id);
+	
+	int updateByPrimaryKeyAndGenerateServerVersion(Report report);
+	
 }

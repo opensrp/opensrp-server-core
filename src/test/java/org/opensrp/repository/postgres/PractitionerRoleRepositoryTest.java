@@ -9,6 +9,7 @@ import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.PractitionerRoleSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,9 +26,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
 
     @BeforeClass
     public static void bootStrap() {
-        tableNames.add("team.organization");
-        tableNames.add("team.practitioner");
-        tableNames.add("team.practitioner_role");
+        tableNames= Arrays.asList("team.organization","team.practitioner","team.practitioner_role");
     }
 
     @Override

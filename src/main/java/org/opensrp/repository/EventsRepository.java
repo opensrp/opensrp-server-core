@@ -93,5 +93,7 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	 * @return baseEntityIds in a location
 	 */
 	List<String> findBaseEntityIdsByLocation(String locationId);
+
+	List<org.opensrp.domain.postgres.Event> getEventData(String planIdentifier, String eventType, Date fromDate, Date toDate);
 	
 }

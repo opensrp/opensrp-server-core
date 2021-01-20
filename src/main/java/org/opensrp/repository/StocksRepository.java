@@ -2,10 +2,12 @@ package org.opensrp.repository;
 
 import java.util.List;
 
-import org.opensrp.domain.Stock;
+import org.smartregister.domain.StockAndProductDetails;
+import org.smartregister.domain.Stock;
 import org.opensrp.search.StockSearchBean;
+import org.smartregister.pathevaluator.dao.StockDao;
 
-public interface StocksRepository extends BaseRepository<Stock> {
+public interface StocksRepository extends BaseRepository<Stock>, StockDao {
 	
 	List<Stock> findAllByProviderid(String providerid);
 	
@@ -26,5 +28,9 @@ public interface StocksRepository extends BaseRepository<Stock> {
 	void delete(Long stockId);
 
 	public List<Stock> findStocksByLocationId(StockSearchBean stockSearchBean);
-	
+
+	public List<StockAndProductDetails> getInventoryWithProductDetails(List<String> locations);
+
+	public List<StockAndProductDetails> getInventoryWithProductDetailsByStockId(String stockId);
+
 }

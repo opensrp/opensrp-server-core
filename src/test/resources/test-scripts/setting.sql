@@ -54,3 +54,5 @@ INSERT INTO core.settings_metadata (id, settings_id, document_id, identifier, se
     'SettingsConfiguration', '13', 'test_5', 'my tests', 'Lots and lots of new tests', null),
 (16, 14, '1213', 'global_configs13', 1, null, null, null, null, '7e2b3029-a79b-4479-7196-938f01ac5bcd', null,
     'SettingsConfiguration', '13', 'test_6', 'my tests', 'Lots and lots of new tests', null);
+
+    SELECT setval('core.setting_server_version_seq',(SELECT max(json->>'serverVersion')::bigint+1 FROM core.settings));
