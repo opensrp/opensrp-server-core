@@ -73,7 +73,7 @@ public class PractitionerServiceTest {
     @Test
     public void testGetPractitionerByUserId() {
         Practitioner expectedPractitioner = initTestPractitioner();
-        when(practitionerRepository.get(anyString())).thenReturn(expectedPractitioner);
+        when(practitionerRepository.getPractitionerByUserId(anyString())).thenReturn(expectedPractitioner);
 
         Practitioner practitioner = practitionerService.getPractitionerByUserId(expectedPractitioner.getUserId());
         verify(practitionerRepository).getPractitionerByUserId(anyString());
