@@ -28,7 +28,7 @@
 	      </if>
 	      nextVal('core.location_server_version_seq'),
 			<if test="geometry != null">
-		  ST_GeomFromGeoJSON(#{geometry,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.GeometryTypeHandler}) AS geometry
+				ST_GeomFromGeoJSON('{"type":"MultiPolygon","coordinates":[102.70283890000002,12.099235999999967]}')
 			</if>
 	    </trim>
 	</insert>
