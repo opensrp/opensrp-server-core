@@ -273,7 +273,7 @@ public class EventService {
 		newEvent.setObs(event.getObs());
 		newEvent.setTeam(birthRegEvent.getTeam());
 		newEvent.setTeamId(birthRegEvent.getTeamId());
-		newEvent.setIdentifiers(birthRegEvent.getIdentifiers());
+		newEvent.setIdentifiers(event.getIdentifiers());
 		logger.info(String.format("New %s event with created with id %s", newEvent.getEventType(), newEvent.getFormSubmissionId()));
 		return newEvent;
 	}
