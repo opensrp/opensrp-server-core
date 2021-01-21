@@ -2,11 +2,12 @@ package org.opensrp.repository.postgres;
 
 import java.util.List;
 
-import org.smartregister.domain.Client;
+import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.SearchRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
+import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -17,7 +18,7 @@ public class SearchRepositoryImpl implements SearchRepository {
 	private CustomClientMetadataMapper clientMetadataMapper;
 	
 	@Autowired
-	private ClientsRepositoryImpl clientsRepository;
+	private ClientsRepository clientsRepository;
 	
 	@Override
 	public List<Client> findByCriteria(ClientSearchBean clientSearchBean, String firstName, String middleName,

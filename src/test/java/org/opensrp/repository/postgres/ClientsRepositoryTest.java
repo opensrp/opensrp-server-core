@@ -1,7 +1,6 @@
 package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -17,15 +16,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.smartregister.domain.Client;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
+import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -39,6 +40,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	protected Set<String> getDatabaseScripts() {
 		Set<String> scripts = new HashSet<String>();
 		scripts.add("client.sql");
+		scripts.add("event.sql");
 		return scripts;
 	}
 	
@@ -80,6 +82,7 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		client.withDateVoided(new DateTime());
 		clientsRepository.add(client);
 		assertNull(clientsRepository.findByBaseEntityId(client.getBaseEntityId()));
+		MatcherAssert.assertThat(savedClient.getServerVersion(), Matchers.greaterThan(5l));
 		
 	}
 	
@@ -89,12 +92,14 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		client.setFirstName("Hummel");
 		client.setLastName("Basialis");
 		client.withIdentifier("ZEIR_ID", "09876-98");
+		long serverVersion=client.getServerVersion();
 		clientsRepository.update(client);
 		
 		Client updatedClient = clientsRepository.get(client.getId());
 		assertEquals("Hummel", updatedClient.getFirstName());
 		assertEquals("Basialis", updatedClient.getLastName());
 		assertEquals("09876-98", client.getIdentifier("ZEIR_ID"));
+		MatcherAssert.assertThat(updatedClient.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 		//test update with voided date deletes client
 		updatedClient.setDateVoided(new DateTime());
@@ -313,17 +318,26 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		searchBean = new ClientSearchBean();
 		searchBean.setLastEditFrom(new DateTime("2018-03-13T12:57:05.652"));
 		searchBean.setLastEditTo(new DateTime());
+
+		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+		
+		addressSearchBean.setAddressType("usual_residence");
+		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+		
+		addressSearchBean.setAddressType("usual_residence");
+		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+		Client testClient = new Client("f67823b0-378e-4a35-93fc-bb00def74e2f").withBirthdate(new DateTime("2017-03-31"), true)
+				.withGender("Male").withFirstName("xobili").withLastName("mbangwa");
+		testClient.setLocationId("123");
+		clientsRepository.add(testClient);
 		List<String> locationIds = new ArrayList<>();
 		locationIds.add("123");
 		searchBean.setLocations(locationIds);
-		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
-		
-		addressSearchBean.setAddressType("usual_residence");
-		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
-		
-		addressSearchBean.setAddressType("usual_residence");
-		assertEquals(6, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
-		
+		searchBean = new ClientSearchBean();
+		searchBean.setLocations(locationIds);
+		addressSearchBean = new AddressSearchBean();
+		assertEquals(1, clientsRepository.findByCriteria(searchBean, addressSearchBean).size());
+
 		//test deleted clients
 		for (Client client : clientsRepository.findByCriteria(searchBean, addressSearchBean))
 			clientsRepository.safeRemove(client);
@@ -430,15 +444,11 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		client.setServerVersion(0l);
 		clientsRepository.update(client);
 		
-		client = clientsRepository.findByEmptyServerVersion().get(0);
-		assertEquals("94f3e8fb-2f05-4fca-8119-2b593d1962eb", client.getBaseEntityId());
-		assertEquals("Fith", client.getFirstName());
-		assertEquals("2018-03-01", client.getBirthdate().toLocalDate().toString());
-		assertEquals("218224-4", client.getIdentifier("ZEIR_ID"));
+		assertTrue(clientsRepository.findByEmptyServerVersion().isEmpty());
 		
 		//test deleted clients
 		clientsRepository.safeRemove(client);
-		assertFalse(clientsRepository.findByEmptyServerVersion().isEmpty());
+		assertTrue(clientsRepository.findByEmptyServerVersion().isEmpty());
 		
 	}
 

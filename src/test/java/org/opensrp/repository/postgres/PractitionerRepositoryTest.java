@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +25,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
 
     @BeforeClass
     public static void bootStrap() {
-        tableNames.add("team.practitioner");
+        tableNames= Collections.singletonList("team.practitioner");
     }
 
     @Override

@@ -10,7 +10,25 @@ import org.smartregister.pathevaluator.dao.TaskDao;
 
 public interface TaskRepository extends BaseRepository<Task>, TaskDao {
 
+	/**
+	 * Gets task for a plan and jurisdiction whose server version is >= that serverVersion
+	 * @param plan the plan identifier
+	 * @param group the jurisdiction identifier
+	 * @param serverVersion the server version to filter with
+	 * @return tasks matching the criteria
+	 */
 	List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion);
+	
+
+	/**
+	 * Gets task for a plan and jurisdiction whose server version is >= that serverVersion
+	 * @param plan the plan identifier
+	 * @param group the jurisdiction identifier
+	 * @param serverVersion the server version to filter with
+	 * @param returnPk flag that controls if rowId will be returned
+	 * @return tasks matching the criteria
+	 */
+	List<Task> getTasksByPlanAndGroup(String plan, String group, long serverVersion,boolean returnPk);
 
 	List<Task> findByEmptyServerVersion();
 

@@ -86,9 +86,9 @@ public class StockServiceTest extends BaseRepositoryTest {
 	public void populateDatabase() throws SQLException {
 		super.populateDatabase();
 		stockService = new StockService(stocksRepository, productCatalogueService, physicalLocationService, inventoryDataValidator);
-		Stock stock1 = new Stock(Long.parseLong("123"), "VT", "TT", "4-2", 10, Long.parseLong("20062017"), "TF",
+		Stock stock1 = new Stock("123", "VT", "TT", "4-2", 10, Long.parseLong("20062017"), "TF",
 		        Long.parseLong("20062017"), Long.parseLong("12345"));
-		Stock stock2 = new Stock(Long.parseLong("123"), "VT", "TT", "4-2", 10, Long.parseLong("20062017"), "TF",
+		Stock stock2 = new Stock("123", "VT", "TT", "4-2", 10, Long.parseLong("20062017"), "TF",
 		        Long.parseLong("20062017"), Long.parseLong("12345"));
 		stockService.addStock(stock1);
 		stockService.addStock(stock2);
@@ -96,7 +96,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 	
 	@Test
 	public void shouldSaveStock() {
-		Stock stock = new Stock(Long.parseLong("124"), "VT1", "TT1", "4-2", 10, Long.parseLong("20062017"), "	TF",
+		Stock stock = new Stock("124", "VT1", "TT1", "4-2", 10, Long.parseLong("20062017"), "	TF",
 		        Long.parseLong("20062017"), Long.parseLong("12345"));
 		
 		Stock savedStock = stockService.addorUpdateStock(stock);
@@ -109,16 +109,16 @@ public class StockServiceTest extends BaseRepositoryTest {
 	public void shouldUpdateStockWithSaveorUpdate() {
 		List<Stock> stocks = stockService.findAllByProviderid("4-2");
 		for (Stock stock : stocks) {
-			stock.setVaccine_type_id("12334");
-			stock.setTransaction_type("Restocking_1");
+			stock.setVaccineTypeId("12334");
+			stock.setTransactionType("Restocking_1");
 			stock.setValue(stock.getValue() * 2);
 			stockService.addorUpdateStock(stock);
 		}
 		stocks = stockService.findAllByProviderid("4-2");
 		for (Stock savedStock : stocks) {
 			Assert.assertEquals(0, Minutes.minutesBetween(savedStock.getDateEdited(), DateTime.now()).getMinutes());
-			Assert.assertEquals("12334", savedStock.getVaccine_type_id());
-			Assert.assertEquals("Restocking_1", savedStock.getTransaction_type());
+			Assert.assertEquals("12334", savedStock.getVaccineTypeId());
+			Assert.assertEquals("Restocking_1", savedStock.getTransactionType());
 			Assert.assertEquals(20, savedStock.getValue());
 		}
 	}
@@ -127,23 +127,23 @@ public class StockServiceTest extends BaseRepositoryTest {
 	public void shouldUpdateStock() {
 		List<Stock> stocks = stockService.findAllByProviderid("4-2");
 		for (Stock stock : stocks) {
-			stock.setVaccine_type_id("12334");
-			stock.setTransaction_type("Restocking_1");
+			stock.setVaccineTypeId("12334");
+			stock.setTransactionType("Restocking_1");
 			stock.setValue(stock.getValue() * 2);
 			stockService.updateStock(stock);
 		}
 		stocks = stockService.findAllByProviderid("4-2");
 		for (Stock savedStock : stocks) {
 			Assert.assertEquals(0, Minutes.minutesBetween(savedStock.getDateEdited(), DateTime.now()).getMinutes());
-			Assert.assertEquals("12334", savedStock.getVaccine_type_id());
-			Assert.assertEquals("Restocking_1", savedStock.getTransaction_type());
+			Assert.assertEquals("12334", savedStock.getVaccineTypeId());
+			Assert.assertEquals("Restocking_1", savedStock.getTransactionType());
 			Assert.assertEquals(20, savedStock.getValue());
 		}
 	}
 	
 	@Test(expected = IllegalArgumentException.class)
 	public void shouldNotUpdateStockForNewStock() {
-		Stock stock = new Stock(Long.parseLong("124"), "VT1", "TT1", "4-2", 10, Long.parseLong("20062017"), "	TF",
+		Stock stock = new Stock("124", "VT1", "TT1", "4-2", 10, Long.parseLong("20062017"), "	TF",
 		        Long.parseLong("20062017"), Long.parseLong("12345"));
 		stockService.updateStock(stock);
 	}
@@ -181,6 +181,27 @@ public class StockServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void testAddInventoryWithProviderId() {
+		Inventory inventory = createInventory();
+		inventory.setProviderId("test provider");
+		List<String> donorsList = createDonorList();
+		List<String> sectionsList = createSectionsList();
+		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
+		when(inventoryDataValidator.getValidDonors()).thenReturn(donorsList);
+		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(sectionsList);
+		when(physicalLocationService.getStructure(anyString(), anyBoolean())).thenReturn(createLocation());
+		stockService.addInventory(inventory, "John");
+		StockSearchBean stockSearchBean =  new StockSearchBean();
+		List<String> locations = new ArrayList<>();
+		locations.add("loc-1");
+		stockSearchBean.setLocations(locations);
+		stockSearchBean.setPageNumber(1);
+		List<Stock> stockList = stockService.getStocksByServicePointId(stockSearchBean);
+		Assert.assertEquals(1, stockList.size());
+		Assert.assertEquals("test provider", stockList.get(0).getProviderid());
+	}
+
+	@Test
 	public void testUpdate() {
 		Inventory inventory = createInventory();
 		List<String> donorsList = createDonorList();
@@ -214,7 +235,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		csvStocks.add(csvRow);
 
 		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(physicalLocationService.getLocation(anyString(), anyBoolean(), anyBoolean())).thenReturn(createLocation());
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.convertandPersistInventorydata(csvStocks, "Test user");
 		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 	}
@@ -236,7 +257,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		csvStocks.add(csvRow);
 
 		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(physicalLocationService.getLocation(anyString(), anyBoolean(), anyBoolean())).thenReturn(createLocation());
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.convertandPersistInventorydata(csvStocks, "Test user");
 		Assert.assertEquals(1,csvBulkImportDataSummary.getFailedRecordSummaryList().size());
 	}

@@ -32,7 +32,6 @@ import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
@@ -52,8 +51,8 @@ public class PhysicalLocationService {
 		this.locationRepository = locationRepository;
 	}
 	
-	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
-		return locationRepository.get(id, returnGeometry);
+	public PhysicalLocation getLocation(String id, boolean returnGeometry, boolean includeInactive) {
+		return locationRepository.get(id, returnGeometry, includeInactive);
 	}
 	
 	public PhysicalLocation getLocation(String id, boolean returnGeometry, int version) {
@@ -71,7 +70,7 @@ public class PhysicalLocationService {
 	public void addOrUpdate(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
-		if ((physicalLocation.isJurisdiction() && getLocation(physicalLocation.getId(), DEFAULT_RETURN_BOOLEAN) == null)
+		if ((physicalLocation.isJurisdiction() && getLocation(physicalLocation.getId(), DEFAULT_RETURN_BOOLEAN, false) == null)
 		        || (!physicalLocation.isJurisdiction()
 		                && getStructure(physicalLocation.getId(), DEFAULT_RETURN_BOOLEAN) == null)) {
 			add(physicalLocation);
@@ -85,8 +84,6 @@ public class PhysicalLocationService {
 	public void add(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
-		physicalLocation.setServerVersion(physicalLocation.isJurisdiction() ? locationRepository.getNextServerVersion()
-		        : locationRepository.getStructureNextServerVersion());
 		locationRepository.add(physicalLocation);
 	}
 	
@@ -95,8 +92,6 @@ public class PhysicalLocationService {
 	public void update(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
-		physicalLocation.setServerVersion(physicalLocation.isJurisdiction() ? locationRepository.getNextServerVersion()
-		        : locationRepository.getStructureNextServerVersion());
 		PhysicalLocation existingEntity = locationRepository.findLocationByIdentifierAndStatus(physicalLocation.getId(),
 		    Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()), true);
 		boolean locationHasNoUpdates = isGeometryCoordsEqual(physicalLocation, existingEntity);
@@ -105,8 +100,6 @@ public class PhysicalLocationService {
 		} else {
 			//make existing location inactive
 			existingEntity.getProperties().setStatus(LocationProperty.PropertyStatus.INACTIVE);
-			existingEntity.setServerVersion(physicalLocation.isJurisdiction() ? locationRepository.getNextServerVersion()
-			        : locationRepository.getStructureNextServerVersion());
 			locationRepository.update(existingEntity);
 			
 			// create new location
@@ -293,8 +286,8 @@ public class PhysicalLocationService {
 	 * @param limit upper limit on number of jurisdictions to fetch
 	 * @return list of jurisdictions
 	 */
-	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit) {
-		return locationRepository.findAllLocations(returnGeometry, serverVersion, limit);
+	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit, boolean includeInactive) {
+		return locationRepository.findAllLocations(returnGeometry, serverVersion, limit, includeInactive);
 	};
 	
 	/**

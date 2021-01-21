@@ -1,10 +1,10 @@
 package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,14 +13,16 @@ import java.util.Set;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
+import org.opensrp.repository.TaskRepository;
 import org.opensrp.search.TaskSearchBean;
 import org.smartregister.domain.Task;
 import org.smartregister.domain.Task.TaskPriority;
 import org.smartregister.domain.Task.TaskStatus;
-import org.opensrp.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class TaskRepositoryTest extends BaseRepositoryTest {
@@ -114,6 +116,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals(TaskStatus.READY, addedTask.getStatus());
 		assertEquals("worker12", addedTask.getOwner());
 		assertEquals(TaskPriority.URGENT, addedTask.getPriority());
+		MatcherAssert.assertThat(addedTask.getServerVersion(), Matchers.greaterThan(5l));
 
 	}
 
@@ -145,6 +148,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setBusinessStatus("Non Residential");
 		DateTime now = new DateTime();
 		task.setLastModified(now);
+		long serverVersion=task.getServerVersion();
 		taskRepository.update(task);
 
 		Task updatedTask = taskRepository.get("iyr-998njoo");
@@ -152,6 +156,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Non Residential", updatedTask.getBusinessStatus());
 		assertEquals(TaskStatus.FAILED, updatedTask.getStatus());
 		assertEquals(now, updatedTask.getLastModified());
+		MatcherAssert.assertThat(updatedTask.getServerVersion(), Matchers.greaterThan(serverVersion));
 	}
 
 	@Test
@@ -166,14 +171,13 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 
 	}
 
-	@Test
+	@Test(expected = IllegalStateException.class)
 	public void testEditNonExistingObject() {
 		Task task = taskRepository.get("iyr-998njoo");
 
 		taskRepository.safeRemove(task);
 
 		taskRepository.update(task);
-		assertNull(taskRepository.get("iyr-998njoo"));
 
 	}
 
@@ -213,8 +217,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		taskRepository.update(task);
 
 		tasks = taskRepository.findByEmptyServerVersion();
-		assertEquals(1, tasks.size());
-		assertEquals("iyr-998njoo", tasks.get(0).getIdentifier());
+		assertEquals(0, tasks.size());
 
 	}
 

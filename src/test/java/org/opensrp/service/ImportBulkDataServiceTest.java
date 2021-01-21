@@ -90,7 +90,7 @@ public class ImportBulkDataServiceTest {
 		locationProperty.setName("test-loc-A");
 		physicalLocation.setProperties(locationProperty);
 
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(physicalLocation);
+		when(physicalLocationService.getLocation(anyString(), anyBoolean(), anyBoolean())).thenReturn(physicalLocation);
 		doNothing().when(organizationService).addOrganization(any(Organization.class));
 		doNothing().when(organizationService).assignLocationAndPlan(anyString(), anyString(), anyString(), any(Date.class),
 				nullable(Date.class));  //handles update case as well
@@ -117,7 +117,7 @@ public class ImportBulkDataServiceTest {
 		locationProperty.setName("test-loc-B");
 		physicalLocation.setProperties(locationProperty);
 
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(physicalLocation);
+		when(physicalLocationService.getLocation(anyString(), anyBoolean(), anyBoolean())).thenReturn(physicalLocation);
 		CsvBulkImportDataSummary csvBulkImportDataSummary = importBulkDataService
 				.convertandPersistOrganizationdata(csvOrganizations);
 
