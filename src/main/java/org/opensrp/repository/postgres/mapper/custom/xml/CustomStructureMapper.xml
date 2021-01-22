@@ -14,7 +14,7 @@
 	      <if test="json != null">
 	        json,
 	      </if>
-	      server_version
+	      server_version,
 			<if test="geometry != null">
 				geometry,
 			</if>
