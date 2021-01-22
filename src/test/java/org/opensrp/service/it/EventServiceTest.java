@@ -485,7 +485,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		Event expectedEvent = getEvent();
 		expectedEvent.setBaseEntityId(null);
 		expectedEvent.addIdentifier(ZEIR_ID.toUpperCase(), "zeirId");
-		Event actualEvent = eventService.processOutOfArea(expectedEvent,username);
+		Event actualEvent = eventService.processOutOfArea(expectedEvent);
 		
 		assertNull(actualEvent.getIdentifier(ZEIR_ID.toUpperCase()));
 		assertEquals(BASE_ENTITY_ID, actualEvent.getBaseEntityId());
@@ -496,7 +496,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		expectedEvent = getEvent();
 		expectedEvent.setBaseEntityId("");
 		expectedEvent.addIdentifier(ZEIR_ID.toUpperCase(), "zeirId");
-		actualEvent = eventService.processOutOfArea(expectedEvent,username);
+		actualEvent = eventService.processOutOfArea(expectedEvent);
 		
 		assertNull(actualEvent.getIdentifier(ZEIR_ID.toUpperCase()));
 		assertEquals(BASE_ENTITY_ID, actualEvent.getBaseEntityId());
@@ -518,7 +518,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		expectedEvent.setBaseEntityId(DIFFERENT_BASE_ENTITY_ID);
 		expectedEvent.addIdentifier(ZEIR_ID.toUpperCase(), "zeirId");
 		
-		Event actualEvent = eventService.processOutOfArea(expectedEvent,username);
+		Event actualEvent = eventService.processOutOfArea(expectedEvent);
 		
 		assertEquals("zeirId", actualEvent.getIdentifier(ZEIR_ID.toUpperCase()));
 		assertEquals(DIFFERENT_BASE_ENTITY_ID, actualEvent.getBaseEntityId());
@@ -537,7 +537,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		expectedEvent.setBaseEntityId(null);
 		expectedEvent.addIdentifier(ZEIR_ID.toUpperCase(), "zeirId");
 		
-		Event actualEvent = eventService.processOutOfArea(expectedEvent,username);
+		Event actualEvent = eventService.processOutOfArea(expectedEvent);
 		
 		assertEquals("zeirId", actualEvent.getIdentifier(ZEIR_ID.toUpperCase()));
 		assertNull(actualEvent.getBaseEntityId());
@@ -558,7 +558,7 @@ public class EventServiceTest extends BaseIntegrationTest {
 		Event expectedEvent = getEvent();
 		expectedEvent.setBaseEntityId(null);
 		expectedEvent.addIdentifier(ZEIR_ID.toUpperCase(), "zeirId");
-		Event actualEvent = eventService.processOutOfArea(expectedEvent,username);
+		Event actualEvent = eventService.processOutOfArea(expectedEvent);
 		
 		assertEquals("zeirId", actualEvent.getIdentifier(ZEIR_ID.toUpperCase()));
 		assertNull(actualEvent.getBaseEntityId());

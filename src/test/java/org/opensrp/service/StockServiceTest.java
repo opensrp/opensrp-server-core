@@ -240,7 +240,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		validationErrors.add(PRODUCT_CATALOG_DOES_NOT_EXISTS);
 
 		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
-		when(physicalLocationService.getLocation(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(physicalLocationService.getLocation(anyString(), anyBoolean(), anyBoolean())).thenReturn(createLocation());
 		when(inventoryDataValidator.getValidationErrors(anyString(),anyString(),anyString(),anyString(),anyString(),
 				anyString(),anyString(),anyString())).thenReturn(validationErrors);
 		CsvBulkImportDataSummary csvBulkImportDataSummary = stockService.validateBulkInventoryData(csvStocks);
@@ -263,7 +263,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		csvStocks.add(csvRow);
 
 		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
-		when(physicalLocationService.getStructure(anyString(), anyBoolean())).thenReturn(createLocation());
+		when(physicalLocationService.getStructure(anyString(), anyBoolean(), anyBoolean())).thenReturn(createLocation());
 		when(inventoryDataValidator.getValidDonors()).thenReturn(createDonors());
 		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(createUnicefSections());
 		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());

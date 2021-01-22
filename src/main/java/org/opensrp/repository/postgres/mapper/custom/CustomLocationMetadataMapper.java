@@ -14,7 +14,7 @@ import org.opensrp.search.LocationSearchBean;
 
 public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	
-	Location findById(@Param("id") String id, @Param("geometry") boolean returnGeometry);
+	Location findById(@Param("id") String id, @Param("geometry") boolean returnGeometry, @Param("includeInactive") boolean includeInactive);
 
 	List<Location> selectMany(@Param("example") LocationMetadataExample locationMetadataExample, @Param("offset") int offset,
 	        @Param("limit") int limit);

@@ -54,7 +54,7 @@ public class EventsRouter {
 	}
 	
 	/**
-	 * @param event
+	 * @param _event Event to route
 	 */
 	public void route(Event _event) {
 		try {
