@@ -229,42 +229,31 @@ public class EventServiceTest extends BaseRepositoryTest {
 	public void testProcessOutOfArea() throws SQLException {
 		scripts.add("client.sql");
 		populateDatabase();
-		Event event = new Event().withEventType("Vaccination").withProviderId("tester111")
+		Event event = new Event().withEventType("Out of Area Service - Vaccination").withProviderId("tester111")
 		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "218229-3");
-		Event outOfAreaEvent = eventService.processOutOfArea(event, username);
-		
-		assertNotNull(outOfAreaEvent);
-		assertNotNull(outOfAreaEvent.getDetails());
-		assertEquals(1, outOfAreaEvent.getDetails().size());
-		assertEquals("biddemo", outOfAreaEvent.getDetails().get("out_of_catchment_provider_id"));
-		assertEquals("42abc582-6658-488b-922e-7be500c070f3", outOfAreaEvent.getLocationId());
-		assertEquals("biddemo", outOfAreaEvent.getProviderId());
-		
-		event = new Event().withEventType("Out of Area Service").withProviderId("tester111")
-		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "218229-3");
-		
-		outOfAreaEvent = eventService.processOutOfArea(event, username);
+
+		Event outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(20, eventService.getAll().size());
+		assertEquals(21, eventService.getAll().size());
 		
-		//Test with card identifier type
-		event = new Event().withEventType("Out of Area Service").withProviderId("tester112")
+		//Test with card identifier type. Should not create any service because there is no client with that identifier
+		event = new Event().withEventType("Out of Area Service - Vaccination").withProviderId("tester112")
 		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "c_2182291985");
-		
-		outOfAreaEvent = eventService.processOutOfArea(event, username);
+
+		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(20, eventService.getAll().size());
+		assertEquals(21, eventService.getAll().size());
 		
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		event = new Event().withEventType("Out of Area Service - Growth Monitoring")
 		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs)
 		        .withIdentifier(Client.ZEIR_ID, "218229-3");
 		
-		outOfAreaEvent = eventService.processOutOfArea(event, username);
+		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
 		
-		assertEquals(21, eventService.getAll().size());
+		assertEquals(22, eventService.getAll().size());
 		
 	}
 	
