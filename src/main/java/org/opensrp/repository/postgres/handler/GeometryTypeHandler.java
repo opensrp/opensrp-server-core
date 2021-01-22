@@ -21,7 +21,7 @@ public class GeometryTypeHandler extends BaseTypeHandler implements TypeHandler<
 			if (parameter != null) {
 				String jsonString = gson.toJson(parameter);
 				PGobject jsonObject = new PGobject();
-				jsonObject.setType("jsonb");
+				jsonObject.setType("json");
 				jsonObject.setValue(jsonString);
 				ps.setObject(i, jsonObject, jdbcType.TYPE_CODE);
 			}
