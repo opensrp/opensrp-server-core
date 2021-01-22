@@ -79,7 +79,7 @@ public class InventoryDataValidator {
 		productCatalogue = productCatalogId != null ?
 				productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId), "") :
 				null;
-		physicalLocation = locationId != null ? physicalLocationService.getStructure(locationId, true, false) : null;
+		physicalLocation = locationId != null ? physicalLocationService.getStructure(locationId, true) : null;
 
 		validateRequiredFields(locationId, productCatalogId, deliveryDateInString, section, poNumber);
 		validateSerialNumber(productCatalogue, serialNumber);
