@@ -263,7 +263,7 @@ public class StockServiceTest extends BaseRepositoryTest {
 		csvStocks.add(csvRow);
 
 		when(productCatalogueService.getProductCatalogue(anyLong(), anyString())).thenReturn(createProductCatalogue());
-		when(physicalLocationService.getStructure(anyString(), anyBoolean(), anyBoolean())).thenReturn(createLocation());
+		when(physicalLocationService.getStructure(anyString(), anyBoolean())).thenReturn(createLocation());
 		when(inventoryDataValidator.getValidDonors()).thenReturn(createDonors());
 		when(inventoryDataValidator.getValidUnicefSections()).thenReturn(createUnicefSections());
 		when(productCatalogueService.getProductCatalogueByName(anyString())).thenReturn(createProductCatalogue());
