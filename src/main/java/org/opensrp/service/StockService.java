@@ -238,29 +238,43 @@ public class StockService {
 	}
 
 	public CsvBulkImportDataSummary convertandPersistInventorydata(List<Map<String, String>> csvStocks, String userName) {
-
 		int rowCount = 0;
 		CsvBulkImportDataSummary csvBulkImportDataSummary = new CsvBulkImportDataSummary();
+		FailedRecordSummary failedRecordSummary;
 		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
 		Inventory inventory;
 		Integer totalRows = csvStocks.size();
 		Integer rowsProcessed = 0;
-		FailedRecordSummary failedRecordSummary;
 
-		for (Map<String, String> csvdata : csvStocks) {
-			try {
-				rowCount++;
-				inventory = createInventoryObject(csvdata);
-				addInventory(inventory, userName);
-				rowsProcessed++;
-			}
-			catch (Exception e) {
-				failedRecordSummary = new FailedRecordSummary();
-				List<String> validationError = new ArrayList<>();
-				failedRecordSummary.setRowNumber(rowCount);
-				validationError.add("Unknown error occurred" + e.getMessage());
-				failedRecordSummary.setReasonOfFailure(validationError);
-				failedRecordSummaries.add(failedRecordSummary);
+		try {
+			failedRecordSummaries = validateInventoryData(csvStocks);
+		}
+		catch (ParseException e) {
+			logger.error("Parse Exception occurred : " + e.getMessage(), e);
+			failedRecordSummary = new FailedRecordSummary();
+			List<String> validationError = new ArrayList<>();
+			failedRecordSummary.setRowNumber(rowCount);
+			validationError.add("Parse Exception occurred");
+			failedRecordSummary.setReasonOfFailure(validationError);
+			failedRecordSummaries.add(failedRecordSummary);
+		}
+
+		if (failedRecordSummaries.size() == 0) {
+			for (Map<String, String> csvdata : csvStocks) {
+				try {
+					rowCount++;
+					inventory = createInventoryObject(csvdata);
+					addInventory(inventory, userName);
+					rowsProcessed++;
+				}
+				catch (Exception e) {
+					failedRecordSummary = new FailedRecordSummary();
+					List<String> validationError = new ArrayList<>();
+					failedRecordSummary.setRowNumber(rowCount);
+					validationError.add("Unknown error occurred");
+					failedRecordSummary.setReasonOfFailure(validationError);
+					failedRecordSummaries.add(failedRecordSummary);
+				}
 			}
 		}
 
@@ -352,7 +366,11 @@ public class StockService {
 		stock.setTransactionType("Inventory");
 		stock.setLocationId(inventory.getServicePointId());
 		stock.setDeliveryDate(inventory.getDeliveryDate());
-		stock.setAccountabilityEndDate(accountabilityEndDate);
+		if (inventory.getAccountabilityEndDate() != null) {
+			stock.setAccountabilityEndDate(inventory.getAccountabilityEndDate());
+		} else {
+			stock.setAccountabilityEndDate(accountabilityEndDate);
+		}
 		stock.setDonor(inventory.getDonor());
 		stock.setSerialNumber(inventory.getSerialNumber());
 		customProperties.put("UNICEF section", inventory.getUnicefSection());
