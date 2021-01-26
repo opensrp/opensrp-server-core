@@ -412,4 +412,55 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, reformattedLocationHierarchy.size());
 	}
 
+	@Test
+	public void testUpdateWithNewSettings() {
+		SettingConfiguration settingConfiguration = new SettingConfiguration();
+		settingConfiguration.setTeamId("test_team");
+		settingConfiguration.setTeam("test_team");
+		settingConfiguration.setId("test_id");
+		settingConfiguration.setIdentifier("test_identifier");
+		settingConfiguration.setServerVersion(0L);
+
+		List<Setting> settings = new ArrayList<>();
+		Map<String, Setting> settingMap = new HashMap<>();
+		Setting setting = new Setting();
+		setting.setKey("key1");
+		setting.setValue("value1");
+		setting.setDescription("description1");
+		settings.add(setting);
+		settingMap.put("key1", setting);
+
+		settingConfiguration.setSettings(settings);
+		settingRepository.addSettings(settingConfiguration);
+
+		SettingConfiguration actualSettingConfiguration = settingRepository.get("test_id");
+		assertNotNull(actualSettingConfiguration);
+		assertEquals(1, actualSettingConfiguration.getSettings().size());
+		settings.clear();
+		settingMap.clear();
+		settings = actualSettingConfiguration.getSettings();
+		setting = settings.get(0);
+		setting.setValue("changedvalue10");
+		settings.add(setting);
+		settingMap.put("key1", setting);
+
+		setting = new Setting();
+		setting.setKey("key2");
+		setting.setValue("value20");
+		setting.setDescription("description20");
+		settings.add(setting);
+		settingMap.put("key2", setting);
+
+		actualSettingConfiguration.setSettings(settings);
+
+		settingRepository.update(actualSettingConfiguration);
+		SettingConfiguration updatedSettingConfiguration = settingRepository.get("test_id");
+		assertNotNull(updatedSettingConfiguration);
+		assertEquals(2, updatedSettingConfiguration.getSettings().size());
+		assertEquals("test_team", updatedSettingConfiguration.getTeam());
+		assertEquals("test_id", updatedSettingConfiguration.getId());
+		verifySettingsAreSame(settingMap, updatedSettingConfiguration.getSettings());
+
+	}
+
 }
