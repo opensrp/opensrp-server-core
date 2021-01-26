@@ -391,7 +391,7 @@ public class EventService {
 	}
 
 	@PreAuthorize("hasRole('EVENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
+	@PostFilter("hasRole('EVENT_VIEW_GLOBAL') or hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit) {
 		return allEvents.findEvents(eventSearchBean, sortBy, sortOrder, limit);
 	}
@@ -466,7 +466,7 @@ public class EventService {
 	}
 	
 	/**
-	 * This method is used to return a count of locations based on the provided parameters
+	 * This method is used to return a count of events based on the provided parameters
 	 * 
 	 * @param eventSearchBean object containing params to search by
 	 * @return returns a count of events matching the passed parameters
@@ -474,4 +474,13 @@ public class EventService {
 	public Long countEvents(EventSearchBean eventSearchBean) {
 		return allEvents.countEvents(eventSearchBean);
 	};
+
+	/**
+	 * This method is similar to {@link #findEventsByConceptAndValue(String, String)}. This method however does not enforce ACL
+	 * so that users can search events globally and not just those within their jurisdiction.
+	 */
+	public List<Event> findGlobalEventsByConceptAndValue(String concept, String conceptValue) {
+		return allEvents.findByConceptAndValue(concept, conceptValue);
+
+	}
 }

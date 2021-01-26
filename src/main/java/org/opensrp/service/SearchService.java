@@ -27,5 +27,14 @@ public class SearchService {
 	        Integer limit) {
 		return search.findByCriteria(clientSearchBean, firstName, middleName, lastName, limit);
 	}
+
+	/**
+	 * This method is similar to {@link #searchClient(ClientSearchBean, String, String, String, Integer)}. This method however does not enforce ACL
+	 * so that users can search clients globally and not just those within their jurisdiction.
+	 */
+	public List<Client> searchGlobalClient(ClientSearchBean clientSearchBean, String firstName, String middleName, String lastName,
+			Integer limit) {
+		return search.findByCriteria(clientSearchBean, firstName, middleName, lastName, limit);
+	}
 	
 }

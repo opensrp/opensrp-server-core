@@ -445,4 +445,21 @@ public class ClientService {
 	public long getNextServerVersion() {
 		return allClients.getNextServerVersion();
 	}
+
+
+	/**
+	 * This method is similar to {@link #findByFieldValue(String, List<String>)}. This method however does not enforce ACL
+	 * so that users can search clients globally and not just those within their jurisdiction.
+	 */
+	public List<Client> findGlobalByFieldValue(String field, List<String> ids) {
+		return allClients.findByFieldValue(field, ids);
+	}
+
+	/**
+	 * This method is similar to {@link #findByRelationship(String)}. This method however does not enforce ACL
+	 * so that users can search clients globally and not just those within their jurisdiction.
+	 */
+	public List<Client> findGlobalByRelationship(String relationalId) {
+		return allClients.findByRelationShip(relationalId);
+	}
 }
