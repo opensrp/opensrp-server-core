@@ -22,6 +22,7 @@ import static org.opensrp.util.constants.InventoryConstants.INVALID_DELIVERY_DAT
 import static org.opensrp.util.constants.InventoryConstants.INVALID_DONOR;
 import static org.opensrp.util.constants.InventoryConstants.INVALID_UNICEF_SECTION;
 import static org.opensrp.util.constants.InventoryConstants.INVALID_QUANTITY;
+import static org.opensrp.util.constants.InventoryConstants.INVALID_FORMAT_OF_DELIVERY_DATE;
 import static org.opensrp.util.constants.InventoryConstants.SERVICE_POINT_DOES_NOT_EXISTS;
 import static org.opensrp.util.constants.InventoryConstants.INVALID_PO_NUMBER;
 import static org.opensrp.util.constants.InventoryConstants.PRODUCT_CATALOG_DOES_NOT_EXISTS;
@@ -54,6 +55,17 @@ public class InventoryDataValidator {
 		this.validationErrors = validationErrors;
 	}
 
+	public InventoryDataValidator(PhysicalLocationService physicalLocationService,
+			ProductCatalogueService productCatalogueService, SettingService settingService) {
+		this.physicalLocationService = physicalLocationService;
+		this.productCatalogueService = productCatalogueService;
+		this.settingService = settingService;
+	}
+
+   public InventoryDataValidator() {
+
+   }
+
 	public List<String> getValidationErrors(String locationId, String productCatalogId, String deliveryDateInString,
 			String section, String poNumber, String serialNumber, String quantity, String donor)
 			throws ParseException {
@@ -62,19 +74,18 @@ public class InventoryDataValidator {
 		validDonors = getValidDonors();
 		validUnicefSections = getValidUnicefSections();
 
-		Date deliveryDate = deliveryDateInString != null ? convertStringToDate(deliveryDateInString) : null;
 		ProductCatalogue productCatalogue;
 		PhysicalLocation physicalLocation;
 		productCatalogue = productCatalogId != null ?
 				productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId), "") :
 				null;
-		physicalLocation = locationId != null ? physicalLocationService.getLocation(locationId, true, false) : null;
+		physicalLocation = locationId != null ? physicalLocationService.getStructure(locationId, true) : null;
 
 		validateRequiredFields(locationId, productCatalogId, deliveryDateInString, section, poNumber);
 		validateSerialNumber(productCatalogue, serialNumber);
 		validateProductCatalogue(productCatalogue);
 		validateLocation(physicalLocation);
-		validateDeliveryDate(deliveryDate);
+		validateDeliveryDate(deliveryDateInString);
 		validateQuantity(quantity);
 		validateUnicefSection(section);
 		validateDonor(donor);
@@ -112,8 +123,17 @@ public class InventoryDataValidator {
 		}
 	}
 
-	private void validateDeliveryDate(Date deliveryDate) {
-		if (deliveryDate.getTime() > new Date().getTime()) {
+	private void validateDeliveryDate(String deliveryDateInString) {
+		Date deliveryDate = null;
+		try {
+			deliveryDate = deliveryDateInString != null ? convertStringToDate(deliveryDateInString) : null;
+		}
+		catch (ParseException e) {
+			logger.error("Parse Exception occurred" + e.getMessage());
+			validationErrors.add(INVALID_FORMAT_OF_DELIVERY_DATE);
+		}
+
+		if (deliveryDate != null && deliveryDate.getTime() > new Date().getTime()) {
 			logger.error(INVALID_DELIVERY_DATE);
 			validationErrors.add(INVALID_DELIVERY_DATE);
 		}
@@ -142,7 +162,7 @@ public class InventoryDataValidator {
 	}
 
 	private void validatePoNumber(String poNumber) {
-		if (!isWholeNumber(poNumber)) {
+		if (poNumber != null && !isWholeNumber(poNumber)) {
 			logger.error(INVALID_PO_NUMBER);
 			validationErrors.add(INVALID_PO_NUMBER);
 		}
