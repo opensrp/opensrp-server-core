@@ -33,6 +33,8 @@ public class InventoryConstants {
 
 	public static final String INVALID_DELIVERY_DATE = "Delivery Date can not be a future date";
 
+	public static final String INVALID_FORMAT_OF_DELIVERY_DATE = "Delivery Date format is invalid; the required format is DD/MM/YYYY";
+
 	public static final String INVALID_QUANTITY = "Quantity should be a whole number and greater than or equal to 1";
 
 	public static final String INVALID_UNICEF_SECTION = "UNICEF section is not valid";

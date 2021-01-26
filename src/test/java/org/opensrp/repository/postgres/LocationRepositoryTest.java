@@ -1181,5 +1181,24 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		Long count = locationRepository.countAllLocations(0l);
 		assertEquals(Long.valueOf(2), count);
 	}
+
+	@Test
+	public void testFindAllLocations() {
+		List<PhysicalLocation> locations = locationRepository.findAllLocations(true, 0l, 10, true);
+        assertEquals(2,locations.size());
+		String uuid = UUID.randomUUID().toString();
+        PhysicalLocation physicalLocation = createLocation(uuid);
+		LocationProperty properties = new LocationProperty();
+		properties.setStatus(PropertyStatus.INACTIVE);
+		properties.setUid(uuid);
+		properties.setName("01_5");
+		physicalLocation.setProperties(properties);
+		locationRepository.add(physicalLocation);
+		List<PhysicalLocation> onlyActiveLocations = locationRepository.findAllLocations(true, 0l, 10, false);
+		assertEquals(2,onlyActiveLocations.size());
+		List<PhysicalLocation> locationList = locationRepository.findAllLocations(true, 0l, 10, true);
+		assertEquals(3,locationList.size());
+		assertEquals(locationList.get(2).getProperties().getStatus(), PropertyStatus.INACTIVE);
+	}
 	
 }

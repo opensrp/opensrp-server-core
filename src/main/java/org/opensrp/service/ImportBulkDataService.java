@@ -216,7 +216,7 @@ public class ImportBulkDataService {
 
 		if (csvdata.containsKey(LOCATION_ID_KEY)) {
 			locationIdFromCSV = getValueFromMap(LOCATION_ID_KEY, csvdata);
-			physicalLocation = physicalLocationService.getLocation(locationIdFromCSV, false);
+			physicalLocation = physicalLocationService.getLocation(locationIdFromCSV, false, false);
 			if (locationNameFromCSV != null && physicalLocation != null && physicalLocation.getProperties() != null
 					&& physicalLocation.getProperties()
 					.getName().equals(locationNameFromCSV)) {
