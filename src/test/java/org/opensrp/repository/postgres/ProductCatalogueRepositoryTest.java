@@ -1,7 +1,9 @@
 package org.opensrp.repository.postgres;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.opensrp.domain.ProductCatalogue;
+import org.smartregister.domain.ProductCatalogue;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.search.ProductCatalogueSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,16 +36,21 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 		productCatalogueRepository.add(productCatalogue);
 		List<ProductCatalogue> productCatalogueList = productCatalogueRepository.getAll("http://localhost:8080/opensrp");
 		assertEquals(2,productCatalogueList.size());
+		for (ProductCatalogue pc : productCatalogueList) {
+			MatcherAssert.assertThat(pc.getServerVersion(), Matchers.greaterThanOrEqualTo(123344l));
+		}
 	}
 
 	@Test
 	public void testUpdate() {
 		ProductCatalogue productCatalogue = productCatalogueRepository.getById(1l, "http://localhost:8080/opensrp");
 		productCatalogue.setProductName("Updated product name");
+		long serverVersion=productCatalogue.getServerVersion();
 		productCatalogueRepository.update(productCatalogue);
 		ProductCatalogue updated = productCatalogueRepository.getById(1l, "http://localhost:8080/opensrp");
 		assertNotNull(updated);
 		assertEquals("Updated product name", updated.getProductName());
+		MatcherAssert.assertThat(updated.getServerVersion(), Matchers.greaterThan(serverVersion));
 	}
 
 	@Test

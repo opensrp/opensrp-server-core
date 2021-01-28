@@ -10,6 +10,7 @@ import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.TaskRepository;
 import org.opensrp.repository.EventsRepository;
+import org.opensrp.repository.StocksRepository;
 import org.smartregister.converters.EventConverter;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.PlanDefinition;
@@ -39,12 +40,15 @@ public class TaskGenerator {
 	private EventsRepository eventsRepository;
 
 	@Autowired
+	private StocksRepository stocksRepository;
+
+	@Autowired
 	@Lazy
 	private QueueHelper queueHelper;
 	
 	@PostConstruct
 	private void postConstruct() {
-		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository);
+		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository, stocksRepository);
 	}
 	
 	@Async

@@ -97,7 +97,6 @@ public class ReportService {
 		}
 		
 		report.setDateCreated(DateTime.now());
-		report.setServerVersion(allReports.getNextServerVersion());
 		allReports.add(report);
 		return report;
 	}
@@ -110,7 +109,6 @@ public class ReportService {
 		}
 		
 		updatedReport.setDateEdited(DateTime.now());
-		updatedReport.setServerVersion(allReports.getNextServerVersion());
 		allReports.update(updatedReport);
 	}
 
@@ -119,12 +117,10 @@ public class ReportService {
 		Report existingReport = findById(report.getId());
 		if (existingReport != null) {
 			report.setDateEdited(DateTime.now());
-			report.setServerVersion(allReports.getNextServerVersion());
 			report.setRevision(existingReport.getRevision());
 			allReports.update(report);
 			
 		} else {
-			report.setServerVersion(allReports.getNextServerVersion());
 			report.setDateCreated(DateTime.now());
 			allReports.add(report);
 			

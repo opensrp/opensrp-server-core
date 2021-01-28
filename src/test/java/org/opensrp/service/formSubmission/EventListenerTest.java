@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.AppStateToken;
+import org.opensrp.service.ExportEventDataMapper;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
@@ -64,6 +64,9 @@ public class EventListenerTest {
 	private PlanRepository planRepository;
 
 	@Mock
+	private ExportEventDataMapper exportEventDataMapper;
+
+	@Mock
 	private TaskGenerator taskGenerator;
 	
 	private EventService eventService;
@@ -77,7 +80,7 @@ public class EventListenerTest {
 		when(configService.registerAppStateToken(any(AllConstants.Config.class), any(), anyString(),
 		    anyBoolean())).thenReturn(new AppStateToken("token", 01l, 02l));
 		eventsRouter = spy(new EventsRouter(handlerMapper, "/schedules/schedule-configs"));
-		eventService = spy(new EventService(allEvents, clientService, taskGenerator, planRepository));
+		eventService = spy(new EventService(allEvents, clientService, taskGenerator, planRepository, exportEventDataMapper));
 		eventsListener = new EventsListener(eventsRouter, configService,  eventService, errorTraceService);
 	}
 	
@@ -108,7 +111,7 @@ public class EventListenerTest {
 		InOrder inOrder = inOrder(eventService, eventsRouter, eventHandler);
 		clients.get(0).setServerVersion(System.currentTimeMillis());
 		events.get(0).setServerVersion(System.currentTimeMillis());
-		inOrder.verify(eventService).processOutOfArea(events.get(0),events.get(0).getProviderId());
+		inOrder.verify(eventService).processOutOfArea(events.get(0));
 		inOrder.verify(eventsRouter).route(events.get(0));
 		
 	}

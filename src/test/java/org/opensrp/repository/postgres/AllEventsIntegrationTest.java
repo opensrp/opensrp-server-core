@@ -3,13 +3,16 @@ package org.opensrp.repository.postgres;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opensrp.service.EventService;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
-import org.opensrp.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -19,20 +22,23 @@ import org.springframework.test.util.ReflectionTestUtils;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
 @ActiveProfiles(profiles = { "jedis"})
-public class AllEventsIntegrationTest {
+public class AllEventsIntegrationTest extends BaseRepositoryTest{
 	
 	//TODO Detailed testing
 	@Autowired
 	private EventService eventService;
-	
-	@Autowired
-	private EventsRepositoryImpl allEvents;
 
 	private String username ="johndoe";
 	
+	@Override
+	protected Set<String> getDatabaseScripts() {
+		return null;
+	}
+	
 	@Before
 	public void setUp() throws Exception {
-		allEvents.removeAll();
+		tableNames=Collections.singletonList("core.event");
+		truncateTables();
 		initMocks(this);
 		ReflectionTestUtils.setField(eventService, "isPlanEvaluationEnabled", true);
 	}

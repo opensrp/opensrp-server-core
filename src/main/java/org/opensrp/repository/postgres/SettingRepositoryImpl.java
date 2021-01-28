@@ -1,7 +1,17 @@
 package org.opensrp.repository.postgres;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static org.opensrp.util.Utils.isEmptyList;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -27,18 +37,8 @@ import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.sql.DataSource;
-
-import static org.opensrp.util.Utils.isEmptyList;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository("settingRepositoryPostgres")
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
@@ -70,6 +70,16 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 		return findSetting(settingQueryBean, null);
 	}
+	
+	private void updateServerVersion(Settings pgSettings, SettingConfiguration entity) {
+		long serverVersion = settingMapper.selectServerVersionByPrimaryKey(pgSettings.getId());
+		entity.setServerVersion(serverVersion);
+		pgSettings.setJson(entity);
+		int rowsAffected = settingMapper.updateByPrimaryKeySelective(pgSettings);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
 
 	@Override
 	public void add(SettingConfiguration entity) {
@@ -98,13 +108,23 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			return;
 		}
 
-		int rowsAffected = settingMapper.updateByPrimaryKey(pgSetting);
+		int rowsAffected = settingMapper.updateByPrimaryKeyAndGenerateServerVersion(pgSetting);
 		if (rowsAffected < 1) {
 			return;
 		}
 
+		updateServerVersion(pgSetting, entity);
 		entity.setSettings(settings);// re-inject settings block
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
+		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
+
+		for (SettingsMetadata settingsMetadata : metadata) {
+			if (!checkIfMetadataExists(settingsMetadata)) {
+				settingsMetadataList.add(settingsMetadata);
+			}
+		}
+
+		settingMetadataMapper.insertMany(settingsMetadataList);
 		settingMetadataMapper.updateMany(metadata);
 	}
 
@@ -472,7 +492,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		settingConfiguration.setIdentifier(setting.getIdentifier());
 		settingConfiguration.setType(setting.getType());
 		settingConfiguration.setSettings(settings);
-		settingConfiguration.setServerVersion(getNextServerVersion());
 		settingConfiguration.setDocumentId(setting.getDocumentId());
 		if (StringUtils.isNotBlank(setting.getSettingsId())) {
 			settingConfiguration.setId(setting.getSettingsId());
@@ -504,7 +523,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		Settings pgSettings;
 
 		if (id == null) {
-			if (entity.getId() == null) {
+			if (entity.getId() == null || entity.getId().isEmpty()) {
 				entity.setId(UUID.randomUUID().toString());
 			}
 
@@ -521,6 +540,8 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			if (rowsAffected < 1 || pgSettings.getId() == null) {
 				return null;
 			}
+			
+			updateServerVersion(pgSettings, entity);
 		} else {
 			settings = entity.getSettings();
 			pgSettings = convert(entity, id);

@@ -1,7 +1,7 @@
 package org.opensrp.service;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.ProductCatalogue;
+import org.smartregister.domain.ProductCatalogue;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.search.ProductCatalogueSearchBean;
 import org.slf4j.Logger;
@@ -33,13 +33,11 @@ public class ProductCatalogueService {
 
 	public void add(ProductCatalogue productCatalogue) {
 		validateFields(productCatalogue);
-		productCatalogue.setServerVersion(productCatalogueRepository.getNextServerVersion());
 		productCatalogueRepository.add(productCatalogue);
 	}
 
 	public void update(ProductCatalogue productCatalogue) {
 		validateFields(productCatalogue);
-		productCatalogue.setServerVersion(productCatalogueRepository.getNextServerVersion());
 		productCatalogueRepository.update(productCatalogue);
 	}
 

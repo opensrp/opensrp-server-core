@@ -35,10 +35,4 @@ public interface BaseRepository<T> {
 	 */
 	void safeRemove(T entity);
 	
-	/**
-	 * Gets the next server version from the sequence configured for the table
-	 * @return
-	 */
-	public long getNextServerVersion();
-	
 }

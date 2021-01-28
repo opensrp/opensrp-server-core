@@ -18,7 +18,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 
 	PhysicalLocation getStructure(String id, boolean returnGeometry);
 
-	PhysicalLocation get(String id, boolean returnGeometry);
+	PhysicalLocation get(String id, boolean returnGeometry, boolean includeInactive);
 
 	List<PhysicalLocation> findLocationsByServerVersion(long serverVersion);
 
@@ -132,7 +132,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @param limit upper limit on number of jurisdictions to fetch
 	 * @return list of jurisdictions
 	 */
-	List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit);
+	List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit, boolean includeInactive);
 
 	/**
 	 * counts all locations
@@ -266,12 +266,6 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 */
 	List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> identifiers, int pageSize);
 
-	/**
-	 * Gets the next server version for structures
-	 * 
-	 * @return the next sequence value
-	 */
-	long getStructureNextServerVersion();
 
 	/**
 	 * Gets the count of locations based on locationIds and server version

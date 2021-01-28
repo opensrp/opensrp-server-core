@@ -1,24 +1,33 @@
 package org.opensrp.repository.postgres;
 
+import static org.opensrp.util.Utils.isEmptyList;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.Stock;
+import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.postgres.StockExample;
 import org.opensrp.domain.postgres.StockMetadata;
 import org.opensrp.domain.postgres.StockMetadataExample;
+import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMetadataMapper;
 import org.opensrp.search.StockSearchBean;
-import org.apache.commons.lang3.tuple.Pair;
+import org.smartregister.converters.StockConverter;
+import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.ProductCatalogue;
+import org.smartregister.domain.Stock;
+import org.smartregister.domain.StockAndProductDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.opensrp.util.Utils.isEmptyList;
+import com.ibm.fhir.model.resource.Bundle;
 
 @Repository("stocksRepositoryPostgres")
 public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements StocksRepository {
@@ -30,7 +39,10 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	
 	@Autowired
 	private CustomStockMetadataMapper stockMetadataMapper;
-	
+
+	@Autowired
+	private LocationRepository locationRepository;
+
 	@Override
 	public Stock get(String id) {
 		if (StringUtils.isBlank(id)) {
@@ -41,6 +53,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		return convert(pgStock);
 	}
 	
+	@Transactional
 	@Override
 	public void add(Stock entity) {
 		if (entity == null) {
@@ -51,20 +64,22 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 			return;
 		}
 		
-		if (entity.getId() == null)
+		if (StringUtils.isBlank(entity.getId()))
 			entity.setId(UUID.randomUUID().toString());
 		setRevision(entity);
 		
 		org.opensrp.domain.postgres.Stock pgStock = convert(entity, null);
 		if (pgStock == null) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		int rowsAffected = stockMapper.insertSelectiveAndSetId(pgStock);
 		
 		if (rowsAffected < 1 || pgStock.getId() == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+		updateServerVersion(pgStock, entity);
 		
 		StockMetadata stockMetadata = createMetadata(entity, pgStock.getId());
 		if (stockMetadata != null) {
@@ -73,6 +88,17 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		
 	}
 	
+	private void updateServerVersion(org.opensrp.domain.postgres.Stock pgStock, Stock entity) {
+		long serverVersion = stockMapper.selectServerVersionByPrimaryKey(pgStock.getId());
+		entity.setServerVersion(serverVersion);
+		pgStock.setJson(entity);
+		int rowsAffected = stockMapper.updateByPrimaryKeySelective(pgStock);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+	}
+	
+	@Transactional
 	@Override
 	public void update(Stock entity) {
 		if (entity == null) {
@@ -81,23 +107,26 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		
 		Long id = retrievePrimaryKey(entity);
 		if (id == null) { // Stock not added
-			return;
+			throw new IllegalStateException();
 		}
 		
 		setRevision(entity);
 		org.opensrp.domain.postgres.Stock pgStock = convert(entity, id);
 		if (pgStock == null) {
-			return;
+			throw new IllegalStateException();
 		}
+		
+	
+		
+		int rowsAffected = stockMapper.updateByPrimaryKeyAndGenerateServerVersion(pgStock);
+		if (rowsAffected < 1) {
+			throw new IllegalStateException();
+		}
+		updateServerVersion(pgStock, entity);
 		
 		StockMetadata stockMetadata = createMetadata(entity, id);
 		if (stockMetadata == null) {
-			return;
-		}
-		
-		int rowsAffected = stockMapper.updateByPrimaryKey(pgStock);
-		if (rowsAffected < 1) {
-			return;
+			throw new IllegalStateException();
 		}
 		
 		StockMetadataExample stockMetadataExample = new StockMetadataExample();
@@ -323,5 +352,87 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 
 		return Pair.of(pageSize, offset);
 	}
-	
+
+
+	@Override
+	public List<Bundle> findInventoryItemsInAJurisdiction(String jurisdictionId) {
+		List<PhysicalLocation> childLocations =
+				locationRepository.findStructuresByProperties(false, jurisdictionId, null);
+		List<String> servicePointIds = new ArrayList<>();
+		for (PhysicalLocation physicalLocation : childLocations) {
+			servicePointIds.add(physicalLocation.getId());
+		}
+
+		if(servicePointIds != null && servicePointIds.size() > 0) {
+			return convertToFHIR(getInventoryWithProductDetails(servicePointIds));
+		}
+		return convertToFHIR(new ArrayList<>());
+	}
+
+
+	@Override
+	public List<Bundle> findInventoryInAServicePoint(String servicePointId) {
+		List<String> locations = new ArrayList<>();
+		locations.add(servicePointId);
+		return convertToFHIR(getInventoryWithProductDetails(locations));
+	}
+
+	@Override
+	public List<Bundle> getStockById(String stockId) {
+		return convertToFHIR(getInventoryWithProductDetailsByStockId(stockId));
+	}
+
+	private List<StockAndProductDetails> convertStockAndProductDetails(List<org.opensrp.domain.postgres.PgStockAndProductDetails> stockAndProductDetails) {
+		if (stockAndProductDetails == null || stockAndProductDetails.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		List<StockAndProductDetails> convertedStocksAndProductDetails = new ArrayList<>();
+		for (org.opensrp.domain.postgres.PgStockAndProductDetails stockAndProductDetail : stockAndProductDetails) {
+			StockAndProductDetails convertedStocksAndProductDetail = convert(stockAndProductDetail);
+			if (convertedStocksAndProductDetail != null) {
+				convertedStocksAndProductDetails.add(convertedStocksAndProductDetail);
+			}
+		}
+		return convertedStocksAndProductDetails;
+	}
+
+	private StockAndProductDetails convert(org.opensrp.domain.postgres.PgStockAndProductDetails pgStockAndProductDetails) {
+		StockAndProductDetails stockAndProductDetails = new StockAndProductDetails();
+		Stock stock = convert(pgStockAndProductDetails.getStock());
+		ProductCatalogue productCatalogue = convert(pgStockAndProductDetails.getProductCatalogue(), "");
+		stockAndProductDetails.setStock(stock);
+		stockAndProductDetails.setProductCatalogue(productCatalogue);
+		return stockAndProductDetails;
+	}
+
+	private ProductCatalogue convert(org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue, String baseUrl) {
+		if (pgProductCatalogue == null || pgProductCatalogue.getJson() == null || !(pgProductCatalogue
+				.getJson() instanceof ProductCatalogue)) {
+			return null;
+		}
+		ProductCatalogue productCatalogue = (ProductCatalogue) pgProductCatalogue.getJson();
+		productCatalogue.setUniqueId(pgProductCatalogue.getUniqueId());
+		String photoUrl = productCatalogue.getPhotoURL();
+		if(!StringUtils.isBlank(photoUrl)) {
+			productCatalogue.setPhotoURL(baseUrl + photoUrl);
+		}
+		return productCatalogue;
+	}
+
+	@Override
+	public List<StockAndProductDetails> getInventoryWithProductDetails(List<String> locations) {
+		return convertStockAndProductDetails(stockMetadataMapper.selectManyStockAndProductDetailsByServicePointId(locations));
+	}
+
+	@Override
+	public List<StockAndProductDetails> getInventoryWithProductDetailsByStockId(String stockId) {
+		return convertStockAndProductDetails(stockMetadataMapper.selectStockAndProductDetailsByStockId(stockId));
+	}
+
+	private List<Bundle> convertToFHIR(List<StockAndProductDetails> stockAndProductDetails) {
+		return stockAndProductDetails.stream().map(stockAndProductDetail -> StockConverter.convertStockToBundleResource(stockAndProductDetail))
+				.collect(Collectors.toList());
+	}
+
 }

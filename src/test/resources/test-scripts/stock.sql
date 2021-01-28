@@ -40,3 +40,5 @@ INSERT INTO core.stock_metadata (id, stock_id, document_id, server_version, prov
 (13, 13, '05934ae338431f28bf6793b241b3c445', 1521112141441, 'biddemo1', null, null, null),
 (14, 14, '05934ae338431f28bf6793b241b3c6f9', 1521112141441, 'biddemo1', null, null, null),
 (15, 15, '05934ae338431f28bf6793b241b3cd6f', 1521112141441, 'biddemo1', null, null, null);
+
+SELECT setval('core.stock_server_version_seq',(SELECT max(json->>'serverVersion')::bigint+1 FROM core.stock));

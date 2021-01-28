@@ -18,6 +18,7 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.utils.DbAccessUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
@@ -59,16 +60,9 @@ public abstract class BaseRepositoryTest {
 		}
 	}
 
-	private void truncateTables() {
-		try {
-			for (String tableName : tableNames) {
-				Connection connection = DataSourceUtils.getConnection(openSRPDataSource);
-				Statement statement = connection.createStatement();
-				statement.executeUpdate("TRUNCATE " + tableName +" CASCADE");
-				connection.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+	protected void truncateTables() {
+		for (String tableName : tableNames) {
+			DbAccessUtils.truncateTable(tableName, openSRPDataSource);
 		}
 	}
 	

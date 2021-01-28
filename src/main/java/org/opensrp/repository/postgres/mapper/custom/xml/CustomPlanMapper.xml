@@ -77,12 +77,10 @@
       <if test="dateDeleted != null">
         date_deleted,
       </if>
-      <if test="serverVersion != null">
         server_version,
-      </if>
-		<if test="experimental != null">
-			experimental,
-		</if>
+	  <if test="experimental != null">
+		experimental,
+	  </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -97,12 +95,10 @@
       <if test="dateDeleted != null">
         #{dateDeleted,jdbcType=TIMESTAMP},
       </if>
-      <if test="serverVersion != null">
-        #{serverVersion,jdbcType=BIGINT},
-      </if>
-		<if test="experimental != null">
+       nextVal('core.plan_server_version_seq'),
+	   <if test="experimental != null">
 			#{experimental,jdbcType=BIT},
-		</if>
+	   </if>
     </trim>
   </insert>
 
@@ -182,6 +178,22 @@
 			order by ${searchBean.orderByFieldName} ${searchBean.orderByType}
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
+	</select>
+	
+	<update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Plan">
+    update core.plan
+    set identifier = #{identifier,jdbcType=VARCHAR},
+      json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.PlanTypeHandler},
+      date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
+      server_version =  nextVal('core.plan_server_version_seq'),
+      experimental = #{experimental,jdbcType=BIT},
+      date_created = #{dateCreated,jdbcType=TIMESTAMP},
+      date_edited = #{dateEdited,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectServerVersionByPrimaryKey"
+		parameterType="java.lang.Long" resultType="long">
+		select server_version from core.plan where id = #{id,jdbcType=BIGINT}
 	</select>
 
 </mapper>

@@ -9,6 +9,7 @@ import org.smartregister.domain.LocationTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,9 +26,7 @@ public class LocationTagRepositoryTest extends BaseRepositoryTest {
 
 	@BeforeClass
 	public static void bootStrap() {
-		tableNames.add("core.location_tag");
-		tableNames.add("core.location_tag_map");
-
+		tableNames=Arrays.asList("core.location_tag","core.location_tag_map");
 	}
 
 	@Override

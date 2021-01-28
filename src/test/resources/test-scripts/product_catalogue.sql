@@ -14,4 +14,7 @@ insert into core.product_catalogue(unique_id,product_name, json, server_version)
     "appropriateUsage": "yes",
     "accountabilityPeriod": 10,
     "serverVersion": 123344
-}',12345);
+}',123344);
+
+
+SELECT setval('core.product_catalogue_server_version_seq',(SELECT max(json->>'serverVersion')::bigint+1 FROM core.product_catalogue));

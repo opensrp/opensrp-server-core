@@ -2,6 +2,7 @@ package org.opensrp.repository.postgres;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import org.opensrp.domain.Report;
@@ -47,6 +50,8 @@ public class ReportsRepositoryTest extends BaseRepositoryTest {
 		assertEquals("3453535sdfs", reports.get(0).getLocationId());
 		assertEquals("MONTHLY", report.getReportType());
 		assertNull(report.getHia2Indicators());
+		MatcherAssert.assertThat(reports,
+		    Matchers.contains(Matchers.hasProperty("serverVersion", Matchers.greaterThan(0l))));
 		
 	}
 	
@@ -56,13 +61,15 @@ public class ReportsRepositoryTest extends BaseRepositoryTest {
 		report.setBaseEntityId("asads-asdas7676-ggas");
 		report.setServerVersion(1522827820l);
 		report.setDuration(6);
-		
+		long serverVersion=report.getServerVersion();
 		reportsRepository.update(report);
 		
 		Report updateReport = reportsRepository.get("cd09a3d4-01d9-485c-a1c5-a2eb078a61be");
 		assertEquals("asads-asdas7676-ggas", updateReport.getBaseEntityId());
-		assertEquals(1522827820l, updateReport.getServerVersion().longValue());
+		assertNotEquals(1522827820l, updateReport.getServerVersion().longValue());
+		assertNotNull(updateReport.getServerVersion());
 		assertEquals(6, updateReport.getDuration());
+		MatcherAssert.assertThat(updateReport.getServerVersion(), Matchers.greaterThan(serverVersion));
 		
 	}
 	

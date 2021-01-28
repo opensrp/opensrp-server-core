@@ -12,6 +12,10 @@
 			<if test="json != null">
 				json,
 			</if>
+			 <if test="dateDeleted != null">
+		        date_deleted,
+		     </if>
+			server_version
 		</trim>
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
 			<if test="id != null">
@@ -20,9 +24,23 @@
 			<if test="json != null">
 				#{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ClientTypeHandler},
 			</if>
+			<if test="dateDeleted != null">
+		        #{dateDeleted,jdbcType=TIMESTAMP},
+		     </if>
+			nextVal('core.client_server_version_seq')
 		</trim>
 	</insert>
-	
+	<update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Client">
+	    update core.client
+	    set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ClientTypeHandler},
+	      date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
+	      server_version = nextVal('core.client_server_version_seq')
+	    where id = #{id,jdbcType=BIGINT}
+    </update>
+  	<select id="selectServerVersionByPrimaryKey"
+		parameterType="java.lang.Long" resultType="long">
+		select server_version from core.client where id = #{id,jdbcType=BIGINT}
+	</select>
 	
 	<select id="selectByDocumentId" parameterType="java.lang.String"
 		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">

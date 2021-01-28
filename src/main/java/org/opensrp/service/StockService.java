@@ -4,9 +4,9 @@ import java.text.ParseException;
 import java.util.*;
 
 import org.joda.time.DateTime;
-import org.opensrp.domain.Inventory;
-import org.opensrp.domain.ProductCatalogue;
-import org.opensrp.domain.Stock;
+import org.smartregister.domain.Inventory;
+import org.smartregister.domain.ProductCatalogue;
+import org.smartregister.domain.Stock;
 import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.dto.FailedRecordSummary;
 import org.opensrp.repository.StocksRepository;
@@ -107,7 +107,6 @@ public class StockService {
 			throw new IllegalArgumentException(
 			        "A stock already exists with given id. Consider updating data.[" + st.getId() + "]");
 		}
-		stock.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.add(stock);
 		return stock;
 	}
@@ -116,12 +115,10 @@ public class StockService {
 	public synchronized Stock addorUpdateStock(Stock stock) {
 		if (stock.getId() != null && getById(stock.getId()) != null) {
 			stock.setDateEdited(DateTime.now());
-			stock.setServerVersion(allStocks.getNextServerVersion());
 			stock.setRevision(getById(stock.getId()).getRevision());
 			allStocks.update(stock);
 		} else {
 			stock.setDateCreated(DateTime.now());
-			stock.setServerVersion(allStocks.getNextServerVersion());
 			allStocks.add(stock);
 		}
 		return stock;
@@ -136,7 +133,6 @@ public class StockService {
 		}
 		
 		updatedStock.setDateEdited(DateTime.now());
-		updatedStock.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.update(updatedStock);
 	}
 
@@ -158,7 +154,6 @@ public class StockService {
 			throw new IllegalArgumentException("No stock found with given id. Consider adding new!");
 		}
 		original.setDateEdited(DateTime.now());
-		original.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.update(original);
 		return original;
 	}
@@ -194,7 +189,6 @@ public class StockService {
 		if (stock == null) {
 			return;
 		}
-		stock.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.add(stock);
 	}
 
@@ -211,7 +205,6 @@ public class StockService {
 		}
         stock.setId(existingStock.getId());
 		stock.setDateEdited(DateTime.now());
-		stock.setServerVersion(allStocks.getNextServerVersion());
 		allStocks.update(stock);
 	}
 
@@ -227,6 +220,34 @@ public class StockService {
 
 	public List<Stock> getStocksByServicePointId(StockSearchBean stockSearchBean) {
 	  return allStocks.findStocksByLocationId(stockSearchBean);
+	}
+
+	public CsvBulkImportDataSummary validateBulkInventoryData(List<Map<String, String>> csvStocks) {
+		int rowCount = 0;
+		CsvBulkImportDataSummary csvBulkImportDataSummary = new CsvBulkImportDataSummary();
+		FailedRecordSummary failedRecordSummary;
+		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
+		Integer totalRows = csvStocks.size();
+		Integer rowsProcessed = 0;
+
+		try {
+			failedRecordSummaries = validateInventoryData(csvStocks);
+		}
+		catch (ParseException e) {
+			logger.error("Parse Exception occurred : " + e.getMessage(), e);
+			failedRecordSummary = new FailedRecordSummary();
+			List<String> validationError = new ArrayList<>();
+			failedRecordSummary.setRowNumber(rowCount);
+			validationError.add("Parse Exception occurred");
+			failedRecordSummary.setReasonOfFailure(validationError);
+			failedRecordSummaries.add(failedRecordSummary);
+		}
+
+		csvBulkImportDataSummary.setFailedRecordSummaryList(failedRecordSummaries);
+		csvBulkImportDataSummary.setNumberOfCsvRows(totalRows);
+		csvBulkImportDataSummary.setNumberOfRowsProcessed(rowsProcessed);
+		return csvBulkImportDataSummary;
+
 	}
 
 	public CsvBulkImportDataSummary convertandPersistInventorydata(List<Map<String, String>> csvStocks, String userName) {
@@ -347,13 +368,22 @@ public class StockService {
 				productCatalogue.getAccountabilityPeriod());
 		Map<String, String> customProperties = new HashMap<>();
 
-		stock.setIdentifier(productCatalogue.getUniqueId());
-		stock.setProviderid(username);
+		stock.setIdentifier(String.valueOf(productCatalogue.getUniqueId()));
+		if(inventory.getProviderId() != null && !inventory.getProviderId().isBlank()) {
+			stock.setProviderid(inventory.getProviderId());
+		}
+		else {
+			stock.setProviderid(username);
+		}
 		stock.setValue(inventory.getQuantity());
-		stock.setTransaction_type("Inventory");
+		stock.setTransactionType("Inventory");
 		stock.setLocationId(inventory.getServicePointId());
 		stock.setDeliveryDate(inventory.getDeliveryDate());
-		stock.setAccountabilityEndDate(accountabilityEndDate);
+		if (inventory.getAccountabilityEndDate() != null) {
+			stock.setAccountabilityEndDate(inventory.getAccountabilityEndDate());
+		} else {
+			stock.setAccountabilityEndDate(accountabilityEndDate);
+		}
 		stock.setDonor(inventory.getDonor());
 		stock.setSerialNumber(inventory.getSerialNumber());
 		customProperties.put("UNICEF section", inventory.getUnicefSection());
@@ -372,7 +402,7 @@ public class StockService {
 
 	private void validateFields(Inventory inventory) {
 		PhysicalLocation physicalLocation = inventory.getServicePointId() != null ?
-				physicalLocationService.getLocation(inventory.getServicePointId(), true) :
+				physicalLocationService.getStructure(inventory.getServicePointId(), true) :
 				null;
 
 		List<String> donors = inventoryDataValidator.getValidDonors();
