@@ -94,7 +94,8 @@
 		    setting_label,
 			inherited_from
 		) VALUES
-		<foreach collection="settingsMetadata" item="setting" index="index" open="(" separator="),("  close=")">
+		<foreach collection="settingsMetadata" item="setting"  separator=","  close=";">
+			(
 			#{setting.settingsId,jdbcType=BIGINT},
 			#{setting.documentId,jdbcType=VARCHAR},
 			#{setting.identifier,jdbcType=VARCHAR},
@@ -111,6 +112,7 @@
 			#{setting.settingDescription,jdbcType=VARCHAR},
 			#{setting.settingLabel,jdbcType=VARCHAR},
 			#{setting.inheritedFrom,jdbcType=VARCHAR}
+			)
 		</foreach>
 	</insert>
 

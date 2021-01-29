@@ -123,8 +123,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				settingsMetadataList.add(settingsMetadata);
 			}
 		}
-
-		settingMetadataMapper.insertMany(settingsMetadataList);
+		if (!settingsMetadataList.isEmpty()) {
+			settingMetadataMapper.insertMany(settingsMetadataList);
+		}
 		settingMetadataMapper.updateMany(metadata);
 	}
 
