@@ -238,7 +238,7 @@ public class PhysicalLocationService {
 	 * @param pageSize number of records to be returned
 	 * @return location together with it's children whose id matches the provided param
 	 */
-	@Cacheable(value = "locationsWIthChildrenByLocationIds", key = "#locationIds")
+	@Cacheable(value = "locationsWIthChildrenByLocationIds", key = "{ #locationIds, #returnGeometry }")
 	public List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> locationIds,
 	        int pageSize) {
 		return locationRepository.findLocationByIdsWithChildren(returnGeometry, locationIds, pageSize);
@@ -342,7 +342,7 @@ public class PhysicalLocationService {
 	 * @param returnTags whether to return loction tags
 	 * @return the location hierarchy/tree of the identifiers
 	 */
-	@Cacheable(value = "locationTreeFromLocationIdentifiers", key = "#identifiers")
+	@Cacheable(value = "locationTreeFromLocationIdentifiers", key = "{ #identifiers, #returnStructureCount, #returnTags }")
 	public LocationTree buildLocationHierachy(Set<String> identifiers, boolean returnStructureCount, boolean returnTags) {
 		LocationTree locationTree = new LocationTree();
 		Set<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers, returnTags);
@@ -505,7 +505,7 @@ public class PhysicalLocationService {
 		return geometryCoordinates;
 	}
 
-	@Cacheable(value = "locationTreeFromLocation", key = "#locationId")
+	@Cacheable(value = "locationTreeFromLocation", key = "{ #locationId, #returnStructureCount }")
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnStructureCount) {
 		return buildLocationHierachyFromLocation(locationId, false, returnStructureCount);
 	}
@@ -516,7 +516,7 @@ public class PhysicalLocationService {
 	 * @param locationId id of the root location
 	 * @return full location hierarchy from passed location plus all of its descendants
 	 */
-	@Cacheable(value = "locationTreeFromLocation", key = "#locationId")
+	@Cacheable(value = "locationTreeFromLocation", key = "{ #locationId, #returnTags, #returnStructureCount }")
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnTags,
 	        boolean returnStructureCount) {
 		LocationTree locationTree = new LocationTree();
