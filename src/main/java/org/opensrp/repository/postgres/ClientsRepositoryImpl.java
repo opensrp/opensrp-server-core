@@ -701,7 +701,8 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Patient> findClientById(String id) {
-		return convertToFHIR(Collections.singletonList(get(id)));
+		Client client = get(id);
+		return client == null ? Collections.emptyList() : convertToFHIR(Collections.singletonList(client));
 	}
 	
 	@Override
