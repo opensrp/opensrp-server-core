@@ -7,6 +7,7 @@ import javax.annotation.PostConstruct;
 
 import org.opensrp.queue.QueueHelper;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.repository.PlanRepository;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.TaskRepository;
 import org.opensrp.repository.EventsRepository;
@@ -41,6 +42,9 @@ public class TaskGenerator {
 
 	@Autowired
 	private StocksRepository stocksRepository;
+	
+	@Autowired
+	private PlanRepository planRepository;
 
 	@Autowired
 	@Lazy
@@ -49,6 +53,7 @@ public class TaskGenerator {
 	@PostConstruct
 	private void postConstruct() {
 		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository, stocksRepository);
+		PathEvaluatorLibrary.getInstance().setPlanDao(planRepository);
 	}
 	
 	@Async

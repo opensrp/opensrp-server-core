@@ -400,4 +400,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         return Pair.of(pageSize, offset);
     }
+
+	@Override
+	public PlanDefinition findPlanByIdentifier(String identifier) {
+		return get(identifier);
+	}
 }
