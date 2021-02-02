@@ -45,8 +45,6 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	public static String RESIDENCE = "residence";
 	
-	private static final String SEQUENCE = "core.client_server_version_seq";
-	
 	@Autowired
 	private CustomClientMetadataMapper clientMetadataMapper;
 	
@@ -754,11 +752,6 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	private List<Patient> convertToFHIR(List<Client> clients) {
 		return clients.stream().map(client -> ClientConverter.convertClientToPatientResource(client))
 		        .collect(Collectors.toList());
-	}
-	
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
 	}
 	
 }

@@ -702,8 +702,9 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 
 	@Override
 	public List<QuestionnaireResponse> findEventsByJurisdictionIdAndPlan(String jurisdictionId, String planIdentifier) {
-		EventMetadataExample example=new EventMetadataExample();
-		example.createCriteria().andLocationIdEqualTo(jurisdictionId).andPlanIdentifierEqualTo(planIdentifier).andDateDeletedIsNull();
+		EventMetadataExample example = new EventMetadataExample();
+		example.createCriteria().andLocationIdEqualTo(jurisdictionId).andPlanIdentifierEqualTo(planIdentifier)
+		        .andDateDeletedIsNull();
 		
 		/**@formatter:off*/
 		return eventMetadataMapper.selectMany(example)

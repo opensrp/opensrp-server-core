@@ -27,9 +27,7 @@ import static org.opensrp.util.RepositoryUtil.getPageSizeAndOffset;
 
 @Repository
 public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements TaskRepository {
-	
-	private static final String SEQUENCE = "core.task_server_version_seq";
-	
+		
 	@Autowired
 	private CustomTaskMapper taskMapper;
 	
@@ -441,11 +439,6 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
 		return tasks.stream().map(task -> TaskConverter.convertTasktoFihrResource(task)).collect(Collectors.toList());
-	}
-	
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
 	}
 	
 }
