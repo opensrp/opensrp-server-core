@@ -21,8 +21,6 @@ import org.springframework.stereotype.Repository;
 @Repository("reportsRepositoryPostgres")
 public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements ReportsRepository {
 	
-	private static final String SEQUENCE="core.report_server_version_seq"; 
-	
 	@Autowired
 	private CustomReportMapper reportMapper;
 	
@@ -337,11 +335,6 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 		reportMetadataMapper.deleteByExample(new ReportMetadataExample());
 		reportMapper.deleteByExample(new ReportExample());
 		
-	}
-	
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
 	}
 	
 }

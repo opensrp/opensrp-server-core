@@ -31,8 +31,6 @@ import com.ibm.fhir.model.resource.QuestionnaireResponse;
 @Repository("eventsRepositoryPostgres")
 public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements EventsRepository {
 	
-	private static final String SEQUENCE = "core.event_server_version_seq";
-	
 	@Autowired
 	private CustomEventMapper eventMapper;
 	
@@ -701,10 +699,21 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		return findByBaseEntityIdAndPlanIdentifier(resourceId, planIdentifier).stream()
 		        .map(event -> EventConverter.convertEventToEncounterResource(event)).collect(Collectors.toList());
 	}
-	
+
 	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
+	public List<QuestionnaireResponse> findEventsByJurisdictionIdAndPlan(String jurisdictionId, String planIdentifier) {
+		EventMetadataExample example = new EventMetadataExample();
+		example.createCriteria().andLocationIdEqualTo(jurisdictionId).andPlanIdentifierEqualTo(planIdentifier)
+		        .andDateDeletedIsNull();
+		
+		/**@formatter:off*/
+		return eventMetadataMapper.selectMany(example)
+				.stream()
+				.map(event -> convert(event))
+		        .map(event -> EventConverter.convertEventToEncounterResource(event))
+		        .collect(Collectors.toList());
+		/**@formatter:on*/
 	}
+	
 	
 }

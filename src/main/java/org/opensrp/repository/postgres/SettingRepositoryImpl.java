@@ -44,8 +44,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
 
 	private static final Logger logger = LoggerFactory.getLogger(SettingRepositoryImpl.class);
-	
-	private static final String SEQUENCE="core.setting_server_version_seq"; 
 
 	private final List<String> reformattedLocationHierarchy = new ArrayList<>();
 
@@ -754,11 +752,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	public List<String> getReformattedLocationHierarchy() {
 		return reformattedLocationHierarchy;
-	}
-
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
 	}
 
 	@Override

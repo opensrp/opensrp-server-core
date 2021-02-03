@@ -922,12 +922,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findJurisdictionsById(String id) {
-		return convertToFHIRLocation(Collections.singletonList(get(id, false, false)));
+		PhysicalLocation location = get(id, false, false);
+		return location == null ? Collections.emptyList() : convertToFHIRLocation(Collections.singletonList(location));
 	}
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findLocationsById(String id) {
-		return convertToFHIRLocation(Collections.singletonList(getStructure(id, false)));
+		PhysicalLocation location=getStructure(id, false);
+		return location == null ? Collections.emptyList() :convertToFHIRLocation(Collections.singletonList(location));
 	}
 	
 	@Override

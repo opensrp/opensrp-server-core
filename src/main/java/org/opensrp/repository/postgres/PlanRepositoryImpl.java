@@ -30,8 +30,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> implements PlanRepository {
 
-    private static final String SEQUENCE = "core.plan_server_version_seq";
-
     @Autowired
     private CustomPlanMapper planMapper;
 
@@ -383,11 +381,6 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         List<Plan> plans = planMapper.selectPlansBySearchBean(planSearchBean, pageSizeAndOffset.getRight(),
                 pageSizeAndOffset.getLeft());
         return convert(plans);
-    }
-
-    @Override
-    protected String getSequenceName() {
-        return SEQUENCE;
     }
 
     private Pair<Integer, Integer> getPageSizeAndOffset(PlanSearchBean planSearchBean) {

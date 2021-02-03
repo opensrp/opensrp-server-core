@@ -24,8 +24,6 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 	@Autowired
 	private CustomProductCatalogueMapper customProductCatalogueMapper;
 
-	private static final String SEQUENCE = "core.product_catalogue_server_version_seq";
-
 	@Override
 	public ProductCatalogue get(String id) {
 		throw new NotImplementedException();
@@ -248,8 +246,4 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 		return criteria;
 	}
 
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
-	}
 }
