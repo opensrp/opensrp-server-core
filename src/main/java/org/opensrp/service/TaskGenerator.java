@@ -61,7 +61,6 @@ public class TaskGenerator {
 		if (!isInternalTaskGeneration(planDefinition)) {
 			return;
 		}
-		queueHelper.setUsername(username);
 		PlanEvaluator planEvaluator = new PlanEvaluator(username,queueHelper);
 		planEvaluator.evaluatePlan(planDefinition, existingPlanDefinition);
 	}
