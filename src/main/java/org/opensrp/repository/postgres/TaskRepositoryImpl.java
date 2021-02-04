@@ -422,8 +422,10 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public List<com.ibm.fhir.model.resource.Task> findTasksByJurisdiction(String s) {
-		throw new NotImplementedException();
+	public List<com.ibm.fhir.model.resource.Task> findTasksByJurisdiction(String jurisdiction, String planIdentifier) {
+		TaskMetadataExample example = new TaskMetadataExample();
+		example.createCriteria().andPlanIdentifierEqualTo(planIdentifier).andGroupIdentifierEqualTo(jurisdiction);
+		return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
 	}
 
 	@Override
