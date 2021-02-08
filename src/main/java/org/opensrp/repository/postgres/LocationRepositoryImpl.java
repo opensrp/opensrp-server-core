@@ -97,6 +97,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		long serverVersion = locationMapper.selectServerVersionByPrimaryKey(pgLocation.getId());
 		entity.setServerVersion(serverVersion);
 		pgLocation.setJson(entity);
+		pgLocation.setServerVersion(null);
 		int rowsAffected = locationMapper.updateByPrimaryKeySelective(pgLocation);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -107,6 +108,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		long serverVersion = structureMapper.selectServerVersionByPrimaryKey(pgStructure.getId());
 		entity.setServerVersion(serverVersion);
 		pgStructure.setJson(entity);
+		pgStructure.setServerVersion(null);
 		int rowsAffected = structureMapper.updateByPrimaryKeySelective(pgStructure);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();

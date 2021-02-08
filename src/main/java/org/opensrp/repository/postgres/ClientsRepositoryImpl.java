@@ -105,6 +105,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		long serverVersion = clientMapper.selectServerVersionByPrimaryKey(pgClient.getId());
 		entity.setServerVersion(serverVersion);
 		pgClient.setJson(entity);
+		pgClient.setServerVersion(null);
 		int rowsAffected = clientMapper.updateByPrimaryKeySelective(pgClient);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();

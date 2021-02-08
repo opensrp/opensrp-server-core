@@ -80,6 +80,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		long serverVersion = taskMapper.selectServerVersionByPrimaryKey(pgTask.getId());
 		entity.setServerVersion(serverVersion);
 		pgTask.setJson(entity);
+		pgTask.setServerVersion(null);
 		int rowsAffected = taskMapper.updateByPrimaryKeySelective(pgTask);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
