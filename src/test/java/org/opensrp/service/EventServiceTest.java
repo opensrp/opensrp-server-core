@@ -234,7 +234,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 
 		Event outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(21, eventService.getAll().size());
+		assertEquals(22, eventService.getAll().size());
 		
 		//Test with card identifier type. Should not create any service because there is no client with that identifier
 		event = new Event().withEventType("Out of Area Service - Vaccination").withProviderId("tester112")
@@ -243,7 +243,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(21, eventService.getAll().size());
+		assertEquals(22, eventService.getAll().size());
 		
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		event = new Event().withEventType("Out of Area Service - Growth Monitoring")
@@ -253,8 +253,26 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
 		
-		assertEquals(22, eventService.getAll().size());
+		assertEquals(23, eventService.getAll().size());
 		
+	}
+
+	@Test
+	public void testProcessOutOfAreaRecurringService() throws SQLException {
+		scripts.add("client.sql");
+		populateDatabase();
+		Event event = new Event().withEventType("Out of Area Service - Recurring Service")
+				.withIdentifier(Client.ZEIR_ID, "218229-3");
+		Map<String, String> details = new HashMap<>() {
+			{
+				put(EventService.RECURRING_SERVICE_TYPES, "[deworming, vit_a]");
+			}
+		};
+		event.setDetails(details);
+		Event outOfAreaEvent = eventService.processOutOfArea(event);
+		assertEquals(event, outOfAreaEvent);
+		assertEquals(22, eventService.getAll().size());
+
 	}
 	
 	@Test
@@ -393,7 +411,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		List<String> actualEventIds = eventIdsModel.getLeft();
 		
 		assertNotNull(actualEventIds);
-		assertEquals(20, actualEventIds.size());
+		assertEquals(21, actualEventIds.size());
 	}
 	
 	@Test
@@ -483,9 +501,9 @@ public class EventServiceTest extends BaseRepositoryTest {
 		List<String> actualEventIds = eventIdsModel.getLeft();
 
 		assertNotNull(actualEventIds);
-		assertEquals(20, actualEventIds.size());
+		assertEquals(21, actualEventIds.size());
 		assertEquals("05934ae338431f28bf6793b2417696bf", actualEventIds.get(0));
-		assertEquals("34166bde-2d40-4cb9-aec7-d8e4feb47c53", actualEventIds.get(19));
+		assertEquals("65de6fd9-c061-4026-b2e7-e10eb22169af", actualEventIds.get(19));
 		assertEquals(1573736256054l, eventIdsModel.getRight().longValue());
 
 	}

@@ -301,38 +301,44 @@ public class EventService {
 				outOfCatchmentServices);
 
 		//Create new recurring service event with correct sequence, incrementing on the old recurring service's ; involves updating the obs
+
 		for (String service : outOfCatchmentServices) {
 			List<Event> events = matchedRecurringServices.get(service);
-			Event lastRecurringService = events.get(events.size() - 1);
-			removeIdentifier(event);
-			Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, RECURRING_SERVICE);
-			List<Obs> newObsList = new ArrayList<>();
+			if (!events.isEmpty()) {
+				Event lastRecurringService = events.get(events.size() - 1);
+				removeIdentifier(event);
+				Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, RECURRING_SERVICE);
+				List<Obs> newObsList = new ArrayList<>();
 
-			Obs obsWithValue = getObsWithValue(lastRecurringService);
-			if(obsWithValue != null) {
-				String newSequence = String.valueOf(Integer.parseInt((String) obsWithValue.getValues().get(0)) + 1);
-				String newFormSubmissionField = String.format("%s_%s", service, newSequence);
+				Obs obsWithValue = getObsWithValue(lastRecurringService);
+				if (obsWithValue != null) {
+					String newSequence = String.valueOf(Integer.parseInt((String) obsWithValue.getValues().get(0)) + 1);
+					String newFormSubmissionField = String.format("%s_%s", service, newSequence);
 
-				for (Obs oldObs : lastRecurringService.getObs()) {
-					updateObs(oldObs, event, newSequence, newFormSubmissionField);
-					newObsList.add(oldObs);
+					for (Obs oldObs : lastRecurringService.getObs()) {
+						updateObs(oldObs, event, newSequence, newFormSubmissionField);
+						newObsList.add(oldObs);
+					}
+					newEvent.setObs(newObsList);
+					addEvent(newEvent, birthRegEvent.getProviderId());
 				}
-				newEvent.setObs(newObsList);
-				addEvent(newEvent, birthRegEvent.getProviderId());
 			}
 		}
+
 	}
 
 	private void updateObs(Obs oldObs, Event incomingEvent, String newSequence, String newFormSubmissionField) {
-		if (oldObs.getFieldType().equalsIgnoreCase(NUMERIC)) {
+		if (oldObs.getFieldDataType().equalsIgnoreCase(NUMERIC)) {
 			oldObs.setFormSubmissionField(newFormSubmissionField + "_dose");
 			oldObs.getValues().clear();
 			oldObs.getValues().add(newSequence);
-		} else if (oldObs.getFieldType().equalsIgnoreCase(DATE)) {
+		}
+		if (oldObs.getFieldDataType().equalsIgnoreCase(DATE)) {
 			oldObs.setFormSubmissionField(newFormSubmissionField + "_date");
 			oldObs.getValues().clear();
 			oldObs.getValues().add(simpleDateFormat.format(incomingEvent.getEventDate()));
-		} else if (oldObs.getFieldType().equalsIgnoreCase(CODED)) {
+		}
+		if (oldObs.getFieldDataType().equalsIgnoreCase(CODED)) {
 			oldObs.setFormSubmissionField(newFormSubmissionField);
 		}
 	}
