@@ -41,6 +41,7 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 		long serverVersion = reportMapper.selectServerVersionByPrimaryKey(pgReport.getId());
 		entity.setServerVersion(serverVersion);
 		pgReport.setJson(entity);
+		pgReport.setServerVersion(null);
 		int rowsAffected = reportMapper.updateByPrimaryKeySelective(pgReport);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();

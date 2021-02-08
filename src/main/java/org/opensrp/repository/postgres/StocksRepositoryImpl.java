@@ -90,6 +90,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		long serverVersion = stockMapper.selectServerVersionByPrimaryKey(pgStock.getId());
 		entity.setServerVersion(serverVersion);
 		pgStock.setJson(entity);
+		pgStock.setServerVersion(null);
 		int rowsAffected = stockMapper.updateByPrimaryKeySelective(pgStock);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
