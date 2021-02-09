@@ -65,6 +65,30 @@ public class EventService {
 
 	private static final String CODED = "coded";
 
+	public static final String _DOSE = "_dose";
+
+	public static final String _DATE = "_date";
+
+	public interface ObsConstants {
+
+		String CODED_FIELD_VALUE = "1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+		String NUMERIC_FIELD_CODE = "1639AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+		String ITN_CODED_FIELD_CODE = "159855AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+		String ITN_DATE_FIELD_CODE = "159432AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+		String VIT_A_CODED_FIELD_CODE = "161534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+		String DEWORMING_CODED_FIELD_CODE = "159922AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+	}
+
+	interface RecurringServiceConstants {
+
+		String DEWORMING = "deworming";
+
+		String VIT_A = "vit_a";
+
+		String ITN = "itn";
+	}
+
 	private final EventsRepository allEvents;
 
 	private final ClientService clientService;
@@ -271,7 +295,6 @@ public class EventService {
 						eventTypeLowercase.contains(VACCINATION_EVENT.toLowerCase()) ? VACCINATION_EVENT : null;
 
 				if (actualEventType != null) {
-					removeIdentifier(event);
 					Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, actualEventType);
 					addEvent(newEvent, birthRegEvent.getProviderId());
 				}
@@ -300,54 +323,102 @@ public class EventService {
 		Map<String, List<Event>> matchedRecurringServices = getMarchedRecurringServices(previousServices,
 				outOfCatchmentServices);
 
-		//Create new recurring service event with correct sequence, incrementing on the old recurring service's ; involves updating the obs
-
+		//Create new recurring service event with correct sequence, incrementing on the old recurring service's
+		//Otherwise create first recurring service
 		for (String service : outOfCatchmentServices) {
+
+			Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, RECURRING_SERVICE);
+			newEvent.setEntityType(RECURRING_SERVICE_UNDERSCORED);
+
+			//Check if there are any existing recurring services or create the first
 			List<Event> events = matchedRecurringServices.get(service);
 			if (!events.isEmpty()) {
 				Event lastRecurringService = events.get(events.size() - 1);
-				removeIdentifier(event);
-				Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, RECURRING_SERVICE);
-				List<Obs> newObsList = new ArrayList<>();
 
 				Obs obsWithValue = getObsWithValue(lastRecurringService);
 				if (obsWithValue != null) {
 					String newSequence = String.valueOf(Integer.parseInt((String) obsWithValue.getValues().get(0)) + 1);
 					String newFormSubmissionField = String.format("%s_%s", service, newSequence);
-
-					for (Obs oldObs : lastRecurringService.getObs()) {
-						updateObs(oldObs, event, newSequence, newFormSubmissionField);
-						newObsList.add(oldObs);
-					}
+					List<Obs> newObsList = updateObs(lastRecurringService, event, newSequence, newFormSubmissionField);
 					newEvent.setObs(newObsList);
 					addEvent(newEvent, birthRegEvent.getProviderId());
 				}
+			} else {
+				createFirstRecurringService(service, newEvent, birthRegEvent);
 			}
 		}
-
 	}
 
-	private void updateObs(Obs oldObs, Event incomingEvent, String newSequence, String newFormSubmissionField) {
-		if (oldObs.getFieldDataType().equalsIgnoreCase(NUMERIC)) {
-			oldObs.setFormSubmissionField(newFormSubmissionField + "_dose");
-			oldObs.getValues().clear();
-			oldObs.getValues().add(newSequence);
+	private void createFirstRecurringService(String service, Event newEvent, Event birthRegEvent) {
+		String submissionField = String.format("%s_%s", service, 1);
+		List<Object> values = Collections.singletonList(ObsConstants.CODED_FIELD_VALUE);
+		String codedFieldCode;
+		switch (service) {
+			case RecurringServiceConstants.DEWORMING:
+				codedFieldCode = ObsConstants.DEWORMING_CODED_FIELD_CODE;
+				break;
+			case RecurringServiceConstants.VIT_A:
+				codedFieldCode = ObsConstants.VIT_A_CODED_FIELD_CODE;
+				break;
+			case RecurringServiceConstants.ITN:
+				codedFieldCode = ObsConstants.ITN_CODED_FIELD_CODE;
+				break;
+			default:
+				codedFieldCode = submissionField;
 		}
-		if (oldObs.getFieldDataType().equalsIgnoreCase(DATE)) {
-			oldObs.setFormSubmissionField(newFormSubmissionField + "_date");
-			oldObs.getValues().clear();
-			oldObs.getValues().add(simpleDateFormat.format(incomingEvent.getEventDate()));
+		List<Obs> obsList = new ArrayList<>();
+		obsList.add(getServiceObs(submissionField, codedFieldCode, CODED, values, Collections.singletonList("yes")));
+		obsList.add(getServiceObs(submissionField + _DOSE, ObsConstants.NUMERIC_FIELD_CODE, NUMERIC,
+				Collections.singletonList(1), Collections.emptyList()));
+
+		if (service.equalsIgnoreCase(RecurringServiceConstants.ITN)) {
+			obsList.add(getServiceObs(submissionField + _DATE, ObsConstants.ITN_DATE_FIELD_CODE, DATE,
+					Collections.singletonList(newEvent.getEventDate()), Collections.emptyList()));
 		}
-		if (oldObs.getFieldDataType().equalsIgnoreCase(CODED)) {
-			oldObs.setFormSubmissionField(newFormSubmissionField);
+
+		newEvent.setObs(obsList);
+		newEvent.setEntityType(RECURRING_SERVICE_UNDERSCORED);
+		addEvent(newEvent, birthRegEvent.getProviderId());
+	}
+
+	public Obs getServiceObs(String submissionField, String fieldCode, String fieldDataType, List<Object> values,
+			Object humanReadableValues) {
+		return new Obs()
+				.withFormSubmissionField(submissionField)
+				.withFieldDataType(fieldDataType)
+				.withFieldType("concept")
+				.withFieldCode(fieldCode)
+				.withValues(values)
+				.withHumanReadableValue(humanReadableValues);
+	}
+
+	private List<Obs> updateObs(Event lastRecurringService, Event incomingEvent, String newSequence,
+			String newFormSubmissionField) {
+		List<Obs> newObsList = new ArrayList<>();
+		for (Obs oldObs : lastRecurringService.getObs()) {
+			if (oldObs.getFieldDataType().equalsIgnoreCase(NUMERIC)) {
+				oldObs.setFormSubmissionField(newFormSubmissionField + _DOSE);
+				oldObs.getValues().clear();
+				oldObs.getValues().add(newSequence);
+			} else if (oldObs.getFieldDataType().equalsIgnoreCase(DATE)) {
+				oldObs.setFormSubmissionField(newFormSubmissionField + _DATE);
+				oldObs.getValues().clear();
+				oldObs.getValues().add(simpleDateFormat.format(incomingEvent.getEventDate()));
+			} else if (oldObs.getFieldDataType().equalsIgnoreCase(CODED)) {
+				oldObs.setFormSubmissionField(newFormSubmissionField);
+			}
+			newObsList.add(oldObs);
 		}
+		return newObsList;
 	}
 
 	public Obs getObsWithValue(Event event) {
-		for (Obs obs : event.getObs()) {
-			if (obs.getFieldDataType().equalsIgnoreCase(NUMERIC) && obs.getFormSubmissionField().contains(DOSE)
-					&& !obs.getValues().isEmpty()) {
-				return obs;
+		if (event != null) {
+			for (Obs obs : event.getObs()) {
+				if (obs.getFieldDataType().equalsIgnoreCase(NUMERIC) && obs.getFormSubmissionField().contains(DOSE)
+						&& !obs.getValues().isEmpty()) {
+					return obs;
+				}
 			}
 		}
 		return null;
@@ -383,6 +454,7 @@ public class EventService {
 	}
 
 	private Event getNewOutOfAreaServiceEvent(Event event, Event birthRegEvent, String eventType) {
+		removeIdentifier(event); //Remove identifier from the old event first because entity id is found
 		Event newEvent = new Event();
 		newEvent.withBaseEntityId(event.getBaseEntityId())
 				.withEventType(eventType)
