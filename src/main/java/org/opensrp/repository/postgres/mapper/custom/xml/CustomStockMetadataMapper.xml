@@ -189,4 +189,60 @@
 		</where>
 	</select>
 
+	<select id="selectManyStockAndProductDetailsBySearchBean" resultMap="StockAndProductDetails">
+		select
+		<include refid="Stock_And_Product_Details_Column_List"/>
+		from core.stock_metadata sm
+		join core.stock stock on sm.stock_id = stock.id
+		join core.product_catalogue productCatalogue
+		on
+		CAST(NULLIF( stock.json->> 'identifier', '') as numeric) = productCatalogue.unique_id
+		<where>
+			<trim  prefixOverrides="and">
+				sm.date_deleted is null
+				and (stock.json->> 'accountabilityEndDate' is null or stock.json->>'accountabilityEndDate' >= #{todayDate,jdbcType=DATE} )
+
+				<if test="searchBean.providerId != null">
+					and sm.provider_id = #{searchBean.providerId,jdbcType=VARCHAR}
+				</if>
+				<if test="searchBean.serverVersion != null">
+					and sm.server_version >= #{searchBean.serverVersion,jdbcType=BIGINT}
+				</if>
+				<if test="searchBean.identifier != null">
+					and stock.json->>'identifier' = #{searchBean.identifier,jdbcType=VARCHAR}
+				</if>
+				<if test="searchBean.stockTypeId != null">
+					and stock.json->>'vaccine_type_id' =
+					#{searchBean.stockTypeId,jdbcType=VARCHAR}
+				</if>
+				<if test="searchBean.transactionType != null">
+					and stock.json->>'transaction_type' =
+					#{searchBean.transactionType,jdbcType=VARCHAR}
+				</if>
+				<if test="searchBean.value != null">
+					and stock.json->>'value' = #{searchBean.value,jdbcType=VARCHAR}
+				</if>
+				<if test="searchBean.dateCreated != null">
+					and stock.json->>'date_created' = #{searchBean.dateCreated,jdbcType=VARCHAR}
+				</if>
+				<if test="searchBean.toFrom != null">
+					and stock.json->>'to_from' = #{searchBean.toFrom,jdbcType=VARCHAR}
+				</if>
+				<if test="searchBean.dateUpdated != null">
+					and stock.json->>'date_updated' = #{searchBean.dateUpdated,jdbcType=VARCHAR}
+				</if>
+				<if test="searchBean.locations != null and searchBean.locations.size() > 0">
+					and sm.location_id IN
+					<foreach item="item" index="index" collection="searchBean.locations" open="(" separator="," close=")">
+						#{item}
+					</foreach>
+				</if>
+			</trim>
+		</where>
+		<if test="orderByClause != null">
+			order by sm.${orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
 </mapper>
