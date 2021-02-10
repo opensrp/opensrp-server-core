@@ -188,7 +188,7 @@ public class ClientServiceTest extends BaseIntegrationTest {
 		List<Client> expectedClientList = asList(expectedClient, expectedClient2, invalidClient);
 
 		List<Client> actualClientList = clientService.findAllByAttributes("type",
-				new ArrayList<>(Arrays.asList("value", "value2")));
+				new ArrayList<>(asList("value", "value2")));
 		assertTwoListAreSameIgnoringOrder(expectedClientList, actualClientList);
 	}
 	

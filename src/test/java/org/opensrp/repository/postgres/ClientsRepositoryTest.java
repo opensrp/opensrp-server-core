@@ -210,6 +210,25 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		clientsRepository.safeRemove(clients.get(0));
 		assertTrue(clientsRepository.findAllByAttribute("CHW_Phone_Number", "0964357951").isEmpty());
 	}
+
+	@Test
+	public void testAllByAttributes() {
+		List<Client> clients = clientsRepository.findAllByAttribute("Home_Facility", "Happy Kids Clinic");
+
+		assertEquals(9, clients.size());
+
+		clients = clientsRepository.findAllByAttribute("CHW_Phone_Number", "0964357951");
+		assertEquals(1, clients.size());
+		assertEquals("05934ae338431f28bf6793b24164cbd9", clients.get(0).getId());
+		assertEquals("Sally", clients.get(0).getFirstName());
+		assertEquals("Mtini", clients.get(0).getLastName().trim());
+
+		assertTrue(clientsRepository.findAllByAttributes("CHW_Phone_Number", new ArrayList<>(Arrays.asList("+0964357951", "0964357951"))).isEmpty());
+
+		//test deleted clients
+		clientsRepository.safeRemove(clients.get(0));
+		assertTrue(clientsRepository.findAllByAttributes("CHW_Phone_Number", new ArrayList<>(Arrays.asList("+0964357951", "0964357951"))).isEmpty());
+	}
 	
 	@Test
 	public void testFindAllByMatchingName() {
