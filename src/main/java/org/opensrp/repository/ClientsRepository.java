@@ -25,6 +25,8 @@ public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	List<Client> findAllByIdentifier(String identifierType, String identifier);
 	
 	List<Client> findAllByAttribute(String attributeType, String attribute);
+
+	List<Client> findAllByAttributes(String attributeType, List<String> attributes);
 	
 	List<Client> findAllByMatchingName(String nameMatches);
 	
