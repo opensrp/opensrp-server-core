@@ -223,11 +223,11 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Sally", clients.get(0).getFirstName());
 		assertEquals("Mtini", clients.get(0).getLastName().trim());
 
-		assertTrue(clientsRepository.findAllByAttributes("CHW_Phone_Number", new ArrayList<>(Arrays.asList("+0964357951", "0964357951"))).isEmpty());
+		assertEquals(clientsRepository.findAllByAttributes("CHW_Phone_Number", new ArrayList<>(Arrays.asList("+0964357951", "0964357951"))).size(), 1);
 
 		//test deleted clients
 		clientsRepository.safeRemove(clients.get(0));
-		assertTrue(clientsRepository.findAllByAttributes("CHW_Phone_Number", new ArrayList<>(Arrays.asList("+0964357951", "0964357951"))).isEmpty());
+		assertTrue(clientsRepository.findAllByAttributes("Phone_Number", new ArrayList<>(Arrays.asList("+0964357951", "0964357951"))).isEmpty());
 	}
 	
 	@Test
