@@ -58,6 +58,10 @@ public class ClientService {
 	public List<Client> findAllByAttribute(String attributeType, String attribute) {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
+
+	public List<Client> findAllByAttributes(String attributeType, List<String> attributes) {
+		return allClients.findAllByAttributes(attributeType, attributes);
+	}
 	
 	public List<Client> findAllByMatchingName(String nameMatches) {
 		return allClients.findAllByMatchingName(nameMatches);

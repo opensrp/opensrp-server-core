@@ -236,10 +236,16 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		List<org.opensrp.domain.postgres.Client> clients = clientMapper.selectByIdentifierOfType(identifierType, identifier);
 		return convert(clients);
 	}
-	
+
 	@Override
 	public List<Client> findAllByAttribute(String attributeType, String attribute) {
 		List<org.opensrp.domain.postgres.Client> clients = clientMapper.selectByAttributeOfType(attributeType, attribute);
+		return convert(clients);
+	}
+
+	@Override
+	public List<Client> findAllByAttributes(String attributeType, List<String> attributes) {
+		List<org.opensrp.domain.postgres.Client> clients = clientMapper.selectByAttributesOfType(attributeType, attributes);
 		return convert(clients);
 	}
 	

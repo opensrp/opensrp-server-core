@@ -174,6 +174,22 @@ public class ClientServiceTest extends BaseIntegrationTest {
 		List<Client> actualClientList = clientService.findAllByAttribute("type", "value");
 		assertTwoListAreSameIgnoringOrder(expectedClientList, actualClientList);
 	}
+
+	@Test
+	public void shouldFindByAttributeTypesAndValue() {
+		Client expectedClient = new Client("b1");
+		expectedClient.addAttribute("type", "value");
+		Client expectedClient2 = new Client("b2");
+		expectedClient2.addAttribute("type", "value");
+		Client invalidClient = new Client("b3");
+		invalidClient.addAttribute("type2", "value2");
+		addObjectToRepository(asList(expectedClient, expectedClient2, invalidClient), allClients);
+		List<Client> expectedClientList = asList(expectedClient, expectedClient2, invalidClient);
+
+		List<Client> actualClientList = clientService.findAllByAttributes("type",
+				new ArrayList<>(asList("value", "value2")));
+		assertTwoListAreSameIgnoringOrder(expectedClientList, actualClientList);
+	}
 	
 	@Test
 	public void shouldFindAllMatchingName() {
