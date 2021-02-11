@@ -25,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,6 +67,8 @@ public class EventService {
 	public static final String _DOSE = "_dose";
 
 	public static final String _DATE = "_date";
+
+	public static final String CONCEPT = "concept";
 
 	public interface ObsConstants {
 
@@ -268,7 +269,7 @@ public class EventService {
 					return event;
 				}
 				Event birthRegEvent = existingEvents.get(0);
-				createOutOfCatchmentService(event, client, birthRegEvent);
+				createOutOfCatchmentService(event, birthRegEvent);
 			}
 		}
 		catch (Exception e) {
@@ -278,8 +279,7 @@ public class EventService {
 		return event;
 	}
 
-	private void createOutOfCatchmentService(Event event, org.smartregister.domain.Client client, Event birthRegEvent) {
-		event.setBaseEntityId(client.getBaseEntityId());
+	private void createOutOfCatchmentService(Event event, Event birthRegEvent) {
 
 		//Remove identifier since entity id is present, also create new service with the right location and provider
 		String eventTypeLowercase = event.getEventType().toLowerCase();
@@ -337,7 +337,8 @@ public class EventService {
 
 				Obs obsWithValue = getObsWithValue(lastRecurringService);
 				if (obsWithValue != null) {
-					String newSequence = String.valueOf(Integer.parseInt((String) obsWithValue.getValues().get(0)) + 1);
+					int newVal = Integer.parseInt((String) obsWithValue.getValues().get(0)) + 1;
+					String newSequence = String.valueOf(newVal);
 					String newFormSubmissionField = String.format("%s_%s", service, newSequence);
 					List<Obs> newObsList = updateObs(lastRecurringService, event, newSequence, newFormSubmissionField);
 					newEvent.setObs(newObsList);
@@ -353,7 +354,7 @@ public class EventService {
 		String submissionField = String.format("%s_%s", service, 1);
 		List<Object> values = Collections.singletonList(ObsConstants.CODED_FIELD_VALUE);
 		String codedFieldCode;
-		switch (service) {
+		switch (service.trim()) {
 			case RecurringServiceConstants.DEWORMING:
 				codedFieldCode = ObsConstants.DEWORMING_CODED_FIELD_CODE;
 				break;
@@ -386,7 +387,7 @@ public class EventService {
 		return new Obs()
 				.withFormSubmissionField(submissionField)
 				.withFieldDataType(fieldDataType)
-				.withFieldType("concept")
+				.withFieldType(CONCEPT)
 				.withFieldCode(fieldCode)
 				.withValues(values)
 				.withHumanReadableValue(humanReadableValues);
@@ -428,24 +429,16 @@ public class EventService {
 			List<String> outOfCatchmentServices) {
 		Map<String, List<Event>> marchedServices = new TreeMap<>();
 		for (String service : outOfCatchmentServices) {
-			List<Event> serviceEvents = previousServices.stream().filter(new Predicate<Event>() {
-
-				@Override
-				public boolean test(Event event) {
-					Obs obs = getObsWithValue(event);
-					if (obs == null) {
-						return false;
-					}
-					return obs.getFormSubmissionField().startsWith(service.trim());
+			List<Event> serviceEvents = previousServices.stream().filter(event -> {
+				Obs obs = getObsWithValue(event);
+				if (obs == null) {
+					return false;
 				}
-			}).sorted(new Comparator<Event>() {
-
-				@Override
-				public int compare(Event event1, Event event2) {
-					int value1 = Integer.parseInt((String) getObsWithValue(event1).getValues().get(0));
-					int value2 = Integer.parseInt((String) getObsWithValue(event2).getValues().get(0));
-					return Integer.compare(value1, value2);
-				}
+				return obs.getFormSubmissionField().startsWith(service.trim());
+			}).sorted((event1, event2) -> {
+				int value1 = Integer.parseInt((String) getObsWithValue(event1).getValues().get(0));
+				int value2 = Integer.parseInt((String) getObsWithValue(event2).getValues().get(0));
+				return Integer.compare(value1, value2);
 			}).collect(Collectors.toList());
 			marchedServices.put(service, serviceEvents);
 		}
@@ -454,6 +447,7 @@ public class EventService {
 	}
 
 	private Event getNewOutOfAreaServiceEvent(Event event, Event birthRegEvent, String eventType) {
+		event.setBaseEntityId(birthRegEvent.getBaseEntityId());
 		removeIdentifier(event); //Remove identifier from the old event first because entity id is found
 		Event newEvent = new Event();
 		newEvent.withBaseEntityId(event.getBaseEntityId())
@@ -472,8 +466,6 @@ public class EventService {
 		newEvent.setTeam(birthRegEvent.getTeam());
 		newEvent.setTeamId(birthRegEvent.getTeamId());
 		newEvent.setIdentifiers(event.getIdentifiers());
-		logger.info(String.format("New %s event with created with id %s", newEvent.getEventType(),
-				newEvent.getFormSubmissionId()));
 		return newEvent;
 	}
 
