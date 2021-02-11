@@ -200,7 +200,7 @@
 		join core.stock s on sm.stock_id = s.id
 		join core.product_catalogue productCatalogue
 		on
-		CAST(NULLIF( s.json->> 'identifier', '') as numeric) = productCatalogue.unique_id
+		(s.json->> 'identifier')::bigint = productCatalogue.unique_id
 		<where>
 			<include refid="selectManyBySearchBeanConditions"/>
 		</where>
