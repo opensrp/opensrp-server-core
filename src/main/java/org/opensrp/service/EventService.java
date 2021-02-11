@@ -370,7 +370,7 @@ public class EventService {
 		List<Obs> obsList = new ArrayList<>();
 		obsList.add(getServiceObs(submissionField, codedFieldCode, CODED, values, Collections.singletonList("yes")));
 		obsList.add(getServiceObs(submissionField + _DOSE, ObsConstants.NUMERIC_FIELD_CODE, NUMERIC,
-				Collections.singletonList(1), Collections.emptyList()));
+				Collections.singletonList(String.valueOf(1)), Collections.emptyList()));
 
 		if (service.equalsIgnoreCase(RecurringServiceConstants.ITN)) {
 			obsList.add(getServiceObs(submissionField + _DATE, ObsConstants.ITN_DATE_FIELD_CODE, DATE,
@@ -383,14 +383,15 @@ public class EventService {
 	}
 
 	public Obs getServiceObs(String submissionField, String fieldCode, String fieldDataType, List<Object> values,
-			Object humanReadableValues) {
-		return new Obs()
+			List<Object> humanReadableValues) {
+		Obs obs = new Obs()
 				.withFormSubmissionField(submissionField)
 				.withFieldDataType(fieldDataType)
 				.withFieldType(CONCEPT)
 				.withFieldCode(fieldCode)
-				.withValues(values)
-				.withHumanReadableValue(humanReadableValues);
+				.withValues(values);
+		obs.setHumanReadableValues(humanReadableValues);
+		return obs;
 	}
 
 	private List<Obs> updateObs(Event lastRecurringService, Event incomingEvent, String newSequence,
