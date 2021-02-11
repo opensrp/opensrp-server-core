@@ -362,7 +362,9 @@ public class StockService {
 		else {
 			stock.setProviderid(username);
 		}
-		stock.setValue(inventory.getQuantity());
+		if(inventory.getQuantity() != null) {
+			stock.setValue(inventory.getQuantity());
+		}
 		stock.setTransactionType("Inventory");
 		stock.setLocationId(inventory.getServicePointId());
 		stock.setDeliveryDate(inventory.getDeliveryDate());
@@ -404,7 +406,7 @@ public class StockService {
 			throw new IllegalArgumentException(SERVICE_POINT_DOES_NOT_EXISTS);
 		} else if (deliveryDate.getTime() > new Date().getTime()) {
 			throw new IllegalArgumentException(INVALID_DELIVERY_DATE);
-		} else if (!isWholeNumber(String.valueOf(inventory.getQuantity())) || inventory.getQuantity() < 1) {
+		} else if (inventory.getQuantity() != null && (!isWholeNumber(String.valueOf(inventory.getQuantity())) || inventory.getQuantity() < 1)) {
 			throw new IllegalArgumentException(INVALID_QUANTITY);
 		} else if (!unicefSections.contains(inventory.getUnicefSection())) {
 			throw new IllegalArgumentException(INVALID_UNICEF_SECTION);
