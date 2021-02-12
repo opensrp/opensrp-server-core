@@ -365,6 +365,9 @@ public class StockService {
 		if(inventory.getQuantity() != null) {
 			stock.setValue(inventory.getQuantity());
 		}
+		else {
+			stock.setValue(1); //As discussed set default value to 1
+		}
 		stock.setTransactionType("Inventory");
 		stock.setLocationId(inventory.getServicePointId());
 		stock.setDeliveryDate(inventory.getDeliveryDate());
