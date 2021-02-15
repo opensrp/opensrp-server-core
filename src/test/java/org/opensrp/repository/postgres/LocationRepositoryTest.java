@@ -1093,6 +1093,51 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		assertEquals(0, locationRepository.findLocationWithDescendants("21", false).size());
 	}
+
+	@Test
+	public void testFindLocationWithDescendantsToCheckOrder() {
+		String uuid = UUID.randomUUID().toString();
+		PhysicalLocation physicalLocation = createLocation(uuid);
+		physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
+		locationRepository.add(physicalLocation);
+
+		uuid = UUID.randomUUID().toString();
+		physicalLocation = createLocation(uuid);
+		physicalLocation.setId("1");
+		physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
+		physicalLocation.getProperties().setParentId("223232");
+		physicalLocation.getProperties().setGeographicLevel(1);
+		physicalLocation.getProperties().setName("Ambatondrazaka");
+		locationRepository.add(physicalLocation);
+
+		uuid = UUID.randomUUID().toString();
+		physicalLocation = createLocation(uuid);
+		physicalLocation.setId("2");
+		physicalLocation.getProperties().setStatus(PropertyStatus.ACTIVE);
+		physicalLocation.getProperties().setParentId("223232");
+		physicalLocation.getProperties().setGeographicLevel(1);
+		physicalLocation.getProperties().setName("MAROVOAY");
+		locationRepository.add(physicalLocation);
+
+		Set<LocationDetail> locations = locationRepository.findLocationWithDescendants("223232", false);
+
+		assertEquals(3, locations.size());
+		Iterator<LocationDetail> it = locations.iterator();
+		LocationDetail actualLocationdetail = it.next();
+		assertEquals("Ambatondrazaka", actualLocationdetail.getName());
+		assertEquals("223232", actualLocationdetail.getParentId());
+		assertEquals(new Integer(1), actualLocationdetail.getGeographicLevel());
+
+		actualLocationdetail = it.next();
+		assertEquals("MAROVOAY", actualLocationdetail.getName());
+		assertEquals("223232", actualLocationdetail.getParentId());
+		assertEquals(new Integer(1), actualLocationdetail.getGeographicLevel());
+
+		actualLocationdetail = it.next();
+		assertEquals("01_5", actualLocationdetail.getName());
+		assertEquals(null, actualLocationdetail.getParentId());
+		assertEquals(new Integer(0), actualLocationdetail.getGeographicLevel());
+	}
 	
 	@Test
 	public void testFindStructureCountsForLocation() {
