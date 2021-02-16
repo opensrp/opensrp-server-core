@@ -44,8 +44,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
 
 	private static final Logger logger = LoggerFactory.getLogger(SettingRepositoryImpl.class);
-	
-	private static final String SEQUENCE="core.setting_server_version_seq"; 
 
 	private final List<String> reformattedLocationHierarchy = new ArrayList<>();
 
@@ -75,6 +73,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		long serverVersion = settingMapper.selectServerVersionByPrimaryKey(pgSettings.getId());
 		entity.setServerVersion(serverVersion);
 		pgSettings.setJson(entity);
+		pgSettings.setServerVersion(null);
 		int rowsAffected = settingMapper.updateByPrimaryKeySelective(pgSettings);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -116,6 +115,16 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		updateServerVersion(pgSetting, entity);
 		entity.setSettings(settings);// re-inject settings block
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
+		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
+
+		for (SettingsMetadata settingsMetadata : metadata) {
+			if (!checkIfMetadataExists(settingsMetadata)) {
+				settingsMetadataList.add(settingsMetadata);
+			}
+		}
+		if (!settingsMetadataList.isEmpty()) {
+			settingMetadataMapper.insertMany(settingsMetadataList);
+		}
 		settingMetadataMapper.updateMany(metadata);
 	}
 
@@ -744,11 +753,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	public List<String> getReformattedLocationHierarchy() {
 		return reformattedLocationHierarchy;
-	}
-
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
 	}
 
 	@Override

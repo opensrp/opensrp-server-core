@@ -749,5 +749,29 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		event.setDetails(details);
 		return event;
 	}
+	
+	@Test
+	public void testFindEventsByJurisdictionIdAndPlan() {
+		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
+		Event event = new Event().withBaseEntityId("4355345345431").withEventType("GrowthMonitoring").
+				withFormSubmissionId("gjhg34534nvbnv33453450").withEventDate(new DateTime()).withObs(obs)
+				.withLocationId("test-location-id").withChildLocationId("test-child-location-id");
+		event.setTeam("team");
+		event.setTeamId("team-id");
+		event.setProviderId("provider-id");
+		event.setServerVersion(12345678l);
+
+		Map<String, String> details = new HashMap<>();
+		details.put("planIdentifier", "plan-id-12345");
+		event.setDetails(details);
+		eventsRepository.add(event);
+		List<QuestionnaireResponse> questionnaireResponses = eventsRepository.findEventsByJurisdictionIdAndPlan("test-location-id","plan-id-12345");
+		assertEquals(1,questionnaireResponses.size());
+		assertEquals(event.getFormSubmissionId(),questionnaireResponses.get(0).getId());
+		
+		assertTrue(eventsRepository.findEventsByJurisdictionIdAndPlan("test-location-id","plan-12345").isEmpty());
+		
+		assertTrue(eventsRepository.findEventsByJurisdictionIdAndPlan("test-location-id1","plan-id-12345").isEmpty());
+	}
 
 }

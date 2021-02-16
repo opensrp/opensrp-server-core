@@ -16,8 +16,6 @@ import org.springframework.stereotype.Repository;
 @Repository("viewConfigurationRepositoryPostgres")
 public class ViewConfigurationRepositoryImpl extends BaseRepositoryImpl<ViewConfiguration> implements ViewConfigurationRepository {
 	
-	private static final String SEQUENCE="core.view_config_server_version_seq"; 
-	
 	@Autowired
 	private CustomViewConfigurationMapper viewConfigurationMapper;
 	
@@ -225,10 +223,4 @@ public class ViewConfigurationRepositoryImpl extends BaseRepositoryImpl<ViewConf
 		metadata.setServerVersion(entity.getServerVersion());
 		return metadata;
 	}
-
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
-	}
-	
 }

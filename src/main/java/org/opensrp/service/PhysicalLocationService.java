@@ -51,8 +51,8 @@ public class PhysicalLocationService {
 		this.locationRepository = locationRepository;
 	}
 	
-	public PhysicalLocation getLocation(String id, boolean returnGeometry) {
-		return locationRepository.get(id, returnGeometry);
+	public PhysicalLocation getLocation(String id, boolean returnGeometry, boolean includeInactive) {
+		return locationRepository.get(id, returnGeometry, includeInactive);
 	}
 	
 	public PhysicalLocation getLocation(String id, boolean returnGeometry, int version) {
@@ -70,7 +70,7 @@ public class PhysicalLocationService {
 	public void addOrUpdate(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
-		if ((physicalLocation.isJurisdiction() && getLocation(physicalLocation.getId(), DEFAULT_RETURN_BOOLEAN) == null)
+		if ((physicalLocation.isJurisdiction() && getLocation(physicalLocation.getId(), DEFAULT_RETURN_BOOLEAN, false) == null)
 		        || (!physicalLocation.isJurisdiction()
 		                && getStructure(physicalLocation.getId(), DEFAULT_RETURN_BOOLEAN) == null)) {
 			add(physicalLocation);
@@ -238,7 +238,7 @@ public class PhysicalLocationService {
 	 * @param pageSize number of records to be returned
 	 * @return location together with it's children whose id matches the provided param
 	 */
-	@Cacheable(value = "locationsWIthChildrenByLocationIds", key = "#locationIds")
+	@Cacheable(value = "locationsWIthChildrenByLocationIds", key = "{ #locationIds, #returnGeometry }")
 	public List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> locationIds,
 	        int pageSize) {
 		return locationRepository.findLocationByIdsWithChildren(returnGeometry, locationIds, pageSize);
@@ -286,8 +286,8 @@ public class PhysicalLocationService {
 	 * @param limit upper limit on number of jurisdictions to fetch
 	 * @return list of jurisdictions
 	 */
-	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit) {
-		return locationRepository.findAllLocations(returnGeometry, serverVersion, limit);
+	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit, boolean includeInactive) {
+		return locationRepository.findAllLocations(returnGeometry, serverVersion, limit, includeInactive);
 	};
 	
 	/**
@@ -342,7 +342,7 @@ public class PhysicalLocationService {
 	 * @param returnTags whether to return loction tags
 	 * @return the location hierarchy/tree of the identifiers
 	 */
-	@Cacheable(value = "locationTreeFromLocationIdentifiers", key = "#identifiers")
+	@Cacheable(value = "locationTreeFromLocationIdentifiers", key = "{ #identifiers, #returnStructureCount, #returnTags }")
 	public LocationTree buildLocationHierachy(Set<String> identifiers, boolean returnStructureCount, boolean returnTags) {
 		LocationTree locationTree = new LocationTree();
 		Set<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(identifiers, returnTags);
@@ -505,7 +505,7 @@ public class PhysicalLocationService {
 		return geometryCoordinates;
 	}
 
-	@Cacheable(value = "locationTreeFromLocation", key = "#locationId")
+	@Cacheable(value = "locationTreeFromLocation", key = "{ #locationId, #returnStructureCount }")
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnStructureCount) {
 		return buildLocationHierachyFromLocation(locationId, false, returnStructureCount);
 	}
@@ -516,7 +516,7 @@ public class PhysicalLocationService {
 	 * @param locationId id of the root location
 	 * @return full location hierarchy from passed location plus all of its descendants
 	 */
-	@Cacheable(value = "locationTreeFromLocation", key = "#locationId")
+	@Cacheable(value = "locationTreeFromLocation", key = "{ #locationId, #returnTags, #returnStructureCount }")
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnTags,
 	        boolean returnStructureCount) {
 		LocationTree locationTree = new LocationTree();

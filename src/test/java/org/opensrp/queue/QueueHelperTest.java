@@ -320,7 +320,6 @@ public class QueueHelperTest {
 	@Before
 	public void setup() {
 		initMocks(this);
-		queueHelper.init();
 		amqpAdmin.purgeQueue(queue.getName());
 		rabbitMQSender.setRabbitTemplate(rabbitTemplate);
 		rabbitMQSender.setQueue(queue);

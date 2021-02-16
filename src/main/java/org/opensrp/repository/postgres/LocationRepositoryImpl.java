@@ -62,12 +62,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	
 	@Override
 	public PhysicalLocation get(String id) {
-		return convert(locationMetadataMapper.findById(id, true));
+		return convert(locationMetadataMapper.findById(id, true, false));
 	}
 	
 	@Override
-	public PhysicalLocation get(String id, boolean returnGeography) {
-		return convert(locationMetadataMapper.findById(id, returnGeography));
+	public PhysicalLocation get(String id, boolean returnGeography, boolean includeInactive) {
+		return convert(locationMetadataMapper.findById(id, returnGeography, includeInactive));
 	}
 	
 	@Override
@@ -97,6 +97,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		long serverVersion = locationMapper.selectServerVersionByPrimaryKey(pgLocation.getId());
 		entity.setServerVersion(serverVersion);
 		pgLocation.setJson(entity);
+		pgLocation.setServerVersion(null);
 		int rowsAffected = locationMapper.updateByPrimaryKeySelective(pgLocation);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -107,6 +108,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		long serverVersion = structureMapper.selectServerVersionByPrimaryKey(pgStructure.getId());
 		entity.setServerVersion(serverVersion);
 		pgStructure.setJson(entity);
+		pgStructure.setServerVersion(null);
 		int rowsAffected = structureMapper.updateByPrimaryKeySelective(pgStructure);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -522,10 +524,13 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit) {
+	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit, boolean includeInactive) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		locationMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion)
-		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
+		LocationMetadataExample.Criteria criteria = locationMetadataExample.createCriteria();
+		if(!includeInactive) {
+			criteria.andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
+		}
+		criteria.andServerVersionGreaterThanOrEqualTo(serverVersion);
 		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		
 		List<Location> locations = locationMetadataMapper.selectManyWithOptionalGeometry(locationMetadataExample,
@@ -719,7 +724,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction) {
 		
 		if (isJurisdiction) {
-			Location pgEntity = locationMetadataMapper.findById(identifier, true);
+			Location pgEntity = locationMetadataMapper.findById(identifier, true, false);
 			if (pgEntity == null) {
 				return null;
 			}
@@ -919,12 +924,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findJurisdictionsById(String id) {
-		return convertToFHIRLocation(Collections.singletonList(get(id, false)));
+		PhysicalLocation location = get(id, false, false);
+		return location == null ? Collections.emptyList() : convertToFHIRLocation(Collections.singletonList(location));
 	}
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findLocationsById(String id) {
-		return convertToFHIRLocation(Collections.singletonList(getStructure(id, false)));
+		PhysicalLocation location=getStructure(id, false);
+		return location == null ? Collections.emptyList() :convertToFHIRLocation(Collections.singletonList(location));
 	}
 	
 	@Override

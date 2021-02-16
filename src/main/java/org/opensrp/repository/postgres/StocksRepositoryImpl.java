@@ -32,8 +32,6 @@ import com.ibm.fhir.model.resource.Bundle;
 @Repository("stocksRepositoryPostgres")
 public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements StocksRepository {
 
-	private static final String SEQUENCE="core.stock_server_version_seq";
-
 	@Autowired
 	private CustomStockMapper stockMapper;
 	
@@ -92,6 +90,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		long serverVersion = stockMapper.selectServerVersionByPrimaryKey(pgStock.getId());
 		entity.setServerVersion(serverVersion);
 		pgStock.setJson(entity);
+		pgStock.setServerVersion(null);
 		int rowsAffected = stockMapper.updateByPrimaryKeySelective(pgStock);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -329,11 +328,6 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		metadata.setLocationId(entity.getLocationId());
 		metadata.setServerVersion(entity.getServerVersion());
 		return metadata;
-	}
-
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
 	}
 
 	private Pair<Integer, Integer> getPageSizeAndOffset(StockSearchBean stockSearchBean) {
