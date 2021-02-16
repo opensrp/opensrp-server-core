@@ -297,8 +297,8 @@ public class PhysicalLocationService {
 	 * @param limit upper limit on number of structures to fetch
 	 * @return list of structures
 	 */
-	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit) {
-		return locationRepository.findAllStructures(returnGeometry, serverVersion, limit);
+	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit, Integer pageNumber, String orderByType, String orderByFieldName) {
+		return locationRepository.findAllStructures(returnGeometry, serverVersion, limit, pageNumber, orderByType, orderByFieldName);
 	};
 	
 	/**
