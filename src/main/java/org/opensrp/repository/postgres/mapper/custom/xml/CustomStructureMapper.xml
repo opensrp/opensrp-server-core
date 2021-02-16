@@ -14,7 +14,10 @@
 	      <if test="json != null">
 	        json,
 	      </if>
-	      server_version
+	      server_version,
+			<if test="geometry != null">
+				geometry,
+			</if>
 	    </trim>
 	    <trim prefix="values (" suffix=")" suffixOverrides=",">
 	      <if test="id != null">
@@ -24,9 +27,12 @@
 	        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
 	      </if>
 	       nextVal('core.structure_server_version_seq')
+			<if test="geometry != null">
+				ST_GeomFromGeoJSON(#{geometry,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.GeometryTypeHandler}),
+			</if>
 	    </trim>
-	</insert>	
-	
+	</insert>
+
 	<resultMap id="StructureFamilyDetailsMap" type="org.opensrp.domain.postgres.StructureFamilyDetails">
     <id column="id" jdbcType="VARCHAR" property="id" />
     <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
@@ -48,7 +54,7 @@
 		      'SPHEROID["WGS 84",6378137,298.257223563]') &lt;= #{radius,jdbcType=DOUBLE}
 
 	</select>
-	
+
 	<update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Structure">
 	    update core.structure
 	    set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},

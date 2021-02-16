@@ -541,6 +541,11 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		physicalLocation.setJurisdiction(true);
 		Geometry geometry = new Geometry();
 		geometry.setType(GeometryType.MULTI_POLYGON);
+		JsonArray jsonArray = new JsonArray();
+		jsonArray.add(102.70283890000002);
+		jsonArray.add(12.099235999999967);
+
+		geometry.setCoordinates(jsonArray);
 		physicalLocation.setGeometry(geometry);
 		LocationProperty properties = new LocationProperty();
 		properties.setStatus(PropertyStatus.INACTIVE);
@@ -557,6 +562,16 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		physicalLocation.setType("Feature");
 		Geometry geometry = new Geometry();
 		geometry.setType(GeometryType.POLYGON);
+		double latitude = -14.1619809;
+		double longitude = 32.5978597;
+		JsonArray jsonArray = new JsonArray();
+		JsonArray cordinates = new JsonArray();
+		JsonArray cordinatesValues = new JsonArray();
+		cordinatesValues.add(longitude);
+		cordinatesValues.add(latitude);
+		cordinates.add(cordinatesValues);
+		jsonArray.add(cordinates);
+		geometry.setCoordinates(jsonArray);
 		physicalLocation.setGeometry(geometry);
 		LocationProperty properties = new LocationProperty();
 		properties.setStatus(PropertyStatus.ACTIVE);

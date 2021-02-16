@@ -14,7 +14,10 @@
 	      <if test="json != null">
 	        json,
 	      </if>
-	      server_version
+	      server_version,
+			<if test="geometry != null">
+				geometry,
+			</if>
 	    </trim>
 	    <trim prefix="values (" suffix=")" suffixOverrides=",">
 	      <if test="id != null">
@@ -23,10 +26,13 @@
 	      <if test="json != null">
 	        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
 	      </if>
-	      nextVal('core.location_server_version_seq')
+	      nextVal('core.location_server_version_seq'),
+			<if test="geometry != null">
+				ST_GeomFromGeoJSON('{"type":"MultiPolygon","coordinates":[102.70283890000002,12.099235999999967]}')
+			</if>
 	    </trim>
 	</insert>
-	
+
 	<update id="updateByPrimaryKeyAndGenerateServerVersion"
 		parameterType="org.opensrp.domain.postgres.Location">
 		update core.location
@@ -40,5 +46,5 @@
 		parameterType="java.lang.Long" resultType="long">
 		select server_version from core.location where id = #{id,jdbcType=BIGINT}
 	</select>
-		
+
 </mapper>

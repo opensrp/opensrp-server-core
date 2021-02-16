@@ -36,6 +36,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapp
 import org.opensrp.search.LocationSearchBean;
 import org.opensrp.service.LocationTagService;
 import org.smartregister.converters.LocationConverter;
+import org.smartregister.domain.Geometry;
 import org.smartregister.domain.LocationTag;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -758,6 +759,9 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		PhysicalLocation location = (PhysicalLocation) entity.getJson();
 		location.setJurisdiction(true);
+		if(entity != null && entity.getGeometry() != null) {
+			location.setGeometry((Geometry) entity.getGeometry());
+		}
 		return location;
 	}
 	
@@ -765,7 +769,11 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		if (entity == null || entity.getJson() == null || !(entity.getJson() instanceof PhysicalLocation)) {
 			return null;
 		}
-		return (PhysicalLocation) entity.getJson();
+		PhysicalLocation location = (PhysicalLocation) entity.getJson();
+		if(entity != null && entity.getGeometry() != null) {
+			location.setGeometry((Geometry) entity.getGeometry());
+		}
+		return location;
 	}
 	
 	private List<PhysicalLocation> convert(List<Location> locations) {
@@ -808,6 +816,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		Location pgLocation = new Location();
 		pgLocation.setId(primaryKey);
 		pgLocation.setJson(physicalLocation);
+		pgLocation.setGeometry(physicalLocation.getGeometry());
 		
 		return pgLocation;
 	}
@@ -820,6 +829,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		Structure pgStructure = new Structure();
 		pgStructure.setId(primaryKey);
 		pgStructure.setJson(physicalLocation);
+		pgStructure.setGeometry(physicalLocation.getGeometry());
 		
 		return pgStructure;
 	}

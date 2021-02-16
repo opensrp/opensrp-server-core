@@ -122,23 +122,23 @@ public class StructureExample {
 	 * @mbg.generated  Wed Nov 25 14:17:23 EAT 2020
 	 */
 	protected abstract static class GeneratedCriteria {
-		
+
 		protected List<Criterion> jsonCriteria;
-		
+
 		protected List<Criterion> allCriteria;
-		
+
 		protected List<Criterion> criteria;
-		
+
 		protected GeneratedCriteria() {
 			super();
 			criteria = new ArrayList<>();
 			jsonCriteria = new ArrayList<>();
 		}
-		
+
 		public List<Criterion> getJsonCriteria() {
 			return jsonCriteria;
 		}
-		
+
 		protected void addJsonCriterion(String condition, Object value, String property) {
 			if (value == null) {
 				throw new IllegalArgumentException("Value for " + property + " cannot be null");
@@ -146,7 +146,7 @@ public class StructureExample {
 			jsonCriteria.add(new Criterion(condition, value, "org.opensrp.repository.postgres.handler.LocationTypeHandler"));
 			allCriteria = null;
 		}
-		
+
 		protected void addJsonCriterion(String condition, Object value1, Object value2, String property) {
 			if (value1 == null || value2 == null) {
 				throw new IllegalArgumentException("Between values for " + property + " cannot be null");
@@ -155,11 +155,11 @@ public class StructureExample {
 			    new Criterion(condition, value1, value2, "org.opensrp.repository.postgres.handler.LocationTypeHandler"));
 			allCriteria = null;
 		}
-		
+
 		public boolean isValid() {
 			return criteria.size() > 0 || jsonCriteria.size() > 0;
 		}
-		
+
 		public List<Criterion> getAllCriteria() {
 			if (allCriteria == null) {
 				allCriteria = new ArrayList<>();
@@ -168,11 +168,11 @@ public class StructureExample {
 			}
 			return allCriteria;
 		}
-		
+
 		public List<Criterion> getCriteria() {
 			return criteria;
 		}
-		
+
 		protected void addCriterion(String condition) {
 			if (condition == null) {
 				throw new IllegalArgumentException("Value for condition cannot be null");
@@ -180,7 +180,7 @@ public class StructureExample {
 			criteria.add(new Criterion(condition));
 			allCriteria = null;
 		}
-		
+
 		protected void addCriterion(String condition, Object value, String property) {
 			if (value == null) {
 				throw new IllegalArgumentException("Value for " + property + " cannot be null");
@@ -188,7 +188,7 @@ public class StructureExample {
 			criteria.add(new Criterion(condition, value));
 			allCriteria = null;
 		}
-		
+
 		protected void addCriterion(String condition, Object value1, Object value2, String property) {
 			if (value1 == null || value2 == null) {
 				throw new IllegalArgumentException("Between values for " + property + " cannot be null");
@@ -196,184 +196,219 @@ public class StructureExample {
 			criteria.add(new Criterion(condition, value1, value2));
 			allCriteria = null;
 		}
-		
+
 		public Criteria andIdIsNull() {
 			addCriterion("id is null");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdIsNotNull() {
 			addCriterion("id is not null");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdEqualTo(Long value) {
 			addCriterion("id =", value, "id");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdNotEqualTo(Long value) {
 			addCriterion("id <>", value, "id");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdGreaterThan(Long value) {
 			addCriterion("id >", value, "id");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdGreaterThanOrEqualTo(Long value) {
 			addCriterion("id >=", value, "id");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdLessThan(Long value) {
 			addCriterion("id <", value, "id");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdLessThanOrEqualTo(Long value) {
 			addCriterion("id <=", value, "id");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdIn(List<Long> values) {
 			addCriterion("id in", values, "id");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdNotIn(List<Long> values) {
 			addCriterion("id not in", values, "id");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdBetween(Long value1, Long value2) {
 			addCriterion("id between", value1, value2, "id");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andIdNotBetween(Long value1, Long value2) {
 			addCriterion("id not between", value1, value2, "id");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonIsNull() {
 			addCriterion("json is null");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonIsNotNull() {
 			addCriterion("json is not null");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonEqualTo(Object value) {
 			addJsonCriterion("json =", value, "json");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonNotEqualTo(Object value) {
 			addJsonCriterion("json <>", value, "json");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonGreaterThan(Object value) {
 			addJsonCriterion("json >", value, "json");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonGreaterThanOrEqualTo(Object value) {
 			addJsonCriterion("json >=", value, "json");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonLessThan(Object value) {
 			addJsonCriterion("json <", value, "json");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonLessThanOrEqualTo(Object value) {
 			addJsonCriterion("json <=", value, "json");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonIn(List<Object> values) {
 			addJsonCriterion("json in", values, "json");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonNotIn(List<Object> values) {
 			addJsonCriterion("json not in", values, "json");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonBetween(Object value1, Object value2) {
 			addJsonCriterion("json between", value1, value2, "json");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andJsonNotBetween(Object value1, Object value2) {
 			addJsonCriterion("json not between", value1, value2, "json");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionIsNull() {
 			addCriterion("server_version is null");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionIsNotNull() {
 			addCriterion("server_version is not null");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionEqualTo(Long value) {
 			addCriterion("server_version =", value, "serverVersion");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionNotEqualTo(Long value) {
 			addCriterion("server_version <>", value, "serverVersion");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionGreaterThan(Long value) {
 			addCriterion("server_version >", value, "serverVersion");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionGreaterThanOrEqualTo(Long value) {
 			addCriterion("server_version >=", value, "serverVersion");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionLessThan(Long value) {
 			addCriterion("server_version <", value, "serverVersion");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionLessThanOrEqualTo(Long value) {
 			addCriterion("server_version <=", value, "serverVersion");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionIn(List<Long> values) {
 			addCriterion("server_version in", values, "serverVersion");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionNotIn(List<Long> values) {
 			addCriterion("server_version not in", values, "serverVersion");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionBetween(Long value1, Long value2) {
 			addCriterion("server_version between", value1, value2, "serverVersion");
 			return (Criteria) this;
 		}
-		
+
 		public Criteria andServerVersionNotBetween(Long value1, Long value2) {
 			addCriterion("server_version not between", value1, value2, "serverVersion");
+			return (Criteria) this;
+		}
+
+		public Criteria andGeometryGreaterThanOrEqualTo(Object value) {
+			addCriterion("geometry >=", value, "geometry");
+			return (Criteria) this;
+		}
+
+		public Criteria andGeometryLessThan(Object value) {
+			addCriterion("geometry <", value, "geometry");
+			return (Criteria) this;
+		}
+
+		public Criteria andGeometryLessThanOrEqualTo(Object value) {
+			addCriterion("geometry <=", value, "geometry");
+			return (Criteria) this;
+		}
+
+		public Criteria andGeometryIn(List<Object> values) {
+			addCriterion("geometry in", values, "geometry");
+			return (Criteria) this;
+		}
+
+		public Criteria andGeometryNotIn(List<Object> values) {
+			addCriterion("geometry not in", values, "geometry");
+			return (Criteria) this;
+		}
+
+		public Criteria andGeometryBetween(Object value1, Object value2) {
+			addCriterion("geometry between", value1, value2, "geometry");
+			return (Criteria) this;
+		}
+
+		public Criteria andGeometryNotBetween(Object value1, Object value2) {
+			addCriterion("geometry not between", value1, value2, "geometry");
 			return (Criteria) this;
 		}
 	}
@@ -383,62 +418,62 @@ public class StructureExample {
 	 * @mbg.generated  Wed Nov 25 14:17:23 EAT 2020
 	 */
 	public static class Criterion {
-		
+
 		private String condition;
-		
+
 		private Object value;
-		
+
 		private Object secondValue;
-		
+
 		private boolean noValue;
-		
+
 		private boolean singleValue;
-		
+
 		private boolean betweenValue;
-		
+
 		private boolean listValue;
-		
+
 		private String typeHandler;
-		
+
 		public String getCondition() {
 			return condition;
 		}
-		
+
 		public Object getValue() {
 			return value;
 		}
-		
+
 		public Object getSecondValue() {
 			return secondValue;
 		}
-		
+
 		public boolean isNoValue() {
 			return noValue;
 		}
-		
+
 		public boolean isSingleValue() {
 			return singleValue;
 		}
-		
+
 		public boolean isBetweenValue() {
 			return betweenValue;
 		}
-		
+
 		public boolean isListValue() {
 			return listValue;
 		}
-		
+
 		public String getTypeHandler() {
 			return typeHandler;
 		}
-		
+
 		protected Criterion(String condition) {
 			super();
 			this.condition = condition;
 			this.typeHandler = null;
 			this.noValue = true;
 		}
-		
+
 		protected Criterion(String condition, Object value, String typeHandler) {
 			super();
 			this.condition = condition;
@@ -450,11 +485,11 @@ public class StructureExample {
 				this.singleValue = true;
 			}
 		}
-		
+
 		protected Criterion(String condition, Object value) {
 			this(condition, value, null);
 		}
-		
+
 		protected Criterion(String condition, Object value, Object secondValue, String typeHandler) {
 			super();
 			this.condition = condition;
@@ -463,7 +498,7 @@ public class StructureExample {
 			this.typeHandler = typeHandler;
 			this.betweenValue = true;
 		}
-		
+
 		protected Criterion(String condition, Object value, Object secondValue) {
 			this(condition, value, secondValue, null);
 		}
