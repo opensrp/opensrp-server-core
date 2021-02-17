@@ -1245,5 +1245,13 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(3,locationList.size());
 		assertEquals(locationList.get(2).getProperties().getStatus(), PropertyStatus.INACTIVE);
 	}
+
+	@Test
+	public void testFindAllStructures() {
+		List<PhysicalLocation> locations  = locationRepository.findAllStructures(false,0l,10,null,null,null);
+		assertEquals(2, locations.size());
+		assertEquals("90397", locations.get(0).getId());
+		assertEquals("90398", locations.get(1).getId());
+	}
 	
 }
