@@ -942,7 +942,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findLocationByJurisdiction(String jurisdiction) {
-		return convertToFHIRLocation(findStructuresByProperties(false, jurisdiction, null, Integer.MAX_VALUE));
+		return convertToFHIRLocation(findStructuresByProperties(true, jurisdiction, null, Integer.MAX_VALUE));
 	}
 	
 	@Override
