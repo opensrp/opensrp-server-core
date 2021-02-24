@@ -427,22 +427,8 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1, tasks.size());
 		assertEquals("tsk11231jh22", tasks.get(0).getId());
 		
-		Task task = new Task();
-		task.setIdentifier("tsk-2332-j");
-		task.setPlanIdentifier("IRS_2018_S1");
-		task.setGroupIdentifier("2018_IRS-3734");
-		task.setBusinessStatus("Not Visited");
-		task.setStatus(TaskStatus.DRAFT);
-		task.setServerVersion(System.currentTimeMillis());
-		taskRepository.add(task);
-		
-		tasks = taskRepository.findTasksByJurisdiction("IRS_2018_S1", "2018_IRS-3734");
-		assertEquals(2, tasks.size());
-		for (com.ibm.fhir.model.resource.Task t : tasks) {
-			MatcherAssert.assertThat(t.getId(),
-			    CoreMatchers.anyOf(CoreMatchers.is("tsk11231jh22"), CoreMatchers.is("tsk-2332-j")));
-		}
-		
+		tasks = taskRepository.findTasksByJurisdiction("2018_IRS-3734","IRS_2018_S11");
+		assertEquals(0, tasks.size());
 	}
 	
 }
