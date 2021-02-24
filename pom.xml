@@ -161,6 +161,12 @@
 			<groupId>org.smartregister</groupId>
 			<artifactId>opensrp-server-api</artifactId>
 			<version>${opensrp.api.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.smartregister</groupId>
@@ -171,16 +177,17 @@
 			<groupId>org.smartregister</groupId>
 			<artifactId>opensrp-server-interface</artifactId>
 			<version>${opensrp.interface.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.smartregister</groupId>
 			<artifactId>opensrp-plan-evaluator</artifactId>
 			<version>${opensrp.plan.evaluator.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
