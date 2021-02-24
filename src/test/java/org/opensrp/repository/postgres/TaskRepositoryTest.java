@@ -11,8 +11,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.joda.time.DateTime;
@@ -26,19 +26,19 @@ import org.smartregister.domain.Task.TaskStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class TaskRepositoryTest extends BaseRepositoryTest {
-
+	
 	private String dateFormat = "yyyy-MM-dd'T'HHmm";
-
+	
 	@Autowired
 	private TaskRepository taskRepository;
-
+	
 	@Override
 	protected Set<String> getDatabaseScripts() {
 		Set<String> scripts = new HashSet<String>();
 		scripts.add("task.sql");
 		return scripts;
 	}
-
+	
 	@Test
 	public void testGet() {
 		Task task = taskRepository.get("tsk11231jh22");
@@ -61,39 +61,39 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("2018-01-01T0800", task.getNotes().get(0).getTime().toString(dateFormat));
 		assertEquals("This should be assigned to patrick.", task.getNotes().get(0).getText());
 	}
-
+	
 	@Test
 	public void testGetWithNoIdentifier() {
-
+		
 		Task task = taskRepository.get("");
 		assertNull(task);
-
+		
 	}
-
+	
 	@Test
 	public void testSafeRemove() {
 		assertEquals(2, taskRepository.getAll().size());
 		Task task = taskRepository.get("iyr-998njoo");
 		taskRepository.safeRemove(task);
-
+		
 		assertEquals(1, taskRepository.getAll().size());
 		assertNull(taskRepository.get("iyr-998njoo"));
 	}
-
+	
 	@Test
 	public void testSafeRemoveNonExistentTask() {
 		taskRepository.safeRemove(null);
 		taskRepository.safeRemove(new Task());
 		assertEquals(2, taskRepository.getAll().size());
-
+		
 		taskRepository.safeRemove(taskRepository.get("iyr-998njoo"));
 		assertEquals(1, taskRepository.getAll().size());
-
+		
 		taskRepository.safeRemove(taskRepository.get("iyr-998njoo"));
 		assertEquals(1, taskRepository.getAll().size());
-
+		
 	}
-
+	
 	@Test
 	public void testAdd() {
 		Task task = new Task();
@@ -106,7 +106,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setOwner("worker12");
 		task.setPriority(TaskPriority.URGENT);
 		taskRepository.add(task);
-
+		
 		assertEquals(3, taskRepository.getAll().size());
 		Task addedTask = taskRepository.get("tsk-2332-j");
 		assertNotNull(addedTask);
@@ -117,30 +117,30 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("worker12", addedTask.getOwner());
 		assertEquals(TaskPriority.URGENT, addedTask.getPriority());
 		MatcherAssert.assertThat(addedTask.getServerVersion(), Matchers.greaterThan(5l));
-
+		
 	}
-
+	
 	@Test
 	public void testAddInvalidObject() {
 		assertEquals(2, taskRepository.getAll().size());
 		Task task = new Task();
 		taskRepository.add(task);
 		assertEquals(2, taskRepository.getAll().size());
-
+		
 		taskRepository.add(null);
 		assertEquals(2, taskRepository.getAll().size());
-
+		
 	}
-
+	
 	@Test
 	public void testAddExistingObject() {
 		assertEquals(2, taskRepository.getAll().size());
 		Task task = taskRepository.get("iyr-998njoo");
 		taskRepository.add(task);
 		assertEquals(2, taskRepository.getAll().size());
-
+		
 	}
-
+	
 	@Test
 	public void testEdit() {
 		Task task = taskRepository.get("iyr-998njoo");
@@ -148,9 +148,9 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setBusinessStatus("Non Residential");
 		DateTime now = new DateTime();
 		task.setLastModified(now);
-		long serverVersion=task.getServerVersion();
+		long serverVersion = task.getServerVersion();
 		taskRepository.update(task);
-
+		
 		Task updatedTask = taskRepository.get("iyr-998njoo");
 		assertNotNull(updatedTask);
 		assertEquals("Non Residential", updatedTask.getBusinessStatus());
@@ -158,35 +158,35 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals(now, updatedTask.getLastModified());
 		MatcherAssert.assertThat(updatedTask.getServerVersion(), Matchers.greaterThan(serverVersion));
 	}
-
+	
 	@Test
 	public void testEditInvalidObject() {
 		assertEquals(2, taskRepository.getAll().size());
 		Task task = new Task();
 		taskRepository.update(task);
 		assertEquals(2, taskRepository.getAll().size());
-
+		
 		taskRepository.update(null);
 		assertEquals(2, taskRepository.getAll().size());
-
+		
 	}
-
+	
 	@Test(expected = IllegalStateException.class)
 	public void testEditNonExistingObject() {
 		Task task = taskRepository.get("iyr-998njoo");
-
+		
 		taskRepository.safeRemove(task);
-
+		
 		taskRepository.update(task);
-
+		
 	}
-
+	
 	@Test
 	public void testGetTasksByPlanAndGroup() {
 		List<Task> tasks = taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 0);
 		assertEquals(1, tasks.size());
 		assertEquals("tsk11231jh22", tasks.get(0).getIdentifier());
-
+		
 		Task task = new Task();
 		task.setIdentifier("tsk-2332-j");
 		task.setPlanIdentifier("IRS_2018_S1");
@@ -195,32 +195,32 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setStatus(TaskStatus.DRAFT);
 		task.setServerVersion(System.currentTimeMillis());
 		taskRepository.add(task);
-
+		
 		assertEquals(2, taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 0).size());
-
+		
 		assertTrue(taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS", 0).isEmpty());
-
+		
 		assertTrue(taskRepository.getTasksByPlanAndGroup("IRS_201", "2018_IRS-3734", 0).isEmpty());
-
-		assertTrue(taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", System.currentTimeMillis())
-				.isEmpty());
-
+		
+		assertTrue(
+		    taskRepository.getTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", System.currentTimeMillis()).isEmpty());
+		
 	}
-
+	
 	@Test
 	public void testGetTasksByServerVersion() {
 		List<Task> tasks = taskRepository.findByEmptyServerVersion();
 		assertTrue(tasks.isEmpty());
-
+		
 		Task task = taskRepository.get("iyr-998njoo");
 		task.setServerVersion(0l);
 		taskRepository.update(task);
-
+		
 		tasks = taskRepository.findByEmptyServerVersion();
 		assertEquals(0, tasks.size());
-
+		
 	}
-
+	
 	@Test
 	public void testFindAllIdsShouldOrderByServerVersion() {
 		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l, 10);
@@ -230,7 +230,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("iyr-998njoo", taskIdentifiers.get(1));
 		assertEquals(1542031602680l, idsModel.getRight().longValue());
 	}
-
+	
 	@Test
 	public void testFindAllIdsShouldLimitByGivenParam() {
 		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l, 1);
@@ -239,38 +239,38 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("tsk11231jh22", taskIdentifiers.get(0));
 		assertEquals(1542027762554l, idsModel.getRight().longValue());
 	}
-
+	
 	@Test
-	public void testFindAllIdsShouldFilterBetweenFromAndToDate(){
+	public void testFindAllIdsShouldFilterBetweenFromAndToDate() {
 		String date1 = "2020-09-25T10:00:00+0300";
 		String date3 = "2020-09-27T10:00:00+0300";
-		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l,2,
-				new DateTime(date1, DateTimeZone.UTC).toDate(), new DateTime(date3, DateTimeZone.UTC).toDate());
+		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l, 2, new DateTime(date1, DateTimeZone.UTC).toDate(),
+		    new DateTime(date3, DateTimeZone.UTC).toDate());
 		assertEquals(2, idsModel.getLeft().size());
 	}
-
+	
 	@Test
-	public void testFindAllIdsShouldFilterFromDateAsMinimumDate(){
+	public void testFindAllIdsShouldFilterFromDateAsMinimumDate() {
 		String date2 = "2020-09-26T10:00:00+0300";
-		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l,2,
-				new DateTime(date2, DateTimeZone.UTC).toDate(), null);
+		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l, 2, new DateTime(date2, DateTimeZone.UTC).toDate(),
+		    null);
 		assertEquals(1, idsModel.getLeft().size());
 	}
-
+	
 	@Test
-	public void testFindAllIdsShouldFilterFromToDateAsMaximumDate(){
+	public void testFindAllIdsShouldFilterFromToDateAsMaximumDate() {
 		String date1 = "2020-09-27T10:00:00+0300";
-		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l,2,
-				null, new DateTime(date1, DateTimeZone.UTC).toDate());
+		Pair<List<String>, Long> idsModel = taskRepository.findAllIds(0l, 2, null,
+		    new DateTime(date1, DateTimeZone.UTC).toDate());
 		assertEquals(2, idsModel.getLeft().size());
 	}
-
+	
 	@Test
 	public void testGetTasksByOwnerAndPlan() {
 		List<Task> tasks = taskRepository.getTasksByPlanAndOwner("IRS_2018_S1", "demouser", 0);
 		assertEquals(1, tasks.size());
 		assertEquals("tsk11231jh22", tasks.get(0).getIdentifier());
-
+		
 		Task task = new Task();
 		task.setIdentifier("tsk-2332-j");
 		task.setPlanIdentifier("IRS_2018_S1");
@@ -280,22 +280,21 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setOwner("demouser");
 		task.setServerVersion(System.currentTimeMillis());
 		taskRepository.add(task);
-
+		
 		assertEquals(2, taskRepository.getTasksByPlanAndOwner("IRS_2018_S1", "demouser", 0).size());
-
+		
 		assertTrue(taskRepository.getTasksByPlanAndOwner("IRS_2018_S", "demouser", 0).isEmpty());
-
+		
 		assertTrue(taskRepository.getTasksByPlanAndOwner("IRS_2018_S1", "demouser1", 0).isEmpty());
-
-		assertTrue(taskRepository.getTasksByPlanAndOwner("IRS_2018_S1", "demouser", System.currentTimeMillis())
-				.isEmpty());
+		
+		assertTrue(taskRepository.getTasksByPlanAndOwner("IRS_2018_S1", "demouser", System.currentTimeMillis()).isEmpty());
 	}
-
+	
 	@Test
 	public void testCountTasksByPlanAndGroup() {
 		Long tasks = taskRepository.countTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 0);
 		assertEquals(1l, tasks.longValue());
-
+		
 		Task task = new Task();
 		task.setIdentifier("tsk-2332-j");
 		task.setPlanIdentifier("IRS_2018_S1");
@@ -304,16 +303,16 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setStatus(TaskStatus.DRAFT);
 		task.setServerVersion(System.currentTimeMillis());
 		taskRepository.add(task);
-
+		
 		assertEquals(2, taskRepository.countTasksByPlanAndGroup("IRS_2018_S1", "2018_IRS-3734", 0).longValue());
-
+		
 	}
-
+	
 	@Test
 	public void countGetTasksByOwnerAndPlan() {
 		Long tasks = taskRepository.countTasksByPlanAndOwner("IRS_2018_S1", "demouser", 0);
 		assertEquals(1, tasks.longValue());
-
+		
 		Task task = new Task();
 		task.setIdentifier("tsk-2332-j");
 		task.setPlanIdentifier("IRS_2018_S1");
@@ -323,11 +322,11 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setOwner("demouser");
 		task.setServerVersion(System.currentTimeMillis());
 		taskRepository.add(task);
-
+		
 		assertEquals(2, taskRepository.countTasksByPlanAndOwner("IRS_2018_S1", "demouser", 0).longValue());
-
+		
 	}
-
+	
 	@Test
 	public void testSaveTask() {
 		Task task = new Task();
@@ -341,7 +340,7 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setOwner("testUser");
 		task.setRequester("testUser");
 		taskRepository.add(task);
-
+		
 		assertEquals(3, taskRepository.getAll().size());
 		Task addedTask = taskRepository.get("tsk-2332-k");
 		assertNotNull(addedTask);
@@ -354,22 +353,22 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		assertEquals("testUser", addedTask.getRequester());
 		assertEquals(TaskPriority.STAT, addedTask.getPriority());
 	}
-
+	
 	@Test
 	public void testCheckIfTaskExists() {
 		Task task = new Task();
 		task.setIdentifier("tsk-2332-kl");
 		task.setPlanIdentifier("test-plan-id-1");
-	    task.setForEntity("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd");
+		task.setForEntity("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd");
 		task.setCode("test-code");
 		task.setGroupIdentifier("group-1");
 		task.setStatus(TaskStatus.READY);
 		taskRepository.add(task);
-		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd","group-1",
-				"test-plan-id-1","test-code");
+		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fd",
+		    "group-1", "test-plan-id-1", "test-code");
 		assertTrue(taskExists);
 	}
-
+	
 	@Test
 	public void testCheckIfTaskExistsReturnsFalse() {
 		Task task = new Task();
@@ -380,17 +379,17 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		task.setGroupIdentifier("group-1");
 		task.setStatus(TaskStatus.ARCHIVED);
 		taskRepository.add(task);
-		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fe","group-1",
-				"test-plan-id-2","test-code-2");
+		boolean taskExists = taskRepository.checkIfTaskExists("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fe",
+		    "group-1", "test-plan-id-2", "test-code-2");
 		assertFalse(taskExists);
 	}
-
+	
 	@Test
-	public void testCountAllTasksShouldReturnCorrectValue(){
+	public void testCountAllTasksShouldReturnCorrectValue() {
 		Long count = taskRepository.countAllTasks(1000l);
 		assertEquals(Long.valueOf(2), count);
 	}
-
+	
 	@Test
 	public void testGetTasksBySearchBean() {
 		TaskSearchBean taskSearchBean = new TaskSearchBean();
@@ -401,11 +400,11 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		taskSearchBean.setCode("IRS");
 		taskSearchBean.setStatus("Ready");
 		taskSearchBean.setBusinessStatus("Not Visited");
-
+		
 		List<Task> tasks = taskRepository.getTasksBySearchBean(taskSearchBean);
-		assertEquals(1,tasks.size());
+		assertEquals(1, tasks.size());
 	}
-
+	
 	@Test
 	public void testGetTaskCount() {
 		TaskSearchBean taskSearchBean = new TaskSearchBean();
@@ -416,14 +415,34 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		taskSearchBean.setCode("IRS");
 		taskSearchBean.setStatus("Ready");
 		taskSearchBean.setBusinessStatus("Not Visited");
-
+		
 		int count = taskRepository.getTaskCount(taskSearchBean);
-		assertEquals(1,count);
+		assertEquals(1, count);
 	}
-
-	@Test(expected = NotImplementedException.class)
+	
+	@Test
 	public void testFindTasksByJurisdiction() {
-		taskRepository.findTasksByJurisdiction("123");
+		
+		List<com.ibm.fhir.model.resource.Task> tasks = taskRepository.findTasksByJurisdiction("2018_IRS-3734","IRS_2018_S1");
+		assertEquals(1, tasks.size());
+		assertEquals("tsk11231jh22", tasks.get(0).getId());
+		
+		Task task = new Task();
+		task.setIdentifier("tsk-2332-j");
+		task.setPlanIdentifier("IRS_2018_S1");
+		task.setGroupIdentifier("2018_IRS-3734");
+		task.setBusinessStatus("Not Visited");
+		task.setStatus(TaskStatus.DRAFT);
+		task.setServerVersion(System.currentTimeMillis());
+		taskRepository.add(task);
+		
+		tasks = taskRepository.findTasksByJurisdiction("IRS_2018_S1", "2018_IRS-3734");
+		assertEquals(2, tasks.size());
+		for (com.ibm.fhir.model.resource.Task t : tasks) {
+			MatcherAssert.assertThat(t.getId(),
+			    CoreMatchers.anyOf(CoreMatchers.is("tsk11231jh22"), CoreMatchers.is("tsk-2332-j")));
+		}
+		
 	}
-
+	
 }
