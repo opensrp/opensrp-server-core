@@ -1,12 +1,13 @@
 package org.opensrp.repository.postgres;
 
+import static org.opensrp.util.RepositoryUtil.getPageSizeAndOffset;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.postgres.TaskMetadata;
@@ -22,8 +23,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ibm.fhir.model.resource.QuestionnaireResponse;
-
-import static org.opensrp.util.RepositoryUtil.getPageSizeAndOffset;
 
 @Repository
 public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements TaskRepository {
@@ -422,8 +421,10 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public List<com.ibm.fhir.model.resource.Task> findTasksByJurisdiction(String s) {
-		throw new NotImplementedException();
+	public List<com.ibm.fhir.model.resource.Task> findTasksByJurisdiction(String jurisdiction, String planIdentifier) {
+		TaskMetadataExample example = new TaskMetadataExample();
+		example.createCriteria().andPlanIdentifierEqualTo(planIdentifier).andGroupIdentifierEqualTo(jurisdiction);
+		return convertToFHIRTasks(convert(taskMetadataMapper.selectMany(example, 0, DEFAULT_FETCH_SIZE)));
 	}
 
 	@Override

@@ -85,6 +85,8 @@ public class QueueHelperTest {
 
 	public static Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
 			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
+	
+	private String username="user12";
 
 	public static String location = "{\n"
 			+ "    \"resourceType\": \"Location\",\n"
@@ -334,7 +336,7 @@ public class QueueHelperTest {
 		Mockito.doNothing().when(planEvaluator)
 				.evaluatePlan(any(PlanDefinition.class), any(TriggerType.class), any(Jurisdiction.class), any(
 						QuestionnaireResponse.class));
-		queueHelper.addToQueue("test-plan-identifier-", TriggerType.PLAN_ACTIVATION, "loc-1");
+		queueHelper.addToQueue("test-plan-identifier-", TriggerType.PLAN_ACTIVATION, "loc-1",username);
 		int count = (Integer) amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT");
 		assertEquals(0, count); // This shows message has been consumed
 	}
@@ -345,7 +347,7 @@ public class QueueHelperTest {
 		Mockito.doNothing().when(planEvaluator)
 				.evaluateResource(any(DomainResource.class), nullable(QuestionnaireResponse.class), any(Action.class),
 						anyString(), anyString(), any(TriggerType.class));
-		queueHelper.addToQueue(location, null, action, "plan-id", "jur-id", TriggerType.PLAN_ACTIVATION);
+		queueHelper.addToQueue(location, null, action, "plan-id", "jur-id", TriggerType.PLAN_ACTIVATION,username);
 		int count = (Integer) amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT");
 		assertEquals(0, count); // This shows message has been consumed
 	}
@@ -353,7 +355,7 @@ public class QueueHelperTest {
 	@Test
 	public void testAddToQueueV2WithQueuingDisabledAndInvalidResource() {
 		Action action = createAction();
-		queueHelper.addToQueue(plan, null, action, "plan-id", "jur-id", TriggerType.PLAN_ACTIVATION);
+		queueHelper.addToQueue(plan, null, action, "plan-id", "jur-id", TriggerType.PLAN_ACTIVATION,username);
 		verify(planEvaluator, never())
 				.evaluateResource(eq(domainResourceArgumentCaptor.capture()), null, eq(action), eq("plan-id"), eq("jur-id"),
 						eq(TriggerType.PLAN_ACTIVATION));
