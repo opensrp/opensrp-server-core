@@ -2,8 +2,8 @@ package org.opensrp.repository.postgres;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opensrp.domain.PractitionerRole;
-import org.opensrp.domain.PractitionerRoleCode;
+import org.smartregister.domain.PractitionerRole;
+import org.smartregister.domain.PractitionerRoleCode;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.PractitionerRoleSearchBean;
