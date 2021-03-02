@@ -1,9 +1,9 @@
 package org.opensrp.service;
 
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
-import org.opensrp.domain.PractitionerRole;
-import org.opensrp.domain.PractitionerRoleCode;
+import org.smartregister.domain.Practitioner;
+import org.smartregister.domain.PractitionerRole;
+import org.smartregister.domain.PractitionerRoleCode;
 import org.opensrp.domain.CodeSystem;
 import org.opensrp.domain.Code;
 import org.opensrp.dto.CsvBulkImportDataSummary;

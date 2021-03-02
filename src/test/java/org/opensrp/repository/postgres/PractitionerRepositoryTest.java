@@ -12,7 +12,7 @@ import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opensrp.domain.Practitioner;
+import org.smartregister.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.PractitionerSearchBean;

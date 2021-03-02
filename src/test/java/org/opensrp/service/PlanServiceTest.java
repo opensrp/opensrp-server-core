@@ -171,7 +171,7 @@ public class PlanServiceTest {
 		List<Long> organizationIds = Arrays.asList(11l, 40l,7667l);
 		long serverVersion = 1234l;
 		
-		org.opensrp.domain.Practitioner practitioner = new org.opensrp.domain.Practitioner();
+		org.smartregister.domain.Practitioner practitioner = new org.smartregister.domain.Practitioner();
 		practitioner.setIdentifier("practioner-1");
 		
 		List<PractitionerRole> roles = new ArrayList<>();
@@ -242,7 +242,7 @@ public class PlanServiceTest {
 			assignedLocation.setPlanId(id);
 			assignedLocations.add(assignedLocation);
 		}
-		org.opensrp.domain.Practitioner practitioner = new org.opensrp.domain.Practitioner();
+		org.smartregister.domain.Practitioner practitioner = new org.smartregister.domain.Practitioner();
 		practitioner.setIdentifier("practioner-1");
 		List<Long> organizationIds = Arrays.asList(1l, 40l);
 		List<PractitionerRole> roles = new ArrayList<>();
@@ -297,7 +297,7 @@ public class PlanServiceTest {
 		List<Long> organizationIds = Arrays.asList(11l, 40l,7667l);
 		long serverVersion = 1234l;
 
-		org.opensrp.domain.Practitioner practitioner = new org.opensrp.domain.Practitioner();
+		org.smartregister.domain.Practitioner practitioner = new org.smartregister.domain.Practitioner();
 		practitioner.setIdentifier("practioner-1");
 
 		List<PractitionerRole> roles = new ArrayList<>();

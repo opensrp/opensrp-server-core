@@ -1,7 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.Practitioner;
+import org.smartregister.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerExample;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerMapper;

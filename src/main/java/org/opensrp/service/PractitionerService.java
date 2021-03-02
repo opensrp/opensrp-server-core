@@ -3,7 +3,7 @@ package org.opensrp.service;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
+import org.smartregister.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.search.PractitionerSearchBean;
