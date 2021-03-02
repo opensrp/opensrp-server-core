@@ -60,6 +60,9 @@ jobs:
       
     - name: Create multimedia dir
       run: sudo mkdir -p /opt/multimedia && id
+
+    - name: Clone plan-evaluator with practitioner and practitioner-role models
+      run: cd .. && git clone https://github.com/OpenSRP/opensrp-plan-evaluator.git && cd opensrp-plan-evaluator && git checkout add-practitioner-and-role-models && mvn clean install -Dmaven.test.skip=true -Dmaven.javadoc.skip=true && cd ../opensrp-server-core/
            
     - name: Run Unit tests with Maven
       run: mvn -B clean test jacoco:report --file pom.xml --no-transfer-progress
