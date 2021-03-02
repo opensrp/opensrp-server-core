@@ -24,6 +24,14 @@
         WHERE version = #{version, jdbcType=INTEGER}
     </select>
 
+    <select id="selectByManifestId" parameterType="string"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMigrationFileMapper.BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM core.client_migration_file
+        WHERE manifest_id = #{manifestId, jdbcType=INTEGER} LIMIT 1
+    </select>
+
     <select id="selectByIdentifier" parameterType="string"
             resultMap="org.opensrp.repository.postgres.mapper.ClientMigrationFileMapper.BaseResultMap">
         SELECT
