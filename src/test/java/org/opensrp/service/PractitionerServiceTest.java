@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
+import org.smartregister.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.search.PractitionerSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;

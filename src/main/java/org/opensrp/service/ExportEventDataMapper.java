@@ -14,7 +14,6 @@ import org.opensrp.api.domain.Obs;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
 import org.opensrp.repository.postgres.handler.BaseTypeHandler;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
