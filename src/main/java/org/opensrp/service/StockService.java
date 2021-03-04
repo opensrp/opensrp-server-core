@@ -3,6 +3,8 @@ package org.opensrp.service;
 import java.text.ParseException;
 import java.util.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.smartregister.domain.Inventory;
 import org.smartregister.domain.ProductCatalogue;
@@ -12,8 +14,6 @@ import org.opensrp.dto.FailedRecordSummary;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.search.StockSearchBean;
 import org.opensrp.validator.InventoryDataValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class StockService {
 
 	private InventoryDataValidator inventoryDataValidator;
 
-	private static Logger logger = LoggerFactory.getLogger(StockService.class.toString());
+	private static Logger logger = LogManager.getLogger(StockService.class.toString());
 
 	@Autowired
 	public StockService(StocksRepository allStocks, ProductCatalogueService productCatalogueService, PhysicalLocationService physicalLocationService,

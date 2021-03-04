@@ -14,6 +14,8 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.opensrp.api.domain.Location;
@@ -30,8 +32,6 @@ import org.opensrp.repository.postgres.mapper.custom.CustomSettingMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper;
 import org.opensrp.search.SettingSearchBean;
 import org.postgresql.util.PGobject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Repository("settingRepositoryPostgres")
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
 
-	private static final Logger logger = LoggerFactory.getLogger(SettingRepositoryImpl.class);
+	private static final Logger logger = LogManager.getLogger(SettingRepositoryImpl.class);
 
 	private final List<String> reformattedLocationHierarchy = new ArrayList<>();
 

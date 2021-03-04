@@ -2,10 +2,10 @@ package org.opensrp.util;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -15,7 +15,7 @@ public class JsonArrayDeserializer extends StdScalarDeserializer<JSONArray> {
 	
 	private static final long serialVersionUID = 428760301825551510L;
 	
-	private static Logger logger = LoggerFactory.getLogger(JsonArrayDeserializer.class.toString());
+	private static Logger logger = LogManager.getLogger(JsonArrayDeserializer.class.toString());
 
     public JsonArrayDeserializer() {
         super(JsonArrayDeserializer.class);

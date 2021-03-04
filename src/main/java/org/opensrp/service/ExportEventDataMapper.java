@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.JsonPathException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opensrp.api.domain.Event;
@@ -12,7 +14,6 @@ import org.opensrp.api.domain.Obs;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.dto.ExportFlagProblemEventImageMetadata;
 import org.opensrp.repository.postgres.handler.BaseTypeHandler;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,7 @@ public class ExportEventDataMapper {
     private ObjectMapper objectMapper = BaseTypeHandler.createObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,false);
 
 
-	private static Logger logger = LoggerFactory.getLogger(ExportEventDataMapper.class.toString());
+	private static Logger logger = LogManager.getLogger(ExportEventDataMapper.class.toString());
 
 	public List<Object> getExportEventDataAfterMapping(Object jsonObject, String eventType, boolean returnHeader,
 			boolean isSettingsExists) throws JsonProcessingException {

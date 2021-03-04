@@ -1,11 +1,12 @@
 package org.opensrp.service.multimedia;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.smartregister.domain.Client;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -33,7 +34,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
     @Value("#{opensrp['multimedia.directory.name']}")
     protected String baseMultimediaDirPath;
 
-    private static Logger logger = LoggerFactory.getLogger(BaseMultimediaFileManager.class.getName());
+    private static Logger logger = LogManager.getLogger(BaseMultimediaFileManager.class.getName());
 
     private static final String SUCCESS = "success";
 

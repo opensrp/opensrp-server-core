@@ -15,17 +15,17 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.domain.postgres.DateRange;
 import org.postgresql.util.PGobject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Samuel Githengi created on 09/25/20
  */
 public class DateRangeTypeHandler extends BaseTypeHandler implements TypeHandler<DateRange> {
 	
-	private static final Logger logger = LoggerFactory.getLogger(DateRangeTypeHandler.class);
+	private static final Logger logger = LogManager.getLogger(DateRangeTypeHandler.class);
 	
 	private SimpleDateFormat dateFormat;
 	
