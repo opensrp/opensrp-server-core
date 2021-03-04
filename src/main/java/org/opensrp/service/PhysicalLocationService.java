@@ -18,6 +18,8 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.LocationDetail;
@@ -25,8 +27,6 @@ import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.search.LocationSearchBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ import com.google.gson.JsonParser;
 @Service
 public class PhysicalLocationService {
 	
-	private static Logger logger = LoggerFactory.getLogger(PhysicalLocationService.class.toString());
+	private static Logger logger = LogManager.getLogger(PhysicalLocationService.class.toString());
 	
 	private LocationRepository locationRepository;
 	

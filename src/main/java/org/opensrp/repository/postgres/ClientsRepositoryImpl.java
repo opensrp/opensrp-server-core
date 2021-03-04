@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.postgres.ClientExample;
@@ -28,8 +30,6 @@ import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.converters.ClientConverter;
 import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ import com.ibm.fhir.model.resource.Patient;
 @Repository("clientsRepositoryPostgres")
 public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements ClientsRepository {
 	
-	private static Logger logger = LoggerFactory.getLogger(ClientsRepository.class.toString());
+	private static Logger logger = LogManager.getLogger(ClientsRepository.class.toString());
 	
 	public static String RESIDENCE = "residence";
 	

@@ -1,13 +1,13 @@
 package org.opensrp.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.opensrp.domain.IdVersionTuple;
 import org.opensrp.domain.postgres.ClientForm;
 import org.opensrp.domain.postgres.ClientFormMetadata;
 import org.opensrp.repository.ClientFormRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ public class ClientFormService {
 
 	private ClientFormRepository clientFormRepository;
 
-	private static Logger logger = LoggerFactory.getLogger(ClientFormService.class.toString());
+	private static Logger logger = LogManager.getLogger(ClientFormService.class.toString());
 
 	@Autowired
 	public void setClientFormRepository(ClientFormRepository clientFormRepository) {

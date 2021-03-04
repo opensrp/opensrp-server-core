@@ -8,12 +8,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import com.ibm.fhir.model.resource.Resource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.queue.PlanEvaluatorMessage;
 import org.opensrp.queue.QueueHelper;
 import org.opensrp.queue.ResourceEvaluatorMessage;
 import org.opensrp.service.PlanService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -32,7 +32,7 @@ import com.ibm.fhir.model.resource.DomainResource;
 @Component
 public class InternalSenderImpl implements MessageSender {
 	
-	private static Logger logger = LoggerFactory.getLogger(InternalSenderImpl.class.toString());
+	private static Logger logger = LogManager.getLogger(InternalSenderImpl.class.toString());
 	
 	@Autowired
 	private PlanService planservice;

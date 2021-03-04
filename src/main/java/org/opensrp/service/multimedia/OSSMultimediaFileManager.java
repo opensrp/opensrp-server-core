@@ -4,10 +4,10 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSException;
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +25,7 @@ import static org.opensrp.util.Utils.closeCloseable;
 @Component("OSSMultimediaFileManager")
 public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager {
 
-	private Logger logger = LoggerFactory.getLogger(OSSMultimediaFileManager.class.toString());
+	private Logger logger = LogManager.getLogger(OSSMultimediaFileManager.class.toString());
 	private OSSClientBuilder ossClientBuilder;
 	
 	@Autowired
