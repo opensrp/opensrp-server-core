@@ -549,5 +549,12 @@ public class PhysicalLocationService {
 		Set<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(locationIds);
 		return locationDetails;
 	}
+
+	public LocationTree buildLocationTreeHierachyWithAncestors(String locationId, boolean returnStructureCount) {
+		LocationTree locationTree = new LocationTree();
+		Set<LocationDetail> locationDetails = buildLocationHeirarchyWithAncestors(locationId);
+		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
+		return locationTree;
+	}
 	
 }
