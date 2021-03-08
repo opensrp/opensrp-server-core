@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.smartregister.domain.Event;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EventsRouter {
 	
-	private static Logger logger = LoggerFactory.getLogger(EventsRouter.class.toString());
+	private static Logger logger = LogManager.getLogger(EventsRouter.class.toString());
 	
 	@Autowired
 	private IHandlerMapper handlerMapper;

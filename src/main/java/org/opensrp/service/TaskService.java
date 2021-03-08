@@ -8,12 +8,12 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.opensrp.domain.TaskUpdate;
 import org.opensrp.repository.TaskRepository;
 import org.opensrp.search.TaskSearchBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TaskService {
 	
-	private static Logger logger = LoggerFactory.getLogger(TaskService.class.toString());
+	private static Logger logger = LogManager.getLogger(TaskService.class.toString());
 	
 	private TaskRepository taskRepository;
 	

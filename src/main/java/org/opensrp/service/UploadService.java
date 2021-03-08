@@ -5,6 +5,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,8 +21,6 @@ import org.opensrp.search.SettingSearchBean;
 import org.opensrp.search.UploadValidationBean;
 import org.smartregister.utils.DateTimeTypeConverter;
 import org.opensrp.util.JSONCSVUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +38,7 @@ public class UploadService {
     public static final String CLIENT = "client";
     public static final String EVENT = "event";
 
-    private static final Logger logger = LoggerFactory.getLogger(UploadService.class.toString());
+    private static final Logger logger = LogManager.getLogger(UploadService.class.toString());
     public static String CSV_UPLOAD_SETTING = "csv_upload_config";
 
     private SettingRepository settingRepository;

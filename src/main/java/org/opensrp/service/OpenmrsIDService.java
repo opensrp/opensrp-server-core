@@ -11,14 +11,14 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.smartregister.domain.Client;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -45,7 +45,7 @@ public class OpenmrsIDService {
 	
 	public static final String OPENMRS_IDGEN_URL = "module/idgen/exportIdentifiers.form";
 	
-	private static Logger logger = LoggerFactory.getLogger(OpenmrsIDService.class.toString());
+	private static Logger logger = LogManager.getLogger(OpenmrsIDService.class.toString());
 	
 	private HttpClient client;
 

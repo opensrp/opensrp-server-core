@@ -1,11 +1,11 @@
 package org.opensrp.validator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.service.PhysicalLocationService;
 import org.opensrp.service.ProductCatalogueService;
 import org.opensrp.service.SettingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.ProductCatalogue;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class InventoryDataValidator {
 
 	private List<String> validUnicefSections;
 
-	private static Logger logger = LoggerFactory.getLogger(InventoryDataValidator.class.toString());
+	private static Logger logger = LogManager.getLogger(InventoryDataValidator.class.toString());
 
 	private static Pattern DATE_PATTERN = Pattern.compile("^\\d{2}/\\d{2}/\\d{4}$");
 

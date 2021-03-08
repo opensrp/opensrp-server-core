@@ -13,10 +13,10 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +29,7 @@ public class RapidProServiceImpl implements RapidProService {
 	@Value("#{opensrp['rapidpro.token']}")
 	private String rapidproToken;
 	
-	private static Logger logger = LoggerFactory.getLogger(RapidProServiceImpl.class.toString());
+	private static Logger logger = LogManager.getLogger(RapidProServiceImpl.class.toString());
 	
 	HttpClient client = HttpClientBuilder.create().build();
 	

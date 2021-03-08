@@ -1,8 +1,8 @@
 package org.opensrp.repository.postgres;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.common.AllConstants.BaseEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.BaseDataEntity;
 
 public abstract class BaseRepositoryImpl<T> {
@@ -21,7 +21,7 @@ public abstract class BaseRepositoryImpl<T> {
 	
 	public static String DESCENDING = "desc";
 	
-	protected static Logger logger = LoggerFactory.getLogger(BaseRepositoryImpl.class.toString());
+	protected static Logger logger = LogManager.getLogger(BaseRepositoryImpl.class.toString());
 	
 	protected abstract Object retrievePrimaryKey(T t);
 	

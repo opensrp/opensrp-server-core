@@ -2,7 +2,8 @@ package org.opensrp.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -126,7 +127,7 @@ public class RabbitMQConfig {
 
 	public static class MyFatalExceptionStrategy extends ConditionalRejectingErrorHandler.DefaultExceptionStrategy {
 
-		private final Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
+		private final Logger logger = LogManager.getLogger(getClass());
 
 		@Override
 		public boolean isFatal(Throwable t) {
