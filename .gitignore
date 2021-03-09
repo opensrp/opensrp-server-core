@@ -10,4 +10,4 @@ target/
 logfile
 *.log*
 .springBeans
-
+.gradle/
