@@ -29,7 +29,15 @@
         SELECT
         <include refid="Base_Column_List"/>
         FROM core.client_migration_file
-        WHERE manifest_id = #{manifestId, jdbcType=INTEGER} LIMIT 1
+        WHERE manifest_id = #{manifestId, jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByManifestIdentifier" parameterType="string"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMigrationFileMapper.BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM core.client_migration_file
+        WHERE manifest_id = #{manifestId, jdbcType=INTEGER}
     </select>
 
     <select id="selectByIdentifier" parameterType="string"
@@ -72,101 +80,10 @@
         </where>
     </sql>
 
-    <insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Manifest"
-            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-        insert into core.manifest
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                id,
-            </if>
-            <if test="json != null">
-                json,
-            </if>
-            <if test="appVersion != null">
-                app_version,
-            </if>
-            <if test="appId != null">
-                app_id,
-            </if>
-            <if test="createdAt != null">
-                created_at,
-            </if>
-            <if test="updatedAt != null">
-                updated_at,
-            </if>
-        </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="id != null">
-                #{id,jdbcType=BIGINT},
-            </if>
-            <if test="json != null">
-                #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ManifestTypeHandler},
-            </if>
-            <if test="appVersion != null">
-                #{appVersion,jdbcType=VARCHAR},
-            </if>
-            <if test="appId != null">
-                #{appId,jdbcType=VARCHAR},
-            </if>
-            <if test="createdAt != null">
-                #{createdAt,jdbcType=TIMESTAMP},
-            </if>
-            <if test="updatedAt != null">
-                #{updatedAt,jdbcType=TIMESTAMP},
-            </if>
-        </trim>
-    </insert>
-
-    <select id="selectMany"
-            resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
-        select
-        <if test="example.distinct">
-            distinct
-        </if>
+    <select id="getAll" parameterType="map" resultMap="org.opensrp.repository.postgres.mapper.ClientMigrationFileMapper.BaseResultMap">
+        SELECT
         <include refid="Base_Column_List"/>
-        from core.manifest m
-        <if test="_parameter != null">
-            <include refid="Example_Where_Clause"/>
-        </if>
-        <if test="example.orderByClause != null">
-            order by m.${example.orderByClause}
-        </if>
-        LIMIT #{limit} OFFSET #{offset}
-    </select>
-
-    <select id="selectManyWithOrdering"
-        resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
-        select
-        <if test="example.distinct">
-            distinct
-        </if>
-        <include refid="Base_Column_List"/>
-        from core.manifest m
-        <if test="_parameter != null">
-            <include refid="Example_Where_Clause"/>
-        </if>
-        <if test="example.orderByClause != null">
-            order by m.${example.orderByClause}
-        </if>
-        ORDER BY  created_at DESC
-        LIMIT #{limit} OFFSET #{offset}
-    </select>
-
-
-    <select id="selectByAppId" parameterType="string"
-            resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
-        SELECT *
-        FROM core.manifest
-        WHERE app_id = #{appId,jdbcType=VARCHAR}
-        ORDER BY app_version DESC, created_at DESC LIMIT 10
-    </select>
-
-    <select id="selectByAppIdAndAppVersion"  parameterType="map"
-            resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
-        SELECT *
-        FROM core.manifest
-        where app_id = #{appId,jdbcType=VARCHAR} AND app_version = #{appVersion, jdbcType=VARCHAR}
-        ORDER BY created_at DESC LIMIT 1
+        FROM core.client_form ORDER BY created_at LIMIT #{batchSize} OFFSET #{offset}
     </select>
 
 </mapper>
