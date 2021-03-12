@@ -20,10 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.TreeNode;
-import org.opensrp.domain.postgres.Settings;
-import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
-import org.opensrp.domain.postgres.SettingsMetadata;
-import org.opensrp.domain.postgres.SettingsMetadataExample;
+import org.opensrp.domain.postgres.*;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.exception.DatabaseException;
@@ -44,6 +41,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
 
 	private static final Logger logger = LogManager.getLogger(SettingRepositoryImpl.class);
+
+	private static final String JURISDICTIONS_METADATA = "jurisdiction_metadata";
 
 	private final List<String> reformattedLocationHierarchy = new ArrayList<>();
 
@@ -117,11 +116,19 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
 
+        String identifier = metadata.get(0).getIdentifier();
 		for (SettingsMetadata settingsMetadata : metadata) {
-			if (!checkIfMetadataExists(settingsMetadata)) {
+			if (!checkIfMetadataExists(settingsMetadata) && (StringUtils.isNotBlank(settingsMetadata.getSettingValue()) &&
+					settingsMetadata.getIdentifier() != null &&
+					settingsMetadata.getIdentifier().startsWith(JURISDICTIONS_METADATA))) {
 				settingsMetadataList.add(settingsMetadata);
 			}
 		}
+
+		if (identifier != null && identifier.startsWith(JURISDICTIONS_METADATA)) {
+			deleteExistingSettingsMetadataWithBlankValue(identifier, "");
+		}
+
 		if (!settingsMetadataList.isEmpty()) {
 			settingMetadataMapper.insertMany(settingsMetadataList);
 		}
@@ -557,7 +564,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
 
 		for (SettingsMetadata metadata : settingsMetadata) {
-			if (!checkIfMetadataExists(metadata)) {
+			if (!checkIfMetadataExists(metadata) && (StringUtils.isNotBlank(metadata.getSettingValue()) &&
+					metadata.getIdentifier() != null &&
+					metadata.getIdentifier().startsWith(JURISDICTIONS_METADATA))) {
 				settingsMetadataList.add(metadata);
 			}
 		}
@@ -762,4 +771,38 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		criteria.andIdentifierEqualTo(identifier);
 		return settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE);
 	}
+
+	private void deleteExistingSettingsMetadataWithBlankValue(String identifier, String locationId) {
+
+		SettingsMetadataExample settingsMetadataExample = new SettingsMetadataExample();
+		SettingsMetadataExample.Criteria settingsMetadataCriteria = settingsMetadataExample.createCriteria()
+				.andIdentifierEqualTo(identifier);
+
+		if (StringUtils.isNotBlank(locationId)) {
+			settingsMetadataCriteria.andLocationIdEqualTo(locationId);
+		}
+
+		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = settingMetadataMapper
+				.selectMany(settingsMetadataExample, 0, DEFAULT_FETCH_SIZE);
+
+		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
+		for (SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined : settingsAndSettingsMetadataJoinedList) {
+			settingsMetadataList.add(settingsAndSettingsMetadataJoined.getSettingsMetadata());
+		}
+
+		SettingsMetadataExample metadataExample;
+		for (SettingsMetadata settingsMetadata : settingsMetadataList) {
+			metadataExample = new SettingsMetadataExample();
+			SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
+
+			if (StringUtils.isNotBlank(settingsMetadata.getLocationId())) {
+				criteria.andLocationIdEqualTo(locationId);
+			}
+
+			criteria.andIdentifierEqualTo(identifier).andSettingValueEqualTo("");
+
+			settingMetadataMapper.deleteByExample(metadataExample);
+		}
+	}
+
 }
