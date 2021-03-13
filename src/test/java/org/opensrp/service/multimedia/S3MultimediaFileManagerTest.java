@@ -89,6 +89,7 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 	@Test
 	public void testRetrieveFileShouldRetrieveFileFromS3() {
 		String testFilePath = getTestFilePath();
+		Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageBucketFolderPath", "opensrp");
 		Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageBucketName", "s3Bucket");
 		doReturn(true).when(s3Client).doesObjectExist(eq("s3Bucket"), eq(s3MultimediaFileManager.getObjectStorageFilePath(testFilePath)));
 		doReturn(mock(ObjectMetadata.class)).when(s3Client).getObject(getObjectRequestArgumentCaptor.capture(), fileArgumentCaptor.capture());
@@ -101,7 +102,7 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 		GetObjectRequest getObjectRequest = getObjectRequestArgumentCaptor.getValue();
 		assertNotNull(getObjectRequest);
 		assertEquals(getObjectRequest.getBucketName(), "s3Bucket");
-		assertEquals(getObjectRequest.getKey(), testFilePath);
+		assertEquals(getObjectRequest.getKey(), "opensrp" + testFilePath);
 	}
 
 	@Test
