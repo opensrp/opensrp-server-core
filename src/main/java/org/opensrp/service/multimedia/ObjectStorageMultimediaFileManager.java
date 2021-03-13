@@ -37,7 +37,6 @@ public abstract class ObjectStorageMultimediaFileManager extends BaseMultimediaF
 	}
 
 	public String getObjectStorageFilePath(String localFilePath) {
-		String cleanPath = localFilePath.startsWith("/") ? localFilePath.substring(1) : localFilePath;
-		return StringUtils.isBlank(cleanPath) ? "" : objectStorageBucketFolderPath + File.separator + cleanPath.replace(getBaseMultiMediaDir(), "");
+		return StringUtils.isBlank(localFilePath) ? "" : objectStorageBucketFolderPath + File.separator + localFilePath.replace(getBaseMultiMediaDir(), "");
 	}
 }
