@@ -102,7 +102,7 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 		GetObjectRequest getObjectRequest = getObjectRequestArgumentCaptor.getValue();
 		assertNotNull(getObjectRequest);
 		assertEquals(getObjectRequest.getBucketName(), "s3Bucket");
-		assertEquals(getObjectRequest.getKey(), "opensrp/" + testFilePath);
+		assertEquals(getObjectRequest.getKey(), "opensrp" + testFilePath);
 	}
 
 	@Test
