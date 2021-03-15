@@ -47,6 +47,7 @@ import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.repository.postgres.EventsRepositoryImpl;
 import org.opensrp.repository.postgres.handler.BaseTypeHandler;
 import org.opensrp.util.DateTimeDeserializer;
+import org.opensrp.util.constants.EventConstants;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.smartregister.domain.Period;
@@ -265,7 +266,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 				.withIdentifier(Client.ZEIR_ID, "218229-3");
 		Map<String, String> details = new HashMap<>() {
 			{
-				put(EventService.RECURRING_SERVICE_TYPES, "[deworming, vit_a]");
+				put(EventConstants.RECURRING_SERVICE_TYPES, "[deworming, vit_a]");
 			}
 		};
 		event.setDetails(details);

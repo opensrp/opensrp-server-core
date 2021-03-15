@@ -16,6 +16,9 @@ import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.EventSearchBean;
 import org.opensrp.util.Utils;
+import org.opensrp.util.constants.EventConstants;
+import org.opensrp.util.constants.ObsConstants;
+import org.opensrp.util.constants.RecurringServiceConstants;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.smartregister.domain.PlanDefinition;
@@ -27,48 +30,26 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.opensrp.util.constants.EventConstants.BIRTH_REGISTRATION_EVENT;
+import static org.opensrp.util.constants.EventConstants.CARD_ID_PREFIX;
+import static org.opensrp.util.constants.EventConstants.CODED;
+import static org.opensrp.util.constants.EventConstants.CONCEPT;
+import static org.opensrp.util.constants.EventConstants.DATE;
+import static org.opensrp.util.constants.EventConstants.DOSE;
+import static org.opensrp.util.constants.EventConstants.GROWTH_MONITORING_EVENT;
+import static org.opensrp.util.constants.EventConstants.NFC_CARD_IDENTIFIER;
+import static org.opensrp.util.constants.EventConstants.NUMERIC;
+import static org.opensrp.util.constants.EventConstants.OPENSRP_ID;
+import static org.opensrp.util.constants.EventConstants.OUT_OF_CATCHMENT_PROVIDER_ID;
+import static org.opensrp.util.constants.EventConstants.RECURRING_SERVICE;
+import static org.opensrp.util.constants.EventConstants.RECURRING_SERVICE_TYPES;
+import static org.opensrp.util.constants.EventConstants.RECURRING_SERVICE_UNDERSCORED;
+import static org.opensrp.util.constants.EventConstants.VACCINATION_EVENT;
+import static org.opensrp.util.constants.EventConstants._DATE;
+import static org.opensrp.util.constants.EventConstants._DOSE;
+
 @Service
 public class EventService {
-
-	public static final String OUT_OF_CATCHMENT_PROVIDER_ID = "out_of_catchment_provider_id";
-
-	public static final String BIRTH_REGISTRATION_EVENT = "Birth Registration";
-
-	public static final String GROWTH_MONITORING_EVENT = "Growth Monitoring";
-
-	public static final String GROWTH_MONITORING_EVENT_UNDERSCORED = "growth_monitoring";
-
-	public static final String VACCINATION_EVENT = "Vaccination";
-
-	public static final String OUT_OF_AREA_SERVICE = "Out of Area Service";
-
-	public static final String NEW_OUT_OF_AREA_SERVICE = "out_of_area_service";
-
-	public static final String RECURRING_SERVICE_UNDERSCORED = "recurring_service";
-
-	public static final String RECURRING_SERVICE = "Recurring Service";
-
-	public static final String NFC_CARD_IDENTIFIER = "NFC_Card_Identifier";
-
-	public static final String CARD_ID_PREFIX = "c_";
-
-	private static final String OPENSRP_ID = "opensrp_id";
-
-	public static final String RECURRING_SERVICE_TYPES = "recurring_service_types";
-
-	public static final String NUMERIC = "numeric";
-
-	public static final String DOSE = "dose";
-
-	public static final String DATE = "date";
-
-	private static final String CODED = "coded";
-
-	public static final String _DOSE = "_dose";
-
-	public static final String _DATE = "_date";
-
-	public static final String CONCEPT = "concept";
 
 	private final EventsRepository allEvents;
 
@@ -81,25 +62,6 @@ public class EventService {
 	private final ExportEventDataMapper exportEventDataMapper;
 
 	private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-	public interface ObsConstants {
-
-		String CODED_FIELD_VALUE = "1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-		String NUMERIC_FIELD_CODE = "1639AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-		String ITN_CODED_FIELD_CODE = "159855AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-		String ITN_DATE_FIELD_CODE = "159432AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-		String VIT_A_CODED_FIELD_CODE = "161534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-		String DEWORMING_CODED_FIELD_CODE = "159922AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-	}
-
-	interface RecurringServiceConstants {
-
-		String DEWORMING = "deworming";
-
-		String VIT_A = "vit_a";
-
-		String ITN = "itn";
-	}
 
 	@Value("#{opensrp['plan.evaluation.enabled'] ?: false}")
 	private boolean isPlanEvaluationEnabled;
@@ -279,27 +241,29 @@ public class EventService {
 	}
 
 	private void createOutOfCatchmentService(Event event, Event birthRegEvent) {
+		if (event.getEventType() != null) {
+			//Remove identifier since entity id is present, also create new service with the right location and provider
+			String eventTypeLowercase = event.getEventType().toLowerCase();
+			if ((event.getEventType().startsWith(EventConstants.OUT_OF_AREA_SERVICE) || event.getEventType()
+					.startsWith(EventConstants.NEW_OUT_OF_AREA_SERVICE))) {
 
-		//Remove identifier since entity id is present, also create new service with the right location and provider
-		String eventTypeLowercase = event.getEventType().toLowerCase();
-		if ((event.getEventType().startsWith(OUT_OF_AREA_SERVICE) || event.getEventType()
-				.startsWith(NEW_OUT_OF_AREA_SERVICE))) {
+				boolean hasGrowthMonitoring =
+						eventTypeLowercase.contains(EventConstants.GROWTH_MONITORING_EVENT.toLowerCase()) ||
+								eventTypeLowercase.contains(EventConstants.GROWTH_MONITORING_EVENT_UNDERSCORED);
 
-			boolean hasGrowthMonitoring = eventTypeLowercase.contains(GROWTH_MONITORING_EVENT.toLowerCase()) ||
-					eventTypeLowercase.contains(GROWTH_MONITORING_EVENT_UNDERSCORED);
+				if (hasGrowthMonitoring || eventTypeLowercase.contains(VACCINATION_EVENT.toLowerCase())) {
 
-			if (hasGrowthMonitoring || eventTypeLowercase.contains(VACCINATION_EVENT.toLowerCase())) {
+					String actualEventType = hasGrowthMonitoring ? GROWTH_MONITORING_EVENT :
+							eventTypeLowercase.contains(VACCINATION_EVENT.toLowerCase()) ? VACCINATION_EVENT : null;
 
-				String actualEventType = hasGrowthMonitoring ? GROWTH_MONITORING_EVENT :
-						eventTypeLowercase.contains(VACCINATION_EVENT.toLowerCase()) ? VACCINATION_EVENT : null;
-
-				if (actualEventType != null) {
-					Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, actualEventType);
-					addEvent(newEvent, birthRegEvent.getProviderId());
+					if (actualEventType != null) {
+						Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, actualEventType);
+						addEvent(newEvent, birthRegEvent.getProviderId());
+					}
+				} else if (eventTypeLowercase.contains(RECURRING_SERVICE.toLowerCase()) ||
+						eventTypeLowercase.contains(RECURRING_SERVICE_UNDERSCORED)) {
+					processOutOfAreaRecurringService(event, birthRegEvent);
 				}
-			} else if (eventTypeLowercase.contains(RECURRING_SERVICE.toLowerCase()) ||
-					eventTypeLowercase.contains(RECURRING_SERVICE_UNDERSCORED)) {
-				processOutOfAreaRecurringService(event, birthRegEvent);
 			}
 		}
 	}
@@ -368,7 +332,8 @@ public class EventService {
 				break;
 		}
 		List<Obs> obsList = new ArrayList<>();
-		obsList.add(getServiceObs(submissionField, codedFieldCode, CODED, values, Collections.singletonList("yes")));
+		obsList.add(getServiceObs(submissionField, codedFieldCode, CODED, values, Collections.singletonList(
+				EventConstants.YES)));
 		obsList.add(getServiceObs(submissionField + _DOSE, ObsConstants.NUMERIC_FIELD_CODE, NUMERIC,
 				Collections.singletonList(String.valueOf(1)), Collections.emptyList()));
 
