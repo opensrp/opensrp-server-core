@@ -29,4 +29,8 @@ public interface CustomStockMetadataMapper extends StockMetadataMapper {
 	List<PgStockAndProductDetails> selectManyStockAndProductDetailsByServicePointId(@Param("locations") List<String> locations);
 
 	List<PgStockAndProductDetails> selectStockAndProductDetailsByStockId(@Param("documentId") String documentId);
+
+	List<PgStockAndProductDetails> selectManyStockAndProductDetailsBySearchBean(@Param("searchBean") StockSearchBean searchBean,
+			@Param("todayDate") Date todayDate, @Param("orderByClause") String orderByClause, @Param("offset") int offset, @Param("limit") int limit);
+
 }

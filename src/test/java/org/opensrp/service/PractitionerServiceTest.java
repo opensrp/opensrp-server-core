@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
+import org.smartregister.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.search.PractitionerSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -68,6 +68,17 @@ public class PractitionerServiceTest {
         verify(practitionerRepository).get(anyString());
         assertNotNull(actutalPractitioner);
         assertEquals("practitoner-1-identifier", actutalPractitioner.getIdentifier());
+    }
+
+    @Test
+    public void testGetPractitionerByUserId() {
+        Practitioner expectedPractitioner = initTestPractitioner();
+        when(practitionerRepository.getPractitionerByUserId(anyString())).thenReturn(expectedPractitioner);
+
+        Practitioner practitioner = practitionerService.getPractitionerByUserId(expectedPractitioner.getUserId());
+        verify(practitionerRepository).getPractitionerByUserId(anyString());
+        assertNotNull(practitioner);
+        assertEquals("user1", practitioner.getUserId());
     }
 
     @Test
@@ -140,18 +151,18 @@ public class PractitionerServiceTest {
         verify(practitionerRepository).getPractitionersByOrgId(anyLong());
 
     }
-    
+
 	@Test
 	public void testGetPractionerByUsername() {
 		String username = "janedoe";
 		Practitioner practitioner = initTestPractitioner();
 		when(practitionerRepository.getPractitionerByUsername(username)).thenReturn(practitioner);
-		
+
 		Practitioner actual = practitionerService.getPractionerByUsername("janedoe");
-		
+
 		verify(practitionerRepository).getPractitionerByUsername(username);
 		assertEquals(practitioner, actual);
-		
+
 	}
 
     private Practitioner initTestPractitioner(){

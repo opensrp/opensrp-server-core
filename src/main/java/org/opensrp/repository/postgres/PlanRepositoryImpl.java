@@ -55,6 +55,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 		long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
 		entity.setServerVersion(serverVersion);
 		pgPlan.setJson(entity);
+		pgPlan.setServerVersion(null);
 		int rowsAffected = planMapper.updateByPrimaryKeySelective(pgPlan);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -399,4 +400,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         return Pair.of(pageSize, offset);
     }
+
+	@Override
+	public PlanDefinition findPlanByIdentifier(String identifier) {
+		return get(identifier);
+	}
 }

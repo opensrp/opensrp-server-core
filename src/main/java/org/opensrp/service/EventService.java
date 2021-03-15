@@ -3,6 +3,8 @@ package org.opensrp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.json.JSONException;
@@ -14,8 +16,6 @@ import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.EventSearchBean;
 import org.opensrp.util.Utils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.smartregister.domain.PlanDefinition;
@@ -147,7 +147,7 @@ public class EventService {
 		return allEvents.findEventsByDynamicQuery(query);
 	}
 
-	private static final Logger logger = LoggerFactory.getLogger(EventService.class.toString());
+	private static Logger logger = LogManager.getLogger(EventService.class.toString());
 
 	public Event find(String uniqueId) {
 		try {

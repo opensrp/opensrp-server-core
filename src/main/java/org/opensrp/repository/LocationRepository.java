@@ -149,7 +149,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @param limit upper limit on number of structures to fetch
 	 * @return list of structures
 	 */
-	List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit);
+	List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit, Integer pageNumber, String orderByType, String orderByFieldName);
 
 	/**
 	 * count all structures

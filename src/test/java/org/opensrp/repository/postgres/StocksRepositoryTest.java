@@ -3,6 +3,7 @@ package org.opensrp.repository.postgres;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.*;
@@ -267,6 +268,24 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 		List<Stock> stocks = stocksRepository.findStocksByLocationId(stockSearchBean);
 		List<StockAndProductDetails> inventoryItems = stocksRepository.getInventoryWithProductDetailsByStockId(stocks.get(0).getId());
 		assertEquals(1,inventoryItems.size());
+	}
+
+	@Test
+	public void testFindStocksWithProductDetails() {
+		Stock stock = createInventoryStockObject("3734");
+		stocksRepository.add(stock);
+		StockSearchBean searchBean = new StockSearchBean();
+		searchBean.setReturnProduct(true);
+		List<String> locations = new ArrayList<>();
+		locations.add("3734");
+		searchBean.setLocations(locations);
+		List<Stock> stocks = stocksRepository.findStocks(searchBean, BaseEntity.SERVER_VERSIOIN, "asc",0, 5);
+		assertEquals(1, stocks.size());
+		assertEquals("1",stocks.get(0).getIdentifier());
+		assertNotNull(stocks.get(0).getProduct());
+		assertEquals(new Long(1), stocks.get(0).getProduct().getUniqueId());
+		assertEquals("Midwifery Kit", stocks.get(0).getProduct().getProductName());
+
 	}
 
 

@@ -1,17 +1,17 @@
 package org.opensrp.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
+import org.smartregister.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.search.PractitionerSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PractitionerService {
@@ -97,15 +97,26 @@ public class PractitionerService {
 		return new ImmutablePair<>(practioner, organizationIds);
 
 	}
-	
+
 	/**
-	 * Get practitioner using username 
+	 * Get practitioner using username
+	 *
 	 * @param username
 	 * @return practitioner with the username
 	 */
 	public Practitioner getPractionerByUsername(String username) {
 		return getPractitionerRepository().getPractitionerByUsername(username);
 
+	}
+
+	/**
+	 * Get practitioner using the user id
+	 *
+	 * @param userId {@link String}, User id from keycloak
+	 * @return practitioner {@link Practitioner}
+	 */
+	public Practitioner getPractitionerByUserId(String userId) {
+		return getPractitionerRepository().getPractitionerByUserId(userId);
 	}
 
 	public List<Practitioner> getPractitionersByOrgIdentifier(String organizationIdentifier) {

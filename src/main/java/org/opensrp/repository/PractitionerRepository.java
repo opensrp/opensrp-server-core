@@ -1,6 +1,6 @@
 package org.opensrp.repository;
 
-import org.opensrp.domain.Practitioner;
+import org.smartregister.domain.Practitioner;
 import org.opensrp.search.PractitionerSearchBean;
 
 import java.util.List;
