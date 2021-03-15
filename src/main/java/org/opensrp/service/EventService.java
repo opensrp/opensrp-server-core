@@ -598,7 +598,7 @@ public class EventService {
 	}
 
 	private void triggerPlanEvaluation(Event event, String username) {
-		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
+		String planIdentifier = event.getDetails() != null ? event.getDetails().get(EventConstants.PLAN_IDENTIFIER) : null;
 		if (isPlanEvaluationEnabled && planIdentifier != null) {
 			PlanDefinition plan = planRepository.get(planIdentifier);
 			if (plan != null && plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (
