@@ -120,7 +120,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		for (SettingsMetadata settingsMetadata : metadata) {
 			if (StringUtils.isBlank(settingsMetadata.getSettingValue())) {
 				deleteExistingSettingsMetadataByKeyAndIdentifier(settingsMetadata.getIdentifier(), settingsMetadata.getSettingKey(),
-						settingsMetadata.getLocationId());
+						settingsMetadata.getLocationId()); 	//This method is called to delete existing settings metadata records where value field is empty
 			}
 			if (!checkIfMetadataExists(settingsMetadata) && StringUtils.isNotBlank(settingsMetadata.getSettingValue())) {
 				settingsMetadataList.add(settingsMetadata);
@@ -768,6 +768,12 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE);
 	}
 
+	/**
+	 * This method deletes existing settings metadata by settings key, identifier and locationId
+	 * @param identifier is the settings identifer
+	 * @param key is the settings key
+	 * @param locationId is used as an optional param to delete settings metadata records
+	 */
 	private void deleteExistingSettingsMetadataByKeyAndIdentifier(String identifier, String key, String locationId) {
 		SettingsMetadataExample metadataExample;
 		metadataExample = new SettingsMetadataExample();
