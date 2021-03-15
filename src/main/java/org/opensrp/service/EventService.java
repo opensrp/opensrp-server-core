@@ -70,6 +70,18 @@ public class EventService {
 
 	public static final String CONCEPT = "concept";
 
+	private final EventsRepository allEvents;
+
+	private final ClientService clientService;
+
+	private final TaskGenerator taskGenerator;
+
+	private final PlanRepository planRepository;
+
+	private final ExportEventDataMapper exportEventDataMapper;
+
+	private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
 	public interface ObsConstants {
 
 		String CODED_FIELD_VALUE = "1065AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
@@ -78,7 +90,6 @@ public class EventService {
 		String ITN_DATE_FIELD_CODE = "159432AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 		String VIT_A_CODED_FIELD_CODE = "161534AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 		String DEWORMING_CODED_FIELD_CODE = "159922AAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-
 	}
 
 	interface RecurringServiceConstants {
@@ -90,20 +101,8 @@ public class EventService {
 		String ITN = "itn";
 	}
 
-	private final EventsRepository allEvents;
-
-	private final ClientService clientService;
-
-	private final TaskGenerator taskGenerator;
-
-	private final PlanRepository planRepository;
-
-	private final ExportEventDataMapper exportEventDataMapper;
-
 	@Value("#{opensrp['plan.evaluation.enabled'] ?: false}")
 	private boolean isPlanEvaluationEnabled;
-
-	private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Autowired
 	public EventService(EventsRepository allEvents, ClientService clientService, TaskGenerator taskGenerator,
@@ -366,6 +365,7 @@ public class EventService {
 				break;
 			default:
 				codedFieldCode = submissionField;
+				break;
 		}
 		List<Obs> obsList = new ArrayList<>();
 		obsList.add(getServiceObs(submissionField, codedFieldCode, CODED, values, Collections.singletonList("yes")));
