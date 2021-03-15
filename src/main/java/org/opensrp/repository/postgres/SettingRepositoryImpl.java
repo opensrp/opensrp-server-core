@@ -45,8 +45,6 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	private static final Logger logger = LogManager.getLogger(SettingRepositoryImpl.class);
 
-	private static final String JURISDICTIONS_METADATA = "jurisdiction_metadata";
-
 	private final List<String> reformattedLocationHierarchy = new ArrayList<>();
 
 	@Autowired
