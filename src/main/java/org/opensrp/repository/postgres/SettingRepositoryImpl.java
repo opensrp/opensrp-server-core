@@ -119,17 +119,14 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> metadata = createMetadata(entity, id);
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
 
-        String identifier = metadata.get(0).getIdentifier();
 		for (SettingsMetadata settingsMetadata : metadata) {
-			if (!checkIfMetadataExists(settingsMetadata) && (StringUtils.isNotBlank(settingsMetadata.getSettingValue()) &&
-					settingsMetadata.getIdentifier() != null &&
-					settingsMetadata.getIdentifier().startsWith(JURISDICTIONS_METADATA))) {
+			if (StringUtils.isBlank(settingsMetadata.getSettingValue())) {
+				deleteExistingSettingsMetadataByKeyAndIdentifier(settingsMetadata.getIdentifier(), settingsMetadata.getSettingKey(),
+						settingsMetadata.getLocationId());
+			}
+			if (!checkIfMetadataExists(settingsMetadata) && StringUtils.isNotBlank(settingsMetadata.getSettingValue())) {
 				settingsMetadataList.add(settingsMetadata);
 			}
-		}
-
-		if (identifier != null && identifier.startsWith(JURISDICTIONS_METADATA)) {
-			deleteExistingSettingsMetadataWithBlankValue(identifier, "");
 		}
 
 		if (!settingsMetadataList.isEmpty()) {
@@ -567,9 +564,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
 
 		for (SettingsMetadata metadata : settingsMetadata) {
-			if (!checkIfMetadataExists(metadata) && (StringUtils.isNotBlank(metadata.getSettingValue()) &&
-					metadata.getIdentifier() != null &&
-					metadata.getIdentifier().startsWith(JURISDICTIONS_METADATA))) {
+			if (!checkIfMetadataExists(metadata) && StringUtils.isNotBlank(metadata.getSettingValue())) {
 				settingsMetadataList.add(metadata);
 			}
 		}
@@ -775,37 +770,17 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE);
 	}
 
-	private void deleteExistingSettingsMetadataWithBlankValue(String identifier, String locationId) {
-
-		SettingsMetadataExample settingsMetadataExample = new SettingsMetadataExample();
-		SettingsMetadataExample.Criteria settingsMetadataCriteria = settingsMetadataExample.createCriteria()
-				.andIdentifierEqualTo(identifier);
+	private void deleteExistingSettingsMetadataByKeyAndIdentifier(String identifier, String key, String locationId) {
+		SettingsMetadataExample metadataExample;
+		metadataExample = new SettingsMetadataExample();
+		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
 
 		if (StringUtils.isNotBlank(locationId)) {
-			settingsMetadataCriteria.andLocationIdEqualTo(locationId);
+			criteria.andLocationIdEqualTo(locationId);
 		}
 
-		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = settingMetadataMapper
-				.selectMany(settingsMetadataExample, 0, DEFAULT_FETCH_SIZE);
-
-		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
-		for (SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined : settingsAndSettingsMetadataJoinedList) {
-			settingsMetadataList.add(settingsAndSettingsMetadataJoined.getSettingsMetadata());
-		}
-
-		SettingsMetadataExample metadataExample;
-		for (SettingsMetadata settingsMetadata : settingsMetadataList) {
-			metadataExample = new SettingsMetadataExample();
-			SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
-
-			if (StringUtils.isNotBlank(settingsMetadata.getLocationId())) {
-				criteria.andLocationIdEqualTo(locationId);
-			}
-
-			criteria.andIdentifierEqualTo(identifier).andSettingValueEqualTo("");
-
-			settingMetadataMapper.deleteByExample(metadataExample);
-		}
+		criteria.andIdentifierEqualTo(identifier).andSettingKeyEqualTo(key);
+		settingMetadataMapper.deleteByExample(metadataExample);
 	}
 
 }
