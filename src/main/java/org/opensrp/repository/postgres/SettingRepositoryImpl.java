@@ -562,7 +562,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
 
 		for (SettingsMetadata metadata : settingsMetadata) {
-			if (!checkIfMetadataExists(metadata) && StringUtils.isNotBlank(metadata.getSettingValue())) {
+			if (!checkIfMetadataExists(metadata) && StringUtils.isNotBlank(metadata.getSettingValue())) { // Add a check to restrict persistence of settings metadata with empty value
 				settingsMetadataList.add(metadata);
 			}
 		}
