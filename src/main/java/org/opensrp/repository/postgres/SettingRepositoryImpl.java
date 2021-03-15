@@ -118,10 +118,15 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
 
 		for (SettingsMetadata settingsMetadata : metadata) {
-			if (!checkIfMetadataExists(settingsMetadata)) {
+			if (StringUtils.isBlank(settingsMetadata.getSettingValue())) {
+				deleteExistingSettingsMetadataByKeyAndIdentifier(settingsMetadata.getIdentifier(), settingsMetadata.getSettingKey(),
+						settingsMetadata.getLocationId()); 	//This method is called to delete existing settings metadata records where value field is empty
+			}
+			if (!checkIfMetadataExists(settingsMetadata) && StringUtils.isNotBlank(settingsMetadata.getSettingValue())) {
 				settingsMetadataList.add(settingsMetadata);
 			}
 		}
+
 		if (!settingsMetadataList.isEmpty()) {
 			settingMetadataMapper.insertMany(settingsMetadataList);
 		}
@@ -557,7 +562,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
 
 		for (SettingsMetadata metadata : settingsMetadata) {
-			if (!checkIfMetadataExists(metadata)) {
+			if (!checkIfMetadataExists(metadata) && StringUtils.isNotBlank(metadata.getSettingValue())) { // Add a check to restrict persistence of settings metadata with empty value
 				settingsMetadataList.add(metadata);
 			}
 		}
@@ -762,4 +767,24 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		criteria.andIdentifierEqualTo(identifier);
 		return settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE);
 	}
+
+	/**
+	 * This method deletes existing settings metadata by settings key, identifier and locationId
+	 * @param identifier is the settings identifer
+	 * @param key is the settings key
+	 * @param locationId is used as an optional param to delete settings metadata records
+	 */
+	private void deleteExistingSettingsMetadataByKeyAndIdentifier(String identifier, String key, String locationId) {
+		SettingsMetadataExample metadataExample;
+		metadataExample = new SettingsMetadataExample();
+		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
+
+		if (StringUtils.isNotBlank(locationId)) {
+			criteria.andLocationIdEqualTo(locationId);
+		}
+
+		criteria.andIdentifierEqualTo(identifier).andSettingKeyEqualTo(key);
+		settingMetadataMapper.deleteByExample(metadataExample);
+	}
+
 }
