@@ -131,4 +131,8 @@ public class PractitionerRoleService {
             throw new IllegalArgumentException("Practitioner Role Identifier not specified");
     }
 
+    public List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code) {
+	    return practitionerRoleRepository.getPractitionerRolesByOrgIdAndCode(organizationId, code);
+    }
+
 }
