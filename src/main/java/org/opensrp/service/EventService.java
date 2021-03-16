@@ -1,7 +1,6 @@
 package org.opensrp.service;
 
-import java.util.*;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +16,9 @@ import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.EventSearchBean;
 import org.opensrp.util.Utils;
+import org.opensrp.util.constants.EventConstants;
+import org.opensrp.util.constants.ObsConstants;
+import org.opensrp.util.constants.RecurringServiceConstants;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.smartregister.domain.PlanDefinition;
@@ -24,38 +26,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.opensrp.util.constants.EventConstants.BIRTH_REGISTRATION_EVENT;
+import static org.opensrp.util.constants.EventConstants.CARD_ID_PREFIX;
+import static org.opensrp.util.constants.EventConstants.CODED;
+import static org.opensrp.util.constants.EventConstants.CONCEPT;
+import static org.opensrp.util.constants.EventConstants.DATE;
+import static org.opensrp.util.constants.EventConstants.DOSE;
+import static org.opensrp.util.constants.EventConstants.GROWTH_MONITORING_EVENT;
+import static org.opensrp.util.constants.EventConstants.NFC_CARD_IDENTIFIER;
+import static org.opensrp.util.constants.EventConstants.NUMERIC;
+import static org.opensrp.util.constants.EventConstants.OPENSRP_ID;
+import static org.opensrp.util.constants.EventConstants.OUT_OF_CATCHMENT_PROVIDER_ID;
+import static org.opensrp.util.constants.EventConstants.RECURRING_SERVICE;
+import static org.opensrp.util.constants.EventConstants.RECURRING_SERVICE_TYPES;
+import static org.opensrp.util.constants.EventConstants.RECURRING_SERVICE_UNDERSCORED;
+import static org.opensrp.util.constants.EventConstants.VACCINATION_EVENT;
+import static org.opensrp.util.constants.EventConstants._DATE;
+import static org.opensrp.util.constants.EventConstants._DOSE;
 
 @Service
 public class EventService {
 
-	public static final String OUT_OF_CATCHMENT_PROVIDER_ID = "out_of_catchment_provider_id";
-
-	public static final String BIRTH_REGISTRATION_EVENT = "Birth Registration";
-
-	public static final String GROWTH_MONITORING_EVENT = "Growth Monitoring";
-
-	public static final String VACCINATION_EVENT = "Vaccination";
-
-	public static final String OUT_OF_AREA_SERVICE = "Out of Area Service";
-
-	public static final String NEW_OUT_OF_AREA_SERVICE = "out_of_area_service";
-
-	public static final String NFC_CARD_IDENTIFIER = "NFC_Card_Identifier";
-
-	public static final String CARD_ID_PREFIX = "c_";
-
-	private static final String OPENSRP_ID = "opensrp_id";
-
 	private final EventsRepository allEvents;
 
-	private ClientService clientService;
+	private final ClientService clientService;
 
-	private TaskGenerator taskGenerator;
+	private final TaskGenerator taskGenerator;
 
-	private PlanRepository planRepository;
+	private final PlanRepository planRepository;
 
-	private ExportEventDataMapper exportEventDataMapper;
+	private final ExportEventDataMapper exportEventDataMapper;
+
+	private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Value("#{opensrp['plan.evaluation.enabled'] ?: false}")
 	private boolean isPlanEvaluationEnabled;
@@ -203,7 +209,7 @@ public class EventService {
 			String identifier = StringUtils.isBlank(event.getIdentifier(Client.ZEIR_ID)) ?
 					event.getIdentifier(OPENSRP_ID) : event.getIdentifier(Client.ZEIR_ID);
 
-			if (StringUtils.isNotBlank(event.getBaseEntityId()) || StringUtils.isBlank(identifier) ) {
+			if (StringUtils.isNotBlank(event.getBaseEntityId()) || StringUtils.isBlank(identifier)) {
 				return event;
 			}
 
@@ -224,7 +230,7 @@ public class EventService {
 					return event;
 				}
 				Event birthRegEvent = existingEvents.get(0);
-				createOutOfCatchmentService(event, client, birthRegEvent);
+				createOutOfCatchmentService(event, birthRegEvent);
 			}
 		}
 		catch (Exception e) {
@@ -234,29 +240,181 @@ public class EventService {
 		return event;
 	}
 
-	private void createOutOfCatchmentService(Event event, org.smartregister.domain.Client client, Event birthRegEvent) {
-		event.setBaseEntityId(client.getBaseEntityId());
+	private void createOutOfCatchmentService(Event event, Event birthRegEvent) {
+		if (event.getEventType() != null) {
+			//Remove identifier since entity id is present, also create new service with the right location and provider
+			String eventTypeLowercase = event.getEventType().toLowerCase();
+			if ((event.getEventType().startsWith(EventConstants.OUT_OF_AREA_SERVICE) || event.getEventType()
+					.startsWith(EventConstants.NEW_OUT_OF_AREA_SERVICE))) {
 
+				boolean hasGrowthMonitoring =
+						eventTypeLowercase.contains(EventConstants.GROWTH_MONITORING_EVENT.toLowerCase()) ||
+								eventTypeLowercase.contains(EventConstants.GROWTH_MONITORING_EVENT_UNDERSCORED);
+
+				if (hasGrowthMonitoring || eventTypeLowercase.contains(VACCINATION_EVENT.toLowerCase())) {
+
+					String actualEventType = hasGrowthMonitoring ? GROWTH_MONITORING_EVENT :
+							eventTypeLowercase.contains(VACCINATION_EVENT.toLowerCase()) ? VACCINATION_EVENT : null;
+
+					if (actualEventType != null) {
+						Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, actualEventType);
+						addEvent(newEvent, birthRegEvent.getProviderId());
+					}
+				} else if (eventTypeLowercase.contains(RECURRING_SERVICE.toLowerCase()) ||
+						eventTypeLowercase.contains(RECURRING_SERVICE_UNDERSCORED)) {
+					processOutOfAreaRecurringService(event, birthRegEvent);
+				}
+			}
+		}
+	}
+
+	private void removeIdentifier(Event event) {
 		//Remove case sensitive identifiers
 		TreeMap<String, String> newIdentifiers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 		newIdentifiers.putAll(event.getIdentifiers());
 		newIdentifiers.remove(Client.ZEIR_ID);
 		newIdentifiers.remove(OPENSRP_ID);
 		event.setIdentifiers(newIdentifiers);
+	}
 
-		//Remove identifier since entity id is present, also create new service with the right location and provider
-		if ((event.getEventType().startsWith(OUT_OF_AREA_SERVICE) || event.getEventType().startsWith(NEW_OUT_OF_AREA_SERVICE)) && (
-				event.getEventType().contains(GROWTH_MONITORING_EVENT) || event.getEventType().contains(VACCINATION_EVENT))) {
-			String eventType = event.getEventType().toLowerCase().contains(GROWTH_MONITORING_EVENT.toLowerCase()) ? GROWTH_MONITORING_EVENT
-					: event.getEventType().toLowerCase().contains(VACCINATION_EVENT.toLowerCase()) ? VACCINATION_EVENT : null;
-			if (eventType != null) {
-				Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, eventType);
-				addEvent(newEvent, birthRegEvent.getProviderId());
+	private void processOutOfAreaRecurringService(Event event, Event birthRegEvent) {
+		//Get and sort previous recurring services related to the current
+		String recurringServiceTypes = event.getDetails().get(RECURRING_SERVICE_TYPES);
+		List<String> outOfCatchmentServices = Arrays
+				.asList(recurringServiceTypes.substring(1, recurringServiceTypes.length() - 1).split(","));
+		List<Event> previousServices = findByBaseEntityAndType(birthRegEvent.getBaseEntityId(), RECURRING_SERVICE);
+		Map<String, List<Event>> matchedRecurringServices = getMarchedRecurringServices(previousServices,
+				outOfCatchmentServices);
+
+		//Create new recurring service event with correct sequence, incrementing on the old recurring service's
+		//Otherwise create first recurring service
+		for (String service : outOfCatchmentServices) {
+
+			Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, RECURRING_SERVICE);
+			newEvent.setEntityType(RECURRING_SERVICE_UNDERSCORED);
+
+			//Check if there are any existing recurring services or create the first
+			List<Event> events = matchedRecurringServices.get(service);
+			if (!events.isEmpty()) {
+				Event lastRecurringService = events.get(events.size() - 1);
+
+				Obs obsWithValue = getObsWithValue(lastRecurringService);
+				if (obsWithValue != null) {
+					int newVal = Integer.parseInt((String) obsWithValue.getValues().get(0)) + 1;
+					String newSequence = String.valueOf(newVal);
+					String newFormSubmissionField = String.format("%s_%s", service, newSequence);
+					List<Obs> newObsList = updateObs(lastRecurringService, event, newSequence, newFormSubmissionField);
+					newEvent.setObs(newObsList);
+					addEvent(newEvent, birthRegEvent.getProviderId());
+				}
+			} else {
+				createFirstRecurringService(service, newEvent, birthRegEvent);
 			}
 		}
 	}
 
+	private void createFirstRecurringService(String service, Event newEvent, Event birthRegEvent) {
+		String submissionField = String.format("%s_%s", service, 1);
+		List<Object> values = Collections.singletonList(ObsConstants.CODED_FIELD_VALUE);
+		String codedFieldCode;
+		switch (service.trim()) {
+			case RecurringServiceConstants.DEWORMING:
+				codedFieldCode = ObsConstants.DEWORMING_CODED_FIELD_CODE;
+				break;
+			case RecurringServiceConstants.VIT_A:
+				codedFieldCode = ObsConstants.VIT_A_CODED_FIELD_CODE;
+				break;
+			case RecurringServiceConstants.ITN:
+				codedFieldCode = ObsConstants.ITN_CODED_FIELD_CODE;
+				break;
+			default:
+				codedFieldCode = submissionField;
+				break;
+		}
+		List<Obs> obsList = new ArrayList<>();
+		obsList.add(getServiceObs(submissionField, codedFieldCode, CODED, values, Collections.singletonList(
+				EventConstants.YES)));
+		obsList.add(getServiceObs(submissionField + _DOSE, ObsConstants.NUMERIC_FIELD_CODE, NUMERIC,
+				Collections.singletonList(String.valueOf(1)), Collections.emptyList()));
+
+		if (service.equalsIgnoreCase(RecurringServiceConstants.ITN)) {
+			obsList.add(getServiceObs(submissionField + _DATE, ObsConstants.ITN_DATE_FIELD_CODE, DATE,
+					Collections.singletonList(newEvent.getEventDate()), Collections.emptyList()));
+		}
+
+		newEvent.setObs(obsList);
+		newEvent.setEntityType(RECURRING_SERVICE_UNDERSCORED);
+		addEvent(newEvent, birthRegEvent.getProviderId());
+	}
+
+	public Obs getServiceObs(String submissionField, String fieldCode, String fieldDataType, List<Object> values,
+			List<Object> humanReadableValues) {
+		Obs obs = new Obs()
+				.withFormSubmissionField(submissionField)
+				.withFieldDataType(fieldDataType)
+				.withFieldType(CONCEPT)
+				.withFieldCode(fieldCode)
+				.withValues(values);
+		obs.setHumanReadableValues(humanReadableValues);
+		return obs;
+	}
+
+	private List<Obs> updateObs(Event lastRecurringService, Event incomingEvent, String newSequence,
+			String newFormSubmissionField) {
+		List<Obs> newObsList = new ArrayList<>();
+		for (Obs oldObs : lastRecurringService.getObs()) {
+			if (oldObs.getFieldDataType().equalsIgnoreCase(NUMERIC)) {
+				oldObs.setFormSubmissionField(newFormSubmissionField + _DOSE);
+				oldObs.getValues().clear();
+				oldObs.getValues().add(newSequence);
+			} else if (oldObs.getFieldDataType().equalsIgnoreCase(DATE)) {
+				oldObs.setFormSubmissionField(newFormSubmissionField + _DATE);
+				oldObs.getValues().clear();
+				oldObs.getValues().add(simpleDateFormat.format(incomingEvent.getEventDate()));
+			} else if (oldObs.getFieldDataType().equalsIgnoreCase(CODED)) {
+				oldObs.setFormSubmissionField(newFormSubmissionField);
+			}
+			newObsList.add(oldObs);
+		}
+		return newObsList;
+	}
+
+	public Obs getObsWithValue(Event event) {
+		if (event != null) {
+			for (Obs obs : event.getObs()) {
+				if (obs.getFieldDataType().equalsIgnoreCase(NUMERIC) && obs.getFormSubmissionField().contains(DOSE)
+						&& !obs.getValues().isEmpty()) {
+					return obs;
+				}
+			}
+		}
+		return null;
+	}
+
+	private Map<String, List<Event>> getMarchedRecurringServices(List<Event> previousServices,
+			List<String> outOfCatchmentServices) {
+		Map<String, List<Event>> marchedServices = new TreeMap<>();
+		for (String service : outOfCatchmentServices) {
+			List<Event> serviceEvents = previousServices.stream().filter(event -> {
+				Obs obs = getObsWithValue(event);
+				if (obs == null) {
+					return false;
+				}
+				return obs.getFormSubmissionField().startsWith(service.trim());
+			}).sorted((event1, event2) -> {
+				int value1 = Integer.parseInt((String) getObsWithValue(event1).getValues().get(0));
+				int value2 = Integer.parseInt((String) getObsWithValue(event2).getValues().get(0));
+				return Integer.compare(value1, value2);
+			}).collect(Collectors.toList());
+			marchedServices.put(service, serviceEvents);
+		}
+
+		return marchedServices;
+	}
+
 	private Event getNewOutOfAreaServiceEvent(Event event, Event birthRegEvent, String eventType) {
+		event.setBaseEntityId(birthRegEvent.getBaseEntityId());
+		removeIdentifier(event); //Remove identifier from the old event first because entity id is found
 		Event newEvent = new Event();
 		newEvent.withBaseEntityId(event.getBaseEntityId())
 				.withEventType(eventType)
@@ -274,7 +432,6 @@ public class EventService {
 		newEvent.setTeam(birthRegEvent.getTeam());
 		newEvent.setTeamId(birthRegEvent.getTeamId());
 		newEvent.setIdentifiers(event.getIdentifiers());
-		logger.info(String.format("New %s event with created with id %s", newEvent.getEventType(), newEvent.getFormSubmissionId()));
 		return newEvent;
 	}
 
@@ -440,10 +597,8 @@ public class EventService {
 		return allEvents.countEvents(eventSearchBean);
 	}
 
-	;
-
 	private void triggerPlanEvaluation(Event event, String username) {
-		String planIdentifier = event.getDetails() != null ? event.getDetails().get("planIdentifier") : null;
+		String planIdentifier = event.getDetails() != null ? event.getDetails().get(EventConstants.PLAN_IDENTIFIER) : null;
 		if (isPlanEvaluationEnabled && planIdentifier != null) {
 			PlanDefinition plan = planRepository.get(planIdentifier);
 			if (plan != null && plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (
@@ -502,7 +657,7 @@ public class EventService {
 		List<ExportFlagProblemEventImageMetadata> exportFlagProblemEventImageMetadataList = new ArrayList<>();
 		for (org.opensrp.domain.postgres.Event pgEvent : pgEvents) {
 			exportFlagProblemEventImageMetadata = exportEventDataMapper
-					.getFlagProblemEventImagesMetadata((Object) pgEvent.getJson(), "$.baseEntityId",
+					.getFlagProblemEventImagesMetadata(pgEvent.getJson(), "$.baseEntityId",
 							"$.details.locationName", "$.details.productName");
 			if (exportFlagProblemEventImageMetadata != null) {
 				exportFlagProblemEventImageMetadataList.add(exportFlagProblemEventImageMetadata);
