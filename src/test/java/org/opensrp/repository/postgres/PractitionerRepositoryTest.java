@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Set;
 
 import org.junit.BeforeClass;
@@ -353,6 +354,23 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals(2,practitioners.size());
         assertEquals("practitoner-1-identifier",practitioners.get(0).getIdentifier());
         assertEquals("practitoner-2-identifier",practitioners.get(1).getIdentifier());
+    }
+
+    @Test
+	public void testGetAllPractitionersByIdentifiers() {
+	    Practitioner practitioner1 = initTestPractitioner1();
+	    practitionerRepository.add(practitioner1);
+	    Practitioner practitioner2 = initTestPractitioner2();
+	    practitionerRepository.add(practitioner2);
+
+	    List<String> practitionerIdentifiers = new ArrayList<>();
+	    practitionerIdentifiers.add("practitoner-1-identifier");
+	    practitionerIdentifiers.add("practitoner-2-identifier");
+	    List<Practitioner> practitioners = practitionerRepository.getAllPractitionersByIdentifiers(practitionerIdentifiers);
+	    assertNotNull(practitioners);
+	    assertEquals(2,practitioners.size());
+	    assertEquals("Practitioner",practitioners.get(0).getName());
+	    assertEquals("Second Practitioner",practitioners.get(1).getName());
     }
 
 }

@@ -2,6 +2,8 @@ package org.opensrp.repository.postgres;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opensrp.domain.Organization;
+import org.opensrp.repository.OrganizationRepository;
 import org.smartregister.domain.PractitionerRole;
 import org.smartregister.domain.PractitionerRoleCode;
 import org.opensrp.repository.PractitionerRoleRepository;
@@ -13,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -23,6 +26,9 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private PractitionerRoleRepository practitionerRoleRepository;
+
+    @Autowired
+    private OrganizationRepository organizationRepository;
 
     @BeforeClass
     public static void bootStrap() {
@@ -290,6 +296,36 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals(2, practitionerRoles.size());
         assertEquals("pr1-identifier", practitionerRoles.get(0).getIdentifier());
         assertEquals("pr2-identifier", practitionerRoles.get(1).getIdentifier());
+    }
+
+    @Test
+    public void testGetPractitionerRolesByOrgIdAndCode() {
+        String identifier = UUID.randomUUID().toString();
+        Organization organization = new Organization();
+        organization.setIdentifier(identifier);
+        organization.setName("Ateam");
+        organization.setPartOf(1l);
+        organization.setActive(true);
+        organizationRepository.add(organization);
+
+        Organization addedOrganization = organizationRepository.get(identifier);
+
+        PractitionerRole practitionerRole1 = initTestPractitionerRole1();
+        practitionerRole1.setOrganizationIdentifier(identifier);
+        practitionerRoleRepository.add(practitionerRole1);
+
+        PractitionerRole practitionerRole2 = initTestPractitionerRole2();
+        practitionerRole2.setOrganizationIdentifier(identifier);
+        practitionerRoleRepository.add(practitionerRole2);
+
+        List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getPractitionerRolesByOrgIdAndCode(addedOrganization.getId(), "pr2Code");
+        assertNotNull(practitionerRoles);
+        assertEquals(1l, practitionerRoles.size());
+        assertEquals("pr2-identifier", practitionerRoles.get(0).getIdentifier());
+        assertEquals("p2-identifier", practitionerRoles.get(0).getPractitionerIdentifier());
+        assertEquals(identifier, practitionerRoles.get(0).getOrganizationIdentifier());
+        assertEquals("pr2Code", practitionerRoles.get(0).getCode().getText());
+
     }
 
     private static PractitionerRole initTestPractitionerRole1(){
