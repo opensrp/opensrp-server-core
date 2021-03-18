@@ -23,4 +23,6 @@ public interface PractitionerRoleRepository extends BaseRepository<PractitionerR
             PractitionerRole practitionerRole);
 
     List<PractitionerRole> getAllPractitionerRoles(PractitionerRoleSearchBean practitionerRoleSearchBean);
+
+	public List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code);
 }

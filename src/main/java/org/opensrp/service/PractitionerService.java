@@ -134,4 +134,26 @@ public class PractitionerService {
 		org.opensrp.domain.postgres.Practitioner pgPractitioner = getPgPractitioner(identifier);
 		return pgPractitioner != null ? pgPractitioner.getId() : null;
 	}
+
+	public List<Practitioner> getPractitionersByIdentifiers(List<String> practitionerIdentifiers) {
+		return practitionerRepository.getAllPractitionersByIdentifiers(practitionerIdentifiers);
+	}
+
+	public List<Practitioner> getAssignedPractitionersByIdentifierAndCode(String practitionerIdentifier, String code) {
+		List<Long> organizationIds = new ArrayList<>();
+		for (PractitionerRole practitionerRole : practitionerRoleService.getPgRolesForPractitioner(practitionerIdentifier)) {
+			organizationIds.add(practitionerRole.getOrganizationId());
+		}
+
+		// Retrieved teams, now get all members of the team
+		List<org.smartregister.domain.PractitionerRole> practitionerRoles = new ArrayList<>();
+		List<String> practitionerIdentifiers = new ArrayList<>();
+		for(Long organizationId : organizationIds) {
+			practitionerRoles = practitionerRoleService.getPractitionerRolesByOrgIdAndCode(organizationId,code);
+			practitionerRoles.stream().forEach(practitionerRole -> practitionerIdentifiers.add(practitionerRole.getPractitionerIdentifier()));
+		}
+
+		// Now get all practitioners by the given Ids
+		return getPractitionersByIdentifiers(practitionerIdentifiers);
+	}
 }

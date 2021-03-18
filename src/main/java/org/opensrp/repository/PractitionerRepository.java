@@ -28,4 +28,6 @@ public interface PractitionerRepository extends BaseRepository<Practitioner> {
 	Practitioner getPractitionerByUsername(String username);
 
 	List<Practitioner> getAllPractitioners(PractitionerSearchBean practitionerSearchBean);
+
+	List<Practitioner> getAllPractitionersByIdentifiers(List<String> practitionerIdentifiers);
 }
