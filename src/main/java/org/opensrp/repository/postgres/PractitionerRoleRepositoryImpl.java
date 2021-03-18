@@ -299,6 +299,16 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         return convert(pgPractitionerRoleList);
     }
 
+    @Override
+    public List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code) {
+        PractitionerRoleSearchBean practitionerRoleSearchBean = new PractitionerRoleSearchBean();
+        Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerRoleSearchBean);
+        PractitionerRoleExample practitionerRoleExample = new PractitionerRoleExample();
+        practitionerRoleExample.createCriteria().andOrganizationIdEqualTo(organizationId).andCodeEqualTo(code);
+        List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoleList = practitionerRoleMapper.selectMany(practitionerRoleExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+        return convert(pgPractitionerRoleList);
+    }
+
     private boolean isExistingPractitionerRole(Long organizationId, Long practitionerId, String code,
             org.opensrp.domain.postgres.PractitionerRole practitionerRole) {
         if (organizationId != null && practitionerId != null) {
