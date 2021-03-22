@@ -39,6 +39,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
     protected Set<String> getDatabaseScripts() {
         Set<String> scripts = new HashSet<>();
         scripts.add("practitioner.sql");
+        scripts.add("organization.sql");
         return scripts;
     }
 
