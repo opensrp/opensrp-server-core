@@ -241,16 +241,16 @@ public class ClientMigrationFileRepositoryImpl extends BaseRepositoryImpl<Client
 
     @Override
     protected Long retrievePrimaryKey(ClientMigrationFile clientMigrationFile) {
-        return getUniqueField(clientMigrationFile);
+        return clientMigrationFile != null ? clientMigrationFile.getId() : null;
     }
 
     @Override
-    protected Long getUniqueField(ClientMigrationFile clientMigrationFile) {
+    protected String getUniqueField(ClientMigrationFile clientMigrationFile) {
         if (clientMigrationFile == null) {
             return null;
         }
 
-        return clientMigrationFile.getId();
+        return clientMigrationFile.getIdentifier();
     }
 }
 
