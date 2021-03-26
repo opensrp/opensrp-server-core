@@ -27,7 +27,7 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void get() {
+	public void getShouldReturnMigrationFileWhenGivenAValidId() {
 		ClientMigrationFile clientMigrationFile = clientMigrationFileRepository.get("1");
 
 		Assert.assertEquals("cec563c2-d3e7-4b2a-866e-82d5902d44de", clientMigrationFile.getIdentifier());
@@ -38,6 +38,16 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 		Assert.assertEquals(Integer.valueOf(1), clientMigrationFile.getManifestId());
 		Assert.assertEquals(null, clientMigrationFile.getObjectStoragePath());
 		Assert.assertEquals(false, clientMigrationFile.getOnObjectStorage());
+	}
+
+	@Test
+	public void getShouldReturnNullWhenGivenBlankId() {
+		Assert.assertNull(clientMigrationFileRepository.get(""));
+	}
+
+	@Test
+	public void getShouldReturnNullWhenGivenNonIntegerId() {
+		Assert.assertNull(clientMigrationFileRepository.get("98iu"));
 	}
 
 	@Test
