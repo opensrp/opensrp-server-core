@@ -8,6 +8,7 @@ import org.opensrp.domain.ClientMigrationFile;
 import org.opensrp.repository.ClientMigrationFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.EntityExistsException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -50,8 +51,23 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 		Assert.assertNull(clientMigrationFileRepository.get("98iu"));
 	}
 
-	@Test
-	public void add() {
+	@Test(expected = IllegalStateException.class)
+	public void addShouldThrowExceptionWhenGiveNullClientMigrationFile() {
+		clientMigrationFileRepository.add(null);
+	}
+
+	@Test(expected = IllegalStateException.class)
+	public void addShouldThrowExceptionWhenGiveClientMigrationFileWithNullIdentifier() {
+		ClientMigrationFile clientMigrationFile = new ClientMigrationFile();
+		clientMigrationFileRepository.add(clientMigrationFile);
+	}
+
+	@Test(expected = EntityExistsException.class)
+	public void addShouldThrowExceptionWhenGiveClientMigrationFileWithId() {
+		ClientMigrationFile clientMigrationFile = new ClientMigrationFile();
+		clientMigrationFile.setIdentifier("my-identifier");
+		clientMigrationFile.setId(2398L);
+		clientMigrationFileRepository.add(clientMigrationFile);
 	}
 
 	@Test
