@@ -3,7 +3,7 @@ package org.opensrp.service;
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Organization;
 import org.opensrp.domain.postgres.Practitioner;
-import org.opensrp.domain.PractitionerRole;
+import org.smartregister.domain.PractitionerRole;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.opensrp.search.PractitionerRoleSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,6 +129,10 @@ public class PractitionerRoleService {
     public void validateIdentifier(String identifier) {
         if (StringUtils.isBlank(identifier))
             throw new IllegalArgumentException("Practitioner Role Identifier not specified");
+    }
+
+    public List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code) {
+	    return practitionerRoleRepository.getPractitionerRolesByOrgIdAndCode(organizationId, code);
     }
 
 }

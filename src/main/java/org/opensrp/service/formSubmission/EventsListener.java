@@ -8,6 +8,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.AppStateToken;
@@ -16,8 +18,6 @@ import org.opensrp.service.ConfigService;
 import org.opensrp.service.ErrorTraceService;
 import org.opensrp.service.EventService;
 import org.opensrp.service.formSubmission.handler.EventsRouter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EventsListener {
 	
-	private static Logger logger = LoggerFactory.getLogger(EventsListener.class.toString());
+	private static Logger logger = LogManager.getLogger(EventsListener.class.toString());
 	
 	private static final ReentrantLock lock = new ReentrantLock();
 	

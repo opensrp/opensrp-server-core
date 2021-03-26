@@ -18,6 +18,8 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.LocationDetail;
@@ -25,8 +27,6 @@ import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.search.LocationSearchBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ import com.google.gson.JsonParser;
 @Service
 public class PhysicalLocationService {
 	
-	private static Logger logger = LoggerFactory.getLogger(PhysicalLocationService.class.toString());
+	private static Logger logger = LogManager.getLogger(PhysicalLocationService.class.toString());
 	
 	private LocationRepository locationRepository;
 	
@@ -297,8 +297,8 @@ public class PhysicalLocationService {
 	 * @param limit upper limit on number of structures to fetch
 	 * @return list of structures
 	 */
-	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit) {
-		return locationRepository.findAllStructures(returnGeometry, serverVersion, limit);
+	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit, Integer pageNumber, String orderByType, String orderByFieldName) {
+		return locationRepository.findAllStructures(returnGeometry, serverVersion, limit, pageNumber, orderByType, orderByFieldName);
 	};
 	
 	/**
@@ -548,6 +548,13 @@ public class PhysicalLocationService {
 		locationIds.add(locationId);
 		Set<LocationDetail> locationDetails = locationRepository.findParentLocationsInclusive(locationIds);
 		return locationDetails;
+	}
+
+	public LocationTree buildLocationTreeHierachyWithAncestors(String locationId, boolean returnStructureCount) {
+		LocationTree locationTree = new LocationTree();
+		Set<LocationDetail> locationDetails = buildLocationHeirarchyWithAncestors(locationId);
+		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
+		return locationTree;
 	}
 	
 }

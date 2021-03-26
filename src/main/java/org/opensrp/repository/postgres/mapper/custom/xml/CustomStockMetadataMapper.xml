@@ -26,6 +26,49 @@
 		= s.id
 	</sql>
 
+	<sql id="selectManyBySearchBeanConditions" >
+		<trim  prefixOverrides="and">
+			sm.date_deleted is null
+			and (s.json->> 'accountabilityEndDate' is null or s.json->>'accountabilityEndDate' >= #{todayDate,jdbcType=DATE} )
+
+			<if test="searchBean.providerId != null">
+				and sm.provider_id = #{searchBean.providerId,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.serverVersion != null">
+				and sm.server_version >= #{searchBean.serverVersion,jdbcType=BIGINT}
+			</if>
+			<if test="searchBean.identifier != null">
+				and s.json->>'identifier' = #{searchBean.identifier,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.stockTypeId != null">
+				and s.json->>'vaccine_type_id' =
+				#{searchBean.stockTypeId,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.transactionType != null">
+				and s.json->>'transaction_type' =
+				#{searchBean.transactionType,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.value != null">
+				and s.json->>'value' = #{searchBean.value,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.dateCreated != null">
+				and s.json->>'date_created' = #{searchBean.dateCreated,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.toFrom != null">
+				and s.json->>'to_from' = #{searchBean.toFrom,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.dateUpdated != null">
+				and s.json->>'date_updated' = #{searchBean.dateUpdated,jdbcType=VARCHAR}
+			</if>
+			<if test="searchBean.locations != null and searchBean.locations.size() > 0">
+				and sm.location_id IN
+				<foreach item="item" index="index" collection="searchBean.locations" open="(" separator="," close=")">
+					#{item}
+				</foreach>
+			</if>
+		</trim>
+	</sql>
+
 	<select id="selectByDocumentId" parameterType="java.lang.String"
 		resultMap="org.opensrp.repository.postgres.mapper.StockMapper.BaseResultMap">
 		select
@@ -100,46 +143,7 @@
 		<include refid="Base_Column_List" />
 		<include refid="Base_Table_List" />
 		<where>
-			<trim  prefixOverrides="and">
-				sm.date_deleted is null
-				and (json->> 'accountabilityEndDate' is null or json->>'accountabilityEndDate' >= #{todayDate,jdbcType=DATE} )
-
-			<if test="searchBean.providerId != null">
-				and sm.provider_id = #{searchBean.providerId,jdbcType=VARCHAR}
-			</if>
-			<if test="searchBean.serverVersion != null">
-				and sm.server_version >= #{searchBean.serverVersion,jdbcType=BIGINT}
-			</if>
-			<if test="searchBean.identifier != null">
-				and json->>'identifier' = #{searchBean.identifier,jdbcType=VARCHAR}
-			</if>
-			<if test="searchBean.stockTypeId != null">
-				and json->>'vaccine_type_id' =
-				#{searchBean.stockTypeId,jdbcType=VARCHAR}
-			</if>
-			<if test="searchBean.transactionType != null">
-				and json->>'transaction_type' =
-				#{searchBean.transactionType,jdbcType=VARCHAR}
-			</if>
-			<if test="searchBean.value != null">
-				and json->>'value' = #{searchBean.value,jdbcType=VARCHAR}
-			</if>
-			<if test="searchBean.dateCreated != null">
-				and json->>'date_created' = #{searchBean.dateCreated,jdbcType=VARCHAR}
-			</if>
-			<if test="searchBean.toFrom != null">
-				and json->>'to_from' = #{searchBean.toFrom,jdbcType=VARCHAR}
-			</if>
-			<if test="searchBean.dateUpdated != null">
-				and json->>'date_updated' = #{searchBean.dateUpdated,jdbcType=VARCHAR}
-			</if>
-			<if test="searchBean.locations != null and searchBean.locations.size() > 0">
-				and sm.location_id IN
-				<foreach item="item" index="index" collection="searchBean.locations" open="(" separator="," close=")">
-					#{item}
-				</foreach>
-			</if>
-		</trim>
+			<include refid="selectManyBySearchBeanConditions"/>
 		</where>
 		<if test="orderByClause != null">
 			order by sm.${orderByClause}
@@ -187,6 +191,23 @@
 				</if>
 			</trim>
 		</where>
+	</select>
+
+	<select id="selectManyStockAndProductDetailsBySearchBean" resultMap="StockAndProductDetails">
+		select
+		s.id, s.json , s.date_deleted, productCatalogue.unique_id, productCatalogue.product_name, productCatalogue.json AS product_catalogue_json, productCatalogue.server_version
+		from core.stock_metadata sm
+		join core.stock s on sm.stock_id = s.id
+		join core.product_catalogue productCatalogue
+		on
+		(s.json->> 'identifier')::bigint = productCatalogue.unique_id
+		<where>
+			<include refid="selectManyBySearchBeanConditions"/>
+		</where>
+		<if test="orderByClause != null">
+			order by sm.${orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
 </mapper>

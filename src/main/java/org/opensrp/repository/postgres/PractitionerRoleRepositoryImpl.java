@@ -3,8 +3,8 @@ package org.opensrp.repository.postgres;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.PractitionerRole;
-import org.opensrp.domain.PractitionerRoleCode;
+import org.smartregister.domain.PractitionerRole;
+import org.smartregister.domain.PractitionerRoleCode;
 import org.opensrp.domain.postgres.Practitioner;
 import org.opensrp.domain.postgres.PractitionerRoleExample;
 import org.opensrp.repository.OrganizationRepository;
@@ -207,7 +207,7 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         if (pgPractitionerRole == null) {
             return null;
         }
-        org.opensrp.domain.Practitioner pgPractitioner = practitionerRepository.getByPrimaryKey(pgPractitionerRole.getPractitionerId());
+        org.smartregister.domain.Practitioner pgPractitioner = practitionerRepository.getByPrimaryKey(pgPractitionerRole.getPractitionerId());
         if (pgPractitioner == null) {
             return null; // practitioner already deleted
         }
@@ -295,6 +295,16 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         if(practitionerRoleSearchBean.getOrderByFieldName() != null && practitionerRoleSearchBean.getOrderByType() != null) {
             practitionerRoleExample.setOrderByClause(practitionerRoleSearchBean.getOrderByFieldName() + " " + practitionerRoleSearchBean.getOrderByType());
         }
+        List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoleList = practitionerRoleMapper.selectMany(practitionerRoleExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+        return convert(pgPractitionerRoleList);
+    }
+
+    @Override
+    public List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code) {
+        PractitionerRoleSearchBean practitionerRoleSearchBean = new PractitionerRoleSearchBean();
+        Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerRoleSearchBean);
+        PractitionerRoleExample practitionerRoleExample = new PractitionerRoleExample();
+        practitionerRoleExample.createCriteria().andOrganizationIdEqualTo(organizationId).andCodeEqualTo(code);
         List<org.opensrp.domain.postgres.PractitionerRole> pgPractitionerRoleList = practitionerRoleMapper.selectMany(practitionerRoleExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
         return convert(pgPractitionerRoleList);
     }

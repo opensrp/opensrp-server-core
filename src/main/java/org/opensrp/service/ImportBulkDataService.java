@@ -1,15 +1,15 @@
 package org.opensrp.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
-import org.opensrp.domain.PractitionerRole;
-import org.opensrp.domain.PractitionerRoleCode;
+import org.smartregister.domain.Practitioner;
+import org.smartregister.domain.PractitionerRole;
+import org.smartregister.domain.PractitionerRoleCode;
 import org.opensrp.domain.CodeSystem;
 import org.opensrp.domain.Code;
 import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.dto.FailedRecordSummary;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +31,7 @@ public class ImportBulkDataService {
 	@Autowired
 	private PhysicalLocationService physicalLocationService;
 
-	private static Logger logger = LoggerFactory.getLogger(ImportBulkDataService.class.toString());
+	private static Logger logger = LogManager.getLogger(ImportBulkDataService.class.toString());
 
 	private static final String LOCATION_ID_KEY = "Location Id";
 

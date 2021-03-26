@@ -1,14 +1,14 @@
 package org.opensrp.generator;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
 import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.util.IdGeneratorUtil;
 import org.opensrp.util.IdentifierValidatorAlgorithm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ import java.util.*;
 @Component
 public class UniqueIdGeneratorProcessor {
 
-	private static Logger logger = LoggerFactory.getLogger(UniqueIdGeneratorProcessor.class.toString());
+	private static Logger logger = LogManager.getLogger(UniqueIdGeneratorProcessor.class.toString());
 
 	@Autowired
 	private UniqueIdRepository uniqueIdRepository;

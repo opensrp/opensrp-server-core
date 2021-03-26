@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.TreeNode;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
@@ -14,15 +16,13 @@ import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.repository.postgres.handler.SettingTypeHandler;
 import org.opensrp.search.SettingSearchBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SettingService {
 
-	private static Logger logger = LoggerFactory.getLogger(SettingService.class.toString());
+	private static Logger logger = LogManager.getLogger(SettingService.class.toString());
 
 	private SettingRepository settingRepository;
 

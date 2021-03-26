@@ -1,17 +1,17 @@
 package org.opensrp.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
+import org.smartregister.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.search.PractitionerSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PractitionerService {
@@ -97,15 +97,26 @@ public class PractitionerService {
 		return new ImmutablePair<>(practioner, organizationIds);
 
 	}
-	
+
 	/**
-	 * Get practitioner using username 
+	 * Get practitioner using username
+	 *
 	 * @param username
 	 * @return practitioner with the username
 	 */
 	public Practitioner getPractionerByUsername(String username) {
 		return getPractitionerRepository().getPractitionerByUsername(username);
 
+	}
+
+	/**
+	 * Get practitioner using the user id
+	 *
+	 * @param userId {@link String}, User id from keycloak
+	 * @return practitioner {@link Practitioner}
+	 */
+	public Practitioner getPractitionerByUserId(String userId) {
+		return getPractitionerRepository().getPractitionerByUserId(userId);
 	}
 
 	public List<Practitioner> getPractitionersByOrgIdentifier(String organizationIdentifier) {
@@ -122,5 +133,36 @@ public class PractitionerService {
 	public Long getPractitionerIdByIdentifier(String identifier) {
 		org.opensrp.domain.postgres.Practitioner pgPractitioner = getPgPractitioner(identifier);
 		return pgPractitioner != null ? pgPractitioner.getId() : null;
+	}
+
+	public List<Practitioner> getPractitionersByIdentifiers(List<String> practitionerIdentifiers) {
+		List<Practitioner> practitioners = new ArrayList<>();
+		if (practitionerIdentifiers != null && practitionerIdentifiers.size() > 0) {
+			practitioners = practitionerRepository.getAllPractitionersByIdentifiers(practitionerIdentifiers);
+		}
+		return practitioners;
+	}
+
+	public List<Practitioner> getAssignedPractitionersByIdentifierAndCode(String practitionerIdentifier, String code) {
+		List<Long> organizationIds = new ArrayList<>();
+		List<PractitionerRole> practitionerRolesOfPractitioner = practitionerRoleService.getPgRolesForPractitioner(practitionerIdentifier);
+		if (practitionerRolesOfPractitioner != null) {
+			for (PractitionerRole practitionerRole : practitionerRolesOfPractitioner) {
+				if (practitionerRole.getOrganizationId() != null) {
+					organizationIds.add(practitionerRole.getOrganizationId());
+				}
+			}
+		}
+
+		// Retrieved teams, now get all members of the team
+		List<org.smartregister.domain.PractitionerRole> practitionerRoles = new ArrayList<>();
+		List<String> practitionerIdentifiers = new ArrayList<>();
+		for(Long organizationId : organizationIds) {
+			practitionerRoles = practitionerRoleService.getPractitionerRolesByOrgIdAndCode(organizationId,code);
+			practitionerRoles.stream().forEach(practitionerRole -> practitionerIdentifiers.add(practitionerRole.getPractitionerIdentifier()));
+		}
+
+		// Now get all practitioners by the given Ids
+		return getPractitionersByIdentifiers(practitionerIdentifiers);
 	}
 }

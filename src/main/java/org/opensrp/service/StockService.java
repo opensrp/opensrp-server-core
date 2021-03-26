@@ -3,6 +3,8 @@ package org.opensrp.service;
 import java.text.ParseException;
 import java.util.*;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.smartregister.domain.Inventory;
 import org.smartregister.domain.ProductCatalogue;
@@ -12,8 +14,6 @@ import org.opensrp.dto.FailedRecordSummary;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.search.StockSearchBean;
 import org.opensrp.validator.InventoryDataValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class StockService {
 
 	private InventoryDataValidator inventoryDataValidator;
 
-	private static Logger logger = LoggerFactory.getLogger(StockService.class.toString());
+	private static Logger logger = LogManager.getLogger(StockService.class.toString());
 
 	@Autowired
 	public StockService(StocksRepository allStocks, ProductCatalogueService productCatalogueService, PhysicalLocationService physicalLocationService,
@@ -362,7 +362,12 @@ public class StockService {
 		else {
 			stock.setProviderid(username);
 		}
-		stock.setValue(inventory.getQuantity());
+		if(inventory.getQuantity() != null) {
+			stock.setValue(inventory.getQuantity());
+		}
+		else {
+			stock.setValue(1); //As discussed set default value to 1
+		}
 		stock.setTransactionType("Inventory");
 		stock.setLocationId(inventory.getServicePointId());
 		stock.setDeliveryDate(inventory.getDeliveryDate());
@@ -404,7 +409,7 @@ public class StockService {
 			throw new IllegalArgumentException(SERVICE_POINT_DOES_NOT_EXISTS);
 		} else if (deliveryDate.getTime() > new Date().getTime()) {
 			throw new IllegalArgumentException(INVALID_DELIVERY_DATE);
-		} else if (!isWholeNumber(String.valueOf(inventory.getQuantity())) || inventory.getQuantity() < 1) {
+		} else if (inventory.getQuantity() != null && (!isWholeNumber(String.valueOf(inventory.getQuantity())) || inventory.getQuantity() < 1)) {
 			throw new IllegalArgumentException(INVALID_QUANTITY);
 		} else if (!unicefSections.contains(inventory.getUnicefSection())) {
 			throw new IllegalArgumentException(INVALID_UNICEF_SECTION);

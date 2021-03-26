@@ -182,7 +182,7 @@ public class PlanService {
 	 * @return the organization ids a user is assigned to
 	 */
 	public List<Long> getOrganizationIdsByUserName(String username) {
-		org.opensrp.domain.Practitioner practitioner = practitionerService.getPractionerByUsername(username);
+		org.smartregister.domain.Practitioner practitioner = practitionerService.getPractionerByUsername(username);
 		if (practitioner != null) {
 			List<PractitionerRole> roles = practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier());
 			if (roles.isEmpty())

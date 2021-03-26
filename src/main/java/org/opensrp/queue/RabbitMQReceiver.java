@@ -6,10 +6,10 @@ import java.nio.charset.StandardCharsets;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.service.PlanService;
 import org.opensrp.service.TaskGenerator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.PlanDefinition;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
@@ -43,7 +43,7 @@ public class RabbitMQReceiver {
 
 	private FHIRParser fhirParser;
 
-	private static Logger logger = LoggerFactory.getLogger(RabbitMQReceiver.class.toString());
+	private static Logger logger = LogManager.getLogger(RabbitMQReceiver.class.toString());
 
 	@PostConstruct
 	public void init() {

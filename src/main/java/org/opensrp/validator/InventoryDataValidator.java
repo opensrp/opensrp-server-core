@@ -1,11 +1,11 @@
 package org.opensrp.validator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.domain.postgres.SettingsAndSettingsMetadataJoined;
 import org.opensrp.service.PhysicalLocationService;
 import org.opensrp.service.ProductCatalogueService;
 import org.opensrp.service.SettingService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.ProductCatalogue;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.opensrp.util.constants.InventoryConstants.MISSING_SERIAL_NUMBER;
 import static org.opensrp.util.constants.InventoryConstants.INVALID_DELIVERY_DATE;
@@ -49,7 +50,9 @@ public class InventoryDataValidator {
 
 	private List<String> validUnicefSections;
 
-	private static Logger logger = LoggerFactory.getLogger(InventoryDataValidator.class.toString());
+	private static Logger logger = LogManager.getLogger(InventoryDataValidator.class.toString());
+
+	private static Pattern DATE_PATTERN = Pattern.compile("^\\d{2}/\\d{2}/\\d{4}$");
 
 	public InventoryDataValidator(List<String> validationErrors) {
 		this.validationErrors = validationErrors;
@@ -125,6 +128,12 @@ public class InventoryDataValidator {
 
 	private void validateDeliveryDate(String deliveryDateInString) {
 		Date deliveryDate = null;
+
+		if (deliveryDateInString != null && !DATE_PATTERN.matcher(deliveryDateInString).matches()) {
+			validationErrors.add(INVALID_FORMAT_OF_DELIVERY_DATE);
+			return;
+		}
+
 		try {
 			deliveryDate = deliveryDateInString != null ? convertStringToDate(deliveryDateInString) : null;
 		}

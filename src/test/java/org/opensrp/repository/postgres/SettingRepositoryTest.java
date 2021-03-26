@@ -463,4 +463,62 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 
 	}
 
+
+	@Test
+	public void testUpdateShouldDeleteBlankValueRecords() {
+		SettingConfiguration expectedSettingConfiguration = new SettingConfiguration();
+		expectedSettingConfiguration.setTeamId("test_team");
+		expectedSettingConfiguration.setTeam("test_team");
+		expectedSettingConfiguration.setId("test_id");
+		expectedSettingConfiguration.setIdentifier("test_identifier");
+		expectedSettingConfiguration.setServerVersion(0L);
+
+		List<Setting> settings = new ArrayList<>();
+		Map<String, Setting> settingMap = new HashMap<>();
+
+		// add
+		Setting setting = new Setting();
+		setting.setKey("key1");
+		setting.setValue("value1");
+		setting.setDescription("description1");
+		settings.add(setting);
+		settingMap.put("key1", setting);
+
+		setting = new Setting();
+		setting.setKey("key2");
+		setting.setValue("");
+		setting.setDescription("description2");
+		settings.add(setting);
+		settingMap.put("key2", setting);
+
+		expectedSettingConfiguration.setSettings(settings);
+		settingRepository.addSettings(expectedSettingConfiguration);
+
+		SettingConfiguration actualSettingConfiguration = settingRepository.get("test_id");
+		assertNotNull(actualSettingConfiguration);
+		assertEquals(1, actualSettingConfiguration.getSettings().size());
+
+		// update
+		settings.clear();
+		expectedSettingConfiguration = new SettingConfiguration();
+		expectedSettingConfiguration.setTeamId("test_team");
+		expectedSettingConfiguration.setTeam("test_team");
+		expectedSettingConfiguration.setId("test_id");
+		expectedSettingConfiguration.setIdentifier("test_identifier");
+		expectedSettingConfiguration.setServerVersion(0L);
+
+		settingMap.clear();
+		setting.setKey("key1");
+		setting.setValue("");
+		setting.setDescription("description10");
+		settings.add(setting);
+		settingMap.put("key1", setting);
+
+		expectedSettingConfiguration.setSettings(settings);
+
+		settingRepository.update(expectedSettingConfiguration);
+		SettingConfiguration updatedSettingConfiguration = settingRepository.get("test_id");
+		assertEquals(null, updatedSettingConfiguration);
+	}
+
 }

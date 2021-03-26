@@ -19,6 +19,8 @@ public interface CustomClientMapper extends ClientMapper {
 	        @Param("identifier") String identifier);
 	
 	List<Client> selectByAttributeOfType(@Param("attributeType") String attributeType, @Param("attribute") String attribute);
+
+	List<Client> selectByAttributesOfType(@Param("attributeType") String attributeType, @Param("attributes") List<String> attributes);
 	
 	List<Client> selectByRelationshipIdAndDateCreated(@Param("relationalId") String relationalId,
 	        @Param("dateFrom") Date date, @Param("dateTo") Date date2);

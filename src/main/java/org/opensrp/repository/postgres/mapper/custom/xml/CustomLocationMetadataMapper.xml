@@ -390,7 +390,7 @@
 		<if test="tags">
 			GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id, geographic_level, record.level
 		</if>
-		order by record.level DESC
+		order by record.level DESC, lm.name ASC
 
 	</select>
 

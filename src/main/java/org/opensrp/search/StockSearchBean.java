@@ -43,6 +43,8 @@ public class StockSearchBean {
 	private FieldName orderByFieldName;
 
 	private OrderByType orderByType;
+
+	private boolean returnProduct;
 	
 	public String getIdentifier() {
 		return identifier;
@@ -170,5 +172,13 @@ public class StockSearchBean {
 
 	public void setLimit(Integer limit) {
 		this.limit = limit;
+	}
+
+	public boolean isReturnProduct() {
+		return returnProduct;
+	}
+
+	public void setReturnProduct(boolean returnProduct) {
+		this.returnProduct = returnProduct;
 	}
 }

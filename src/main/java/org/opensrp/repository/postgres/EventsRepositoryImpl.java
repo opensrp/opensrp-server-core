@@ -85,6 +85,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		long serverVersion = eventMapper.selectServerVersionByPrimaryKey(pgEvent.getId());
 		entity.setServerVersion(serverVersion);
 		pgEvent.setJson(entity);
+		pgEvent.setServerVersion(null);
 		int rowsAffected = eventMapper.updateByPrimaryKeySelective(pgEvent);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
