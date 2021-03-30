@@ -130,6 +130,30 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 
 	@Test
 	public void safeRemove() {
+		ClientMigrationFile clientMigrationFile = new ClientMigrationFile();
+		clientMigrationFile.setId(5L);
+
+		clientMigrationFileRepository.safeRemove(clientMigrationFile);
+
+		Assert.assertEquals(5, clientMigrationFileRepository.getAll().size());
+		Assert.assertNull(clientMigrationFileRepository.get("5"));
+	}
+
+	@Test
+	public void safeRemoveShouldFailWhenEntityPrimaryKeyIsNull() {
+		ClientMigrationFile clientMigrationFile = new ClientMigrationFile();
+		clientMigrationFile.setId(null);
+
+		clientMigrationFileRepository.safeRemove(clientMigrationFile);
+
+		Assert.assertEquals(6, clientMigrationFileRepository.getAll().size());
+	}
+
+	@Test
+	public void safeRemoveShouldFailWhenEntityIsNull() {
+		clientMigrationFileRepository.safeRemove(null);
+
+		Assert.assertEquals(6, clientMigrationFileRepository.getAll().size());
 	}
 
 	@Test
