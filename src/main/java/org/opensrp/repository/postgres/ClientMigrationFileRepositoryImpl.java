@@ -77,7 +77,7 @@ public class ClientMigrationFileRepositoryImpl extends BaseRepositoryImpl<Client
 
     @Override
     public List<ClientMigrationFile> getAll() {
-        return null;
+        return getAll(DEFAULT_FETCH_SIZE);
     }
 
     @Override
