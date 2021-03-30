@@ -158,6 +158,17 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 
 	@Test
 	public void getClientMigrationFileByFilename() {
+		ClientMigrationFile clientMigrationFile = clientMigrationFileRepository.getClientMigrationFileByFilename("3.up.sql");
+
+		Assert.assertEquals(Integer.valueOf(3), clientMigrationFile.getVersion());
+		Assert.assertEquals(Integer.valueOf(3), clientMigrationFile.getManifestId());
+		Assert.assertEquals("CREATE TABLE alerts(id INTEGER, alert_name VARCHAR, is_offline BOOLEAN);", clientMigrationFile.getFileContents());
+		Assert.assertEquals("38bc7c3f-7439-4d62-bd9b-fa40867d0a44", clientMigrationFile.getIdentifier());
+	}
+
+	@Test
+	public void getClientMigrationFileByFilenameShouldReturnNullWhenFileNameisEmpty() {
+		Assert.assertNull(clientMigrationFileRepository.getClientMigrationFileByFilename(""));
 	}
 
 	@Test
