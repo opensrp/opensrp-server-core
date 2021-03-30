@@ -16,7 +16,7 @@
         WHERE filename = #{string, jdbcType=VARCHAR} LIMIT 1
     </select>
 
-    <select id="selectByVersion" parameterType="string"
+    <select id="selectByVersion" parameterType="int"
             resultMap="org.opensrp.repository.postgres.mapper.ClientMigrationFileMapper.BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
