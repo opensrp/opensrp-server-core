@@ -4,7 +4,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.opensrp.domain.ClientMigrationFile;
 import org.opensrp.repository.ClientMigrationFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +84,40 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void update() {
+	public void updateShouldUpdateClientMigrationFileDetails() {
+		ClientMigrationFile clientMigrationFile = clientMigrationFileRepository.getClientMigrationFileByIdentifier("38bc7c3f-7439-4d62-bd9b-fa40867d0a44");
+		clientMigrationFile.setFilename("a different file name");
+
+		clientMigrationFileRepository.update(clientMigrationFile);
+
+		ClientMigrationFile actualUpdatedRecord = clientMigrationFileRepository.getClientMigrationFileByIdentifier("38bc7c3f-7439-4d62-bd9b-fa40867d0a44");
+		Assert.assertEquals("a different file name", actualUpdatedRecord.getFilename());
+	}
+
+	@Test
+	public void updateShouldNotUpdateClientMigrationFileDetailsWhenIdentifierIsNull() {
+		ClientMigrationFile clientMigrationFile = clientMigrationFileRepository.getClientMigrationFileByIdentifier("38bc7c3f-7439-4d62-bd9b-fa40867d0a44");
+		clientMigrationFile.setFilename("a different file name");
+		clientMigrationFile.setIdentifier(null);
+
+		clientMigrationFileRepository.update(clientMigrationFile);
+
+		// Assert that the file name is similar
+		ClientMigrationFile actualUpdatedRecord = clientMigrationFileRepository.getClientMigrationFileByIdentifier("38bc7c3f-7439-4d62-bd9b-fa40867d0a44");
+		Assert.assertEquals("3.up.sql", actualUpdatedRecord.getFilename());
+	}
+
+	@Test
+	public void updateShouldNotUpdateClientMigrationFileDetailsWhenIdIsNull() {
+		ClientMigrationFile clientMigrationFile = clientMigrationFileRepository.getClientMigrationFileByIdentifier("38bc7c3f-7439-4d62-bd9b-fa40867d0a44");
+		clientMigrationFile.setFilename("a different file name");
+		clientMigrationFile.setId(null);
+
+		clientMigrationFileRepository.update(clientMigrationFile);
+
+		// Assert that the file name is similar
+		ClientMigrationFile actualUpdatedRecord = clientMigrationFileRepository.getClientMigrationFileByIdentifier("38bc7c3f-7439-4d62-bd9b-fa40867d0a44");
+		Assert.assertEquals("3.up.sql", actualUpdatedRecord.getFilename());
 	}
 
 	@Test
