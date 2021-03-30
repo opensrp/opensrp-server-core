@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opensrp.domain.ClientMigrationFile;
 import org.opensrp.repository.ClientMigrationFileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +69,19 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 		clientMigrationFile.setIdentifier("my-identifier");
 		clientMigrationFile.setId(2398L);
 		clientMigrationFileRepository.add(clientMigrationFile);
+	}
+
+	@Test
+	public void addShouldCallInsertSelectiveOnMapper() {
+		ClientMigrationFile clientMigrationFile = new ClientMigrationFile();
+		clientMigrationFile.setIdentifier("my-identifier");
+		String randomFileName = "some-random-filename";
+		clientMigrationFile.setFilename(randomFileName);
+		clientMigrationFile.setVersion(89);
+		clientMigrationFileRepository.add(clientMigrationFile);
+
+		ClientMigrationFile actualRecord = clientMigrationFileRepository.getClientMigrationFileByIdentifier("my-identifier");
+		Assert.assertEquals(randomFileName, actualRecord.getFilename());
 	}
 
 	@Test
