@@ -173,6 +173,13 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 
 	@Test
 	public void getClientMigrationFileByVersion() {
+		List<ClientMigrationFile> migrationFiles = clientMigrationFileRepository.getClientMigrationFileByVersion(3);
+
+		Assert.assertEquals(2, migrationFiles.size());
+		Assert.assertEquals(Integer.valueOf(3), migrationFiles.get(0).getVersion());
+
+		Assert.assertEquals("3.up.sql", migrationFiles.get(0).getFilename());
+		Assert.assertEquals("3.down.sql", migrationFiles.get(1).getFilename());
 	}
 
 	@Test
