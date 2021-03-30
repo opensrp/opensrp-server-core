@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityExistsException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
@@ -122,6 +123,9 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 
 	@Test
 	public void getAll() {
+		List<ClientMigrationFile> migrationFiles = clientMigrationFileRepository.getAll();
+
+		Assert.assertEquals(6, migrationFiles.size());
 	}
 
 	@Test
