@@ -157,8 +157,10 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                 break;
             default:
                 multimediaDirPath += OTHER_DIR;
-                String ext = getFileExtension(originalFileName);
-                fileExt = StringUtils.isBlank(ext) ? "" : ext;
+                fileExt = getFileExtension(originalFileName);
+
+                if(StringUtils.isBlank(fileExt))
+                    throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
                 break;
         }
 
