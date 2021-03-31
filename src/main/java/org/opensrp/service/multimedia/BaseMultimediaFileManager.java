@@ -1,5 +1,6 @@
 package org.opensrp.service.multimedia;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.smartregister.domain.Client;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import static org.opensrp.service.MultimediaService.IMAGES_DIR;
 import static org.opensrp.service.MultimediaService.CSV_DIR;
 import static org.opensrp.service.MultimediaService.MULTI_VERSION;
+import static org.opensrp.service.MultimediaService.OTHER_DIR;
 import static org.opensrp.service.MultimediaService.VIDEOS_DIR;
 
 /**
@@ -154,7 +156,10 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                 fileExt = ".csv";
                 break;
             default:
-                throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
+                multimediaDirPath += OTHER_DIR;
+                String ext = getFileExtension(originalFileName);
+                fileExt = StringUtils.isBlank(ext) ? "" : ext;
+                break;
         }
 
         String fileName;
@@ -172,6 +177,12 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
         return fileName;
     }
 
+    public String getFileExtension(String fileName) {
+        int lastIndexOf = fileName.lastIndexOf(".");
+        if (lastIndexOf == -1)
+            return "";
+        return fileName.substring(lastIndexOf);
+    }
 
     protected abstract String getBaseMultiMediaDir();
 
