@@ -75,4 +75,11 @@ public class MultimediaServiceTest {
 		fileManager.uploadFile(multimedia, new byte[10], originalFileName);
 		assertEquals(multimedia.getFilePath(), BASE_MULTIMEDIA_DIR_PATH + "/patient_images/caseId1.jpg");
 	}
+
+	@Test
+	public void testGetFileExtension(){
+		assertEquals(".csv",fileManager.getFileExtension("text.csv"));
+		assertEquals("",fileManager.getFileExtension("text"));
+		assertEquals(".gz",fileManager.getFileExtension("sample.tr.gz"));
+	}
 }
