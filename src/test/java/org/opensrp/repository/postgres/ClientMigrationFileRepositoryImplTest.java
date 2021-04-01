@@ -1,8 +1,6 @@
 package org.opensrp.repository.postgres;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.opensrp.domain.ClientMigrationFile;
 import org.opensrp.repository.ClientMigrationFileRepository;
@@ -19,14 +17,6 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 	private ClientMigrationFileRepository clientMigrationFileRepository;
 
 	private Set<String> scripts = new HashSet<String>();
-
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@After
-	public void tearDown() throws Exception {
-	}
 
 	@Test
 	public void getShouldReturnMigrationFileWhenGivenAValidId() {
