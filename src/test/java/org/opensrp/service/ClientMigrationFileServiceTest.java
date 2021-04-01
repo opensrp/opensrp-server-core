@@ -4,16 +4,20 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opensrp.domain.ClientMigrationFile;
+import org.opensrp.domain.postgres.Client;
 import org.opensrp.repository.ClientFormRepository;
 import org.opensrp.repository.ClientMigrationFileRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.powermock.reflect.Whitebox;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -136,15 +140,59 @@ public class ClientMigrationFileServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void getClientMigrationFile() {
+	public void getClientMigrationFileShouldReturnClientMigrationFile() {
+		String identifier = "my-identifier";
+
+		ClientMigrationFile clientMigrationFile = new ClientMigrationFile();
+		clientMigrationFile.setIdentifier(identifier);
+		Mockito.doReturn(clientMigrationFile).when(clientMigrationFileRepository).getClientMigrationFileByIdentifier(identifier);
+
+		// call the method under test
+		Assert.assertEquals(clientMigrationFile, clientMigrationFileService.getClientMigrationFile(identifier));
+
+		Mockito.verify(clientMigrationFileRepository).getClientMigrationFileByIdentifier(identifier);
 	}
 
 	@Test
-	public void saveClientMigrationFiles() {
+	public void getClientMigrationFileShouldReturnNull() {
+		// call the method under test
+		Assert.assertNull(clientMigrationFileService.getClientMigrationFile(null));
+
+		Mockito.verify(clientMigrationFileRepository, Mockito.never()).getClientMigrationFileByIdentifier(identifier);
 	}
 
 	@Test
-	public void deleteClientMigrationFile() {
+	public void saveClientMigrationFilesShouldCallAddOrUpdateClientMigrationFileAndReturnEmptyErrorSet() {
+		ClientMigrationFileService clientMigrationFileService1 = Mockito.spy(clientMigrationFileService);
+
+		List<ClientMigrationFile> clientMigrationFileList = new ArrayList<>();
+
+		for (int i = 0; i < 8; i++) {
+			clientMigrationFileList.add(new ClientMigrationFile());
+		}
+
+		ArgumentCaptor<List<ClientMigrationFile>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
+
+		// Call the method under test
+		Set<String> errorSet = clientMigrationFileService1.saveClientMigrationFiles(listArgumentCaptor.capture());
+
+		Assert.assertEquals(0, errorSet.size());
+		Assert.assertEquals(8, listArgumentCaptor.getValue().size());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void deleteClientMigrationFileShouldThrowExceptionWhenGivenClientMigrationFileWithoutIdentifier() {
+		clientMigrationFileService.deleteClientMigrationFile(new ClientMigrationFile());
+	}
+
+	@Test
+	public void deleteClientMigrationFileShouldCallRepositorySafeRemove() {
+		ClientMigrationFile clientMigrationFile = new ClientMigrationFile();
+		clientMigrationFile.setIdentifier("my-identifier");
+
+		clientMigrationFileService.deleteClientMigrationFile(clientMigrationFile);
+
+		Mockito.verify(clientMigrationFileRepository).safeRemove(clientMigrationFile);
 	}
 
 	@Test
