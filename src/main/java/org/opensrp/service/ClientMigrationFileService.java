@@ -8,10 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class ClientMigrationFileService {
@@ -73,8 +72,8 @@ public class ClientMigrationFileService {
         return getClientMigrationFileRepository().getClientMigrationFileByIdentifier(identifier);
     }
 
-    public Set<String> saveClientMigrationFiles(List<ClientMigrationFile> clientMigrationFiles) {
-        Set<String> clientMigrationFilesWithErrors = new HashSet<>();
+    public ArrayList<String> saveClientMigrationFiles(List<ClientMigrationFile> clientMigrationFiles) {
+        ArrayList<String> clientMigrationFilesWithErrors = new ArrayList<>();
 
         for (ClientMigrationFile clientMigrationFile : clientMigrationFiles) {
             try {
