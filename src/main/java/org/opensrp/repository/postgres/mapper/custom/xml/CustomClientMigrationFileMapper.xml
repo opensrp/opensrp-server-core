@@ -24,7 +24,7 @@
         WHERE version = #{version, jdbcType=INTEGER}
     </select>
 
-    <select id="selectByManifestId" parameterType="string"
+    <select id="selectByManifestId" parameterType="int"
             resultMap="org.opensrp.repository.postgres.mapper.ClientMigrationFileMapper.BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
@@ -32,7 +32,7 @@
         WHERE manifest_id = #{manifestId, jdbcType=INTEGER}
     </select>
 
-    <select id="selectByManifestIdentifier" parameterType="string"
+    <select id="selectByManifestIdentifier" parameterType="int"
             resultMap="org.opensrp.repository.postgres.mapper.ClientMigrationFileMapper.BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>

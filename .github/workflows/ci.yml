@@ -23,6 +23,9 @@ jobs:
       with:
         java-version: 11
 
+    - name: Checkout configs to branch add-migration-files-table
+    run: cd configs && git checkout add-migration-files-table && cd ..
+
     - name: Setup Postgres
       uses: harmon758/postgresql-action@v1
       with:

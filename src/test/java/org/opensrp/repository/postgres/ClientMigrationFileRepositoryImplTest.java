@@ -195,6 +195,11 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 	}
 
 	@Test
+	public void getClientMigrationFileByManifestIdShouldReturnNull() {
+		Assert.assertNull(clientMigrationFileRepository.getClientMigrationFileByManifestId(0));
+	}
+
+	@Test
 	public void getClientMigrationFileById() {
 	}
 
