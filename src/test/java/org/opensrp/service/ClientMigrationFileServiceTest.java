@@ -8,19 +8,15 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opensrp.domain.ClientMigrationFile;
-import org.opensrp.domain.postgres.Client;
-import org.opensrp.repository.ClientFormRepository;
 import org.opensrp.repository.ClientMigrationFileRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.powermock.reflect.Whitebox;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static org.junit.Assert.*;
+import java.util.UUID;
 
 public class ClientMigrationFileServiceTest extends BaseRepositoryTest {
 
@@ -158,7 +154,7 @@ public class ClientMigrationFileServiceTest extends BaseRepositoryTest {
 		// call the method under test
 		Assert.assertNull(clientMigrationFileService.getClientMigrationFile(null));
 
-		Mockito.verify(clientMigrationFileRepository, Mockito.never()).getClientMigrationFileByIdentifier(identifier);
+		Mockito.verify(clientMigrationFileRepository, Mockito.never()).getClientMigrationFileByIdentifier(Mockito.nullable(String.class));
 	}
 
 	@Test
@@ -168,16 +164,44 @@ public class ClientMigrationFileServiceTest extends BaseRepositoryTest {
 		List<ClientMigrationFile> clientMigrationFileList = new ArrayList<>();
 
 		for (int i = 0; i < 8; i++) {
+			ClientMigrationFile clientMigrationFile = new ClientMigrationFile();
+			clientMigrationFile.setIdentifier(UUID.randomUUID().toString());
+			clientMigrationFileList.add(clientMigrationFile);
+		}
+
+		ArgumentCaptor<ClientMigrationFile> clientMigrationFileArgumentCaptor = ArgumentCaptor.forClass(ClientMigrationFile.class);
+
+		// Call the method under test
+		ArrayList<String> errorSet = clientMigrationFileService1.saveClientMigrationFiles(clientMigrationFileList);
+
+		Mockito.verify(clientMigrationFileService1, Mockito.times(8)).addOrUpdateClientMigrationFile(
+				clientMigrationFileArgumentCaptor.capture());
+
+		Assert.assertEquals(0, errorSet.size());
+		Assert.assertEquals(8, clientMigrationFileArgumentCaptor.getAllValues().size());
+	}
+
+	@Test
+	public void saveClientMigrationFilesShouldReturnSaveErrors() {
+		ClientMigrationFileService clientMigrationFileService1 = Mockito.spy(clientMigrationFileService);
+
+		List<ClientMigrationFile> clientMigrationFileList = new ArrayList<>();
+
+		for (int i = 0; i < 8; i++) {
 			clientMigrationFileList.add(new ClientMigrationFile());
 		}
 
-		ArgumentCaptor<List<ClientMigrationFile>> listArgumentCaptor = ArgumentCaptor.forClass(List.class);
+		ArgumentCaptor<ClientMigrationFile> clientMigrationFileArgumentCaptor = ArgumentCaptor.forClass(ClientMigrationFile.class);
 
 		// Call the method under test
-		Set<String> errorSet = clientMigrationFileService1.saveClientMigrationFiles(listArgumentCaptor.capture());
+		ArrayList<String> errorSet = clientMigrationFileService1.saveClientMigrationFiles(clientMigrationFileList);
 
-		Assert.assertEquals(0, errorSet.size());
-		Assert.assertEquals(8, listArgumentCaptor.getValue().size());
+		Mockito.verify(clientMigrationFileService1, Mockito.times(8)).addOrUpdateClientMigrationFile(
+				clientMigrationFileArgumentCaptor.capture());
+
+		Assert.assertEquals(8, errorSet.size());
+		Assert.assertEquals(8, clientMigrationFileArgumentCaptor.getAllValues().size());
+		Assert.assertEquals("unknown file!!", errorSet.get(0));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -196,19 +220,40 @@ public class ClientMigrationFileServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void getClientMigrationFileByFilename() {
+	public void getClientMigrationFileByFilenameShouldCallRepositoryMethod() {
+		String filename = "89.up.sql";
+		clientMigrationFileService.getClientMigrationFileByFilename(filename);
+
+		Mockito.verify(clientMigrationFileRepository).getClientMigrationFileByFilename(filename);
+	}
+
+	@Test
+	public void getClientMigrationFileByFilenameShouldReturnNullWhenFilenamebIsBlank() {
+		Assert.assertNull(clientMigrationFileService.getClientMigrationFileByFilename(null));
 	}
 
 	@Test
 	public void getClientMigrationFileByVersion() {
+		int version = 7;
+		clientMigrationFileService.getClientMigrationFileByVersion(version);
+
+		Mockito.verify(clientMigrationFileRepository).getClientMigrationFileByVersion(version);
 	}
 
 	@Test
 	public void getClientMigrationFileByManifestId() {
+		int manifestId = 7;
+		clientMigrationFileService.getClientMigrationFileByManifestId(manifestId);
+
+		Mockito.verify(clientMigrationFileRepository).getClientMigrationFileByManifestId(manifestId);
 	}
 
 	@Test
-	public void getClientMigrationFileByFileId() {
+	public void getClientMigrationFileById() {
+		int id = 7;
+		clientMigrationFileService.getClientMigrationFileById(id);
+
+		Mockito.verify(clientMigrationFileRepository).getClientMigrationFileById(id);
 	}
 
 	@Override
