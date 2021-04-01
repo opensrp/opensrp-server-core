@@ -111,7 +111,7 @@ public class ClientMigrationFileService {
         return clientMigrationFileRepository.getClientMigrationFileByManifestId(manifestId);
     }
 
-    public ClientMigrationFile getClientMigrationFileByFileId(int id) {
+    public ClientMigrationFile getClientMigrationFileById(int id) {
         return clientMigrationFileRepository.getClientMigrationFileById(id);
     }
 }
