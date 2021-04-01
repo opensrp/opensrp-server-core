@@ -200,23 +200,38 @@ public class ClientMigrationFileRepositoryImplTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void getClientMigrationFileById() {
+	public void getClientMigrationFileByIdShouldReturnNull() {
+		Assert.assertNull(clientMigrationFileRepository.getClientMigrationFileById(0));
 	}
 
 	@Test
-	public void getClientMigrationFileByIdentifier() {
+	public void getClientMigrationFileByIdShouldReturnClientMigrationFile() {
+		ClientMigrationFile clientMigrationFile = clientMigrationFileRepository.getClientMigrationFileById(1);
+		Assert.assertEquals("cec563c2-d3e7-4b2a-866e-82d5902d44de", clientMigrationFile.getIdentifier());
+		Assert.assertEquals("1.up.sql", clientMigrationFile.getFilename());
 	}
 
 	@Test
-	public void testGetAll() {
+	public void getClientMigrationFileByIdentifierShouldReturnNull() {
+		Assert.assertNull(clientMigrationFileRepository.getClientMigrationFileByIdentifier("an-identifier"));
 	}
 
 	@Test
-	public void retrievePrimaryKey() {
+	public void getClientMigrationFileByIdentifierShouldReturnClientMigrationFile() {
+		ClientMigrationFile clientMigrationFile = clientMigrationFileRepository.getClientMigrationFileByIdentifier("70cbd363-5dd7-4e92-8364-bcc093cb4962");
+		Assert.assertEquals("2.down.sql", clientMigrationFile.getFilename());
+		Assert.assertEquals(Integer.valueOf(2), clientMigrationFile.getVersion());
+		Assert.assertEquals("ALTER TABLE vaccines RENAME TO vaccines_old;\\nCREATE TABLE vaccines(id INTEGER, vaccine_name VARCHAR);\\nINSERT INTO vaccines(id, vaccine_name) SELECT id, vaccine_name FROM vaccines_old;\\nDROP TABLE vaccines_old", clientMigrationFile.getFileContents());
 	}
 
 	@Test
-	public void getUniqueField() {
+	public void testGetAllWhenGivenLimit() {
+		List<ClientMigrationFile> migrationFiles = clientMigrationFileRepository.getAll(3);
+
+		Assert.assertEquals(3, migrationFiles.size());
+		Assert.assertEquals("1.up.sql", migrationFiles.get(0).getFilename());
+		Assert.assertEquals("1.down.sql", migrationFiles.get(1).getFilename());
+		Assert.assertEquals("2.up.sql", migrationFiles.get(2).getFilename());
 	}
 
 	@Override
