@@ -74,18 +74,18 @@ public class ClientMigrationFileService {
     }
 
     public Set<String> saveClientMigrationFiles(List<ClientMigrationFile> clientMigrationFiles) {
-        Set<String> clientManifestFilesWithErrors = new HashSet<>();
+        Set<String> clientMigrationFilesWithErrors = new HashSet<>();
 
         for (ClientMigrationFile clientMigrationFile : clientMigrationFiles) {
             try {
                 addOrUpdateClientMigrationFile(clientMigrationFile);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
-                clientManifestFilesWithErrors.add(clientMigrationFile.getIdentifier());
+                clientMigrationFilesWithErrors.add(clientMigrationFile.getIdentifier() != null ? clientMigrationFile.getIdentifier() : "unknown file!!");
             }
         }
 
-        return clientManifestFilesWithErrors;
+        return clientMigrationFilesWithErrors;
     }
 
     public void deleteClientMigrationFile(ClientMigrationFile clientMigrationFile) {
