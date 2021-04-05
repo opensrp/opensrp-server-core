@@ -1,6 +1,5 @@
 package org.opensrp.service;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,10 +35,6 @@ public class ClientMigrationFileServiceTest extends BaseRepositoryTest {
 
 		clientMigrationFileService = new ClientMigrationFileService();
 		clientMigrationFileService.setClientMigrationFileRepository(clientMigrationFileRepository);
-	}
-
-	@After
-	public void tearDown() throws Exception {
 	}
 
 	@Test
@@ -133,6 +128,8 @@ public class ClientMigrationFileServiceTest extends BaseRepositoryTest {
 		clientMigrationFile.setIdentifier("my-identifier");
 
 		clientMigrationFileService.updateClientMigrationFile(clientMigrationFile);
+
+		Mockito.verify(clientMigrationFileRepository).update(clientMigrationFile);
 	}
 
 	@Test
