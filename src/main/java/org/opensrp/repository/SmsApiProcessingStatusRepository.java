@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface SmsApiProcessingStatusRepository extends BaseRepository<SmsApiProcessingStatus> {
 
-	SmsApiProcessingStatus getSmsProcessingStatusById(long id);
+	SmsApiProcessingStatus getSmsApiProcessingStatusById(long id);
 
 	@Nullable
 	List<SmsApiProcessingStatus> getStatusListByRequestStatus(String requestStatus);

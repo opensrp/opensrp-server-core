@@ -18,7 +18,7 @@ public class SmsApiProcessingStatusRepositoryImpl extends BaseRepositoryImpl<Sms
 	private CustomSmsApiProcessingStatusMapper statusMapper;
 
 	@Override
-	public SmsApiProcessingStatus getSmsProcessingStatusById(long id) {
+	public SmsApiProcessingStatus getSmsApiProcessingStatusById(long id) {
 		return statusMapper.selectByPrimaryKey(id);
 	}
 
@@ -36,7 +36,7 @@ public class SmsApiProcessingStatusRepositoryImpl extends BaseRepositoryImpl<Sms
 		if (deliveryStatus == null)
 			return null;
 		SmsApiProcessingStatusExample example = new SmsApiProcessingStatusExample();
-		example.createCriteria().andRequestStatusEqualTo(deliveryStatus);
+		example.createCriteria().andSmsDeliveryStatusEqualTo(deliveryStatus);
 		return statusMapper.selectByExample(example);
 	}
 
@@ -45,7 +45,7 @@ public class SmsApiProcessingStatusRepositoryImpl extends BaseRepositoryImpl<Sms
 		if (deliveryStatus == null)
 			return null;
 		SmsApiProcessingStatusExample example = new SmsApiProcessingStatusExample();
-		example.createCriteria().andRequestStatusEqualTo(deliveryStatus).andAttemptsEqualTo(attempts);
+		example.createCriteria().andSmsDeliveryStatusEqualTo(deliveryStatus).andAttemptsEqualTo(attempts);
 		return statusMapper.selectByExample(example);
 	}
 

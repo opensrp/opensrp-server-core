@@ -37,7 +37,7 @@
         select
         <include
                 refid="org.opensrp.repository.postgres.mapper.SmsApiProcessingStatusMapper.Base_Column_List" />
-        from  core.sms.api_processing_status sps
+        from  core.sms_api_processing_status sps
         <if test="_parameter != null">
             <include refid="Example_Where_Clause" />
         </if>
@@ -52,7 +52,8 @@
         select
         <include
                 refid="org.opensrp.repository.postgres.mapper.SmsApiProcessingStatusMapper.Base_Column_List" />
-        where core.sms.api_processing_status.base_entity_id = #{entityId,jdbcType=VARCHAR}
+        from core.sms_api_processing_status sps
+        where sps.base_entity_id = #{entityId,jdbcType=VARCHAR}
     </select>
 
 </mapper>

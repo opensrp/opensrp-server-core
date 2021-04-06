@@ -33,9 +33,9 @@ public class SmsApiProcessingStatusServiceTest {
 	public void getSmsProcessingStatusByIdReturnsStatus() {
 		Long testId = 1L;
 		SmsApiProcessingStatus expectedStatus = getTestSmsApiProcessingStatus();
-		when(statusRepository.getSmsProcessingStatusById(testId)).thenReturn(expectedStatus);
+		when(statusRepository.getSmsApiProcessingStatusById(testId)).thenReturn(expectedStatus);
 		SmsApiProcessingStatus returnedStatus = statusService.getSmsProcessingStatusById(testId);
-		verify(statusRepository).getSmsProcessingStatusById(testId);
+		verify(statusRepository).getSmsApiProcessingStatusById(testId);
 		assertEquals(testId, returnedStatus.getId());
 	}
 

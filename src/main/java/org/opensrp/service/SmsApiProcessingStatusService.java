@@ -19,7 +19,7 @@ public class SmsApiProcessingStatusService {
 	}
 
 	public SmsApiProcessingStatus getSmsProcessingStatusById(long id) {
-		return statusRepository.getSmsProcessingStatusById(id);
+		return statusRepository.getSmsApiProcessingStatusById(id);
 	}
 
 	public List<SmsApiProcessingStatus> getStatusListByRequestStatus(String requestStatus) {
@@ -43,7 +43,7 @@ public class SmsApiProcessingStatusService {
 	}
 
 	public void addOrUpdateSmsApiProcessingEntry(SmsApiProcessingStatus status) {
-		if(statusRepository.getSmsProcessingStatusById(status.getId()) != null) {
+		if(statusRepository.getSmsApiProcessingStatusById(status.getId()) != null) {
 			statusRepository.update(status);
 		}
 		else {
