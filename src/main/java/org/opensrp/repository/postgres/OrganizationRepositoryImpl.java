@@ -153,6 +153,11 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		    currentDate);
 	}
 
+	/**
+	 * Find all team assignments against the given planId
+	 * @param planId
+	 * @return
+	 */
 	private List<OrganizationLocation> getAssignedLocationsByPlanId(Long planId) {
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		example.createCriteria().andPlanIdEqualTo(planId); //returns future assignments as well
