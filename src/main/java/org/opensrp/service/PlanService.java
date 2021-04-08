@@ -79,8 +79,8 @@ public class PlanService {
 		PlanDefinition existing = getPlan(plan.getIdentifier());
 		getPlanRepository().update(plan);
 		taskGenerator.processPlanEvaluation(plan, existing, username);
-		if (plan.getStatus().equals(PlanDefinition.PlanStatus.COMPLETED) || plan.getStatus()
-				.equals(PlanDefinition.PlanStatus.RETIRED)) {
+		if (plan.getStatus() != null && (plan.getStatus().equals(PlanDefinition.PlanStatus.COMPLETED) || plan.getStatus()
+				.equals(PlanDefinition.PlanStatus.RETIRED))) {
 			organizationService.unassignLocationAndPlan(plan.getIdentifier());
 		}
 		return plan;

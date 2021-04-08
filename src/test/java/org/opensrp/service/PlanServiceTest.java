@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -81,6 +82,7 @@ public class PlanServiceTest {
 	@Test
 	public void testAddOrUpdatePlanShouldCallRepositoryUpdateMethod() {
 		when(planRepository.get(anyString())).thenReturn(new PlanDefinition());
+		doNothing().when(organizationService).unassignLocationAndPlan(anyString());
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
 		planService.addOrUpdatePlan(plan,user);
@@ -99,6 +101,7 @@ public class PlanServiceTest {
 	@Test
 	public void updatePlanShouldCallRepositoryUpdateMethod() {
 		when(planRepository.get(anyString())).thenReturn(new PlanDefinition());
+		doNothing().when(organizationService).unassignLocationAndPlan(anyString());
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
 		planService.updatePlan(plan,user);
