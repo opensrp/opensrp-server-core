@@ -156,7 +156,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	private List<OrganizationLocation> getAssignedLocationsByPlanId(Long planId) {
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		Date currentDate = new LocalDate().toDate();
-		example.createCriteria().andPlanIdEqualTo(planId).andFromDateLessThanOrEqualTo(currentDate);
+		example.createCriteria().andPlanIdEqualTo(planId); //returns future assignments as well
 		return organizationLocationMapper.selectByExampleAndDateTo(example.getOredCriteria(), example.getOrderByClause(),
 				currentDate);
 	}
@@ -361,6 +361,10 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		return convert(organizations);
 	}
 
+	/**
+	 * This method will revoke all the team assignments including future assignments as well
+	 * by setting to_date param to the current date
+	 */
 	@Override
 	public void unassignLocationAndPlan(Long planId) {
 		List<OrganizationLocation> organizationLocations = getAssignedLocationsByPlanId(planId);

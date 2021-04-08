@@ -20,12 +20,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.UUID;
 
 import org.junit.Test;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Code;
 import org.opensrp.domain.Organization;
+import org.opensrp.repository.PlanRepository;
+import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Practitioner;
 import org.smartregister.domain.PractitionerRole;
 import org.smartregister.domain.PractitionerRoleCode;
@@ -57,10 +60,16 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 	
 	@Autowired
 	private PractitionerRoleRepository practitionerRoleRepository;
+
+	@Autowired
+	private PlanRepository planRepository;
 	
 	@Override
 	protected Set<String> getDatabaseScripts() {
-		return Collections.singleton("organization.sql");
+		Set<String> scripts = new HashSet<String>();
+		scripts.add("organization.sql");
+		scripts.add("plan.sql");
+		return scripts;
 	}
 	
 	@Test
@@ -471,6 +480,47 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(new Long(1l), organizations.get(0).getId());
 		assertEquals(new Long(4l), organizations.get(3).getId());
 
+	}
+
+	@Test
+	public void testUnassignLocationAndPlan() {
+		String identifier = UUID.randomUUID().toString();
+		Organization organization = new Organization();
+		organization.setIdentifier(identifier);
+		organization.setName("ATeam");
+		organizationRepository.add(organization);
+
+		String planIdentifier = UUID.randomUUID().toString();
+		PlanDefinition planDefinition = new PlanDefinition();
+		planDefinition.setIdentifier(planIdentifier);
+		planDefinition.setName("Plan A");
+		planRepository.add(planDefinition);
+
+		organization = organizationRepository.get(identifier);
+		Long planId = planRepository.retrievePrimaryKey(planIdentifier);
+		Calendar calendar = Calendar.getInstance();
+		Date fromDate = calendar.getTime();
+		calendar.add(Calendar.YEAR, 2);
+		Date toDate = calendar.getTime();
+		organizationRepository.assignLocationAndPlan(organization.getId(), "04cbcd4-0850-404a-a8b1-486b02f7b84d", 2243l,
+				planIdentifier, planId, fromDate, toDate);
+
+		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = AssignedLocationAndPlanSearchBean.builder()
+				.planId(planId)
+				.returnFutureAssignments(true).build();
+		List<AssignedLocations> assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
+		assertEquals(1, assignedLocations.size());
+		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", assignedLocations.get(0).getJurisdictionId());
+		assertEquals(planIdentifier, assignedLocations.get(0).getPlanId());
+		assertEquals(dateFormat.format(fromDate), dateFormat.format(assignedLocations.get(0).getFromDate()));
+		assertEquals(dateFormat.format(toDate), dateFormat.format(assignedLocations.get(0).getToDate()));
+
+		organizationRepository.unassignLocationAndPlan(planId);
+		assignedLocationAndPlanSearchBean = AssignedLocationAndPlanSearchBean.builder()
+				.planId(planId)
+				.build();
+		assignedLocations = organizationRepository.findAssignedLocations(assignedLocationAndPlanSearchBean);
+		assertEquals(0, assignedLocations.size()); // verified - removes all the assigned teams
 	}
 
 
