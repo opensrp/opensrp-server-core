@@ -260,4 +260,15 @@ public class OrganizationService {
 		return organizationRepository.findOrganizationByName(organizationName);
 	}
 
+	public void unassignLocationAndPlan(String planIdentifier) {
+		if (StringUtils.isBlank(planIdentifier))
+			throw new IllegalArgumentException("PlanIdentfier cannot be null");
+
+		Long planId = planRepository.retrievePrimaryKey(planIdentifier);
+		if (planId == null)
+			throw new IllegalArgumentException("Plan not found");
+
+		organizationRepository.unassignLocationAndPlan(planId);
+	}
+
 }

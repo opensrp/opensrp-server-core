@@ -152,6 +152,14 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		return organizationLocationMapper.selectByExampleAndDateTo(example.getOredCriteria(), example.getOrderByClause(),
 		    currentDate);
 	}
+
+	private List<OrganizationLocation> getAssignedLocationsByPlanId(Long planId) {
+		OrganizationLocationExample example = new OrganizationLocationExample();
+		Date currentDate = new LocalDate().toDate();
+		example.createCriteria().andPlanIdEqualTo(planId).andFromDateLessThanOrEqualTo(currentDate);
+		return organizationLocationMapper.selectByExampleAndDateTo(example.getOredCriteria(), example.getOrderByClause(),
+				currentDate);
+	}
 	
 	private boolean isExistingAssignment(Long jurisdictionId, Long planId, Date fromDate,
 	        OrganizationLocation organizationLocation) {
@@ -353,5 +361,17 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		return convert(organizations);
 	}
 
+	@Override
+	public void unassignLocationAndPlan(Long planId) {
+		List<OrganizationLocation> organizationLocations = getAssignedLocationsByPlanId(planId);
+		for (OrganizationLocation organizationLocation : organizationLocations) {
+			organizationLocation.setToDate(new Date());
+			OrganizationLocationExample example = new OrganizationLocationExample();
+			example.createCriteria().andIdEqualTo(organizationLocation.getId());
+			organizationLocationMapper.updateByExample(organizationLocation, example);
+		}
+
+		return;
+	}
 
 }
