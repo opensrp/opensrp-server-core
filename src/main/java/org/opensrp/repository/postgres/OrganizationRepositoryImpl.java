@@ -156,7 +156,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	/**
 	 * Find all team assignments against the given planId
 	 * @param planId
-	 * @return
+	 * @return List of OrganizationLocation team assignments
 	 */
 	private List<OrganizationLocation> getAssignedLocationsByPlanId(Long planId) {
 		OrganizationLocationExample example = new OrganizationLocationExample();
