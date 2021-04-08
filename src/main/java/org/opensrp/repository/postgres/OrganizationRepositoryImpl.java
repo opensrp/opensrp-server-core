@@ -370,8 +370,6 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			example.createCriteria().andIdEqualTo(organizationLocation.getId());
 			organizationLocationMapper.updateByExample(organizationLocation, example);
 		}
-
-		return;
 	}
 
 }
