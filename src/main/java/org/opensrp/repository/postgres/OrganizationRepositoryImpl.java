@@ -155,10 +155,8 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 
 	private List<OrganizationLocation> getAssignedLocationsByPlanId(Long planId) {
 		OrganizationLocationExample example = new OrganizationLocationExample();
-		Date currentDate = new LocalDate().toDate();
 		example.createCriteria().andPlanIdEqualTo(planId); //returns future assignments as well
-		return organizationLocationMapper.selectByExampleAndDateTo(example.getOredCriteria(), example.getOrderByClause(),
-				currentDate);
+		return organizationLocationMapper.selectByExample(example);
 	}
 	
 	private boolean isExistingAssignment(Long jurisdictionId, Long planId, Date fromDate,
