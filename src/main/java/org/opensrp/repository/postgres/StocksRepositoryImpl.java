@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.opensrp.domain.postgres.PgStockAndProductDetails;
 import org.opensrp.domain.postgres.StockExample;
 import org.opensrp.domain.postgres.StockMetadata;
 import org.opensrp.domain.postgres.StockMetadataExample;
@@ -31,8 +32,6 @@ import com.ibm.fhir.model.resource.Bundle;
 
 @Repository("stocksRepositoryPostgres")
 public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements StocksRepository {
-
-	private static final String SEQUENCE="core.stock_server_version_seq";
 
 	@Autowired
 	private CustomStockMapper stockMapper;
@@ -92,6 +91,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		long serverVersion = stockMapper.selectServerVersionByPrimaryKey(pgStock.getId());
 		entity.setServerVersion(serverVersion);
 		pgStock.setJson(entity);
+		pgStock.setServerVersion(null);
 		int rowsAffected = stockMapper.updateByPrimaryKeySelective(pgStock);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -194,7 +194,14 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int offset, int limit) {
 		String orderByClause = getOrderByClause(sortBy, sortOrder);
 		Date date = new Date();
-		return convert(stockMetadataMapper.selectManyBySearchBean(searchBean, date, orderByClause, offset, limit));
+		if(!searchBean.isReturnProduct()) {
+			return convert(stockMetadataMapper.selectManyBySearchBean(searchBean, date, orderByClause, offset, limit));
+		}
+		else {
+			List<PgStockAndProductDetails> pgStockAndProductDetails = stockMetadataMapper.selectManyStockAndProductDetailsBySearchBean(searchBean, date, orderByClause, offset, limit);
+		    List<StockAndProductDetails> stockAndProductDetails = convertStockAndProductDetails(pgStockAndProductDetails);
+		    return convertStockAndProductListToStockList(stockAndProductDetails);
+		}
 
 	}
 	
@@ -331,11 +338,6 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		return metadata;
 	}
 
-	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
-	}
-
 	private Pair<Integer, Integer> getPageSizeAndOffset(StockSearchBean stockSearchBean) {
 
 		Integer pageSize;
@@ -396,6 +398,31 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 		}
 		return convertedStocksAndProductDetails;
 	}
+
+	private List<Stock> convertStockAndProductListToStockList(List<StockAndProductDetails> stockAndProductDetails) {
+		if (stockAndProductDetails == null || stockAndProductDetails.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		List<Stock> stocks = new ArrayList<>();
+		for (StockAndProductDetails stockAndProductDetail : stockAndProductDetails) {
+			Stock stock = convertedStocksAndProductObjectToStockObject(stockAndProductDetail);
+			if (stock != null) {
+				stocks.add(stock);
+			}
+		}
+		return stocks;
+	}
+
+	private Stock convertedStocksAndProductObjectToStockObject(StockAndProductDetails stockAndProductDetails) {
+		if(stockAndProductDetails == null) {
+			return null;
+		}
+		Stock stock = stockAndProductDetails.getStock();
+		stock.setProduct(stockAndProductDetails.getProductCatalogue());
+		return stock;
+	}
+
 
 	private StockAndProductDetails convert(org.opensrp.domain.postgres.PgStockAndProductDetails pgStockAndProductDetails) {
 		StockAndProductDetails stockAndProductDetails = new StockAndProductDetails();

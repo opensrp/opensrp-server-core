@@ -1,7 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
-import org.opensrp.domain.Practitioner;
+import org.smartregister.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerExample;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerMapper;
@@ -199,7 +199,17 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         return convert(pgPractitionerList);
     }
 
-    @Override
+	@Override
+	public List<Practitioner> getAllPractitionersByIdentifiers(List<String> practitionerIdentifiers) {
+    	PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean();
+		Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean);
+		PractitionerExample practitionerExample = new PractitionerExample();
+		practitionerExample.createCriteria().andDateDeletedIsNull().andIdentifierIn(practitionerIdentifiers);
+		List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+		return convert(pgPractitionerList);
+	}
+
+	@Override
     protected Long retrievePrimaryKey(Practitioner practitioner) {
         Object uniqueId = getUniqueField(practitioner);
         if (uniqueId == null) {

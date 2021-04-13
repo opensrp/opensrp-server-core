@@ -59,7 +59,10 @@ jobs:
       run: chmod +x configs/assets/migrations/run_mybatis_migrations.sh && sudo ./configs/assets/migrations/run_mybatis_migrations.sh
       
     - name: Create multimedia dir
-      run: sudo mkdir -p /opt/multimedia && id
+      run: sudo mkdir -p /opt/multimedia/patient_images && id
+
+    - name: Grant read and write permissions to multimedia directory
+      run: sudo chmod a+rwx /opt/multimedia/patient_images
            
     - name: Run Unit tests with Maven
       run: mvn -B clean test jacoco:report --file pom.xml --no-transfer-progress

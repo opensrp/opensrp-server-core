@@ -23,6 +23,8 @@ public class MultimediaService {
 
 	public static final String CSV_DIR = "csv";
 
+	public static final String OTHER_DIR = "unknown_files";
+
 	public static final String MULTI_VERSION = "multi_version";
 
 	private final MultimediaRepository multimediaRepository;

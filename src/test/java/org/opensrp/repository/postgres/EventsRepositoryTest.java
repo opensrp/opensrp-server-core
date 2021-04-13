@@ -61,13 +61,13 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testGetAll() {
 		List<Event> events = eventsRepository.getAll();
-		assertEquals(20, events.size());
+		assertEquals(21, events.size());
 		
 		//test with deleted event
 		Event event = eventsRepository.findById("05934ae338431f28bf6793b2419c319a");
 		eventsRepository.safeRemove(event);
 		events = eventsRepository.getAll();
-		assertEquals(19, events.size());
+		assertEquals(20, events.size());
 		for (Event e : events)
 			assertNotEquals("05934ae338431f28bf6793b2419c319a", e.getId());
 		
@@ -134,7 +134,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindByBaseEntityId() {
 		List<Event> events = eventsRepository.findByBaseEntityId("58b33379-dab2-4f5c-8f09-6d2bd63023d8");
-		assertEquals(7, events.size());
+		assertEquals(8, events.size());
 		
 		events = eventsRepository.findByBaseEntityId("43930c23-c787-4ddb-ab76-770f77e7b17d");
 		assertEquals(1, events.size());
@@ -196,7 +196,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		EventSearchBean eventSearchBean = new EventSearchBean();
 		eventSearchBean.setBaseEntityId("58b33379-dab2-4f5c-8f09-6d2bd63023d8");
 		List<Event> events = eventsRepository.findEvents(eventSearchBean);
-		assertEquals(7, events.size());
+		assertEquals(8, events.size());
 		
 		DateTime from = new DateTime("2018-01-10T11:59:37.380");
 		DateTime to = new DateTime("2018-02-21T12:00:08.788");
@@ -264,17 +264,18 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindByServerVersion() {
-		assertEquals(21, eventsRepository.findByServerVersion(0).size());
+		assertEquals(22, eventsRepository.findByServerVersion(0).size());
 		
 		//missing data
 		assertTrue(eventsRepository.findByServerVersion(1578908926000l).isEmpty());
 		
 		List<Event> events = eventsRepository.findByServerVersion(1521469045587l);
-		assertEquals(9, events.size());
+		assertEquals(10, events.size());
 		List<String> expectedIds = Arrays.asList("05934ae338431f28bf6793b241780bac", "05934ae338431f28bf6793b241781149",
 		    "05934ae338431f28bf6793b241781a1e", "05934ae338431f28bf6793b241781149", "34166bde-2d40-4cb9-aec7-d8e4feb47c53",
 		    "66c1ffdc-697c-4d31-b50d-6396ccb6368c", "f9db43e1-1b15-4d26-ba56-29136edb73d6",
-		    "18a43e36-5701-4afc-b901-8eb4ce0e2002", "d945f800-eeca-415e-b737-e5611e19f706","cfcc0e7e3cef11eab77f2e728ce88125");
+		    "18a43e36-5701-4afc-b901-8eb4ce0e2002", "d945f800-eeca-415e-b737-e5611e19f706","cfcc0e7e3cef11eab77f2e728ce88125",
+				"81228b7f-b336-440e-9428-ebfba225ad17");
 		for (Event event : events) {
 			assertTrue(event.getServerVersion() >= 1521469045587l);
 			assertTrue(expectedIds.contains(event.getId()));
@@ -289,7 +290,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testNotInOpenMRSByServerVersion() {
 		Calendar cal = Calendar.getInstance();
-		assertEquals(12, eventsRepository.notInOpenMRSByServerVersion(0, cal).size());
+		assertEquals(13, eventsRepository.notInOpenMRSByServerVersion(0, cal).size());
 		
 		cal.setTimeInMillis(1521469045589l);
 		
@@ -558,6 +559,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		Calendar cal = Calendar.getInstance();
 		cal.set(Calendar.DATE, 1);
 		for (Event event : events) {
+			if(event.getEventType().equalsIgnoreCase("Recurring Service")) continue; //Skip this event type
 			event.setDateCreated(new DateTime(cal.getTimeInMillis()));
 			eventsRepository.update(event);
 		}
@@ -578,7 +580,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		Event event = eventsRepository.get("05934ae338431f28bf6793b241bdb88c");
 		eventsRepository.safeRemove(event);
 		List<Event> events = eventsRepository.getAll();
-		assertEquals(19, events.size());
+		assertEquals(20, events.size());
 		for (Event e : events)
 			assertNotEquals("05934ae338431f28bf6793b241bdb88c", e.getId());
 		assertNull(eventsRepository.get("05934ae338431f28bf6793b241bdb88c"));
@@ -629,7 +631,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		EventSearchBean eventSearchBean = new EventSearchBean();
 		eventSearchBean.setBaseEntityId("58b33379-dab2-4f5c-8f09-6d2bd63023d8");
 		Long events = eventsRepository.countEvents(eventSearchBean);
-		assertEquals(7, events.longValue());
+		assertEquals(8, events.longValue());
 
 		eventSearchBean.setEventType("Vaccination");
 		events = eventsRepository.countEvents(eventSearchBean);
@@ -695,7 +697,7 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 
 		Pair<List<String>, Long> listLongPair = eventsRepository.findIdsByEventType("",false,0L,10,
 				new DateTime(date1).toDate(), null);
-		assertEquals(2, listLongPair.getLeft().size());
+		assertEquals(3, listLongPair.getLeft().size());
 	}
 
 	@Test
@@ -748,6 +750,30 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		details.put("planIdentifier", "335ef7a3-7f35-58aa-8263-4419464946d8");
 		event.setDetails(details);
 		return event;
+	}
+	
+	@Test
+	public void testFindEventsByJurisdictionIdAndPlan() {
+		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
+		Event event = new Event().withBaseEntityId("4355345345431").withEventType("GrowthMonitoring").
+				withFormSubmissionId("gjhg34534nvbnv33453450").withEventDate(new DateTime()).withObs(obs)
+				.withLocationId("test-location-id").withChildLocationId("test-child-location-id");
+		event.setTeam("team");
+		event.setTeamId("team-id");
+		event.setProviderId("provider-id");
+		event.setServerVersion(12345678l);
+
+		Map<String, String> details = new HashMap<>();
+		details.put("planIdentifier", "plan-id-12345");
+		event.setDetails(details);
+		eventsRepository.add(event);
+		List<QuestionnaireResponse> questionnaireResponses = eventsRepository.findEventsByJurisdictionIdAndPlan("test-location-id","plan-id-12345");
+		assertEquals(1,questionnaireResponses.size());
+		assertEquals(event.getFormSubmissionId(),questionnaireResponses.get(0).getId());
+		
+		assertTrue(eventsRepository.findEventsByJurisdictionIdAndPlan("test-location-id","plan-12345").isEmpty());
+		
+		assertTrue(eventsRepository.findEventsByJurisdictionIdAndPlan("test-location-id1","plan-id-12345").isEmpty());
 	}
 
 }

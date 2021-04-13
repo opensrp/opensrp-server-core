@@ -94,6 +94,10 @@ public class PlanService {
 		PlanDefinition existing = getPlan(plan.getIdentifier());
 		getPlanRepository().update(plan);
 		taskGenerator.processPlanEvaluation(plan, existing, username);
+		if (plan.getStatus() != null && (plan.getStatus().equals(PlanDefinition.PlanStatus.COMPLETED) || plan.getStatus()
+				.equals(PlanDefinition.PlanStatus.RETIRED))) {
+			organizationService.unassignLocationAndPlan(plan.getIdentifier());
+		}
 		return plan;
 	}
 	
@@ -208,7 +212,7 @@ public class PlanService {
 	 * @return the organization ids a user is assigned to
 	 */
 	public List<Long> getOrganizationIdsByUserName(String username) {
-		org.opensrp.domain.Practitioner practitioner = practitionerService.getPractionerByUsername(username);
+		org.smartregister.domain.Practitioner practitioner = practitionerService.getPractionerByUsername(username);
 		if (practitioner != null) {
 			List<PractitionerRole> roles = practitionerRoleService.getPgRolesForPractitioner(practitioner.getIdentifier());
 			if (roles.isEmpty())

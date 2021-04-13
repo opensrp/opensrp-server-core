@@ -1,11 +1,11 @@
 package org.opensrp.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.smartregister.domain.ProductCatalogue;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.search.ProductCatalogueSearchBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ public class ProductCatalogueService {
 
 	private ProductCatalogueRepository productCatalogueRepository;
 
-	private static Logger logger = LoggerFactory.getLogger(ProductCatalogueService.class.toString());
+	private static Logger logger = LogManager.getLogger(ProductCatalogueService.class.toString());
 
 	@Autowired
 	public ProductCatalogueService(ProductCatalogueRepository productCatalogueRepository) {

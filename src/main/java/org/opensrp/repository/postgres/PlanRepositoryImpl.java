@@ -30,8 +30,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> implements PlanRepository {
 
-    private static final String SEQUENCE = "core.plan_server_version_seq";
-
     @Autowired
     private CustomPlanMapper planMapper;
 
@@ -57,6 +55,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 		long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
 		entity.setServerVersion(serverVersion);
 		pgPlan.setJson(entity);
+		pgPlan.setServerVersion(null);
 		int rowsAffected = planMapper.updateByPrimaryKeySelective(pgPlan);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -385,11 +384,6 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         return convert(plans);
     }
 
-    @Override
-    protected String getSequenceName() {
-        return SEQUENCE;
-    }
-
     private Pair<Integer, Integer> getPageSizeAndOffset(PlanSearchBean planSearchBean) {
 
         Integer pageSize;
@@ -406,4 +400,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         return Pair.of(pageSize, offset);
     }
+
+	@Override
+	public PlanDefinition findPlanByIdentifier(String identifier) {
+		return get(identifier);
+	}
 }

@@ -24,9 +24,9 @@ import java.util.List;
 
 import org.opensrp.domain.Manifest;
 
-
 @RunWith(PowerMockRunner.class)
-@PowerMockIgnore("org.slf4j.*")
+@PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*", "org.slf4j.*",
+		"org.apache.logging.log4j.*"})
 public class ManifestServiceTest {
 
     private ManifestService manifestService;

@@ -2,11 +2,11 @@ package org.opensrp.service;
 
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Report;
 import org.opensrp.repository.ReportsRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -16,7 +16,7 @@ public class ReportService {
 	
 	private final ReportsRepository allReports;
 	
-	private static Logger logger = LoggerFactory.getLogger(ReportService.class.toString());
+	private static Logger logger = LogManager.getLogger(ReportService.class.toString());
 	
 	@Autowired
 	public ReportService(ReportsRepository allReports) {

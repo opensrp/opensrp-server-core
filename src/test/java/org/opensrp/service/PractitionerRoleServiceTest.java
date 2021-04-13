@@ -21,10 +21,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
-import org.opensrp.domain.PractitionerRole;
-import org.opensrp.domain.PractitionerRoleCode;
-import org.opensrp.repository.PractitionerRepository;
+import org.smartregister.domain.PractitionerRole;
+import org.smartregister.domain.PractitionerRoleCode;
 import org.opensrp.repository.PractitionerRoleRepository;
 import org.opensrp.search.PractitionerRoleSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -190,6 +188,28 @@ public class PractitionerRoleServiceTest {
         verify(practitionerRoleRepository, never()).getPgRolesForPractitioner(anyString());
     }
 
+    @Test
+    public void testGetPractitionerRolesByOrgIdAndCode() {
+        PractitionerRole practitionerRole1 = initTestPractitionerRole();
+        practitionerRoleRepository.add(practitionerRole1);
+
+        PractitionerRole practitionerRole2 = initTestPractitionerRole2();
+        practitionerRoleRepository.add(practitionerRole2);
+
+        List<PractitionerRole> practitionerRoles = new ArrayList<>();
+        practitionerRoles.add(practitionerRole1);
+        practitionerRoles.add(practitionerRole2);
+
+        when(practitionerRoleRepository.getPractitionerRolesByOrgIdAndCode(anyLong(), anyString())).thenReturn(practitionerRoles);
+        assertNotNull(practitionerRoles);
+        assertEquals(2l, practitionerRoles.size());
+        assertEquals("pr1-identifier", practitionerRoles.get(0).getIdentifier());
+        assertEquals("p1-identifier", practitionerRoles.get(0).getPractitionerIdentifier());
+        assertEquals("pr2-identifier", practitionerRoles.get(1).getIdentifier());
+        assertEquals("p2-identifier", practitionerRoles.get(1).getPractitionerIdentifier());
+
+    }
+
     private static PractitionerRole initTestPractitionerRole(){
         PractitionerRole practitionerRole = new PractitionerRole();
         practitionerRole.setIdentifier("pr1-identifier");
@@ -198,6 +218,18 @@ public class PractitionerRoleServiceTest {
         practitionerRole.setPractitionerIdentifier("p1-identifier");
         PractitionerRoleCode code = new PractitionerRoleCode();
         code.setText("pr1Code");
+        practitionerRole.setCode(code);
+        return practitionerRole;
+    }
+
+    private static PractitionerRole initTestPractitionerRole2(){
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier("pr2-identifier");
+        practitionerRole.setActive(true);
+        practitionerRole.setOrganizationIdentifier("org1");
+        practitionerRole.setPractitionerIdentifier("p2-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr2Code");
         practitionerRole.setCode(code);
         return practitionerRole;
     }

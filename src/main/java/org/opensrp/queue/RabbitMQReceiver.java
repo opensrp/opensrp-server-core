@@ -1,19 +1,16 @@
 package org.opensrp.queue;
 
-import com.ibm.fhir.model.format.Format;
-import com.ibm.fhir.model.parser.FHIRParser;
-import com.ibm.fhir.model.parser.exception.FHIRParserException;
-import com.ibm.fhir.model.resource.Resource;
-import org.opensrp.repository.ClientsRepository;
-import org.opensrp.repository.EventsRepository;
-import org.opensrp.repository.LocationRepository;
-import org.opensrp.repository.TaskRepository;
-import org.opensrp.repository.StocksRepository;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.service.PlanService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opensrp.service.TaskGenerator;
 import org.smartregister.domain.PlanDefinition;
-import org.smartregister.pathevaluator.PathEvaluatorLibrary;
 import org.smartregister.pathevaluator.plan.PlanEvaluator;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -21,10 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
+import com.ibm.fhir.model.format.Format;
+import com.ibm.fhir.model.parser.FHIRParser;
+import com.ibm.fhir.model.parser.exception.FHIRParserException;
+import com.ibm.fhir.model.resource.Resource;
 
 @Profile("rabbitmq")
 @Component
@@ -34,33 +31,22 @@ public class RabbitMQReceiver {
 	private PlanEvaluator planEvaluator;
 
 	@Autowired
-	private LocationRepository locationRepository;
-
-	@Autowired
-	private ClientsRepository clientsRepository;
-
-	@Autowired
-	private TaskRepository taskRepository;
-
-	@Autowired
-	private EventsRepository eventsRepository;
-
-	@Autowired
-	private StocksRepository stocksRepository;
-
-	@Autowired
 	private PlanService planService;
 	
 	@Autowired
 	private QueueHelper queueHelper;
+	
+	//import task generator to guarantee PathEvaluatorLibrary is instantiated first
+	@SuppressWarnings("unused")
+	@Autowired
+	private TaskGenerator taskGenerator;
 
 	private FHIRParser fhirParser;
 
-	private static Logger logger = LoggerFactory.getLogger(RabbitMQReceiver.class.toString());
+	private static Logger logger = LogManager.getLogger(RabbitMQReceiver.class.toString());
 
 	@PostConstruct
 	public void init() {
-		PathEvaluatorLibrary.init(locationRepository, clientsRepository, taskRepository, eventsRepository, stocksRepository);
 		planEvaluator = new PlanEvaluator("",queueHelper);
 		fhirParser = FHIRParser.parser(Format.JSON);
 	}

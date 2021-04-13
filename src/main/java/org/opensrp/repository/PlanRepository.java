@@ -3,6 +3,7 @@ package org.opensrp.repository;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.search.PlanSearchBean;
 import org.smartregister.domain.PlanDefinition;
+import org.smartregister.pathevaluator.dao.PlanDao;
 
 import java.util.Date;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Created by Vincent Karuri on 06/05/2019
  */
-public interface PlanRepository extends BaseRepository<PlanDefinition> {
+public interface PlanRepository extends BaseRepository<PlanDefinition>, PlanDao {
 
     List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds, boolean experimental);
 

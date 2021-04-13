@@ -80,6 +80,12 @@ public class ClientService {
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
+	public List<Client> findAllByAttributes(String attributeType, List<String> attributes) {
+		return allClients.findAllByAttributes(attributeType, attributes);
+	}
+
+	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllByMatchingName(String nameMatches) {
 		return allClients.findAllByMatchingName(nameMatches);
 	}

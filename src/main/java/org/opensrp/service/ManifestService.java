@@ -1,11 +1,11 @@
 package org.opensrp.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.opensrp.domain.Manifest;
 import org.opensrp.repository.ManifestRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +18,7 @@ import java.util.Set;
 @Service
 public class ManifestService {
 
-    private static Logger logger = LoggerFactory.getLogger(ManifestService.class.toString());
+    private static Logger logger = LogManager.getLogger(ManifestService.class.toString());
 
     private ManifestRepository manifestRepository;
 

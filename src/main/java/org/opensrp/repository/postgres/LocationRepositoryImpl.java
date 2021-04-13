@@ -97,6 +97,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		long serverVersion = locationMapper.selectServerVersionByPrimaryKey(pgLocation.getId());
 		entity.setServerVersion(serverVersion);
 		pgLocation.setJson(entity);
+		pgLocation.setServerVersion(null);
 		int rowsAffected = locationMapper.updateByPrimaryKeySelective(pgLocation);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -107,6 +108,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		long serverVersion = structureMapper.selectServerVersionByPrimaryKey(pgStructure.getId());
 		entity.setServerVersion(serverVersion);
 		pgStructure.setJson(entity);
+		pgStructure.setServerVersion(null);
 		int rowsAffected = structureMapper.updateByPrimaryKeySelective(pgStructure);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -551,13 +553,19 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit) {
+	public List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit, Integer pageNumber, String orderByType, String orderByFieldName) {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
-		
+		String sortBy = orderByFieldName != null ? orderByFieldName : null;
+		String sortOrder = orderByType != null ? orderByType : null;
+		if (sortBy != null && sortOrder != null) {
+			structureMetadataExample.setOrderByClause(getOrderByClause(sortBy, sortOrder));
+		} else {
+			structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+		}
+		Pair<Integer, Integer> pageLimitAndOffSet = getPageSizeAndOffset(limit, pageNumber);
 		List<Location> locations = structureMetadataMapper.selectManyByProperties(structureMetadataExample, null,
-		    returnGeometry, 0, limit);
+		    returnGeometry, pageLimitAndOffSet.getRight(), pageLimitAndOffSet.getLeft());
 		return convert(locations);
 	}
 
@@ -922,17 +930,19 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findJurisdictionsById(String id) {
-		return convertToFHIRLocation(Collections.singletonList(get(id, false, false)));
+		PhysicalLocation location = get(id, false, false);
+		return location == null ? Collections.emptyList() : convertToFHIRLocation(Collections.singletonList(location));
 	}
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findLocationsById(String id) {
-		return convertToFHIRLocation(Collections.singletonList(getStructure(id, false)));
+		PhysicalLocation location=getStructure(id, false);
+		return location == null ? Collections.emptyList() :convertToFHIRLocation(Collections.singletonList(location));
 	}
 	
 	@Override
 	public List<com.ibm.fhir.model.resource.Location> findLocationByJurisdiction(String jurisdiction) {
-		return convertToFHIRLocation(findStructuresByProperties(false, jurisdiction, null, Integer.MAX_VALUE));
+		return convertToFHIRLocation(findStructuresByProperties(true, jurisdiction, null, Integer.MAX_VALUE));
 	}
 	
 	@Override
@@ -943,5 +953,22 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
 		return locations.stream().map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
 		        .collect(Collectors.toList());
+	}
+
+	private Pair<Integer, Integer> getPageSizeAndOffset(Integer pageSize, Integer pageNumber) {
+
+		Integer sizePerPage;
+		Integer offset = 0;
+		if (pageSize == null || pageSize == 0) {
+			sizePerPage = DEFAULT_FETCH_SIZE;
+		} else {
+			sizePerPage = pageSize;
+		}
+
+		if (pageNumber != null && pageNumber != 0) {
+			offset = (pageNumber - 1) * sizePerPage;
+		}
+
+		return Pair.of(sizePerPage, offset);
 	}
 }

@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -81,6 +82,7 @@ public class PlanServiceTest {
 	@Test
 	public void testAddOrUpdatePlanShouldCallRepositoryUpdateMethod() {
 		when(planRepository.get(anyString())).thenReturn(new PlanDefinition());
+		doNothing().when(organizationService).unassignLocationAndPlan(anyString());
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
 		planService.addOrUpdatePlan(plan,user);
@@ -99,6 +101,7 @@ public class PlanServiceTest {
 	@Test
 	public void updatePlanShouldCallRepositoryUpdateMethod() {
 		when(planRepository.get(anyString())).thenReturn(new PlanDefinition());
+		doNothing().when(organizationService).unassignLocationAndPlan(anyString());
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("identifier");
 		planService.updatePlan(plan,user);
@@ -171,7 +174,7 @@ public class PlanServiceTest {
 		List<Long> organizationIds = Arrays.asList(11l, 40l,7667l);
 		long serverVersion = 1234l;
 		
-		org.opensrp.domain.Practitioner practitioner = new org.opensrp.domain.Practitioner();
+		org.smartregister.domain.Practitioner practitioner = new org.smartregister.domain.Practitioner();
 		practitioner.setIdentifier("practioner-1");
 		
 		List<PractitionerRole> roles = new ArrayList<>();
@@ -243,7 +246,7 @@ public class PlanServiceTest {
 			assignedLocation.setPlanId(id);
 			assignedLocations.add(assignedLocation);
 		}
-		org.opensrp.domain.Practitioner practitioner = new org.opensrp.domain.Practitioner();
+		org.smartregister.domain.Practitioner practitioner = new org.smartregister.domain.Practitioner();
 		practitioner.setIdentifier("practioner-1");
 		List<Long> organizationIds = Arrays.asList(1l, 40l);
 		List<PractitionerRole> roles = new ArrayList<>();
@@ -298,7 +301,7 @@ public class PlanServiceTest {
 		List<Long> organizationIds = Arrays.asList(11l, 40l,7667l);
 		long serverVersion = 1234l;
 
-		org.opensrp.domain.Practitioner practitioner = new org.opensrp.domain.Practitioner();
+		org.smartregister.domain.Practitioner practitioner = new org.smartregister.domain.Practitioner();
 		practitioner.setIdentifier("practioner-1");
 
 		List<PractitionerRole> roles = new ArrayList<>();

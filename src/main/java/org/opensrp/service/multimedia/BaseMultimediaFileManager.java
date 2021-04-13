@@ -1,12 +1,13 @@
 package org.opensrp.service.multimedia;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.smartregister.domain.Client;
 import org.opensrp.domain.Multimedia;
 import org.opensrp.dto.form.MultimediaDTO;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.File;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import static org.opensrp.service.MultimediaService.IMAGES_DIR;
 import static org.opensrp.service.MultimediaService.CSV_DIR;
 import static org.opensrp.service.MultimediaService.MULTI_VERSION;
+import static org.opensrp.service.MultimediaService.OTHER_DIR;
 import static org.opensrp.service.MultimediaService.VIDEOS_DIR;
 
 /**
@@ -33,7 +35,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
     @Value("#{opensrp['multimedia.directory.name']}")
     protected String baseMultimediaDirPath;
 
-    private static Logger logger = LoggerFactory.getLogger(BaseMultimediaFileManager.class.getName());
+    private static Logger logger = LogManager.getLogger(BaseMultimediaFileManager.class.getName());
 
     private static final String SUCCESS = "success";
 
@@ -154,7 +156,12 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                 fileExt = ".csv";
                 break;
             default:
-                throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
+                multimediaDirPath += OTHER_DIR;
+                fileExt = getFileExtension(originalFileName);
+
+                if(StringUtils.isBlank(fileExt))
+                    throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
+                break;
         }
 
         String fileName;
@@ -172,6 +179,12 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
         return fileName;
     }
 
+    public String getFileExtension(String fileName) {
+        int lastIndexOf = fileName.lastIndexOf(".");
+        if (lastIndexOf == -1)
+            return "";
+        return fileName.substring(lastIndexOf);
+    }
 
     protected abstract String getBaseMultiMediaDir();
 

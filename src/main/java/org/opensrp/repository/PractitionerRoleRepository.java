@@ -1,6 +1,6 @@
 package org.opensrp.repository;
 
-import org.opensrp.domain.PractitionerRole;
+import org.smartregister.domain.PractitionerRole;
 import org.opensrp.search.PractitionerRoleSearchBean;
 
 import java.util.List;
@@ -23,4 +23,6 @@ public interface PractitionerRoleRepository extends BaseRepository<PractitionerR
             PractitionerRole practitionerRole);
 
     List<PractitionerRole> getAllPractitionerRoles(PractitionerRoleSearchBean practitionerRoleSearchBean);
+
+	public List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code);
 }

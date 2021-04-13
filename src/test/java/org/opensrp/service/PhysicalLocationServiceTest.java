@@ -39,7 +39,6 @@ import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.StructureCount;
-import org.opensrp.domain.Practitioner;
 import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.Geometry.GeometryType;
 import org.smartregister.domain.LocationProperty;
@@ -51,6 +50,7 @@ import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.google.gson.JsonArray;
+import org.smartregister.domain.Practitioner;
 import org.smartregister.utils.PropertiesConverter;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -1088,5 +1088,65 @@ public class PhysicalLocationServiceTest {
 		assertEquals("Province", actuallocationDetail.getTags());
 	}
 
+	@Test
+	public void testBuildLocationTreeHierachyWithAncestors() {
+		Set<String> locationIds = new HashSet<>();
+		String locationId = "1";
+		locationIds.add(locationId);
 
+		Set<LocationDetail> locationDetails = new HashSet<>();
+
+		LocationDetail country = LocationDetail.builder().name("Country 1").id(2l).identifier("1").tags("Country").build();
+		LocationDetail province1 = LocationDetail.builder().name("Province 1").id(3l).identifier("11").parentId("1")
+				.tags("Province").build();
+		LocationDetail province2 = LocationDetail.builder().name("Province 2").id(4l).identifier("12").parentId("1")
+				.tags("Province").build();
+		LocationDetail district1 = LocationDetail.builder().name("District 1").id(5l).identifier("111").parentId("11")
+				.tags("District").build();
+		LocationDetail district2 = LocationDetail.builder().name("District 2").id(6l).identifier("121").parentId("12")
+				.tags("District").build();
+		LocationDetail district3 = LocationDetail.builder().name("District 3").id(7l).identifier("122").parentId("12")
+				.tags("District").build();
+
+		locationDetails.add(country);
+		locationDetails.add(province1);
+		locationDetails.add(province2);
+		locationDetails.add(district1);
+		locationDetails.add(district2);
+		locationDetails.add(district3);
+
+		when(locationRepository.findParentLocationsInclusive(locationIds)).thenReturn(locationDetails);
+
+		LocationTree locationTree = locationService.buildLocationTreeHierachyWithAncestors(locationId, false);
+
+		verify(locationRepository).findParentLocationsInclusive(locationIds);
+		assertNotNull(locationTree);
+		assertEquals(1, locationTree.getLocationsHierarchy().size());
+
+		TreeNode<String, Location> level0Node = locationTree.getLocationsHierarchy().get(country.getIdentifier());
+		assertNotNull(level0Node);
+		assertEquals(country.getIdentifier(), level0Node.getId());
+		assertEquals(country.getName(), level0Node.getLabel());
+		assertNull(level0Node.getParent());
+		assertEquals(country.getTags(), level0Node.getNode().getTags().iterator().next());
+		assertEquals(2, level0Node.getChildren().size());
+
+		TreeNode<String, Location> level1Node = level0Node.getChildren().get(province2.getIdentifier());
+		assertNotNull(level1Node);
+		assertEquals(province2.getIdentifier(), level1Node.getId());
+		assertEquals(province2.getName(), level1Node.getLabel());
+		assertEquals(2, level1Node.getChildren().size());
+		assertEquals(country.getIdentifier(), level1Node.getParent());
+
+		TreeNode<String, Location> level2Node = level1Node.getChildren().get(district2.getIdentifier());
+		assertNotNull(level2Node);
+		assertEquals(district2.getIdentifier(), level2Node.getId());
+		assertEquals(district2.getName(), level2Node.getLabel());
+		assertNull(level2Node.getChildren());
+		assertEquals(province2.getIdentifier(), level2Node.getParent());
+
+		Set<String> tags = level2Node.getNode().getTags();
+		assertEquals(1, tags.size());
+		assertTrue(tags.contains("District"));
+	}
 }

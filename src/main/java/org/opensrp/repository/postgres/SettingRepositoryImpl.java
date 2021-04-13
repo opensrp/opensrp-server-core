@@ -14,6 +14,8 @@ import java.util.UUID;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.opensrp.api.domain.Location;
@@ -30,8 +32,6 @@ import org.opensrp.repository.postgres.mapper.custom.CustomSettingMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomSettingMetadataMapper;
 import org.opensrp.search.SettingSearchBean;
 import org.postgresql.util.PGobject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
@@ -43,9 +43,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Repository("settingRepositoryPostgres")
 public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfiguration> implements SettingRepository {
 
-	private static final Logger logger = LoggerFactory.getLogger(SettingRepositoryImpl.class);
-	
-	private static final String SEQUENCE="core.setting_server_version_seq"; 
+	private static final Logger logger = LogManager.getLogger(SettingRepositoryImpl.class);
 
 	private final List<String> reformattedLocationHierarchy = new ArrayList<>();
 
@@ -75,6 +73,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		long serverVersion = settingMapper.selectServerVersionByPrimaryKey(pgSettings.getId());
 		entity.setServerVersion(serverVersion);
 		pgSettings.setJson(entity);
+		pgSettings.setServerVersion(null);
 		int rowsAffected = settingMapper.updateByPrimaryKeySelective(pgSettings);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
@@ -119,12 +118,18 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
 
 		for (SettingsMetadata settingsMetadata : metadata) {
-			if (!checkIfMetadataExists(settingsMetadata)) {
+			if (StringUtils.isBlank(settingsMetadata.getSettingValue())) {
+				deleteExistingSettingsMetadataByKeyAndIdentifier(settingsMetadata.getIdentifier(), settingsMetadata.getSettingKey(),
+						settingsMetadata.getLocationId()); 	//This method is called to delete existing settings metadata records where value field is empty
+			}
+			if (!checkIfMetadataExists(settingsMetadata) && StringUtils.isNotBlank(settingsMetadata.getSettingValue())) {
 				settingsMetadataList.add(settingsMetadata);
 			}
 		}
 
-		settingMetadataMapper.insertMany(settingsMetadataList);
+		if (!settingsMetadataList.isEmpty()) {
+			settingMetadataMapper.insertMany(settingsMetadataList);
+		}
 		settingMetadataMapper.updateMany(metadata);
 	}
 
@@ -557,7 +562,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
 
 		for (SettingsMetadata metadata : settingsMetadata) {
-			if (!checkIfMetadataExists(metadata)) {
+			if (!checkIfMetadataExists(metadata) && StringUtils.isNotBlank(metadata.getSettingValue())) { // Add a check to restrict persistence of settings metadata with empty value
 				settingsMetadataList.add(metadata);
 			}
 		}
@@ -756,15 +761,30 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	}
 
 	@Override
-	protected String getSequenceName() {
-		return SEQUENCE;
-	}
-
-	@Override
 	public List<SettingsAndSettingsMetadataJoined> findSettingsAndSettingsMetadataByIdentifier(String identifier) {
 		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
 		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
 		criteria.andIdentifierEqualTo(identifier);
 		return settingMetadataMapper.selectMany(metadataExample, 0, DEFAULT_FETCH_SIZE);
 	}
+
+	/**
+	 * This method deletes existing settings metadata by settings key, identifier and locationId
+	 * @param identifier is the settings identifer
+	 * @param key is the settings key
+	 * @param locationId is used as an optional param to delete settings metadata records
+	 */
+	private void deleteExistingSettingsMetadataByKeyAndIdentifier(String identifier, String key, String locationId) {
+		SettingsMetadataExample metadataExample;
+		metadataExample = new SettingsMetadataExample();
+		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
+
+		if (StringUtils.isNotBlank(locationId)) {
+			criteria.andLocationIdEqualTo(locationId);
+		}
+
+		criteria.andIdentifierEqualTo(identifier).andSettingKeyEqualTo(key);
+		settingMetadataMapper.deleteByExample(metadataExample);
+	}
+
 }

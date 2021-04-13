@@ -11,13 +11,13 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
+import org.smartregister.domain.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -90,7 +90,7 @@ public class OrganizationService {
 	/**
 	 * Get the organization that has the identifier
 	 * 
-	 * @param identifier
+	 * @param id
 	 * @return organization with matching identifier
 	 */
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
@@ -152,7 +152,7 @@ public class OrganizationService {
 	/**
 	 * Assigns the jurisdiction and /or plan to the organization with organizationId
 	 * 
-	 * @param organizationId the id of the organization
+	 * @param identifier the id of the organization
 	 * @param jurisdictionId the identifier of the jurisdiction
 	 * @param planId the identifier of the plan
 	 * @param fromDate
@@ -321,7 +321,7 @@ public class OrganizationService {
 	/**
 	 * Gets practitioners in an organization
 	 * 
-	 * @param organizationId the identifier for organization
+	 * @param organizationIdentifier the identifier for organization
 	 * @return practitioners in an organization
 	 */
 	
@@ -339,5 +339,20 @@ public class OrganizationService {
 	public Organization findOrganizationByName(String organizationName) {
 		return organizationRepository.findOrganizationByName(organizationName);
 	}
-	
+
+	/**
+	 * This method will revoke all the team assignments including future assignments as well
+	 * fetched from the plan Id
+	 * by setting to_date param to the current date
+	 */
+	public void unassignLocationAndPlan(String planIdentifier) {
+		if (StringUtils.isBlank(planIdentifier))
+			throw new IllegalArgumentException("PlanIdentfier cannot be null");
+
+		Long planId = planRepository.retrievePrimaryKey(planIdentifier);
+		if (planId == null)
+			throw new IllegalArgumentException("Plan not found");
+
+		organizationRepository.unassignLocationAndPlan(planId);
+	}
 }

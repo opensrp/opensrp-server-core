@@ -29,7 +29,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
-import org.opensrp.domain.Practitioner;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.OrganizationRepository;
 import org.opensrp.repository.PlanRepository;
@@ -38,6 +37,7 @@ import org.opensrp.search.OrganizationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.Practitioner;
 import org.springframework.data.redis.core.HashOperations;
 
 /**
