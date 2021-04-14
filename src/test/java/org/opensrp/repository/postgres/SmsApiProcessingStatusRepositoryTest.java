@@ -121,12 +121,6 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 		assertNull(statusRepository.get(null));
 	}
 
-
-	@Test
-	public void getUniqueFieldReturnsStatusId() {
-		assertNull(statusRepository.getUniqueField(null));
-	}
-
 	@Test
 	public void canSafeRemoveStatus() {
 		SmsApiProcessingStatus statusToRemove = statusRepository.get("60ab7d5c-a051-4633-b0b3-f52b701cb261");
