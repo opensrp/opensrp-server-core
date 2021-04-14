@@ -67,6 +67,7 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 
 	@Test
 	public void canGetStatusListByRequestStatus() {
+		assertNull(statusRepository.getStatusListByRequestStatus(null));
 		List<SmsApiProcessingStatus> statusList = statusRepository.getStatusListByRequestStatus("NEW");
 		assertEquals(2, statusList.size());
 		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", statusList.get(0).getBaseEntityId());
@@ -77,6 +78,7 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 
 	@Test
 	public void canGetStatusListBySmsDeliveryStatus() {
+		assertNull(statusRepository.getStatusListBySmsDeliveryStatus(null));
 		List<SmsApiProcessingStatus> statusList = statusRepository.getStatusListBySmsDeliveryStatus("QUEUED");
 		assertEquals(2, statusList.size());
 		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", statusList.get(0).getBaseEntityId());
@@ -91,6 +93,7 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 
 	@Test
 	public void canGetStatusListBySmsDeliveryStatusAndAttempts() {
+		assertNull(statusRepository.getStatusListBySmsDeliveryStatusAndAttempts(null, 1));
 		List<SmsApiProcessingStatus> notAttemptedList = statusRepository.getStatusListBySmsDeliveryStatusAndAttempts("QUEUED", 0);
 		assertEquals(2, notAttemptedList.size());
 		List<SmsApiProcessingStatus> attemptedList = statusRepository.getStatusListBySmsDeliveryStatusAndAttempts("SENT", 1);
@@ -111,6 +114,17 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 		assertEquals("QUEUED", updatedStatus.getRequestStatus());
 		assertEquals("SENT", updatedStatus.getSmsDeliveryStatus());
 
+	}
+
+	@Test
+	public void getSmsApiProcessingStatusReturnsNullIfIdIsNull() {
+		assertNull(statusRepository.get(null));
+	}
+
+
+	@Test
+	public void getUniqueFieldReturnsStatusId() {
+		assertNull(statusRepository.getUniqueField(null));
 	}
 
 	@Test

@@ -112,10 +112,18 @@ public class SmsApiProcessingStatusServiceTest {
 	}
 
 	@Test
-	public void addOrUpdateCallsRepositoryAddOrUpdateMethod() {
+	public void addCallsRepositoryAddMethod() {
 		SmsApiProcessingStatus testStatus = getTestSmsApiProcessingStatus();
 		statusService.addOrUpdateSmsApiProcessingEntry(testStatus);
 		verify(statusRepository).add(testStatus);
+	}
+
+	@Test
+	public void updateCallsRepositoryUpdateMethod() {
+		SmsApiProcessingStatus testStatus = getTestSmsApiProcessingStatus();
+		when(statusRepository.getSmsApiProcessingStatusById(testStatus.getId())).thenReturn(testStatus);
+		statusService.addOrUpdateSmsApiProcessingEntry(testStatus);
+		verify(statusRepository).update(testStatus);
 	}
 
 	@Test
