@@ -54,7 +54,7 @@ public class SmsApiProcessingStatusRepositoryImpl extends BaseRepositoryImpl<Sms
 		if (StringUtils.isBlank(id)) {
 			return null;
 		}
-		return statusMapper.selectByEntityId(id);
+		return statusMapper.selectByRequestId(id);
 	}
 
 	@Override

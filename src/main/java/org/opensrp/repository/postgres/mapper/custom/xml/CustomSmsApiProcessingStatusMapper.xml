@@ -47,13 +47,13 @@
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
-    <select id="selectByEntityId" parameterType="java.lang.String"
+    <select id="selectByRequestId" parameterType="java.lang.String"
             resultMap="org.opensrp.repository.postgres.mapper.SmsApiProcessingStatusMapper.BaseResultMap">
         select
         <include
                 refid="org.opensrp.repository.postgres.mapper.SmsApiProcessingStatusMapper.Base_Column_List" />
         from core.sms_api_processing_status sps
-        where sps.base_entity_id = #{entityId,jdbcType=VARCHAR}
+        where sps.request_id = #{requestId,jdbcType=VARCHAR}
     </select>
 
 </mapper>

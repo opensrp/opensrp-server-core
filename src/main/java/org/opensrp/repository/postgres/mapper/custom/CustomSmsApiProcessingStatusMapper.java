@@ -12,5 +12,5 @@ public interface CustomSmsApiProcessingStatusMapper extends SmsApiProcessingStat
 	List<SmsApiProcessingStatus> selectMany(@Param("example")SmsApiProcessingStatusExample smsApiProcessingStatusExample,
 			@Param("offset") int offset, @Param("limit") int limit);
 
-	SmsApiProcessingStatus selectByEntityId(String entityId);
+	SmsApiProcessingStatus selectByRequestId(String requestId);
 }

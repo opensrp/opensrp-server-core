@@ -34,8 +34,8 @@ public class SmsApiProcessingStatusService {
 		return statusRepository.getStatusListBySmsDeliveryStatusAndAttempts(deliveryStatus, attempts);
 	}
 
-	public SmsApiProcessingStatus getStatusByEntityId(String entityId) {
-		return statusRepository.get(entityId);
+	public SmsApiProcessingStatus getStatusByRequestId(String requestId) {
+		return statusRepository.get(requestId);
 	}
 
 	public List<SmsApiProcessingStatus> getAllStatusEntries() {
