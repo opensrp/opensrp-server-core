@@ -18,7 +18,7 @@ public interface ClientMigrationFileRepository extends BaseRepository<ClientMigr
     List<ClientMigrationFile> getClientMigrationFileByManifestId(int manifestId);
 
     @Nullable
-    ClientMigrationFile getClientMigrationFileById(@NonNull long id);
+    ClientMigrationFile getClientMigrationFileById(long id);
 
     @Nullable
     ClientMigrationFile getClientMigrationFileByIdentifier(@NonNull String identifier);

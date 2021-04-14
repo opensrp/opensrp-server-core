@@ -37,6 +37,7 @@ public class ClientMigrationFileRepositoryImpl extends BaseRepositoryImpl<Client
         return getClientMigrationFileById(idInt);
     }
 
+    @Transactional
     @Override
     public void add(ClientMigrationFile entity) {
         if (getUniqueField(entity) == null) {
@@ -80,6 +81,7 @@ public class ClientMigrationFileRepositoryImpl extends BaseRepositoryImpl<Client
         return getAll(DEFAULT_FETCH_SIZE);
     }
 
+    @Transactional
     @Override
     public void safeRemove(ClientMigrationFile entity) {
         if (entity == null) {
@@ -213,7 +215,6 @@ public class ClientMigrationFileRepositoryImpl extends BaseRepositoryImpl<Client
         return psqlClientMigrationFile;
     }
 
-
     private ClientMigrationFile convert(@Nullable org.opensrp.domain.postgres.ClientMigrationFile clientMigrationFile) {
         if (clientMigrationFile == null) {
             return null;
@@ -246,11 +247,7 @@ public class ClientMigrationFileRepositoryImpl extends BaseRepositoryImpl<Client
 
     @Override
     protected String getUniqueField(ClientMigrationFile clientMigrationFile) {
-        if (clientMigrationFile == null) {
-            return null;
-        }
-
-        return clientMigrationFile.getIdentifier();
+        return clientMigrationFile != null ? clientMigrationFile.getIdentifier() : null;
     }
 }
 
