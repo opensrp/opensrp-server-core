@@ -90,7 +90,7 @@ public class SmsApiProcessingStatusServiceTest {
 		SmsApiProcessingStatus expectedStatus = getTestSmsApiProcessingStatus();
 		String entityId = "test-123";
 		when(statusRepository.get(entityId)).thenReturn(expectedStatus);
-		SmsApiProcessingStatus returnedStatus = statusService.getStatusByEntityId(entityId);
+		SmsApiProcessingStatus returnedStatus = statusService.getStatusByRequestId(entityId);
 		verify(statusRepository).get(entityId);
 		assertEquals((Long)1L, returnedStatus.getId());
 		assertEquals(entityId, returnedStatus.getBaseEntityId());

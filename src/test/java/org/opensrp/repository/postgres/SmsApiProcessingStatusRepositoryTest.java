@@ -5,10 +5,7 @@ import org.opensrp.domain.postgres.SmsApiProcessingStatus;
 import org.opensrp.repository.SmsApiProcessingStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -28,7 +25,7 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 
 	@Test
 	public void getReturnsCorrectStatus() {
-		SmsApiProcessingStatus status = statusRepository.get("123cbcd4-0851-404a-a8b2-000b02f7b85e");
+		SmsApiProcessingStatus status = statusRepository.get("c57ba49f-34b9-4986-9b87-69f48b1830c5");
 		assertEquals((Long)3L, status.getId());
 		assertEquals("CHILD REMOVED", status.getEventType());
 		assertEquals("QUEUED", status.getRequestStatus());
@@ -47,6 +44,7 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 		newStatus.setEventType("CHILD REGISTRATION");
 		newStatus.setServiceType("REGISTRATION");
 		newStatus.setRequestStatus("NEW");
+		newStatus.setRequestId(UUID.randomUUID().toString());
 		newStatus.setDateCreated(new Date());
 		newStatus.setLastUpdated(new Date());
 		newStatus.setSmsDeliveryStatus("QUEUED");
@@ -55,21 +53,6 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 
 		statusRepository.add(newStatus);
 		assertEquals(4, statusRepository.getAll().size());
-	}
-
-	@Test
-	public void updateShouldUpdateStatus() {
-		SmsApiProcessingStatus status = statusRepository.get("304cbcd4-0850-404a-a8b1-486b02f7b84d");
-		assertEquals("NEW", status.getRequestStatus());
-		assertEquals("QUEUED", status.getSmsDeliveryStatus());
-		status.setRequestStatus("QUEUED");
-		status.setSmsDeliveryStatus("SENT");
-		statusRepository.update(status);
-
-		SmsApiProcessingStatus updatedStatus = statusRepository.get("304cbcd4-0850-404a-a8b1-486b02f7b84d");
-		assertEquals("QUEUED", updatedStatus.getRequestStatus());
-		assertEquals("SENT", updatedStatus.getSmsDeliveryStatus());
-
 	}
 
 	@Test
@@ -88,7 +71,7 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 		assertEquals(2, statusList.size());
 		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", statusList.get(0).getBaseEntityId());
 		assertEquals("CHILD REGISTRATION", statusList.get(0).getEventType());
-		assertEquals("000b02f7b85e-404a-404a-a8b1-123cbcd4", statusList.get(1).getBaseEntityId());
+		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", statusList.get(1).getBaseEntityId());
 		assertEquals("CHILD HOME VISIT", statusList.get(1).getEventType());
 	}
 
@@ -98,7 +81,7 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 		assertEquals(2, statusList.size());
 		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", statusList.get(0).getBaseEntityId());
 		assertEquals("CHILD REGISTRATION", statusList.get(0).getEventType());
-		assertEquals("000b02f7b85e-404a-404a-a8b1-123cbcd4", statusList.get(1).getBaseEntityId());
+		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", statusList.get(1).getBaseEntityId());
 		assertEquals("CHILD HOME VISIT", statusList.get(1).getEventType());
 
 		List<SmsApiProcessingStatus> statusListSent = statusRepository.getStatusListBySmsDeliveryStatus("SENT");
@@ -116,10 +99,25 @@ public class SmsApiProcessingStatusRepositoryTest extends BaseRepositoryTest{
 	}
 
 	@Test
+	public void updateShouldUpdateStatus() {
+		SmsApiProcessingStatus status = statusRepository.get("60ab7d5c-a051-4633-b0b3-f52b701cb261");
+		assertEquals("NEW", status.getRequestStatus());
+		assertEquals("QUEUED", status.getSmsDeliveryStatus());
+		status.setRequestStatus("QUEUED");
+		status.setSmsDeliveryStatus("SENT");
+		statusRepository.update(status);
+
+		SmsApiProcessingStatus updatedStatus = statusRepository.get("60ab7d5c-a051-4633-b0b3-f52b701cb261");
+		assertEquals("QUEUED", updatedStatus.getRequestStatus());
+		assertEquals("SENT", updatedStatus.getSmsDeliveryStatus());
+
+	}
+
+	@Test
 	public void canSafeRemoveStatus() {
-		SmsApiProcessingStatus statusToRemove = statusRepository.get("304cbcd4-0850-404a-a8b1-486b02f7b84d");
+		SmsApiProcessingStatus statusToRemove = statusRepository.get("60ab7d5c-a051-4633-b0b3-f52b701cb261");
 		assertNotNull(statusToRemove);
 		statusRepository.safeRemove(statusToRemove);
-		assertNull(statusRepository.get("304cbcd4-0850-404a-a8b1-486b02f7b84d"));
+		assertNull(statusRepository.get("60ab7d5c-a051-4633-b0b3-f52b701cb261"));
 	}
 }
