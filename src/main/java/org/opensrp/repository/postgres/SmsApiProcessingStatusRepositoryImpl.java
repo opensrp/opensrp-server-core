@@ -54,7 +54,13 @@ public class SmsApiProcessingStatusRepositoryImpl extends BaseRepositoryImpl<Sms
 		if (StringUtils.isBlank(id)) {
 			return null;
 		}
-		return statusMapper.selectByRequestId(id);
+		SmsApiProcessingStatusExample example = new SmsApiProcessingStatusExample();
+		example.createCriteria().andRequestIdEqualTo(id);
+		List<SmsApiProcessingStatus> statusList = statusMapper.selectByExample(example);
+		if (!statusList.isEmpty())
+			return statusList.get(0);
+		else
+			return null;
 	}
 
 	@Override
