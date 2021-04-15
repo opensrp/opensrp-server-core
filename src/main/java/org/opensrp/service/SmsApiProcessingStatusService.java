@@ -18,7 +18,7 @@ public class SmsApiProcessingStatusService {
 		this.statusRepository = repository;
 	}
 
-	public SmsApiProcessingStatus getSmsProcessingStatusById(long id) {
+	public SmsApiProcessingStatus getStatusById(long id) {
 		return statusRepository.getSmsApiProcessingStatusById(id);
 	}
 

@@ -30,11 +30,21 @@ public class SmsApiProcessingStatusServiceTest {
 	}
 
 	@Test
+	public void canGetProcessingStatusByRequestId() {
+		String requestId = "test-request-id-1";
+		SmsApiProcessingStatus expectedStatus = getTestSmsApiProcessingStatus();
+		when(statusRepository.get(requestId)).thenReturn(expectedStatus);
+		SmsApiProcessingStatus returnedStatus = statusService.getStatusByRequestId(requestId);
+		verify(statusRepository).get(requestId);
+		assertEquals(requestId, returnedStatus.getRequestId());
+	}
+
+	@Test
 	public void getSmsProcessingStatusByIdReturnsStatus() {
 		Long testId = 1L;
 		SmsApiProcessingStatus expectedStatus = getTestSmsApiProcessingStatus();
 		when(statusRepository.getSmsApiProcessingStatusById(testId)).thenReturn(expectedStatus);
-		SmsApiProcessingStatus returnedStatus = statusService.getSmsProcessingStatusById(testId);
+		SmsApiProcessingStatus returnedStatus = statusService.getStatusById(testId);
 		verify(statusRepository).getSmsApiProcessingStatusById(testId);
 		assertEquals(testId, returnedStatus.getId());
 	}
@@ -97,7 +107,7 @@ public class SmsApiProcessingStatusServiceTest {
 	}
 
 	@Test
-	public void getAllStatusEntriessReturnsList() {
+	public void getAllStatusEntriesReturnsList() {
 		List<SmsApiProcessingStatus> expectedStatusList = new ArrayList<>();
 		expectedStatusList.add(getTestSmsApiProcessingStatus());
 		expectedStatusList.add(getTestSmsApiProcessingStatus(2L, "test-2-1234"));
