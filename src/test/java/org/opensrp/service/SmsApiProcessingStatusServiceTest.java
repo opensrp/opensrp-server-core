@@ -157,6 +157,7 @@ public class SmsApiProcessingStatusServiceTest {
 		status.setDateCreated(new Date());
 		status.setLastUpdated(new Date());
 		status.setRequestStatus("NEW");
+		status.setRequestId("test-request-id-1");
 		status.setSmsDeliveryStatus("QUEUED");
 		status.setAttempts(0);
 		status.setSmsDeliveryDate(null);
