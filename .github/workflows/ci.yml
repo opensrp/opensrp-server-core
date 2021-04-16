@@ -12,7 +12,7 @@ on:
 jobs:
   run-unit-tests:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
     - uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
     - name: Install PostGIS packages
       run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "apt-get -y update && apt-get -y install postgresql-client-10 postgresql-10-postgis-2.4 postgresql-10-postgis-2.4-scripts"
  
-    - name: Install Posgres client
+    - name: Install Postgres client
       run: sudo apt-get -y update && sudo apt-get -y install postgresql-client-10
       
     - name: Create PostGIS extension
