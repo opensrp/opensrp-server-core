@@ -260,4 +260,20 @@ public class OrganizationService {
 		return organizationRepository.findOrganizationByName(organizationName);
 	}
 
+	/**
+	 * This method will revoke all the team assignments including future assignments as well
+	 * fetched from the plan Id
+	 * by setting to_date param to the current date
+	 */
+	public void unassignLocationAndPlan(String planIdentifier) {
+		if (StringUtils.isBlank(planIdentifier))
+			throw new IllegalArgumentException("PlanIdentfier cannot be null");
+
+		Long planId = planRepository.retrievePrimaryKey(planIdentifier);
+		if (planId == null)
+			throw new IllegalArgumentException("Plan not found");
+
+		organizationRepository.unassignLocationAndPlan(planId);
+	}
+
 }

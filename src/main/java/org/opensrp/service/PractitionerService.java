@@ -136,13 +136,22 @@ public class PractitionerService {
 	}
 
 	public List<Practitioner> getPractitionersByIdentifiers(List<String> practitionerIdentifiers) {
-		return practitionerRepository.getAllPractitionersByIdentifiers(practitionerIdentifiers);
+		List<Practitioner> practitioners = new ArrayList<>();
+		if (practitionerIdentifiers != null && practitionerIdentifiers.size() > 0) {
+			practitioners = practitionerRepository.getAllPractitionersByIdentifiers(practitionerIdentifiers);
+		}
+		return practitioners;
 	}
 
 	public List<Practitioner> getAssignedPractitionersByIdentifierAndCode(String practitionerIdentifier, String code) {
 		List<Long> organizationIds = new ArrayList<>();
-		for (PractitionerRole practitionerRole : practitionerRoleService.getPgRolesForPractitioner(practitionerIdentifier)) {
-			organizationIds.add(practitionerRole.getOrganizationId());
+		List<PractitionerRole> practitionerRolesOfPractitioner = practitionerRoleService.getPgRolesForPractitioner(practitionerIdentifier);
+		if (practitionerRolesOfPractitioner != null) {
+			for (PractitionerRole practitionerRole : practitionerRolesOfPractitioner) {
+				if (practitionerRole.getOrganizationId() != null) {
+					organizationIds.add(practitionerRole.getOrganizationId());
+				}
+			}
 		}
 
 		// Retrieved teams, now get all members of the team
