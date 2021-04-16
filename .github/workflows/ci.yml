@@ -26,18 +26,18 @@ jobs:
     - name: Setup Postgres
       uses: harmon758/postgresql-action@v1
       with:
-        postgresql version:  '10'  # See https://hub.docker.com/_/postgres for available versions
+        postgresql version:  '11'  # See https://hub.docker.com/_/postgres for available versions
         postgresql db:       'opensrp_test'
         postgresql user:     'opensrp_admin'
         postgresql password: 'admin'
     - name: Configure Postgres repository
-      run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list"
+      run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:11` bash -c  "echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list"
 
     - name: Install PostGIS packages
-      run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "apt-get -y update && apt-get -y install postgresql-client-10 postgresql-10-postgis-2.4 postgresql-10-postgis-2.4-scripts"
+      run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:11` bash -c  "apt-get -y update && apt-get -y install postgresql-client-11 postgresql-11-postgis-2.5 postgresql-11-postgis-2.5-scripts"
  
     - name: Install Posgres client
-      run: sudo apt-get -y update &&  sudo apt-get -y install postgresql-client-10
+      run: sudo apt-get -y update &&  sudo apt-get -y install postgresql-client-11
       
     - name: Create PostGIS extension
       run: psql -p 5432 -c "create extension postgis" -U opensrp_admin -d opensrp_test -h localhost
