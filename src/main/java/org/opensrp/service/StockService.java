@@ -80,8 +80,8 @@ public class StockService {
 		return allStocks.findStocks(searchBean);
 	}
 	
-	public List<Stock> findAllStocks() {
-		return allStocks.findAllStocks();
+	public List<Stock> findAllStocks(Long serverVersion, Integer limit) {
+		return allStocks.findAllStocks(serverVersion, limit);
 	}
 	
 	public Stock find(Stock stock) {
