@@ -428,7 +428,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public List<com.ibm.fhir.model.resource.Task> findTasksByJurisdiction(String s) {
+	public List<com.ibm.fhir.model.resource.Task> findTasksByJurisdiction(String jurisdiction) {
 		return null;
 	}
 

@@ -429,5 +429,10 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 		tasks = taskRepository.findTasksByJurisdiction("2018_IRS-3734","IRS_2018_S11");
 		assertEquals(0, tasks.size());
 	}
-	
+
+	@Test
+	public void testFindTasksByJurisdictionWithSingleParameter() {
+		List<com.ibm.fhir.model.resource.Task> tasks = taskRepository.findTasksByJurisdiction("2018_IRS-3734");
+		assertNull(tasks);
+	}
 }
