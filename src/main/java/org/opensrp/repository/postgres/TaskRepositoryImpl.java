@@ -428,6 +428,11 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
+	public List<com.ibm.fhir.model.resource.Task> findTasksByJurisdiction(String s) {
+		return null;
+	}
+
+	@Override
 	public List<Task> getTasksBySearchBean(TaskSearchBean taskSearchBean) {
 		Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(taskSearchBean);
 		return taskMetadataMapper.selectTasksBySearchBean(taskSearchBean, pageSizeAndOffset.getRight(),
