@@ -22,6 +22,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opensrp.domain.postgres.HouseholdClient;
 import org.opensrp.repository.ClientsRepository;
 import org.opensrp.search.AddressSearchBean;
@@ -804,6 +805,23 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 	public void testCountAllClientsShouldReturnCorrectValue() {
 		Long count = clientsRepository.countAll(0l);
 		assertEquals(Long.valueOf(21), count);
+	}
+
+	@Test
+	public void testFindFamilyMemberBYJurisdiction(){
+		String jurisdictionId = "f9ce9265-88ef-4bdd-ac73-b24ca3653871";
+		ClientsRepository mockClientRepository = Mockito.spy(clientsRepository);
+		mockClientRepository.findFamilyByJurisdiction(jurisdictionId);
+		Mockito.verify(mockClientRepository).findByLocationIdExclusiveOfType(jurisdictionId, "Family");
+	}
+
+	@Test
+	public void testFindByLocationIdExclusiveOfTYpe(){
+		String jurisdictionId = "f9ce9265-88ef-4bdd-ac73-b24ca3653871";
+		List<Client> clients = clientsRepository.findByLocationIdExclusiveOfType(jurisdictionId, "Family");
+		boolean allHaveLocationIdExcludingFamilyType = clients.stream()
+				.allMatch(client -> client.getLocationId().equalsIgnoreCase(jurisdictionId) && client.getClientType().equalsIgnoreCase("Family"));
+		assertTrue(allHaveLocationIdExcludingFamilyType);
 	}
 
 }

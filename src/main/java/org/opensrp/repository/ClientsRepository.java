@@ -118,6 +118,8 @@ public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 
 	List<Client> findByClientTypeAndLocationId(String clientType, String locationId);
 
+	List<Client> findByLocationIdExclusiveOfType(String locationId, String clientType);
+
 	/**
 	 * @param clients
 	 * @return
