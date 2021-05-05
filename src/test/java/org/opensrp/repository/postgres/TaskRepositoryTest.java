@@ -420,13 +420,25 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 	}
 	
 	@Test
-	public void testFindTasksByJurisdiction() {
+	public void testFindTasksByJurisdictionWhenGivenJurisdictionIdAndPlanIdShouldReturnTasksOnlyInJurisdictionAndPlan() {
 		
 		List<com.ibm.fhir.model.resource.Task> tasks = taskRepository.findTasksByJurisdiction("2018_IRS-3734","IRS_2018_S1");
 		assertEquals(1, tasks.size());
 		assertEquals("tsk11231jh22", tasks.get(0).getId());
 		
 		tasks = taskRepository.findTasksByJurisdiction("2018_IRS-3734","IRS_2018_S11");
+		assertEquals(0, tasks.size());
+	}
+
+	@Test
+	public void testFindTasksByJurisdictionWhenGivenJurisdictionIdShouldReturnAllTasks() {
+
+		List<com.ibm.fhir.model.resource.Task> tasks = taskRepository.findTasksByJurisdiction("2018_IRS-3734");
+		assertEquals(2, tasks.size());
+		assertEquals("tsk11231jh22", tasks.get(0).getId());
+		assertEquals("iyr-998njoo", tasks.get(1).getId());
+
+		tasks = taskRepository.findTasksByJurisdiction("2018_IRS-37");
 		assertEquals(0, tasks.size());
 	}
 	
