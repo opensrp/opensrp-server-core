@@ -19,7 +19,7 @@ public interface StocksRepository extends BaseRepository<Stock>, StockDao {
 	
 	public List<Stock> findStocks(StockSearchBean searchBean);
 	
-	public List<Stock> findAllStocks();
+	public List<Stock> findAllStocks(Long serverVersion, Integer limit);
 
 	public Stock findByIdentifierAndServicePointId(String identifier, String locationId);
 

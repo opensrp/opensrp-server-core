@@ -216,8 +216,16 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	}
 	
 	@Override
-	public List<Stock> findAllStocks() {
-		return getAll();
+	public List<Stock> findAllStocks(Long serverVersion, Integer limit) {
+		StockMetadataExample stockMetadataExample = new StockMetadataExample();
+		StockMetadataExample.Criteria criteria = stockMetadataExample.createCriteria();
+		if(serverVersion != null) {
+			criteria.andServerVersionGreaterThan(serverVersion);
+		}
+		Integer pageLimit = limit == null ? DEFAULT_FETCH_SIZE : limit;
+		List<org.opensrp.domain.postgres.Stock> stocks = stockMetadataMapper.selectMany(stockMetadataExample, 0,
+				pageLimit);
+		return convert(stocks);
 	}
 
 	@Override

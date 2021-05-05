@@ -213,9 +213,9 @@ public class StocksRepositoryTest extends BaseRepositoryTest {
 	
 	@Test
 	public void testFindAllStocks() {
-		assertEquals(15, stocksRepository.findAllStocks().size());
+		assertEquals(15, stocksRepository.findAllStocks(null,null).size());
 		stocksRepository.safeRemove(stocksRepository.get("05934ae338431f28bf6793b241b2df09"));
-		List<Stock> stocks = stocksRepository.findAllStocks();
+		List<Stock> stocks = stocksRepository.findAllStocks(0l,null);
 		assertEquals(14, stocks.size());
 		for (Stock stock : stocks)
 			assertNotEquals("05934ae338431f28bf6793b241b2df09", stock.getId());
