@@ -49,7 +49,7 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		        .withGender("Male").withFirstName("xobili").withLastName("mbangwa");
 		client.withIdentifier("ZEIR_ID", "233864-8").withAttribute("Home_Facility", "Linda");
 		clientService.addClient(client);
-		assertEquals(22, clientService.findAllClients().size());
+		assertEquals(24, clientService.findAllClients().size());
 		
 		Client savedClient = clientService.find("f67823b0-378e-4a35-93fc-bb00def74e2f");
 		assertNotNull(savedClient.getId());
@@ -152,7 +152,7 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		        .withGender("Male").withFirstName("xobili").withLastName("mbangwa");
 		client.withIdentifier("ZEIR_ID", "233864-8").withAttribute("Home_Facility", "Linda");
 		clientService.addorUpdate(client);
-		assertEquals(22, clientService.findAllClients().size());
+		assertEquals(24, clientService.findAllClients().size());
 		
 		Client savedClient = clientService.find("f67823b0-378e-4a35-93fc-bb00def74e2f");
 		assertNotNull(savedClient.getId());
@@ -178,7 +178,7 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		        .withGender("Male").withFirstName("xobili").withLastName("mbangwa");
 		client.withIdentifier("ZEIR_ID", "233864-8").withAttribute("Home_Facility", "Linda");
 		clientService.addorUpdate(client, false);
-		assertEquals(22, clientService.findAllClients().size());
+		assertEquals(24, clientService.findAllClients().size());
 		
 		Client savedClient = clientService.find("f67823b0-378e-4a35-93fc-bb00def74e2f");
 		assertNotNull(savedClient.getId());
