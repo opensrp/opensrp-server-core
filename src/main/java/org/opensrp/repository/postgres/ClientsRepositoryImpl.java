@@ -732,7 +732,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	
 	@Override
 	public List<Patient> findFamilyMemberyByJurisdiction(String jurisdiction) {
-		List<Client> clients = findByClientTypeAndLocationId("Family", jurisdiction);
+		List<Client> clients = findByLocationIdExclusiveOfType(jurisdiction, "Family");
 		return convertToFHIR(clients);
 	}
 	
@@ -755,7 +755,14 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		    locationId);
 		return convert(clients);
 	}
-	
+
+	@Override
+	public List<Client> findByLocationIdExclusiveOfType(String locationId, String clientType) {
+		List<org.opensrp.domain.postgres.Client> clients = clientMetadataMapper.selectByLocationIdAndNotOfType(locationId,
+				clientType);
+		return convert(clients);
+	}
+
 	private List<Patient> convertToFHIR(List<Client> clients) {
 		return clients.stream().map(client -> ClientConverter.convertClientToPatientResource(client))
 		        .collect(Collectors.toList());
