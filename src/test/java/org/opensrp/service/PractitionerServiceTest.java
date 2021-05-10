@@ -57,7 +57,10 @@ public class PractitionerServiceTest {
 
     @Before
     public void setUp() {
-        practitionerService = new PractitionerService(practitionerRepository,practitionerRoleService, organizationService);
+        practitionerService = new PractitionerService(); //new PractitionerService(practitionerRepository,practitionerRoleService, organizationService);
+        practitionerService.setOrganizationService(organizationService);
+        practitionerService.setPractitionerRoleService(practitionerRoleService);
+        practitionerService.setPractitionerRepository(practitionerRepository);
     }
 
     @Test

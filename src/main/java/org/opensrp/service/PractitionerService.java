@@ -25,12 +25,22 @@ public class PractitionerService {
 	private PractitionerRoleService practitionerRoleService;
 
 	private OrganizationService organizationService;
-	
+
 	@Autowired
-	public PractitionerService(PractitionerRepository practitionerRepository,
-	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService) {
+	public void setPractitionerRepository(PractitionerRepository practitionerRepository) {
 		this.practitionerRepository = practitionerRepository;
+	}
+
+	/**
+	 * @param practitionerRoleService the practitionerRoleService to set
+	 */
+	@Autowired
+	public void setPractitionerRoleService(PractitionerRoleService practitionerRoleService) {
 		this.practitionerRoleService = practitionerRoleService;
+	}
+
+	@Autowired
+	public void setOrganizationService(OrganizationService organizationService) {
 		this.organizationService = organizationService;
 	}
 	
