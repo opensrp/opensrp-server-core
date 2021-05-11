@@ -8,7 +8,7 @@
 	<version>3.0.0-ACL-3</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
-	<url>http://github.com/OpenSRP/opensrp-server-core</url>
+	<url>https://github.com/OpenSRP/opensrp-server-core</url>
 
 	<properties>
 		<main.basedir>${project.basedir}</main.basedir>
