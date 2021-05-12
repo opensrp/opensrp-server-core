@@ -53,15 +53,31 @@ public class TaskService {
 			addTask(task);
 		}
 	}
+
+	public boolean taskExists(Task task){
+		String taskIdentifier = task.getIdentifier();
+		String entityId = task.getForEntity();
+		String jurisdiction = task.getGroupIdentifier();
+		String planIdentifier = task.getPlanIdentifier();
+		String taskCode = task.getCode();
+
+		return (StringUtils.isNotBlank(taskIdentifier) && taskRepository.checkIfTaskExists(entityId, jurisdiction, planIdentifier, taskCode));
+	}
+
+	public boolean taskNotExists(Task task){
+		return !taskExists(task);
+	}
 	
 	public Task addTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		task.setAuthoredOn(new DateTime());
-		task.setLastModified(new DateTime());
-		taskRepository.add(task);
+		if (taskNotExists(task)) {
+			task.setAuthoredOn(new DateTime());
+			task.setLastModified(new DateTime());
+			taskRepository.add(task);
+		}
+
 		return task;
-		
 	}
 	
 	public Task updateTask(Task task) {
