@@ -356,7 +356,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	public List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId,
 	        Map<String, String> properties) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		if (StringUtils.isNotBlank(parentId)) {
+		if (parentId != null) {
 			locationMetadataExample.createCriteria().andParentIdEqualTo(parentId);
 		}
 		List<Location> locations = locationMetadataMapper.selectManyByProperties(locationMetadataExample, properties,
