@@ -38,7 +38,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * This methods searches for jurisdictions using the parentId and location properties
 	 * It returns the Geometry optionally if @param returnGeometry is set to true. 
 	 * @param returnGeometry boolean which controls if geometry is returned
-	 * @param parentId string the parent id of the jurisdiction being searched
+	 * @param parentId string the parent id of the jurisdiction being searched. If empty search for ROOT location.
 	 * @param properties map of location properties to filter with, each entry in map has property name and value
 	 * @return jurisdictions matching the params 
 	 */
