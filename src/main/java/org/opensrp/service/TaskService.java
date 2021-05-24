@@ -63,15 +63,11 @@ public class TaskService {
 
 		return (StringUtils.isNotBlank(taskIdentifier) && taskRepository.checkIfTaskExists(entityId, jurisdiction, planIdentifier, taskCode));
 	}
-
-	public boolean taskNotExists(Task task){
-		return !taskExists(task);
-	}
 	
 	public Task addTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
-		if (taskNotExists(task)) {
+		if (!taskExists(task)) {
 			task.setAuthoredOn(new DateTime());
 			task.setLastModified(new DateTime());
 			taskRepository.add(task);
