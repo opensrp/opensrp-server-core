@@ -102,7 +102,7 @@
     -->
     id, settings_id, document_id, identifier, server_version, team, team_id, provider_id, 
     location_id, uuid, json, setting_type, setting_value, setting_key, setting_description, 
-    setting_label, inherited_from, metadata_version
+    inherited_from, metadata_version
   </sql>
   <select id="selectByExample" parameterType="org.opensrp.domain.postgres.SettingsMetadataExample" resultMap="BaseResultMap">
     <!--
@@ -169,10 +169,10 @@
     values (#{id,jdbcType=BIGINT}, #{settingsId,jdbcType=BIGINT}, #{documentId,jdbcType=VARCHAR}, 
       #{identifier,jdbcType=VARCHAR}, #{serverVersion,jdbcType=BIGINT}, #{team,jdbcType=VARCHAR}, 
       #{teamId,jdbcType=VARCHAR}, #{providerId,jdbcType=VARCHAR}, #{locationId,jdbcType=VARCHAR}, 
-      #{uuid,jdbcType=VARCHAR}, #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.SettingMetadataTypeHandler}, 
-      #{settingType,jdbcType=VARCHAR}, #{settingValue,jdbcType=VARCHAR}, #{settingKey,jdbcType=VARCHAR}, 
-      #{settingDescription,jdbcType=VARCHAR}, #{settingLabel,jdbcType=VARCHAR}, #{inheritedFrom,jdbcType=VARCHAR},
-      nextVal('core.setting_metadata_version_seq') )
+      #{uuid,jdbcType=VARCHAR}, #{json,jdbcType=OTHER}, #{settingType,jdbcType=VARCHAR},
+      #{settingValue,jdbcType=VARCHAR}, #{settingKey,jdbcType=VARCHAR}, #{settingDescription,jdbcType=VARCHAR},
+      #{settingLabel,jdbcType=VARCHAR},#{inheritedFrom,jdbcType=VARCHAR},
+      nextVal('core.setting_metadata_version_seq'))
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.SettingsMetadata">
     <!--
