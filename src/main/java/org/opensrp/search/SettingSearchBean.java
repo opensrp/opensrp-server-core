@@ -38,6 +38,9 @@ public class SettingSearchBean extends BaseDataObject {
 	
 	@JsonIgnore
 	private boolean resolveSettings;
+
+//	@JsonProperty
+	private long metadataVersion ;
 	
 	private Long primaryKey;
 	
@@ -120,5 +123,13 @@ public class SettingSearchBean extends BaseDataObject {
 	
 	public void setV1Settings(boolean v1Settings) {
 		this.v1Settings = v1Settings;
+	}
+
+	public long getMetadataVersion() {
+		return metadataVersion;
+	}
+
+	public void setMetadataVersion(long metadataVersion) {
+		this.metadataVersion = metadataVersion;
 	}
 }

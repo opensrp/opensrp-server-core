@@ -212,6 +212,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 		}
 
+		if (settingQueryBean.getMetadataVersion() > 0) {
+			criteria.andMetadataVersionGreaterThan(settingQueryBean.getMetadataVersion());
+		}
+
 		if (settingQueryBean.isResolveSettings()) {
 			return fetchSettingsPerLocation(settingQueryBean, metadataExample, treeNodeHashMap, limit, criteria);
 		} else {
@@ -452,6 +456,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		setting.setDescription(settingsMetadata.getSettingDescription());
 		setting.setLabel(settingsMetadata.getSettingLabel());
 		setting.setSettingIdentifier(settingsMetadata.getIdentifier());
+		if (settingsMetadata.getMetadataVersion() != null) {
+			setting.setMetadataVersion(settingsMetadata.getMetadataVersion());
+		}
 		if (!isV1Settings) {
 			setting.setProviderId(settingsMetadata.getProviderId());
 			setting.setSettingsId(String.valueOf(settingsMetadata.getSettingsId()));
@@ -701,6 +708,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 					metadata.setIdentifier(settingConfiguration.getIdentifier());
 					checkIdentityAttributtes(settingConfiguration, metadata);
 					metadata.setServerVersion(settingConfiguration.getServerVersion());
+					metadata.setMetadataVersion(settingConfiguration.getMetadataVersion());
 					metadata.setJson(convertToSetting(metadata, false)); //always want to create the json on the settings
 					// creation
 
