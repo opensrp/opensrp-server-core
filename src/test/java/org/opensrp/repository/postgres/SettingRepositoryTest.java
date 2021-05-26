@@ -80,6 +80,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		SettingSearchBean settingQueryBean = new SettingSearchBean();
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setMetadataVersion(0L);
+		settingQueryBean.setLimit(1000);
 
 		List<SettingConfiguration> settings = settingRepository.findSettings(settingQueryBean, null);
 		assertEquals(1, settings.size());
