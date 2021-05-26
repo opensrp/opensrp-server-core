@@ -168,7 +168,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	@Override
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean,
 			Map<String, TreeNode<String, Location>> treeNodeHashMap) {
-		return findSettings(settingQueryBean, DEFAULT_FETCH_SIZE, treeNodeHashMap);
+		Integer limit;
+		limit = settingQueryBean.getLimit() == null || settingQueryBean.getLimit() == 0? DEFAULT_FETCH_SIZE : settingQueryBean.getLimit();
+		return findSettings(settingQueryBean, limit, treeNodeHashMap);
 	}
 
 	@Override
@@ -212,7 +214,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
 		}
 
-		if (settingQueryBean.getMetadataVersion() > 0) {
+		if (settingQueryBean.getMetadataVersion() != null && settingQueryBean.getMetadataVersion() > 0) {
 			criteria.andMetadataVersionGreaterThan(settingQueryBean.getMetadataVersion());
 		}
 
