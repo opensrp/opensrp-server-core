@@ -8,15 +8,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.opensrp.domain.TaskUpdate;
+import org.opensrp.repository.TaskRepository;
 import org.opensrp.search.TaskSearchBean;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.smartregister.domain.Task;
 import org.smartregister.domain.Task.TaskPriority;
 import org.smartregister.domain.Task.TaskStatus;
-import org.opensrp.domain.TaskUpdate;
-import org.opensrp.repository.TaskRepository;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,10 +78,50 @@ public class TaskServiceTest {
 	}
 
 	@Test
+	public void testTaskExistsChecksRepo(){
+		Task task = initializeTask();
+		taskService.taskExists(task);
+		verify(taskRepository).checkIfTaskExists(eq(task.getForEntity()), eq(task.getGroupIdentifier()), eq(task.getPlanIdentifier()), eq(task.getCode()));
+	}
+
+	@Test
+	public void testTaskExistsReturnsExpected(){
+		Task task = initializeTask();
+		when(taskRepository.checkIfTaskExists(eq(task.getForEntity()), eq(task.getGroupIdentifier()), eq(task.getPlanIdentifier()), eq(task.getCode())))
+				.thenReturn(true);
+		assertTrue(taskService.taskExists(task));
+	}
+
+	@Test
+	public void testAddTaskChecksIfTaskExists(){
+		Task task = initializeTask();
+		taskService = spy(taskService);
+		taskService.addTask(task);
+		verify(taskService).taskExists(eq(task));
+	}
+
+	@Test
 	public void testAddTask() {
 		Task task = initializeTask();
 		taskService.addTask(task);
 		verify(taskRepository).add(task);
+	}
+
+	@Test
+	public void testAddTaskDoesNotDuplicate(){
+		taskService = spy(taskService);
+
+		doReturn(false, true, true, true, true)
+				.when(taskService)
+				.taskExists(any(Task.class));
+
+		Task task = initializeTask();
+		taskService.addTask(task);
+		verify(taskRepository).add(task);
+		taskService.addTask(task);
+		taskService.addTask(task);
+		taskService.addTask(task);
+		verify(taskRepository, times(1)).add(task);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
