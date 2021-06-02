@@ -59,14 +59,19 @@ public class ProductCatalogueService {
 
 	}
 
-	public List<ProductCatalogue> getProductCatalogues(ProductCatalogueSearchBean productCatalogueSearchBean, String baseUrl) {
+	public List<ProductCatalogue> getProductCatalogues(ProductCatalogueSearchBean productCatalogueSearchBean, int limit, String baseUrl) {
 		if (StringUtils.isBlank(productCatalogueSearchBean.getProductName()) &&
 				productCatalogueSearchBean.getUniqueId() == 0
 				&& productCatalogueSearchBean.getServerVersion() == null) {
 			return findAllProductCatalogues(baseUrl);
 		} else {
-			return productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean, baseUrl);
+			return productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean, limit, baseUrl);
 		}
+	}
+
+	@Deprecated(since = "2.11.4-SNAPSHOT")
+	public List<ProductCatalogue> getProductCatalogues(ProductCatalogueSearchBean productCatalogueSearchBean, String baseUrl) {
+		return getProductCatalogues(productCatalogueSearchBean, Integer.MAX_VALUE, baseUrl);
 	}
 
 	public ProductCatalogue getProductCatalogueByName(String productName) {

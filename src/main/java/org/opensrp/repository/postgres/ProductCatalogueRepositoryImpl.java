@@ -158,11 +158,17 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 	}
 
 	@Override
-	public List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean, String baseUrl) {
+	public List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean, int limit, String baseUrl) {
 		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
 		populateProductCatalogueSearchCriteria(productCatalogueSearchBean,
 				productCatalogueExample);
-		return convert(customProductCatalogueMapper.selectMany(productCatalogueExample, 0, DEFAULT_FETCH_SIZE), baseUrl);
+		productCatalogueExample.setOrderByClause(this.getOrderByClause(SERVER_VERSION, ASCENDING));
+		return convert(customProductCatalogueMapper.selectMany(productCatalogueExample, 0, limit), baseUrl);
+	}
+
+	@Override
+	public List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean, String baseUrl){
+		return getProductCataloguesBySearchBean(productCatalogueSearchBean, DEFAULT_FETCH_SIZE, baseUrl);
 	}
 
 	@Override
@@ -231,8 +237,9 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 
 		ProductCatalogueExample.Criteria criteria = productCatalogueExample.createCriteria();
 
-		if (productCatalogueSearchBean.getServerVersion() != null && productCatalogueSearchBean.getServerVersion() != 0)
+		if (productCatalogueSearchBean.getServerVersion() != null && productCatalogueSearchBean.getServerVersion() >= 0) {
 			criteria.andServerVersionGreaterThanOrEqualTo(productCatalogueSearchBean.getServerVersion());
+		}
 
 		if (StringUtils.isNotEmpty(productCatalogueSearchBean.getProductName()))
 			criteria.andProductNameEqualTo(productCatalogueSearchBean.getProductName());
