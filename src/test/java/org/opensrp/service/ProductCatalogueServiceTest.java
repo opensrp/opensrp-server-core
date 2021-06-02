@@ -36,7 +36,18 @@ public class ProductCatalogueServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testFindAllProductCatalogs() {
+	public void testFindAllProductCatalogsWithLimitSet() {
+		ProductCatalogueSearchBean productCatalogueSearchBean = new ProductCatalogueSearchBean();
+		productCatalogueSearchBean.setProductName("");
+		productCatalogueSearchBean.setUniqueId(0l);
+		int limit = Integer.MAX_VALUE;
+		List<ProductCatalogue> productCatalogueList = productCatalogueService
+				.getProductCatalogues(productCatalogueSearchBean, limit, "http://localhost:8080/opensrp");
+		assertEquals(1, productCatalogueList.size());
+	}
+
+	@Test
+	public void testFindAllProductCatalogsWithNoLimitSet() {
 		ProductCatalogueSearchBean productCatalogueSearchBean = new ProductCatalogueSearchBean();
 		productCatalogueSearchBean.setProductName("");
 		productCatalogueSearchBean.setUniqueId(0l);
