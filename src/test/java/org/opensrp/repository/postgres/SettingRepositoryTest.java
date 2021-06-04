@@ -524,7 +524,7 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testfindSettingsReturnsSettingConfigurationsWhenIsResolveParamIsTrueAndLocationHeirarchyIsPresent() {
+	public void testFindSettingsReturnsSettingsWhenResolveParamTrueAndHasLocationHeirarchy() {
 		SettingSearchBean settingQueryBean = new SettingSearchBean();
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setMetadataVersion(0L);
