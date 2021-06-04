@@ -23,6 +23,7 @@
 		<result column="setting_description" jdbcType="VARCHAR" property="settingsMetadata.settingDescription" />
 		<result column="setting_label" jdbcType="VARCHAR" property="settingsMetadata.settingLabel" />
 		<result column="inherited_from" jdbcType="VARCHAR" property="settingsMetadata.inheritedFrom" />
+		<result column="metadata_version" jdbcType="BIGINT" property="settingsMetadata.metadataVersion" />
 	</resultMap>
 
 	<sql id="Base_Column_List">
@@ -92,7 +93,8 @@
 			setting_key,
 			setting_description,
 		    setting_label,
-			inherited_from
+			inherited_from,
+		    metadata_version
 		) VALUES
 		<foreach collection="settingsMetadata" item="setting"  separator=","  close=";">
 			(
@@ -111,7 +113,8 @@
 			#{setting.settingKey,jdbcType=VARCHAR},
 			#{setting.settingDescription,jdbcType=VARCHAR},
 			#{setting.settingLabel,jdbcType=VARCHAR},
-			#{setting.inheritedFrom,jdbcType=VARCHAR}
+			#{setting.inheritedFrom,jdbcType=VARCHAR},
+			nextVal('core.setting_metadata_version_seq')
 			)
 		</foreach>
 	</insert>
@@ -134,7 +137,8 @@
 				setting_key = #{setting.settingKey},
 				setting_description = #{setting.settingDescription},
                 setting_label = #{setting.settingLabel},
-				inherited_from = #{setting.inheritedFrom}
+				inherited_from = #{setting.inheritedFrom},
+			    metadata_version = nextVal('core.setting_metadata_version_seq')
 			WHERE uuid = #{setting.uuid}
 			AND setting_key = #{setting.settingKey}
 		</foreach>

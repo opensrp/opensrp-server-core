@@ -1218,6 +1218,67 @@ public class SettingsMetadataExampleGeneratedCriteria {
 			addCriterion("inherited_from not between", value1, value2, "inheritedFrom");
 			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
 		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionIsNull() {
+			addCriterion("metadata_version is null");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionIsNotNull() {
+			addCriterion("metadata_version is not null");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionEqualTo(Long value) {
+			addCriterion("metadata_version =", value, "metadataVersion");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionNotEqualTo(Long value) {
+			addCriterion("metadata_version <>", value, "metadataVersion");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionGreaterThan(Long value) {
+			addCriterion("metadata_version >", value, "metadataVersion");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionGreaterThanOrEqualTo(Long value) {
+			addCriterion("metadata_version >=", value, "metadataVersion");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionLessThan(Long value) {
+			addCriterion("metadata_version <", value, "metadataVersion");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionLessThanOrEqualTo(Long value) {
+			addCriterion("metadata_version <=", value, "metadataVersion");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionIn(List<Long> values) {
+			addCriterion("metadata_version in", values, "metadataVersion");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionNotIn(List<Long> values) {
+			addCriterion("metadata_version not in", values, "metadataVersion");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionBetween(Long value1, Long value2) {
+			addCriterion("metadata_version between", value1, value2, "metadataVersion");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
+		public SettingsMetadataExampleGeneratedCriteria.Criteria andMetadataVersionNotBetween(Long value1, Long value2) {
+			addCriterion("metadata_version not between", value1, value2, "metadataVersion");
+			return (SettingsMetadataExampleGeneratedCriteria.Criteria) this;
+		}
+
 	}
 
 	/**

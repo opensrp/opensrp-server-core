@@ -168,7 +168,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 	@Override
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean,
 			Map<String, TreeNode<String, Location>> treeNodeHashMap) {
-		return findSettings(settingQueryBean, DEFAULT_FETCH_SIZE, treeNodeHashMap);
+		Integer limit;
+		limit = settingQueryBean.getLimit() == null || settingQueryBean.getLimit() == 0? DEFAULT_FETCH_SIZE : settingQueryBean.getLimit();
+		return findSettings(settingQueryBean, limit, treeNodeHashMap);
 	}
 
 	@Override
@@ -210,6 +212,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 		if (StringUtils.isBlank(settingQueryBean.getId())) {
 			criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
+		}
+
+		if (settingQueryBean.getMetadataVersion() != null) {
+			criteria.andMetadataVersionGreaterThan(settingQueryBean.getMetadataVersion());
 		}
 
 		if (settingQueryBean.isResolveSettings()) {
@@ -452,6 +458,9 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		setting.setDescription(settingsMetadata.getSettingDescription());
 		setting.setLabel(settingsMetadata.getSettingLabel());
 		setting.setSettingIdentifier(settingsMetadata.getIdentifier());
+		if (settingsMetadata.getMetadataVersion() != null) {
+			setting.setMetadataVersion(settingsMetadata.getMetadataVersion());
+		}
 		if (!isV1Settings) {
 			setting.setProviderId(settingsMetadata.getProviderId());
 			setting.setSettingsId(String.valueOf(settingsMetadata.getSettingsId()));
@@ -701,6 +710,7 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 					metadata.setIdentifier(settingConfiguration.getIdentifier());
 					checkIdentityAttributtes(settingConfiguration, metadata);
 					metadata.setServerVersion(settingConfiguration.getServerVersion());
+					metadata.setMetadataVersion(settingConfiguration.getMetadataVersion());
 					metadata.setJson(convertToSetting(metadata, false)); //always want to create the json on the settings
 					// creation
 

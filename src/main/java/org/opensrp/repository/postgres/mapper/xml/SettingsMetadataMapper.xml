@@ -24,6 +24,7 @@
     <result column="setting_description" jdbcType="VARCHAR" property="settingDescription" />
     <result column="setting_label" jdbcType="VARCHAR" property="settingLabel" />
     <result column="inherited_from" jdbcType="VARCHAR" property="inheritedFrom" />
+    <result column="metadata_version" jdbcType="BIGINT" property="metadataVersion" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -101,7 +102,7 @@
     -->
     id, settings_id, document_id, identifier, server_version, team, team_id, provider_id, 
     location_id, uuid, json, setting_type, setting_value, setting_key, setting_description, 
-    inherited_from
+    inherited_from, metadata_version
   </sql>
   <select id="selectByExample" parameterType="org.opensrp.domain.postgres.SettingsMetadataExample" resultMap="BaseResultMap">
     <!--
@@ -162,15 +163,16 @@
     insert into core.settings_metadata (id, settings_id, document_id, 
       identifier, server_version, team, 
       team_id, provider_id, location_id, 
-      uuid, json, setting_type, 
+      uuid, json, setting_type,
       setting_value, setting_key, setting_description, setting_label,
-      inherited_from)
+      inherited_from, metadata_version)
     values (#{id,jdbcType=BIGINT}, #{settingsId,jdbcType=BIGINT}, #{documentId,jdbcType=VARCHAR}, 
       #{identifier,jdbcType=VARCHAR}, #{serverVersion,jdbcType=BIGINT}, #{team,jdbcType=VARCHAR}, 
       #{teamId,jdbcType=VARCHAR}, #{providerId,jdbcType=VARCHAR}, #{locationId,jdbcType=VARCHAR}, 
-      #{uuid,jdbcType=VARCHAR}, #{json,jdbcType=OTHER}, #{settingType,jdbcType=VARCHAR}, 
+      #{uuid,jdbcType=VARCHAR}, #{json,jdbcType=OTHER}, #{settingType,jdbcType=VARCHAR},
       #{settingValue,jdbcType=VARCHAR}, #{settingKey,jdbcType=VARCHAR}, #{settingDescription,jdbcType=VARCHAR},
-      #{settingLabel,jdbcType=VARCHAR},#{inheritedFrom,jdbcType=VARCHAR})
+      #{settingLabel,jdbcType=VARCHAR},#{inheritedFrom,jdbcType=VARCHAR},
+      nextVal('core.setting_metadata_version_seq'))
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.SettingsMetadata">
     <!--
@@ -231,6 +233,9 @@
       <if test="inheritedFrom != null">
         inherited_from,
       </if>
+      <if test="metadataVersion != null">
+        metadata_version,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -284,6 +289,7 @@
       <if test="inheritedFrom != null">
         #{inheritedFrom,jdbcType=VARCHAR},
       </if>
+      nextVal('core.setting_metadata_version_seq')
     </trim>
   </insert>
   <select id="countByExample" parameterType="org.opensrp.domain.postgres.SettingsMetadataExample" resultType="java.lang.Long">
@@ -356,6 +362,9 @@
       <if test="record.inheritedFrom != null">
         inherited_from = #{record.inheritedFrom,jdbcType=VARCHAR},
       </if>
+      <if test="record.metadataVersion != null">
+        metadata_version =  nextVal('core.setting_metadata_version_seq'),
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -384,7 +393,8 @@
       setting_key = #{record.settingKey,jdbcType=VARCHAR},
       setting_description = #{record.settingDescription,jdbcType=VARCHAR},
       setting_label = #{record.settingLabel,jdbcType=VARCHAR},
-      inherited_from = #{record.inheritedFrom,jdbcType=VARCHAR}
+      inherited_from = #{record.inheritedFrom,jdbcType=VARCHAR},
+      metadata_version =  nextVal('core.setting_metadata_version_seq')
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -445,6 +455,9 @@
       <if test="inheritedFrom != null">
         inherited_from = #{inheritedFrom,jdbcType=VARCHAR},
       </if>
+      <if test="metadataVersion != null">
+        metadata_version =  nextVal('core.setting_metadata_version_seq'),
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -470,7 +483,8 @@
       setting_key = #{settingKey,jdbcType=VARCHAR},
       setting_description = #{settingDescription,jdbcType=VARCHAR},
       setting_label = #{settingLabel,jdbcType=VARCHAR},
-      inherited_from = #{inheritedFrom,jdbcType=VARCHAR}
+      inherited_from = #{inheritedFrom,jdbcType=VARCHAR},
+      metadata_version =  nextVal('core.setting_metadata_version_seq')
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

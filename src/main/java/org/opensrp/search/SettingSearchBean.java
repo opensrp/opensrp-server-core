@@ -38,10 +38,15 @@ public class SettingSearchBean extends BaseDataObject {
 	
 	@JsonIgnore
 	private boolean resolveSettings;
-	
+
 	private Long primaryKey;
 	
 	private String documentId;
+
+	private Long metadataVersion ;
+
+	private Integer limit;
+
 	public String getProviderId() {
 		return providerId;
 	}
@@ -120,5 +125,21 @@ public class SettingSearchBean extends BaseDataObject {
 	
 	public void setV1Settings(boolean v1Settings) {
 		this.v1Settings = v1Settings;
+	}
+
+	public Long getMetadataVersion() {
+		return metadataVersion;
+	}
+
+	public void setMetadataVersion(Long metadataVersion) {
+		this.metadataVersion = metadataVersion;
+	}
+
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
 	}
 }
