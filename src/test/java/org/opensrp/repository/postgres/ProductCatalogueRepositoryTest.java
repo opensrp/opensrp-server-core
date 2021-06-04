@@ -81,7 +81,18 @@ public class ProductCatalogueRepositoryTest extends BaseRepositoryTest  {
 	}
 
 	@Test
-	public void testGetProductCataloguesBySearchBean(){
+	public void testGetProductCataloguesBySearchBeanWithLimit(){
+		ProductCatalogueSearchBean productCatalogueSearchBean = new ProductCatalogueSearchBean();
+		productCatalogueSearchBean.setUniqueId(1l);
+		int limit = Integer.MAX_VALUE;
+		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean, limit, "http://localhost:8080/opensrp");
+		assertEquals(1,productCatalogues.size());
+		assertEquals("Midwifery Kit", productCatalogues.get(0).getProductName());
+
+	}
+
+	@Test
+	public void testGetProductCataloguesBySearchBeanWithNoLimitSet(){
 		ProductCatalogueSearchBean productCatalogueSearchBean = new ProductCatalogueSearchBean();
 		productCatalogueSearchBean.setUniqueId(1l);
 		List<ProductCatalogue> productCatalogues = productCatalogueRepository.getProductCataloguesBySearchBean(productCatalogueSearchBean, "http://localhost:8080/opensrp");
