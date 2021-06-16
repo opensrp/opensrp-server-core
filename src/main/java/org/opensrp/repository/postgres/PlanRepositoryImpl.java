@@ -64,7 +64,11 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
     
     private void updateServerVersion(Plan pgPlan, PlanDefinition entity) {
-		long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
+		Long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
+		if (serverVersion == null){
+		    // just fail...server_version is not expected to null
+            throw new IllegalStateException("Either CustomPlanMapper#insertSelectiveAndSetId or CustomPlanMapper#updateByPrimaryKeyAndGenerateServerVersion should have been called first.");
+        }
 		entity.setServerVersion(serverVersion);
 		pgPlan.setJson(entity);
 		pgPlan.setServerVersion(null);
