@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
+import org.opensrp.domain.LocationAndStock;
+import org.opensrp.domain.PhysicalLocationAndStock;
 import org.opensrp.domain.StructureCount;
 import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
@@ -274,4 +276,22 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return number of records
 	 */
 	long countLocationsByIds(List<String> locationIds, long serverVersion);
+
+	/**
+	 * Gets the structures/locations with the stocks attached to them
+	 * @param jurisdictionId the id of the location
+	 * @return location together with its stock
+	 */
+	List<PhysicalLocationAndStock> findLocationAndStocksByJurisdiction(String jurisdictionId);
+
+	/**
+	 * Gets the structures/locations with the stocks attached to them
+	 * @param jurisdictionId
+	 * @param properties
+	 * @param returnGeometry
+	 * @param limit
+	 * @return
+	 */
+	List<PhysicalLocationAndStock> findLocationAndStocksByJurisdiction(String jurisdictionId, Map<String, String> properties,
+			boolean returnGeometry, int limit);
 }

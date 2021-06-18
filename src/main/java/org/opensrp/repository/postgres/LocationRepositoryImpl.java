@@ -14,16 +14,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationTagMap;
+import org.opensrp.domain.LocationAndStock;
+import org.opensrp.domain.PhysicalLocationAndStock;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.LocationMetadata;
 import org.opensrp.domain.postgres.LocationMetadataExample;
 import org.opensrp.domain.postgres.LocationMetadataExample.Criteria;
+import org.opensrp.domain.postgres.Stock;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureFamilyDetails;
 import org.opensrp.domain.postgres.StructureMetadata;
@@ -714,7 +718,57 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		return locationMetadataMapper.countByExample(locationMetadataExample);
 	}
-	
+
+	@Override
+	public List<PhysicalLocationAndStock> findLocationAndStocksByJurisdiction(String parentId) {
+	    return findLocationAndStocksByJurisdiction(parentId, null, true, Integer.MAX_VALUE);
+	}
+
+	private List<PhysicalLocationAndStock> convertToPhysicalLocationAndStock(List<LocationAndStock> locationAndStocks){
+		if (locationAndStocks == null || locationAndStocks.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		List<PhysicalLocationAndStock> convertedLocations = new ArrayList<>();
+		for (LocationAndStock locationAndStock : locationAndStocks) {
+			PhysicalLocationAndStock convertedLocation = convertToPhysicalLocationAndStock(locationAndStock);
+			if (convertedLocation != null) {
+				convertedLocations.add(convertedLocation);
+			}
+		}
+
+		return convertedLocations;
+	}
+
+	@Override
+	public List<PhysicalLocationAndStock> findLocationAndStocksByJurisdiction(String parentId, Map<String, String> properties,
+			boolean returnGeometry, int limit) {
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		if (StringUtils.isNotBlank(parentId)) {
+			structureMetadataExample.createCriteria().andParentIdEqualTo(parentId);
+		}
+		return convertToPhysicalLocationAndStock(structureMetadataMapper.findStructureAndStocksByJurisdiction(structureMetadataExample, null,
+		    returnGeometry, 0, limit));
+	}
+
+
+	private PhysicalLocationAndStock convertToPhysicalLocationAndStock(LocationAndStock entity) {
+		if (entity == null || entity.getJson() == null || !(entity.getJson() instanceof PhysicalLocation)) {
+			return null;
+		}
+
+		PhysicalLocationAndStock location = (PhysicalLocationAndStock) entity.getJson();
+		location.setJurisdiction(false);
+		List<org.smartregister.domain.Stock> stocks = new ArrayList<>();
+		for(Stock stock: entity.getStocks()){
+			if (stock != null && stock.getJson() != null && (stock.getJson() instanceof org.smartregister.domain.Stock)) {
+				stocks.add((org.smartregister.domain.Stock) stock.getJson());
+			}
+		}
+		location.setStocks(stocks);
+		return location;
+	}
+
 	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);

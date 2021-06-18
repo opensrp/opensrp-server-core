@@ -22,7 +22,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
+import org.opensrp.domain.LocationAndStock;
 import org.opensrp.domain.LocationDetail;
+import org.opensrp.domain.PhysicalLocationAndStock;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.repository.LocationRepository;
@@ -556,5 +558,8 @@ public class PhysicalLocationService {
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
 		return locationTree;
 	}
-	
+
+	public List<PhysicalLocationAndStock> findStructureAndStocksByJurisdiction(String jurisdictionId){
+		return locationRepository.findLocationAndStocksByJurisdiction(jurisdictionId);
+	}
 }

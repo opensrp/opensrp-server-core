@@ -153,4 +153,49 @@
 		GROUP BY parent_id
 	</select>
 
+	<resultMap id="LocationAndStocksResultMap" type="org.opensrp.domain.LocationAndStock">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="json" jdbcType="OTHER" property="json" typeHandler="org.opensrp.repository.postgres.handler.LocationAndStockTypeHandler" />
+		<result column="server_version" jdbcType="BIGINT" property="serverVersion" />
+		<collection property="stocks" ofType="Stock" resultMap="org.opensrp.repository.postgres.mapper.StockMapper.BaseResultMap" columnPrefix="stock_" />
+	</resultMap>
+
+	<select id="findStructureAndStocksByJurisdiction" resultMap="LocationAndStocksResultMap">
+		select
+		stock.id as stock_id,
+		stock.json as stock_json,
+		stock.date_deleted as stock_date_deleted,
+		stock.server_version as stock_server_version,
+		<if test="example.distinct">
+			distinct
+		</if>
+
+		<if test="geometry">
+				<include refid="Base_Column_List" />
+		</if>
+
+		<if test="!geometry">
+				<include refid="No_Geometry_Column_List" />
+		</if>
+
+		from core.structure_metadata sm
+		join core.structure s on sm.structure_id = s.id
+		left join core.stock stock on sm.geojson_id = stock.json ->> 'locationId'
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="properties != null" >
+			<trim prefix="and "  >
+				<foreach collection="properties" index="propertyName"
+					item="propertyValue" separator=" and ">
+					json -> 'properties' ->> #{propertyName,jdbcType=VARCHAR} = #{propertyValue,jdbcType=VARCHAR}
+				</foreach>
+			</trim>
+		</if>
+		<if test="example.orderByClause != null">
+			order by sm.${example.orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+
 </mapper>
