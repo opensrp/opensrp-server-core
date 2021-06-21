@@ -6,6 +6,9 @@ import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.multimedia.MultimediaFileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -36,10 +39,14 @@ public class MultimediaService {
 		this.clientService = clientService;
 	}
 
+	@PreAuthorize("hasRole('MULTIMEDIA_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'MULTIMEDIA_VIEW')")
 	public List<Multimedia> getMultimediaFiles(String providerId) {
 		return multimediaRepository.all(providerId);
 	}
-	
+
+	@PreAuthorize("hasRole('MANIFEST_VIEW')")
+	@PostAuthorize("hasPermission(returnObject,'Multimedia', 'MANIFEST_VIEW')")
 	public Multimedia findByCaseId(String entityId) {
 		return multimediaRepository.findByCaseId(entityId);
 	}
@@ -53,6 +60,8 @@ public class MultimediaService {
 	 *
 	 * @return A {@link List} of {@link Multimedia} objects
 	 */
+	@PreAuthorize("hasRole('MULTIMEDIA_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'MULTIMEDIA_VIEW')")
 	public List<Multimedia> getMultimediaFiles(String entityId, String contentType, String fileCategory) {
 		return multimediaRepository.get(entityId, contentType, fileCategory);
 	}
@@ -67,6 +76,7 @@ public class MultimediaService {
 	 *
 	 * @return
 	 */
+	@PreAuthorize("hasRole('MULTIMEDIA_CREATE')")
 	public String saveFile(MultimediaDTO multimedia, byte[] fileBytes, String originalFileName) {
 		return fileManager.saveFile(multimedia, fileBytes, originalFileName);
 	}

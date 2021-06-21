@@ -8,6 +8,7 @@ import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.postgres.LocationTagExample;
 import org.opensrp.repository.LocationTagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,15 +24,18 @@ public class LocationTagService {
 	public LocationTagRepository getLocationTagRepository() {
 		return locationTagRepository;
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATIONTAG_VIEW')")
 	public List<LocationTag> getAllLocationTags() {
 		return getLocationTagRepository().getAll();
 	}
 
+	@PreAuthorize("hasRole('LOCATIONTAG_VIEW')")
 	public LocationTag getLocationTagById(String id) {
 		return getLocationTagRepository().getLocationTagByPrimaryKey(Long.valueOf(id));
 	}
 	
+	@PreAuthorize("hasRole('LOCATIONTAG_CREATE') or hasRole('LOCATIONTAG_UPDATE')")
 	public LocationTag addOrUpdateLocationTag(LocationTag locationTag) {
 		if (StringUtils.isBlank(locationTag.getName())) {
 			throw new IllegalArgumentException("Location tag name not specified");
@@ -44,7 +48,8 @@ public class LocationTagService {
 		}
 		return locationTag;
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATIONTAG_DELETE')")
 	public void deleteLocationTag(LocationTag locationTag) {
 		if (StringUtils.isBlank(locationTag.getName())) {
 			throw new IllegalArgumentException("Location tag name not specified");
@@ -53,7 +58,8 @@ public class LocationTagService {
 		getLocationTagRepository().safeRemove(locationTag);
 		
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATIONTAG_DELETE')")
 	public void deleteLocationTag(Long id) {
 		if (id == 0) {
 			throw new IllegalArgumentException("Id not specified");
