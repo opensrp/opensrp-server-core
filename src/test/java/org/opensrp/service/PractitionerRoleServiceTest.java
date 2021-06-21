@@ -1,9 +1,25 @@
 package org.opensrp.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.opensrp.domain.Organization;
 import org.smartregister.domain.PractitionerRole;
 import org.smartregister.domain.PractitionerRoleCode;
@@ -11,43 +27,22 @@ import org.opensrp.repository.PractitionerRoleRepository;
 import org.opensrp.search.PractitionerRoleSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @RunWith(PowerMockRunner.class)
 public class PractitionerRoleServiceTest {
 
+	@InjectMocks
     private PractitionerRoleService practitionerRoleService;
 
+	@Mock
     private PractitionerRoleRepository practitionerRoleRepository;
 
+	@Mock
     private OrganizationService organizationService;
 
+	@Mock
     private PractitionerService practitionerService;
 
-    @Before
-    public void setUp() {
-        practitionerRoleRepository = mock(PractitionerRoleRepository.class);
-        practitionerRoleService = new PractitionerRoleService();
-        practitionerRoleService.setPractitionerRoleRepository(practitionerRoleRepository);
-        organizationService = mock(OrganizationService.class);
-        practitionerRoleService.setOrganizationService(organizationService);
-        practitionerService = mock(PractitionerService.class);
-        practitionerRoleService.setPractitionerService(practitionerService);
-    }
-
+   
     @Test
     public void testGetAllPractitionerRoles() {
         List<PractitionerRole> expectedPractitionerRoles = new ArrayList<>();
@@ -136,16 +131,13 @@ public class PractitionerRoleServiceTest {
     @Test
     public void testDeleteByOrganizationAndPractitionerShouldCallRepostorySafeRemoveMethod() {
 
-        when(practitionerRoleRepository.getPractitionerRole(anyLong(), anyLong() ))
-                .thenReturn(Collections.singletonList(new org.opensrp.domain.postgres.PractitionerRole()));
-
         Organization organization = new Organization();
         organization.setId(1l);
         when(organizationService.getOrganization(anyString())).thenReturn(organization);
 
-        org.opensrp.domain.postgres.Practitioner pgPractitioner = new org.opensrp.domain.postgres.Practitioner();
-        pgPractitioner.setId(2l);
-
+       org.opensrp.domain.postgres.Practitioner pgPractitioner = new org.opensrp.domain.postgres.Practitioner();
+       pgPractitioner.setId(1l);
+       
         when(practitionerService.getPgPractitioner(anyString())).thenReturn(pgPractitioner);
 
         PractitionerRole practitionerRole = initTestPractitionerRole();

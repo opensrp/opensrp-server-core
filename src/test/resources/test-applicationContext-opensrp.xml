@@ -12,6 +12,8 @@
 
 
 	<import resource="test-persistence-postgres.xml"/>
+	
+	<bean class="org.opensrp.config.RedisConfig"/>
 
 	<context:annotation-config />
 
@@ -24,6 +26,7 @@
 	<context:component-scan base-package="org.opensrp.config"/>
 	<context:component-scan base-package="org.opensrp.queue"/>
 	<context:component-scan base-package="org.opensrp.validator"/>
+
 	<context:component-scan base-package="org.opensrp.service">
 		<!--These classes are excluded to enable the context load. This is because
 			EventsListener has EventsRouter as a dependency, problem is that IHandlerMapper

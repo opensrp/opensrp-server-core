@@ -8,6 +8,7 @@ import org.opensrp.domain.Manifest;
 import org.opensrp.repository.ManifestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -30,12 +31,15 @@ public class ManifestService {
         return manifestRepository;
     }
 
+    @PreAuthorize("hasRole('MANIFEST_VIEW')")
     public List<Manifest> getAllManifest() {
         return manifestRepository.getAll();
     }
 
+    @PreAuthorize("hasRole('MANIFEST_VIEW')")
     public List<Manifest> getAllManifest(int limit) { return manifestRepository.getAll(limit);}
 
+    @PreAuthorize("hasRole('MANIFEST_CREATE') or hasRole('MANIFEST_UPDATE')")
     public void addOrUpdateManifest(Manifest manifest) {
         if (StringUtils.isBlank(manifest.getIdentifier()))
             throw new IllegalArgumentException("Id not specified");
@@ -48,6 +52,7 @@ public class ManifestService {
         }
     }
 
+    @PreAuthorize("hasRole('MANIFEST_CREATE')")
     public Manifest addManifest(Manifest manifest) {
         if (StringUtils.isBlank(manifest.getIdentifier()))
             throw new IllegalArgumentException("Id not specified");
@@ -58,6 +63,7 @@ public class ManifestService {
         
     }
 
+    @PreAuthorize("hasRole('MANIFEST_UPDATE')")
     public Manifest updateManifest(Manifest manifest) {
         if (StringUtils.isBlank(manifest.getIdentifier()))
             throw new IllegalArgumentException("Id not specified");
@@ -66,12 +72,14 @@ public class ManifestService {
         return manifest;
     }
 
+    @PreAuthorize("hasRole('MANIFEST_VIEW')")
     public Manifest getManifest(String identifier) {
         if (StringUtils.isBlank(identifier))
             return null;
         return getManifestRepository().get(identifier);
     }
 
+    @PreAuthorize("hasRole('MANIFEST_CREATE')")
     public Set<String> saveManifests(List<Manifest> manifests) {
         Set<String> manifestWithErrors = new HashSet<>();
         for (Manifest manifest : manifests) {
@@ -85,6 +93,7 @@ public class ManifestService {
         return manifestWithErrors;
     }
 
+    @PreAuthorize("hasRole('MANIFEST_DELETE')")
     public void deleteManifest(Manifest manifest) {
         if (StringUtils.isBlank(manifest.getIdentifier())) {
             throw new IllegalArgumentException("Identifier not specified");
@@ -92,18 +101,21 @@ public class ManifestService {
         manifestRepository.safeRemove(manifest);
     }
 
+    @PreAuthorize("hasRole('MANIFEST_VIEW')")
     public Manifest getManifestByAppId(String appId) {
         if (StringUtils.isBlank(appId))
             return null;
         return manifestRepository.getManifestByAppId(appId);
     }
 
+    @PreAuthorize("hasRole('MANIFEST_VIEW')")
     public List<Manifest> getManifestsByAppId(String appId) {
         if (StringUtils.isBlank(appId))
             return null;
         return manifestRepository.getManifestsByAppId(appId);
     }
 
+    @PreAuthorize("hasRole('MANIFEST_VIEW')")
     public Manifest getManifest(@NonNull String appId, @NonNull String appVersion) {
         return manifestRepository.getManifest(appId, appVersion);
     }
