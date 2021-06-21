@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.Stock;
-import org.smartregister.domain.PhysicalLocation;
 
 import java.util.List;
 

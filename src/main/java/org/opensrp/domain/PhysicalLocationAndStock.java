@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.opensrp.domain.postgres.Location;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.Stock;
 
