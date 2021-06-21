@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.ibm.fhir.model.resource.Bundle;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
-import org.opensrp.domain.PhysicalLocationAndStock;
 import org.opensrp.domain.StructureCount;
 import org.smartregister.domain.PhysicalLocation;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.search.LocationSearchBean;
+import org.smartregister.domain.PhysicalLocationAndStocks;
 import org.smartregister.pathevaluator.dao.LocationDao;
 
 public interface LocationRepository extends BaseRepository<PhysicalLocation>, LocationDao {
@@ -278,19 +279,12 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 
 	/**
 	 * Gets the structures/locations with the stocks attached to them
-	 * @param jurisdictionId the id of the location
-	 * @return location together with its stock
-	 */
-	List<PhysicalLocationAndStock> findLocationAndStocksByJurisdiction(String jurisdictionId);
-
-	/**
-	 * Gets the structures/locations with the stocks attached to them
 	 * @param jurisdictionId
 	 * @param properties
 	 * @param returnGeometry
 	 * @param limit
 	 * @return
 	 */
-	List<PhysicalLocationAndStock> findLocationAndStocksByJurisdiction(String jurisdictionId, Map<String, String> properties,
+	List<PhysicalLocationAndStocks> findLocationAndStocksByJurisdiction(String jurisdictionId, Map<String, String> properties,
 			boolean returnGeometry, int limit);
 }

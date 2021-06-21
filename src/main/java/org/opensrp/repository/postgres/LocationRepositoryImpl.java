@@ -14,12 +14,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.ibm.fhir.model.resource.Bundle;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationTagMap;
 import org.opensrp.domain.LocationAndStock;
-import org.opensrp.domain.PhysicalLocationAndStock;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
@@ -40,8 +40,10 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapp
 import org.opensrp.search.LocationSearchBean;
 import org.opensrp.service.LocationTagService;
 import org.smartregister.converters.LocationConverter;
+import org.smartregister.converters.PhysicalLocationAndStocksConverter;
 import org.smartregister.domain.LocationTag;
 import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.PhysicalLocationAndStocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -720,18 +722,24 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public List<PhysicalLocationAndStock> findLocationAndStocksByJurisdiction(String parentId) {
-	    return findLocationAndStocksByJurisdiction(parentId, null, true, Integer.MAX_VALUE);
+	public List<Bundle> findLocationAndStocksByJurisdiction(String parentId) {
+		List<PhysicalLocationAndStocks> locationAndStocks = findLocationAndStocksByJurisdiction(parentId, null, true, Integer.MAX_VALUE);
+		List<Bundle> bundleList = new ArrayList<>();
+		for(PhysicalLocationAndStocks physicalLocationAndStock: locationAndStocks){
+			bundleList.add(PhysicalLocationAndStocksConverter
+				.convertLocationAndStocksToBundleResource(physicalLocationAndStock));
+		}
+		return bundleList;
 	}
 
-	private List<PhysicalLocationAndStock> convertToPhysicalLocationAndStock(List<LocationAndStock> locationAndStocks){
+	private List<PhysicalLocationAndStocks> convertToPhysicalLocationAndStock(List<LocationAndStock> locationAndStocks){
 		if (locationAndStocks == null || locationAndStocks.isEmpty()) {
 			return new ArrayList<>();
 		}
 
-		List<PhysicalLocationAndStock> convertedLocations = new ArrayList<>();
+		List<PhysicalLocationAndStocks> convertedLocations = new ArrayList<>();
 		for (LocationAndStock locationAndStock : locationAndStocks) {
-			PhysicalLocationAndStock convertedLocation = convertToPhysicalLocationAndStock(locationAndStock);
+			PhysicalLocationAndStocks convertedLocation = convertToPhysicalLocationAndStock(locationAndStock);
 			if (convertedLocation != null) {
 				convertedLocations.add(convertedLocation);
 			}
@@ -741,7 +749,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public List<PhysicalLocationAndStock> findLocationAndStocksByJurisdiction(String parentId, Map<String, String> properties,
+	public List<PhysicalLocationAndStocks> findLocationAndStocksByJurisdiction(String parentId, Map<String, String> properties,
 			boolean returnGeometry, int limit) {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		if (StringUtils.isNotBlank(parentId)) {
@@ -755,12 +763,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 
-	private PhysicalLocationAndStock convertToPhysicalLocationAndStock(LocationAndStock entity) {
+	private PhysicalLocationAndStocks convertToPhysicalLocationAndStock(LocationAndStock entity) {
 		if (entity == null || entity.getJson() == null || !(entity.getJson() instanceof PhysicalLocation)) {
 			return null;
 		}
 
-		PhysicalLocationAndStock location = (PhysicalLocationAndStock) entity.getJson();
+		PhysicalLocationAndStocks location = (PhysicalLocationAndStocks) entity.getJson();
 		location.setJurisdiction(false);
 		List<org.smartregister.domain.Stock> stocks = new ArrayList<>();
 		for(Stock stock: entity.getStocks()){

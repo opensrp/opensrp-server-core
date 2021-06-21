@@ -5,9 +5,9 @@ import com.google.gson.GsonBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.TypeHandler;
-import org.opensrp.domain.PhysicalLocationAndStock;
 import org.postgresql.util.PGobject;
 import org.smartregister.domain.LocationProperty;
+import org.smartregister.domain.PhysicalLocationAndStocks;
 import org.smartregister.utils.PropertiesConverter;
 
 import java.sql.CallableStatement;
@@ -15,13 +15,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class LocationAndStockTypeHandler extends BaseTypeHandler implements TypeHandler<PhysicalLocationAndStock> {
+public class LocationAndStockTypeHandler extends BaseTypeHandler implements TypeHandler<PhysicalLocationAndStocks> {
 
 	private static Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HHmm")
 			.registerTypeAdapter(LocationProperty.class, new PropertiesConverter()).create();
 
 	@Override
-	public void setParameter(PreparedStatement ps, int i, PhysicalLocationAndStock parameter, JdbcType jdbcType)
+	public void setParameter(PreparedStatement ps, int i, PhysicalLocationAndStocks parameter, JdbcType jdbcType)
 			throws SQLException {
 		try {
 			if (parameter != null) {
@@ -37,26 +37,26 @@ public class LocationAndStockTypeHandler extends BaseTypeHandler implements Type
 	}
 
 	@Override
-	public PhysicalLocationAndStock getResult(ResultSet rs, String columnName) throws SQLException {
+	public PhysicalLocationAndStocks getResult(ResultSet rs, String columnName) throws SQLException {
 		return getResult(rs.getString(columnName));
 	}
 
 	@Override
-	public PhysicalLocationAndStock getResult(ResultSet rs, int columnIndex) throws SQLException {
+	public PhysicalLocationAndStocks getResult(ResultSet rs, int columnIndex) throws SQLException {
 		return getResult(rs.getString(columnIndex));
 	}
 
 	@Override
-	public PhysicalLocationAndStock getResult(CallableStatement cs, int columnIndex) throws SQLException {
+	public PhysicalLocationAndStocks getResult(CallableStatement cs, int columnIndex) throws SQLException {
 		return getResult(cs.getString(columnIndex));
 	}
 
-	private PhysicalLocationAndStock getResult(String jsonString) throws SQLException {
+	private PhysicalLocationAndStocks getResult(String jsonString) throws SQLException {
 		try {
 			if (StringUtils.isBlank(jsonString)) {
 				return null;
 			}
-			return gson.fromJson(jsonString, PhysicalLocationAndStock.class);
+			return gson.fromJson(jsonString, PhysicalLocationAndStocks.class);
 		} catch (Exception e) {
 			throw new SQLException(e);
 		}
