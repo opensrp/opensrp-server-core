@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.LocationAndStock;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.postgres.Location;
+import org.opensrp.domain.postgres.StockMetadataExample;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureMetadataExample;
 import org.opensrp.repository.postgres.mapper.StructureMetadataMapper;
@@ -31,6 +32,7 @@ public interface CustomStructureMetadataMapper extends StructureMetadataMapper {
 	Long countMany(@Param("example") StructureMetadataExample structureMetadataExample);
 
 	List<LocationAndStock> findStructureAndStocksByJurisdiction(@Param("example") StructureMetadataExample locationMetadataExample,
+		@Param("stockMetadataExample") StockMetadataExample stockMetadataExample,
 		@Param("properties") Map<String, String> properties, @Param("geometry") boolean returnGeometry,
 		@Param("offset") int offset, @Param("limit") int limit);
 

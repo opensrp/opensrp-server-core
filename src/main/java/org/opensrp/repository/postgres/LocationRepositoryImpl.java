@@ -28,6 +28,7 @@ import org.opensrp.domain.postgres.LocationMetadata;
 import org.opensrp.domain.postgres.LocationMetadataExample;
 import org.opensrp.domain.postgres.LocationMetadataExample.Criteria;
 import org.opensrp.domain.postgres.Stock;
+import org.opensrp.domain.postgres.StockMetadataExample;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureFamilyDetails;
 import org.opensrp.domain.postgres.StructureMetadata;
@@ -747,7 +748,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		if (StringUtils.isNotBlank(parentId)) {
 			structureMetadataExample.createCriteria().andParentIdEqualTo(parentId);
 		}
-		return convertToPhysicalLocationAndStock(structureMetadataMapper.findStructureAndStocksByJurisdiction(structureMetadataExample, null,
+		StockMetadataExample stockMetadataExample = new StockMetadataExample();
+		stockMetadataExample.createCriteria().andDateDeletedIsNull();
+		return convertToPhysicalLocationAndStock(structureMetadataMapper.findStructureAndStocksByJurisdiction(structureMetadataExample,
+				stockMetadataExample,null,
 		    returnGeometry, 0, limit));
 	}
 
