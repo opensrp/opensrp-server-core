@@ -128,7 +128,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindLocationAndStocksByJurisdictionShouldReturnWithNoStock(){
 		List<PhysicalLocationAndStocks> physicalLocationAndStocks = locationRepository
-				.findLocationAndStocksByJurisdiction("3724", null, true, Integer.MAX_VALUE);
+				.findLocationAndStocksByJurisdiction("3724", null, true, -1);
 		assertFalse(physicalLocationAndStocks.isEmpty());
 		assertEquals(1, physicalLocationAndStocks.size());
 		assertTrue(physicalLocationAndStocks.get(0).getStocks().isEmpty());

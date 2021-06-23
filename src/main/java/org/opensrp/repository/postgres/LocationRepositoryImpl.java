@@ -723,7 +723,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 
 	@Override
 	public List<Bundle> findLocationAndStocksByJurisdiction(String parentId) {
-		List<PhysicalLocationAndStocks> locationAndStocks = findLocationAndStocksByJurisdiction(parentId, null, true, Integer.MAX_VALUE);
+		List<PhysicalLocationAndStocks> locationAndStocks = findLocationAndStocksByJurisdiction(parentId, null, true, -1);
 		List<Bundle> bundleList = new ArrayList<>();
 		for(PhysicalLocationAndStocks physicalLocationAndStock: locationAndStocks){
 			bundleList.add(PhysicalLocationAndStocksConverter

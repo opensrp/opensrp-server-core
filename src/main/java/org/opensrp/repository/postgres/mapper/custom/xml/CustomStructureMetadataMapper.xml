@@ -255,7 +255,10 @@
 		<if test="example.orderByClause != null">
 			order by sm.${example.orderByClause}
 		</if>
-		LIMIT #{limit} OFFSET #{offset}
+		<if test="limit != -1">
+		LIMIT #{limit}
+		</if>
+		OFFSET #{offset}
 	</select>
 
 </mapper>
