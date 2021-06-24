@@ -523,6 +523,14 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(0, assignedLocations.size()); // verified - removes all the assigned teams
 	}
 
+	@Test
+	public void testCountAllOrganizations() {
+		Organization organization1 = new Organization();
+		Organization organization2 = new Organization();
+		organizationRepository.add(organization1);
+		organizationRepository.add(organization2);
+		assertEquals(3, organizationRepository.countAllOrganizations());
+	}
 
 	private static PractitionerRole initTestPractitionerRole() {
 		PractitionerRole practitionerRole = new PractitionerRole();
