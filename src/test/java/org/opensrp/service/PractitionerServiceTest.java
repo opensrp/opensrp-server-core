@@ -37,6 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -227,6 +228,17 @@ public class PractitionerServiceTest {
 		assertEquals(practitioners.size(), actual.size());
 		assertEquals(practitioners.get(0).getName(), actual.get(0).getName());
 		assertEquals(practitioners.get(1).getName(), actual.get(1).getName());
+	}
+
+	@Test
+	public void testCountAllPractitioners() {
+		Practitioner practitioner1 = initTestPractitioner();
+		Practitioner practitioner2 = initTestPractitioner2();
+		List<Practitioner> practitioners = new ArrayList<>();
+		practitioners.add(practitioner1);
+		practitioners.add(practitioner2);
+		doReturn((long)practitioners.size()).when(practitionerRepository).countAllPractitioners();
+		assertEquals(2, practitionerService.countAllPractitioners());
 	}
 
     private Practitioner initTestPractitioner(){
