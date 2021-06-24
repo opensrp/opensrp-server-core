@@ -277,12 +277,12 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	long countLocationsByIds(List<String> locationIds, long serverVersion);
 
 	/**
-	 * Gets the structures/locations with the stocks attached to them
-	 * @param jurisdictionId
-	 * @param properties
-	 * @param returnGeometry
-	 * @param limit
-	 * @return
+	 * Gets the structures with the stocks attached to them
+	 * @param jurisdictionId location Id
+	 * @param properties Structure properties
+	 * @param returnGeometry boolean that returns geometry data if true
+	 * @param limit number of records to be returned, use -1 to return all the records
+	 * @return List of Structures alongside its stocks
 	 */
 	List<PhysicalLocationAndStocks> findLocationAndStocksByJurisdiction(String jurisdictionId, Map<String, String> properties,
 			boolean returnGeometry, int limit);
