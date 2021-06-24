@@ -1,22 +1,26 @@
 package org.opensrp.service;
 
-import java.util.List;
-import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public interface RapidProService {
-	
-	public static final String RAPIDPRO_UUID_IDENTIFIER_TYPE = "RAPIDPRO_UUID";
-	
-	public static final String RAPIDPRO_GROUPS = "RAPIDPRO_GROUPS";
-	
-	String sendMessage(List<String> urns, List<String> contacts, List<String> groups, String text, String channel);
-	
-	String createContact(Map<String, Object> fieldValues);
-	
-	int deleteContact(String uuid);
-	
-	String createGroup(String name);
-	
-	String addField(String label, String valueType);
-	
+@Service
+public class RapidProService {
+
+	private EventService eventService;
+
+	private ClientService clientService;
+
+	@Autowired
+	public void setEventService(EventService eventService) {
+		this.eventService = eventService;
+	}
+
+	@Autowired
+	public void setClientService(ClientService clientService) {
+		this.clientService = clientService;
+	}
+
+	public void processRapidProPayload(String payload) {
+
+	}
 }
