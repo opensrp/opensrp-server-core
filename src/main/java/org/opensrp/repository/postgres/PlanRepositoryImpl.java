@@ -18,6 +18,7 @@ import org.opensrp.repository.PlanRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanMetadataMapper;
 import org.opensrp.search.PlanSearchBean;
+import org.opensrp.util.RepositoryUtil;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -385,20 +386,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
 
     private Pair<Integer, Integer> getPageSizeAndOffset(PlanSearchBean planSearchBean) {
-
-        Integer pageSize;
-        Integer offset = 0;
-        if (planSearchBean.getPageSize() == null || planSearchBean.getPageSize() == 0) {
-            pageSize = DEFAULT_FETCH_SIZE;
-        } else {
-            pageSize = planSearchBean.getPageSize();
-        }
-
-        if (planSearchBean.getPageNumber() != null && planSearchBean.getPageNumber() != 0) {
-            offset = (planSearchBean.getPageNumber() - 1) * pageSize;
-        }
-
-        return Pair.of(pageSize, offset);
+       return RepositoryUtil.getPageSizeAndOffset(planSearchBean.getPageNumber(), planSearchBean.getPageSize());
     }
 
 	@Override
