@@ -154,4 +154,10 @@ public class PractitionerRoleService {
     public List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code) {
 	    return practitionerRoleRepository.getPractitionerRolesByOrgIdAndCode(organizationId, code);
     }
+
+	@PreAuthorize("hasRole('PRACTITIONER_ROLE_VIEW')")
+	@PostFilter("hasPermission(returnObject, 'PRACTITIONER_ROLE_VIEW')")
+    public long countAllPractitionerRoles() {
+        return practitionerRoleRepository.countAllPractitionerRoles();
+    }
 }
