@@ -366,4 +366,9 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		}
 	}
 
+	@Override
+	public long countAllOrganizations() {
+		return organizationMapper.countByExample(new OrganizationExample());
+	}
+
 }

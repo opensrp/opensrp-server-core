@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -323,7 +324,7 @@ public class OrganizationServiceTest {
 	}
 
 
-	private Practitioner initTestPractitioner(){
+	private Practitioner initTestPractitioner() {
 		Practitioner practitioner = new Practitioner();
 		practitioner.setIdentifier("practitoner-1-identifier");
 		practitioner.setActive(true);
@@ -331,6 +332,12 @@ public class OrganizationServiceTest {
 		practitioner.setUsername("Practioner1");
 		practitioner.setUserId("user1");
 		return practitioner;
+	}
+
+	@Test
+	public void testCountAllOrganizations() {
+		doReturn(2L).when(organizationRepository).countAllOrganizations();
+		assertEquals(2L, organizationService.countAllOrganizations());
 	}
 }
 
