@@ -156,7 +156,6 @@ public class PractitionerRoleService {
     }
 
 	@PreAuthorize("hasRole('PRACTITIONER_ROLE_VIEW')")
-	@PostFilter("hasPermission(returnObject, 'PRACTITIONER_ROLE_VIEW')")
     public long countAllPractitionerRoles() {
         return practitionerRoleRepository.countAllPractitionerRoles();
     }
