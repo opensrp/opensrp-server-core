@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.UUID;
 
+import com.ibm.fhir.model.resource.Bundle;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.MatcherAssert;
@@ -33,6 +34,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
 import org.opensrp.domain.LocationDetail;
+import org.opensrp.repository.StocksRepository;
 import org.smartregister.domain.Client;
 import org.smartregister.domain.Geometry;
 import org.smartregister.domain.LocationProperty;
@@ -48,6 +50,8 @@ import org.opensrp.repository.LocationTagRepository;
 import org.opensrp.search.LocationSearchBean;
 import org.opensrp.search.LocationSearchBean.OrderByType;
 import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.PhysicalLocationAndStocks;
+import org.smartregister.domain.Stock;
 import org.smartregister.utils.PropertiesConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -73,6 +77,9 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 	
 	@Autowired
 	private LocationTagRepository locationTagRepository;
+
+	@Autowired
+	private StocksRepository stocksRepository;
 	
 	@Autowired
 	@Qualifier("clientsRepositoryPostgres")
@@ -84,6 +91,7 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		scripts.add("structure.sql");
 		scripts.add("location_tag.sql");
 		scripts.add("plan.sql");
+		scripts.add("stock.sql");
 		return scripts;
 	}
 	
@@ -115,6 +123,36 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		
 		assertNull(locationRepository.get(null));
 		
+	}
+
+	@Test
+	public void testFindLocationAndStocksByJurisdictionShouldReturnWithNoStock(){
+		List<PhysicalLocationAndStocks> physicalLocationAndStocks = locationRepository
+				.findLocationAndStocksByJurisdiction("3724", null, true, -1);
+		assertFalse(physicalLocationAndStocks.isEmpty());
+		assertEquals(1, physicalLocationAndStocks.size());
+		assertTrue(physicalLocationAndStocks.get(0).getStocks().isEmpty());
+	}
+
+	@Test
+	public void testFindLocationAndStocksByJurisdictionShouldReturnWithStock(){
+		Stock stock = new Stock();
+		stock.setId("05934ae338431f28bf6793b24181ea5e");
+		stock.setLocationId("90397");
+		stocksRepository.update(stock);
+		List<PhysicalLocationAndStocks> physicalLocationAndStocks = locationRepository
+				.findLocationAndStocksByJurisdiction("3734",null, true, Integer.MAX_VALUE);
+		assertFalse(physicalLocationAndStocks.isEmpty());
+		assertEquals(1, physicalLocationAndStocks.size());
+		assertFalse(physicalLocationAndStocks.get(0).getStocks().isEmpty());
+	}
+
+	@Test
+	public void testFindLocationAndStocksByJurisdictionShouldReturnNonEmptyBundle(){
+		List<Bundle> bundles = locationRepository
+				.findLocationAndStocksByJurisdiction("3724");
+		assertFalse(bundles.isEmpty());
+		assertEquals(1, bundles.size());
 	}
 	
 	@Test
