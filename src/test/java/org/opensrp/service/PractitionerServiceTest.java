@@ -1,8 +1,23 @@
 package org.opensrp.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.opensrp.domain.Organization;
 import org.smartregister.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
@@ -26,27 +41,26 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 @RunWith(PowerMockRunner.class)
 public class PractitionerServiceTest {
 
     private PractitionerService practitionerService;
 
+    @Mock
     private PractitionerRepository practitionerRepository;
 
+    @Mock
     private PractitionerRoleService practitionerRoleService;
 
+    @Mock
     private OrganizationService organizationService;
 
     @Before
     public void setUp() {
-        practitionerRepository = mock(PractitionerRepository.class);
-        practitionerService = new PractitionerService();
-        practitionerService.setPractitionerRepository(practitionerRepository);
-        practitionerRoleService = mock(PractitionerRoleService.class);
-        practitionerService.setPractitionerRoleService(practitionerRoleService);
-        organizationService = mock(OrganizationService.class);
+        practitionerService = new PractitionerService(); //new PractitionerService(practitionerRepository,practitionerRoleService, organizationService);
         practitionerService.setOrganizationService(organizationService);
+        practitionerService.setPractitionerRoleService(practitionerRoleService);
+        practitionerService.setPractitionerRepository(practitionerRepository);
     }
 
     @Test
@@ -136,21 +150,14 @@ public class PractitionerServiceTest {
     }
 
     @Test
-    public void testGetPractitionersByOrgIdentifier() {
+    public void testGetPractitionersByOrgId() {
 
         Practitioner practitioner = initTestPractitioner();
         when(practitionerRepository.getPractitionersByOrgId(anyLong()))
                 .thenReturn(Collections.singletonList(practitioner));
 
-        Organization organization = new Organization();
-        organization.setId(1l);
-        organization.setIdentifier("org1");
-        when(organizationService.getOrganization("org1")).thenReturn(organization);
+        practitionerService.getPractitionersByOrgId(1l);
 
-        practitionerService.getPractitionersByOrgIdentifier("org1");
-
-        verify(organizationService).validateIdentifier(anyString());
-        verify(organizationService).getOrganization(anyString());
         verify(practitionerRepository).getPractitionersByOrgId(anyLong());
 
     }

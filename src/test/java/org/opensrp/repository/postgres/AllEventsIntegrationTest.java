@@ -14,12 +14,14 @@ import org.opensrp.service.EventService;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
+@ActiveProfiles(profiles = { "jedis"})
 public class AllEventsIntegrationTest extends BaseRepositoryTest{
 	
 	//TODO Detailed testing

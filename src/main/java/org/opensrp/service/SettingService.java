@@ -17,6 +17,7 @@ import org.opensrp.repository.SettingRepository;
 import org.opensrp.repository.postgres.handler.SettingTypeHandler;
 import org.opensrp.search.SettingSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,6 +38,7 @@ public class SettingService {
 	 * @param settingQueryBean {@link SettingSearchBean} -- has the required parameters for the search
 	 * @return
 	 */
+	@PreAuthorize("hasRole('SETTINGS_VIEW_VIEW')")
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean,
 			Map<String, TreeNode<String, Location>> treeNodeHashMap) {
 		return settingRepository.findSettings(settingQueryBean, treeNodeHashMap);
@@ -49,6 +51,7 @@ public class SettingService {
 	 * @param jsonSettingConfiguration {@link String} -- the string representation of the settings configuration
 	 * @return
 	 */
+	@PreAuthorize("hasRole('SETTINGS_VIEW_CREATE') or hasRole('SETTINGS_VIEW_UPDATE')")
 	public synchronized String saveSetting(String jsonSettingConfiguration) {
 		SettingTypeHandler settingTypeHandler = new SettingTypeHandler();
 		SettingConfiguration settingConfigurations = null;
@@ -102,10 +105,13 @@ public class SettingService {
 	 * Gets a single setting object from the v2 endpoint to save
 	 *
 	 * @param setting {@link Setting}
+	 * @return 
 	 */
+
+	@PreAuthorize("hasRole('SETTINGS_VIEW_CREATE') or hasRole('SETTINGS_VIEW_UPDATE')")
 	public String addOrUpdateSettings(Setting setting) {
 		String settingsResponse = null;
-
+		
 		if (setting != null) {
 			settingsResponse = settingRepository.addOrUpdate(setting);
 		}
@@ -118,6 +124,7 @@ public class SettingService {
 	 *
 	 * @param id {@link Long} -- settings id
 	 */
+	@PreAuthorize("hasRole('SETTINGS_VIEW_DELETE')")
 	public void deleteSetting(Long id) {
 		if (id != null) {
 			settingRepository.delete(id);

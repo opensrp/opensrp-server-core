@@ -1,19 +1,25 @@
 package org.opensrp.service;
 
+
+
 import static org.opensrp.domain.StructureCount.STRUCTURE_COUNT;
 import static org.smartregister.domain.LocationProperty.PropertyStatus.ACTIVE;
 import static org.smartregister.domain.LocationProperty.PropertyStatus.PENDING_REVIEW;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensrp.api.domain.Location;
 import org.opensrp.api.util.LocationTree;
+import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
@@ -32,6 +39,9 @@ import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
@@ -45,28 +55,55 @@ public class PhysicalLocationService {
 	private LocationRepository locationRepository;
 	
 	private final boolean DEFAULT_RETURN_BOOLEAN = true;
-	
+
+	@Autowired
+	private OrganizationService organizationService;
+
+	@Autowired
+	private PractitionerService practitionerService;
+
+	@Resource(name = "redisTemplate")
+	private HashOperations<String, String, List<AssignedLocations>> hashOps;
+
+	@Autowired
+	private RedisTemplate<String, String> redisTemplate;
+
+	private static final String ASSIGNED_LOCATIONS_HASH_KEY = "_assignedLocations";
+
 	@Autowired
 	public void setLocationRepository(LocationRepository locationRepository) {
 		this.locationRepository = locationRepository;
 	}
-	
+
+	public void setOrganizationService(OrganizationService organizationService) {
+		this.organizationService = organizationService;
+	}
+
+	public void setPractitionerService(PractitionerService practitionerService) {
+		this.practitionerService = practitionerService;
+	}
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public PhysicalLocation getLocation(String id, boolean returnGeometry, boolean includeInactive) {
 		return locationRepository.get(id, returnGeometry, includeInactive);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public PhysicalLocation getLocation(String id, boolean returnGeometry, int version) {
 		return locationRepository.get(id, returnGeometry, version);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public PhysicalLocation getStructure(String id, boolean returnGeometry) {
 		return locationRepository.getStructure(id, returnGeometry);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> getAllLocations() {
 		return locationRepository.getAll();
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_CREATE') or hasRole('LOCATION_UPDATE')")
 	public void addOrUpdate(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -81,6 +118,7 @@ public class PhysicalLocationService {
 	
 	@Transactional
     @CacheEvict(value = {"locationsWIthChildrenByLocationIds","locationTreeFromLocation","locationTreeFromLocationIdentifiers"}, allEntries = true)
+	@PreAuthorize("hasRole('LOCATION_CREATE')")
 	public void add(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -89,6 +127,7 @@ public class PhysicalLocationService {
 	
 	@Transactional
 	@CacheEvict(value = {"locationsWIthChildrenByLocationIds","locationTreeFromLocation","locationTreeFromLocationIdentifiers"}, allEntries = true)
+	@PreAuthorize("hasRole('LOCATION_UPDATE')")
 	public void update(PhysicalLocation physicalLocation) {
 		if (StringUtils.isBlank(physicalLocation.getId()))
 			throw new IllegalArgumentException("id not specified");
@@ -101,31 +140,36 @@ public class PhysicalLocationService {
 			//make existing location inactive
 			existingEntity.getProperties().setStatus(LocationProperty.PropertyStatus.INACTIVE);
 			locationRepository.update(existingEntity);
-			
+
 			// create new location
 			//increment location version
 			int newVersion = existingEntity.getProperties().getVersion() + 1;
 			physicalLocation.getProperties().setVersion(newVersion);
-			
+
 			locationRepository.add(physicalLocation);
 		}
-		
+
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationsByServerVersion(long serverVersion) {
 		return locationRepository.findLocationsByServerVersion(serverVersion);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationsByNames(String locationNames, long serverVersion) {
 		return locationRepository.findLocationsByNames(locationNames, serverVersion);
 	}
-	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {
 		if (StringUtils.isBlank(parentId))
 			throw new IllegalArgumentException("parentId not specified");
 		return locationRepository.findStructuresByParentAndServerVersion(parentId, serverVersion);
 	}
 	
+
+	@PreAuthorize("hasRole('LOCATION_CREATE') or hasRole('LOCATION_UPDATE')")
 	public Set<String> saveLocations(List<PhysicalLocation> locations, boolean isJurisdiction) {
 		Set<String> locationsWithErrors = new HashSet<>();
 		for (PhysicalLocation location : locations) {
@@ -157,6 +201,7 @@ public class PhysicalLocationService {
 	 * @return jurisdictions matching the params
 	 * @see org.opensrp.repository.LocationRepository#findLocationsByProperties(boolean, String, Map)
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationsByProperties(boolean returnGeometry, String parentId,
 	        Map<String, String> properties) {
 		return locationRepository.findLocationsByProperties(returnGeometry, parentId, properties);
@@ -173,6 +218,7 @@ public class PhysicalLocationService {
 	 * @return structures matching the params
 	 * @see org.opensrp.repository.LocationRepository#findStructuresByProperties(boolean, String, Map)
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
 	        Map<String, String> properties) {
 		return locationRepository.findStructuresByProperties(returnGeometry, parentId, properties);
@@ -186,6 +232,7 @@ public class PhysicalLocationService {
 	 * @param ids list of location ids
 	 * @return jurisdictions whose ids match the provided params
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids) {
 		return locationRepository.findLocationsByIds(returnGeometry, ids, null);
 	}
@@ -212,6 +259,7 @@ public class PhysicalLocationService {
 	 * @param ids list of location ids
 	 * @return jurisdictions whose ids match the provided params
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationsByIdsOrParentIds(boolean returnGeometry, List<String> ids) {
 		return locationRepository.findLocationsByIdsOrParentIds(returnGeometry, ids);
 	}
@@ -225,6 +273,7 @@ public class PhysicalLocationService {
 	 * @param pageSize number of records to be returned
 	 * @return location together with it's children whose id matches the provided param
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id, int pageSize) {
 		return locationRepository.findLocationByIdWithChildren(returnGeometry, id, pageSize);
 	}
@@ -243,7 +292,7 @@ public class PhysicalLocationService {
 	        int pageSize) {
 		return locationRepository.findLocationByIdsWithChildren(returnGeometry, locationIds, pageSize);
 	}
-	
+
 	/**
 	 * This method searches for all structure ids
 	 *
@@ -286,6 +335,7 @@ public class PhysicalLocationService {
 	 * @param limit upper limit on number of jurisdictions to fetch
 	 * @return list of jurisdictions
 	 */
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit, boolean includeInactive) {
 		return locationRepository.findAllLocations(returnGeometry, serverVersion, limit, includeInactive);
 	};
@@ -325,6 +375,8 @@ public class PhysicalLocationService {
 		return locationRepository.findAllLocationIds(serverVersion, limit, fromDate, toDate);
 	}
 	
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean) {
 		return locationRepository.searchLocations(locationSearchBean);
 	}
@@ -364,16 +416,16 @@ public class PhysicalLocationService {
 			location.setParentLocation(new Location().withLocationId(parent.getIdentifier()));
 		}
 		location.addAttribute("geographicLevel", locationDetail.getGeographicLevel());
-		
+
 		if (returnStructureCounts) {
 			location.addAttribute(STRUCTURE_COUNT, cumulativeCountsMap.get(location.getLocationId()));
 		}
 		return location;
 	}
-	
+
 	private void populateCumulativeCountsMap(Set<LocationDetail> locationDetails, Map<String, Integer> cumulativeCountsMap,
 	        Map<String, StructureCount> structureCountMap) {
-		
+
 		for (LocationDetail locationDetail : locationDetails) {
 			StructureCount structureCount = structureCountMap.get(locationDetail.getIdentifier());
 			if (structureCount != null) { //only locations with structure counts
@@ -384,23 +436,23 @@ public class PhysicalLocationService {
 			} else if (cumulativeCountsMap.get(locationDetail.getIdentifier()) == null) {
 				cumulativeCountsMap.put(locationDetail.getIdentifier(), 0);
 			}
-			
+
 			if (locationDetail.getParentId() != null) {
 				// init parent location map value
 				if (cumulativeCountsMap.get(locationDetail.getParentId()) == null) {
 					cumulativeCountsMap.put(locationDetail.getParentId(), 0);
 				}
-				
+
 				// update parent location structure count
 				int updatedCount = cumulativeCountsMap.get(locationDetail.getParentId())
 				        + cumulativeCountsMap.get(locationDetail.getIdentifier());
 				cumulativeCountsMap.put(locationDetail.getParentId(), updatedCount);
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	private List<Location> getLocations(Set<LocationDetail> locationDetails, boolean returnStructureCounts) {
 		/* @formatter:off */
 		List<StructureCount> structureCountsForLocation = null;
@@ -430,10 +482,10 @@ public class PhysicalLocationService {
 
 		/* @formatter:on */
 	}
-	
+
 	/**
 	 * This method is used to return a count of structure based on the provided parameters
-	 * 
+	 *
 	 * @param parentId id for the parent location
 	 * @param serverVersion
 	 * @return returns a count of structures matching the passed parameters
@@ -441,20 +493,20 @@ public class PhysicalLocationService {
 	public Long countStructuresByParentAndServerVersion(String parentId, long serverVersion) {
 		return locationRepository.countStructuresByParentAndServerVersion(parentId, serverVersion);
 	}
-	
+
 	/**
 	 * This method is used to return a count of locations based on the provided parameters
-	 * 
+	 *
 	 * @param serverVersion
 	 * @return returns a count of locations matching the passed parameters
 	 */
 	public Long countLocationsByServerVersion(long serverVersion) {
 		return locationRepository.countLocationsByServerVersion(serverVersion);
 	};
-	
+
 	/**
 	 * This method is used to return a count of locations based on the provided parameters
-	 * 
+	 *
 	 * @param locationNames A string of comma separated location names
 	 * @param serverVersion
 	 * @return returns a count of locations matching the passed parameters
@@ -462,7 +514,25 @@ public class PhysicalLocationService {
 	public Long countLocationsByNames(String locationNames, long serverVersion) {
 		return locationRepository.countLocationsByNames(locationNames, serverVersion);
 	};
-	
+
+	public List<AssignedLocations> getAssignedLocations(String username) {
+		List<AssignedLocations> assignedLocations = new ArrayList<>();
+		if (hashOps.hasKey(username, ASSIGNED_LOCATIONS_HASH_KEY)) {
+			return hashOps.get(username, ASSIGNED_LOCATIONS_HASH_KEY);
+		} else {
+			List<Long> organizationIds = practitionerService.getOrganizationsByUserId(username).right;
+			if (isEmptyOrNull(organizationIds)) {
+				return new ArrayList<>();
+			}
+			assignedLocations = organizationService.findAssignedLocationsAndPlans(organizationIds);
+            persistInRedisCache(assignedLocations, username);
+			return assignedLocations;
+		}
+	}
+
+	private boolean isEmptyOrNull(Collection<? extends Object> collection) {
+		return collection == null || collection.isEmpty();
+	}
 	/**
 	 * Gets the count of locations based on locationIds and server version
 	 * 
@@ -476,7 +546,7 @@ public class PhysicalLocationService {
 	
 	/**
 	 * This method checks whether the coordinates contained in the locations Geometry are equal
-	 * 
+	 *
 	 * @param newEntity location entity
 	 * @param existingEntity location entity
 	 * @return
@@ -489,7 +559,6 @@ public class PhysicalLocationService {
 		JsonElement existingGeometryCoordsElement = JsonParser.parseString(geometryCoords(existingEntity));
 		return newGeometryCoordsElement.equals(existingGeometryCoordsElement);
 	}
-
 
 	/**
 	 * Returns the geometry coordinates string.
@@ -509,7 +578,7 @@ public class PhysicalLocationService {
 	public LocationTree buildLocationHierachyFromLocation(String locationId, boolean returnStructureCount) {
 		return buildLocationHierachyFromLocation(locationId, false, returnStructureCount);
 	}
-	
+
 	/**
 	 * Build full location tree with passed location id as tree root
 	 *
@@ -523,6 +592,31 @@ public class PhysicalLocationService {
 		Set<LocationDetail> locationDetails = locationRepository.findLocationWithDescendants(locationId, returnTags);
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
 		return locationTree;
+	}
+
+	private void persistInRedisCache(List<AssignedLocations> assignedLocations, String username) {
+		List<Date> toDates = new ArrayList<>();
+		Boolean toDateExists = false;
+		for (AssignedLocations assignedLocation : assignedLocations) {
+			if (assignedLocation.getToDate() != null) {
+				toDates.add(assignedLocation.getToDate());
+				toDateExists = true;
+			}
+		}
+
+		if (toDateExists) {
+			long expiryTime = Math.abs(findMinimumDate(toDates).getTime() - new Date().getTime());
+			expiryTime = expiryTime / 1000 ;
+			hashOps.put(username, ASSIGNED_LOCATIONS_HASH_KEY, assignedLocations);
+			redisTemplate.expire(username, expiryTime , TimeUnit.SECONDS);
+		}
+	}
+
+	private Date findMinimumDate(List<Date> dates) {
+		if(!isEmptyOrNull(dates)) {
+			return Collections.min(dates);
+		}
+		return null;
 	}
 
 	/**
