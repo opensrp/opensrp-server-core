@@ -135,4 +135,7 @@ public class PractitionerRoleService {
 	    return practitionerRoleRepository.getPractitionerRolesByOrgIdAndCode(organizationId, code);
     }
 
+    public long countAllPractitionerRoles() {
+        return practitionerRoleRepository.countAllPractitionerRoles();
+    }
 }

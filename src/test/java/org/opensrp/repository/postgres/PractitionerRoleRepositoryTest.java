@@ -300,6 +300,15 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    public void testCountAllPractitionerRoles(){
+        PractitionerRole practitionerRole1 = initTestPractitionerRole1();
+        PractitionerRole practitionerRole2 = initTestPractitionerRole2();
+        practitionerRoleRepository.add(practitionerRole1);
+        practitionerRoleRepository.add(practitionerRole2);
+        assertEquals(2, practitionerRoleRepository.countAllPractitionerRoles());
+    }
+
+    @Test
     public void testGetPractitionerRolesByOrgIdAndCode() {
         String identifier = UUID.randomUUID().toString();
         Organization organization = new Organization();

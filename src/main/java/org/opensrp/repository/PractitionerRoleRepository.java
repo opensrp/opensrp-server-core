@@ -11,9 +11,9 @@ public interface PractitionerRoleRepository extends BaseRepository<PractitionerR
 
     List<org.opensrp.domain.postgres.PractitionerRole>  getPgRolesForPractitioner(String practitionerIdentifier);
 
-    public org.opensrp.domain.postgres.PractitionerRole getPractitionerRole(String id);
+    org.opensrp.domain.postgres.PractitionerRole getPractitionerRole(String id);
 
-    public List<org.opensrp.domain.postgres.PractitionerRole> getPractitionerRole(Long organizationId, Long practitionerId);
+    List<org.opensrp.domain.postgres.PractitionerRole> getPractitionerRole(Long organizationId, Long practitionerId);
 
     void safeRemove(String identifier);
 
@@ -24,5 +24,7 @@ public interface PractitionerRoleRepository extends BaseRepository<PractitionerR
 
     List<PractitionerRole> getAllPractitionerRoles(PractitionerRoleSearchBean practitionerRoleSearchBean);
 
-	public List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code);
+	List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code);
+
+	long countAllPractitionerRoles();
 }

@@ -21,6 +21,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -217,6 +218,13 @@ public class PractitionerRoleServiceTest {
         assertEquals("p2-identifier", practitionerRoles.get(1).getPractitionerIdentifier());
 
     }
+
+	@Test
+	public void testCountAllPractitionerRoles() {
+		PractitionerRole practitionerRole = initTestPractitionerRole();
+		doReturn((long) Collections.singletonList(practitionerRole).size()).when(practitionerRoleRepository).countAllPractitionerRoles();
+		assertEquals(1, practitionerRoleService.countAllPractitionerRoles());
+	}
 
     private static PractitionerRole initTestPractitionerRole(){
         PractitionerRole practitionerRole = new PractitionerRole();
