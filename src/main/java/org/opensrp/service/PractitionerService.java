@@ -165,4 +165,8 @@ public class PractitionerService {
 		// Now get all practitioners by the given Ids
 		return getPractitionersByIdentifiers(practitionerIdentifiers);
 	}
+
+	public long countAllPractitioners () {
+		return getPractitionerRepository().countAllPractitioners();
+	}
 }
