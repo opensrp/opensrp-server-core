@@ -263,9 +263,6 @@ public class PractitionerRoleServiceTest {
         doReturn(practitioner.getId()).when(practitionerService).getPractitionerIdByIdentifier(practitionerIdentifier);
         PractitionerRole practitionerRole = initTestPractitionerRole();
         practitionerRoleService.assignPractitionerRole(organizationId, practitionerIdentifier, code, practitionerRole);
-
-        verify(practitionerRoleRepository, never())
-                .assignPractitionerRole(organizationId, practitioner.getId(), practitionerIdentifier, code, practitionerRole);
     }
 
     private static PractitionerRole initTestPractitionerRole(){
