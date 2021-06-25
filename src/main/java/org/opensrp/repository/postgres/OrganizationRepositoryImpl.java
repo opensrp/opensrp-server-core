@@ -320,20 +320,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 	
 	private Pair<Integer, Integer> getPageSizeAndOffset(OrganizationSearchBean organizationSearchBean) {
-		
-		Integer pageSize = 0;
-		Integer offset = 0;
-		if (organizationSearchBean.getPageSize() == null || organizationSearchBean.getPageSize() == 0) {
-			pageSize = DEFAULT_FETCH_SIZE;
-		} else {
-			pageSize = organizationSearchBean.getPageSize();
-		}
-		
-		if (organizationSearchBean.getPageNumber() != null && organizationSearchBean.getPageNumber() != 0) {
-			offset = (organizationSearchBean.getPageNumber() - 1) * pageSize;
-		}
-		
-		return Pair.of(pageSize, offset);
+		return RepositoryUtil.getPageSizeAndOffset(organizationSearchBean.getPageNumber(), organizationSearchBean.getPageSize());
 	}
 	
 	@Override
@@ -377,6 +364,11 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			example.createCriteria().andIdEqualTo(organizationLocation.getId());
 			organizationLocationMapper.updateByExample(organizationLocation, example);
 		}
+	}
+
+	@Override
+	public long countAllOrganizations() {
+		return organizationMapper.countByExample(new OrganizationExample());
 	}
 
 }

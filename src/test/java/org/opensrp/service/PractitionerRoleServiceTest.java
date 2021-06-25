@@ -1,5 +1,20 @@
 package org.opensrp.service;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.opensrp.domain.Organization;
+import org.opensrp.repository.PractitionerRoleRepository;
+import org.opensrp.search.PractitionerRoleSearchBean;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.smartregister.domain.PractitionerRole;
+import org.smartregister.domain.PractitionerRoleCode;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -7,25 +22,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.opensrp.domain.Organization;
-import org.smartregister.domain.PractitionerRole;
-import org.smartregister.domain.PractitionerRoleCode;
-import org.opensrp.repository.PractitionerRoleRepository;
-import org.opensrp.search.PractitionerRoleSearchBean;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 public class PractitionerRoleServiceTest {
@@ -208,6 +209,44 @@ public class PractitionerRoleServiceTest {
         assertEquals("pr2-identifier", practitionerRoles.get(1).getIdentifier());
         assertEquals("p2-identifier", practitionerRoles.get(1).getPractitionerIdentifier());
 
+    }
+
+	@Test
+	public void testCountAllPractitionerRoles() {
+		PractitionerRole practitionerRole = initTestPractitionerRole();
+		doReturn((long) Collections.singletonList(practitionerRole).size()).when(practitionerRoleRepository).countAllPractitionerRoles();
+		assertEquals(1, practitionerRoleService.countAllPractitionerRoles());
+	}
+
+	@Test
+    public void testAssignPractitionerRole() {
+        String practitionerIdentifier = "p1-identifier";
+        org.opensrp.domain.postgres.Practitioner practitioner = new org.opensrp.domain.postgres.Practitioner();
+        practitioner.setId(1L);
+        practitioner.setIdentifier(practitionerIdentifier);
+
+        Long organizationId = 1L;
+        String code = "code";
+        doReturn(practitioner.getId()).when(practitionerService).getPractitionerIdByIdentifier(practitionerIdentifier);
+        PractitionerRole practitionerRole = initTestPractitionerRole();
+        practitionerRoleService.assignPractitionerRole(organizationId, practitionerIdentifier, code, practitionerRole);
+
+        verify(practitionerRoleRepository, atLeastOnce())
+                .assignPractitionerRole(organizationId, practitioner.getId(), practitionerIdentifier, code, practitionerRole);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testAssignPractitionerRoleWithException() {
+        String practitionerIdentifier = "p1-identifier";
+        org.opensrp.domain.postgres.Practitioner practitioner = new org.opensrp.domain.postgres.Practitioner();
+        practitioner.setId(null);
+        practitioner.setIdentifier(practitionerIdentifier);
+
+        Long organizationId = 1L;
+        String code = "code";
+        doReturn(practitioner.getId()).when(practitionerService).getPractitionerIdByIdentifier(practitionerIdentifier);
+        PractitionerRole practitionerRole = initTestPractitionerRole();
+        practitionerRoleService.assignPractitionerRole(organizationId, practitionerIdentifier, code, practitionerRole);
     }
 
     private static PractitionerRole initTestPractitionerRole(){

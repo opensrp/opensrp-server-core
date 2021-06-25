@@ -224,4 +224,9 @@ public class PractitionerService {
 		// Now get all practitioners by the given Ids
 		return getPractitionersByIdentifiers(practitionerIdentifiers);
 	}
+
+	@PreAuthorize("hasRole('PRACTITIONER_VIEW')")
+	public long countAllPractitioners () {
+		return getPractitionerRepository().countAllPractitioners();
+	}
 }

@@ -19,6 +19,7 @@ import org.opensrp.repository.StocksRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMetadataMapper;
 import org.opensrp.search.StockSearchBean;
+import org.opensrp.util.RepositoryUtil;
 import org.smartregister.converters.StockConverter;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.ProductCatalogue;
@@ -347,22 +348,8 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	}
 
 	private Pair<Integer, Integer> getPageSizeAndOffset(StockSearchBean stockSearchBean) {
-
-		Integer pageSize;
-		Integer offset = 0;
-		if (stockSearchBean.getPageSize() == null || stockSearchBean.getPageSize() == 0) {
-			pageSize = DEFAULT_FETCH_SIZE;
-		} else {
-			pageSize = stockSearchBean.getPageSize();
-		}
-
-		if (stockSearchBean.getPageNumber() != null && stockSearchBean.getPageNumber() != 0) {
-			offset = (stockSearchBean.getPageNumber() - 1) * pageSize;
-		}
-
-		return Pair.of(pageSize, offset);
+		return RepositoryUtil.getPageSizeAndOffset(stockSearchBean.getPageNumber(), stockSearchBean.getPageSize());
 	}
-
 
 	@Override
 	public List<Bundle> findInventoryItemsInAJurisdiction(String jurisdictionId) {

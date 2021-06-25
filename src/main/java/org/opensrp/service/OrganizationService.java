@@ -298,8 +298,6 @@ public class OrganizationService {
 	public void setPractitionerService(PractitionerService practitionerService) {
 		this.practitionerService = practitionerService;
 	}
-	
-
 
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'ORGANIZATION_VIEW')")
@@ -354,5 +352,10 @@ public class OrganizationService {
 			throw new IllegalArgumentException("Plan not found");
 
 		organizationRepository.unassignLocationAndPlan(planId);
+	}
+
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
+	public long countAllOrganizations() {
+		return organizationRepository.countAllOrganizations();
 	}
 }
