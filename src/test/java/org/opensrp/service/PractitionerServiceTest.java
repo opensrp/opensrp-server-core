@@ -1,28 +1,13 @@
 package org.opensrp.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.opensrp.domain.Organization;
-import org.smartregister.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.search.PractitionerSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.smartregister.domain.Practitioner;
 import org.smartregister.domain.PractitionerRole;
 import org.smartregister.domain.PractitionerRoleCode;
 
@@ -33,15 +18,12 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
 @RunWith(PowerMockRunner.class)
 public class PractitionerServiceTest {
 
