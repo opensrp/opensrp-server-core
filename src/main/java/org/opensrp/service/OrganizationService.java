@@ -276,4 +276,7 @@ public class OrganizationService {
 		organizationRepository.unassignLocationAndPlan(planId);
 	}
 
+	public long countAllOrganizations() {
+		return organizationRepository.countAllOrganizations();
+	}
 }

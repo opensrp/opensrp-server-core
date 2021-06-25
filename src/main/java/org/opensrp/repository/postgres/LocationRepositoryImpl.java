@@ -39,6 +39,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
 import org.opensrp.search.LocationSearchBean;
 import org.opensrp.service.LocationTagService;
+import org.opensrp.util.RepositoryUtil;
 import org.smartregister.converters.LocationConverter;
 import org.smartregister.converters.PhysicalLocationAndStocksConverter;
 import org.smartregister.domain.LocationTag;
@@ -569,7 +570,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		} else {
 			structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		}
-		Pair<Integer, Integer> pageLimitAndOffSet = getPageSizeAndOffset(limit, pageNumber);
+		Pair<Integer, Integer> pageLimitAndOffSet = RepositoryUtil.getPageSizeAndOffset(pageNumber, limit);
 		List<Location> locations = structureMetadataMapper.selectManyByProperties(structureMetadataExample, null,
 		    returnGeometry, pageLimitAndOffSet.getRight(), pageLimitAndOffSet.getLeft());
 		return convert(locations);
@@ -1018,22 +1019,5 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
 		return locations.stream().map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
 		        .collect(Collectors.toList());
-	}
-
-	private Pair<Integer, Integer> getPageSizeAndOffset(Integer pageSize, Integer pageNumber) {
-
-		Integer sizePerPage;
-		Integer offset = 0;
-		if (pageSize == null || pageSize == 0) {
-			sizePerPage = DEFAULT_FETCH_SIZE;
-		} else {
-			sizePerPage = pageSize;
-		}
-
-		if (pageNumber != null && pageNumber != 0) {
-			offset = (pageNumber - 1) * sizePerPage;
-		}
-
-		return Pair.of(sizePerPage, offset);
 	}
 }
