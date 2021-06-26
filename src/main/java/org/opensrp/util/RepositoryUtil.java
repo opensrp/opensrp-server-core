@@ -8,19 +8,23 @@ import static org.opensrp.repository.postgres.BaseRepositoryImpl.DEFAULT_FETCH_S
 public class RepositoryUtil {
 
 	public static Pair<Integer, Integer> getPageSizeAndOffset(BaseSearchBean baseSearchBean) {
+		return getPageSizeAndOffset(baseSearchBean.getPageNumber(), baseSearchBean.getPageSize());
+	}
 
-		Integer pageSize;
-		Integer offset = 0;
-		if (baseSearchBean.getPageSize() == null || baseSearchBean.getPageSize() == 0) {
-			pageSize = DEFAULT_FETCH_SIZE;
+	public static Pair<Integer, Integer> getPageSizeAndOffset(Integer pageNumber, Integer pageSize){
+		int currentPageSize;
+		int offset = 0;
+
+		if (pageSize == null || pageSize == 0) {
+			currentPageSize = DEFAULT_FETCH_SIZE;
 		} else {
-			pageSize = baseSearchBean.getPageSize();
+			currentPageSize = pageSize;
 		}
 
-		if (baseSearchBean.getPageNumber() != null && baseSearchBean.getPageNumber() != 0) {
-			offset = (baseSearchBean.getPageNumber() - 1) * pageSize;
+		if (pageNumber != null && pageNumber != 0) {
+			offset = (pageNumber - 1) * currentPageSize;
 		}
 
-		return Pair.of(pageSize, offset);
+		return Pair.of(currentPageSize, offset);
 	}
 }
