@@ -216,13 +216,24 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testGetOpenMRSIdentifiersShouldReturnValidOpenmrsIds() throws IOException {
+	public void testGetOpenMRSIdentifiersShouldReturnOpenmrsIds() throws IOException {
 		String source = "1";
 		String numberToGenerate = "2";
 		OpenmrsIDService spyOpenmrsIDService = spy(openmrsIDService);
 		String openmrsUrl = "http://localhost:8080/openmrs/module/idgen/exportIdentifiers.form?source="+source+"&numberToGenerate="+numberToGenerate+"&username=admin&password=Admin123";
 		doReturn("{\"identifiers\":[\"100399-5\",\"100400-1\"]}").when(spyOpenmrsIDService).getHttpResponse(eq(openmrsUrl));
 		List<String> identifies = spyOpenmrsIDService.getOpenMRSIdentifiers(source, numberToGenerate);
+		assertFalse(identifies.isEmpty());
+		assertEquals(2, identifies.size());
+	}
+
+	@Test
+	public void testDownloadOpenmrsIdsShouldReturnOpenmrsIds() throws IOException {
+		long numberToGenerate = 2L;
+		OpenmrsIDService spyOpenmrsIDService = spy(OpenmrsIDService.createInstanceWithOpenMrsUrl("http://localhost:8080/openmrs/"));
+		String openmrsUrl = "http://localhost:8080/openmrs/module/idgen/exportIdentifiers.form?source=0&numberToGenerate=" + numberToGenerate + "&username=null&password=null";
+		doReturn("{\"identifiers\":[\"100399-5\",\"100400-1\"]}").when(spyOpenmrsIDService).getHttpResponse(eq(openmrsUrl));
+		List<String> identifies = spyOpenmrsIDService.downloadOpenmrsIds(numberToGenerate);
 		assertFalse(identifies.isEmpty());
 		assertEquals(2, identifies.size());
 	}

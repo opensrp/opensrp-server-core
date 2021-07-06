@@ -69,10 +69,8 @@ public class OpenmrsIDService {
 		openmrsQueryUrl += "?source=" + this.openmrsSourceId + "&numberToGenerate=" + size;
 		openmrsQueryUrl += "&username=" + this.openmrsUserName + "&password=" + this.openmrsPassword;
 		
-		HttpGet get = new HttpGet(openmrsQueryUrl);
 		try {
-			HttpResponse response = client.execute(get);
-			String jsonResponse = EntityUtils.toString(response.getEntity());
+			String jsonResponse = getHttpResponse(openmrsQueryUrl);
 			
 			JSONObject responseJson = new JSONObject(jsonResponse);
 			JSONArray jsonArray = responseJson.getJSONArray("identifiers");
