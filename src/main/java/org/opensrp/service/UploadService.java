@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opensrp.domain.CSVRowConfig;
+import org.opensrp.repository.LocationRepository;
 import org.smartregister.domain.Client;
 import org.smartregister.domain.Event;
 import org.opensrp.domain.setting.Setting;
@@ -19,6 +20,7 @@ import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.search.SettingSearchBean;
 import org.opensrp.search.UploadValidationBean;
+import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.utils.DateTimeTypeConverter;
 import org.opensrp.util.JSONCSVUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,7 @@ public class UploadService {
 
     public static final String CLIENT = "client";
     public static final String EVENT = "event";
+    public static final String DEFAULT_RESIDENCE = "default_residence";
 
     private static final Logger logger = LogManager.getLogger(UploadService.class.toString());
     public static String CSV_UPLOAD_SETTING = "csv_upload_config";
@@ -46,6 +49,8 @@ public class UploadService {
     private SettingRepository settingRepository;
 
     private ClientsRepository clientsRepository;
+
+    private LocationRepository locationRepository;
 
     @Autowired
     public void setSettingRepository(SettingRepository settingRepository) {
@@ -55,6 +60,11 @@ public class UploadService {
     @Autowired
     public void setClientsRepository(ClientsRepository clientsRepository) {
         this.clientsRepository = clientsRepository;
+    }
+
+    @Autowired
+    public void setLocationRepository(LocationRepository locationRepository) {
+        this.locationRepository = locationRepository;
     }
 
     /**
@@ -86,17 +96,27 @@ public class UploadService {
 
                 Client client = null;
                 Event event = null;
+                PhysicalLocation dbStructure = null;
 
                 String baseEntityID = null;
                 if (jsonObject.has(CLIENT)) {
                     client = gson.fromJson(jsonObject.get(CLIENT).toString(), Client.class);
                     baseEntityID = getClientsBaseEntityID(client, uniqueIDKey);
                     client.setBaseEntityId(baseEntityID);
+                    // Get structure by Id
+                    String uploadedStructureId = (String) client.getAttribute(DEFAULT_RESIDENCE);
+                    dbStructure = locationRepository.getStructure(uploadedStructureId,false);
+                    if (dbStructure == null) {
+                        throw new IllegalArgumentException("Structure with id " + uploadedStructureId + " does not exist");
+                    }
                 }
 
                 if (jsonObject.has(EVENT)) {
                     event = gson.fromJson(jsonObject.get(EVENT).toString(), Event.class);
                     event.setBaseEntityId(baseEntityID);
+                    if (StringUtils.isNotBlank(dbStructure.getProperties().getParentId())) {
+                        event.setLocationId(dbStructure.getProperties().getParentId());
+                    }
                 }
 
                 if (StringUtils.isBlank(baseEntityID)) {

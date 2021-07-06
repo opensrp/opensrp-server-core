@@ -650,5 +650,4 @@ public class PhysicalLocationService {
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
 		return locationTree;
 	}
-	
 }
