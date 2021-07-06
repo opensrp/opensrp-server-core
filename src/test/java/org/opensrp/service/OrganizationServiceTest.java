@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -304,5 +305,11 @@ public class OrganizationServiceTest {
 		List<Organization> organizations = organizationService.getSearchOrganizations(organizationSearchBean);
 		verify(organizationRepository).findSearchOrganizations(organizationSearchBean);
 		assertEquals(expected, organizations);
+	}
+
+	@Test
+	public void testCountAllOrganizations() {
+		doReturn(2L).when(organizationRepository).countAllOrganizations();
+		assertEquals(2L, organizationService.countAllOrganizations());
 	}
 }

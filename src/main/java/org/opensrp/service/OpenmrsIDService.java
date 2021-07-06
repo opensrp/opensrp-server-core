@@ -69,10 +69,8 @@ public class OpenmrsIDService {
 		openmrsQueryUrl += "?source=" + this.openmrsSourceId + "&numberToGenerate=" + size;
 		openmrsQueryUrl += "&username=" + this.openmrsUserName + "&password=" + this.openmrsPassword;
 		
-		HttpGet get = new HttpGet(openmrsQueryUrl);
 		try {
-			HttpResponse response = client.execute(get);
-			String jsonResponse = EntityUtils.toString(response.getEntity());
+			String jsonResponse = getHttpResponse(openmrsQueryUrl);
 			
 			JSONObject responseJson = new JSONObject(jsonResponse);
 			JSONArray jsonArray = responseJson.getJSONArray("identifiers");
@@ -188,11 +186,8 @@ public class OpenmrsIDService {
 		openMRSUrl += "?source=" + source + "&numberToGenerate=" + numberToGenerate;
 		openMRSUrl += "&username=" + openmrsUserName + "&password=" + openmrsPassword;
 		
-		HttpGet get = new HttpGet(openMRSUrl);
 		try {
-			HttpResponse response = client.execute(get);
-			String jsonResponse = EntityUtils.toString(response.getEntity());
-			
+			String jsonResponse = getHttpResponse(openMRSUrl);
 			JSONObject responseJson = new JSONObject(jsonResponse);
 			JSONArray jsonArray = responseJson.getJSONArray("identifiers");
 			
@@ -210,6 +205,12 @@ public class OpenmrsIDService {
 			return null;
 		}
 		
+	}
+
+	protected String getHttpResponse(String url) throws IOException {
+		HttpGet get = new HttpGet(url);
+		HttpResponse response = client.execute(get);
+		return EntityUtils.toString(response.getEntity());
 	}
 	
 }

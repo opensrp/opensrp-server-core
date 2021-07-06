@@ -373,4 +373,10 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
 	    assertEquals("Second Practitioner",practitioners.get(1).getName());
     }
 
+    @Test
+    public void testCountAllPractitioners() {
+        Practitioner practitioner1 = initTestPractitioner1();
+        practitionerRepository.add(practitioner1);
+        assertEquals(1, practitionerRepository.countAllPractitioners());
+    }
 }

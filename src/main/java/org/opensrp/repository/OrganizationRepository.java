@@ -80,4 +80,6 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	List<Organization> getAllOrganizations(OrganizationSearchBean organizationSearchBean);
 
 	void unassignLocationAndPlan(Long planId);
+
+	long countAllOrganizations();
 }

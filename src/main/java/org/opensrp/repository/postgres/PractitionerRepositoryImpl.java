@@ -266,4 +266,8 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         return practitioners;
     }
 
+    @Override
+    public long countAllPractitioners() {
+      return practitionerMapper.countByExample(new PractitionerExample());
+    }
 }

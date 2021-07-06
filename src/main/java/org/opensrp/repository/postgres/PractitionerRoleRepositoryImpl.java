@@ -309,7 +309,12 @@ public class PractitionerRoleRepositoryImpl extends BaseRepositoryImpl<Practitio
         return convert(pgPractitionerRoleList);
     }
 
-    private boolean isExistingPractitionerRole(Long organizationId, Long practitionerId, String code,
+	@Override
+	public long countAllPractitionerRoles() {
+		return practitionerRoleMapper.countByExample(new PractitionerRoleExample());
+	}
+
+	private boolean isExistingPractitionerRole(Long organizationId, Long practitionerId, String code,
             org.opensrp.domain.postgres.PractitionerRole practitionerRole) {
         if (organizationId != null && practitionerId != null) {
             return practitionerRole.getPractitionerId().equals(practitionerId)

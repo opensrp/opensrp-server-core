@@ -14,16 +14,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.ibm.fhir.model.resource.Bundle;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.LocationTagMap;
+import org.opensrp.domain.LocationAndStock;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Location;
 import org.opensrp.domain.postgres.LocationMetadata;
 import org.opensrp.domain.postgres.LocationMetadataExample;
 import org.opensrp.domain.postgres.LocationMetadataExample.Criteria;
+import org.opensrp.domain.postgres.Stock;
+import org.opensrp.domain.postgres.StockMetadataExample;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureFamilyDetails;
 import org.opensrp.domain.postgres.StructureMetadata;
@@ -35,9 +39,12 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
 import org.opensrp.search.LocationSearchBean;
 import org.opensrp.service.LocationTagService;
+import org.opensrp.util.RepositoryUtil;
 import org.smartregister.converters.LocationConverter;
+import org.smartregister.converters.PhysicalLocationAndStocksConverter;
 import org.smartregister.domain.LocationTag;
 import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.PhysicalLocationAndStocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -563,7 +570,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		} else {
 			structureMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
 		}
-		Pair<Integer, Integer> pageLimitAndOffSet = getPageSizeAndOffset(limit, pageNumber);
+		Pair<Integer, Integer> pageLimitAndOffSet = RepositoryUtil.getPageSizeAndOffset(pageNumber, limit);
 		List<Location> locations = structureMetadataMapper.selectManyByProperties(structureMetadataExample, null,
 		    returnGeometry, pageLimitAndOffSet.getRight(), pageLimitAndOffSet.getLeft());
 		return convert(locations);
@@ -714,7 +721,66 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		        .andStatusIn(Arrays.asList(ACTIVE.name(), PENDING_REVIEW.name()));
 		return locationMetadataMapper.countByExample(locationMetadataExample);
 	}
-	
+
+	@Override
+	public List<Bundle> findLocationAndStocksByJurisdiction(String parentId) {
+		List<PhysicalLocationAndStocks> locationAndStocks = findLocationAndStocksByJurisdiction(parentId, null, true, -1);
+		List<Bundle> bundleList = new ArrayList<>();
+		for(PhysicalLocationAndStocks physicalLocationAndStock: locationAndStocks){
+			bundleList.add(PhysicalLocationAndStocksConverter
+				.convertLocationAndStocksToBundleResource(physicalLocationAndStock));
+		}
+		return bundleList;
+	}
+
+	private List<PhysicalLocationAndStocks> convertToPhysicalLocationAndStock(List<LocationAndStock> locationAndStocks){
+		if (locationAndStocks == null || locationAndStocks.isEmpty()) {
+			return new ArrayList<>();
+		}
+
+		List<PhysicalLocationAndStocks> convertedLocations = new ArrayList<>();
+		for (LocationAndStock locationAndStock : locationAndStocks) {
+			PhysicalLocationAndStocks convertedLocation = convertToPhysicalLocationAndStock(locationAndStock);
+			if (convertedLocation != null) {
+				convertedLocations.add(convertedLocation);
+			}
+		}
+
+		return convertedLocations;
+	}
+
+	@Override
+	public List<PhysicalLocationAndStocks> findLocationAndStocksByJurisdiction(String parentId, Map<String, String> properties,
+			boolean returnGeometry, int limit) {
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		if (StringUtils.isNotBlank(parentId)) {
+			structureMetadataExample.createCriteria().andParentIdEqualTo(parentId);
+		}
+		StockMetadataExample stockMetadataExample = new StockMetadataExample();
+		stockMetadataExample.createCriteria().andDateDeletedIsNull();
+		return convertToPhysicalLocationAndStock(structureMetadataMapper.findStructureAndStocksByJurisdiction(structureMetadataExample,
+				stockMetadataExample,null,
+		    returnGeometry, 0, limit));
+	}
+
+
+	private PhysicalLocationAndStocks convertToPhysicalLocationAndStock(LocationAndStock entity) {
+		if (entity == null || entity.getJson() == null || !(entity.getJson() instanceof PhysicalLocation)) {
+			return null;
+		}
+
+		PhysicalLocationAndStocks location = (PhysicalLocationAndStocks) entity.getJson();
+		location.setJurisdiction(false);
+		List<org.smartregister.domain.Stock> stocks = new ArrayList<>();
+		for(Stock stock: entity.getStocks()){
+			if (stock != null && stock.getJson() != null && (stock.getJson() instanceof org.smartregister.domain.Stock)) {
+				stocks.add((org.smartregister.domain.Stock) stock.getJson());
+			}
+		}
+		location.setStocks(stocks);
+		return location;
+	}
+
 	@Override
 	protected Long retrievePrimaryKey(PhysicalLocation entity) {
 		Object uniqueId = getUniqueField(entity);
@@ -953,22 +1019,5 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
 		return locations.stream().map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
 		        .collect(Collectors.toList());
-	}
-
-	private Pair<Integer, Integer> getPageSizeAndOffset(Integer pageSize, Integer pageNumber) {
-
-		Integer sizePerPage;
-		Integer offset = 0;
-		if (pageSize == null || pageSize == 0) {
-			sizePerPage = DEFAULT_FETCH_SIZE;
-		} else {
-			sizePerPage = pageSize;
-		}
-
-		if (pageNumber != null && pageNumber != 0) {
-			offset = (pageNumber - 1) * sizePerPage;
-		}
-
-		return Pair.of(sizePerPage, offset);
 	}
 }
