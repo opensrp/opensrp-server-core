@@ -5,7 +5,7 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>3.0.1-SNAPSHOT</version>
+	<version>3.0.2-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>https://github.com/OpenSRP/opensrp-server-core</url>
@@ -24,7 +24,7 @@
 
 		<opensrp.api.version>1.0.6-SNAPSHOT</opensrp.api.version>
 		<opensrp.interface.version>2.0.1-SNAPSHOT</opensrp.interface.version>
-		<opensrp.plan.evaluator.version>1.5.1-SNAPSHOT</opensrp.plan.evaluator.version>
+		<opensrp.plan.evaluator.version>1.6.1-SNAPSHOT</opensrp.plan.evaluator.version>
 		<jackson.version>2.12.1</jackson.version>
 		<powermock.version>2.0.5</powermock.version>
 		<lombok.version>1.18.12</lombok.version>
@@ -346,7 +346,7 @@
 			<version>${redis.jedis.version}</version>
 		    <scope>test</scope>
 		</dependency>
-		
+
 
 		<!-- Test dependencies -->
 		<dependency>

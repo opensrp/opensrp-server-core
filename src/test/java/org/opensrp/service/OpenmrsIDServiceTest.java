@@ -5,9 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.opensrp.service.OpenmrsIDService.CHILD_REGISTER_CARD_NUMBER;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -20,22 +24,20 @@ import java.util.Map;
 import java.util.Set;
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.smartregister.domain.Address;
 import org.smartregister.domain.Client;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 
 	@Autowired
-	OpenmrsIDService openmrsIDService;
+	private OpenmrsIDService openmrsIDService;
 
 	@Autowired
-	UniqueIdRepository uniqueIdRepository;
+	private UniqueIdRepository uniqueIdRepository;
 
 	private Set<String> scripts = new HashSet<String>();
 
@@ -110,8 +112,8 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 		List<String> downloadedIds = new ArrayList<>();
 		downloadedIds.add("1");
 		downloadedIds.add("2");
-		OpenmrsIDService openmrsIDServiceSpy = Mockito.spy(openmrsIDService);
-		Mockito.doReturn(downloadedIds).when(openmrsIDServiceSpy).downloadOpenmrsIds(anyLong());
+		OpenmrsIDService openmrsIDServiceSpy = spy(openmrsIDService);
+		doReturn(downloadedIds).when(openmrsIDServiceSpy).downloadOpenmrsIds(anyLong());
 		
 		openmrsIDServiceSpy.downloadAndSaveIds(2, "test");
 
@@ -211,5 +213,28 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 		assertEquals(expected.getOpenmrsId(), actual.getOpenmrsId());
 		assertEquals(expected.getStatus(), actual.getStatus());
 		assertEquals(expected.getUsedBy(), actual.getUsedBy());
+	}
+
+	@Test
+	public void testGetOpenMRSIdentifiersShouldReturnOpenmrsIds() throws IOException {
+		String source = "1";
+		String numberToGenerate = "2";
+		OpenmrsIDService spyOpenmrsIDService = spy(openmrsIDService);
+		String openmrsUrl = "http://localhost:8080/openmrs/module/idgen/exportIdentifiers.form?source="+source+"&numberToGenerate="+numberToGenerate+"&username=admin&password=Admin123";
+		doReturn("{\"identifiers\":[\"100399-5\",\"100400-1\"]}").when(spyOpenmrsIDService).getHttpResponse(eq(openmrsUrl));
+		List<String> identifies = spyOpenmrsIDService.getOpenMRSIdentifiers(source, numberToGenerate);
+		assertFalse(identifies.isEmpty());
+		assertEquals(2, identifies.size());
+	}
+
+	@Test
+	public void testDownloadOpenmrsIdsShouldReturnOpenmrsIds() throws IOException {
+		long numberToGenerate = 2L;
+		OpenmrsIDService spyOpenmrsIDService = spy(OpenmrsIDService.createInstanceWithOpenMrsUrl("http://localhost:8080/openmrs/"));
+		String openmrsUrl = "http://localhost:8080/openmrs/module/idgen/exportIdentifiers.form?source=0&numberToGenerate=" + numberToGenerate + "&username=null&password=null";
+		doReturn("{\"identifiers\":[\"100399-5\",\"100400-1\"]}").when(spyOpenmrsIDService).getHttpResponse(eq(openmrsUrl));
+		List<String> identifies = spyOpenmrsIDService.downloadOpenmrsIds(numberToGenerate);
+		assertFalse(identifies.isEmpty());
+		assertEquals(2, identifies.size());
 	}
 }
