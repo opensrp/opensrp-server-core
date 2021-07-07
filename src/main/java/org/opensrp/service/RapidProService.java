@@ -10,8 +10,8 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-import org.opensrp.common.util.DateUtil;
 import org.opensrp.util.constants.RapidProConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URI;
+import java.time.Instant;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class RapidProService {
@@ -26,6 +28,8 @@ public class RapidProService {
 	private static final Logger logger = LogManager.getLogger(RapidProService.class.toString());
 
 	private static final String API_URL = "/api/v2";
+
+	private static final ReentrantLock reentrantLock = new ReentrantLock();
 
 	@Value("#{opensrp['rapidpro.url']}")
 	private String rapidProUrl;
@@ -57,11 +61,20 @@ public class RapidProService {
 		this.clientService = clientService;
 	}
 
+	/**
+	 * This method will query RapidPro contacts filtering by the date/time they were last modified.
+	 * The default placeholder string is the hash sign ('#'). Query all contacts modified before today's date/time when the
+	 * parameter passed is a '#' otherwise get only the contacts that were updated after the last modified date.
+	 *
+	 * @param dateModified the last date the contact was updated. Default placeholder '#'
+	 * @return A list of RapidPro contacts
+	 */
 	public JSONArray queryContacts(String dateModified) {
 
 		JSONArray results = null;
-		String url = StringUtils.isNotBlank(dateModified) ? getBaseUrl() + "/contacts.json?after=" + dateModified :
-				getBaseUrl() + "/contacts.json?before=" + DateUtil.getTodayAsString();
+		String url = !dateModified.equalsIgnoreCase("#") ? getBaseUrl() + "/contacts.json?after=" + dateModified :
+				getBaseUrl() + "/contacts.json?before=" + Instant.now().toString();
+
 		HttpGet contactsRequest = (HttpGet) setupRapidproRequest(url, new HttpGet());
 
 		try {
@@ -83,7 +96,18 @@ public class RapidProService {
 	}
 
 	private void processResults(JSONArray results) {
-		logger.info("Found " + (results.isEmpty() ? 0 : results.length()) + " recently modified contacts");
+		if (!reentrantLock.tryLock()) {
+			logger.warn("Rapidpro Results processing in progress...");
+			return;
+		}
+
+		try {
+			logger.info("Found " + (results.isEmpty() ? 0 : results.length()) + " recently modified contacts");
+		} catch (JSONException jsonException) {
+			logger.error(jsonException.getMessage(), jsonException);
+		} finally {
+			reentrantLock.unlock();
+		}
 	}
 
 	private String getBaseUrl() {
