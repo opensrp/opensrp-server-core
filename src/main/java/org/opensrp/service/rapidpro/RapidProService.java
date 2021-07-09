@@ -1,4 +1,4 @@
-package org.opensrp.service;
+package org.opensrp.service.rapidpro;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
@@ -9,10 +9,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.opensrp.util.constants.RapidProConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,16 +16,13 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URI;
 import java.time.Instant;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class RapidProService {
 
-	private static final Logger logger = LogManager.getLogger(RapidProService.class.toString());
+	private static final Logger logger = LogManager.getLogger(RapidProService.class);
 
 	private static final String API_URL = "/api/v2";
-
-	private static final ReentrantLock reentrantLock = new ReentrantLock();
 
 	@Value("#{opensrp['rapidpro.url']}")
 	private String rapidProUrl;
@@ -39,9 +32,7 @@ public class RapidProService {
 
 	private HttpClient httpClient;
 
-	private EventService eventService;
-
-	private ClientService clientService;
+	private ZeirRapidProService zeirRapidProService;
 
 	public RapidProService() {
 		this.httpClient = HttpClientBuilder.create().build();
@@ -52,13 +43,8 @@ public class RapidProService {
 	}
 
 	@Autowired
-	public void setEventService(EventService eventService) {
-		this.eventService = eventService;
-	}
-
-	@Autowired
-	public void setClientService(ClientService clientService) {
-		this.clientService = clientService;
+	public void setZeirRapidProService(ZeirRapidProService zeirRapidProService) {
+		this.zeirRapidProService = zeirRapidProService;
 	}
 
 	/**
@@ -69,9 +55,8 @@ public class RapidProService {
 	 * @param dateModified the last date the contact was updated. Default placeholder '#'
 	 * @return A list of RapidPro contacts
 	 */
-	public JSONArray queryContacts(String dateModified) {
+	public void queryContacts(String dateModified) {
 
-		JSONArray results = null;
 		String url = !dateModified.equalsIgnoreCase("#") ? getBaseUrl() + "/contacts.json?after=" + dateModified :
 				getBaseUrl() + "/contacts.json?before=" + Instant.now().toString();
 
@@ -79,34 +64,12 @@ public class RapidProService {
 
 		try {
 			HttpResponse httpResponse = httpClient.execute(contactsRequest);
-			if(httpResponse != null && httpResponse.getEntity() != null) {
-				JSONObject responseJson = new JSONObject(EntityUtils.toString(httpResponse.getEntity()));
-
-				results = responseJson.optJSONArray(RapidProConstants.RESULTS);
-
-				if (results != null) {
-					processResults(results);
-				}
+			if (httpResponse != null && httpResponse.getEntity() != null) {
+				zeirRapidProService.handleContactResponse(EntityUtils.toString(httpResponse.getEntity()));
 			}
-		} catch (IOException exception) {
+		}
+		catch (IOException exception) {
 			logger.error(exception.getMessage(), exception);
-			return null;
-		}
-		return results;
-	}
-
-	private void processResults(JSONArray results) {
-		if (!reentrantLock.tryLock()) {
-			logger.warn("Rapidpro Results processing in progress...");
-			return;
-		}
-
-		try {
-			logger.info("Found " + (results.isEmpty() ? 0 : results.length()) + " recently modified contacts");
-		} catch (JSONException jsonException) {
-			logger.error(jsonException.getMessage(), jsonException);
-		} finally {
-			reentrantLock.unlock();
 		}
 	}
 

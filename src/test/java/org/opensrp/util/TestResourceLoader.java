@@ -44,10 +44,8 @@ public class TestResourceLoader {
 		return new JSONObject(new FileReader(fsfile));
 	}
 	
-	protected String getFullPath(String fileName) throws IOException {
-		ResourceLoader loader = new DefaultResourceLoader();
-		String path = loader.getResource(fileName).getURI().getPath();
-		return path;
+	public String getFullPath(String fileName) throws IOException {
+		return new DefaultResourceLoader().getResource(fileName).getURI().getPath();
 	}
 	
 }
