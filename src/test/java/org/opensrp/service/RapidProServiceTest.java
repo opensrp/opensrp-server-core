@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
+import org.opensrp.service.callback.RapidProOnTaskComplete;
 import org.opensrp.service.rapidpro.RapidProService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,6 +23,9 @@ public class RapidProServiceTest extends BaseRepositoryTest {
 
 	@Mock
 	private HttpClient httpClient;
+
+	@Mock
+	private RapidProOnTaskComplete onTaskComplete;
 
 	@Autowired
 	private RapidProService rapidProService;
@@ -40,7 +44,7 @@ public class RapidProServiceTest extends BaseRepositoryTest {
 		Mockito.doReturn(new ByteArrayInputStream(jsonResponse.getBytes())).when(entity).getContent();
 		Mockito.doReturn(entity).when(httpResponse).getEntity();
 		Mockito.doReturn(httpResponse).when(httpClient).execute(Mockito.any(HttpUriRequest.class));
-		rapidProService.queryContacts("2021-07-01T00:00:00");
+		rapidProService.queryContacts("2021-07-01T00:00:00", onTaskComplete);
 	}
 
 	@Override

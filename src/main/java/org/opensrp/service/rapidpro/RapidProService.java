@@ -9,6 +9,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensrp.service.PhysicalLocationService;
+import org.opensrp.service.callback.RapidProOnTaskComplete;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ public class RapidProService {
 
 	private HttpClient httpClient;
 
+	private PhysicalLocationService locationService;
+
 	private ZeirRapidProService zeirRapidProService;
 
 	public RapidProService() {
@@ -40,6 +44,11 @@ public class RapidProService {
 
 	public void setHttpClient(HttpClient httpClient) {
 		this.httpClient = httpClient;
+	}
+
+	@Autowired
+	public void setLocationService(PhysicalLocationService locationService) {
+		this.locationService = locationService;
 	}
 
 	@Autowired
@@ -55,7 +64,7 @@ public class RapidProService {
 	 * @param dateModified the last date the contact was updated. Default placeholder '#'
 	 * @return A list of RapidPro contacts
 	 */
-	public void queryContacts(String dateModified) {
+	public void queryContacts(String dateModified, RapidProOnTaskComplete onTaskComplete) {
 
 		String url = !dateModified.equalsIgnoreCase("#") ? getBaseUrl() + "/contacts.json?after=" + dateModified :
 				getBaseUrl() + "/contacts.json?before=" + Instant.now().toString();
@@ -65,7 +74,7 @@ public class RapidProService {
 		try {
 			HttpResponse httpResponse = httpClient.execute(contactsRequest);
 			if (httpResponse != null && httpResponse.getEntity() != null) {
-				zeirRapidProService.handleContactResponse(EntityUtils.toString(httpResponse.getEntity()));
+				zeirRapidProService.handleContactResponse(EntityUtils.toString(httpResponse.getEntity()), onTaskComplete);
 			}
 		}
 		catch (IOException exception) {
