@@ -19,5 +19,9 @@ public interface CustomSettingMetadataMapper extends SettingsMetadataMapper {
 	int insertMany(@Param("settingsMetadata") List<SettingsMetadata> settingsMetadata);
 
 	int updateMany(@Param("settingsMetadata") List<SettingsMetadata> settingsMetadata);
+
+	List<SettingsMetadata> selectManySettingsMetadata(@Param("example") SettingsMetadataExample settingsExample,
+													   @Param("offset") int offset,
+													   @Param("limit") int limit);
 }
 
