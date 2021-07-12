@@ -119,6 +119,10 @@ public class PhysicalLocationService {
 	public List<PhysicalLocation> findLocationsByNames(String locationNames, long serverVersion) {
 		return locationRepository.findLocationsByNames(locationNames, serverVersion);
 	}
+
+	public List<PhysicalLocation> findLocationsByName(String locationName) {
+		return locationRepository.findLocationsByName(locationName);
+	}
 	
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {
 		if (StringUtils.isBlank(parentId))

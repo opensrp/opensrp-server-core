@@ -25,6 +25,8 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 
 	List<PhysicalLocation> findLocationsByNames(String locationNames, long serverVersion);
 
+	List<PhysicalLocation> findLocationsByName(String locationName);
+
 	List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion);
 
 	List<PhysicalLocation> findByEmptyServerVersion();

@@ -302,6 +302,16 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
+
+	@Override
+	public List<PhysicalLocation> findLocationsByName(String locationNames) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria().andNameLike(locationNames);
+		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+		Long count = countAllLocations(0L);
+		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, count.intValue());
+		return convert(locations);
+	}
 	
 	@Override
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentIds, long serverVersion) {
