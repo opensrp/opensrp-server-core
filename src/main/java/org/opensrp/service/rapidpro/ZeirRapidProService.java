@@ -28,6 +28,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Subclass of BaseRapidProService for ZEIR project. This implementation is for RapidPro/MVACC integration.
+ */
 @Service
 public class ZeirRapidProService extends BaseRapidProService implements RapidProResponseCallback {
 
@@ -63,8 +66,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 						if (supervisorContact != null) {
 							RapidProFields supervisorFields = supervisorContact.getFields();
 							String locationId = getProviderLocationId(supervisorFields.getProvince(),
-									supervisorFields.getDistrict(),
-									supervisorFields.getFacility());
+									supervisorFields.getDistrict(), supervisorFields.getFacility());
 							rapidProContact.getFields().setFacilityLocationId(locationId);
 
 							processRegistrationEventClient(rapidProContact, rapidProContacts);

@@ -23,6 +23,9 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+/**
+ * Base class for RapidProService, extend this class to provide project specific integration with RapidPro
+ */
 public abstract class BaseRapidProService {
 
 	private static final String API_URL = "/api/v2";
