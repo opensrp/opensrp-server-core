@@ -22,7 +22,6 @@ public interface UniqueIdRepository extends BaseRepository<UniqueId> {
     UniqueId findByIdentifierSourceOrderByIdDesc(Long identifierSource);
     
     Set<String> findReservedIdentifiers();
-    
-    
 
+    void markIdentifierAsUsed(String identifier);
 }

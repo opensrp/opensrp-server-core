@@ -123,11 +123,15 @@ public class UniqueIdGeneratorProcessor {
 
 	private void saveIds(List<String> ids, String location, String status, Date updatedAt, String usedBy,
 			Date createdAt, Long idSource) {
-		for (int i = 0; i < ids.size(); i++) {
-			UniqueId uniqueId = new UniqueId("", status, usedBy, location, createdAt, updatedAt, ids.get(i), idSource,
+		for (String id : ids) {
+			UniqueId uniqueId = new UniqueId("", status, usedBy, location, createdAt, updatedAt, id, idSource,
 					Boolean.FALSE);
 			uniqueIdRepository.add(uniqueId);
 		}
+	}
+
+	public void markIdentifierAsUsed(String identifier) {
+		uniqueIdRepository.markIdentifierAsUsed(identifier);
 	}
 
 }
