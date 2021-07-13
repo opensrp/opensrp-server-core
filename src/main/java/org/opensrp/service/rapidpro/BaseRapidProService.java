@@ -2,17 +2,14 @@ package org.opensrp.service.rapidpro;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
-import org.opensrp.domain.rapidpro.converter.BaseRapidProClientConverter;
-import org.opensrp.domain.rapidpro.converter.BaseRapidProEventConverter;
 import org.opensrp.service.ClientService;
 import org.opensrp.service.EventService;
 import org.opensrp.service.PhysicalLocationService;
-import org.smartregister.domain.Client;
-import org.smartregister.domain.Event;
 import org.smartregister.domain.LocationTag;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,13 +35,19 @@ public abstract class BaseRapidProService {
 
 	protected ClientService clientService;
 
+	protected PhysicalLocationService locationService;
+
+	protected HttpClient httpClient;
+
 	@Value("#{opensrp['rapidpro.url']}")
 	private String rapidProUrl;
 
 	@Value("#{opensrp['rapidpro.token']}")
 	private String rapidProToken;
 
-	protected PhysicalLocationService locationService;
+	public BaseRapidProService() {
+		this.httpClient = HttpClientBuilder.create().build();
+	}
 
 	@Autowired
 	public void setLocationService(PhysicalLocationService locationService) {
@@ -61,14 +64,8 @@ public abstract class BaseRapidProService {
 		this.clientService = clientService;
 	}
 
-	protected void saveEvent(RapidProContact rapidProContact, BaseRapidProEventConverter eventConverter) {
-		Event event = eventConverter.convertContactToEvent(rapidProContact);
-		eventService.addorUpdateEvent(event, rapidProContact.getFields().getSupervisor());
-	}
-
-	protected void saveClient(RapidProContact rapidProContact, BaseRapidProClientConverter clientConverter) {
-		Client client = clientConverter.convertContactToClient(rapidProContact);
-		clientService.addorUpdate(client);
+	public void setHttpClient(HttpClient httpClient) {
+		this.httpClient = httpClient;
 	}
 
 	public String getBaseUrl() {

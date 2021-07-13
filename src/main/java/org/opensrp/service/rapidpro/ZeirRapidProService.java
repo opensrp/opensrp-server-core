@@ -2,18 +2,29 @@ package org.opensrp.service.rapidpro;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
+import org.opensrp.domain.rapidpro.converter.BaseRapidProEventConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.*;
 import org.opensrp.service.callback.RapidProOnTaskComplete;
 import org.opensrp.service.callback.RapidProResponseCallback;
 import org.opensrp.util.constants.RapidProConstants;
+import org.smartregister.domain.Client;
+import org.smartregister.domain.Event;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ZeirRapidProService extends BaseRapidProService implements RapidProResponseCallback {
@@ -26,12 +37,11 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	 * on the available data on the contacts field.
 	 *
 	 * @param response the response received from the RapidPro
+	 * @param onTaskComplete callback method invoked when processing contact is completed
 	 */
 	@Override
 	public void handleContactResponse(String response, RapidProOnTaskComplete onTaskComplete) {
-		JSONObject responseJson = new JSONObject(response);
-		JSONArray results = responseJson.optJSONArray(RapidProConstants.RESULTS);
-
+		JSONArray results = getResults(response);
 		if (results != null) {
 
 			if (!reentrantLock.tryLock()) {
@@ -39,16 +49,26 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			}
 
 			try {
-				List<RapidProContact> rapidProContacts = objectMapper.readValue(results.toString(), new TypeReference<>() {
-
-				});
+				List<RapidProContact> rapidProContacts = getRapidProContacts(results);
 
 				logger.info("Found " + (rapidProContacts.isEmpty() ? 0 : rapidProContacts.size()) + " modified contacts");
 
 				for (RapidProContact rapidProContact : rapidProContacts) {
-					processRegistrationEventClient(rapidProContact);
-					processVaccinationEvent(rapidProContact);
-					processGrowthMonitoringEvent(rapidProContact);
+					RapidProContact supervisorContact =
+							getSupervisorContact(rapidProContact.getFields().getSupervisorPhone());
+					if (supervisorContact != null) {
+						RapidProFields supervisorFields = supervisorContact.getFields();
+						String locationId = getProviderLocationId(supervisorFields.getProvince(),
+								supervisorFields.getDistrict(),
+								supervisorFields.getFacility());
+						rapidProContact.getFields().setFacilityLocationId(locationId);
+
+						processRegistrationEventClient(rapidProContact, rapidProContacts);
+						processVaccinationEvent(rapidProContact);
+						processGrowthMonitoringEvent(rapidProContact);
+					} else {
+						processSupervisor(rapidProContact);
+					}
 				}
 				onTaskComplete.completeTask();
 			}
@@ -61,27 +81,98 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		}
 	}
 
-	public void processRegistrationEventClient(RapidProContact rapidProContact) {
-		saveClient(rapidProContact, new ZeirChildClientConverter());
-		saveClient(rapidProContact, new ZeirMotherClientConverter());
-		saveEvent(rapidProContact, new ZeirBirthRegistrationConverter());
+	private void processSupervisor(RapidProContact rapidProContact) {
+		//TODO implement processing for supervisor
+	}
+
+	private JSONArray getResults(String response) {
+		JSONObject responseJson = new JSONObject(response);
+		return responseJson.optJSONArray(RapidProConstants.RESULTS);
+	}
+
+	private List<RapidProContact> getRapidProContacts(JSONArray results) throws JsonProcessingException {
+		return objectMapper.readValue(results.toString(), new TypeReference<>() {
+
+		});
+	}
+
+	/**
+	 * Create both mother and child registration event and client. Registration should only be done when both mother and
+	 * child contacts are present otherwise proceed to process other events (Vaccination and Growth Monitoring)
+	 *
+	 * @param rapidProContact  Current contact
+	 * @param rapidProContacts All RapidPro contacts used to filter mother contact
+	 */
+	public void processRegistrationEventClient(RapidProContact rapidProContact, List<RapidProContact> rapidProContacts) {
+		RapidProFields fields = rapidProContact.getFields();
+		if (RapidProConstants.CHILD.equalsIgnoreCase(fields.getPosition())) {
+			RapidProContact motherContact = getMotherContact(fields.getMotherName(), fields.getMotherPhone(),
+					rapidProContacts);
+			if (motherContact != null) {
+				processChildRegistration(rapidProContact, motherContact);
+
+				Client motherClient = clientService.getByBaseEntityId(motherContact.getUuid());
+				if (motherClient == null) {
+					ZeirMotherClientConverter clientConverter = new ZeirMotherClientConverter();
+					Client client = clientConverter.convertContactToClient(motherContact);
+					clientService.addorUpdate(client);
+					saveEvent(motherContact, new ZeirMotherRegistrationConverter());
+				}
+			}
+		}
+	}
+
+	private void saveEvent(RapidProContact rapidProContact, BaseRapidProEventConverter eventConverter) {
+		Event event = eventConverter.convertContactToEvent(rapidProContact);
+		eventService.addorUpdateEvent(event, rapidProContact.getFields().getSupervisorPhone());
+	}
+
+	private void processChildRegistration(RapidProContact childContact, RapidProContact motherContact) {
+		Client existingClient = clientService.getByBaseEntityId(childContact.getUuid());
+
+		if (existingClient == null) {
+			ZeirChildClientConverter clientConverter = new ZeirChildClientConverter();
+			Client client = clientConverter.convertContactToClient(childContact);
+			client.getRelationships().put(RapidProConstants.MOTHER, Collections.singletonList(motherContact.getUuid()));
+			clientService.addorUpdate(client);
+			saveEvent(childContact, new ZeirBirthRegistrationConverter());
+		}
+	}
+
+	private RapidProContact getMotherContact(String motherName, String motherPhone, List<RapidProContact> rapidProContacts) {
+		List<RapidProContact> motherList = rapidProContacts.stream()
+				.filter(it ->
+						RapidProConstants.CARETAKER.equalsIgnoreCase(it.getFields().getPosition()) &&
+								motherName.equalsIgnoreCase(it.getFields().getMotherName()) &&
+								motherPhone.equalsIgnoreCase(it.getFields().getMotherPhone()))
+				.collect(Collectors.toList());
+		if (motherList.isEmpty()) {
+			return null;
+		}
+		return motherList.get(0);
 	}
 
 	public void processVaccinationEvent(RapidProContact rapidProContact) {
-		saveEvent(rapidProContact, new ZeirVaccinationConverter());
+		if (RapidProConstants.CHILD.equalsIgnoreCase(rapidProContact.getFields().getPosition())) {
+			ZeirVaccinationConverter eventConverter = new ZeirVaccinationConverter();
+			Event event = eventConverter.convertContactToEvent(rapidProContact);
+			eventService.addorUpdateEvent(event, rapidProContact.getFields().getSupervisorPhone());
+		}
 	}
 
 	public void processGrowthMonitoringEvent(RapidProContact rapidProContact) {
-		saveEvent(rapidProContact, new ZeirGrowthMonitoringConverter());
+		if (RapidProConstants.CHILD.equalsIgnoreCase(rapidProContact.getFields().getPosition())) {
+			ZeirGrowthMonitoringConverter eventConverter = new ZeirGrowthMonitoringConverter();
+			Event event = eventConverter.convertContactToEvent(rapidProContact);
+			eventService.addorUpdateEvent(event, rapidProContact.getFields().getSupervisorPhone());
+		}
 	}
 
-	public String getProviderLocationId(RapidProContact rapidProContact) {
+	public String getProviderLocationId(String province, String district, String facility) {
+		if (StringUtils.isBlank(province) || StringUtils.isBlank(province) || StringUtils.isBlank(province)) {
+			return null;
+		}
 		Long count = locationService.countAllLocations(0L);
-
-		RapidProFields fields = rapidProContact.getFields();
-		String province = fields.getProvince();
-		String district = fields.getDistrict();
-		String facility = fields.getFacility();
 
 		List<PhysicalLocation> provinceLocations = locationService.findLocationsByName(province);
 
@@ -121,6 +212,50 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 					return locationService.findLocationByIdWithChildren(false, districtUuid, count.intValue());
 				}
 			}
+		}
+		return null;
+	}
+
+	public void queryContacts(String dateModified, RapidProOnTaskComplete onTaskComplete) {
+		String baseUrl = getBaseUrl();
+		String url = !dateModified.equalsIgnoreCase("#") ? baseUrl + "/contacts.json?after=" + dateModified :
+				baseUrl + "/contacts.json?before=" + Instant.now().toString();
+
+		HttpGet contactsRequest = (HttpGet) setupRapidproRequest(url, new HttpGet());
+
+		try {
+			HttpResponse httpResponse = httpClient.execute(contactsRequest);
+			if (httpResponse != null && httpResponse.getEntity() != null) {
+				handleContactResponse(EntityUtils.toString(httpResponse.getEntity()), onTaskComplete);
+			}
+		}
+		catch (IOException exception) {
+			logger.error(exception.getMessage(), exception);
+		}
+	}
+
+	public RapidProContact getSupervisorContact(String phone) {
+
+		if (StringUtils.isBlank(phone) || StringUtils.isEmpty(phone)) {
+			return null;
+		}
+
+		HttpGet contactsRequest = (HttpGet) setupRapidproRequest(getBaseUrl() + "/contacts.json?urn=tel" + phone,
+				new HttpGet());
+
+		try {
+			HttpResponse httpResponse = httpClient.execute(contactsRequest);
+			if (httpResponse != null && httpResponse.getEntity() != null) {
+				JSONArray results = getResults(EntityUtils.toString(httpResponse.getEntity()));
+				List<RapidProContact> rapidProContacts = getRapidProContacts(results);
+				if (rapidProContacts == null || rapidProContacts.isEmpty()) {
+					return null;
+				}
+				return rapidProContacts.get(0);
+			}
+		}
+		catch (IOException exception) {
+			logger.error(exception.getMessage(), exception);
 		}
 		return null;
 	}
