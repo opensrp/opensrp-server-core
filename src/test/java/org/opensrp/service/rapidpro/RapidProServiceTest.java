@@ -30,9 +30,8 @@ public class RapidProServiceTest extends BaseRepositoryTest {
 
 	@Test
 	public void testQueryContacts() {
-		String dateModified = "2021-07-01T00:00:00";
-		rapidProService.queryContacts(dateModified, onTaskComplete);
-		Mockito.verify(zeirRapidProService, Mockito.atLeastOnce()).queryContacts(dateModified, onTaskComplete);
+		rapidProService.queryContacts(onTaskComplete);
+		Mockito.verify(zeirRapidProService, Mockito.atLeastOnce()).queryContacts(onTaskComplete);
 	}
 
 	@Override

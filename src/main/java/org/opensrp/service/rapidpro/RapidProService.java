@@ -18,11 +18,8 @@ public class RapidProService {
 	 * This method will query RapidPro contacts filtering by the date/time they were last modified.
 	 * The default placeholder string is the hash sign ('#'). Query all contacts modified before today's date/time when the
 	 * parameter passed is a '#' otherwise get only the contacts that were updated after the last modified date.
-	 *
-	 * @param dateModified the last date the contact was updated. Default placeholder '#'
-	 * @return A list of RapidPro contacts
 	 */
-	public void queryContacts(String dateModified, RapidProOnTaskComplete onTaskComplete) {
-		zeirRapidProService.queryContacts(dateModified, onTaskComplete);
+	public void queryContacts(RapidProOnTaskComplete onTaskComplete) {
+		zeirRapidProService.queryContacts(onTaskComplete);
 	}
 }

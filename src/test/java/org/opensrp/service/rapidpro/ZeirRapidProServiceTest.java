@@ -43,7 +43,7 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 		Mockito.doReturn(new ByteArrayInputStream(jsonResponse.getBytes())).when(entity).getContent();
 		Mockito.doReturn(entity).when(httpResponse).getEntity();
 		Mockito.doReturn(httpResponse).when(httpClient).execute(Mockito.any(HttpUriRequest.class));
-		zeirRapidProService.queryContacts("2021-07-01T00:00:00", onTaskComplete);
+		zeirRapidProService.queryContacts(onTaskComplete);
 		Mockito.verify(onTaskComplete, Mockito.atLeastOnce()).completeTask();
 	}
 

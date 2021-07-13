@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.opensrp.domain.rapidpro.RapidProStateToken;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProEventConverter;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,14 +38,15 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	 * This method receives RapidPro contacts and generate BirthRegistration, Vaccination and Growth Monitoring events based
 	 * on the available data on the contacts field.
 	 *
-	 * @param response the response received from the RapidPro
+	 * @param response       the response received from the RapidPro
 	 * @param onTaskComplete callback method invoked when processing contact is completed
 	 */
 	@Override
 	public void handleContactResponse(String response, RapidProOnTaskComplete onTaskComplete) {
+		String currentDateTime = Instant.now().toString();
 		JSONArray results = getResults(response);
-		if (results != null) {
 
+		if (results != null) {
 			if (!reentrantLock.tryLock()) {
 				logger.warn("Rapidpro results processing in progress...");
 			}
@@ -54,22 +57,34 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				logger.info("Found " + (rapidProContacts.isEmpty() ? 0 : rapidProContacts.size()) + " modified contacts");
 
 				for (RapidProContact rapidProContact : rapidProContacts) {
-					RapidProContact supervisorContact =
-							getSupervisorContact(rapidProContact.getFields().getSupervisorPhone());
-					if (supervisorContact != null) {
-						RapidProFields supervisorFields = supervisorContact.getFields();
-						String locationId = getProviderLocationId(supervisorFields.getProvince(),
-								supervisorFields.getDistrict(),
-								supervisorFields.getFacility());
-						rapidProContact.getFields().setFacilityLocationId(locationId);
+					try {
+						RapidProContact supervisorContact =
+								getSupervisorContact(rapidProContact.getFields().getSupervisorPhone());
+						if (supervisorContact != null) {
+							RapidProFields supervisorFields = supervisorContact.getFields();
+							String locationId = getProviderLocationId(supervisorFields.getProvince(),
+									supervisorFields.getDistrict(),
+									supervisorFields.getFacility());
+							rapidProContact.getFields().setFacilityLocationId(locationId);
 
-						processRegistrationEventClient(rapidProContact, rapidProContacts);
-						processVaccinationEvent(rapidProContact);
-						processGrowthMonitoringEvent(rapidProContact);
-					} else {
-						processSupervisor(rapidProContact);
+							processRegistrationEventClient(rapidProContact, rapidProContacts);
+							processVaccinationEvent(rapidProContact);
+							processGrowthMonitoringEvent(rapidProContact);
+						} else {
+							processSupervisor(rapidProContact);
+						}
+					}
+					catch (Exception exception) {
+						logger.error(exception.getMessage(), exception);
+						// Catch all exception thrown when attempting to save data to the database, keep track of contacts
+						updateStateTokenFromContactDates(rapidProContacts);
+					}
+					finally {
+						reentrantLock.unlock();
 					}
 				}
+
+				configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, currentDateTime);
 				onTaskComplete.completeTask();
 			}
 			catch (JsonProcessingException jsonException) {
@@ -79,6 +94,22 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				reentrantLock.unlock();
 			}
 		}
+	}
+
+	private void updateStateTokenFromContactDates(List<RapidProContact> rapidProContacts) {
+		Instant currentDateTime = Instant.now();
+		for (RapidProContact rapidProContact : rapidProContacts) {
+			try {
+				Instant modifiedOn = Instant.parse(rapidProContact.getModifiedOn());
+				if (modifiedOn.isBefore(currentDateTime)) {
+					currentDateTime = modifiedOn;
+				}
+			}
+			catch (DateTimeParseException parseException) {
+				logger.error("Error parsing RapidProContact modified date: ", parseException);
+			}
+		}
+		configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, currentDateTime.toString());
 	}
 
 	private void processSupervisor(RapidProContact rapidProContact) {
@@ -216,7 +247,9 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		return null;
 	}
 
-	public void queryContacts(String dateModified, RapidProOnTaskComplete onTaskComplete) {
+	public void queryContacts(RapidProOnTaskComplete onTaskComplete) {
+		String dateModified = (String) configService.getAppStateTokenByName(RapidProStateToken.RAPIDPRO_STATE_TOKEN).getValue();
+
 		String baseUrl = getBaseUrl();
 		String url = !dateModified.equalsIgnoreCase("#") ? baseUrl + "/contacts.json?after=" + dateModified :
 				baseUrl + "/contacts.json?before=" + Instant.now().toString();

@@ -7,7 +7,9 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensrp.domain.rapidpro.RapidProStateToken;
 import org.opensrp.service.ClientService;
+import org.opensrp.service.ConfigService;
 import org.opensrp.service.EventService;
 import org.opensrp.service.PhysicalLocationService;
 import org.smartregister.domain.LocationTag;
@@ -45,6 +47,8 @@ public abstract class BaseRapidProService {
 	@Value("#{opensrp['rapidpro.token']}")
 	private String rapidProToken;
 
+	protected ConfigService configService;
+
 	public BaseRapidProService() {
 		this.httpClient = HttpClientBuilder.create().build();
 	}
@@ -62,6 +66,13 @@ public abstract class BaseRapidProService {
 	@Autowired
 	public void setClientService(ClientService clientService) {
 		this.clientService = clientService;
+	}
+
+	@Autowired
+	public void setConfigService(ConfigService configService) {
+		this.configService = configService;
+		this.configService.registerAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, "#",
+				"Token to keep track of the date of the last processed rapidpro contacts", true);
 	}
 
 	public void setHttpClient(HttpClient httpClient) {
