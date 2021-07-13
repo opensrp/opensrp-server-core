@@ -14,6 +14,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SettingSearchBean extends BaseDataObject {
+
+	public enum OrderByType {
+		ASC, DESC
+	};
+
+	public enum FieldName {
+		id, metadata_version, server_version
+	};
 	
 	@JsonProperty
 	private String identifier;
@@ -46,6 +54,12 @@ public class SettingSearchBean extends BaseDataObject {
 	private Long metadataVersion ;
 
 	private Integer limit;
+
+	private FieldName orderByFieldName;
+
+	private OrderByType orderByType;
+
+	private boolean isETL;
 
 	public String getProviderId() {
 		return providerId;
@@ -141,5 +155,29 @@ public class SettingSearchBean extends BaseDataObject {
 
 	public void setLimit(Integer limit) {
 		this.limit = limit;
+	}
+
+	public FieldName getOrderByFieldName() {
+		return orderByFieldName;
+	}
+
+	public void setOrderByFieldName(FieldName orderByFieldName) {
+		this.orderByFieldName = orderByFieldName;
+	}
+
+	public OrderByType getOrderByType() {
+		return orderByType;
+	}
+
+	public void setOrderByType(OrderByType orderByType) {
+		this.orderByType = orderByType;
+	}
+
+	public boolean isETL() {
+		return isETL;
+	}
+
+	public void setETL(boolean ETL) {
+		isETL = ETL;
 	}
 }

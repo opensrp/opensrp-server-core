@@ -182,13 +182,21 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 
 	public List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean, int limit,
 			Map<String, TreeNode<String, Location>> treeNodeHashMap) {
+		List<SettingConfiguration> settingConfigurations;
 		if (settingQueryBean.isResolveSettings()) {
-			return resolveSettings(findSettingsAndSettingsMetadata(settingQueryBean, treeNodeHashMap, limit),
-					settingQueryBean.isV1Settings(), settingQueryBean.isResolveSettings());
+			settingConfigurations = settingQueryBean.isETL() ?
+					resolveSettingsMetadata(findSettingsMetadata(settingQueryBean, treeNodeHashMap, limit),
+							settingQueryBean.isV1Settings(), settingQueryBean.isResolveSettings()) :
+					resolveSettings(findSettingsAndSettingsMetadata(settingQueryBean, treeNodeHashMap, limit),
+							settingQueryBean.isV1Settings(), settingQueryBean.isResolveSettings());
 		} else {
-			return convertToSettingConfigurations(findSettingsAndSettingsMetadata(settingQueryBean, treeNodeHashMap, limit),
-					settingQueryBean.isV1Settings(), settingQueryBean.isResolveSettings());
+			settingConfigurations = settingQueryBean.isETL() ?
+					convertSettingsMetadataToSettingConfigurations(findSettingsMetadata(settingQueryBean, treeNodeHashMap, limit),
+							settingQueryBean.isV1Settings(), settingQueryBean.isResolveSettings()) :
+					convertToSettingConfigurations(findSettingsAndSettingsMetadata(settingQueryBean, treeNodeHashMap, limit),
+							settingQueryBean.isV1Settings(), settingQueryBean.isResolveSettings());
 		}
+		return settingConfigurations;
 	}
 
 	public SettingsAndSettingsMetadataJoined findSettingsAndSettingsMetadata(SettingSearchBean settingQueryBean,
@@ -218,6 +226,10 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			criteria.andMetadataVersionGreaterThan(settingQueryBean.getMetadataVersion());
 		}
 
+		if(settingQueryBean.getOrderByType() != null && settingQueryBean.getOrderByFieldName() != null) {
+			metadataExample.setOrderByClause(getOrderByClause(settingQueryBean.getOrderByFieldName().name(),settingQueryBean.getOrderByType().name()));
+		}
+
 		if (settingQueryBean.isResolveSettings()) {
 			return fetchSettingsPerLocation(settingQueryBean, metadataExample, treeNodeHashMap, limit, criteria);
 		} else {
@@ -225,6 +237,39 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 				criteria.andLocationIdEqualTo(locationId);
 			}
 			return settingMetadataMapper.selectMany(metadataExample, 0, limit);
+		}
+	}
+
+	public List<SettingsMetadata> findSettingsMetadata(SettingSearchBean settingQueryBean, Map<String, TreeNode<String, Location>> treeNodeHashMap, int limit) {
+		SettingsMetadataExample metadataExample = new SettingsMetadataExample();
+		SettingsMetadataExample.Criteria criteria = metadataExample.createCriteria();
+		String locationId = settingQueryBean.getLocationId();
+		Long primaryKey = settingQueryBean.getPrimaryKey();
+		updateCriteria(criteria, settingQueryBean);
+
+		if (primaryKey != null) {
+			metadataExample.or(metadataExample.createCriteria().andSettingsIdEqualTo(primaryKey));
+		}
+
+		if (StringUtils.isBlank(settingQueryBean.getId())) {
+			criteria.andServerVersionGreaterThanOrEqualTo(settingQueryBean.getServerVersion());
+		}
+
+		if (settingQueryBean.getMetadataVersion() != null) {
+			criteria.andMetadataVersionGreaterThan(settingQueryBean.getMetadataVersion());
+		}
+
+		if (settingQueryBean.getOrderByType() != null && settingQueryBean.getOrderByFieldName() != null) {
+			metadataExample.setOrderByClause(getOrderByClause(settingQueryBean.getOrderByFieldName().name(), settingQueryBean.getOrderByType().name()));
+		}
+
+		if (settingQueryBean.isResolveSettings()) {
+			return fetchSettingsMetadataPerLocation(settingQueryBean, metadataExample, treeNodeHashMap, limit, criteria);
+		} else {
+			if (StringUtils.isNotEmpty(locationId)) {
+				criteria.andLocationIdEqualTo(locationId);
+			}
+			return settingMetadataMapper.selectManySettingsMetadata(metadataExample, 0, limit);
 		}
 	}
 
@@ -289,6 +334,28 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		return settingsAndSettingsMetadataJoinedList;
 	}
 
+	private List<SettingsMetadata> fetchSettingsMetadataPerLocation(SettingSearchBean settingSearchBean,
+																	SettingsMetadataExample metadataExample, Map<String, TreeNode<String, Location>> treeNodeHashMap, int limit,
+																	SettingsMetadataExample.Criteria criteria) {
+
+		List<SettingsMetadata> settingsMetadataList = new ArrayList<>();
+		if (StringUtils.isNotBlank(settingSearchBean.getLocationId())) {
+			locationUuid = settingSearchBean.getLocationId();
+
+			reformattedLocationHierarchy.clear();
+			if (treeNodeHashMap != null && treeNodeHashMap.size() > 0) {
+				reformattedLocationHierarchy(treeNodeHashMap);
+			}
+
+			if (reformattedLocationHierarchy.size() > 0) {
+				criteria.andLocationIdIn(reformattedLocationHierarchy);
+				settingsMetadataList = settingMetadataMapper.selectManySettingsMetadata(metadataExample, 0, limit);
+			}
+		}
+
+		return settingsMetadataList;
+	}
+
 	private void reformattedLocationHierarchy(Map<String, TreeNode<String, Location>> parentLocation) {
 		Map.Entry<String, TreeNode<String, Location>> stringMapEntry = parentLocation.entrySet().iterator().next();
 		String locationKey = stringMapEntry.getKey();
@@ -310,6 +377,30 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 		Map<String, Setting> stringSettingsMap = new HashMap<>();
 
 		List<SettingConfiguration> configurations = convertToSettingConfigurations(settingsAndSettingsMetadataJoined,
+				isV1Settings, resolveSettings);
+
+		for (SettingConfiguration configuration : configurations) {
+			String configKey =
+					configuration.getId() + "_" + configuration.getLocationId() + "_" + configuration.getIdentifier();
+			stringConfigurationMap.put(configKey, configuration);
+
+			List<Setting> settingsList = configuration.getSettings();
+			for (Setting setting : settingsList) {
+				String settingKey = setting.getKey() + "_" + configuration.getIdentifier();
+				stringSettingsMap.put(settingKey, setting);
+			}
+		}
+
+		return reconcileConfigurations(stringConfigurationMap, stringSettingsMap);
+	}
+
+	private List<SettingConfiguration> resolveSettingsMetadata(
+			List<SettingsMetadata> settingsMetadataList, boolean isV1Settings,
+			boolean resolveSettings) {
+		Map<String, SettingConfiguration> stringConfigurationMap = new HashMap<>();
+		Map<String, Setting> stringSettingsMap = new HashMap<>();
+
+		List<SettingConfiguration> configurations = convertSettingsMetadataToSettingConfigurations(settingsMetadataList,
 				isV1Settings, resolveSettings);
 
 		for (SettingConfiguration configuration : configurations) {
@@ -441,6 +532,25 @@ public class SettingRepositoryImpl extends BaseRepositoryImpl<SettingConfigurati
 			settingConfiguration.setIdentifier(settingConfiguration.getSettings().get(0).getSettingIdentifier());
 		}
 		settingConfigurations.addAll(settingConfigurationMap.values());
+		return settingConfigurations;
+	}
+
+	private List<SettingConfiguration> convertSettingsMetadataToSettingConfigurations(
+			List<SettingsMetadata> settingsMetadataList, boolean isV1Settings,
+			boolean resolveSettings) {
+		List<SettingConfiguration> settingConfigurations = new ArrayList<>();
+		if (settingsMetadataList == null || settingsMetadataList.isEmpty()) {
+			return settingConfigurations;
+		}
+
+		SettingConfiguration settingConfiguration = new SettingConfiguration();
+		settingConfiguration.setSettings(new ArrayList<>());
+		for (SettingsMetadata settingsMetadata : settingsMetadataList) {
+			settingConfiguration.getSettings().add(convertToSetting(settingsMetadata, isV1Settings, resolveSettings));
+			settingConfiguration.setDocumentId(settingConfiguration.getSettings().get(0).getDocumentId());
+			settingConfiguration.setIdentifier(settingConfiguration.getSettings().get(0).getSettingIdentifier());
+		}
+		settingConfigurations.add(settingConfiguration);
 		return settingConfigurations;
 	}
 
