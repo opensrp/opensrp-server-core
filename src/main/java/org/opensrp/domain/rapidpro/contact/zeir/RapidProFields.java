@@ -1,5 +1,6 @@
 package org.opensrp.domain.rapidpro.contact.zeir;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
@@ -130,15 +131,18 @@ public class RapidProFields implements Serializable {
 	private String height;
 
 	@JsonProperty("gmh_date_modified")
+	@JsonAlias({"growth_monitoring_height_modified_on", "growth_monitoring_height_date_modified"})
 	private String gmHeightDateModified;
 
 	@JsonProperty("weight")
 	private String weight;
 
 	@JsonProperty("gmw_date_modified")
+	@JsonAlias({"growth_monitoring_weight_modified_on", "growth_monitoring_weight_date_modified"})
 	private String gmWeightDateModified;
 
 	@JsonProperty("reg_processed")
+	@JsonAlias({"registration_processed", "is_registration_processed", "processed_registration"})
 	private boolean registrationProcessed;
 
 	public String getSupervisorPhone() {
