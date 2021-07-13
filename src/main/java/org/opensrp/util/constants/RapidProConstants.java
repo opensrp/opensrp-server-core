@@ -23,4 +23,7 @@ public interface RapidProConstants {
 	String RESIDENTIAL_ADDRESS = "residential_address";
 	String DATA_STRATEGY = "data_strategy";
 	String NORMAL = "Normal";
+	String CONCEPT = "concept";
+	String CHW_NAME = "chw_name";
+	String CHW_PHONE_NUMBER = "chw_phone_number";
 }

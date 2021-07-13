@@ -18,7 +18,6 @@ public class ZeirBirthRegistrationConverter extends BaseRapidProEventConverter {
 			Event event = new Event();
 			event.setEventType(EventConstants.BIRTH_REGISTRATION_EVENT);
 			event.setEntityType(RapidProConstants.CHILD.toLowerCase(Locale.ROOT));
-			event.addDetails(RapidProConstants.DATA_STRATEGY, RapidProConstants.NORMAL);
 			addCommonEventProperties(rapidProContact, event);
 			return event;
 		}

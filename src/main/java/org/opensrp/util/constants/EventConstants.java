@@ -24,4 +24,5 @@ public interface EventConstants {
 	String CONCEPT = "concept";
 	String YES = "yes";
 	String PLAN_IDENTIFIER = "planIdentifier";
+	String NEW_WOMAN_REGISTRATION_EVENT = "New Woman Registration";
 }
