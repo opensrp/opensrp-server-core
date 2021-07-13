@@ -41,13 +41,13 @@ public abstract class BaseRapidProService {
 
 	protected HttpClient httpClient;
 
+	protected ConfigService configService;
+
 	@Value("#{opensrp['rapidpro.url']}")
 	private String rapidProUrl;
 
 	@Value("#{opensrp['rapidpro.token']}")
 	private String rapidProToken;
-
-	protected ConfigService configService;
 
 	public BaseRapidProService() {
 		this.httpClient = HttpClientBuilder.create().build();

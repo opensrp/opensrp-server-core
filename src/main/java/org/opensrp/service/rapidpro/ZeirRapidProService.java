@@ -248,7 +248,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	public void queryContacts(RapidProOnTaskComplete onTaskComplete) {
-		String dateModified = (String) configService.getAppStateTokenByName(RapidProStateToken.RAPIDPRO_STATE_TOKEN).getValue();
+		String dateModified = (String) configService.getAppStateTokenByName(RapidProStateToken.RAPIDPRO_STATE_TOKEN)
+				.getValue();
 
 		String baseUrl = getBaseUrl();
 		String url = !dateModified.equalsIgnoreCase("#") ? baseUrl + "/contacts.json?after=" + dateModified :
