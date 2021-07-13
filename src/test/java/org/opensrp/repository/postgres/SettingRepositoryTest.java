@@ -133,6 +133,8 @@ public class SettingRepositoryTest extends BaseRepositoryTest {
 		settingQueryBean.setServerVersion(0L);
 		settingQueryBean.setLocationId("44de66fb-e6c6-4bae-92bb-386dfe626eba");
 		settingQueryBean.setETL(true);
+		settingQueryBean.setOrderByFieldName(SettingSearchBean.FieldName.metadata_version);
+		settingQueryBean.setOrderByType(SettingSearchBean.OrderByType.ASC);
 		settings = settingRepository.findSettings(settingQueryBean, null);
 
 		assertEquals(1, settings.size());
