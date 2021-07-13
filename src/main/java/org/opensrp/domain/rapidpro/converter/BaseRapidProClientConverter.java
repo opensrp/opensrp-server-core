@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 public abstract class BaseRapidProClientConverter implements RapidProContactClientConverter {
@@ -37,16 +38,16 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 		if (StringUtils.isNoneBlank(rapidProContact.getName())) {
 			String[] nameSplit = rapidProContact.getName().split(" ");
 			if (nameSplit.length == 1) {
-				client.setFirstName(nameSplit[0]);
+				client.setFirstName(nameSplit[0].trim());
 			} else if (nameSplit.length > 1) {
-				client.setFirstName(nameSplit[0]);
-				client.setLastName(nameSplit[1]);
+				client.setFirstName(nameSplit[0].trim());
+				client.setLastName(nameSplit[1].trim());
 			}
 		}
 		client.setLocationId(fields.getFacilityLocationId());
 	}
 
-	protected String getIdentifier(RapidProContact rapidProContact) {
+	protected void addZeirClientIdentifier(RapidProContact rapidProContact, Client client, String identifierType) {
 		List<IdentifierSource> identifierSources = identifierSourceService.findAllIdentifierSources();
 		if (identifierSources != null && !identifierSources.isEmpty()) {
 			IdentifierSource identifierSource = identifierSources.get(0);
@@ -55,10 +56,16 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 
 			if (uniqueIds != null && !uniqueIds.isEmpty()) {
 				String zeirId = uniqueIds.get(0);
+				client.getIdentifiers().put(identifierType,
+						RapidProConstants.ZEIR_ID.equalsIgnoreCase(identifierType) ? zeirId.replaceAll("-", "") : zeirId);
 				identifierService.markIdentifierAsUsed(zeirId);
-				return zeirId;
 			}
 		}
-		return null;
+	}
+
+	protected boolean isValidPhoneNumber(String formattedTelPhone) {
+		String extractedPhone = formattedTelPhone.replace("tel:", "").replace("+", "");
+		Pattern pattern = Pattern.compile("^\\d{10}$");
+		return pattern.matcher(extractedPhone).matches();
 	}
 }
