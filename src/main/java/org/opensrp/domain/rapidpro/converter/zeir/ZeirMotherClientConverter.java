@@ -21,6 +21,7 @@ public class ZeirMotherClientConverter extends BaseRapidProClientConverter {
 			if (urns != null && isValidPhoneNumber(urns.get(0))) {
 				motherClient.addAttribute(RapidProConstants.MOTHER_GUARDIAN_NUMBER, urns.get(0));
 			}
+			return motherClient;
 		}
 		return null;
 	}

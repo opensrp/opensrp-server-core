@@ -26,7 +26,9 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 		event.setProviderId(rapidProContact.getFields().getSupervisorPhone());
 		Organization organization = organizationService
 				.getOrganizationByLocationId(rapidProContact.getFields().getFacilityLocationId());
-		event.setTeam(organization.getName());
-		event.setTeamId(organization.getIdentifier());
+		if (organization != null) {
+			event.setTeam(organization.getName());
+			event.setTeamId(organization.getIdentifier());
+		}
 	}
 }
