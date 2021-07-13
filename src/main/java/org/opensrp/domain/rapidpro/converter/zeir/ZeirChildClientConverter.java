@@ -15,11 +15,10 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 
 	@Override
 	public Client convertContactToClient(RapidProContact rapidProContact) {
-
 		RapidProFields fields = rapidProContact.getFields();
 		if (RapidProConstants.CHILD.equalsIgnoreCase(fields.getPosition())) {
 			Client childClient = new Client(rapidProContact.getUuid());
-			setCommonZeirClientAttributes(rapidProContact, childClient);
+			addCommonZeirProperties(rapidProContact, childClient);
 
 			addZeirClientIdentifier(rapidProContact, childClient, RapidProConstants.ZEIR_ID);
 

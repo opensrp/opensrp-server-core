@@ -15,7 +15,7 @@ public class ZeirMotherClientConverter extends BaseRapidProClientConverter {
 		RapidProFields fields = rapidProContact.getFields();
 		if (RapidProConstants.CARETAKER.equalsIgnoreCase(fields.getPosition())) {
 			Client motherClient = new Client(rapidProContact.getUuid());
-			setCommonZeirClientAttributes(rapidProContact, motherClient);
+			addCommonZeirProperties(rapidProContact, motherClient);
 			addZeirClientIdentifier(rapidProContact, motherClient, RapidProConstants.M_ZEIR_ID);
 			List<String> urns = rapidProContact.getUrns();
 			if (urns != null && isValidPhoneNumber(urns.get(0))) {

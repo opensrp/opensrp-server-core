@@ -31,7 +31,7 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 		this.identifierSourceService = identifierSourceService;
 	}
 
-	protected void setCommonZeirClientAttributes(RapidProContact rapidProContact, Client client) {
+	protected void addCommonZeirProperties(RapidProContact rapidProContact, Client client) {
 		RapidProFields fields = rapidProContact.getFields();
 		client.addAttribute(RapidProConstants.IS_REGISTRATION_COMPLETE, false);
 		client.addAttribute(RapidProConstants.SYSTEM_OF_REGISTRATION, RapidProConstants.MVACC);
