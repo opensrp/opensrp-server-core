@@ -17,9 +17,9 @@ import java.util.regex.Pattern;
 @Service
 public abstract class BaseRapidProClientConverter implements RapidProContactClientConverter {
 
-	private IdentifierSourceService identifierSourceService;
+	protected IdentifierSourceService identifierSourceService;
 
-	private UniqueIdentifierService identifierService;
+	protected UniqueIdentifierService identifierService;
 
 	@Autowired
 	public void setIdentifierService(UniqueIdentifierService identifierService) {
