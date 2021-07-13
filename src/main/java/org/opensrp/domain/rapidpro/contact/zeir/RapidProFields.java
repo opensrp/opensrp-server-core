@@ -97,6 +97,9 @@ public class RapidProFields implements Serializable {
 	@JsonProperty("pcv3")
 	private String pcv3;
 
+	@JsonProperty("ipv")
+	private String ipv;
+
 	@JsonProperty("position")
 	private String position;
 
@@ -131,18 +134,18 @@ public class RapidProFields implements Serializable {
 	private String height;
 
 	@JsonProperty("gmh_date_modified")
-	@JsonAlias({"growth_monitoring_height_modified_on", "growth_monitoring_height_date_modified"})
+	@JsonAlias({ "growth_monitoring_height_modified_on", "growth_monitoring_height_date_modified" })
 	private String gmHeightDateModified;
 
 	@JsonProperty("weight")
 	private String weight;
 
 	@JsonProperty("gmw_date_modified")
-	@JsonAlias({"growth_monitoring_weight_modified_on", "growth_monitoring_weight_date_modified"})
+	@JsonAlias({ "growth_monitoring_weight_modified_on", "growth_monitoring_weight_date_modified" })
 	private String gmWeightDateModified;
 
 	@JsonProperty("reg_processed")
-	@JsonAlias({"registration_processed", "is_registration_processed", "processed_registration"})
+	@JsonAlias({ "registration_processed", "is_registration_processed", "processed_registration" })
 	private boolean registrationProcessed;
 
 	public String getSupervisorPhone() {
@@ -383,6 +386,14 @@ public class RapidProFields implements Serializable {
 
 	public void setPcv3(String pcv3) {
 		this.pcv3 = pcv3;
+	}
+
+	public String getIpv() {
+		return this.ipv;
+	}
+
+	public void setIpv(String ipv) {
+		this.ipv = ipv;
 	}
 
 	public String getPosition() {
