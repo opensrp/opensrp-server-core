@@ -163,7 +163,7 @@ public class PractitionerService {
 			throw new IllegalArgumentException("Organization does not exist");
 		}
 
-		return null;
+		return getPractitionerRepository().getPractitionersByOrgId(organization.getId());
 	}
 
 	
