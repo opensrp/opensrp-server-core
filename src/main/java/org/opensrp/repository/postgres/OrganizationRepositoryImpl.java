@@ -1,9 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.LocalDate;
@@ -23,6 +19,10 @@ import org.opensrp.search.OrganizationSearchBean;
 import org.opensrp.util.RepositoryUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Samuel Githengi on 8/30/19.
@@ -369,6 +369,21 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	@Override
 	public long countAllOrganizations() {
 		return organizationMapper.countByExample(new OrganizationExample());
+	}
+
+	@Override
+	public org.opensrp.domain.postgres.Organization getOrganizationByLocation(Long locationPrimaryKey) {
+		OrganizationLocationExample organizationLocationExample = new OrganizationLocationExample();
+		organizationLocationExample.createCriteria().andLocationIdEqualTo(locationPrimaryKey);
+
+		List<OrganizationLocation> organizationLocations =
+				organizationLocationMapper.selectByExample(organizationLocationExample);
+		if (organizationLocations != null && !organizationLocations.isEmpty()) {
+			//Use the most recent organization assignment
+			OrganizationLocation organizationLocation = organizationLocations.get(organizationLocations.size() - 1);
+			return organizationMapper.selectByPrimaryKey(organizationLocation.getOrganizationId());
+		}
+		return null;
 	}
 
 }
