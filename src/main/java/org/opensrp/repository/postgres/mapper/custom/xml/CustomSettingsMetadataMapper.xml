@@ -213,7 +213,7 @@
 			<include refid="Example_Where_Clause" />
 		</if>
 		<if test="example.orderByClause != null">
-			order by ${orderByClause}
+			order by ${example.orderByClause}
 		</if>
 
 		LIMIT #{limit} OFFSET #{offset}
