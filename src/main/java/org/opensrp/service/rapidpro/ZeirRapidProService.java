@@ -12,12 +12,7 @@ import org.opensrp.domain.rapidpro.RapidProStateToken;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProEventConverter;
-import org.opensrp.domain.rapidpro.converter.zeir.ZeirBirthRegistrationConverter;
-import org.opensrp.domain.rapidpro.converter.zeir.ZeirChildClientConverter;
-import org.opensrp.domain.rapidpro.converter.zeir.ZeirGrowthMonitoringConverter;
-import org.opensrp.domain.rapidpro.converter.zeir.ZeirMotherClientConverter;
-import org.opensrp.domain.rapidpro.converter.zeir.ZeirMotherRegistrationConverter;
-import org.opensrp.domain.rapidpro.converter.zeir.ZeirVaccinationConverter;
+import org.opensrp.domain.rapidpro.converter.zeir.*;
 import org.opensrp.service.callback.RapidProOnTaskComplete;
 import org.opensrp.service.callback.RapidProResponseCallback;
 import org.opensrp.util.constants.RapidProConstants;
@@ -149,12 +144,14 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			if (motherContact != null) {
 				processChildRegistration(rapidProContact, motherContact);
 
-				Client motherClient = clientService.getByBaseEntityId(motherContact.getUuid());
-				if (motherClient == null) {
+				Client existingMotherClient = clientService.getByBaseEntityId(motherContact.getUuid());
+				if (existingMotherClient == null) {
 					ZeirMotherClientConverter clientConverter = new ZeirMotherClientConverter();
-					Client client = clientConverter.convertContactToClient(motherContact);
-					clientService.addorUpdate(client);
-					saveEvent(motherContact, new ZeirMotherRegistrationConverter());
+					Client motherClient = clientConverter.convertContactToClient(motherContact);
+					if (motherClient != null) {
+						clientService.addorUpdate(motherClient);
+						saveEvent(motherContact, new ZeirMotherRegistrationConverter());
+					}
 				}
 			}
 		}
@@ -166,14 +163,17 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	private void processChildRegistration(RapidProContact childContact, RapidProContact motherContact) {
-		Client existingClient = clientService.getByBaseEntityId(childContact.getUuid());
+		Client existingChildClient = clientService.getByBaseEntityId(childContact.getUuid());
 
-		if (existingClient == null) {
+		if (existingChildClient == null) {
 			ZeirChildClientConverter clientConverter = new ZeirChildClientConverter();
-			Client client = clientConverter.convertContactToClient(childContact);
-			client.getRelationships().put(RapidProConstants.MOTHER, Collections.singletonList(motherContact.getUuid()));
-			clientService.addorUpdate(client);
-			saveEvent(childContact, new ZeirBirthRegistrationConverter());
+			Client childClient = clientConverter.convertContactToClient(childContact);
+			if(childClient != null) {
+				childClient.getRelationships()
+						.put(RapidProConstants.MOTHER, Collections.singletonList(motherContact.getUuid()));
+				clientService.addorUpdate(childClient);
+				saveEvent(childContact, new ZeirBirthRegistrationConverter());
+			}
 		}
 	}
 

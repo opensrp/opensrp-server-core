@@ -19,4 +19,6 @@ public interface RapidProConstants {
 	String RESIDENTIAL_AREA = "residential_area";
 	String ZEIR_ID = "zeir_id";
 	String M_ZEIR_ID = "M_ZEIR_ID";
+	String MOTHER_GUARDIAN_NUMBER = "mother_guardian_number";
+	String RESIDENTIAL_ADDRESS = "residential_address";
 }
