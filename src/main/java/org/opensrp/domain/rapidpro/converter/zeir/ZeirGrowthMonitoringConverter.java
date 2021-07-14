@@ -59,6 +59,8 @@ public class ZeirGrowthMonitoringConverter extends BaseRapidProEventConverter {
 						.withFormSubmissionField(RapidProConstants.WEIGHT_KGS)
 						.withFieldDataType(RapidProConstants.DECIMAL));
 				break;
+			default:
+				break;
 		}
 		return event;
 	}

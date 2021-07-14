@@ -80,17 +80,12 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 								processVaccinationEvent(rapidProContact);
 								processGrowthMonitoringEvent(rapidProContact);
 							}
-						} else {
-							processSupervisor(rapidProContact);
-						}
+						} //TODO Add implementation for processing supervisor for instance when their location is updated;
 					}
 					catch (Exception exception) {
 						logger.error(exception.getMessage(), exception);
 						// Catch all exception thrown when attempting to save data to the database, keep track of contacts
 						updateStateTokenFromContactDates(rapidProContacts);
-					}
-					finally {
-						reentrantLock.unlock();
 					}
 				}
 
@@ -126,10 +121,6 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			}
 		}
 		configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, currentDateTime.toString());
-	}
-
-	private void processSupervisor(RapidProContact rapidProContact) {
-		//TODO implement processing for supervisor
 	}
 
 	private JSONArray getResults(String response) {
@@ -269,6 +260,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				value = fields.getWeight();
 				dateModified = fields.getGmWeightDateModified();
 				break;
+			default:
+				break;
 		}
 		if (value != null && dateModified != null) {
 			if (filteredExistingGMEvents.isEmpty()) {
@@ -355,17 +348,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	public void queryContacts(RapidProOnTaskComplete onTaskComplete) {
-		String dateModified = (String) configService.getAppStateTokenByName(RapidProStateToken.RAPIDPRO_STATE_TOKEN)
-				.getValue();
-
-		String baseUrl = getBaseUrl();
-		String url = !dateModified.equalsIgnoreCase("#") ? baseUrl + "/contacts.json?after=" + dateModified :
-				baseUrl + "/contacts.json?before=" + Instant.now().toString();
-
-		HttpGet contactsRequest = (HttpGet) setupRapidproRequest(url, new HttpGet());
-
 		try {
-			HttpResponse httpResponse = httpClient.execute(contactsRequest);
+			HttpResponse httpResponse = httpClient.execute(getContactRequest());
 			if (httpResponse != null && httpResponse.getEntity() != null) {
 				handleContactResponse(EntityUtils.toString(httpResponse.getEntity()), onTaskComplete);
 			}
@@ -375,17 +359,24 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		}
 	}
 
+	public HttpGet getContactRequest() {
+		String dateModified = (String) configService.getAppStateTokenByName(RapidProStateToken.RAPIDPRO_STATE_TOKEN)
+				.getValue();
+		String baseUrl = getBaseUrl();
+		String url = !dateModified.equalsIgnoreCase("#") ? baseUrl + "/contacts.json?after=" + dateModified :
+				baseUrl + "/contacts.json?before=" + Instant.now().toString();
+
+		return (HttpGet) setupRapidproRequest(url, new HttpGet());
+	}
+
 	public RapidProContact getSupervisorContact(String phone) {
 
 		if (StringUtils.isBlank(phone) || StringUtils.isEmpty(phone)) {
 			return null;
 		}
 
-		HttpGet contactsRequest = (HttpGet) setupRapidproRequest(getBaseUrl() + "/contacts.json?urn=tel" + phone,
-				new HttpGet());
-
 		try {
-			HttpResponse httpResponse = httpClient.execute(contactsRequest);
+			HttpResponse httpResponse = httpClient.execute(getSupervisorContactRequest(phone));
 			if (httpResponse != null && httpResponse.getEntity() != null) {
 				JSONArray results = getResults(EntityUtils.toString(httpResponse.getEntity()));
 				List<RapidProContact> rapidProContacts = getRapidProContacts(results);
@@ -400,4 +391,10 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		}
 		return null;
 	}
+
+	public HttpGet getSupervisorContactRequest(String phone) {
+		return (HttpGet) setupRapidproRequest(getBaseUrl() + "/contacts.json?urn=tel" + phone,
+				new HttpGet());
+	}
+
 }
