@@ -1,16 +1,17 @@
 package org.opensrp.domain.rapidpro.converter.zeir;
 
-import org.joda.time.DateTime;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProClientConverter;
+import org.opensrp.util.DateParserUtils;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Address;
 import org.smartregister.domain.Client;
+import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Locale;
 
+@Service
 public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 
 	@Override
@@ -22,7 +23,7 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 
 			addZeirClientIdentifier(rapidProContact, childClient, RapidProConstants.ZEIR_ID);
 
-			childClient.setBirthdate(new DateTime(Instant.parse(fields.getDob()).toEpochMilli()));
+			childClient.setBirthdate(DateParserUtils.parseZoneDateTime(fields.getDob()));
 			childClient.addAttribute(RapidProConstants.CHILD_REGISTER_CARD_NUMBER, fields.getMvaccId());
 			childClient.addAttribute(RapidProConstants.RESIDENTIAL_AREA, fields.getLocation());
 			childClient.addAttribute(RapidProConstants.RESIDENTIAL_ADDRESS, fields.getLocation());

@@ -52,6 +52,16 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 		Mockito.verify(onTaskComplete, Mockito.atLeastOnce()).completeTask();
 	}
 
+	@Test
+	public void testQueryContactsWithLocationId() throws IOException {
+		mockContactsHttpResponse();
+		mockSupervisorHttpResponse();
+		Mockito.doReturn("102e1ee92s9-12a90192-1s999b1").when(zeirRapidProServiceMock)
+				.getProviderLocationId(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+		zeirRapidProServiceMock.queryContacts(onTaskComplete);
+		Mockito.verify(onTaskComplete, Mockito.atLeastOnce()).completeTask();
+	}
+
 	private void mockSupervisorHttpResponse() throws IOException {
 		//Mock querying supervisors
 		HttpResponse supervisorHttpResponse = Mockito.spy(HttpResponse.class);

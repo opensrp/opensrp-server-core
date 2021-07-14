@@ -6,11 +6,13 @@ import org.opensrp.domain.rapidpro.converter.BaseRapidProEventConverter;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+@Service
 public class ZeirVaccinationConverter extends BaseRapidProEventConverter {
 
 	@Override

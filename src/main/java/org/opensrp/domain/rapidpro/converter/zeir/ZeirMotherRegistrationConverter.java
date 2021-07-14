@@ -7,9 +7,11 @@ import org.opensrp.util.constants.EventConstants;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
+import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 
+@Service
 public class ZeirMotherRegistrationConverter extends BaseRapidProEventConverter {
 
 	@Override

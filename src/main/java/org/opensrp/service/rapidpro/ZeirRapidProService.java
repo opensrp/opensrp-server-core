@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
+import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +23,7 @@ import org.opensrp.domain.rapidpro.converter.zeir.ZeirMotherRegistrationConverte
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirVaccinationConverter;
 import org.opensrp.service.callback.RapidProOnTaskComplete;
 import org.opensrp.service.callback.RapidProResponseCallback;
+import org.opensrp.util.DateParserUtils;
 import org.opensrp.util.constants.EventConstants;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
@@ -34,6 +36,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -181,8 +184,10 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			ZeirChildClientConverter clientConverter = new ZeirChildClientConverter();
 			Client childClient = clientConverter.convertContactToClient(childContact);
 			if (childClient != null) {
-				childClient.getRelationships()
-						.put(RapidProConstants.MOTHER, Collections.singletonList(motherContact.getUuid()));
+				childClient.withRelationships(new HashMap<>() {{
+					put(RapidProConstants.MOTHER, Collections.singletonList(motherContact.getUuid()));
+				}});
+
 				clientService.addorUpdate(childClient);
 				saveEvent(childContact, new ZeirBirthRegistrationConverter());
 			}
@@ -191,10 +196,10 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 	private RapidProContact getMotherContact(String motherName, String motherPhone, List<RapidProContact> rapidProContacts) {
 		List<RapidProContact> motherList = rapidProContacts.stream()
-				.filter(it ->
-						RapidProConstants.CARETAKER.equalsIgnoreCase(it.getFields().getPosition()) &&
-								motherName.equalsIgnoreCase(it.getFields().getMotherName()) &&
-								motherPhone.equalsIgnoreCase(it.getFields().getMotherPhone()))
+				.filter(rapidProContact ->
+						RapidProConstants.CARETAKER.equalsIgnoreCase(rapidProContact.getFields().getPosition()) &&
+								motherName.equalsIgnoreCase(rapidProContact.getName()) &&
+								rapidProContact.getUrns().stream().anyMatch(urn -> urn.contains(motherPhone)))
 				.collect(Collectors.toList());
 		if (motherList.isEmpty()) {
 			return null;
@@ -274,8 +279,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			if (filteredExistingGMEvents.isEmpty()) {
 				saveEvents(fields, filterGMEvents(processedGMEvents, gmEvent));
 			} else {
-				Instant contactGMEventDate = Instant.parse(dateModified);
-				Instant lastGMEventDate = getLastGMEventDate(filteredExistingGMEvents);
+				DateTime contactGMEventDate = DateParserUtils.parseZoneDateTime(dateModified);
+				DateTime lastGMEventDate = getLastGMEventDate(filteredExistingGMEvents);
 				if (contactGMEventDate.isAfter(lastGMEventDate)) {
 					saveEvents(fields, filterGMEvents(processedGMEvents, gmEvent));
 				}
@@ -289,15 +294,15 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		}
 	}
 
-	private Instant getLastGMEventDate(List<Event> filteredGMEvents) {
-		Instant currentInstant = Instant.ofEpochMilli(filteredGMEvents.get(0).getEventDate().toInstant().getMillis());
+	private DateTime getLastGMEventDate(List<Event> filteredGMEvents) {
+		DateTime eventDate = filteredGMEvents.get(0).getEventDate();
 		for (Event filteredEvent : filteredGMEvents) {
-			Instant existingGMEventInstant = Instant.ofEpochMilli(filteredEvent.getEventDate().toInstant().getMillis());
-			if (existingGMEventInstant.isAfter(currentInstant)) {
-				currentInstant = existingGMEventInstant;
+			DateTime existingGMEventInstant = filteredEvent.getEventDate();
+			if (existingGMEventInstant.isAfter(eventDate)) {
+				eventDate = existingGMEventInstant;
 			}
 		}
-		return currentInstant;
+		return eventDate;
 	}
 
 	private List<Event> filterGMEvents(List<Event> previousGMEvents, GMEvent gmEvent) {

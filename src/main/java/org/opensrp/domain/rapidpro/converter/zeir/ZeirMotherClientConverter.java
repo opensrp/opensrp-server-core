@@ -5,9 +5,11 @@ import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProClientConverter;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ZeirMotherClientConverter extends BaseRapidProClientConverter {
 
 	@Override

@@ -9,12 +9,10 @@ import org.opensrp.service.UniqueIdentifierService;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-@Service
 public abstract class BaseRapidProClientConverter implements RapidProContactClientConverter {
 
 	protected IdentifierSourceService identifierSourceService;

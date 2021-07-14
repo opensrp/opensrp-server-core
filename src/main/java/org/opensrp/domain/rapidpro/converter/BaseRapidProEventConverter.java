@@ -1,24 +1,21 @@
 package org.opensrp.domain.rapidpro.converter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.opensrp.common.util.DateUtil;
 import org.opensrp.domain.postgres.Organization;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.service.OrganizationService;
+import org.opensrp.util.DateParserUtils;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Service
 public abstract class BaseRapidProEventConverter implements RapidProContactEventConverter {
 
 	protected OrganizationService organizationService;
@@ -42,7 +39,7 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 	}
 
 	protected Obs vaccineObs(String parentCode, String fieldCode, String formSubmissionField, String value) {
-		Date vaccineDate = new DateTime(Instant.parse(value).toEpochMilli()).toDate();
+		Date vaccineDate = DateParserUtils.parseZoneDateTime(value).toDate();
 		return createObs(padOpenMRSCode(fieldCode), DateUtil.yyyyMMdd.format(vaccineDate))
 				.withParentCode(padOpenMRSCode(parentCode))
 				.withFormSubmissionField(formSubmissionField)
