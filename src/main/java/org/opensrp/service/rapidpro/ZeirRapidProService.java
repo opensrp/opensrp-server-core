@@ -20,9 +20,11 @@ import org.opensrp.domain.rapidpro.converter.zeir.ZeirMotherRegistrationConverte
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirVaccinationConverter;
 import org.opensrp.service.callback.RapidProOnTaskComplete;
 import org.opensrp.service.callback.RapidProResponseCallback;
+import org.opensrp.util.constants.EventConstants;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
 import org.smartregister.domain.Event;
+import org.smartregister.domain.Obs;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -173,7 +176,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		if (existingChildClient == null) {
 			ZeirChildClientConverter clientConverter = new ZeirChildClientConverter();
 			Client childClient = clientConverter.convertContactToClient(childContact);
-			if(childClient != null) {
+			if (childClient != null) {
 				childClient.getRelationships()
 						.put(RapidProConstants.MOTHER, Collections.singletonList(motherContact.getUuid()));
 				clientService.addorUpdate(childClient);
@@ -195,16 +198,42 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		return motherList.get(0);
 	}
 
+	/**
+	 * Vaccines are only administered once. Filter the processed vaccination events from the previous ones. Only new vaccination
+	 * events are saved
+	 *
+	 * @param rapidProContact child contact from rapidpro
+	 */
 	public void processVaccinationEvent(RapidProContact rapidProContact) {
 		if (RapidProConstants.CHILD.equalsIgnoreCase(rapidProContact.getFields().getPosition())) {
 			ZeirVaccinationConverter eventConverter = new ZeirVaccinationConverter();
-			List<Event> events = eventConverter.convertContactToEvents(rapidProContact);
-			if(events != null && !events.isEmpty()) {
-				for (Event event : events) {
+			List<Event> processedVaccineEvents = eventConverter.convertContactToEvents(rapidProContact);
+			List<Event> previousVaccinationEvents =
+					eventService.findByBaseEntityAndType(rapidProContact.getUuid(), EventConstants.VACCINATION_EVENT);
+
+			//Remove all previously administered vaccines
+			Set<String> administeredVaccines = getVaccinesDoses(previousVaccinationEvents);
+			Set<String> processedVaccines = getVaccinesDoses(processedVaccineEvents);
+			processedVaccines.removeAll(administeredVaccines);
+
+			List<Event> newVaccinationEvents = processedVaccineEvents
+					.stream()
+					.filter(event ->
+							event.getObs().stream().map(Obs::getFormSubmissionField).allMatch(processedVaccines::contains))
+					.collect(Collectors.toList());
+
+			if (!newVaccinationEvents.isEmpty()) {
+				for (Event event : newVaccinationEvents) {
 					eventService.addorUpdateEvent(event, rapidProContact.getFields().getSupervisorPhone());
 				}
 			}
 		}
+	}
+
+	private Set<String> getVaccinesDoses(List<Event> vaccineEvents) {
+		return vaccineEvents.stream()
+				.flatMap(event -> event.getObs().stream().map(Obs::getFormSubmissionField))
+				.collect(Collectors.toSet());
 	}
 
 	public void processGrowthMonitoringEvent(RapidProContact rapidProContact) {
