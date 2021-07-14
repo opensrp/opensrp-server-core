@@ -76,7 +76,7 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 	 */
 	protected String padOpenMRSCode(String code) {
 		if (StringUtils.isNumeric(code)) {
-			return StringUtils.rightPad(code, 20, "A");
+			return StringUtils.rightPad(code, 36, "A");
 		}
 		return code;
 	}

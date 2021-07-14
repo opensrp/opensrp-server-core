@@ -30,4 +30,7 @@ public interface RapidProConstants {
 	String TEXT = "text";
 	String CALCULATE = "calculate";
 	String DOSE = "_dose";
+	String DECIMAL = "decimal";
+	String HEIGHT_CM = "height_cm";
+	String WEIGHT_KGS = "Weight_Kgs";
 }

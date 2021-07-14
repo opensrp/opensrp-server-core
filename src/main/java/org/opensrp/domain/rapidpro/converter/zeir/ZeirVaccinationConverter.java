@@ -26,8 +26,8 @@ public class ZeirVaccinationConverter extends BaseRapidProEventConverter {
 	@Override
 	public List<Event> convertContactToEvents(RapidProContact rapidProContact) {
 		RapidProFields fields = rapidProContact.getFields();
+		List<Event> vaccineEvents = new ArrayList<>();
 		if (RapidProConstants.CHILD.equalsIgnoreCase(fields.getPosition())) {
-			List<Event> vaccineEvents = new ArrayList<>();
 			createVaccineEvent(rapidProContact, vaccineEvents, ZeirVaccine.OPV_0, fields.getOpv0());
 			createVaccineEvent(rapidProContact, vaccineEvents, ZeirVaccine.BCG, fields.getBcg());
 			createVaccineEvent(rapidProContact, vaccineEvents, ZeirVaccine.OPV_1, fields.getOpv1());
@@ -45,9 +45,8 @@ public class ZeirVaccinationConverter extends BaseRapidProEventConverter {
 			createVaccineEvent(rapidProContact, vaccineEvents, ZeirVaccine.MR_1, fields.getMeasles());
 			createVaccineEvent(rapidProContact, vaccineEvents, ZeirVaccine.OPV_4, fields.getOpv4());
 			createVaccineEvent(rapidProContact, vaccineEvents, ZeirVaccine.MR_2, fields.getMeasles2());
-			return vaccineEvents;
 		}
-		return null;
+		return vaccineEvents;
 	}
 
 	private void createVaccineEvent(RapidProContact rapidProContact, List<Event> vaccineEvents,

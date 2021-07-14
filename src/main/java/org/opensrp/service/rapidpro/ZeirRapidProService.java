@@ -15,6 +15,7 @@ import org.opensrp.domain.rapidpro.converter.BaseRapidProEventConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirBirthRegistrationConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirChildClientConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirGrowthMonitoringConverter;
+import org.opensrp.domain.rapidpro.converter.zeir.ZeirGrowthMonitoringConverter.GMEvent;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirMotherClientConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirMotherRegistrationConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirVaccinationConverter;
@@ -72,14 +73,13 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 						RapidProContact supervisorContact =
 								getSupervisorContact(rapidProContact.getFields().getSupervisorPhone());
 						if (supervisorContact != null) {
-							RapidProFields supervisorFields = supervisorContact.getFields();
-							String locationId = getProviderLocationId(supervisorFields.getProvince(),
-									supervisorFields.getDistrict(), supervisorFields.getFacility());
-							rapidProContact.getFields().setFacilityLocationId(locationId);
-
-							processRegistrationEventClient(rapidProContact, rapidProContacts);
-							processVaccinationEvent(rapidProContact);
-							processGrowthMonitoringEvent(rapidProContact);
+							String locationId = getLocationId(supervisorContact);
+							if (StringUtils.isNoneBlank(locationId)) {
+								rapidProContact.getFields().setFacilityLocationId(locationId);
+								processRegistrationEventClient(rapidProContact, rapidProContacts);
+								processVaccinationEvent(rapidProContact);
+								processGrowthMonitoringEvent(rapidProContact);
+							}
 						} else {
 							processSupervisor(rapidProContact);
 						}
@@ -104,6 +104,12 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				reentrantLock.unlock();
 			}
 		}
+	}
+
+	private String getLocationId(RapidProContact supervisorContact) {
+		RapidProFields supervisorFields = supervisorContact.getFields();
+		return getProviderLocationId(supervisorFields.getProvince(),
+				supervisorFields.getDistrict(), supervisorFields.getFacility());
 	}
 
 	private void updateStateTokenFromContactDates(List<RapidProContact> rapidProContacts) {
@@ -208,23 +214,24 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		if (RapidProConstants.CHILD.equalsIgnoreCase(rapidProContact.getFields().getPosition())) {
 			ZeirVaccinationConverter eventConverter = new ZeirVaccinationConverter();
 			List<Event> processedVaccineEvents = eventConverter.convertContactToEvents(rapidProContact);
-			List<Event> previousVaccinationEvents =
-					eventService.findByBaseEntityAndType(rapidProContact.getUuid(), EventConstants.VACCINATION_EVENT);
 
-			//Remove all previously administered vaccines
-			Set<String> administeredVaccines = getVaccinesDoses(previousVaccinationEvents);
-			Set<String> processedVaccines = getVaccinesDoses(processedVaccineEvents);
-			processedVaccines.removeAll(administeredVaccines);
+			if (!processedVaccineEvents.isEmpty()) {
+				List<Event> existingVaccinationEvents =
+						eventService.findByBaseEntityAndType(rapidProContact.getUuid(), EventConstants.VACCINATION_EVENT);
 
-			List<Event> newVaccinationEvents = processedVaccineEvents
-					.stream()
-					.filter(event ->
-							event.getObs().stream().map(Obs::getFormSubmissionField).allMatch(processedVaccines::contains))
-					.collect(Collectors.toList());
+				//Remove all previously administered vaccines
+				Set<String> existingVaccines = getVaccinesDoses(existingVaccinationEvents);
+				Set<String> processedVaccines = getVaccinesDoses(processedVaccineEvents);
+				processedVaccines.removeAll(existingVaccines);
 
-			if (!newVaccinationEvents.isEmpty()) {
-				for (Event event : newVaccinationEvents) {
-					eventService.addorUpdateEvent(event, rapidProContact.getFields().getSupervisorPhone());
+				List<Event> newVaccinationEvents = processedVaccineEvents
+						.stream()
+						.filter(event -> event.getObs().stream().map(Obs::getFormSubmissionField)
+								.allMatch(processedVaccines::contains))
+						.collect(Collectors.toList());
+
+				if (!newVaccinationEvents.isEmpty()) {
+					saveEvents(rapidProContact.getFields(), newVaccinationEvents);
 				}
 			}
 		}
@@ -237,11 +244,66 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	public void processGrowthMonitoringEvent(RapidProContact rapidProContact) {
-		if (RapidProConstants.CHILD.equalsIgnoreCase(rapidProContact.getFields().getPosition())) {
+		RapidProFields fields = rapidProContact.getFields();
+		if (RapidProConstants.CHILD.equalsIgnoreCase(fields.getPosition())) {
 			ZeirGrowthMonitoringConverter eventConverter = new ZeirGrowthMonitoringConverter();
-			Event event = eventConverter.convertContactToEvent(rapidProContact);
-			eventService.addorUpdateEvent(event, rapidProContact.getFields().getSupervisorPhone());
+			List<Event> processedGMEvents = eventConverter.convertContactToEvents(rapidProContact);
+			List<Event> existingGMEvents =
+					eventService.findByBaseEntityAndType(rapidProContact.getUuid(), EventConstants.GROWTH_MONITORING_EVENT);
+			processGMEvent(fields, processedGMEvents, existingGMEvents, GMEvent.HEIGHT);
+			processGMEvent(fields, processedGMEvents, existingGMEvents, GMEvent.WEIGHT);
 		}
+	}
+
+	private void processGMEvent(RapidProFields fields, List<Event> processedGMEvents, List<Event> existingGMEvents,
+			GMEvent gmEvent) {
+		List<Event> filteredExistingGMEvents = filterGMEvents(existingGMEvents, gmEvent);
+		String value = null;
+		String dateModified = null;
+		switch (gmEvent) {
+			case HEIGHT:
+				value = fields.getHeight();
+				dateModified = fields.getGmHeightDateModified();
+				break;
+			case WEIGHT:
+				value = fields.getWeight();
+				dateModified = fields.getGmWeightDateModified();
+				break;
+		}
+		if (value != null && dateModified != null) {
+			if (filteredExistingGMEvents.isEmpty()) {
+				saveEvents(fields, filterGMEvents(processedGMEvents, gmEvent));
+			} else {
+				Instant contactGMEventDate = Instant.parse(dateModified);
+				Instant lastGMEventDate = getLastGMEventDate(filteredExistingGMEvents);
+				if (contactGMEventDate.isAfter(lastGMEventDate)) {
+					saveEvents(fields, filterGMEvents(processedGMEvents, gmEvent));
+				}
+			}
+		}
+	}
+
+	private void saveEvents(RapidProFields fields, List<Event> events) {
+		for (Event processedGMEvent : events) {
+			eventService.addorUpdateEvent(processedGMEvent, fields.getSupervisorPhone());
+		}
+	}
+
+	private Instant getLastGMEventDate(List<Event> filteredGMEvents) {
+		Instant currentInstant = Instant.ofEpochMilli(filteredGMEvents.get(0).getEventDate().toInstant().getMillis());
+		for (Event filteredEvent : filteredGMEvents) {
+			Instant existingGMEventInstant = Instant.ofEpochMilli(filteredEvent.getEventDate().toInstant().getMillis());
+			if (existingGMEventInstant.isAfter(currentInstant)) {
+				currentInstant = existingGMEventInstant;
+			}
+		}
+		return currentInstant;
+	}
+
+	private List<Event> filterGMEvents(List<Event> previousGMEvents, GMEvent gmEvent) {
+		return previousGMEvents.stream()
+				.filter(it -> it.getEntityType().equalsIgnoreCase(gmEvent.name()))
+				.collect(Collectors.toList());
 	}
 
 	public String getProviderLocationId(String province, String district, String facility) {
