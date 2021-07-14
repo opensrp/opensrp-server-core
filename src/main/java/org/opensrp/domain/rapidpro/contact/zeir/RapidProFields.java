@@ -128,7 +128,12 @@ public class RapidProFields implements Serializable {
 	private String zone;
 
 	@JsonProperty("facility_location_id")
+	@JsonAlias({ "health_facility_location_id" })
 	private String facilityLocationId;
+
+	@JsonProperty("facility_code")
+	@JsonAlias({ "health_facility_code" })
+	private String facilityCode;
 
 	@JsonProperty("height")
 	private String height;
@@ -514,5 +519,13 @@ public class RapidProFields implements Serializable {
 
 	public void setRegistrationProcessed(boolean registrationProcessed) {
 		this.registrationProcessed = registrationProcessed;
+	}
+
+	public String getFacilityCode() {
+		return facilityCode;
+	}
+
+	public void setFacilityCode(String facilityCode) {
+		this.facilityCode = facilityCode;
 	}
 }
