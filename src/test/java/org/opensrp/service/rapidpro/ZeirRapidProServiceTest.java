@@ -42,11 +42,10 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 		MockitoAnnotations.initMocks(this);
 		zeirRapidProService.setHttpClient(httpClient);
 		zeirRapidProServiceMock = Mockito.spy(zeirRapidProService);
-
 	}
 
 	@Test
-	public void testQueryContacts() throws IOException {
+	public void testQueryContactsWithNoLocationId() throws IOException {
 		mockContactsHttpResponse();
 		mockSupervisorHttpResponse();
 		zeirRapidProServiceMock.queryContacts(onTaskComplete);

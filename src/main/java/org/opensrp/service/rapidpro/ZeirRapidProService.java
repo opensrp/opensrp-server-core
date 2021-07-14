@@ -7,6 +7,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.domain.rapidpro.RapidProStateToken;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
@@ -124,8 +125,14 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	private JSONArray getResults(String response) {
-		JSONObject responseJson = new JSONObject(response);
-		return responseJson.optJSONArray(RapidProConstants.RESULTS);
+		try {
+			JSONObject responseJson = new JSONObject(response);
+			return responseJson.optJSONArray(RapidProConstants.RESULTS);
+		}
+		catch (JSONException jsonException) {
+			return null;
+		}
+
 	}
 
 	private List<RapidProContact> getRapidProContacts(JSONArray results) throws JsonProcessingException {
@@ -379,11 +386,13 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			HttpResponse httpResponse = httpClient.execute(getSupervisorContactRequest(phone));
 			if (httpResponse != null && httpResponse.getEntity() != null) {
 				JSONArray results = getResults(EntityUtils.toString(httpResponse.getEntity()));
-				List<RapidProContact> rapidProContacts = getRapidProContacts(results);
-				if (rapidProContacts == null || rapidProContacts.isEmpty()) {
-					return null;
+				if (results != null) {
+					List<RapidProContact> rapidProContacts = getRapidProContacts(results);
+					if (rapidProContacts == null || rapidProContacts.isEmpty()) {
+						return null;
+					}
+					return rapidProContacts.get(0);
 				}
-				return rapidProContacts.get(0);
 			}
 		}
 		catch (IOException exception) {

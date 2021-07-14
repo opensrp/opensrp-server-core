@@ -101,6 +101,8 @@ public class ZeirVaccinationConverter extends BaseRapidProEventConverter {
 				vaccineObs = vaccineObs("36", "1410", formSubmissionField, value);
 				vaccineDoseObs = vaccineDoseObs("36", "1418", formSubmissionField, value);
 				break;
+			default:
+				break;
 		}
 		if (vaccineObs != null && vaccineDoseObs != null) {
 			vaccineEvents.add(vaccineEvent.withObs(vaccineObs).withObs(vaccineDoseObs));
