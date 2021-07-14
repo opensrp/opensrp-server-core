@@ -19,6 +19,7 @@ public class ZeirMotherRegistrationConverter extends BaseRapidProEventConverter 
 			Event event = new Event();
 			event.setEventType(EventConstants.NEW_WOMAN_REGISTRATION_EVENT);
 			event.setEntityType(RapidProConstants.MOTHER.toLowerCase(Locale.ROOT));
+			event.addDetails(RapidProConstants.DATA_STRATEGY, RapidProConstants.NORMAL);
 			addCommonEventProperties(rapidProContact, event);
 
 			//chw_name obs and chw_phone_number obs

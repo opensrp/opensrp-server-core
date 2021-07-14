@@ -198,8 +198,12 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	public void processVaccinationEvent(RapidProContact rapidProContact) {
 		if (RapidProConstants.CHILD.equalsIgnoreCase(rapidProContact.getFields().getPosition())) {
 			ZeirVaccinationConverter eventConverter = new ZeirVaccinationConverter();
-			Event event = eventConverter.convertContactToEvent(rapidProContact);
-			eventService.addorUpdateEvent(event, rapidProContact.getFields().getSupervisorPhone());
+			List<Event> events = eventConverter.convertContactToEvents(rapidProContact);
+			if(events != null && !events.isEmpty()) {
+				for (Event event : events) {
+					eventService.addorUpdateEvent(event, rapidProContact.getFields().getSupervisorPhone());
+				}
+			}
 		}
 	}
 

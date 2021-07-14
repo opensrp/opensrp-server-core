@@ -26,4 +26,8 @@ public interface RapidProConstants {
 	String CONCEPT = "concept";
 	String CHW_NAME = "chw_name";
 	String CHW_PHONE_NUMBER = "chw_phone_number";
+	String DATE = "date";
+	String TEXT = "text";
+	String CALCULATE = "calculate";
+	String DOSE = "_dose";
 }
