@@ -3,14 +3,19 @@ package org.opensrp.domain.rapidpro.converter.zeir;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProClientConverter;
+import org.opensrp.service.IdentifierSourceService;
+import org.opensrp.service.UniqueIdentifierService;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class ZeirMotherClientConverter extends BaseRapidProClientConverter {
+
+	public ZeirMotherClientConverter(IdentifierSourceService identifierSourceService,
+			UniqueIdentifierService identifierService) {
+		super(identifierSourceService, identifierService);
+	}
 
 	@Override
 	public Client convertContactToClient(RapidProContact rapidProContact) {

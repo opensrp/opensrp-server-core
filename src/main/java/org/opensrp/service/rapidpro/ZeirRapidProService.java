@@ -157,15 +157,17 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			RapidProContact motherContact = getMotherContact(fields.getMotherName(), fields.getMotherPhone(),
 					rapidProContacts);
 			if (motherContact != null) {
+				motherContact.getFields().setFacilityLocationId(fields.getFacilityLocationId());
 				processChildRegistration(rapidProContact, motherContact);
 
 				Client existingMotherClient = clientService.getByBaseEntityId(motherContact.getUuid());
 				if (existingMotherClient == null) {
-					ZeirMotherClientConverter clientConverter = new ZeirMotherClientConverter();
+					ZeirMotherClientConverter clientConverter =
+							new ZeirMotherClientConverter(identifierSourceService, uniqueIdentifierService);
 					Client motherClient = clientConverter.convertContactToClient(motherContact);
 					if (motherClient != null) {
-						clientService.addorUpdate(motherClient);
-						saveEvent(motherContact, new ZeirMotherRegistrationConverter());
+						clientService.addClient(motherClient);
+						saveEvent(motherContact, new ZeirMotherRegistrationConverter(organizationService));
 					}
 				}
 			}
@@ -174,22 +176,23 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 	private void saveEvent(RapidProContact rapidProContact, BaseRapidProEventConverter eventConverter) {
 		Event event = eventConverter.convertContactToEvent(rapidProContact);
-		eventService.addorUpdateEvent(event, rapidProContact.getFields().getSupervisorPhone());
+		eventService.addEvent(event, rapidProContact.getFields().getSupervisorPhone());
 	}
 
 	private void processChildRegistration(RapidProContact childContact, RapidProContact motherContact) {
 		Client existingChildClient = clientService.getByBaseEntityId(childContact.getUuid());
 
 		if (existingChildClient == null) {
-			ZeirChildClientConverter clientConverter = new ZeirChildClientConverter();
+			ZeirChildClientConverter clientConverter =
+					new ZeirChildClientConverter(identifierSourceService, uniqueIdentifierService);
 			Client childClient = clientConverter.convertContactToClient(childContact);
 			if (childClient != null) {
 				childClient.withRelationships(new HashMap<>() {{
 					put(RapidProConstants.MOTHER, Collections.singletonList(motherContact.getUuid()));
 				}});
 
-				clientService.addorUpdate(childClient);
-				saveEvent(childContact, new ZeirBirthRegistrationConverter());
+				clientService.addClient(childClient);
+				saveEvent(childContact, new ZeirBirthRegistrationConverter(organizationService));
 			}
 		}
 	}
@@ -215,7 +218,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	 */
 	public void processVaccinationEvent(RapidProContact rapidProContact) {
 		if (RapidProConstants.CHILD.equalsIgnoreCase(rapidProContact.getFields().getPosition())) {
-			ZeirVaccinationConverter eventConverter = new ZeirVaccinationConverter();
+			ZeirVaccinationConverter eventConverter = new ZeirVaccinationConverter(organizationService);
 			List<Event> processedVaccineEvents = eventConverter.convertContactToEvents(rapidProContact);
 
 			if (!processedVaccineEvents.isEmpty()) {
@@ -249,7 +252,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	public void processGrowthMonitoringEvent(RapidProContact rapidProContact) {
 		RapidProFields fields = rapidProContact.getFields();
 		if (RapidProConstants.CHILD.equalsIgnoreCase(fields.getPosition())) {
-			ZeirGrowthMonitoringConverter eventConverter = new ZeirGrowthMonitoringConverter();
+			ZeirGrowthMonitoringConverter eventConverter = new ZeirGrowthMonitoringConverter(organizationService);
 			List<Event> processedGMEvents = eventConverter.convertContactToEvents(rapidProContact);
 			List<Event> existingGMEvents =
 					eventService.findByBaseEntityAndType(rapidProContact.getUuid(), EventConstants.GROWTH_MONITORING_EVENT);
@@ -290,7 +293,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 	private void saveEvents(RapidProFields fields, List<Event> events) {
 		for (Event processedGMEvent : events) {
-			eventService.addorUpdateEvent(processedGMEvent, fields.getSupervisorPhone());
+			eventService.addEvent(processedGMEvent, fields.getSupervisorPhone());
 		}
 	}
 
@@ -410,5 +413,4 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		return (HttpGet) setupRapidproRequest(getBaseUrl() + "/contacts.json?urn=tel:" + phone,
 				new HttpGet());
 	}
-
 }

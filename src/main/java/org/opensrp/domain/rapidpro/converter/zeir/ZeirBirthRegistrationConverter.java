@@ -3,15 +3,18 @@ package org.opensrp.domain.rapidpro.converter.zeir;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProEventConverter;
+import org.opensrp.service.OrganizationService;
 import org.opensrp.util.constants.EventConstants;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Event;
-import org.springframework.stereotype.Service;
 
 import java.util.Locale;
 
-@Service
 public class ZeirBirthRegistrationConverter extends BaseRapidProEventConverter {
+
+	public ZeirBirthRegistrationConverter(OrganizationService organizationService) {
+		super(organizationService);
+	}
 
 	@Override
 	public Event convertContactToEvent(RapidProContact rapidProContact) {

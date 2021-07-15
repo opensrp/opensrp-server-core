@@ -9,7 +9,6 @@ import org.opensrp.util.DateParserUtils;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 import java.util.Date;
@@ -20,8 +19,7 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 
 	protected OrganizationService organizationService;
 
-	@Autowired
-	public void setOrganizationService(OrganizationService organizationService) {
+	public BaseRapidProEventConverter(OrganizationService organizationService) {
 		this.organizationService = organizationService;
 	}
 

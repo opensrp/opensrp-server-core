@@ -8,7 +8,6 @@ import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.service.UniqueIdentifierService;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -19,14 +18,10 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 
 	protected UniqueIdentifierService identifierService;
 
-	@Autowired
-	public void setIdentifierService(UniqueIdentifierService identifierService) {
-		this.identifierService = identifierService;
-	}
-
-	@Autowired
-	public void setIdentifierSourceService(IdentifierSourceService identifierSourceService) {
+	public BaseRapidProClientConverter(IdentifierSourceService identifierSourceService,
+			UniqueIdentifierService identifierService) {
 		this.identifierSourceService = identifierSourceService;
+		this.identifierService = identifierService;
 	}
 
 	protected void addCommonZeirProperties(RapidProContact rapidProContact, Client client) {

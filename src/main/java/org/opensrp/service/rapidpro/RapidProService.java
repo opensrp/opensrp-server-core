@@ -20,6 +20,7 @@ public class RapidProService {
 	 * parameter passed is a '#' otherwise get only the contacts that were updated after the last modified date.
 	 */
 	public void queryContacts(RapidProOnTaskComplete onTaskComplete) {
+
 		zeirRapidProService.queryContacts(onTaskComplete);
 	}
 }

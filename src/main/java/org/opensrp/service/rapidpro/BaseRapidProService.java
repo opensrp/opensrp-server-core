@@ -11,7 +11,10 @@ import org.opensrp.domain.rapidpro.RapidProStateToken;
 import org.opensrp.service.ClientService;
 import org.opensrp.service.ConfigService;
 import org.opensrp.service.EventService;
+import org.opensrp.service.IdentifierSourceService;
+import org.opensrp.service.OrganizationService;
 import org.opensrp.service.PhysicalLocationService;
+import org.opensrp.service.UniqueIdentifierService;
 import org.smartregister.domain.LocationTag;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +49,12 @@ public abstract class BaseRapidProService {
 
 	protected ConfigService configService;
 
+	protected IdentifierSourceService identifierSourceService;
+
+	protected UniqueIdentifierService uniqueIdentifierService;
+
+	protected OrganizationService organizationService;
+
 	@Value("#{opensrp['rapidpro.url']}")
 	private String rapidProUrl;
 
@@ -76,6 +85,21 @@ public abstract class BaseRapidProService {
 		this.configService = configService;
 		this.configService.registerAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, "#",
 				"Token to keep track of the date of the last processed rapidpro contacts", true);
+	}
+
+	@Autowired
+	public void setUniqueIdentifierService(UniqueIdentifierService uniqueIdentifierService) {
+		this.uniqueIdentifierService = uniqueIdentifierService;
+	}
+
+	@Autowired
+	public void setIdentifierSourceService(IdentifierSourceService identifierSourceService) {
+		this.identifierSourceService = identifierSourceService;
+	}
+
+	@Autowired
+	public void setOrganizationService(OrganizationService organizationService) {
+		this.organizationService = organizationService;
 	}
 
 	public void setHttpClient(HttpClient httpClient) {
