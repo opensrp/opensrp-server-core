@@ -15,6 +15,7 @@ import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.service.OrganizationService;
 import org.opensrp.service.PhysicalLocationService;
 import org.opensrp.service.UniqueIdentifierService;
+import org.opensrp.service.callback.RapidProOnTaskComplete;
 import org.smartregister.domain.LocationTag;
 import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,4 +140,7 @@ public abstract class BaseRapidProService {
 		this.clientService = clientService;
 	}
 
+	public abstract void queryContacts(RapidProOnTaskComplete onTaskComplete);
+
+	public abstract void syncOpenSRPEventClientsToRapidPro();
 }

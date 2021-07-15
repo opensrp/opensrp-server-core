@@ -362,6 +362,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		return null;
 	}
 
+	@Override
 	public void queryContacts(RapidProOnTaskComplete onTaskComplete) {
 		try {
 			HttpResponse httpResponse = httpClient.execute(getContactRequest());
@@ -372,6 +373,11 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		catch (IOException exception) {
 			logger.error(exception.getMessage(), exception);
 		}
+	}
+
+	@Override
+	public void syncOpenSRPEventClientsToRapidPro() {
+
 	}
 
 	public HttpGet getContactRequest() {

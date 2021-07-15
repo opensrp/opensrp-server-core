@@ -23,4 +23,8 @@ public class RapidProService {
 
 		zeirRapidProService.queryContacts(onTaskComplete);
 	}
+
+	public void syncOpenSRPEventClientsToRapidPro() {
+		zeirRapidProService.syncOpenSRPEventClientsToRapidPro();
+	}
 }
