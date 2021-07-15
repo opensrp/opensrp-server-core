@@ -1,10 +1,12 @@
 package org.opensrp.domain.rapidpro.contact.zeir;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RapidProFields implements Serializable {
 
 	@JsonProperty("supervisor_phone")
