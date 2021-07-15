@@ -329,7 +329,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				return null;
 			}
 
-			return facilities.get(0).getProperties().getUid();
+			return facilities.get(0).getId();
 		}
 		return null;
 	}
@@ -337,7 +337,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	private List<PhysicalLocation> getDistrictLocations(Long count, String district, List<PhysicalLocation> provinces) {
 		for (PhysicalLocation province : provinces) {
 			if (locationTagExists(province.getLocationTags(), RapidProConstants.PROVINCE)) {
-				String provinceUuid = province.getProperties().getUid();
+				String provinceUuid = province.getId();
 				List<PhysicalLocation> districtLocations =
 						locationService.findLocationByIdWithChildren(false, provinceUuid, count.intValue());
 
@@ -351,7 +351,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 						throw new IllegalStateException("Found " + districts.size() + " districts with the same name "
 								+ "in the same province ( " + province.getProperties().getName() + ")");
 					}
-					String districtUuid = districts.get(0).getProperties().getUid();
+					String districtUuid = districts.get(0).getId();
 					return locationService.findLocationByIdWithChildren(false, districtUuid, count.intValue());
 				}
 			}
