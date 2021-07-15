@@ -16,6 +16,7 @@ public interface RapidProConstants {
 	String FACILITY = "Facility";
 	String USUAL_RESIDENCE = "usual_residence";
 	String ADDRESS_SIX = "address6";
+	String ADDRESS_SEVEN = "address7";
 	String RESIDENTIAL_AREA = "residential_area";
 	String ZEIR_ID = "zeir_id";
 	String M_ZEIR_ID = "M_ZEIR_ID";

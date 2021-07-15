@@ -39,10 +39,12 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 					fields.getBirth();
 			childClient.addAttribute(RapidProConstants.PLACE_OF_BIRTH, birth.toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
 
-			//Use Supervisor's location as the default place of birth which is saved as location id address in childClient json object
+			//Use Supervisor's location as the default place of birth and home facility both saved as location
+			// id address property of client json
 			Address address = new Address();
 			address.setAddressType(RapidProConstants.USUAL_RESIDENCE);
 			address.addAddressField(RapidProConstants.ADDRESS_SIX, fields.getFacilityLocationId());
+			address.addAddressField(RapidProConstants.ADDRESS_SEVEN, fields.getFacilityLocationId());
 			childClient.addAddress(address);
 
 			childClient.setGender(fields.getSex().toLowerCase(Locale.ROOT));
