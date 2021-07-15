@@ -71,16 +71,6 @@ public abstract class BaseRapidProService {
 	}
 
 	@Autowired
-	public void setEventService(EventService eventService) {
-		this.eventService = eventService;
-	}
-
-	@Autowired
-	public void setClientService(ClientService clientService) {
-		this.clientService = clientService;
-	}
-
-	@Autowired
 	public void setConfigService(ConfigService configService) {
 		this.configService = configService;
 		this.configService.registerAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, "#",
@@ -130,4 +120,23 @@ public abstract class BaseRapidProService {
 						it.getLocationTags(), tag))
 				.collect(Collectors.toList());
 	}
+
+	public EventService getEventService() {
+		return eventService;
+	}
+
+	@Autowired
+	public void setEventService(EventService eventService) {
+		this.eventService = eventService;
+	}
+
+	public ClientService getClientService() {
+		return clientService;
+	}
+
+	@Autowired
+	public void setClientService(ClientService clientService) {
+		this.clientService = clientService;
+	}
+
 }

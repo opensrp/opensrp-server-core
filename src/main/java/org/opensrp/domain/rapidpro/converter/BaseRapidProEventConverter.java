@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensrp.common.util.DateUtil;
 import org.opensrp.domain.postgres.Organization;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
+import org.opensrp.domain.rapidpro.converter.zeir.ZeirVaccine;
 import org.opensrp.service.OrganizationService;
 import org.opensrp.util.DateParserUtils;
 import org.opensrp.util.constants.RapidProConstants;
@@ -44,12 +45,26 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 				.withFieldDataType(RapidProConstants.DATE);
 	}
 
-	protected Obs vaccineDoseObs(String parentCode, String fieldCode, String formSubmissionField, String value) {
-		return createObs(padOpenMRSCode(fieldCode), value)
+	protected Obs vaccineDoseObs(String parentCode, String fieldCode, String formSubmissionField, ZeirVaccine vaccine) {
+		return createObs(padOpenMRSCode(fieldCode), getVaccineSequence(vaccine))
 				.withParentCode(padOpenMRSCode(parentCode))
-				.withFormSubmissionField(formSubmissionField)
-				.withFieldCode(fieldCode + RapidProConstants.DOSE)
+				.withFormSubmissionField(formSubmissionField + RapidProConstants.DOSE)
+				.withFieldCode(fieldCode)
 				.withFieldDataType(RapidProConstants.CALCULATE);
+	}
+
+	protected String getVaccineSequence(ZeirVaccine vaccine) {
+		String[] splitVaccine = vaccine.name().split("_");
+		if (splitVaccine.length <= 1) {
+			return "1";
+		} else {
+			String lastItem = splitVaccine[splitVaccine.length - 1];
+			if (StringUtils.isNumeric(lastItem)) {
+				return String.valueOf(Integer.parseInt(lastItem) + 1);
+			} else {
+				return "1";
+			}
+		}
 	}
 
 	protected Obs createObs(String fieldCode, String value) {

@@ -4,6 +4,7 @@ import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProEventConverter;
 import org.opensrp.service.OrganizationService;
+import org.opensrp.util.constants.EventConstants;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
@@ -62,6 +63,8 @@ public class ZeirVaccinationConverter extends BaseRapidProEventConverter {
 		}
 
 		Event vaccineEvent = new Event();
+		vaccineEvent.setEventType(EventConstants.VACCINATION_EVENT);
+		vaccineEvent.setEntityType(EventConstants.VACCINATION_EVENT.toLowerCase(Locale.ROOT));
 		addCommonEventProperties(rapidProContact, vaccineEvent);
 		String formSubmissionField = vaccine.name().toLowerCase(Locale.ROOT);
 		Obs vaccineObs = null;
@@ -74,37 +77,37 @@ public class ZeirVaccinationConverter extends BaseRapidProEventConverter {
 			case OPV_3:
 			case OPV_4:
 				vaccineObs = vaccineObs("783", "1410", formSubmissionField, value);
-				vaccineDoseObs = vaccineDoseObs("783", "1418", formSubmissionField, value);
+				vaccineDoseObs = vaccineDoseObs("783", "1418", formSubmissionField, vaccine);
 				break;
 			case BCG:
 				vaccineObs = vaccineObs("886", "1410", formSubmissionField, value);
-				vaccineDoseObs = vaccineDoseObs("886", "1418", formSubmissionField, value);
+				vaccineDoseObs = vaccineDoseObs("886", "1418", formSubmissionField, vaccine);
 				break;
 			case PENTA_1:
 			case PENTA_2:
 			case PENTA_3:
 				vaccineObs = vaccineObs("1685", "1410", formSubmissionField, value);
-				vaccineDoseObs = vaccineDoseObs("1685", "1418", formSubmissionField, value);
+				vaccineDoseObs = vaccineDoseObs("1685", "1418", formSubmissionField, vaccine);
 				break;
 			case PCV_1:
 			case PCV_2:
 			case PCV_3:
 				vaccineObs = vaccineObs("162342", "1410", formSubmissionField, value);
-				vaccineDoseObs = vaccineDoseObs("162342", "1418", formSubmissionField, value);
+				vaccineDoseObs = vaccineDoseObs("162342", "1418", formSubmissionField, vaccine);
 				break;
 			case ROTA_1:
 			case ROTA_2:
 				vaccineObs = vaccineObs("159698", "1410", formSubmissionField, value);
-				vaccineDoseObs = vaccineDoseObs("159698", "1418", formSubmissionField, value);
+				vaccineDoseObs = vaccineDoseObs("159698", "1418", formSubmissionField, vaccine);
 				break;
 			case IPV:
 				vaccineObs = vaccineObs("", "ipv", formSubmissionField, value);
-				vaccineDoseObs = vaccineDoseObs("", "ipv_calculation", formSubmissionField, value);
+				vaccineDoseObs = vaccineDoseObs("", "ipv_calculation", formSubmissionField, vaccine);
 				break;
 			case MR_1:
 			case MR_2:
 				vaccineObs = vaccineObs("36", "1410", formSubmissionField, value);
-				vaccineDoseObs = vaccineDoseObs("36", "1418", formSubmissionField, value);
+				vaccineDoseObs = vaccineDoseObs("36", "1418", formSubmissionField, vaccine);
 				break;
 			default:
 				break;

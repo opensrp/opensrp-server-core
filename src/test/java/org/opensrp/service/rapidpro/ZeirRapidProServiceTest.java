@@ -4,7 +4,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -13,16 +13,17 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.opensrp.domain.postgres.Organization;
-import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.service.OrganizationService;
 import org.opensrp.service.callback.RapidProOnTaskComplete;
+import org.smartregister.domain.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ZeirRapidProServiceTest extends BaseRepositoryTest {
@@ -57,6 +58,7 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 
 	@Before
 	public void setUp() throws Exception {
+		truncateTables();
 		MockitoAnnotations.initMocks(this);
 
 		zeirRapidProService.setHttpClient(httpClient);
@@ -80,11 +82,32 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void testQueryContactsWithLocationId() throws IOException {
+	public void testQueryContactsWithLocationIdSavesEventsAndClients() throws IOException {
 		mockContactsHttpResponse();
 		mockSupervisorHttpResponse();
 		zeirRapidProServiceSpy.queryContacts(onTaskComplete);
 		Mockito.verify(onTaskComplete, Mockito.atLeastOnce()).completeTask();
+		List<Event> events = zeirRapidProServiceSpy.getEventService().getAll();
+
+		Assert.assertTrue(events.size() >= 7);
+		Assert.assertTrue(event_isCreated(events, "Birth Registration"));
+		Assert.assertTrue(event_isCreated(events, "New Woman Registration"));
+		Assert.assertTrue(event_isCreated(events, "Vaccination"));
+
+		//At least 3 Vaccination events were created
+		Assert.assertTrue(
+				events.stream().filter(event -> event.getEventType().equalsIgnoreCase("Vaccination")).count() >= 3);
+
+		//At least 2 Growth Monitoring events were created
+		Assert.assertTrue(
+				events.stream().filter(event -> event.getEventType().equalsIgnoreCase("Growth Monitoring")).count() >= 2);
+
+		//At least 2 clients created
+		Assert.assertTrue(zeirRapidProServiceSpy.getClientService().countAll(0) >= 2);
+	}
+
+	private boolean event_isCreated(List<Event> events, String evenType) {
+		return events.stream().anyMatch(it -> it.getEventType().equalsIgnoreCase(evenType));
 	}
 
 	private void mockSupervisorHttpResponse() throws IOException {
@@ -109,11 +132,6 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 		Mockito.doReturn(contactsHttpEntity).when(contactsHttpResponse).getEntity();
 		Mockito.doReturn(contactsHttpRequest).when(zeirRapidProServiceSpy).getContactRequest();
 		Mockito.doReturn(contactsHttpResponse).when(httpClient).execute(contactsHttpRequest);
-	}
-
-	@After
-	public void tearDown() {
-		truncateTables();
 	}
 
 	@Override
