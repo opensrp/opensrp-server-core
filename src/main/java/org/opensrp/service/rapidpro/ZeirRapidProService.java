@@ -407,7 +407,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	public HttpGet getSupervisorContactRequest(String phone) {
-		return (HttpGet) setupRapidproRequest(getBaseUrl() + "/contacts.json?urn=tel" + phone,
+		return (HttpGet) setupRapidproRequest(getBaseUrl() + "/contacts.json?urn=tel:" + phone,
 				new HttpGet());
 	}
 
