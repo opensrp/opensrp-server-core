@@ -96,7 +96,7 @@ public abstract class BaseRapidProService {
 	}
 
 	public boolean locationTagExists(Set<LocationTag> locationTags, String tag) {
-		return locationTags.stream().filter(it -> it.getName().equalsIgnoreCase(tag)).count() > 1;
+		return locationTags.stream().anyMatch(it -> it.getName().equalsIgnoreCase(tag));
 	}
 
 	public List<PhysicalLocation> findLocationsWithNameAndTag(List<PhysicalLocation> locations, String locationName,
