@@ -90,9 +90,9 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 		List<Event> events = zeirRapidProServiceSpy.getEventService().getAll();
 
 		Assert.assertTrue(events.size() >= 7);
-		Assert.assertTrue(event_isCreated(events, "Birth Registration"));
-		Assert.assertTrue(event_isCreated(events, "New Woman Registration"));
-		Assert.assertTrue(event_isCreated(events, "Vaccination"));
+		Assert.assertTrue(eventIsCreated(events, "Birth Registration"));
+		Assert.assertTrue(eventIsCreated(events, "New Woman Registration"));
+		Assert.assertTrue(eventIsCreated(events, "Vaccination"));
 
 		//At least 3 Vaccination events were created
 		Assert.assertTrue(
@@ -106,7 +106,7 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 		Assert.assertTrue(zeirRapidProServiceSpy.getClientService().countAll(0) >= 2);
 	}
 
-	private boolean event_isCreated(List<Event> events, String evenType) {
+	private boolean eventIsCreated(List<Event> events, String evenType) {
 		return events.stream().anyMatch(it -> it.getEventType().equalsIgnoreCase(evenType));
 	}
 
