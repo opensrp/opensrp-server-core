@@ -74,10 +74,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 				for (RapidProContact rapidProContact : rapidProContacts) {
 					try {
-						RapidProContact supervisorContact =
-								getSupervisorContact(rapidProContact.getFields().getSupervisorPhone());
-						if (supervisorContact != null) {
-							String locationId = getLocationId(supervisorContact);
+						String locationId = getLocationId(rapidProContact);
+						if (locationId != null) {
 							if (StringUtils.isNoneBlank(locationId)) {
 								rapidProContact.getFields().setFacilityLocationId(locationId);
 								processRegistrationEventClient(rapidProContact, rapidProContacts);
@@ -105,10 +103,15 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		}
 	}
 
-	private String getLocationId(RapidProContact supervisorContact) {
+	private String getLocationId(RapidProContact rapidProContact) {
+		RapidProFields fields = rapidProContact.getFields();
+		if (StringUtils.isNoneBlank(fields.getFacilityLocationId())) {
+			return fields.getFacilityLocationId();
+		}
+		RapidProContact supervisorContact = getSupervisorContact(fields.getSupervisorPhone());
 		RapidProFields supervisorFields = supervisorContact.getFields();
-		return getProviderLocationId(supervisorFields.getProvince(),
-				supervisorFields.getDistrict(), supervisorFields.getFacility());
+		return getProviderLocationId(supervisorFields.getProvince(), supervisorFields.getDistrict(),
+				supervisorFields.getFacility());
 	}
 
 	private void updateStateTokenFromContactDates(List<RapidProContact> rapidProContacts) {
