@@ -155,6 +155,10 @@ public class RapidProFields implements Serializable {
 	@JsonAlias({ "registration_processed", "is_registration_processed", "processed_registration" })
 	private boolean registrationProcessed;
 
+	@JsonProperty("opensrp_id")
+	@JsonAlias({"zeir_id", "ZEIR_ID", "OPENSRP_ID"})
+	private String opensrpId;
+
 	public String getSupervisorPhone() {
 		return this.supervisorPhone;
 	}
@@ -529,5 +533,13 @@ public class RapidProFields implements Serializable {
 
 	public void setFacilityCode(String facilityCode) {
 		this.facilityCode = facilityCode;
+	}
+
+	public String getOpensrpId() {
+		return opensrpId;
+	}
+
+	public void setOpensrpId(String opensrpId) {
+		this.opensrpId = opensrpId;
 	}
 }

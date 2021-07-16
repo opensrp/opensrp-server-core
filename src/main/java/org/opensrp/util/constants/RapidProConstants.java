@@ -35,4 +35,5 @@ public interface RapidProConstants {
 	String DECIMAL = "decimal";
 	String HEIGHT_CM = "height_cm";
 	String WEIGHT_KGS = "Weight_Kgs";
+	String HOME = "Home";
 }

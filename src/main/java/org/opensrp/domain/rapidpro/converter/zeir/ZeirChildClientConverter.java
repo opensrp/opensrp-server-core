@@ -1,5 +1,6 @@
 package org.opensrp.domain.rapidpro.converter.zeir;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProClientConverter;
@@ -15,8 +16,8 @@ import java.util.Locale;
 public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 
 	public ZeirChildClientConverter(IdentifierSourceService identifierSourceService,
-			UniqueIdentifierService identifierService) {
-		super(identifierSourceService, identifierService);
+			UniqueIdentifierService uniqueIdentifierService) {
+		super(identifierSourceService, uniqueIdentifierService);
 	}
 
 	@Override
@@ -35,8 +36,7 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 
 			//Place of birth facility saved as health_facility in ZEIR
 			String birth = RapidProConstants.FACILITY.equalsIgnoreCase(fields.getBirth()) ?
-					RapidProConstants.HEALTH_FACILITY :
-					fields.getBirth();
+					RapidProConstants.HEALTH_FACILITY : fields.getBirth();
 			childClient.addAttribute(RapidProConstants.PLACE_OF_BIRTH, birth.toLowerCase(Locale.ROOT).replaceAll(" ", "_"));
 
 			//Use Supervisor's location as the default place of birth and home facility both saved as location
@@ -56,6 +56,22 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 
 	@Override
 	public RapidProContact convertClientToContact(Client client) {
-		return null;
+		RapidProContact rapidProContact = new RapidProContact();
+		rapidProContact.setName(client.fullName());
+
+		RapidProFields fields = new RapidProFields();
+		fields.setMvaccId((String) client.getAttribute(RapidProConstants.CHILD_REGISTER_CARD_NUMBER));
+		fields.setOpensrpId(client.getIdentifier(RapidProConstants.ZEIR_ID));
+		fields.setSex(StringUtils.capitalize(client.getGender().toLowerCase(Locale.ROOT)));
+		fields.setDob(client.getBirthdate().toDateTimeISO().toString());
+		String birthPlace = (String) client.getAttribute(RapidProConstants.PLACE_OF_BIRTH);
+		fields.setBirth(RapidProConstants.HEALTH_FACILITY.equalsIgnoreCase(birthPlace)
+				? RapidProConstants.FACILITY : RapidProConstants.HOME);
+		fields.setLocation((String) client.getAttribute(RapidProConstants.RESIDENTIAL_AREA));
+		fields.setPosition(RapidProConstants.CHILD);
+		fields.setFacilityLocationId(client.getLocationId());
+
+		rapidProContact.setFields(fields);
+		return rapidProContact;
 	}
 }

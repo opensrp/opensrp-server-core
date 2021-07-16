@@ -18,9 +18,9 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 	protected UniqueIdentifierService identifierService;
 
 	public BaseRapidProClientConverter(IdentifierSourceService identifierSourceService,
-			UniqueIdentifierService identifierService) {
+			UniqueIdentifierService uniqueIdentifierService) {
 		this.identifierSourceService = identifierSourceService;
-		this.identifierService = identifierService;
+		this.identifierService = uniqueIdentifierService;
 	}
 
 	protected void addCommonZeirProperties(RapidProContact rapidProContact, Client client) {

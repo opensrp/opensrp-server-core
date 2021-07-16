@@ -13,8 +13,8 @@ import java.util.List;
 public class ZeirMotherClientConverter extends BaseRapidProClientConverter {
 
 	public ZeirMotherClientConverter(IdentifierSourceService identifierSourceService,
-			UniqueIdentifierService identifierService) {
-		super(identifierSourceService, identifierService);
+			UniqueIdentifierService uniqueIdentifierService) {
+		super(identifierSourceService, uniqueIdentifierService);
 	}
 
 	@Override
