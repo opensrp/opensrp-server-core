@@ -44,6 +44,8 @@ import java.util.stream.Collectors;
 
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntity.SUPERVISOR;
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.LOCATION_ID;
+import static org.opensrp.util.RapidProUtils.getBaseUrl;
+import static org.opensrp.util.RapidProUtils.setupRapidproRequest;
 
 /**
  * Subclass of BaseRapidProService for ZEIR project. This implementation is for RapidPro/MVACC integration.
@@ -130,7 +132,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 		String supervisorPhone = fields.getSupervisorPhone();
 		List<RapidproState> rapidProState =
-				rapidProStateService.getRapidProState(SUPERVISOR.name(), LOCATION_ID.name(), supervisorPhone);
+				zeirRapidProStateService.getRapidProState(SUPERVISOR.name(), LOCATION_ID.name(), supervisorPhone);
 
 		if (rapidProState != null && !rapidProState.isEmpty()) {
 			return rapidProState.get(rapidProState.size() - 1).getPropertyValue();
@@ -218,7 +220,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 		if (existingChildClient == null) {
 			ZeirChildClientConverter clientConverter =
-					new ZeirChildClientConverter(identifierSourceService, uniqueIdentifierService, rapidProStateService);
+					new ZeirChildClientConverter(identifierSourceService, uniqueIdentifierService, zeirRapidProStateService);
 			Client childClient = clientConverter.convertContactToClient(childContact);
 			if (childClient != null) {
 				childClient.withRelationships(new HashMap<>() {{
@@ -373,7 +375,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			rapidProState.setProperty(LOCATION_ID.name());
 			rapidProState.setPropertyKey(supervisorPhone);
 			rapidProState.setPropertyValue(facilityLocationId);
-			rapidProStateService.saveRapidProState(rapidProState);
+			zeirRapidProStateService.saveRapidProState(rapidProState);
 
 			return facilityLocationId;
 		}
@@ -426,11 +428,11 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	public HttpGet getContactRequest() {
 		String dateModified = (String) configService.getAppStateTokenByName(RapidProStateToken.RAPIDPRO_STATE_TOKEN)
 				.getValue();
-		String baseUrl = getBaseUrl();
+		String baseUrl = getBaseUrl(rapidProUrl);
 		String url = !dateModified.equalsIgnoreCase("#") ? baseUrl + "/contacts.json?after=" + dateModified :
 				baseUrl + "/contacts.json?before=" + Instant.now().toString();
 
-		return (HttpGet) setupRapidproRequest(url, new HttpGet());
+		return (HttpGet) setupRapidproRequest(url, new HttpGet(), rapidProToken);
 	}
 
 	public RapidProContact getSupervisorContact(String phone, List<RapidProContact> downloadedContacts) {
@@ -472,7 +474,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	public HttpGet getSupervisorContactRequest(String phone) {
-		return (HttpGet) setupRapidproRequest(getBaseUrl() + "/contacts.json?urn=tel:" + phone,
-				new HttpGet());
+		return (HttpGet) setupRapidproRequest(getBaseUrl(rapidProUrl) + "/contacts.json?urn=tel:" + phone,
+				new HttpGet(), rapidProToken);
 	}
 }

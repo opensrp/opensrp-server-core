@@ -9,7 +9,7 @@ import org.mockito.MockitoAnnotations;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.service.UniqueIdentifierService;
-import org.opensrp.service.rapidpro.RapidProStateService;
+import org.opensrp.service.rapidpro.ZeirRapidProStateService;
 import org.opensrp.util.DateParserUtils;
 import org.opensrp.util.SampleFullDomainObject;
 import org.opensrp.util.constants.RapidProConstants;
@@ -26,13 +26,13 @@ public class ZeirChildClientConverterTest {
 	private UniqueIdentifierService identifierService;
 
 	@Mock
-	private RapidProStateService rapidProStateService;
+	private ZeirRapidProStateService zeirRapidProStateService;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		zeirChildClientConverter = Mockito.spy(new ZeirChildClientConverter(identifierSourceService, identifierService,
-				rapidProStateService));
+				zeirRapidProStateService));
 	}
 
 	@Test

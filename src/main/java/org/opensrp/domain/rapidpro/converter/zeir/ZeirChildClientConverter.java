@@ -7,7 +7,7 @@ import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProClientConverter;
 import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.service.UniqueIdentifierService;
-import org.opensrp.service.rapidpro.RapidProStateService;
+import org.opensrp.service.rapidpro.ZeirRapidProStateService;
 import org.opensrp.util.DateParserUtils;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Address;
@@ -20,12 +20,12 @@ import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.IDENTIFIER;
 
 public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 
-	private final RapidProStateService rapidProStateService;
+	private final ZeirRapidProStateService zeirRapidProStateService;
 
 	public ZeirChildClientConverter(IdentifierSourceService identifierSourceService,
-			UniqueIdentifierService uniqueIdentifierService, RapidProStateService rapidProStateService) {
+			UniqueIdentifierService uniqueIdentifierService, ZeirRapidProStateService zeirRapidProStateService) {
 		super(identifierSourceService, uniqueIdentifierService);
-		this.rapidProStateService = rapidProStateService;
+		this.zeirRapidProStateService = zeirRapidProStateService;
 	}
 
 	@Override
@@ -75,7 +75,7 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 				fields.getFacilityLocationId() + fields.getMvaccId());
 
 		rapidProState.setPropertyValue(childClient.getIdentifier(RapidProConstants.ZEIR_ID));
-		rapidProStateService.saveRapidProState(rapidProState);
+		zeirRapidProStateService.saveRapidProState(rapidProState);
 	}
 
 	@Override

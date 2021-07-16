@@ -36,6 +36,11 @@ public interface RapidProConstants {
 	String HEIGHT_CM = "height_cm";
 	String WEIGHT_KGS = "Weight_Kgs";
 	String HOME = "Home";
+	String OPENSRP_ID = "opensrp_id";
+	String FACILITY_LOCATION_ID = "facility_location_id";
+	String FIELDS = "fields";
+	String REGISTRATION_PROCESSED = "registration_processed";
+	String OPENSRP = "OpenSRP";
 
 	interface RapidProProjects {
 		String ZEIR_RAPIDPRO = "zeir";
