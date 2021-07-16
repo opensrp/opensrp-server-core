@@ -21,6 +21,7 @@ public interface RapidProConstants {
 	String ZEIR_ID = "zeir_id";
 	String M_ZEIR_ID = "M_ZEIR_ID";
 	String MOTHER_GUARDIAN_NUMBER = "mother_guardian_number";
+	String SMS_REMINDER_PHONE = "sms_reminder_phone";
 	String RESIDENTIAL_ADDRESS = "residential_address";
 	String DATA_STRATEGY = "data_strategy";
 	String NORMAL = "Normal";

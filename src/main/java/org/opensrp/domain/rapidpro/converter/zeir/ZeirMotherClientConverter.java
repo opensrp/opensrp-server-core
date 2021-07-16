@@ -25,8 +25,15 @@ public class ZeirMotherClientConverter extends BaseRapidProClientConverter {
 			addCommonZeirProperties(rapidProContact, motherClient);
 			addZeirClientIdentifier(rapidProContact, motherClient, RapidProConstants.M_ZEIR_ID);
 			List<String> urns = rapidProContact.getUrns();
-			if (urns != null && isValidPhoneNumber(urns.get(0))) {
-				motherClient.addAttribute(RapidProConstants.MOTHER_GUARDIAN_NUMBER, urns.get(0));
+			final String prefix = "tel:+260";
+			if (urns != null && !urns.isEmpty()) {
+				urns.forEach(urn -> {
+					if (urn.startsWith(prefix)) {
+						String formattedPhone = urn.replace(prefix, "0");
+						motherClient.addAttribute(RapidProConstants.MOTHER_GUARDIAN_NUMBER, formattedPhone);
+						motherClient.addAttribute(RapidProConstants.SMS_REMINDER_PHONE, formattedPhone);
+					}
+				});
 			}
 			return motherClient;
 		}

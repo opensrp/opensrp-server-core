@@ -10,7 +10,6 @@ import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 public abstract class BaseRapidProClientConverter implements RapidProContactClientConverter {
 
@@ -54,11 +53,5 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 				identifierService.markIdentifierAsUsed(zeirId);
 			}
 		}
-	}
-
-	protected boolean isValidPhoneNumber(String formattedTelPhone) {
-		String extractedPhone = formattedTelPhone.replace("tel:", "").replace("+", "");
-		Pattern pattern = Pattern.compile("^\\d{10}$");
-		return pattern.matcher(extractedPhone).matches();
 	}
 }
