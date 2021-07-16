@@ -83,7 +83,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 						if (fields.getSupervisorPhone() != null &&
 								(fields.getPosition().equalsIgnoreCase(RapidProConstants.CHILD) ||
 										fields.getPosition().equalsIgnoreCase(RapidProConstants.CARETAKER))) {
-							String locationId = getLocationId(rapidProContact);
+							String locationId = getLocationId(rapidProContact, rapidProContacts);
 							if (locationId != null) {
 								if (StringUtils.isNoneBlank(locationId)) {
 									fields.setFacilityLocationId(locationId);
@@ -113,7 +113,16 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		}
 	}
 
-	private String getLocationId(RapidProContact rapidProContact) {
+	/**
+	 * Return the location id of the supervisor, first check if the location id was saved, if not confirm if the supervisor is
+	 * amongst the returned contacts and fetch their location id from the database otherwise make a get request to find a
+	 * supervisor with matching phone number and query the database for their location
+	 *
+	 * @param rapidProContact  child contact
+	 * @param rapidProContacts all contacts
+	 * @return location id of the supervisor
+	 */
+	public String getLocationId(RapidProContact rapidProContact, List<RapidProContact> rapidProContacts) {
 		RapidProFields fields = rapidProContact.getFields();
 		if (StringUtils.isNoneBlank(fields.getFacilityLocationId())) {
 			return fields.getFacilityLocationId();
@@ -127,7 +136,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			return rapidProState.get(rapidProState.size() - 1).getPropertyValue();
 		}
 
-		RapidProContact supervisorContact = getSupervisorContact(supervisorPhone);
+		RapidProContact supervisorContact = getSupervisorContact(supervisorPhone, rapidProContacts);
 		if (supervisorContact == null) {
 			return null;
 		}
@@ -424,10 +433,23 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		return (HttpGet) setupRapidproRequest(url, new HttpGet());
 	}
 
-	public RapidProContact getSupervisorContact(String phone) {
+	public RapidProContact getSupervisorContact(String phone, List<RapidProContact> downloadedContacts) {
 
 		if (StringUtils.isBlank(phone) || StringUtils.isEmpty(phone)) {
 			return null;
+		}
+		List<RapidProContact> supervisors = downloadedContacts.stream()
+				.filter(supervisor ->
+				{
+					RapidProFields fields = supervisor.getFields();
+					return !RapidProConstants.CARETAKER.equalsIgnoreCase(fields.getPosition()) &&
+							!RapidProConstants.CHILD.equalsIgnoreCase(fields.getPosition()) &&
+							supervisor.getUrns().stream().anyMatch(urn -> urn.contains(phone));
+				})
+				.collect(Collectors.toList());
+
+		if (!supervisors.isEmpty()) {
+			return supervisors.get(supervisors.size() - 1);
 		}
 
 		try {
