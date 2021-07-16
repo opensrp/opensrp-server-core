@@ -15,12 +15,12 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 
 	protected IdentifierSourceService identifierSourceService;
 
-	protected UniqueIdentifierService identifierService;
+	protected UniqueIdentifierService uniqueIdentifierService;
 
 	public BaseRapidProClientConverter(IdentifierSourceService identifierSourceService,
 			UniqueIdentifierService uniqueIdentifierService) {
 		this.identifierSourceService = identifierSourceService;
-		this.identifierService = uniqueIdentifierService;
+		this.uniqueIdentifierService = uniqueIdentifierService;
 	}
 
 	protected void addCommonZeirProperties(RapidProContact rapidProContact, Client client) {
@@ -43,14 +43,14 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 		List<IdentifierSource> identifierSources = identifierSourceService.findAllIdentifierSources();
 		if (identifierSources != null && !identifierSources.isEmpty()) {
 			IdentifierSource identifierSource = identifierSources.get(0);
-			List<String> uniqueIds = identifierService
+			List<String> uniqueIds = uniqueIdentifierService
 					.generateIdentifiers(identifierSource, 1, rapidProContact.getFields().getSupervisorPhone());
 
 			if (uniqueIds != null && !uniqueIds.isEmpty()) {
 				String zeirId = uniqueIds.get(0);
 				client.getIdentifiers().put(identifierType,
 						RapidProConstants.ZEIR_ID.equalsIgnoreCase(identifierType) ? zeirId.replaceAll("-", "") : zeirId);
-				identifierService.markIdentifierAsUsed(zeirId);
+				uniqueIdentifierService.markIdentifierAsUsed(zeirId);
 			}
 		}
 	}

@@ -11,7 +11,7 @@ public interface RapidProStateRepository {
 
 	void updateSyncStatus(Long id, RapidProStateSyncStatus stateSyncStatus);
 
-	List<RapidproState> getState(String entity, String property, String propertyKey, boolean synced);
+	List<RapidproState> getState(String entity, String property, String propertyKey);
 
-	List<RapidproState> getUnSyncedState(String entity, String property);
+	List<RapidproState> getUnSyncedStates(String entity, String property);
 }

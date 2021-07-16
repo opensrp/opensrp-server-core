@@ -12,12 +12,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.opensrp.domain.IdentifierSource;
 import org.opensrp.domain.postgres.Organization;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
+import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.service.OrganizationService;
+import org.opensrp.service.UniqueIdentifierService;
 import org.opensrp.service.callback.RapidProOnTaskComplete;
 import org.smartregister.domain.Event;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,6 +34,9 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 
 	@Autowired
 	private ZeirRapidProService zeirRapidProService;
+
+	@Spy
+	private RestTemplate restTemplate;
 
 	@Mock
 	private HttpClient httpClient;
@@ -46,6 +53,12 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 	@Mock
 	private OrganizationService organizationService;
 
+	@Mock
+	private IdentifierSourceService identifierSourceService;
+
+	@Mock
+	private UniqueIdentifierService uniqueIdentifierService;
+
 	@Spy
 	private Organization organization;
 
@@ -53,20 +66,31 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 
 	@BeforeClass
 	public static void bootStrap() {
-		tableNames = Arrays.asList("core.event", "core.event_metadata", "core.client", "core.client_metadata");
+		tableNames = Arrays
+				.asList("core.rapidpro_state", "core.event", "core.event_metadata", "core.client", "core.client_metadata");
 	}
 
 	@Before
 	public void setUp() throws Exception {
 		truncateTables();
 		MockitoAnnotations.initMocks(this);
-
 		zeirRapidProService.setHttpClient(httpClient);
 		zeirRapidProService.setOrganizationService(organizationService);
-
+		zeirRapidProService.setIdentifierSourceService(identifierSourceService);
+		zeirRapidProService.setUniqueIdentifierService(uniqueIdentifierService);
 		zeirRapidProServiceSpy = Mockito.spy(zeirRapidProService);
+
+		IdentifierSource identifierSource = new IdentifierSource();
+		identifierSource.setIdentifier("2");
+		identifierSource.setId(1L);
+
+		Mockito.doReturn(Arrays.asList(identifierSource)).when(identifierSourceService).findAllIdentifierSources();
+
+		Mockito.doReturn(Arrays.asList("1201200-1")).when(uniqueIdentifierService)
+				.generateIdentifiers(Mockito.any(IdentifierSource.class), Mockito.anyInt(), Mockito.anyString());
+
 		Mockito.doReturn("102e1ee92s9-12a90192-1s999b1").when(zeirRapidProServiceSpy)
-				.getProviderLocationId(Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+				.getProviderLocationId(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
 
 		organization.setName("Team");
 		organization.setIdentifier("5039573a-6f39-4385-9e38-4809811faf6b");

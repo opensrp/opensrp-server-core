@@ -35,21 +35,16 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 	}
 
 	@Override
-	public List<RapidproState> getState(String entity, String property, String propertyKey, boolean synced) {
+	public List<RapidproState> getState(String entity, String property, String propertyKey) {
 		RapidproStateExample rapidproStateExample = new RapidproStateExample();
 		rapidproStateExample.createCriteria().andEntityEqualTo(entity);
 		rapidproStateExample.createCriteria().andPropertyEqualTo(property);
 		rapidproStateExample.createCriteria().andPropertyKeyEqualTo(propertyKey);
-		if (synced) {
-			rapidproStateExample.createCriteria().andSyncStatusEqualTo(RapidProStateSyncStatus.SYNCED.name());
-		} else {
-			rapidproStateExample.createCriteria().andSyncStatusEqualTo(RapidProStateSyncStatus.UN_SYNCED.name());
-		}
 		return rapidproStateMapper.selectByExample(rapidproStateExample);
 	}
 
 	@Override
-	public List<RapidproState> getUnSyncedState(String entity, String property) {
+	public List<RapidproState> getUnSyncedStates(String entity, String property) {
 		RapidproStateExample rapidproStateExample = new RapidproStateExample();
 		rapidproStateExample.createCriteria().andEntityEqualTo(entity);
 		rapidproStateExample.createCriteria().andPropertyKeyEqualTo(property);

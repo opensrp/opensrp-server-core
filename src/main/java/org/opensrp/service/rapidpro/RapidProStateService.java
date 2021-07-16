@@ -26,11 +26,11 @@ public class RapidProStateService {
 		rapidProStateRepository.updateSyncStatus(id, stateSyncStatus);
 	}
 
-	public List<RapidproState> getUnSyncedRapidProState(String entity, String property) {
-		return rapidProStateRepository.getUnSyncedState(entity, property);
+	public List<RapidproState> getUnSyncedRapidProStates(String entity, String property) {
+		return rapidProStateRepository.getUnSyncedStates(entity, property);
 	}
 
-	public List<RapidproState> getSyncedRapidProStates(String entity, String property, String propertyKey) {
-		return rapidProStateRepository.getState(entity, property, propertyKey, false);
+	public List<RapidproState> getRapidProState(String entity, String property, String propertyKey) {
+		return rapidProStateRepository.getState(entity, property, propertyKey);
 	}
 }

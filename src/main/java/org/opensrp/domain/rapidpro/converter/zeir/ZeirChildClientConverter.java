@@ -1,11 +1,13 @@
 package org.opensrp.domain.rapidpro.converter.zeir;
 
 import org.apache.commons.lang3.StringUtils;
+import org.opensrp.domain.postgres.RapidproState;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProClientConverter;
 import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.service.UniqueIdentifierService;
+import org.opensrp.service.rapidpro.RapidProStateService;
 import org.opensrp.util.DateParserUtils;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Address;
@@ -13,11 +15,17 @@ import org.smartregister.domain.Client;
 
 import java.util.Locale;
 
+import static org.opensrp.domain.rapidpro.ZeirRapidProEntity.CHILD;
+import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.IDENTIFIER;
+
 public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 
+	private final RapidProStateService rapidProStateService;
+
 	public ZeirChildClientConverter(IdentifierSourceService identifierSourceService,
-			UniqueIdentifierService uniqueIdentifierService) {
+			UniqueIdentifierService uniqueIdentifierService, RapidProStateService rapidProStateService) {
 		super(identifierSourceService, uniqueIdentifierService);
+		this.rapidProStateService = rapidProStateService;
 	}
 
 	@Override
@@ -28,6 +36,8 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 			addCommonZeirProperties(rapidProContact, childClient);
 
 			addZeirClientIdentifier(rapidProContact, childClient, RapidProConstants.ZEIR_ID);
+
+			mapMvaccIdToZeirId(fields, childClient);
 
 			childClient.setBirthdate(DateParserUtils.parseZoneDateTime(fields.getDob()));
 			childClient.addAttribute(RapidProConstants.CHILD_REGISTER_CARD_NUMBER, fields.getMvaccId());
@@ -52,6 +62,20 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 			return childClient;
 		}
 		return null;
+	}
+
+	private void mapMvaccIdToZeirId(RapidProFields fields, Client childClient) {
+		RapidproState rapidProState = new RapidproState();
+		rapidProState.setUuid(childClient.getBaseEntityId());
+		rapidProState.setEntity(CHILD.name());
+		rapidProState.setProperty(IDENTIFIER.name());
+		String facilityCode = fields.getFacilityCode();
+		//Uniquely identify MVACC ID
+		rapidProState.setPropertyKey(StringUtils.isNoneBlank(facilityCode) ? facilityCode + fields.getMvaccId() :
+				fields.getFacilityLocationId() + fields.getMvaccId());
+
+		rapidProState.setPropertyValue(childClient.getIdentifier(RapidProConstants.ZEIR_ID));
+		rapidProStateService.saveRapidProState(rapidProState);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.opensrp.domain.postgres.RapidproState;
 import org.opensrp.domain.rapidpro.RapidProStateToken;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
@@ -40,6 +41,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static org.opensrp.domain.rapidpro.ZeirRapidProEntity.SUPERVISOR;
+import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.LOCATION_ID;
 
 /**
  * Subclass of BaseRapidProService for ZEIR project. This implementation is for RapidPro/MVACC integration.
@@ -74,15 +78,21 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 				for (RapidProContact rapidProContact : rapidProContacts) {
 					try {
-						String locationId = getLocationId(rapidProContact);
-						if (locationId != null) {
-							if (StringUtils.isNoneBlank(locationId)) {
-								rapidProContact.getFields().setFacilityLocationId(locationId);
-								processRegistrationEventClient(rapidProContact, rapidProContacts);
-								processVaccinationEvent(rapidProContact);
-								processGrowthMonitoringEvent(rapidProContact);
+						//Only process process data for child and mother contacts
+						RapidProFields fields = rapidProContact.getFields();
+						if (fields.getSupervisorPhone() != null &&
+								(fields.getPosition().equalsIgnoreCase(RapidProConstants.CHILD) ||
+										fields.getPosition().equalsIgnoreCase(RapidProConstants.CARETAKER))) {
+							String locationId = getLocationId(rapidProContact);
+							if (locationId != null) {
+								if (StringUtils.isNoneBlank(locationId)) {
+									fields.setFacilityLocationId(locationId);
+									processRegistrationEventClient(rapidProContact, rapidProContacts);
+									processVaccinationEvent(rapidProContact);
+									processGrowthMonitoringEvent(rapidProContact);
+								}
 							}
-						} //TODO Add implementation for processing supervisor for instance when their location is updated;
+						}//TODO Add implementation for processing supervisor for instance when their location is updated;
 					}
 					catch (Exception exception) {
 						logger.error(exception.getMessage(), exception);
@@ -108,9 +118,21 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		if (StringUtils.isNoneBlank(fields.getFacilityLocationId())) {
 			return fields.getFacilityLocationId();
 		}
-		RapidProContact supervisorContact = getSupervisorContact(fields.getSupervisorPhone());
+
+		String supervisorPhone = fields.getSupervisorPhone();
+		List<RapidproState> rapidProState =
+				rapidProStateService.getRapidProState(SUPERVISOR.name(), LOCATION_ID.name(), supervisorPhone);
+
+		if (rapidProState != null && !rapidProState.isEmpty()) {
+			return rapidProState.get(rapidProState.size() - 1).getPropertyValue();
+		}
+
+		RapidProContact supervisorContact = getSupervisorContact(supervisorPhone);
+		if (supervisorContact == null) {
+			return null;
+		}
 		RapidProFields supervisorFields = supervisorContact.getFields();
-		return getProviderLocationId(supervisorFields.getProvince(), supervisorFields.getDistrict(),
+		return getProviderLocationId(supervisorPhone, supervisorFields.getProvince(), supervisorFields.getDistrict(),
 				supervisorFields.getFacility());
 	}
 
@@ -187,7 +209,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 		if (existingChildClient == null) {
 			ZeirChildClientConverter clientConverter =
-					new ZeirChildClientConverter(identifierSourceService, uniqueIdentifierService);
+					new ZeirChildClientConverter(identifierSourceService, uniqueIdentifierService, rapidProStateService);
 			Client childClient = clientConverter.convertContactToClient(childContact);
 			if (childClient != null) {
 				childClient.withRelationships(new HashMap<>() {{
@@ -317,14 +339,15 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				.collect(Collectors.toList());
 	}
 
-	public String getProviderLocationId(String province, String district, String facility) {
-		if (StringUtils.isBlank(province) || StringUtils.isBlank(province) || StringUtils.isBlank(province)) {
+	public String getProviderLocationId(String supervisorPhone, String province, String district, String facility) {
+		if (StringUtils.isBlank(supervisorPhone) || StringUtils.isBlank(province) || StringUtils.isBlank(district)
+				|| StringUtils.isBlank(province)) {
 			return null;
 		}
+
 		Long count = locationService.countAllLocations(0L);
 
 		List<PhysicalLocation> provinceLocations = locationService.findLocationsByName(province);
-
 		List<PhysicalLocation> districtFacilities = getDistrictLocations(count, district, provinceLocations);
 
 		if (districtFacilities != null) {
@@ -335,7 +358,15 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				return null;
 			}
 
-			return facilities.get(0).getId();
+			String facilityLocationId = facilities.get(0).getId();
+			RapidproState rapidProState = new RapidproState();
+			rapidProState.setEntity(SUPERVISOR.name());
+			rapidProState.setProperty(LOCATION_ID.name());
+			rapidProState.setPropertyKey(supervisorPhone);
+			rapidProState.setPropertyValue(facilityLocationId);
+			rapidProStateService.saveRapidProState(rapidProState);
+
+			return facilityLocationId;
 		}
 		return null;
 	}
