@@ -36,4 +36,8 @@ public interface RapidProConstants {
 	String HEIGHT_CM = "height_cm";
 	String WEIGHT_KGS = "Weight_Kgs";
 	String HOME = "Home";
+
+	interface RapidProProjects {
+		String ZEIR_RAPIDPRO = "zeir";
+	}
 }
