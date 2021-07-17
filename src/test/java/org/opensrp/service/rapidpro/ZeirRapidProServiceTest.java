@@ -36,9 +36,6 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 	@Autowired
 	private ZeirRapidProService zeirRapidProService;
 
-	@Spy
-	private RestTemplate restTemplate;
-
 	@Mock
 	private HttpClient httpClient;
 

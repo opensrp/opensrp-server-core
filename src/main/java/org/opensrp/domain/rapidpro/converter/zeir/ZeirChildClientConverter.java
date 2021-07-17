@@ -2,6 +2,7 @@ package org.opensrp.domain.rapidpro.converter.zeir;
 
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.postgres.RapidproState;
+import org.opensrp.domain.rapidpro.RapidProStateSyncStatus;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProClientConverter;
@@ -75,6 +76,7 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 				fields.getFacilityLocationId() + fields.getMvaccId());
 
 		rapidProState.setPropertyValue(childClient.getIdentifier(RapidProConstants.ZEIR_ID));
+		rapidProState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
 		zeirRapidProStateService.saveRapidProState(rapidProState);
 	}
 

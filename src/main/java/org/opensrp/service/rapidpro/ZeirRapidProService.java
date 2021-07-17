@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.domain.postgres.RapidproState;
+import org.opensrp.domain.rapidpro.RapidProStateSyncStatus;
 import org.opensrp.domain.rapidpro.RapidProStateToken;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
@@ -377,6 +378,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			rapidProState.setProperty(LOCATION_ID.name());
 			rapidProState.setPropertyKey(supervisorContact.getFields().getSupervisorPhone());
 			rapidProState.setPropertyValue(facilityLocationId);
+			rapidProState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
 			zeirRapidProStateService.saveRapidProState(rapidProState);
 
 			return facilityLocationId;
