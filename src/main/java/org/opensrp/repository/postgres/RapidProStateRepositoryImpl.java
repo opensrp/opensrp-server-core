@@ -37,9 +37,10 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 	@Override
 	public List<RapidproState> getState(String entity, String property, String propertyKey) {
 		RapidproStateExample rapidproStateExample = new RapidproStateExample();
-		rapidproStateExample.createCriteria().andEntityEqualTo(entity);
-		rapidproStateExample.createCriteria().andPropertyEqualTo(property);
-		rapidproStateExample.createCriteria().andPropertyKeyEqualTo(propertyKey);
+		rapidproStateExample.createCriteria()
+				.andEntityEqualTo(entity)
+				.andPropertyEqualTo(property)
+				.andPropertyKeyEqualTo(propertyKey);
 		return rapidproStateMapper.selectByExample(rapidproStateExample);
 	}
 
