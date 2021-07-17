@@ -41,6 +41,8 @@ public interface RapidProConstants {
 	String FIELDS = "fields";
 	String REGISTRATION_PROCESSED = "registration_processed";
 	String OPENSRP = "OpenSRP";
+	String ORDER_BY_ID_CLAUSE = "id ASC";
+	String UNPROCESSED_UUID = "UNPROCESSED_UUID";
 
 	interface RapidProProjects {
 		String ZEIR_RAPIDPRO = "zeir";

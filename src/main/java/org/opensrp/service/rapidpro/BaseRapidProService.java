@@ -131,5 +131,4 @@ public abstract class BaseRapidProService {
 
 	public abstract void queryContacts(RapidProOnTaskComplete onTaskComplete);
 
-	public abstract void syncOpenSRPEventClientsToRapidPro();
 }

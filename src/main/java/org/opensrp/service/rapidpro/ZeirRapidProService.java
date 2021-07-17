@@ -424,11 +424,6 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		}
 	}
 
-	@Override
-	public void syncOpenSRPEventClientsToRapidPro() {
-
-	}
-
 	public HttpGet getContactRequest() {
 		String dateModified = (String) configService.getAppStateTokenByName(RapidProStateToken.RAPIDPRO_STATE_TOKEN)
 				.getValue();

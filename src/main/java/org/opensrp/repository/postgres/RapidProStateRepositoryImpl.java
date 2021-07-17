@@ -5,6 +5,7 @@ import org.opensrp.domain.postgres.RapidproStateExample;
 import org.opensrp.domain.rapidpro.RapidProStateSyncStatus;
 import org.opensrp.repository.RapidProStateRepository;
 import org.opensrp.repository.postgres.mapper.RapidproStateMapper;
+import org.opensrp.util.constants.RapidProConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -41,6 +42,7 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 				.andEntityEqualTo(entity)
 				.andPropertyEqualTo(property)
 				.andPropertyKeyEqualTo(propertyKey);
+		rapidproStateExample.setOrderByClause(RapidProConstants.ORDER_BY_ID_CLAUSE);
 		return rapidproStateMapper.selectByExample(rapidproStateExample);
 	}
 
@@ -51,6 +53,7 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 				.andEntityEqualTo(entity)
 				.andPropertyEqualTo(property)
 				.andSyncStatusEqualTo(RapidProStateSyncStatus.UN_SYNCED.name());
+		rapidproStateExample.setOrderByClause(RapidProConstants.ORDER_BY_ID_CLAUSE);
 		return rapidproStateMapper.selectByExample(rapidproStateExample);
 	}
 }

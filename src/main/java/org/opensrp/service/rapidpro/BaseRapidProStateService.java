@@ -58,8 +58,9 @@ public abstract class BaseRapidProStateService {
 		return rapidProStateRepository.getState(entity, property, propertyKey);
 	}
 
-	public void updateRapidProContact(RapidproState rapidproState, String payload) {
-		String updateContactUrl = RapidProUtils.getBaseUrl(rapidProUrl) +  "/contacts.json?uuid=" + rapidproState.getUuid();
+	public void postRapidProContact(RapidproState rapidproState, String payload, boolean existing) {
+		String updateContactUrl = RapidProUtils.getBaseUrl(rapidProUrl) +
+				(existing ? "/contacts.json?uuid=" + rapidproState.getUuid() : "/contacts.json");
 		try {
 			HttpPost httpPost = (HttpPost) RapidProUtils
 					.setupRapidproRequest(updateContactUrl, new HttpPost(), rapidProToken);

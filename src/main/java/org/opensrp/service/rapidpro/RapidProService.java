@@ -30,10 +30,4 @@ public class RapidProService {
 			zeirRapidProService.queryContacts(onTaskComplete);
 		}
 	}
-
-	public void syncOpenSRPEventClientsToRapidPro() {
-		if (ZEIR_RAPIDPRO.equalsIgnoreCase(rapidProProject)) {
-			zeirRapidProService.syncOpenSRPEventClientsToRapidPro();
-		}
-	}
 }
