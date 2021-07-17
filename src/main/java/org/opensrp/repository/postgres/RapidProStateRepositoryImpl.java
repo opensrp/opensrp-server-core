@@ -49,7 +49,7 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 		RapidproStateExample rapidproStateExample = new RapidproStateExample();
 		rapidproStateExample.createCriteria()
 				.andEntityEqualTo(entity)
-				.andPropertyKeyEqualTo(property)
+				.andPropertyEqualTo(property)
 				.andSyncStatusEqualTo(RapidProStateSyncStatus.UN_SYNCED.name());
 		return rapidproStateMapper.selectByExample(rapidproStateExample);
 	}
