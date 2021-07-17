@@ -22,7 +22,6 @@ import org.opensrp.service.UniqueIdentifierService;
 import org.opensrp.service.callback.RapidProOnTaskComplete;
 import org.smartregister.domain.Event;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -88,7 +87,7 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 				.generateIdentifiers(Mockito.any(IdentifierSource.class), Mockito.anyInt(), Mockito.anyString());
 
 		Mockito.doReturn("102e1ee92s9-12a90192-1s999b1").when(zeirRapidProServiceSpy)
-				.getProviderLocationId(Mockito.any(RapidProContact.class), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+				.getProviderLocationId(Mockito.any(RapidProContact.class));
 
 		organization.setName("Team");
 		organization.setIdentifier("5039573a-6f39-4385-9e38-4809811faf6b");
