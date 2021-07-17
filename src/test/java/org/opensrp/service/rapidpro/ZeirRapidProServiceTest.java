@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.domain.postgres.Organization;
+import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.repository.postgres.BaseRepositoryTest;
 import org.opensrp.service.IdentifierSourceService;
 import org.opensrp.service.OrganizationService;
@@ -90,7 +91,7 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 				.generateIdentifiers(Mockito.any(IdentifierSource.class), Mockito.anyInt(), Mockito.anyString());
 
 		Mockito.doReturn("102e1ee92s9-12a90192-1s999b1").when(zeirRapidProServiceSpy)
-				.getProviderLocationId(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+				.getProviderLocationId(Mockito.any(RapidProContact.class), Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
 
 		organization.setName("Team");
 		organization.setIdentifier("5039573a-6f39-4385-9e38-4809811faf6b");

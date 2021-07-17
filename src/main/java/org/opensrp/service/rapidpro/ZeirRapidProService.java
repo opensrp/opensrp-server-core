@@ -100,6 +100,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 						logger.error(exception.getMessage(), exception);
 						// Catch all exception thrown when attempting to save data to the database, keep track of contacts
 						updateStateTokenFromContactDates(rapidProContacts);
+						return;
 					}
 				}
 
@@ -143,7 +144,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			return null;
 		}
 		RapidProFields supervisorFields = supervisorContact.getFields();
-		return getProviderLocationId(supervisorPhone, supervisorFields.getProvince(), supervisorFields.getDistrict(),
+		return getProviderLocationId(supervisorContact, supervisorFields.getProvince(), supervisorFields.getDistrict(),
 				supervisorFields.getFacility());
 	}
 
@@ -350,9 +351,9 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				.collect(Collectors.toList());
 	}
 
-	public String getProviderLocationId(String supervisorPhone, String province, String district, String facility) {
-		if (StringUtils.isBlank(supervisorPhone) || StringUtils.isBlank(province) || StringUtils.isBlank(district)
-				|| StringUtils.isBlank(province)) {
+	public String getProviderLocationId(RapidProContact supervisorContact, String province, String district, String facility) {
+		if (StringUtils.isBlank(supervisorContact.getFields().getSupervisorPhone()) || StringUtils.isBlank(province)
+				|| StringUtils.isBlank(district) || StringUtils.isBlank(province)) {
 			return null;
 		}
 
@@ -371,9 +372,10 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 			String facilityLocationId = facilities.get(0).getId();
 			RapidproState rapidProState = new RapidproState();
+			rapidProState.setUuid(supervisorContact.getUuid());
 			rapidProState.setEntity(SUPERVISOR.name());
 			rapidProState.setProperty(LOCATION_ID.name());
-			rapidProState.setPropertyKey(supervisorPhone);
+			rapidProState.setPropertyKey(supervisorContact.getFields().getSupervisorPhone());
 			rapidProState.setPropertyValue(facilityLocationId);
 			zeirRapidProStateService.saveRapidProState(rapidProState);
 
