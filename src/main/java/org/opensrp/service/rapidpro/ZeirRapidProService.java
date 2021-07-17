@@ -87,12 +87,11 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 								(fields.getPosition().equalsIgnoreCase(RapidProConstants.CHILD) ||
 										fields.getPosition().equalsIgnoreCase(RapidProConstants.CARETAKER))) {
 							String locationId = getLocationId(rapidProContact, rapidProContacts);
-							if (StringUtils.isNoneBlank(locationId)) {
+							if (StringUtils.isNotBlank(locationId)) {
 								fields.setFacilityLocationId(locationId);
 								processRegistrationEventClient(rapidProContact, rapidProContacts);
 								processVaccinationEvent(rapidProContact);
 								processGrowthMonitoringEvent(rapidProContact);
-
 							}
 						}//TODO Add implementation for processing supervisor for instance when their location is updated;
 					}
@@ -143,7 +142,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		if (supervisorContact == null) {
 			return null;
 		}
-		return getProviderLocationId(supervisorContact);
+		return getProviderLocationId(supervisorContact, supervisorPhone);
 	}
 
 	private void updateStateTokenFromContactDates(List<RapidProContact> rapidProContacts) {
@@ -349,7 +348,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				.collect(Collectors.toList());
 	}
 
-	public String getProviderLocationId(RapidProContact supervisorContact) {
+	public String getProviderLocationId(RapidProContact supervisorContact, String supervisorPhone) {
 		RapidProFields supervisorFields = supervisorContact.getFields();
 		String province = supervisorFields.getProvince();
 		String district = supervisorFields.getDistrict();
@@ -377,7 +376,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			rapidProState.setUuid(supervisorContact.getUuid());
 			rapidProState.setEntity(SUPERVISOR.name());
 			rapidProState.setProperty(LOCATION_ID.name());
-			rapidProState.setPropertyKey(supervisorContact.getFields().getSupervisorPhone());
+			rapidProState.setPropertyKey(supervisorPhone);
 			rapidProState.setPropertyValue(facilityLocationId);
 			rapidProState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
 			zeirRapidProStateService.saveRapidProState(rapidProState);
