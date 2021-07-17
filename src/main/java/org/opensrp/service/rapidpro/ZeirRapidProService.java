@@ -87,13 +87,12 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 								(fields.getPosition().equalsIgnoreCase(RapidProConstants.CHILD) ||
 										fields.getPosition().equalsIgnoreCase(RapidProConstants.CARETAKER))) {
 							String locationId = getLocationId(rapidProContact, rapidProContacts);
-							if (locationId != null) {
-								if (StringUtils.isNoneBlank(locationId)) {
-									fields.setFacilityLocationId(locationId);
-									processRegistrationEventClient(rapidProContact, rapidProContacts);
-									processVaccinationEvent(rapidProContact);
-									processGrowthMonitoringEvent(rapidProContact);
-								}
+							if (StringUtils.isNoneBlank(locationId)) {
+								fields.setFacilityLocationId(locationId);
+								processRegistrationEventClient(rapidProContact, rapidProContacts);
+								processVaccinationEvent(rapidProContact);
+								processGrowthMonitoringEvent(rapidProContact);
+
 							}
 						}//TODO Add implementation for processing supervisor for instance when their location is updated;
 					}
