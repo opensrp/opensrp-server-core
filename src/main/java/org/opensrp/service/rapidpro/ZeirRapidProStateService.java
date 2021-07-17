@@ -30,11 +30,10 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 			for (RapidproState rapidproState : unSyncedStates) {
 				try {
 					if (!reentrantLock.tryLock()) {
-						logger.error("Some instance of this process is still running");
-						JSONObject payload =
-								new JSONObject().put(RapidProConstants.FIELDS, getPayload(entity, rapidproState));
-						updateRapidProContact(rapidproState, payload.toString());
+						logger.warn("Some instance of this" + this.getClass() + "process is still running");
 					}
+					JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, getPayload(entity, rapidproState));
+					updateRapidProContact(rapidproState, payload.toString());
 				}
 				catch (Exception exception) {
 					logger.error(exception);
