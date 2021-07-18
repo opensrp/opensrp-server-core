@@ -1,8 +1,11 @@
 package org.opensrp.service.rapidpro;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.domain.postgres.RapidproState;
 import org.opensrp.domain.rapidpro.ZeirRapidProEntity;
@@ -52,6 +55,10 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 
 	private ClientService clientService;
 
+	public ZeirRapidProStateService() {
+		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+	}
+
 	/**
 	 * <p>
 	 * This method is responsible for updating RapidProContact with data coming from OpenSRP.
@@ -64,51 +71,90 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	 * </p>
 	 */
 	public void postDataToRapidPro() {
-		updateRapidProContacts(CHILD, IDENTIFIER);
-		updateRapidProContacts(SUPERVISOR, LOCATION_ID);
+		updateContactAndStatus(CHILD, IDENTIFIER);
+		updateContactAndStatus(SUPERVISOR, LOCATION_ID);
 
 		List<RapidproState> childStates = getUnSyncedRapidProStates(CHILD.name(), REGISTRATION_DATA.name());
-		postChildEventClients(childStates);
+		postChildData(childStates);
 
 		List<RapidproState> motherStates = getUnSyncedRapidProStates(CARETAKER.name(), REGISTRATION_DATA.name());
-		postMotherEventClients(motherStates);
+		postMotherData(motherStates);
 	}
 
-	private void postChildEventClients(List<RapidproState> childStates) {
+	private void postChildData(List<RapidproState> childStates) {
 		ZeirChildClientConverter childConverter = new ZeirChildClientConverter(this);
+		ZeirVaccinationConverter vaccinationConverter = new ZeirVaccinationConverter();
+		ZeirGrowthMonitoringConverter growthMonitoringConverter = new ZeirGrowthMonitoringConverter();
+
 		if (childStates != null && !childStates.isEmpty()) {
 			for (RapidproState childState : childStates) {
+
 				Client childClient = clientService.getByBaseEntityId(childState.getPropertyKey());
+				RapidProContact childContact = childConverter.convertClientToContact(childClient);
+
+				//Get vaccination and growth monitoring events and use them to update the child's RapidProContact
+				List<RapidproState> vaccinationStates = getStatesByPropertyKey(CHILD.name(),
+						VACCINATION_DATA.name(), childClient.getBaseEntityId());
+
+				List<RapidproState> growthMonitoringStates = getStatesByPropertyKey(CHILD.name(),
+						GROWTH_MONITORING_DATA.name(), childClient.getBaseEntityId());
+
 				if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(childState.getUuid())) {
 					if (childClient.getRelationships() != null && childClient.getRelationships()
 							.containsKey(RapidProConstants.MOTHER)) {
 
 						String motherBaseEntityId = childClient.getRelationships(RapidProConstants.MOTHER).get(0);
 						Client motherClient = clientService.getByBaseEntityId(motherBaseEntityId);
-						RapidProContact childContact = childConverter.convertClientToContact(childClient);
+
 						childContact.getFields().setMotherName(motherClient.fullName());
 						childContact.getFields().setMotherPhone((String) motherClient.getAttributes()
 								.getOrDefault(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED, null));
 
-						//Get vaccination and growth monitoring events data - post them in the same contact
-						List<RapidproState> vaccinationStates = getStatesByPropertyKey(CHILD.name(),
-								VACCINATION_DATA.name(), childClient.getBaseEntityId());
-						processVaccinationStates(vaccinationStates, childContact);
-
-						List<RapidproState> growthMonitoringStates = getStatesByPropertyKey(CHILD.name(),
-								GROWTH_MONITORING_DATA.name(), childClient.getBaseEntityId());
-						processGrowthMonitoringStates(growthMonitoringStates, childContact);
-
-						postToRapidProAndUpdateUuids(childContact, childState, vaccinationStates, growthMonitoringStates);
+						processVaccinationStates(vaccinationStates, childContact, vaccinationConverter);
+						processGrowthMonitoringStates(growthMonitoringStates, childContact, growthMonitoringConverter);
+						postDataAndUpdateUuids(childContact, childState, vaccinationStates, growthMonitoringStates);
 					}
+				} else {
+					processVaccinationStates(vaccinationStates, childContact, vaccinationConverter);
+					processGrowthMonitoringStates(growthMonitoringStates, childContact, growthMonitoringConverter);
+					postExistingChildData(childState, childContact, vaccinationStates, growthMonitoringStates);
 				}
 			}
 		}
 	}
 
-	private void processVaccinationStates(List<RapidproState> vaccinationStates, RapidProContact childContact) {
+	private void postExistingChildData(RapidproState childState, RapidProContact childContact,
+			List<RapidproState> vaccinationStates, List<RapidproState> growthMonitoringStates) {
+		List<Long> primaryKeys = getPrimaryKeys(vaccinationStates);
+		primaryKeys.addAll(getPrimaryKeys(growthMonitoringStates));
+
+		if (!primaryKeys.isEmpty()) {
+			try {
+				if (!reentrantLock.tryLock()) {
+					logger.warn("[POST_DATA] Task still running...");
+				}
+				String fieldsJson = objectMapper.writeValueAsString(childContact.getFields());
+				JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, new JSONObject(fieldsJson));
+				postAndUpdateStatus(primaryKeys, childState.getUuid(), payload.toString(), true);
+			}
+			catch (JSONException jsonException) {
+				logger.warn("Error creating fields Json", jsonException);
+			}
+			catch (JsonProcessingException jsonProcessingException) {
+				logger.warn("Error fields JSON from child contact", jsonProcessingException);
+			}
+			catch (IOException exception) {
+				logger.warn("Error processing Vaccination and Growth Monitoring data for existing child", exception);
+			}
+			finally {
+				reentrantLock.unlock();
+			}
+		}
+	}
+
+	private void processVaccinationStates(List<RapidproState> vaccinationStates, RapidProContact childContact,
+			ZeirVaccinationConverter vaccinationConverter) {
 		if (vaccinationStates != null && !vaccinationStates.isEmpty()) {
-			ZeirVaccinationConverter vaccinationConverter = new ZeirVaccinationConverter();
 			for (RapidproState rapidProState : vaccinationStates) {
 				Event vaccinationEvent = eventService.findByFormSubmissionId(rapidProState.getPropertyValue());
 				if (vaccinationEvent != null) {
@@ -118,21 +164,21 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		}
 	}
 
-	private void processGrowthMonitoringStates(List<RapidproState> growthMonitoringStates, RapidProContact childContact) {
+	private void processGrowthMonitoringStates(List<RapidproState> growthMonitoringStates, RapidProContact childContact,
+			ZeirGrowthMonitoringConverter growthMonitoringConverter) {
 		if (growthMonitoringStates != null && !growthMonitoringStates.isEmpty()) {
 			List<Event> gmEvents = new ArrayList<>();
 			for (RapidproState rapidProState : growthMonitoringStates) {
 				Event gmEvent = eventService.findByFormSubmissionId(rapidProState.getPropertyValue());
 				gmEvents.add(gmEvent);
 			}
-			processGrowthMonitoringEvent(gmEvents, GMEvent.HEIGHT, childContact);
-			processGrowthMonitoringEvent(gmEvents, GMEvent.WEIGHT, childContact);
+			processGrowthMonitoringEvent(gmEvents, GMEvent.HEIGHT, childContact, growthMonitoringConverter);
+			processGrowthMonitoringEvent(gmEvents, GMEvent.WEIGHT, childContact, growthMonitoringConverter);
 		}
 	}
 
-	private void processGrowthMonitoringEvent(List<Event> gmEvents, GMEvent gmEvent, RapidProContact childContact) {
-		ZeirGrowthMonitoringConverter growthMonitoringConverter = new ZeirGrowthMonitoringConverter();
-
+	private void processGrowthMonitoringEvent(List<Event> gmEvents, GMEvent gmEvent, RapidProContact childContact,
+			ZeirGrowthMonitoringConverter growthMonitoringConverter) {
 		List<Event> filteredGmEvents = gmEvents.stream()
 				.filter(it -> gmEvent.name().toLowerCase(Locale.ROOT)
 						.equalsIgnoreCase(it.getEntityType())).collect(Collectors.toList());
@@ -143,7 +189,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		}
 	}
 
-	private void postToRapidProAndUpdateUuids(RapidProContact childContact, RapidproState registrationState,
+	private void postDataAndUpdateUuids(RapidProContact childContact, RapidproState registrationState,
 			List<RapidproState> vaccinationEvents, List<RapidproState> growthMonitoringEvents) {
 		try {
 			if (!reentrantLock.tryLock()) {
@@ -175,11 +221,11 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		}
 	}
 
-	private List<Long> getPrimaryKeys(List<RapidproState> vaccinationEvents) {
-		return vaccinationEvents.stream().map(RapidproState::getId).collect(Collectors.toList());
+	private List<Long> getPrimaryKeys(List<RapidproState> rapidproStates) {
+		return rapidproStates.stream().map(RapidproState::getId).collect(Collectors.toList());
 	}
 
-	private void postMotherEventClients(List<RapidproState> motherStates) {
+	private void postMotherData(List<RapidproState> motherStates) {
 		ZeirMotherClientConverter motherConverter = new ZeirMotherClientConverter();
 		for (RapidproState motherState : motherStates) {
 			if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(motherState.getUuid())) {
@@ -216,7 +262,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		this.clientService = clientService;
 	}
 
-	private void updateRapidProContacts(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property) {
+	private void updateContactAndStatus(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property) {
 		List<RapidproState> unSyncedStates = getUnSyncedRapidProStates(entity.name(), property.name());
 
 		if (unSyncedStates != null && !unSyncedStates.isEmpty()) {
@@ -228,10 +274,11 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					JSONObject fields = getPayload(entity, property, rapidproState);
 					if (fields != null) {
 						JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, fields);
-						updateRapidProContact(rapidproState, payload.toString(), true);
+						postAndUpdateStatus(Collections.singletonList(rapidproState.getId()),
+								rapidproState.getUuid(), payload.toString(), true);
 					}
 				}
-				catch (Exception exception) {
+				catch (IOException exception) {
 					logger.error(exception);
 				}
 				finally {

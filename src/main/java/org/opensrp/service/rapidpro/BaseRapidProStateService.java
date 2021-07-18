@@ -67,20 +67,17 @@ public abstract class BaseRapidProStateService {
 		return rapidProStateRepository.getByStatesPropertyKey(entity, property, propertyKey);
 	}
 
-	public void updateRapidProContact(RapidproState rapidproState, String payload, boolean existing) {
-		String uuid = rapidproState.getUuid();
+	public void postAndUpdateStatus(List<Long> ids, String uuid, String payload, boolean existing) throws IOException {
 		if (uuid == null || RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(uuid)) {
 			return;
 		}
-		try {
-			CloseableHttpResponse httpResponse = postToRapidPro(payload, getContactUrl(existing, uuid));
-			StatusLine statusLine = httpResponse.getStatusLine();
-			if (statusLine != null && statusLine.getStatusCode() == HttpStatus.SC_OK && existing) {
-				updateRapidProState(rapidproState.getId(), RapidProStateSyncStatus.SYNCED);
+		CloseableHttpResponse httpResponse = postToRapidPro(payload, getContactUrl(existing, uuid));
+		StatusLine statusLine = httpResponse.getStatusLine();
+		if (statusLine != null && statusLine.getStatusCode() == HttpStatus.SC_OK
+				&& existing && ids != null && !ids.isEmpty()) {
+			for (Long id : ids) {
+				updateRapidProState(id, RapidProStateSyncStatus.SYNCED);
 			}
-		}
-		catch (IOException e) {
-			logger.error(e.getMessage(), e);
 		}
 	}
 
