@@ -47,6 +47,17 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 	}
 
 	@Override
+	public List<RapidproState> getStateByUuid(String uuid, String entity, String property) {
+		RapidproStateExample rapidproStateExample = new RapidproStateExample();
+		rapidproStateExample.createCriteria()
+				.andUuidEqualTo(uuid)
+				.andEntityEqualTo(entity)
+				.andPropertyEqualTo(property);
+		rapidproStateExample.setOrderByClause(RapidProConstants.ORDER_BY_ID_CLAUSE);
+		return rapidproStateMapper.selectByExample(rapidproStateExample);
+	}
+
+	@Override
 	public List<RapidproState> getUnSyncedStates(String entity, String property) {
 		RapidproStateExample rapidproStateExample = new RapidproStateExample();
 		rapidproStateExample.createCriteria()

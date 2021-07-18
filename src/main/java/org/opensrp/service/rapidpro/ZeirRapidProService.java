@@ -13,6 +13,8 @@ import org.json.JSONObject;
 import org.opensrp.domain.postgres.RapidproState;
 import org.opensrp.domain.rapidpro.RapidProStateSyncStatus;
 import org.opensrp.domain.rapidpro.RapidProStateToken;
+import org.opensrp.domain.rapidpro.ZeirRapidProEntity;
+import org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.BaseRapidProEventConverter;
@@ -81,13 +83,13 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 				for (RapidProContact rapidProContact : rapidProContacts) {
 					try {
-						//Only process process data for child and mother contacts
+						//Only process process child contacts
 						RapidProFields fields = rapidProContact.getFields();
-						if (fields.getSupervisorPhone() != null &&
-								(fields.getPosition().equalsIgnoreCase(RapidProConstants.CHILD) ||
-										fields.getPosition().equalsIgnoreCase(RapidProConstants.CARETAKER))) {
+						if (fields.getSupervisorPhone() != null && RapidProConstants.CHILD
+								.equalsIgnoreCase(fields.getPosition())) {
 							String locationId = getLocationId(rapidProContact, rapidProContacts);
 							if (StringUtils.isNotBlank(locationId)) {
+								updateExistingClientUuid(rapidProContact, ZeirRapidProEntity.CHILD);
 								fields.setFacilityLocationId(locationId);
 								processRegistrationEventClient(rapidProContact, rapidProContacts);
 								processVaccinationEvent(rapidProContact);
@@ -97,7 +99,6 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 					}
 					catch (Exception exception) {
 						logger.error(exception.getMessage(), exception);
-						// Catch all exception thrown when attempting to save data to the database, keep track of contacts
 						updateStateTokenFromContactDates(rapidProContacts);
 						return;
 					}
@@ -112,6 +113,15 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			finally {
 				reentrantLock.unlock();
 			}
+		}
+	}
+
+	private void updateExistingClientUuid(RapidProContact rapidProContact, ZeirRapidProEntity entity) {
+		RapidproState rapidproState = rapidProStateService.getRapidProStateByUuid(rapidProContact.getUuid(),
+				entity.name(), ZeirRapidProEntityProperty.REGISTRATION_DATA.name());
+		//Use client baseEntityId (that is saved as property_key for REGISTRATION_DATA property of entity CHILD/CARETAKER)
+		if (rapidproState != null) {
+			rapidProContact.setUuid(rapidproState.getPropertyKey());
 		}
 	}
 
@@ -132,7 +142,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 		String supervisorPhone = fields.getSupervisorPhone();
 		List<RapidproState> rapidProState =
-				zeirRapidProStateService.getRapidProState(SUPERVISOR.name(), LOCATION_ID.name(), supervisorPhone);
+				rapidProStateService.getRapidProState(SUPERVISOR.name(), LOCATION_ID.name(), supervisorPhone);
 
 		if (rapidProState != null && !rapidProState.isEmpty()) {
 			return rapidProState.get(rapidProState.size() - 1).getPropertyValue();
@@ -182,17 +192,19 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	 * Create both mother and child registration event and client. Registration should only be done when both mother and
 	 * child contacts are present otherwise proceed to process other events (Vaccination and Growth Monitoring)
 	 *
-	 * @param rapidProContact  Current contact
+	 * @param childContact     Current contact
 	 * @param rapidProContacts All RapidPro contacts used to filter mother contact
 	 */
-	public void processRegistrationEventClient(RapidProContact rapidProContact, List<RapidProContact> rapidProContacts) {
-		RapidProFields fields = rapidProContact.getFields();
+	public void processRegistrationEventClient(RapidProContact childContact, List<RapidProContact> rapidProContacts) {
+		RapidProFields fields = childContact.getFields();
 		if (RapidProConstants.CHILD.equalsIgnoreCase(fields.getPosition())) {
-			RapidProContact motherContact = getMotherContact(fields.getMotherName(), fields.getMotherPhone(),
-					rapidProContacts);
+			RapidProContact motherContact =
+					getMotherContact(fields.getMotherName(), fields.getMotherPhone(), rapidProContacts);
+
 			if (motherContact != null) {
+				updateExistingClientUuid(motherContact, ZeirRapidProEntity.CARETAKER);
 				motherContact.getFields().setFacilityLocationId(fields.getFacilityLocationId());
-				processChildRegistration(rapidProContact, motherContact);
+				processChildRegistration(childContact, motherContact);
 
 				Client existingMotherClient = clientService.getByBaseEntityId(motherContact.getUuid());
 				if (existingMotherClient == null) {
@@ -218,7 +230,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 		if (existingChildClient == null) {
 			ZeirChildClientConverter clientConverter =
-					new ZeirChildClientConverter(identifierSourceService, uniqueIdentifierService, zeirRapidProStateService);
+					new ZeirChildClientConverter(identifierSourceService, uniqueIdentifierService, rapidProStateService);
 			Client childClient = clientConverter.convertContactToClient(childContact);
 			if (childClient != null) {
 				childClient.withRelationships(new HashMap<>() {{
@@ -382,7 +394,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			rapidProState.setPropertyKey(supervisorPhone);
 			rapidProState.setPropertyValue(facilityLocationId);
 			rapidProState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
-			zeirRapidProStateService.saveRapidProState(rapidProState);
+			rapidProStateService.saveRapidProState(rapidProState);
 
 			return facilityLocationId;
 		}

@@ -26,13 +26,13 @@ public abstract class BaseRapidProStateService {
 
 	protected CloseableHttpClient closeableHttpClient;
 
-	private RapidProStateRepository rapidProStateRepository;
-
 	@Value("#{opensrp['rapidpro.url']}")
 	protected String rapidProUrl;
 
 	@Value("#{opensrp['rapidpro.token']}")
 	protected String rapidProToken;
+
+	private RapidProStateRepository rapidProStateRepository;
 
 	public BaseRapidProStateService() {
 		this.closeableHttpClient = HttpClients.createDefault();
@@ -57,6 +57,14 @@ public abstract class BaseRapidProStateService {
 
 	public List<RapidproState> getRapidProState(String entity, String property, String propertyKey) {
 		return rapidProStateRepository.getState(entity, property, propertyKey);
+	}
+
+	public RapidproState getRapidProStateByUuid(String uuid, String entity, String property) {
+		List<RapidproState> states = rapidProStateRepository.getStateByUuid(uuid, entity, property);
+		if (states != null && !states.isEmpty()) {
+			return states.get(states.size() - 1);
+		}
+		return null;
 	}
 
 	public boolean updateUuids(List<Long> ids, String uuid) {

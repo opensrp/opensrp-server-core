@@ -51,7 +51,7 @@ public abstract class BaseRapidProService {
 
 	protected OrganizationService organizationService;
 
-	protected ZeirRapidProStateService zeirRapidProStateService;
+	protected ZeirRapidProStateService rapidProStateService;
 
 	@Value("#{opensrp['rapidpro.url']}")
 	protected String rapidProUrl;
@@ -92,7 +92,7 @@ public abstract class BaseRapidProService {
 
 	@Autowired
 	public void setRapidProStateService(ZeirRapidProStateService zeirRapidProStateService) {
-		this.zeirRapidProStateService = zeirRapidProStateService;
+		this.rapidProStateService = zeirRapidProStateService;
 	}
 
 	public void setHttpClient(HttpClient httpClient) {

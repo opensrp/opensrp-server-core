@@ -13,6 +13,8 @@ public interface RapidProStateRepository {
 
 	List<RapidproState> getState(String entity, String property, String propertyKey);
 
+	List<RapidproState> getStateByUuid(String uuid, String entity, String property);
+
 	List<RapidproState> getUnSyncedStates(String entity, String property);
 
 	boolean updateUuids(List<Long> ids, String uuid);
