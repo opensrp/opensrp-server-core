@@ -68,42 +68,43 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	 */
 	@Override
 	public void handleContactResponse(String response, RapidProOnTaskComplete onTaskComplete) {
+		if (StringUtils.isBlank(response)) {
+			return;
+		}
+		JSONObject responseJson = new JSONObject(response);
 		String currentDateTime = Instant.now().toString();
-		JSONArray results = getResults(response);
-
+		JSONArray results = getResults(responseJson);
 		if (results != null) {
 			if (!reentrantLock.tryLock()) {
 				logger.warn("Rapidpro results processing in progress...");
 			}
-
 			try {
 				List<RapidProContact> rapidProContacts = getRapidProContacts(results);
-
-				logger.info("Found " + (rapidProContacts.isEmpty() ? 0 : rapidProContacts.size()) + " modified contacts");
-
-				for (RapidProContact rapidProContact : rapidProContacts) {
-					try {
-						//Only process process child contacts
-						RapidProFields fields = rapidProContact.getFields();
-						if (fields.getSupervisorPhone() != null && RapidProConstants.CHILD
-								.equalsIgnoreCase(fields.getPosition())) {
-							String locationId = getLocationId(rapidProContact, rapidProContacts);
-							if (StringUtils.isNotBlank(locationId)) {
-								updateExistingClientUuid(rapidProContact, ZeirRapidProEntity.CHILD);
-								fields.setFacilityLocationId(locationId);
-								processRegistrationEventClient(rapidProContact, rapidProContacts);
-								processVaccinationEvent(rapidProContact);
-								processGrowthMonitoringEvent(rapidProContact);
-							}
-						}//TODO Add implementation for processing supervisor for instance when their location is updated;
-					}
-					catch (Exception exception) {
-						logger.error(exception.getMessage(), exception);
-						updateStateTokenFromContactDates(rapidProContacts);
-						return;
+				logger.info("Found " + rapidProContacts.size() + " modified contacts");
+				if (!rapidProContacts.isEmpty()) {
+					for (RapidProContact rapidProContact : rapidProContacts) {
+						try {
+							//Only process process child contacts
+							RapidProFields fields = rapidProContact.getFields();
+							if (fields.getSupervisorPhone() != null && RapidProConstants.CHILD
+									.equalsIgnoreCase(fields.getPosition())) {
+								String locationId = getLocationId(rapidProContact, rapidProContacts);
+								if (StringUtils.isNotBlank(locationId)) {
+									updateExistingClientUuid(rapidProContact, ZeirRapidProEntity.CHILD);
+									fields.setFacilityLocationId(locationId);
+									processRegistrationEventClient(rapidProContact, rapidProContacts);
+									processVaccinationEvent(rapidProContact);
+									processGrowthMonitoringEvent(rapidProContact);
+								}
+							}//TODO Add implementation for processing supervisor for instance when their location is updated;
+						}
+						catch (Exception exception) {
+							logger.error(exception.getMessage(), exception);
+							updateStateTokenFromContactDates(rapidProContacts);
+							return;
+						}
 					}
 				}
-
 				configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, currentDateTime);
 				onTaskComplete.completeTask();
 			}
@@ -113,6 +114,18 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			finally {
 				reentrantLock.unlock();
 			}
+		}
+		if (responseJson.isNull(RapidProConstants.NEXT)) {
+			return;
+		}
+		try {
+			HttpResponse nextHttpResponse = httpClient.execute(getContactRequest());
+			if (nextHttpResponse != null && nextHttpResponse.getEntity() != null) {
+				handleContactResponse(EntityUtils.toString(nextHttpResponse.getEntity()), onTaskComplete);
+			}
+		}
+		catch (IOException exception) {
+			logger.error(exception.getMessage(), exception);
 		}
 	}
 
@@ -171,9 +184,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, currentDateTime.toString());
 	}
 
-	private JSONArray getResults(String response) {
+	private JSONArray getResults(JSONObject responseJson) {
 		try {
-			JSONObject responseJson = new JSONObject(response);
 			return responseJson.optJSONArray(RapidProConstants.RESULTS);
 		}
 		catch (JSONException jsonException) {
@@ -471,7 +483,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		try {
 			HttpResponse httpResponse = httpClient.execute(getSupervisorContactRequest(phone));
 			if (httpResponse != null && httpResponse.getEntity() != null) {
-				JSONArray results = getResults(EntityUtils.toString(httpResponse.getEntity()));
+				JSONArray results = getResults(new JSONObject(EntityUtils.toString(httpResponse.getEntity())));
 				if (results != null) {
 					List<RapidProContact> rapidProContacts = getRapidProContacts(results);
 					if (rapidProContacts == null || rapidProContacts.isEmpty()) {
@@ -481,8 +493,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				}
 			}
 		}
-		catch (IOException exception) {
-			logger.error(exception.getMessage(), exception);
+		catch (JSONException | IOException jsonException) {
+			logger.error(jsonException.getMessage(), jsonException);
 		}
 		return null;
 	}

@@ -46,6 +46,7 @@ public interface RapidProConstants {
 	String ORDER_BY_ID_CLAUSE = "id ASC";
 	String UNPROCESSED_UUID = "UNPROCESSED_UUID";
 	String YES = "yes" ;
+	String NEXT = "next";
 
 	interface RapidProProjects {
 		String ZEIR_RAPIDPRO = "zeir";
