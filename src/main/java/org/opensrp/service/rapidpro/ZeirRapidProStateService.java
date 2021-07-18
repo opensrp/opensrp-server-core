@@ -59,20 +59,29 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 	}
 
+	@Autowired
+	public void setEventService(EventService eventService) {
+		this.eventService = eventService;
+	}
+
+	@Autowired
+	public void setClientService(ClientService clientService) {
+		this.clientService = clientService;
+	}
+
 	/**
 	 * <p>
-	 * This method is responsible for updating RapidProContact with data coming from OpenSRP.
-	 * It is invoked after processing data from RapidPro is completed.
-	 * For Birth Registration/Vaccination and Growth Monitoring events, event baseEntityId is saved as the property_key and
-	 * the form submissionId of the event as the property_value in the rapidpro_state table. The Birth Registration event
-	 * will be used to fetch other events associated with the client. First time registration in OpenSRP will populate the
-	 * uuid column of rapidpro_state table with a special value UNPROCESSED_UUID. This is necessary as the UUID is not known
-	 * until the contact is created via POST endpoint in RapidPro.
+	 * This method is responsible for syncing data from OpenSRP to RapidPro as well as updating particular contact fields.
+	 * It is invoked after processing data from RapidPro.
+	 * For Birth Registration/Vaccination and Growth Monitoring events, the baseEntityId is saved as the property_key and
+	 * the formSubmissionId as the property_value in the rapidpro_state table.
+	 * First time registration in OpenSRP will populate the uuid column of rapidpro_state table with a special value
+	 * UNPROCESSED_UUID that will be updated with the actual UUID from RapidPro
 	 * </p>
 	 */
 	public void postDataToRapidPro() {
-		updateContactAndStatus(CHILD, IDENTIFIER);
-		updateContactAndStatus(SUPERVISOR, LOCATION_ID);
+		updateContactFields(CHILD, IDENTIFIER);
+		updateContactFields(SUPERVISOR, LOCATION_ID);
 
 		List<RapidproState> childStates = getUnSyncedRapidProStates(CHILD.name(), REGISTRATION_DATA.name());
 		postChildData(childStates);
@@ -144,7 +153,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				logger.warn("Error fields JSON from child contact", jsonProcessingException);
 			}
 			catch (IOException exception) {
-				logger.warn("Error processing Vaccination and Growth Monitoring data for existing child", exception);
+				logger.warn("Child Vaccination and Growth Monitoring data not posted", exception);
 			}
 			finally {
 				reentrantLock.unlock();
@@ -252,17 +261,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		}
 	}
 
-	@Autowired
-	public void setEventService(EventService eventService) {
-		this.eventService = eventService;
-	}
-
-	@Autowired
-	public void setClientService(ClientService clientService) {
-		this.clientService = clientService;
-	}
-
-	private void updateContactAndStatus(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property) {
+	private void updateContactFields(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property) {
 		List<RapidproState> unSyncedStates = getUnSyncedRapidProStates(entity.name(), property.name());
 
 		if (unSyncedStates != null && !unSyncedStates.isEmpty()) {
