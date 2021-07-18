@@ -86,18 +86,18 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 
 	@Override
 	public RapidProContact convertClientToContact(Client client) {
-		RapidProContact rapidProContact = new RapidProContact();
-		RapidProFields fields = new RapidProFields();
-		fields.setMvaccId((String) client.getAttribute(RapidProConstants.CHILD_REGISTER_CARD_NUMBER));
-		fields.setOpensrpId(client.getIdentifier(RapidProConstants.ZEIR_ID));
+		RapidProContact childContact = new RapidProContact();
+		RapidProFields childFields = new RapidProFields();
+		childFields.setMvaccId((String) client.getAttribute(RapidProConstants.CHILD_REGISTER_CARD_NUMBER));
+		childFields.setOpensrpId(client.getIdentifier(RapidProConstants.ZEIR_ID));
 		String birthPlace = (String) client.getAttribute(RapidProConstants.PLACE_OF_BIRTH);
-		fields.setBirth(RapidProConstants.HEALTH_FACILITY.equalsIgnoreCase(birthPlace)
+		childFields.setBirth(RapidProConstants.HEALTH_FACILITY.equalsIgnoreCase(birthPlace)
 				? RapidProConstants.FACILITY : RapidProConstants.HOME);
-		fields.setLocation((String) client.getAttribute(RapidProConstants.RESIDENTIAL_AREA));
-		fields.setPosition(RapidProConstants.CHILD);
-		addCommonClientProperties(client, rapidProContact);
-		rapidProContact.setFields(fields);
-		return rapidProContact;
+		childFields.setLocation((String) client.getAttribute(RapidProConstants.RESIDENTIAL_AREA));
+		childFields.setPosition(RapidProConstants.CHILD);
+		addCommonClientProperties(client, childContact);
+		childContact.setFields(childFields);
+		return childContact;
 	}
 
 }

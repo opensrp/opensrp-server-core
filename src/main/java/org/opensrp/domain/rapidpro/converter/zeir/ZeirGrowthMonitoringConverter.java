@@ -69,10 +69,6 @@ public class ZeirGrowthMonitoringConverter extends BaseRapidProEventConverter {
 		return event;
 	}
 
-	public enum GMEvent {
-		HEIGHT, WEIGHT
-	}
-
 	@Override
 	public void updateRapidProContact(RapidProContact rapidProContact, Event event) {
 		switch (GMEvent.valueOf(event.getEntityType().toUpperCase(Locale.ROOT))) {
@@ -87,5 +83,9 @@ public class ZeirGrowthMonitoringConverter extends BaseRapidProEventConverter {
 			default:
 				break;
 		}
+	}
+
+	public enum GMEvent {
+		HEIGHT, WEIGHT
 	}
 }
