@@ -71,14 +71,17 @@ public class ZeirGrowthMonitoringConverter extends BaseRapidProEventConverter {
 
 	@Override
 	public void updateRapidProContact(RapidProContact rapidProContact, Event event) {
+		RapidProFields fields = rapidProContact.getFields();
 		switch (GMEvent.valueOf(event.getEntityType().toUpperCase(Locale.ROOT))) {
 			case WEIGHT:
 				String weight = readObsValue(event, RapidProConstants.WEIGHT_KGS);
-				rapidProContact.getFields().setWeight(weight);
+				fields.setWeight(weight);
+				fields.setGmWeightDateModified(event.getEventDate().toInstant().toString());
 				break;
 			case HEIGHT:
 				String height = readObsValue(event, RapidProConstants.HEIGHT_CM);
-				rapidProContact.getFields().setHeight(height);
+				fields.setHeight(height);
+				fields.setGmHeightDateModified(event.getEventDate().toInstant().toString());
 				break;
 			default:
 				break;
