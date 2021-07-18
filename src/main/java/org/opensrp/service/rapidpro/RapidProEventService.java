@@ -45,11 +45,18 @@ public class RapidProEventService {
 		Client client = clientService.getByBaseEntityId(event.getBaseEntityId());
 
 		if (client != null && client.getAttributes() != null &&
-				client.getAttributes().containsKey(RapidProConstants.SMS_REMINDER_PHONE)) {
-			String property = null;
+				client.getAttributes().containsKey(RapidProConstants.SMS_REMINDER) &&
+				client.getAttributes().containsKey(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED)) {
+
+			String property;
+			String entity = ZeirRapidProEntity.CHILD.name();
 			String eventType = event.getEventType();
 			switch (eventType) {
 				case EventConstants.BIRTH_REGISTRATION_EVENT:
+					property = ZeirRapidProEntityProperty.REGISTRATION_DATA.name();
+					break;
+				case EventConstants.NEW_WOMAN_REGISTRATION_EVENT:
+					entity = ZeirRapidProEntity.CARETAKER.name();
 					property = ZeirRapidProEntityProperty.REGISTRATION_DATA.name();
 					break;
 				case EventConstants.VACCINATION_EVENT:
@@ -59,14 +66,16 @@ public class RapidProEventService {
 					property = ZeirRapidProEntityProperty.GROWTH_MONITORING_DATA.name();
 					break;
 				default:
+					property = null;
 					break;
 			}
 
 			if (StringUtils.isNotBlank(property)) {
 				RapidproState rapidproState = new RapidproState();
 				rapidproState.setUuid(RapidProConstants.UNPROCESSED_UUID);
-				rapidproState.setEntity(ZeirRapidProEntity.CHILD.name());
+				rapidproState.setEntity(entity);
 				rapidproState.setProperty(property);
+				rapidproState.setPropertyKey(event.getBaseEntityId());
 				rapidproState.setPropertyValue(event.getFormSubmissionId());
 				rapidproState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
 				rapidProStateService.saveRapidProState(rapidproState);

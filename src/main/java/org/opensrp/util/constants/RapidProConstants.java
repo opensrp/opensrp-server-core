@@ -21,7 +21,9 @@ public interface RapidProConstants {
 	String ZEIR_ID = "zeir_id";
 	String M_ZEIR_ID = "M_ZEIR_ID";
 	String MOTHER_GUARDIAN_NUMBER = "mother_guardian_number";
+	String SMS_REMINDER = "sms_reminder";
 	String SMS_REMINDER_PHONE = "sms_reminder_phone";
+	String SMS_REMINDER_PHONE_FORMATTED = "sms_reminder_phone_formatted";
 	String RESIDENTIAL_ADDRESS = "residential_address";
 	String DATA_STRATEGY = "data_strategy";
 	String NORMAL = "Normal";
@@ -43,7 +45,7 @@ public interface RapidProConstants {
 	String OPENSRP = "OpenSRP";
 	String ORDER_BY_ID_CLAUSE = "id ASC";
 	String UNPROCESSED_UUID = "UNPROCESSED_UUID";
-	String SMS_REMINDER_PHONE_FORMATTED = "sms_reminder_phone_formatted";
+	String YES = "yes" ;
 
 	interface RapidProProjects {
 		String ZEIR_RAPIDPRO = "zeir";

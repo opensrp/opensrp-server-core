@@ -72,10 +72,8 @@ public abstract class BaseRapidProStateService {
 		if (uuid == null || RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(uuid)) {
 			return;
 		}
-		String updateContactUrl = RapidProUtils.getBaseUrl(rapidProUrl) +
-				(existing ? "/contacts.json?uuid=" + uuid : "/contacts.json");
 		try {
-			CloseableHttpResponse httpResponse = postToRapidPro(payload, updateContactUrl);
+			CloseableHttpResponse httpResponse = postToRapidPro(payload, getContactUrl(existing, uuid));
 			StatusLine statusLine = httpResponse.getStatusLine();
 			if (statusLine != null && statusLine.getStatusCode() == HttpStatus.SC_OK && existing) {
 				updateRapidProState(rapidproState.getId(), RapidProStateSyncStatus.SYNCED);
@@ -84,6 +82,10 @@ public abstract class BaseRapidProStateService {
 		catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+
+	protected String getContactUrl(boolean existing, String uuid) {
+		return RapidProUtils.getBaseUrl(rapidProUrl) + (existing ? "/contacts.json?uuid=" + uuid : "/contacts.json");
 	}
 
 	public CloseableHttpResponse postToRapidPro(String payload, String url) throws IOException {

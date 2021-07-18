@@ -232,6 +232,9 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	private RapidProContact getMotherContact(String motherName, String motherPhone, List<RapidProContact> rapidProContacts) {
+		if (StringUtils.isBlank(motherPhone)) {
+			return null;
+		}
 		List<RapidProContact> motherList = rapidProContacts.stream()
 				.filter(rapidProContact ->
 						RapidProConstants.CARETAKER.equalsIgnoreCase(rapidProContact.getFields().getPosition()) &&

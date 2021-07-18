@@ -62,8 +62,12 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 	protected void addCommonClientProperties(Client client, RapidProContact rapidProContact) {
 		RapidProFields fields = rapidProContact.getFields();
 		rapidProContact.setName(client.fullName());
-		fields.setSex(StringUtils.capitalize(client.getGender().toLowerCase(Locale.ROOT)));
-		fields.setDob(client.getBirthdate().toDateTimeISO().toString());
+		if (StringUtils.isNotBlank(client.getGender())) {
+			fields.setSex(StringUtils.capitalize(client.getGender().toLowerCase(Locale.ROOT)));
+		}
+		if (client.getBirthdate() != null) {
+			fields.setDob(client.getBirthdate().toDateTimeISO().toString());
+		}
 		fields.setFacilityLocationId(client.getLocationId());
 		if (client.getVoided() || client.getDeathdate() != null) {
 			rapidProContact.setStopped(true);
