@@ -248,7 +248,10 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					CloseableHttpResponse httpResponse = postToRapidPro(objectMapper.writeValueAsString(motherContact),
 							getContactUrl(false, null));
 					if (httpResponse != null && httpResponse.getEntity() != null) {
-						updateUuids(Collections.singletonList(motherState.getId()), motherState.getUuid());
+						final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
+						RapidProContact newMotherContact =
+								objectMapper.readValue(rapidProContactJson, RapidProContact.class);
+						updateUuids(Collections.singletonList(motherState.getId()), newMotherContact.getUuid());
 					}
 				}
 				catch (IOException exception) {
