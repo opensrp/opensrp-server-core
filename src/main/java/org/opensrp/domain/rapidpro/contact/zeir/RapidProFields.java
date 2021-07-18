@@ -156,7 +156,7 @@ public class RapidProFields implements Serializable {
 	private boolean registrationProcessed;
 
 	@JsonProperty("opensrp_id")
-	@JsonAlias({"zeir_id", "ZEIR_ID", "OPENSRP_ID"})
+	@JsonAlias({ "zeir_id", "ZEIR_ID", "OPENSRP_ID" })
 	private String opensrpId;
 
 	public String getSupervisorPhone() {
@@ -228,7 +228,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setDpt1(String dpt1) {
-		this.dpt1 = dpt1;
+		if (dpt1 != null)
+			this.dpt1 = dpt1;
 	}
 
 	public String getDpt2() {
@@ -236,7 +237,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setDpt2(String dpt2) {
-		this.dpt2 = dpt2;
+		if (dpt2 != null)
+			this.dpt2 = dpt2;
 	}
 
 	public String getDpt3() {
@@ -244,7 +246,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setDpt3(String dpt3) {
-		this.dpt3 = dpt3;
+		if (dpt3 != null)
+			this.dpt3 = dpt3;
 	}
 
 	public String getFacility() {
@@ -268,7 +271,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setMeasles(String measles) {
-		this.measles = measles;
+		if (measles != null)
+			this.measles = measles;
 	}
 
 	public String getMeasles2() {
@@ -276,7 +280,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setMeasles2(String measles2) {
-		this.measles2 = measles2;
+		if (measles2 != null)
+			this.measles2 = measles2;
 	}
 
 	public String getMonthlyChildrenCount() {
@@ -324,7 +329,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setOpv0(String opv0) {
-		this.opv0 = opv0;
+		if (opv0 != null)
+			this.opv0 = opv0;
 	}
 
 	public String getOpv1() {
@@ -332,7 +338,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setOpv1(String opv1) {
-		this.opv1 = opv1;
+		if (opv1 != null)
+			this.opv1 = opv1;
 	}
 
 	public String getOpv2() {
@@ -340,7 +347,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setOpv2(String opv2) {
-		this.opv2 = opv2;
+		if (opv2 != null)
+			this.opv2 = opv2;
 	}
 
 	public String getOpv3() {
@@ -348,7 +356,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setOpv3(String opv3) {
-		this.opv3 = opv3;
+		if (opv3 != null)
+			this.opv3 = opv3;
 	}
 
 	public String getOpv4() {
@@ -356,7 +365,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setOpv4(String opv4) {
-		this.opv4 = opv4;
+		if (opv4 != null)
+			this.opv4 = opv4;
 	}
 
 	public String getOutreach() {
@@ -380,7 +390,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setPcv1(String pcv1) {
-		this.pcv1 = pcv1;
+		if (pcv1 != null)
+			this.pcv1 = pcv1;
 	}
 
 	public String getPcv2() {
@@ -388,7 +399,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setPcv2(String pcv2) {
-		this.pcv2 = pcv2;
+		if (pcv2 != null)
+			this.pcv2 = pcv2;
 	}
 
 	public String getPcv3() {
@@ -396,7 +408,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setPcv3(String pcv3) {
-		this.pcv3 = pcv3;
+		if (pcv3 != null)
+			this.pcv3 = pcv3;
 	}
 
 	public String getIpv() {
@@ -404,7 +417,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setIpv(String ipv) {
-		this.ipv = ipv;
+		if (ipv != null)
+			this.ipv = ipv;
 	}
 
 	public String getPosition() {
@@ -428,7 +442,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setRota1(String rota1) {
-		this.rota1 = rota1;
+		if (rota1 != null)
+			this.rota1 = rota1;
 	}
 
 	public String getRota2() {
@@ -436,7 +451,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setRota2(String rota2) {
-		this.rota2 = rota2;
+		if (rota2 != null)
+			this.rota2 = rota2;
 	}
 
 	public String getSex() {
@@ -492,7 +508,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setHeight(String height) {
-		this.height = height;
+		if (height != null)
+			this.height = height;
 	}
 
 	public String getGmHeightDateModified() {
@@ -508,7 +525,8 @@ public class RapidProFields implements Serializable {
 	}
 
 	public void setWeight(String weight) {
-		this.weight = weight;
+		if (weight != null)
+			this.weight = weight;
 	}
 
 	public String getGmWeightDateModified() {

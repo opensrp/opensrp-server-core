@@ -19,6 +19,9 @@ public class ZeirVaccinationConverter extends BaseRapidProEventConverter {
 		super(organizationService);
 	}
 
+	public ZeirVaccinationConverter() {
+	}
+
 	@Override
 	public Event convertContactToEvent(RapidProContact rapidProContact) {
 		return null;
@@ -66,7 +69,7 @@ public class ZeirVaccinationConverter extends BaseRapidProEventConverter {
 		vaccineEvent.setEventType(EventConstants.VACCINATION_EVENT);
 		vaccineEvent.setEntityType(EventConstants.VACCINATION_EVENT.toLowerCase(Locale.ROOT));
 		addCommonEventProperties(rapidProContact, vaccineEvent);
-		String formSubmissionField = vaccine.name().toLowerCase(Locale.ROOT);
+		String formSubmissionField = getFormSubmissionField(vaccine);
 		Obs vaccineObs = null;
 		Obs vaccineDoseObs = null;
 
@@ -115,5 +118,31 @@ public class ZeirVaccinationConverter extends BaseRapidProEventConverter {
 		if (vaccineObs != null && vaccineDoseObs != null) {
 			vaccineEvents.add(vaccineEvent.withObs(vaccineObs).withObs(vaccineDoseObs));
 		}
+	}
+
+	@Override
+	public void updateRapidProContact(RapidProContact rapidProContact, Event event) {
+		RapidProFields fields = rapidProContact.getFields();
+		fields.setOpv0(readObsValue(event, getFormSubmissionField(ZeirVaccine.OPV_0)));
+		fields.setBcg(readObsValue(event, getFormSubmissionField(ZeirVaccine.BCG)));
+		fields.setOpv1(readObsValue(event, getFormSubmissionField(ZeirVaccine.OPV_1)));
+		fields.setDpt1(readObsValue(event, getFormSubmissionField(ZeirVaccine.PENTA_1)));
+		fields.setPcv1(readObsValue(event, getFormSubmissionField(ZeirVaccine.PCV_1)));
+		fields.setRota1(readObsValue(event, getFormSubmissionField(ZeirVaccine.ROTA_1)));
+		fields.setOpv2(readObsValue(event, getFormSubmissionField(ZeirVaccine.OPV_2)));
+		fields.setDpt2(readObsValue(event, getFormSubmissionField(ZeirVaccine.PENTA_2)));
+		fields.setPcv2(readObsValue(event, getFormSubmissionField(ZeirVaccine.PCV_2)));
+		fields.setRota2(readObsValue(event, getFormSubmissionField(ZeirVaccine.ROTA_2)));
+		fields.setOpv3(readObsValue(event, getFormSubmissionField(ZeirVaccine.OPV_3)));
+		fields.setPcv3(readObsValue(event, getFormSubmissionField(ZeirVaccine.PCV_3)));
+		fields.setDpt3(readObsValue(event, getFormSubmissionField(ZeirVaccine.PENTA_3)));
+		fields.setIpv(readObsValue(event, getFormSubmissionField(ZeirVaccine.IPV)));
+		fields.setMeasles(readObsValue(event, getFormSubmissionField(ZeirVaccine.MR_1)));
+		fields.setOpv4(readObsValue(event, getFormSubmissionField(ZeirVaccine.OPV_4)));
+		fields.setMeasles2(readObsValue(event, getFormSubmissionField(ZeirVaccine.MR_2)));
+	}
+
+	private String getFormSubmissionField(ZeirVaccine opv0) {
+		return opv0.name().toLowerCase(Locale.ROOT);
 	}
 }

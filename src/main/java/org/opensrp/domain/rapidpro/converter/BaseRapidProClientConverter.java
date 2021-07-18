@@ -10,12 +10,16 @@ import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
 
 import java.util.List;
+import java.util.Locale;
 
 public abstract class BaseRapidProClientConverter implements RapidProContactClientConverter {
 
 	protected IdentifierSourceService identifierSourceService;
 
 	protected UniqueIdentifierService uniqueIdentifierService;
+
+	public BaseRapidProClientConverter() {
+	}
 
 	public BaseRapidProClientConverter(IdentifierSourceService identifierSourceService,
 			UniqueIdentifierService uniqueIdentifierService) {
@@ -52,6 +56,18 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 						RapidProConstants.ZEIR_ID.equalsIgnoreCase(identifierType) ? zeirId.replaceAll("-", "") : zeirId);
 				uniqueIdentifierService.markIdentifierAsUsed(zeirId);
 			}
+		}
+	}
+
+	protected void addCommonClientProperties(Client client, RapidProContact rapidProContact) {
+		RapidProFields fields = rapidProContact.getFields();
+		rapidProContact.setName(client.fullName());
+		fields.setSex(StringUtils.capitalize(client.getGender().toLowerCase(Locale.ROOT)));
+		fields.setDob(client.getBirthdate().toDateTimeISO().toString());
+		fields.setFacilityLocationId(client.getLocationId());
+		if (client.getVoided() || client.getDeathdate() != null) {
+			rapidProContact.setStopped(true);
+			rapidProContact.setBlocked(true);
 		}
 	}
 }

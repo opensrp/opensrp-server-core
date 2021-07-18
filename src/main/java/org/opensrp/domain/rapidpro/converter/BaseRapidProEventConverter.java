@@ -14,11 +14,15 @@ import org.smartregister.domain.Obs;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public abstract class BaseRapidProEventConverter implements RapidProContactEventConverter {
 
 	protected OrganizationService organizationService;
+
+	public BaseRapidProEventConverter() {
+	}
 
 	public BaseRapidProEventConverter(OrganizationService organizationService) {
 		this.organizationService = organizationService;
@@ -91,8 +95,25 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 		return code;
 	}
 
+	public String readObsValue(Event event, String formSubmissionField) {
+		Optional<Obs> optionalObs = event.getObs().stream()
+				.filter(it -> formSubmissionField.equalsIgnoreCase(it.getFormSubmissionField()))
+				.findFirst();
+		if (optionalObs.isPresent()) {
+			Obs obs = optionalObs.get();
+			List<Object> values = obs.getValues();
+			return values != null && !values.isEmpty() ? (String) values.get(0) : null;
+		} else {
+			return null;
+		}
+	}
+
 	@Override
 	public List<Event> convertContactToEvents(RapidProContact rapidProContact) {
 		return null;
+	}
+
+	public void updateRapidProContact(RapidProContact rapidProContact, Event event) {
+		//To be overridden
 	}
 }

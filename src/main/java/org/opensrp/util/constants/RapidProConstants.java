@@ -43,6 +43,7 @@ public interface RapidProConstants {
 	String OPENSRP = "OpenSRP";
 	String ORDER_BY_ID_CLAUSE = "id ASC";
 	String UNPROCESSED_UUID = "UNPROCESSED_UUID";
+	String SMS_REMINDER_PHONE_FORMATTED = "sms_reminder_phone_formatted";
 
 	interface RapidProProjects {
 		String ZEIR_RAPIDPRO = "zeir";

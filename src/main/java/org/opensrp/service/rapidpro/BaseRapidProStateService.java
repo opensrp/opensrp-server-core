@@ -13,6 +13,7 @@ import org.opensrp.domain.postgres.RapidproState;
 import org.opensrp.domain.rapidpro.RapidProStateSyncStatus;
 import org.opensrp.repository.RapidProStateRepository;
 import org.opensrp.util.RapidProUtils;
+import org.opensrp.util.constants.RapidProConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -28,10 +29,10 @@ public abstract class BaseRapidProStateService {
 	private RapidProStateRepository rapidProStateRepository;
 
 	@Value("#{opensrp['rapidpro.url']}")
-	private String rapidProUrl;
+	protected String rapidProUrl;
 
 	@Value("#{opensrp['rapidpro.token']}")
-	private String rapidProToken;
+	protected String rapidProToken;
 
 	public BaseRapidProStateService() {
 		this.closeableHttpClient = HttpClients.createDefault();
@@ -58,24 +59,38 @@ public abstract class BaseRapidProStateService {
 		return rapidProStateRepository.getState(entity, property, propertyKey);
 	}
 
-	public void postRapidProContact(RapidproState rapidproState, String payload, boolean existing) {
+	public boolean updateUuids(List<Long> ids, String uuid) {
+		return rapidProStateRepository.updateUuids(ids, uuid);
+	}
+
+	public List<RapidproState> getStatesByPropertyKey(String entity, String property, String propertyKey) {
+		return rapidProStateRepository.getByStatesPropertyKey(entity, property, propertyKey);
+	}
+
+	public void updateRapidProContact(RapidproState rapidproState, String payload, boolean existing) {
+		String uuid = rapidproState.getUuid();
+		if (uuid == null || RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(uuid)) {
+			return;
+		}
 		String updateContactUrl = RapidProUtils.getBaseUrl(rapidProUrl) +
-				(existing ? "/contacts.json?uuid=" + rapidproState.getUuid() : "/contacts.json");
+				(existing ? "/contacts.json?uuid=" + uuid : "/contacts.json");
 		try {
-			HttpPost httpPost = (HttpPost) RapidProUtils
-					.setupRapidproRequest(updateContactUrl, new HttpPost(), rapidProToken);
-			StringEntity stringEntity = new StringEntity(payload);
-			httpPost.setEntity(stringEntity);
-			CloseableHttpResponse httpResponse = closeableHttpClient.execute(httpPost);
+			CloseableHttpResponse httpResponse = postToRapidPro(payload, updateContactUrl);
 			StatusLine statusLine = httpResponse.getStatusLine();
-			if (statusLine != null && (statusLine.getStatusCode() == HttpStatus.SC_ACCEPTED
-					|| statusLine.getStatusCode() == HttpStatus.SC_CREATED
-					|| statusLine.getStatusCode() == HttpStatus.SC_OK)) {
+			if (statusLine != null && statusLine.getStatusCode() == HttpStatus.SC_OK && existing) {
 				updateRapidProState(rapidproState.getId(), RapidProStateSyncStatus.SYNCED);
 			}
 		}
 		catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+
+	public CloseableHttpResponse postToRapidPro(String payload, String url) throws IOException {
+		HttpPost httpPost = (HttpPost) RapidProUtils
+				.setupRapidproRequest(url, new HttpPost(), rapidProToken);
+		StringEntity stringEntity = new StringEntity(payload);
+		httpPost.setEntity(stringEntity);
+		return closeableHttpClient.execute(httpPost);
 	}
 }

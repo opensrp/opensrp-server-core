@@ -56,4 +56,27 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 		rapidproStateExample.setOrderByClause(RapidProConstants.ORDER_BY_ID_CLAUSE);
 		return rapidproStateMapper.selectByExample(rapidproStateExample);
 	}
+
+	@Override
+	public boolean updateUuids(List<Long> ids, String uuid) {
+		int counter = 0;
+		for (Long id : ids) {
+			RapidproState rapidproState = new RapidproState();
+			rapidproState.setId(id);
+			rapidproState.setUuid(uuid);
+			rapidproState.setSyncStatus(RapidProStateSyncStatus.SYNCED.name());
+			counter = counter + rapidproStateMapper.updateByPrimaryKeySelective(rapidproState);
+		}
+		return counter == ids.size();
+	}
+
+	@Override
+	public List<RapidproState> getByStatesPropertyKey(String entity, String property, String propertyKey) {
+		RapidproStateExample rapidproStateExample = new RapidproStateExample();
+		rapidproStateExample.createCriteria()
+				.andEntityEqualTo(entity)
+				.andPropertyEqualTo(property)
+				.andPropertyKeyEqualTo(propertyKey);
+		return rapidproStateMapper.selectByExample(rapidproStateExample);
+	}
 }

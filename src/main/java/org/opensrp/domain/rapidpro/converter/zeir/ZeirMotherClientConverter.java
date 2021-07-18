@@ -31,7 +31,7 @@ public class ZeirMotherClientConverter extends BaseRapidProClientConverter {
 					if (urn.startsWith(prefix)) {
 						String formattedPhone = urn.replace(prefix, "0");
 						motherClient.addAttribute(RapidProConstants.MOTHER_GUARDIAN_NUMBER, formattedPhone);
-						motherClient.addAttribute(RapidProConstants.SMS_REMINDER_PHONE, formattedPhone);
+						motherClient.addAttribute(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED, formattedPhone);
 					}
 				});
 			}
