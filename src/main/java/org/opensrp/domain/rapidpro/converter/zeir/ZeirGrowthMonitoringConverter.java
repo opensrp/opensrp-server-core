@@ -18,6 +18,9 @@ public class ZeirGrowthMonitoringConverter extends BaseRapidProEventConverter {
 		super(organizationService);
 	}
 
+	public ZeirGrowthMonitoringConverter() {
+	}
+
 	@Override
 	public Event convertContactToEvent(RapidProContact rapidProContact) {
 		return null;
@@ -70,4 +73,19 @@ public class ZeirGrowthMonitoringConverter extends BaseRapidProEventConverter {
 		HEIGHT, WEIGHT
 	}
 
+	@Override
+	public void updateRapidProContact(RapidProContact rapidProContact, Event event) {
+		switch (GMEvent.valueOf(event.getEntityType().toUpperCase(Locale.ROOT))) {
+			case WEIGHT:
+				String weight = readObsValue(event, RapidProConstants.WEIGHT_KGS);
+				rapidProContact.getFields().setWeight(weight);
+				break;
+			case HEIGHT:
+				String height = readObsValue(event, RapidProConstants.HEIGHT_CM);
+				rapidProContact.getFields().setHeight(height);
+				break;
+			default:
+				break;
+		}
+	}
 }
