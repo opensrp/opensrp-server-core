@@ -88,16 +88,15 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 	public RapidProContact convertClientToContact(Client client) {
 		RapidProContact childContact = new RapidProContact();
 		RapidProFields childFields = new RapidProFields();
+		childContact.setFields(childFields);
+		addCommonClientProperties(client, childContact);
+		childFields.setPosition(RapidProConstants.CHILD);
 		childFields.setMvaccId((String) client.getAttribute(RapidProConstants.CHILD_REGISTER_CARD_NUMBER));
 		childFields.setOpensrpId(client.getIdentifier(RapidProConstants.ZEIR_ID));
 		String birthPlace = (String) client.getAttribute(RapidProConstants.PLACE_OF_BIRTH);
 		childFields.setBirth(RapidProConstants.HEALTH_FACILITY.equalsIgnoreCase(birthPlace)
 				? RapidProConstants.FACILITY : RapidProConstants.HOME);
 		childFields.setLocation((String) client.getAttribute(RapidProConstants.RESIDENTIAL_AREA));
-		childFields.setPosition(RapidProConstants.CHILD);
-		addCommonClientProperties(client, childContact);
-		childContact.setFields(childFields);
 		return childContact;
 	}
-
 }

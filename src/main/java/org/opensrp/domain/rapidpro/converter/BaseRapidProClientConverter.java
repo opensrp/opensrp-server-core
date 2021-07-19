@@ -1,6 +1,7 @@
 package org.opensrp.domain.rapidpro.converter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
@@ -10,7 +11,6 @@ import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
 
 import java.util.List;
-import java.util.Locale;
 
 public abstract class BaseRapidProClientConverter implements RapidProContactClientConverter {
 
@@ -63,10 +63,12 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 		RapidProFields fields = rapidProContact.getFields();
 		rapidProContact.setName(client.fullName());
 		if (StringUtils.isNotBlank(client.getGender())) {
-			fields.setSex(StringUtils.capitalize(client.getGender().toLowerCase(Locale.ROOT)));
+			fields.setSex(client.getGender());
 		}
 		if (client.getBirthdate() != null) {
-			fields.setDob(client.getBirthdate().toDateTimeISO().toString());
+			DateTime dateTimeISO = client.getBirthdate().toDateTimeISO();
+			if (dateTimeISO != null)
+				fields.setDob(dateTimeISO.toString());
 		}
 		fields.setFacilityLocationId(client.getLocationId());
 		if (client.getVoided() || client.getDeathdate() != null) {

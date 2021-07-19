@@ -49,8 +49,9 @@ public class ZeirMotherClientConverter extends BaseRapidProClientConverter {
 	@Override
 	public RapidProContact convertClientToContact(Client client) {
 		RapidProContact motherContact = new RapidProContact();
-		addCommonClientProperties(client, motherContact);
 		RapidProFields motherFields = new RapidProFields();
+		motherContact.setFields(motherFields);
+		addCommonClientProperties(client, motherContact);
 		motherFields.setPosition(RapidProConstants.CARETAKER);
 		String motherPhone = (String) client.getAttribute(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED);
 		//Phone number required in ISO format
@@ -58,7 +59,6 @@ public class ZeirMotherClientConverter extends BaseRapidProClientConverter {
 			String formattedPhone = "tel:" + (motherPhone.startsWith("+") ? motherPhone : "+" + motherPhone);
 			motherContact.setUrns(Collections.singletonList(formattedPhone));
 		}
-		motherContact.setFields(motherFields);
 		return motherContact;
 	}
 }
