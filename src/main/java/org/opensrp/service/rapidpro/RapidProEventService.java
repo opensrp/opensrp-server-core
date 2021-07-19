@@ -47,8 +47,9 @@ public class RapidProEventService {
 					EventConstants.VACCINATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
 					EventConstants.GROWTH_MONITORING_EVENT.equalsIgnoreCase(event.getEventType())) {
 
-				if (currentClient.getRelationships() != null) {
-					String motherEntityId = currentClient.getRelationships(RapidProConstants.MOTHER).get(0);
+				if (currentClient.getRelationships() != null &&
+						currentClient.getRelationships().containsKey(RapidProConstants.MOTHER)) {
+					String motherEntityId = currentClient.getRelationships().get(RapidProConstants.MOTHER).get(0);
 					Client motherClient = clientService.getByBaseEntityId(motherEntityId);
 					if (motherNotRegisteredFromMvacc(motherClient)) {
 						saveRapidProState(event);
