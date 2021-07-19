@@ -14,8 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 @Service
 public class RapidProEventService {
 
@@ -43,53 +41,72 @@ public class RapidProEventService {
 	}
 
 	public void handleZeirEvent(Event event) {
+		Client currentClient = clientService.getByBaseEntityId(event.getBaseEntityId());
+		if (currentClient != null) {
+			if (EventConstants.BIRTH_REGISTRATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
+					EventConstants.VACCINATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
+					EventConstants.GROWTH_MONITORING_EVENT.equalsIgnoreCase(event.getEventType())) {
 
-		Client client = clientService.getByBaseEntityId(event.getBaseEntityId());
-
-		if (client != null) {
-			Map<String, Object> attributes = client.getAttributes();
-
-			String systemOfRegistration = (String) attributes.get(RapidProConstants.SYSTEM_OF_REGISTRATION);
-			String smsReminder = (String) attributes.get(RapidProConstants.SMS_REMINDER);
-			String formattedPhone = (String) attributes.get(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED);
-
-			if (RapidProConstants.YES.equalsIgnoreCase(smsReminder) && StringUtils.isNotBlank(formattedPhone) &&
-					!"0".equalsIgnoreCase(formattedPhone) && formattedPhone.length() > 0 &&
-					!RapidProConstants.MVACC.equalsIgnoreCase(systemOfRegistration)) {
-
-				String property;
-				String entity = ZeirRapidProEntity.CHILD.name();
-				String eventType = event.getEventType();
-				switch (eventType) {
-					case EventConstants.BIRTH_REGISTRATION_EVENT:
-						property = ZeirRapidProEntityProperty.REGISTRATION_DATA.name();
-						break;
-					case EventConstants.NEW_WOMAN_REGISTRATION_EVENT:
-						entity = ZeirRapidProEntity.CARETAKER.name();
-						property = ZeirRapidProEntityProperty.REGISTRATION_DATA.name();
-						break;
-					case EventConstants.VACCINATION_EVENT:
-						property = ZeirRapidProEntityProperty.VACCINATION_DATA.name();
-						break;
-					case EventConstants.GROWTH_MONITORING_EVENT:
-						property = ZeirRapidProEntityProperty.GROWTH_MONITORING_DATA.name();
-						break;
-					default:
-						property = null;
-						break;
+				if (currentClient.getRelationships() != null) {
+					String motherEntityId = currentClient.getRelationships(RapidProConstants.MOTHER).get(0);
+					Client motherClient = clientService.getByBaseEntityId(motherEntityId);
+					if (motherNotRegisteredFromMvacc(motherClient)) {
+						saveRapidProState(event);
+					}
 				}
 
-				if (StringUtils.isNotBlank(property)) {
-					RapidproState rapidproState = new RapidproState();
-					rapidproState.setUuid(RapidProConstants.UNPROCESSED_UUID);
-					rapidproState.setEntity(entity);
-					rapidproState.setProperty(property);
-					rapidproState.setPropertyKey(event.getBaseEntityId());
-					rapidproState.setPropertyValue(event.getFormSubmissionId());
-					rapidproState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
-					rapidProStateService.saveRapidProState(rapidproState);
+			} else if (EventConstants.NEW_WOMAN_REGISTRATION_EVENT.equalsIgnoreCase(event.getEventType())) {
+				if (motherNotRegisteredFromMvacc(currentClient)) {
+					saveRapidProState(event);
 				}
 			}
+		}
+	}
+
+	private boolean motherNotRegisteredFromMvacc(Client motherClient) {
+		if (motherClient == null) {
+			return false;
+		}
+		String systemOfReg = (String) motherClient.getAttribute(RapidProConstants.SYSTEM_OF_REGISTRATION);
+		String smsReminder = (String) motherClient.getAttribute(RapidProConstants.SMS_REMINDER);
+		String formattedPhone = (String) motherClient.getAttribute(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED);
+		return StringUtils.isNotBlank(systemOfReg) && !RapidProConstants.MVACC.equalsIgnoreCase(systemOfReg) &&
+				StringUtils.isNotBlank(smsReminder) && RapidProConstants.YES.equalsIgnoreCase(smsReminder) &&
+				StringUtils.isNotBlank(formattedPhone) && !"0".equals(formattedPhone);
+	}
+
+	private void saveRapidProState(Event event) {
+		String property;
+		String entity = ZeirRapidProEntity.CHILD.name();
+		String eventType = event.getEventType();
+		switch (eventType) {
+			case EventConstants.BIRTH_REGISTRATION_EVENT:
+				property = ZeirRapidProEntityProperty.REGISTRATION_DATA.name();
+				break;
+			case EventConstants.NEW_WOMAN_REGISTRATION_EVENT:
+				entity = ZeirRapidProEntity.CARETAKER.name();
+				property = ZeirRapidProEntityProperty.REGISTRATION_DATA.name();
+				break;
+			case EventConstants.VACCINATION_EVENT:
+				property = ZeirRapidProEntityProperty.VACCINATION_DATA.name();
+				break;
+			case EventConstants.GROWTH_MONITORING_EVENT:
+				property = ZeirRapidProEntityProperty.GROWTH_MONITORING_DATA.name();
+				break;
+			default:
+				property = null;
+				break;
+		}
+
+		if (StringUtils.isNotBlank(property)) {
+			RapidproState rapidproState = new RapidproState();
+			rapidproState.setUuid(RapidProConstants.UNPROCESSED_UUID);
+			rapidproState.setEntity(entity);
+			rapidproState.setProperty(property);
+			rapidproState.setPropertyKey(event.getBaseEntityId());
+			rapidproState.setPropertyValue(event.getFormSubmissionId());
+			rapidproState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
+			rapidProStateService.saveRapidProState(rapidproState);
 		}
 	}
 }
