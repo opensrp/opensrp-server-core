@@ -71,7 +71,8 @@ public class RapidProEventService {
 		String systemOfReg = (String) motherClient.getAttribute(RapidProConstants.SYSTEM_OF_REGISTRATION);
 		String smsReminder = (String) motherClient.getAttribute(RapidProConstants.SMS_REMINDER);
 		String formattedPhone = (String) motherClient.getAttribute(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED);
-		return StringUtils.isNotBlank(systemOfReg) && !RapidProConstants.MVACC.equalsIgnoreCase(systemOfReg) &&
+		return (systemOfReg == null || StringUtils.isNotBlank(systemOfReg) &&
+				!RapidProConstants.MVACC.equalsIgnoreCase(systemOfReg)) &&
 				StringUtils.isNotBlank(smsReminder) && RapidProConstants.YES.equalsIgnoreCase(smsReminder) &&
 				StringUtils.isNotBlank(formattedPhone) && !"0".equals(formattedPhone);
 	}

@@ -112,7 +112,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					if (childClient.getRelationships() != null && childClient.getRelationships()
 							.containsKey(RapidProConstants.MOTHER)) {
 
-						String motherBaseEntityId = childClient.getRelationships(RapidProConstants.MOTHER).get(0);
+						String motherBaseEntityId = childClient.getRelationships().get(RapidProConstants.MOTHER).get(0);
 						Client motherClient = clientService.getByBaseEntityId(motherBaseEntityId);
 
 						childContact.getFields().setMotherName(motherClient.fullName());
