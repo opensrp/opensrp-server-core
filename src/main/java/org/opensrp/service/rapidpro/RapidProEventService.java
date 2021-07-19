@@ -48,9 +48,12 @@ public class RapidProEventService {
 
 		if (client != null) {
 			Map<String, Object> attributes = client.getAttributes();
+
 			String systemOfRegistration = (String) attributes.get(RapidProConstants.SYSTEM_OF_REGISTRATION);
-			if ((attributes.containsKey(RapidProConstants.SMS_REMINDER) &&
-					attributes.containsKey(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED)) ||
+			String smsReminder = (String) attributes.get(RapidProConstants.SMS_REMINDER);
+			String formattedPhone = (String) attributes.get(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED);
+
+			if ((RapidProConstants.YES.equalsIgnoreCase(smsReminder) && StringUtils.isNotBlank(formattedPhone)) ||
 					!RapidProConstants.MVACC.equalsIgnoreCase(systemOfRegistration)) {
 
 				String property;
