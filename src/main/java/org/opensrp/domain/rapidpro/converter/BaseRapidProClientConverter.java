@@ -63,7 +63,7 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 		RapidProFields fields = rapidProContact.getFields();
 		rapidProContact.setName(client.fullName());
 		if (StringUtils.isNotBlank(client.getGender())) {
-			fields.setSex(client.getGender());
+			fields.setSex(StringUtils.capitalize(client.getGender()));
 		}
 		if (client.getBirthdate() != null) {
 			DateTime dateTimeISO = client.getBirthdate().toDateTimeISO();
@@ -71,9 +71,11 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 				fields.setDob(dateTimeISO.toString());
 		}
 		fields.setFacilityLocationId(client.getLocationId());
-		if (client.getVoided() || client.getDeathdate() != null) {
-			rapidProContact.setStopped(true);
+		if (client.getVoided() != null && client.getVoided()) {
 			rapidProContact.setBlocked(true);
+		}
+		if (client.getDeathdate() != null) {
+			rapidProContact.setStopped(true);
 		}
 	}
 }

@@ -91,11 +91,11 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	}
 
 	private void postChildData(List<RapidproState> childStates) {
-		ZeirChildClientConverter childConverter = new ZeirChildClientConverter(this);
-		ZeirVaccinationConverter vaccinationConverter = new ZeirVaccinationConverter();
-		ZeirGrowthMonitoringConverter growthMonitoringConverter = new ZeirGrowthMonitoringConverter();
-
 		if (childStates != null && !childStates.isEmpty()) {
+			ZeirChildClientConverter childConverter = new ZeirChildClientConverter(this);
+			ZeirVaccinationConverter vaccinationConverter = new ZeirVaccinationConverter();
+			ZeirGrowthMonitoringConverter growthMonitoringConverter = new ZeirGrowthMonitoringConverter();
+
 			for (RapidproState childState : childStates) {
 
 				Client childClient = clientService.getByBaseEntityId(childState.getPropertyKey());
@@ -235,30 +235,32 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	}
 
 	private void postMotherData(List<RapidproState> motherStates) {
-		ZeirMotherClientConverter motherConverter = new ZeirMotherClientConverter();
-		for (RapidproState motherState : motherStates) {
-			if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(motherState.getUuid())) {
-				Client motherClient = clientService.getByBaseEntityId(motherState.getPropertyKey());
-				RapidProContact motherContact = motherConverter.convertClientToContact(motherClient);
+		if (motherStates != null && !motherStates.isEmpty()) {
+			ZeirMotherClientConverter motherConverter = new ZeirMotherClientConverter();
+			for (RapidproState motherState : motherStates) {
+				if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(motherState.getUuid())) {
+					Client motherClient = clientService.getByBaseEntityId(motherState.getPropertyKey());
+					RapidProContact motherContact = motherConverter.convertClientToContact(motherClient);
 
-				try {
-					if (!reentrantLock.tryLock()) {
-						logger.warn("[POST_DATA] Task still running...");
+					try {
+						if (!reentrantLock.tryLock()) {
+							logger.warn("[POST_DATA] Task still running...");
+						}
+						CloseableHttpResponse httpResponse = postToRapidPro(objectMapper.writeValueAsString(motherContact),
+								getContactUrl(false, null));
+						if (httpResponse != null && httpResponse.getEntity() != null) {
+							final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
+							RapidProContact newMotherContact =
+									objectMapper.readValue(rapidProContactJson, RapidProContact.class);
+							updateUuids(Collections.singletonList(motherState.getId()), newMotherContact.getUuid());
+						}
 					}
-					CloseableHttpResponse httpResponse = postToRapidPro(objectMapper.writeValueAsString(motherContact),
-							getContactUrl(false, null));
-					if (httpResponse != null && httpResponse.getEntity() != null) {
-						final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
-						RapidProContact newMotherContact =
-								objectMapper.readValue(rapidProContactJson, RapidProContact.class);
-						updateUuids(Collections.singletonList(motherState.getId()), newMotherContact.getUuid());
+					catch (IOException exception) {
+						logger.warn("Mother's data not posted to RapidPro", exception);
 					}
-				}
-				catch (IOException exception) {
-					logger.warn("Mother's data not posted to RapidPro", exception);
-				}
-				finally {
-					reentrantLock.unlock();
+					finally {
+						reentrantLock.unlock();
+					}
 				}
 			}
 		}
