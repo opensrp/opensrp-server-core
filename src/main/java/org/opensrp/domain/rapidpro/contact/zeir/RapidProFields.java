@@ -138,22 +138,24 @@ public class RapidProFields implements Serializable {
 	private String facilityCode;
 
 	@JsonProperty("height")
+	@JsonAlias("growth_monitoring_height")
 	private String height;
 
-	@JsonProperty("gmh_date_modified")
-	@JsonAlias({ "growth_monitoring_height_modified_on", "growth_monitoring_height_date_modified" })
+	@JsonProperty("growth_monitoring_height_modified_on")
+	@JsonAlias({ "gmh_date_modified", "growth_monitoring_height_date_modified" })
 	private String gmHeightDateModified;
 
 	@JsonProperty("weight")
+	@JsonAlias("growth_monitoring_weight")
 	private String weight;
 
-	@JsonProperty("gmw_date_modified")
-	@JsonAlias({ "growth_monitoring_weight_modified_on", "growth_monitoring_weight_date_modified" })
+	@JsonProperty("growth_monitoring_weight_modified_on")
+	@JsonAlias({ "gmw_date_modified", "growth_monitoring_weight_date_modified" })
 	private String gmWeightDateModified;
 
-	@JsonProperty("reg_processed")
-	@JsonAlias({ "registration_processed", "is_registration_processed", "processed_registration" })
-	private boolean registrationProcessed;
+	@JsonProperty("registration_processed")
+	@JsonAlias({ "reg_processed", "is_registration_processed", "processed_registration" })
+	private String registrationProcessed;
 
 	@JsonProperty("opensrp_id")
 	@JsonAlias({ "zeir_id", "ZEIR_ID", "OPENSRP_ID" })
@@ -537,11 +539,11 @@ public class RapidProFields implements Serializable {
 		this.gmWeightDateModified = gmWeightDateModified;
 	}
 
-	public boolean isRegistrationProcessed() {
+	public String isRegistrationProcessed() {
 		return registrationProcessed;
 	}
 
-	public void setRegistrationProcessed(boolean registrationProcessed) {
+	public void setRegistrationProcessed(String registrationProcessed) {
 		this.registrationProcessed = registrationProcessed;
 	}
 
