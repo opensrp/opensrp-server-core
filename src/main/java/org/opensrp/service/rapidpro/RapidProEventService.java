@@ -48,11 +48,10 @@ public class RapidProEventService {
 
 		if (client != null) {
 			Map<String, Object> attributes = client.getAttributes();
-			if (attributes != null &&
-					attributes.containsKey(RapidProConstants.SMS_REMINDER) &&
-					attributes.containsKey(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED) &&
-					!RapidProConstants.MVACC
-							.equalsIgnoreCase((String) attributes.get(RapidProConstants.SYSTEM_OF_REGISTRATION))) {
+			String systemOfRegistration = (String) attributes.get(RapidProConstants.SYSTEM_OF_REGISTRATION);
+			if ((attributes.containsKey(RapidProConstants.SMS_REMINDER) &&
+					attributes.containsKey(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED)) ||
+					!RapidProConstants.MVACC.equalsIgnoreCase(systemOfRegistration)) {
 
 				String property;
 				String entity = ZeirRapidProEntity.CHILD.name();
