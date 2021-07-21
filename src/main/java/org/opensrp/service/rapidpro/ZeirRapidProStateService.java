@@ -3,8 +3,11 @@ package org.opensrp.service.rapidpro;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.domain.postgres.RapidproState;
@@ -18,6 +21,7 @@ import org.opensrp.domain.rapidpro.converter.zeir.ZeirMotherClientConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirVaccinationConverter;
 import org.opensrp.service.ClientService;
 import org.opensrp.service.EventService;
+import org.opensrp.util.RapidProUtils;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
 import org.smartregister.domain.Event;
@@ -218,6 +222,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				}};
 
 				if (updateUuids(primaryKeys, rapidProContact.getUuid())) {
+					addContactToGroup(CHILD, rapidProContact.getUuid());
 					logger.info("Successfully synced OpenSRP data to RapidPro");
 				}
 			}
@@ -253,6 +258,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 							RapidProContact newMotherContact =
 									objectMapper.readValue(rapidProContactJson, RapidProContact.class);
 							updateUuids(Collections.singletonList(motherState.getId()), newMotherContact.getUuid());
+							addContactToGroup(CARETAKER, motherState.getUuid());
 						}
 					}
 					catch (IOException exception) {
@@ -312,6 +318,22 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				break;
 		}
 		return fields;
+	}
+
+	public void addContactToGroup(ZeirRapidProEntity entity, String uuid) throws IOException {
+		JSONObject payload = new JSONObject();
+		payload.put(RapidProConstants.CONTACTS, new JSONArray().put(uuid));
+		payload.put(RapidProConstants.ACTION, RapidProConstants.ADD);
+		String group = entity == CHILD ? RapidProConstants.CHILD : RapidProConstants.CARETAKER;
+		payload.put(RapidProConstants.GROUP, group);
+		CloseableHttpResponse httpResponse = postToRapidPro(payload.toString(),
+				RapidProUtils.getBaseUrl(rapidProUrl) + "/contact_actions.json");
+		if (httpResponse != null && httpResponse.getEntity() != null) {
+			StatusLine statusLine = httpResponse.getStatusLine();
+			if (statusLine.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+				logger.info("Contact added to group named" + group);
+			}
+		}
 	}
 }
 

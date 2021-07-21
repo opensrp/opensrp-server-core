@@ -47,6 +47,10 @@ public interface RapidProConstants {
 	String UNPROCESSED_UUID = "UNPROCESSED_UUID";
 	String YES = "yes" ;
 	String NEXT = "next";
+	String CONTACTS = "contacts";
+	String ACTION = "action";
+	String GROUP = "group";
+	String ADD = "add";
 
 	interface RapidProProjects {
 		String ZEIR_RAPIDPRO = "zeir";
