@@ -1,6 +1,5 @@
 package org.opensrp.domain.rapidpro.converter.zeir;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.postgres.RapidproState;
 import org.opensrp.domain.rapidpro.RapidProStateSyncStatus;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
@@ -74,10 +73,8 @@ public class ZeirChildClientConverter extends BaseRapidProClientConverter {
 		rapidProState.setUuid(childClient.getBaseEntityId());
 		rapidProState.setEntity(CHILD.name());
 		rapidProState.setProperty(IDENTIFIER.name());
-		String facilityCode = fields.getFacilityCode();
-		//Uniquely identify MVACC ID
-		rapidProState.setPropertyKey(StringUtils.isNoneBlank(facilityCode) ? facilityCode + fields.getMvaccId() :
-				fields.getFacilityLocationId() + fields.getMvaccId());
+		//Uniquely identify MVACC ID by using location_id|mvacc_id
+		rapidProState.setPropertyKey(fields.getFacilityLocationId() + "|" + fields.getMvaccId());
 
 		rapidProState.setPropertyValue(childClient.getIdentifier(RapidProConstants.ZEIR_ID));
 		rapidProState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
