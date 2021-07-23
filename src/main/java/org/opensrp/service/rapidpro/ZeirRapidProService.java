@@ -75,44 +75,40 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		String currentDateTime = Instant.now().toString();
 		JSONArray results = getResults(responseJson);
 		if (results != null) {
-			if (!reentrantLock.tryLock()) {
-				logger.warn("Rapidpro results processing in progress...");
-			}
-			try {
-				List<RapidProContact> rapidProContacts = getRapidProContacts(results);
-				logger.info("Found " + rapidProContacts.size() + " modified contacts");
-				if (!rapidProContacts.isEmpty()) {
-					for (RapidProContact rapidProContact : rapidProContacts) {
-						try {
-							//Only process process child contacts
-							RapidProFields fields = rapidProContact.getFields();
-							if (fields.getSupervisorPhone() != null && RapidProConstants.CHILD
-									.equalsIgnoreCase(fields.getPosition())) {
-								String locationId = getLocationId(rapidProContact, rapidProContacts);
-								if (StringUtils.isNotBlank(locationId)) {
-									updateExistingClientUuid(rapidProContact, ZeirRapidProEntity.CHILD);
-									fields.setFacilityLocationId(locationId);
-									processRegistrationEventClient(rapidProContact, rapidProContacts);
-									processVaccinationEvent(rapidProContact);
-									processGrowthMonitoringEvent(rapidProContact);
-								}
-							}//TODO Add implementation for processing supervisor for instance when their location is updated;
-						}
-						catch (Exception exception) {
-							logger.error(exception.getMessage(), exception);
-							updateStateTokenFromContactDates(rapidProContacts);
-							return;
+			synchronized (this) {
+				try {
+					List<RapidProContact> rapidProContacts = getRapidProContacts(results);
+					logger.info("Found " + rapidProContacts.size() + " modified contacts");
+					if (!rapidProContacts.isEmpty()) {
+						for (RapidProContact rapidProContact : rapidProContacts) {
+							try {
+								//Only process process child contacts
+								RapidProFields fields = rapidProContact.getFields();
+								if (fields.getSupervisorPhone() != null && RapidProConstants.CHILD
+										.equalsIgnoreCase(fields.getPosition())) {
+									String locationId = getLocationId(rapidProContact, rapidProContacts);
+									if (StringUtils.isNotBlank(locationId)) {
+										updateExistingClientUuid(rapidProContact, ZeirRapidProEntity.CHILD);
+										fields.setFacilityLocationId(locationId);
+										processRegistrationEventClient(rapidProContact, rapidProContacts);
+										processVaccinationEvent(rapidProContact);
+										processGrowthMonitoringEvent(rapidProContact);
+									}
+								}//TODO Add implementation for processing supervisor for instance when their location is updated;
+							}
+							catch (Exception exception) {
+								logger.error(exception.getMessage(), exception);
+								updateStateTokenFromContactDates(rapidProContacts);
+								return;
+							}
 						}
 					}
+					configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, currentDateTime);
+					onTaskComplete.completeTask();
 				}
-				configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, currentDateTime);
-				onTaskComplete.completeTask();
-			}
-			catch (JsonProcessingException jsonException) {
-				logger.error(jsonException.getMessage(), jsonException);
-			}
-			finally {
-				reentrantLock.unlock();
+				catch (JsonProcessingException jsonException) {
+					logger.error(jsonException.getMessage(), jsonException);
+				}
 			}
 		}
 		if (responseJson.isNull(RapidProConstants.NEXT)) {

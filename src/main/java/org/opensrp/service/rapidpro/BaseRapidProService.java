@@ -31,8 +31,6 @@ public abstract class BaseRapidProService {
 
 	protected final Logger logger = LogManager.getLogger(getClass());
 
-	protected final ReentrantLock reentrantLock = new ReentrantLock();
-
 	protected final ObjectMapper objectMapper = new ObjectMapper();
 
 	protected EventService eventService;

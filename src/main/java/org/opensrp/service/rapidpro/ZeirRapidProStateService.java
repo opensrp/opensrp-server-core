@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntity.CARETAKER;
@@ -50,8 +49,6 @@ import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.VACCINATION
  */
 @Service
 public class ZeirRapidProStateService extends BaseRapidProStateService {
-
-	private final ReentrantLock reentrantLock = new ReentrantLock();
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -142,25 +139,21 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		primaryKeys.addAll(getPrimaryKeys(growthMonitoringStates));
 
 		if (!primaryKeys.isEmpty()) {
-			try {
-				if (!reentrantLock.tryLock()) {
-					logger.warn("[POST_DATA] Task still running...");
+			synchronized (this) {
+				try {
+					String fieldsJson = objectMapper.writeValueAsString(childContact.getFields());
+					JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, new JSONObject(fieldsJson));
+					postAndUpdateStatus(primaryKeys, childState.getUuid(), payload.toString(), true);
 				}
-				String fieldsJson = objectMapper.writeValueAsString(childContact.getFields());
-				JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, new JSONObject(fieldsJson));
-				postAndUpdateStatus(primaryKeys, childState.getUuid(), payload.toString(), true);
-			}
-			catch (JSONException jsonException) {
-				logger.warn("Error creating fields Json", jsonException);
-			}
-			catch (JsonProcessingException jsonProcessingException) {
-				logger.warn("Error fields JSON from child contact", jsonProcessingException);
-			}
-			catch (IOException exception) {
-				logger.warn("Child Vaccination and Growth Monitoring data not posted", exception);
-			}
-			finally {
-				reentrantLock.unlock();
+				catch (JSONException jsonException) {
+					logger.warn("Error creating fields Json", jsonException);
+				}
+				catch (JsonProcessingException jsonProcessingException) {
+					logger.warn("Error fields JSON from child contact", jsonProcessingException);
+				}
+				catch (IOException exception) {
+					logger.warn("Child Vaccination and Growth Monitoring data not posted", exception);
+				}
 			}
 		}
 	}
@@ -204,34 +197,30 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 
 	private void postDataAndUpdateUuids(RapidProContact childContact, RapidproState registrationState,
 			List<RapidproState> vaccinationEvents, List<RapidproState> growthMonitoringEvents) {
-		try {
-			if (!reentrantLock.tryLock()) {
-				logger.warn("[POST_DATA] Task still running...");
-			}
-			CloseableHttpResponse httpResponse = postToRapidPro(objectMapper.writeValueAsString(childContact),
-					getContactUrl(false, null));
+		synchronized (this) {
+			try {
+				CloseableHttpResponse httpResponse = postToRapidPro(objectMapper.writeValueAsString(childContact),
+						getContactUrl(false, null));
 
-			if (httpResponse != null && httpResponse.getEntity() != null) {
-				final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
-				RapidProContact rapidProContact = objectMapper.readValue(rapidProContactJson, RapidProContact.class);
+				if (httpResponse != null && httpResponse.getEntity() != null) {
+					final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
+					RapidProContact rapidProContact = objectMapper.readValue(rapidProContactJson, RapidProContact.class);
 
-				List<Long> primaryKeys = new ArrayList<>() {{
-					add(registrationState.getId());
-					addAll(getPrimaryKeys(vaccinationEvents));
-					addAll(getPrimaryKeys(growthMonitoringEvents));
-				}};
+					List<Long> primaryKeys = new ArrayList<>() {{
+						add(registrationState.getId());
+						addAll(getPrimaryKeys(vaccinationEvents));
+						addAll(getPrimaryKeys(growthMonitoringEvents));
+					}};
 
-				if (updateUuids(primaryKeys, rapidProContact.getUuid())) {
-					addContactToGroup(CHILD, rapidProContact.getUuid());
-					logger.info("Successfully synced OpenSRP data to RapidPro");
+					if (updateUuids(primaryKeys, rapidProContact.getUuid())) {
+						addContactToGroup(CHILD, rapidProContact.getUuid());
+						logger.info("Successfully synced OpenSRP data to RapidPro");
+					}
 				}
 			}
-		}
-		catch (IOException exception) {
-			logger.warn("Child's data not posted to RapidPro", exception);
-		}
-		finally {
-			reentrantLock.unlock();
+			catch (IOException exception) {
+				logger.warn("Child's data not posted to RapidPro", exception);
+			}
 		}
 	}
 
@@ -247,25 +236,22 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					Client motherClient = clientService.getByBaseEntityId(motherState.getPropertyKey());
 					RapidProContact motherContact = motherConverter.convertClientToContact(motherClient);
 
-					try {
-						if (!reentrantLock.tryLock()) {
-							logger.warn("[POST_DATA] Task still running...");
+					synchronized (this) {
+						try {
+							CloseableHttpResponse httpResponse = postToRapidPro(
+									objectMapper.writeValueAsString(motherContact),
+									getContactUrl(false, null));
+							if (httpResponse != null && httpResponse.getEntity() != null) {
+								final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
+								RapidProContact newMotherContact =
+										objectMapper.readValue(rapidProContactJson, RapidProContact.class);
+								updateUuids(Collections.singletonList(motherState.getId()), newMotherContact.getUuid());
+								addContactToGroup(CARETAKER, motherState.getUuid());
+							}
 						}
-						CloseableHttpResponse httpResponse = postToRapidPro(objectMapper.writeValueAsString(motherContact),
-								getContactUrl(false, null));
-						if (httpResponse != null && httpResponse.getEntity() != null) {
-							final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
-							RapidProContact newMotherContact =
-									objectMapper.readValue(rapidProContactJson, RapidProContact.class);
-							updateUuids(Collections.singletonList(motherState.getId()), newMotherContact.getUuid());
-							addContactToGroup(CARETAKER, motherState.getUuid());
+						catch (IOException exception) {
+							logger.warn("Mother's data not posted to RapidPro", exception);
 						}
-					}
-					catch (IOException exception) {
-						logger.warn("Mother's data not posted to RapidPro", exception);
-					}
-					finally {
-						reentrantLock.unlock();
 					}
 				}
 			}
@@ -277,22 +263,18 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 
 		if (unSyncedStates != null && !unSyncedStates.isEmpty()) {
 			for (RapidproState rapidproState : unSyncedStates) {
-				try {
-					if (!reentrantLock.tryLock()) {
-						logger.warn("Some instance of this" + this.getClass() + "process is still running");
+				synchronized (this) {
+					try {
+						JSONObject fields = getPayload(entity, property, rapidproState);
+						if (fields != null) {
+							JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, fields);
+							postAndUpdateStatus(Collections.singletonList(rapidproState.getId()),
+									rapidproState.getUuid(), payload.toString(), true);
+						}
 					}
-					JSONObject fields = getPayload(entity, property, rapidproState);
-					if (fields != null) {
-						JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, fields);
-						postAndUpdateStatus(Collections.singletonList(rapidproState.getId()),
-								rapidproState.getUuid(), payload.toString(), true);
+					catch (IOException exception) {
+						logger.error(exception);
 					}
-				}
-				catch (IOException exception) {
-					logger.error(exception);
-				}
-				finally {
-					reentrantLock.unlock();
 				}
 			}
 		}
