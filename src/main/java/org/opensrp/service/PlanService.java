@@ -70,17 +70,25 @@ public class PlanService {
 		taskGenerator.processPlanEvaluation(plan, null, username);
 		return plan;
 	}
-	
+
 	@CachePut(value = "plans", key = "#plan.identifier")
 	public PlanDefinition updatePlan(PlanDefinition plan, String username) {
+		return this.updatePlan(plan, username, true);
+	}
+
+	@CachePut(value = "plans", key = "#result.identifier")
+	public PlanDefinition updatePlan(final PlanDefinition plan, final String username,
+			final boolean revokeAssignments) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
 		}
 		PlanDefinition existing = getPlan(plan.getIdentifier());
 		getPlanRepository().update(plan);
 		taskGenerator.processPlanEvaluation(plan, existing, username);
-		if (plan.getStatus() != null && (plan.getStatus().equals(PlanDefinition.PlanStatus.COMPLETED) || plan.getStatus()
-				.equals(PlanDefinition.PlanStatus.RETIRED))) {
+
+		if (revokeAssignments && plan.getStatus() != null
+				&& (plan.getStatus().equals(PlanDefinition.PlanStatus.COMPLETED)
+				|| plan.getStatus().equals(PlanDefinition.PlanStatus.RETIRED))) {
 			organizationService.unassignLocationAndPlan(plan.getIdentifier());
 		}
 		return plan;
