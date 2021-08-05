@@ -112,17 +112,21 @@ public class TaskService {
 		List<String> updatedTaskIds = new ArrayList<>();
 		for (TaskUpdate taskUpdate : taskUpdates) {
 			Task task = taskRepository.get(taskUpdate.getIdentifier());
+			logger.info("UpdateTaskStatus retrieved task from db with id : " + task.getIdentifier());
 			try {
 				Task.TaskStatus status = fromString(taskUpdate.getStatus());
+				logger.info("UpdateTaskStatus task status is : " + status);
 				if (task != null && status != null) {
 					task.setBusinessStatus(taskUpdate.getBusinessStatus());
 					task.setStatus(status);
 					task.setLastModified(new DateTime());
 					taskRepository.update(task);
+					logger.info("UpdateTaskStatus task updated to db with id : " + task.getIdentifier());
 					updatedTaskIds.add(task.getIdentifier());
 				}
 			}
 			catch (Exception e) {
+				logger.info("UpdateTaskStatus exception thrown while processing task with id : " + task.getIdentifier());
 				logger.error(e.getMessage(), e);
 			}
 		}

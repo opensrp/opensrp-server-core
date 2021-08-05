@@ -108,6 +108,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
 		}
+		logger.info("TaskRepositoryImpl updated task with id : " + entity.getIdentifier());
 		
 		updateServerVersion(pgTask, entity);
 		
@@ -116,9 +117,11 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
 		taskMetadataExample.createCriteria().andTaskIdEqualTo(id);
 		TaskMetadata metadata = taskMetadataMapper.selectByExample(taskMetadataExample).get(0);
+		logger.info("TaskRepositoryImpl retrieved task metadata with id : " + taskMetadata.getIdentifier());
 		taskMetadata.setId(metadata.getId());
 		taskMetadata.setDateCreated(metadata.getDateCreated());
 		taskMetadataMapper.updateByPrimaryKey(taskMetadata);
+		logger.info("TaskRepositoryImpl updated task metadata with id : " + taskMetadata.getIdentifier());
 		
 	}
 	
