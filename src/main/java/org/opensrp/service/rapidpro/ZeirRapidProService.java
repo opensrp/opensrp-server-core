@@ -230,6 +230,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 	private void saveEvent(RapidProContact rapidProContact, BaseRapidProEventConverter eventConverter) {
 		Event event = eventConverter.convertContactToEvent(rapidProContact);
+		event.addDetails(RapidProConstants.SYSTEM_OF_REGISTRATION, RapidProConstants.MVACC);
 		eventService.addEvent(event, rapidProContact.getFields().getSupervisorPhone());
 	}
 
@@ -350,6 +351,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 	private void saveEvents(RapidProFields fields, List<Event> events) {
 		for (Event processedGMEvent : events) {
+			processedGMEvent.addDetails(RapidProConstants.SYSTEM_OF_REGISTRATION, RapidProConstants.MVACC);
 			eventService.addEvent(processedGMEvent, fields.getSupervisorPhone());
 		}
 	}
