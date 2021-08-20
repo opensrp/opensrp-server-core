@@ -94,6 +94,7 @@ public abstract class BaseRapidProStateService {
 
 	public CloseableHttpResponse postToRapidPro(String payload, String url) throws IOException {
 		HttpPost httpPost = (HttpPost) RapidProUtils.setupRapidproRequest(url, new HttpPost(), rapidProToken);
+		httpPost.setConfig(RapidProUtils.getRequestConfig(150));
 		httpPost.setEntity(new StringEntity(payload));
 		return closeableHttpClient.execute(httpPost);
 	}

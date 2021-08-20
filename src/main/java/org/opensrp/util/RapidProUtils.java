@@ -1,6 +1,7 @@
 package org.opensrp.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
 
 import java.net.URI;
@@ -21,5 +22,14 @@ public class RapidProUtils {
 		httpRequestBase.addHeader("content-type", "application/json");
 		httpRequestBase.addHeader("Accept", "application/json");
 		return httpRequestBase;
+	}
+
+	public static RequestConfig getRequestConfig(int timeoutSeconds) {
+		int CONNECTION_TIMEOUT_MS = timeoutSeconds * 1000;
+		return RequestConfig.custom()
+				.setConnectionRequestTimeout(CONNECTION_TIMEOUT_MS)
+				.setConnectTimeout(CONNECTION_TIMEOUT_MS)
+				.setSocketTimeout(CONNECTION_TIMEOUT_MS)
+				.build();
 	}
 }
