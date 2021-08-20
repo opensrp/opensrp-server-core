@@ -83,5 +83,5 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 
 	long countAllOrganizations();
 
-	org.opensrp.domain.postgres.Organization getOrganizationByLocation(Long locationPrimaryKey);
+	org.opensrp.domain.postgres.Organization getLastAssignedOrganization(Long locationPrimaryKey);
 }

@@ -14,6 +14,7 @@ import org.opensrp.domain.postgres.RapidproState;
 import org.opensrp.domain.rapidpro.ZeirRapidProEntity;
 import org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
+import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirChildClientConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirGrowthMonitoringConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirGrowthMonitoringConverter.GMEvent;
@@ -116,10 +117,12 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 						String motherBaseEntityId = childClient.getRelationships().get(RapidProConstants.MOTHER).get(0);
 						Client motherClient = clientService.getByBaseEntityId(motherBaseEntityId);
 
-						childContact.getFields().setMotherName(motherClient.fullName());
-						childContact.getFields().setMotherPhone((String) motherClient.getAttributes()
-								.getOrDefault(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED, null));
-
+						RapidProFields childFields = childContact.getFields();
+						if (childFields != null) {
+							childFields.setMotherName(motherClient.fullName());
+							childFields.setMotherPhone((String) motherClient.getAttributes()
+									.getOrDefault(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED, null));
+						}
 						processVaccinationStates(vaccinationStates, childContact, vaccinationConverter);
 						processGrowthMonitoringStates(growthMonitoringStates, childContact, growthMonitoringConverter);
 						postDataAndUpdateUuids(childContact, childState, vaccinationStates, growthMonitoringStates);

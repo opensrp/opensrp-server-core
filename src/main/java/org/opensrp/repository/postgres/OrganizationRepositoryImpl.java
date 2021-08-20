@@ -372,7 +372,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 	}
 
 	@Override
-	public org.opensrp.domain.postgres.Organization getOrganizationByLocation(Long locationPrimaryKey) {
+	public org.opensrp.domain.postgres.Organization getLastAssignedOrganization(Long locationPrimaryKey) {
 		OrganizationLocationExample organizationLocationExample = new OrganizationLocationExample();
 		organizationLocationExample.createCriteria().andLocationIdEqualTo(locationPrimaryKey);
 

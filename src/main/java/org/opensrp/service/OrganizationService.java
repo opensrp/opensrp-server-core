@@ -282,6 +282,6 @@ public class OrganizationService {
 
 	public org.opensrp.domain.postgres.Organization getOrganizationByLocationId(String jurisdictionId) {
 		Long primaryKey = locationRepository.retrievePrimaryKey(jurisdictionId, true);
-		return organizationRepository.getOrganizationByLocation(primaryKey);
+		return organizationRepository.getLastAssignedOrganization(primaryKey);
 	}
 }

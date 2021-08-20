@@ -51,6 +51,7 @@ public interface RapidProConstants {
 	String ACTION = "action";
 	String GROUP = "group";
 	String ADD = "add";
+	int OPENMRS_CONCEPT_REQUIRED_LENGTH = 36;
 
 	interface RapidProProjects {
 		String ZEIR_RAPIDPRO = "zeir";

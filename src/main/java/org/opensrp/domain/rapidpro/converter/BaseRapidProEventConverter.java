@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.opensrp.common.util.DateUtil;
 import org.opensrp.domain.postgres.Organization;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
+import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirVaccine;
 import org.opensrp.service.OrganizationService;
 import org.opensrp.util.DateParserUtils;
@@ -31,13 +32,16 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 	protected void addCommonEventProperties(RapidProContact rapidProContact, Event event) {
 		event.setBaseEntityId(rapidProContact.getUuid());
 		event.setFormSubmissionId(UUID.randomUUID().toString());
-		event.setLocationId(rapidProContact.getFields().getFacilityLocationId());
-		event.setProviderId(rapidProContact.getFields().getSupervisorPhone());
-		Organization organization = organizationService
-				.getOrganizationByLocationId(rapidProContact.getFields().getFacilityLocationId());
-		if (organization != null) {
-			event.setTeam(organization.getName());
-			event.setTeamId(organization.getIdentifier());
+		RapidProFields fields = rapidProContact.getFields();
+		if (fields != null) {
+			event.setLocationId(fields.getFacilityLocationId());
+			event.setProviderId(fields.getSupervisorPhone());
+			Organization organization = organizationService
+					.getOrganizationByLocationId(fields.getFacilityLocationId());
+			if (organization != null) {
+				event.setTeam(organization.getName());
+				event.setTeamId(organization.getIdentifier());
+			}
 		}
 	}
 
@@ -90,7 +94,7 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 	 */
 	protected String padOpenMRSCode(String code) {
 		if (StringUtils.isNumeric(code)) {
-			return StringUtils.rightPad(code, 36, "A");
+			return StringUtils.rightPad(code, RapidProConstants.OPENMRS_CONCEPT_REQUIRED_LENGTH, "A");
 		}
 		return code;
 	}
