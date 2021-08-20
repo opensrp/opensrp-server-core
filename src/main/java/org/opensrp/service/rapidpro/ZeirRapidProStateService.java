@@ -305,7 +305,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		return fields;
 	}
 
-	public void addContactToGroup(ZeirRapidProEntity entity, String uuid) throws IOException {
+	synchronized public void addContactToGroup(ZeirRapidProEntity entity, String uuid) throws IOException {
 		JSONObject payload = new JSONObject();
 		payload.put(RapidProConstants.CONTACTS, new JSONArray().put(uuid));
 		payload.put(RapidProConstants.ACTION, RapidProConstants.ADD);
