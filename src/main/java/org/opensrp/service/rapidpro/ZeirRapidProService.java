@@ -73,13 +73,12 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			return;
 		}
 		JSONObject responseJson = new JSONObject(response);
-		String currentDateTime = Instant.now().toString();
 		JSONArray results = getResults(responseJson);
 		if (results != null) {
 			synchronized (this) {
 				try {
 					List<RapidProContact> rapidProContacts = getRapidProContacts(results);
-					logger.info("Found " + rapidProContacts.size() + " modified contacts");
+					logger.info("Found " + rapidProContacts.size() + " modified RapidPro contacts");
 					if (!rapidProContacts.isEmpty()) {
 						for (RapidProContact rapidProContact : rapidProContacts) {
 							try {
@@ -104,7 +103,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 							}
 						}
 					}
-					configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, currentDateTime);
+					updateStateTokenFromContactDates(rapidProContacts);
 					onTaskComplete.completeTask();
 				}
 				catch (JsonProcessingException jsonException) {
