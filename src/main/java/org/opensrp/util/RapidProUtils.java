@@ -21,7 +21,11 @@ public class RapidProUtils {
 
 	public static String getBaseUrl(String rapidProUrl) {
 		return StringUtils.isBlank(rapidProUrl) || StringUtils.isEmpty(rapidProUrl) ? "" :
-				rapidProUrl.endsWith(API_URL) ? rapidProUrl : rapidProUrl + API_URL;
+				rapidProUrl.endsWith(API_URL) ?
+						rapidProUrl :
+						rapidProUrl.endsWith("/") ?
+								rapidProUrl.substring(0, rapidProUrl.length() - 1) + API_URL :
+								rapidProUrl + API_URL;
 	}
 
 	public static HttpRequestBase setupRapidproRequest(String url, HttpRequestBase httpRequestBase,
