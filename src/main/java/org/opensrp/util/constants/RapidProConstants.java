@@ -5,6 +5,7 @@ public interface RapidProConstants {
 	String CARETAKER = "Caretaker";
 	String MOTHER = "mother";
 	String CHILD = "Child";
+	String CHILDREN = "Children";
 	String PROVINCE = "Province";
 	String DISTRICT = "District";
 	String HEALTH_FACILITY = "Health Facility";
