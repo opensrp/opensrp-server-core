@@ -80,10 +80,13 @@ public abstract class BaseRapidProStateService {
 			return;
 		}
 		try (CloseableHttpResponse httpResponse = postToRapidPro(payload, getContactUrl(existing, uuid))) {
-			StatusLine statusLine = httpResponse.getStatusLine();
-			if (statusLine.getStatusCode() == HttpStatus.SC_OK && existing) {
-				for (Long id : ids) {
-					updateRapidProState(id, RapidProStateSyncStatus.SYNCED);
+			if(httpResponse != null) {
+				RapidProUtils.logStatusCodeResponse(httpResponse, logger);
+				StatusLine statusLine = httpResponse.getStatusLine();
+				if (statusLine.getStatusCode() == HttpStatus.SC_OK && existing) {
+					for (Long id : ids) {
+						updateRapidProState(id, RapidProStateSyncStatus.SYNCED);
+					}
 				}
 			}
 		}

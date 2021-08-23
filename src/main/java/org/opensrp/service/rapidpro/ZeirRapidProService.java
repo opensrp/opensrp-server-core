@@ -28,6 +28,7 @@ import org.opensrp.domain.rapidpro.converter.zeir.ZeirVaccinationConverter;
 import org.opensrp.service.callback.RapidProOnTaskComplete;
 import org.opensrp.service.callback.RapidProResponseCallback;
 import org.opensrp.util.DateParserUtils;
+import org.opensrp.util.RapidProUtils;
 import org.opensrp.util.constants.EventConstants;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
@@ -439,6 +440,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	public void queryContacts(RapidProOnTaskComplete onTaskComplete) {
 		try (CloseableHttpResponse httpResponse = closeableHttpClient.execute(getContactRequest())) {
 			if (httpResponse != null && httpResponse.getEntity() != null) {
+				RapidProUtils.logStatusCodeResponse(httpResponse, logger);
 				handleContactResponse(EntityUtils.toString(httpResponse.getEntity()), onTaskComplete);
 			}
 		}

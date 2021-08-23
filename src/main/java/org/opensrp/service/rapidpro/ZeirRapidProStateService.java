@@ -110,6 +110,10 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				List<RapidproState> growthMonitoringStates = getStatesByPropertyKey(CHILD.name(),
 						GROWTH_MONITORING_DATA.name(), childClient.getBaseEntityId());
 
+				logger.warn("Found {} UN_SYNCED Vaccination and Growth Monitoring {} for child identifier as {}",
+						vaccinationStates.size(),
+						growthMonitoringStates.size(), childClient.getBaseEntityId());
+
 				if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(childState.getUuid())) {
 					if (childClient.getRelationships() != null && childClient.getRelationships()
 							.containsKey(RapidProConstants.MOTHER)) {
@@ -141,6 +145,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		List<Long> primaryKeys = getPrimaryKeys(vaccinationStates);
 		primaryKeys.addAll(getPrimaryKeys(growthMonitoringStates));
 
+		logger.warn("Updating RapidProContact: " + childContact.getUuid());
 		if (!primaryKeys.isEmpty()) {
 			synchronized (this) {
 				try {
@@ -201,10 +206,11 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	private void postDataAndUpdateUuids(RapidProContact childContact, RapidproState registrationState,
 			List<RapidproState> vaccinationEvents, List<RapidproState> growthMonitoringEvents) {
 		synchronized (this) {
+			logger.warn("Creating new RapidPro contact...");
 			try (CloseableHttpResponse httpResponse = postToRapidPro(objectMapper.writeValueAsString(childContact),
 					getContactUrl(false, null))) {
-
 				if (httpResponse != null && httpResponse.getEntity() != null) {
+					RapidProUtils.logStatusCodeResponse(httpResponse, logger);
 					final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
 					RapidProContact rapidProContact = objectMapper.readValue(rapidProContactJson, RapidProContact.class);
 
@@ -213,10 +219,10 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 						addAll(getPrimaryKeys(vaccinationEvents));
 						addAll(getPrimaryKeys(growthMonitoringEvents));
 					}};
-
+					logger.info("Updating RapidPro uuid for the created child contact: {}", rapidProContact.getUuid());
 					if (updateUuids(primaryKeys, rapidProContact.getUuid())) {
 						addContactToGroup(CHILD, rapidProContact.getUuid());
-						logger.info("Successfully synced OpenSRP data to RapidPro");
+						logger.info("Successfully synced {} OpenSRP child client(s) data to RapidPro", primaryKeys.size());
 					}
 				}
 			}
@@ -243,12 +249,14 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 								objectMapper.writeValueAsString(motherContact),
 								getContactUrl(false, null))) {
 							if (httpResponse != null && httpResponse.getEntity() != null) {
+								RapidProUtils.logStatusCodeResponse(httpResponse, logger);
 								final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
 								RapidProContact newMotherContact =
 										objectMapper.readValue(rapidProContactJson, RapidProContact.class);
 								updateUuids(Collections.singletonList(motherState.getId()), newMotherContact.getUuid());
 								addContactToGroup(CARETAKER, motherState.getUuid());
 							}
+							logger.warn("Mother contact {} created and their UUID updated", motherContact.getUuid());
 						}
 						catch (IOException exception) {
 							logger.warn("Mother's data not posted to RapidPro", exception);
@@ -312,6 +320,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		try (CloseableHttpResponse httpResponse = postToRapidPro(payload.toString(),
 				RapidProUtils.getBaseUrl(rapidProUrl) + "/contact_actions.json")) {
 			if (httpResponse != null && httpResponse.getEntity() != null) {
+				RapidProUtils.logStatusCodeResponse(httpResponse, logger);
 				StatusLine statusLine = httpResponse.getStatusLine();
 				if (statusLine.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
 					logger.info("Contact added to group named" + group);
