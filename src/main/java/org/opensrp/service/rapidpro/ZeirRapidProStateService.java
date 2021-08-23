@@ -85,10 +85,12 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		updateContactFields(CHILD, IDENTIFIER);
 		updateContactFields(SUPERVISOR, LOCATION_ID);
 
-		List<RapidproState> childStates = getUnSyncedRapidProStates(CHILD.name(), REGISTRATION_DATA.name());
+		List<RapidproState> childStates = getUnSyncedRapidProStates(CHILD.name(), REGISTRATION_DATA.name()).stream()
+				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 		postChildData(childStates);
 
-		List<RapidproState> motherStates = getUnSyncedRapidProStates(CARETAKER.name(), REGISTRATION_DATA.name());
+		List<RapidproState> motherStates = getUnSyncedRapidProStates(CARETAKER.name(), REGISTRATION_DATA.name()).stream()
+				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 		postMotherData(motherStates);
 	}
 
@@ -268,9 +270,10 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	}
 
 	private void updateContactFields(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property) {
-		List<RapidproState> unSyncedStates = getUnSyncedRapidProStates(entity.name(), property.name());
+		List<RapidproState> unSyncedStates = getUnSyncedRapidProStates(entity.name(), property.name()).stream()
+				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 
-		if (unSyncedStates != null && !unSyncedStates.isEmpty()) {
+		if (!unSyncedStates.isEmpty()) {
 			for (RapidproState rapidproState : unSyncedStates) {
 				synchronized (this) {
 					try {
