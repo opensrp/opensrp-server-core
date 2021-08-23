@@ -298,7 +298,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				if (property == IDENTIFIER) {
 					fields.put(RapidProConstants.OPENSRP_ID, rapidproState.getPropertyValue())
 							.put(RapidProConstants.REGISTRATION_PROCESSED, "true")
-							.put(RapidProConstants.SYSTEM_OF_REGISTRATION, RapidProConstants.OPENSRP);
+							.put(RapidProConstants.SYSTEM_OF_REGISTRATION, RapidProConstants.MVACC);
 				}
 				break;
 			case SUPERVISOR:
