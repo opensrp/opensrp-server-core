@@ -201,9 +201,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	private void postDataAndUpdateUuids(RapidProContact childContact, RapidproState registrationState,
 			List<RapidproState> vaccinationEvents, List<RapidproState> growthMonitoringEvents) {
 		synchronized (this) {
-			try {
-				CloseableHttpResponse httpResponse = postToRapidPro(objectMapper.writeValueAsString(childContact),
-						getContactUrl(false, null));
+			try (CloseableHttpResponse httpResponse = postToRapidPro(objectMapper.writeValueAsString(childContact),
+					getContactUrl(false, null))) {
 
 				if (httpResponse != null && httpResponse.getEntity() != null) {
 					final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
@@ -240,10 +239,9 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					RapidProContact motherContact = motherConverter.convertClientToContact(motherClient);
 
 					synchronized (this) {
-						try {
-							CloseableHttpResponse httpResponse = postToRapidPro(
-									objectMapper.writeValueAsString(motherContact),
-									getContactUrl(false, null));
+						try (CloseableHttpResponse httpResponse = postToRapidPro(
+								objectMapper.writeValueAsString(motherContact),
+								getContactUrl(false, null))) {
 							if (httpResponse != null && httpResponse.getEntity() != null) {
 								final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
 								RapidProContact newMotherContact =
@@ -311,13 +309,17 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		payload.put(RapidProConstants.ACTION, RapidProConstants.ADD);
 		String group = entity == CHILD ? RapidProConstants.CHILD : RapidProConstants.CARETAKER;
 		payload.put(RapidProConstants.GROUP, group);
-		CloseableHttpResponse httpResponse = postToRapidPro(payload.toString(),
-				RapidProUtils.getBaseUrl(rapidProUrl) + "/contact_actions.json");
-		if (httpResponse != null && httpResponse.getEntity() != null) {
-			StatusLine statusLine = httpResponse.getStatusLine();
-			if (statusLine.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
-				logger.info("Contact added to group named" + group);
+		try (CloseableHttpResponse httpResponse = postToRapidPro(payload.toString(),
+				RapidProUtils.getBaseUrl(rapidProUrl) + "/contact_actions.json")) {
+			if (httpResponse != null && httpResponse.getEntity() != null) {
+				StatusLine statusLine = httpResponse.getStatusLine();
+				if (statusLine.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
+					logger.info("Contact added to group named" + group);
+				}
 			}
+		}
+		catch (IOException exception) {
+			logger.error(exception.getMessage(), exception.fillInStackTrace().toString());
 		}
 	}
 }

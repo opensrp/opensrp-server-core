@@ -1,8 +1,9 @@
 package org.opensrp.service.rapidpro;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.opensrp.domain.rapidpro.RapidProStateToken;
@@ -21,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +39,7 @@ public abstract class BaseRapidProService {
 
 	protected PhysicalLocationService locationService;
 
-	protected HttpClient httpClient;
+	protected CloseableHttpClient closeableHttpClient;
 
 	protected ConfigService configService;
 
@@ -58,7 +58,7 @@ public abstract class BaseRapidProService {
 	protected String rapidProToken;
 
 	public BaseRapidProService() {
-		this.httpClient = HttpClientBuilder.create().build();
+		this.closeableHttpClient = HttpClients.createDefault();
 	}
 
 	@Autowired
@@ -93,8 +93,8 @@ public abstract class BaseRapidProService {
 		this.rapidProStateService = zeirRapidProStateService;
 	}
 
-	public void setHttpClient(HttpClient httpClient) {
-		this.httpClient = httpClient;
+	public void setCloseableHttpClient(CloseableHttpClient closeableHttpClient) {
+		this.closeableHttpClient = closeableHttpClient;
 	}
 
 	public boolean locationTagExists(Set<LocationTag> locationTags, String tag) {

@@ -79,12 +79,16 @@ public abstract class BaseRapidProStateService {
 		if (uuid == null || RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(uuid)) {
 			return;
 		}
-		CloseableHttpResponse httpResponse = postToRapidPro(payload, getContactUrl(existing, uuid));
-		StatusLine statusLine = httpResponse.getStatusLine();
-		if (statusLine.getStatusCode() == HttpStatus.SC_OK && existing) {
-			for (Long id : ids) {
-				updateRapidProState(id, RapidProStateSyncStatus.SYNCED);
+		try (CloseableHttpResponse httpResponse = postToRapidPro(payload, getContactUrl(existing, uuid))) {
+			StatusLine statusLine = httpResponse.getStatusLine();
+			if (statusLine.getStatusCode() == HttpStatus.SC_OK && existing) {
+				for (Long id : ids) {
+					updateRapidProState(id, RapidProStateSyncStatus.SYNCED);
+				}
 			}
+		}
+		catch (IOException exception) {
+			logger.error(exception);
 		}
 	}
 

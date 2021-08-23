@@ -3,7 +3,7 @@ package org.opensrp.service.rapidpro;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
@@ -82,7 +82,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 					if (!rapidProContacts.isEmpty()) {
 						for (RapidProContact rapidProContact : rapidProContacts) {
 							try {
-								//Only process process child contacts
+								//Only process child contacts
 								RapidProFields fields = rapidProContact.getFields();
 								if (fields.getSupervisorPhone() != null && RapidProConstants.CHILD
 										.equalsIgnoreCase(fields.getPosition())) {
@@ -114,10 +114,9 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		if (responseJson.isNull(RapidProConstants.NEXT)) {
 			return;
 		}
-		try {
-			HttpResponse nextHttpResponse = httpClient.execute(getContactRequest());
-			if (nextHttpResponse != null && nextHttpResponse.getEntity() != null) {
-				handleContactResponse(EntityUtils.toString(nextHttpResponse.getEntity()), onTaskComplete);
+		try (CloseableHttpResponse httpResponse = closeableHttpClient.execute(getContactRequest())) {
+			if (httpResponse != null && httpResponse.getEntity() != null) {
+				handleContactResponse(EntityUtils.toString(httpResponse.getEntity()), onTaskComplete);
 			}
 		}
 		catch (IOException exception) {
@@ -438,14 +437,13 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 
 	@Override
 	public void queryContacts(RapidProOnTaskComplete onTaskComplete) {
-		try {
-			HttpResponse httpResponse = httpClient.execute(getContactRequest());
+		try (CloseableHttpResponse httpResponse = closeableHttpClient.execute(getContactRequest())) {
 			if (httpResponse != null && httpResponse.getEntity() != null) {
 				handleContactResponse(EntityUtils.toString(httpResponse.getEntity()), onTaskComplete);
 			}
 		}
 		catch (IOException exception) {
-			logger.error(exception.getMessage(), exception);
+			logger.error(exception.getMessage(), exception.fillInStackTrace().toString());
 		}
 	}
 
@@ -478,8 +476,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			return supervisors.get(supervisors.size() - 1);
 		}
 
-		try {
-			HttpResponse httpResponse = httpClient.execute(getSupervisorContactRequest(phone));
+		try (CloseableHttpResponse httpResponse = closeableHttpClient.execute(getSupervisorContactRequest(phone))) {
 			if (httpResponse != null && httpResponse.getEntity() != null) {
 				JSONArray results = getResults(new JSONObject(EntityUtils.toString(httpResponse.getEntity())));
 				if (results != null) {
@@ -491,8 +488,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				}
 			}
 		}
-		catch (JSONException | IOException jsonException) {
-			logger.error(jsonException.getMessage(), jsonException);
+		catch (JSONException | IOException exception) {
+			logger.error(exception.getMessage(), exception.fillInStackTrace().toString());
 		}
 		return null;
 	}

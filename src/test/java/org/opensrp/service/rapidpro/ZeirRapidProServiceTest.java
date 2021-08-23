@@ -1,9 +1,9 @@
 package org.opensrp.service.rapidpro;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -36,7 +36,7 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 	private ZeirRapidProService zeirRapidProService;
 
 	@Mock
-	private HttpClient httpClient;
+	private CloseableHttpClient httpClient;
 
 	@Mock
 	private HttpGet contactsHttpRequest;
@@ -71,7 +71,7 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 	public void setUp() throws Exception {
 		truncateTables();
 		MockitoAnnotations.initMocks(this);
-		zeirRapidProService.setHttpClient(httpClient);
+		zeirRapidProService.setCloseableHttpClient(httpClient);
 		zeirRapidProService.setOrganizationService(organizationService);
 		zeirRapidProService.setIdentifierSourceService(identifierSourceService);
 		zeirRapidProService.setUniqueIdentifierService(uniqueIdentifierService);
@@ -133,7 +133,7 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 
 	private void mockSupervisorHttpResponse() throws IOException {
 		//Mock querying supervisors
-		HttpResponse supervisorHttpResponse = Mockito.spy(HttpResponse.class);
+		CloseableHttpResponse supervisorHttpResponse = Mockito.spy(CloseableHttpResponse.class);
 		HttpEntity supervisorHttpEntity = Mockito.spy(HttpEntity.class);
 		String supervisorJsonResponse = getFileContentAsString("rapidpro_supervisor_contact.json");
 		Mockito.doReturn(new ByteArrayInputStream(supervisorJsonResponse.getBytes())).when(supervisorHttpEntity)
@@ -146,7 +146,7 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 
 	private void mockContactsHttpResponse() throws IOException {
 		//Mock querying contacts
-		HttpResponse contactsHttpResponse = Mockito.spy(HttpResponse.class);
+		CloseableHttpResponse contactsHttpResponse = Mockito.spy(CloseableHttpResponse.class);
 		HttpEntity contactsHttpEntity = Mockito.spy(HttpEntity.class);
 		String contactJsonResponse = getFileContentAsString("rapidpro_contacts.json");
 		Mockito.doReturn(new ByteArrayInputStream(contactJsonResponse.getBytes())).when(contactsHttpEntity).getContent();
