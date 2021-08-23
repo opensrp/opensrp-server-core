@@ -3,6 +3,7 @@ package org.opensrp.service.rapidpro;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
@@ -454,8 +455,10 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	public void queryContacts(RapidProOnTaskComplete onTaskComplete) {
 		try (CloseableHttpResponse httpResponse = closeableHttpClient.execute(getContactRequest())) {
 			if (httpResponse != null && httpResponse.getEntity() != null) {
-				RapidProUtils.logStatusCodeResponse(httpResponse, logger);
-				handleContactResponse(EntityUtils.toString(httpResponse.getEntity()), onTaskComplete);
+				RapidProUtils.logResponseStatusCode(httpResponse, logger);
+				if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+					handleContactResponse(EntityUtils.toString(httpResponse.getEntity()), onTaskComplete);
+				}
 			}
 		}
 		catch (IOException exception) {

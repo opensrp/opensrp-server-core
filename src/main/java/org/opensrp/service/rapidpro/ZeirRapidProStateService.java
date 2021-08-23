@@ -212,7 +212,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 			try (CloseableHttpResponse httpResponse = postToRapidPro(objectMapper.writeValueAsString(childContact),
 					getContactUrl(false, null))) {
 				if (httpResponse != null && httpResponse.getEntity() != null) {
-					RapidProUtils.logStatusCodeResponse(httpResponse, logger);
+					RapidProUtils.logResponseStatusCode(httpResponse, logger);
 					final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
 					RapidProContact rapidProContact = objectMapper.readValue(rapidProContactJson, RapidProContact.class);
 
@@ -251,7 +251,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 								objectMapper.writeValueAsString(motherContact),
 								getContactUrl(false, null))) {
 							if (httpResponse != null && httpResponse.getEntity() != null) {
-								RapidProUtils.logStatusCodeResponse(httpResponse, logger);
+								RapidProUtils.logResponseStatusCode(httpResponse, logger);
 								final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
 								RapidProContact newMotherContact =
 										objectMapper.readValue(rapidProContactJson, RapidProContact.class);
@@ -323,7 +323,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		try (CloseableHttpResponse httpResponse = postToRapidPro(payload.toString(),
 				RapidProUtils.getBaseUrl(rapidProUrl) + "/contact_actions.json")) {
 			if (httpResponse != null && httpResponse.getEntity() != null) {
-				RapidProUtils.logStatusCodeResponse(httpResponse, logger);
+				RapidProUtils.logResponseStatusCode(httpResponse, logger);
 				StatusLine statusLine = httpResponse.getStatusLine();
 				if (statusLine.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
 					logger.info("Contact added to group named" + group);

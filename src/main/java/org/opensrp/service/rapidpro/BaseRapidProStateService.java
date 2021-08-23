@@ -81,9 +81,8 @@ public abstract class BaseRapidProStateService {
 		}
 		try (CloseableHttpResponse httpResponse = postToRapidPro(payload, getContactUrl(existing, uuid))) {
 			if(httpResponse != null) {
-				RapidProUtils.logStatusCodeResponse(httpResponse, logger);
-				StatusLine statusLine = httpResponse.getStatusLine();
-				if (statusLine.getStatusCode() == HttpStatus.SC_OK && existing) {
+				RapidProUtils.logResponseStatusCode(httpResponse, logger);
+				if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK && existing) {
 					for (Long id : ids) {
 						updateRapidProState(id, RapidProStateSyncStatus.SYNCED);
 					}

@@ -50,9 +50,8 @@ public class RapidProUtils {
 				.build();
 	}
 
-	public static void logStatusCodeResponse(@NonNull CloseableHttpResponse httpResponse, Logger logger) throws IOException {
+	public static void logResponseStatusCode(@NonNull CloseableHttpResponse httpResponse, Logger logger) throws IOException {
 		StatusLine statusLine = httpResponse.getStatusLine();
-		String message = EntityUtils.toString(httpResponse.getEntity());
 		switch (statusLine.getStatusCode()) {
 			case HttpStatus.SC_OK:
 			case HttpStatus.SC_CREATED:
@@ -61,17 +60,18 @@ public class RapidProUtils {
 				break;
 			case HttpStatus.SC_BAD_REQUEST:
 				logger.error("RapidPro request failed due to invalid parameters");
-				logger.error(message);
+				logger.error(EntityUtils.toString(httpResponse.getEntity()));
 				break;
 			case HttpStatus.SC_FORBIDDEN:
 				logger.warn("RapidPro request failed due to lack of permissions to access resource");
+				logger.warn(EntityUtils.toString(httpResponse.getEntity()));
 				break;
 			case HttpStatus.SC_NOT_FOUND:
 				logger.warn("RapidPro Resource was not found");
 				break;
 			case RATE_LIMIT_EXCEEDED:
 				logger.warn("RapidPro rate limit for the endpoint has been exceeded");
-				logger.error(message);
+				logger.warn(EntityUtils.toString(httpResponse.getEntity()));
 				break;
 			default:
 				logger.error("Unsupported status code");
