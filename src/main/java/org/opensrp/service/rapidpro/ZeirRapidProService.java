@@ -49,7 +49,6 @@ import java.util.stream.Collectors;
 
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntity.SUPERVISOR;
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.LOCATION_ID;
-import static org.opensrp.util.RapidProUtils.RAPIDPRO_DATA_LIMIT;
 import static org.opensrp.util.RapidProUtils.getBaseUrl;
 import static org.opensrp.util.RapidProUtils.setupRapidproRequest;
 
@@ -125,7 +124,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 					currentDateTime.toString());
 			onTaskComplete.completeTask();
 		}
-		if (responseJson.isNull(RapidProConstants.NEXT) || rapidProContacts.size() <= RAPIDPRO_DATA_LIMIT) {
+		if (responseJson.isNull(RapidProConstants.NEXT)) {
 			return;
 		}
 		try (CloseableHttpResponse httpResponse = closeableHttpClient.execute(getContactRequest())) {
@@ -188,11 +187,9 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	private List<RapidProContact> getRapidProContacts(JSONArray results) throws JsonProcessingException {
-		List<RapidProContact> rapidProContacts = objectMapper.readValue(results.toString(), new TypeReference<>() {
+		return objectMapper.readValue(results.toString(), new TypeReference<>() {
 
 		});
-		//Process only 25 contacts at a time. Earliest date modified will be used
-		return rapidProContacts.stream().limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 	}
 
 	/**
