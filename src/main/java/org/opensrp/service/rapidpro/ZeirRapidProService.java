@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +49,7 @@ import java.util.stream.Collectors;
 
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntity.SUPERVISOR;
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.LOCATION_ID;
+import static org.opensrp.util.RapidProUtils.RAPIDPRO_DATA_LIMIT;
 import static org.opensrp.util.RapidProUtils.getBaseUrl;
 import static org.opensrp.util.RapidProUtils.setupRapidproRequest;
 
@@ -68,50 +70,62 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	 * @param onTaskComplete callback method invoked when processing contact is completed
 	 */
 	@Override
-	public void handleContactResponse(String response, RapidProOnTaskComplete onTaskComplete) {
+	public synchronized void handleContactResponse(String response, RapidProOnTaskComplete onTaskComplete) {
 		if (StringUtils.isBlank(response)) {
 			return;
 		}
 		JSONObject responseJson = new JSONObject(response);
 		JSONArray results = getResults(responseJson);
+		List<RapidProContact> rapidProContacts = new ArrayList<>();
+
 		if (results != null) {
-			synchronized (this) {
-				try {
-					List<RapidProContact> rapidProContacts = getRapidProContacts(results);
-					logger.info("Found " + rapidProContacts.size() + " modified RapidPro contacts");
-					if (!rapidProContacts.isEmpty()) {
-						for (RapidProContact rapidProContact : rapidProContacts) {
-							try {
-								//Only process child contacts
-								RapidProFields fields = rapidProContact.getFields();
-								if (fields.getSupervisorPhone() != null && RapidProConstants.CHILD
-										.equalsIgnoreCase(fields.getPosition())) {
-									String locationId = getLocationId(rapidProContact, rapidProContacts);
-									if (StringUtils.isNotBlank(locationId)) {
-										updateExistingClientUuid(rapidProContact, ZeirRapidProEntity.CHILD);
-										fields.setFacilityLocationId(locationId);
-										processRegistrationEventClient(rapidProContact, rapidProContacts);
-										processVaccinationEvent(rapidProContact);
-										processGrowthMonitoringEvent(rapidProContact);
-									}
-								}//TODO Add implementation for processing supervisor for instance when their location is updated;
-							}
-							catch (Exception exception) {
-								logger.error(exception.getMessage(), exception);
-								updateStateTokenFromContactDates(rapidProContacts);
-								return;
-							}
+			try {
+				rapidProContacts = getRapidProContacts(results);
+			}
+			catch (JsonProcessingException jsonProcessingException) {
+				logger.error(jsonProcessingException);
+			}
+			logger.info("Found " + rapidProContacts.size() + " modified RapidPro contacts");
+			Instant currentDateTime = Instant.now();
+			if (!rapidProContacts.isEmpty()) {
+				for (RapidProContact rapidProContact : rapidProContacts) {
+					//Update last modified date to use the earliest
+					try {
+						Instant modifiedOn = Instant.parse(rapidProContact.getModifiedOn());
+						if (modifiedOn.isBefore(currentDateTime)) {
+							currentDateTime = modifiedOn;
 						}
 					}
-					updateStateTokenFromContactDates(rapidProContacts);
-					onTaskComplete.completeTask();
-				}
-				catch (JsonProcessingException jsonException) {
-					logger.error(jsonException.getMessage(), jsonException);
+					catch (DateTimeParseException parseException) {
+						logger.error("Error parsing RapidProContact modified date: ", parseException);
+					}
+
+					try {
+						//Only process child contacts
+						RapidProFields fields = rapidProContact.getFields();
+						if (fields.getSupervisorPhone() != null && RapidProConstants.CHILD
+								.equalsIgnoreCase(fields.getPosition())) {
+							String locationId = getLocationId(rapidProContact, rapidProContacts);
+							if (StringUtils.isNotBlank(locationId)) {
+								updateExistingClientUuid(rapidProContact, ZeirRapidProEntity.CHILD);
+								fields.setFacilityLocationId(locationId);
+								processRegistrationEventClient(rapidProContact, rapidProContacts);
+								processVaccinationEvent(rapidProContact);
+								processGrowthMonitoringEvent(rapidProContact);
+							}
+						}//TODO Add implementation for processing supervisor for instance when their location is updated;
+					}
+					catch (Exception exception) {
+						logger.error(exception.getMessage(), exception);
+						return;
+					}
 				}
 			}
+			configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN,
+					currentDateTime.toString());
+			onTaskComplete.completeTask();
 		}
-		if (responseJson.isNull(RapidProConstants.NEXT)) {
+		if (responseJson.isNull(RapidProConstants.NEXT) || rapidProContacts.size() <= RAPIDPRO_DATA_LIMIT) {
 			return;
 		}
 		try (CloseableHttpResponse httpResponse = closeableHttpClient.execute(getContactRequest())) {
@@ -163,22 +177,6 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		return getProviderLocationId(supervisorContact, supervisorPhone);
 	}
 
-	private void updateStateTokenFromContactDates(List<RapidProContact> rapidProContacts) {
-		Instant currentDateTime = Instant.now();
-		for (RapidProContact rapidProContact : rapidProContacts) {
-			try {
-				Instant modifiedOn = Instant.parse(rapidProContact.getModifiedOn());
-				if (modifiedOn.isBefore(currentDateTime)) {
-					currentDateTime = modifiedOn;
-				}
-			}
-			catch (DateTimeParseException parseException) {
-				logger.error("Error parsing RapidProContact modified date: ", parseException);
-			}
-		}
-		configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN, currentDateTime.toString());
-	}
-
 	private JSONArray getResults(JSONObject responseJson) {
 		try {
 			return responseJson.optJSONArray(RapidProConstants.RESULTS);
@@ -190,9 +188,11 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	private List<RapidProContact> getRapidProContacts(JSONArray results) throws JsonProcessingException {
-		return objectMapper.readValue(results.toString(), new TypeReference<>() {
+		List<RapidProContact> rapidProContacts = objectMapper.readValue(results.toString(), new TypeReference<>() {
 
 		});
+		//Process only 25 contacts at a time. Earliest date modified will be used
+		return rapidProContacts.stream().limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 	}
 
 	/**

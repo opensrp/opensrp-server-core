@@ -19,6 +19,10 @@ public class RapidProUtils {
 
 	public static final int RATE_LIMIT_EXCEEDED = 429;
 
+	// Optimal number of requests to make to avoid 2500 requests per hour limit
+	// (8 (number of hits per scheduled task) by 25 (data/requests) by 12 (from 5 minutes interval) = 2400)
+	public static final int RAPIDPRO_DATA_LIMIT = 25;
+
 	public static String getBaseUrl(String rapidProUrl) {
 		return StringUtils.isBlank(rapidProUrl) || StringUtils.isEmpty(rapidProUrl) ? "" :
 				rapidProUrl.endsWith(API_URL) ?
