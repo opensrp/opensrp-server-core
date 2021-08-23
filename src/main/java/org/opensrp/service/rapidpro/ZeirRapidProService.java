@@ -85,14 +85,28 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				logger.error(jsonProcessingException);
 			}
 			logger.info("Found " + rapidProContacts.size() + " modified RapidPro contacts");
-			Instant currentDateTime = Instant.now();
+
+			Instant firstContactDateModified;
+			try {
+				firstContactDateModified = Instant.parse(rapidProContacts.get(0).getModifiedOn());
+			}
+			catch (DateTimeParseException parseException) {
+				firstContactDateModified = Instant.now();
+			}
+
+			Instant earliestDateModified = firstContactDateModified;
+			Instant latestDateModified = earliestDateModified;
+
 			if (!rapidProContacts.isEmpty()) {
 				for (RapidProContact rapidProContact : rapidProContacts) {
 					//Update last modified date to use the earliest
 					try {
 						Instant modifiedOn = Instant.parse(rapidProContact.getModifiedOn());
-						if (modifiedOn.isBefore(currentDateTime)) {
-							currentDateTime = modifiedOn;
+						if (modifiedOn.isBefore(earliestDateModified)) {
+							earliestDateModified = modifiedOn;
+						}
+						if (modifiedOn.isAfter(latestDateModified)) {
+							latestDateModified = modifiedOn;
 						}
 					}
 					catch (DateTimeParseException parseException) {
@@ -116,12 +130,16 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 					}
 					catch (Exception exception) {
 						logger.error(exception.getMessage(), exception);
+						//Use the earliest date modified to not miss any contact
+						configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN,
+								earliestDateModified.toString());
 						return;
 					}
 				}
 			}
+			//Use the latest date modified for the processed contacts
 			configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN,
-					currentDateTime.toString());
+					latestDateModified.toString());
 			onTaskComplete.completeTask();
 		}
 		if (responseJson.isNull(RapidProConstants.NEXT)) {
