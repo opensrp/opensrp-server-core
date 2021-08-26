@@ -40,7 +40,12 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 				client.setLastName(nameSplit[1].trim());
 			}
 		}
+
 		client.setLocationId(fields.getFacilityLocationId());
+
+		if (rapidProContact.getStopped() || rapidProContact.getBlocked()) {
+			client.setVoided(true);
+		}
 	}
 
 	protected void addZeirClientIdentifier(RapidProContact rapidProContact, Client client, String identifierType) {
