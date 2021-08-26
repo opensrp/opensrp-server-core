@@ -1,6 +1,7 @@
 package org.opensrp.service.rapidpro;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -139,8 +140,9 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 		Mockito.doReturn(new ByteArrayInputStream(supervisorJsonResponse.getBytes())).when(supervisorHttpEntity)
 				.getContent();
 		Mockito.doReturn(supervisorHttpEntity).when(supervisorHttpResponse).getEntity();
-		Mockito.doReturn(supervisorHttpRequest).when(zeirRapidProServiceSpy)
-				.getSupervisorContactRequest(Mockito.anyString());
+		StatusLine statusLine = Mockito.spy(StatusLine.class);
+		Mockito.doReturn(200).when(statusLine).getStatusCode();
+		Mockito.doReturn(statusLine).when(supervisorHttpResponse).getStatusLine();
 		Mockito.doReturn(supervisorHttpResponse).when(httpClient).execute(supervisorHttpRequest);
 	}
 
@@ -153,6 +155,9 @@ public class ZeirRapidProServiceTest extends BaseRepositoryTest {
 		Mockito.doReturn(contactsHttpEntity).when(contactsHttpResponse).getEntity();
 		Mockito.doReturn(contactsHttpRequest).when(zeirRapidProServiceSpy).getContactRequest();
 		Mockito.doReturn(contactsHttpResponse).when(httpClient).execute(contactsHttpRequest);
+		StatusLine statusLine = Mockito.spy(StatusLine.class);
+		Mockito.doReturn(200).when(statusLine).getStatusCode();
+		Mockito.doReturn(statusLine).when(contactsHttpResponse).getStatusLine();
 	}
 
 	@Override

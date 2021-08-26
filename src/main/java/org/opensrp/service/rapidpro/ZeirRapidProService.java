@@ -1,7 +1,6 @@
 package org.opensrp.service.rapidpro;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -9,7 +8,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.domain.postgres.RapidproState;
 import org.opensrp.domain.rapidpro.RapidProStateSyncStatus;
@@ -75,12 +73,12 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			return;
 		}
 		JSONObject responseJson = new JSONObject(response);
-		JSONArray results = getResults(responseJson);
+		JSONArray results = RapidProUtils.getResults(responseJson);
 		List<RapidProContact> rapidProContacts = new ArrayList<>();
 
 		if (results != null) {
 			try {
-				rapidProContacts = getRapidProContacts(results);
+				rapidProContacts = RapidProUtils.getRapidProContacts(results, objectMapper);
 			}
 			catch (JsonProcessingException jsonProcessingException) {
 				logger.error(jsonProcessingException);
@@ -193,22 +191,6 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			return null;
 		}
 		return getProviderLocationId(supervisorContact, supervisorPhone);
-	}
-
-	private JSONArray getResults(JSONObject responseJson) {
-		try {
-			return responseJson.optJSONArray(RapidProConstants.RESULTS);
-		}
-		catch (JSONException jsonException) {
-			return null;
-		}
-
-	}
-
-	private List<RapidProContact> getRapidProContacts(JSONArray results) throws JsonProcessingException {
-		return objectMapper.readValue(results.toString(), new TypeReference<>() {
-
-		});
 	}
 
 	/**
@@ -495,26 +477,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 			return supervisors.get(supervisors.size() - 1);
 		}
 
-		try (CloseableHttpResponse httpResponse = closeableHttpClient.execute(getSupervisorContactRequest(phone))) {
-			if (httpResponse != null && httpResponse.getEntity() != null) {
-				JSONArray results = getResults(new JSONObject(EntityUtils.toString(httpResponse.getEntity())));
-				if (results != null) {
-					List<RapidProContact> rapidProContacts = getRapidProContacts(results);
-					if (rapidProContacts == null || rapidProContacts.isEmpty()) {
-						return null;
-					}
-					return rapidProContacts.get(0);
-				}
-			}
-		}
-		catch (JSONException | IOException exception) {
-			logger.error(exception.getMessage(), exception.fillInStackTrace().toString());
-		}
-		return null;
-	}
-
-	public HttpGet getSupervisorContactRequest(String phone) {
-		return (HttpGet) setupRapidproRequest(getBaseUrl(rapidProUrl) + "/contacts.json?urn=tel:" + phone,
-				new HttpGet(), rapidProToken);
+		HttpGet contactRequest = RapidProUtils.contactByPhoneRequest(phone, rapidProUrl, rapidProToken);
+		return RapidProUtils.getRapidProContactByPhone(closeableHttpClient, contactRequest, objectMapper, logger);
 	}
 }

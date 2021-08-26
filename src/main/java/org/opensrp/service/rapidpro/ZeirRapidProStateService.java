@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntity.CARETAKER;
@@ -238,35 +240,55 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		return rapidproStates.stream().map(RapidproState::getId).collect(Collectors.toList());
 	}
 
-	private void postMotherData(List<RapidproState> motherStates) {
+	private synchronized void postMotherData(List<RapidproState> motherStates) {
 		if (motherStates != null && !motherStates.isEmpty()) {
 			ZeirMotherClientConverter motherConverter = new ZeirMotherClientConverter();
 			for (RapidproState motherState : motherStates) {
 				if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(motherState.getUuid())) {
 					Client motherClient = clientService.getByBaseEntityId(motherState.getPropertyKey());
 					RapidProContact motherContact = motherConverter.convertClientToContact(motherClient);
-
-					synchronized (this) {
-						try (CloseableHttpResponse httpResponse = postToRapidPro(
-								objectMapper.writeValueAsString(motherContact),
-								getContactUrl(false, null))) {
-							if (httpResponse != null && httpResponse.getEntity() != null) {
-								RapidProUtils.logResponseStatusCode(httpResponse, logger);
-								final String rapidProContactJson = EntityUtils.toString(httpResponse.getEntity());
-								RapidProContact newMotherContact =
-										objectMapper.readValue(rapidProContactJson, RapidProContact.class);
-								updateUuids(Collections.singletonList(motherState.getId()), newMotherContact.getUuid());
-								addContactToGroup(CARETAKER, motherState.getUuid());
+					Optional<String> optionalMotherPhone = optionalMotherPhone(motherContact);
+					if (optionalMotherPhone.isPresent()) {
+						HttpGet contactRequest = RapidProUtils.contactByPhoneRequest(
+								optionalMotherPhone.get(), rapidProUrl, rapidProToken
+						);
+						RapidProContact existingMother = RapidProUtils.getRapidProContactByPhone(
+								closeableHttpClient, contactRequest, objectMapper, logger);
+						if (existingMother == null) {
+							try (CloseableHttpResponse httpResponse = postToRapidPro(
+									objectMapper.writeValueAsString(motherContact),
+									getContactUrl(false, null))) {
+								if (httpResponse != null && httpResponse.getEntity() != null) {
+									RapidProUtils.logResponseStatusCode(httpResponse, logger);
+									final String rapidProContactJson = EntityUtils.toString(
+											httpResponse.getEntity());
+									RapidProContact newMotherContact =
+											objectMapper.readValue(rapidProContactJson, RapidProContact.class);
+									updateUuids(Collections.singletonList(motherState.getId()),
+											newMotherContact.getUuid());
+									addContactToGroup(CARETAKER, motherState.getUuid());
+								}
+								logger.warn("Mother contact {} created and their UUID updated",
+										motherContact.getUuid());
 							}
-							logger.warn("Mother contact {} created and their UUID updated", motherContact.getUuid());
-						}
-						catch (IOException exception) {
-							logger.warn("Mother's data not posted to RapidPro", exception);
+							catch (IOException exception) {
+								logger.warn("Mother's data not posted to RapidPro", exception);
+							}
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private Optional<String> optionalMotherPhone(RapidProContact motherContact) {
+		if (motherContact == null) {
+			return Optional.empty();
+		}
+		return motherContact.getUrns()
+				.stream().filter(urn -> urn.startsWith("tel"))
+				.collect(Collectors.toList())
+				.stream().findFirst();
 	}
 
 	private void updateContactFields(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property) {
