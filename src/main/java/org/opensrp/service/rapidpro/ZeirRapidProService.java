@@ -354,9 +354,9 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	}
 
 	private DateTime getLastGMEventDate(List<Event> filteredGMEvents) {
-		DateTime eventDate = filteredGMEvents.get(0).getEventDate();
+		DateTime eventDate = filteredGMEvents.get(0).getDateCreated();
 		for (Event filteredEvent : filteredGMEvents) {
-			DateTime existingGMEventInstant = filteredEvent.getEventDate();
+			DateTime existingGMEventInstant = filteredEvent.getDateCreated();
 			if (existingGMEventInstant.isAfter(eventDate)) {
 				eventDate = existingGMEventInstant;
 			}
