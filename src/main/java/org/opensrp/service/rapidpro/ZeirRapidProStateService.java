@@ -340,7 +340,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		JSONObject payload = new JSONObject();
 		payload.put(RapidProConstants.CONTACTS, new JSONArray().put(uuid));
 		payload.put(RapidProConstants.ACTION, RapidProConstants.ADD);
-		String group = entity == CHILD ? RapidProConstants.CHILDREN : RapidProConstants.CARETAKER;
+		String group = entity == CHILD ? RapidProConstants.CHILDREN : RapidProConstants.CARETAKERS;
 		payload.put(RapidProConstants.GROUP, group);
 		try (CloseableHttpResponse httpResponse = postToRapidPro(payload.toString(),
 				RapidProUtils.getBaseUrl(rapidProUrl) + "/contact_actions.json")) {
