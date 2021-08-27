@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -453,7 +454,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				.getValue();
 		String baseUrl = getBaseUrl(rapidProUrl);
 		String url = !dateModified.equalsIgnoreCase("#") ? baseUrl + "/contacts.json?after=" + dateModified :
-				baseUrl + "/contacts.json?before=" + Instant.now().toString();
+				baseUrl + "/contacts.json?after=" + ZonedDateTime.now().minusMonths(6).toInstant().toString();
 
 		return (HttpGet) setupRapidproRequest(url, new HttpGet(), rapidProToken);
 	}
