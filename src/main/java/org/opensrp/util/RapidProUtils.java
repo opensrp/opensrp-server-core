@@ -68,21 +68,25 @@ public class RapidProUtils {
 				case HttpStatus.SC_OK:
 				case HttpStatus.SC_CREATED:
 				case HttpStatus.SC_NO_CONTENT:
-					logger.info("RapidPro resource successfully listed/created/updated");
+					logger.info("[Status {}] RapidPro resource successfully listed/created/updated",
+							statusLine.getStatusCode());
 					break;
 				case HttpStatus.SC_BAD_REQUEST:
-					logger.error("RapidPro request failed due to invalid parameters");
+					logger.error("[Status {}] RapidPro request failed due to invalid parameters",
+							statusLine.getStatusCode());
 					logger.error(EntityUtils.toString(httpResponse.getEntity()));
 					break;
 				case HttpStatus.SC_FORBIDDEN:
-					logger.warn("RapidPro request failed due to lack of permissions to access resource");
+					logger.warn("[Status {}] RapidPro request failed due to lack of permissions to access resource",
+							statusLine.getStatusCode());
 					logger.warn(EntityUtils.toString(httpResponse.getEntity()));
 					break;
 				case HttpStatus.SC_NOT_FOUND:
-					logger.warn("RapidPro Resource was not found");
+					logger.warn("[Status {}] RapidPro Resource was not found", statusLine.getStatusCode());
 					break;
 				case RATE_LIMIT_EXCEEDED:
-					logger.warn("RapidPro rate limit for the endpoint has been exceeded");
+					logger.warn("[Status {}] RapidPro rate limit for the endpoint has been exceeded",
+							statusLine.getStatusCode());
 					logger.warn(EntityUtils.toString(httpResponse.getEntity()));
 					break;
 				default:

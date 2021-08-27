@@ -263,11 +263,11 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 											httpResponse.getEntity());
 									RapidProContact newMotherContact =
 											objectMapper.readValue(rapidProContactJson, RapidProContact.class);
+									logger.warn("Mother contact {} created and their UUID updated",
+											newMotherContact.getUuid());
 									updateUuids(Collections.singletonList(motherState.getId()), newMotherContact.getUuid());
 									addContactToGroup(CARETAKER, newMotherContact.getUuid());
 								}
-								logger.warn("Mother contact {} created and their UUID updated",
-										motherContact.getUuid());
 							}
 							catch (IOException exception) {
 								logger.warn("Mother's data not posted to RapidPro", exception);
@@ -342,11 +342,11 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		payload.put(RapidProConstants.GROUP, group);
 		try (CloseableHttpResponse httpResponse = postToRapidPro(payload.toString(),
 				RapidProUtils.getBaseUrl(rapidProUrl) + "/contact_actions.json")) {
-			if (httpResponse != null && httpResponse.getEntity() != null) {
+			if (httpResponse != null) {
 				RapidProUtils.logResponseStatusCode(httpResponse, logger);
 				StatusLine statusLine = httpResponse.getStatusLine();
 				if (statusLine.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
-					logger.info("Contact added to group named" + group);
+					logger.info("Contact identified as {} added to group named {} ", uuid, group);
 				}
 			}
 		}
