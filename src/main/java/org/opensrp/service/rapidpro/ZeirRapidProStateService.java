@@ -250,7 +250,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					Optional<String> optionalMotherPhone = optionalMotherPhone(motherContact);
 					if (optionalMotherPhone.isPresent()) {
 						HttpGet contactRequest = RapidProUtils.contactByPhoneRequest(
-								optionalMotherPhone.get(), rapidProUrl, rapidProToken
+								optionalMotherPhone.get().replace("tel:", ""), rapidProUrl, rapidProToken
 						);
 						RapidProContact existingMother = RapidProUtils.getRapidProContactByPhone(
 								closeableHttpClient, contactRequest, objectMapper, logger);
