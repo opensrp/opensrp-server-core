@@ -9,7 +9,7 @@ public interface RapidProStateRepository {
 
 	void saveState(RapidproState rapidproState);
 
-	void updateSyncStatus(Long id, RapidProStateSyncStatus stateSyncStatus);
+	void updateSyncStatus(Long id, String uuid,  RapidProStateSyncStatus stateSyncStatus);
 
 	List<RapidproState> getState(String entity, String property, String propertyKey);
 

@@ -27,10 +27,11 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 	}
 
 	@Override
-	public void updateSyncStatus(Long id, RapidProStateSyncStatus stateSyncStatus) {
+	public void updateSyncStatus(Long id, String uuid, RapidProStateSyncStatus stateSyncStatus) {
 		RapidproStateExample rapidproStateExample = new RapidproStateExample();
 		rapidproStateExample.createCriteria().andIdEqualTo(id);
 		RapidproState rapidproState = new RapidproState();
+		rapidproState.setUuid(uuid);
 		rapidproState.setSyncStatus(stateSyncStatus.name());
 		rapidproStateMapper.updateByExampleSelective(rapidproState, rapidproStateExample);
 	}

@@ -199,13 +199,13 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		List<Long> primaryKeys = getPrimaryKeys(vaccinationStates);
 		primaryKeys.addAll(getPrimaryKeys(growthMonitoringStates));
 
-		logger.warn("Updating RapidProContact: " + childContact.getUuid());
 		if (!primaryKeys.isEmpty()) {
 			synchronized (this) {
 				try {
 					String fieldsJson = objectMapper.writeValueAsString(childContact.getFields());
 					JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, new JSONObject(fieldsJson));
 					postAndUpdateStatus(primaryKeys, uuid, payload.toString(), true);
+					logger.warn("Updated RapidProContact: " + uuid);
 				}
 				catch (JSONException jsonException) {
 					logger.warn("Error creating fields Json", jsonException);

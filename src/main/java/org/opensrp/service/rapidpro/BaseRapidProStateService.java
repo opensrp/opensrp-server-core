@@ -46,8 +46,8 @@ public abstract class BaseRapidProStateService {
 		rapidProStateRepository.saveState(rapidproState);
 	}
 
-	public void updateRapidProState(Long id, RapidProStateSyncStatus stateSyncStatus) {
-		rapidProStateRepository.updateSyncStatus(id, stateSyncStatus);
+	public void updateRapidProState(Long id, String uuid, RapidProStateSyncStatus stateSyncStatus) {
+		rapidProStateRepository.updateSyncStatus(id, uuid, stateSyncStatus);
 	}
 
 	public List<RapidproState> getUnSyncedRapidProStates(String entity, String property) {
@@ -91,7 +91,7 @@ public abstract class BaseRapidProStateService {
 				RapidProUtils.logResponseStatusCode(httpResponse, logger);
 				if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK && existing) {
 					for (Long id : ids) {
-						updateRapidProState(id, RapidProStateSyncStatus.SYNCED);
+						updateRapidProState(id, uuid, RapidProStateSyncStatus.SYNCED);
 					}
 				}
 			}
