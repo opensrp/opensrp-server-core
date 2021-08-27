@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntity.CARETAKER;
@@ -87,24 +88,26 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		updateContactFields(CHILD, IDENTIFIER);
 		updateContactFields(SUPERVISOR, LOCATION_ID);
 
-		List<RapidproState> childStates = getUnSyncedRapidProStates(CHILD.name(), REGISTRATION_DATA.name()).stream()
+		List<RapidproState> unSyncedChildStates = getUnSyncedRapidProStates(CHILD.name(), REGISTRATION_DATA.name()).stream()
 				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
-		postChildData(childStates);
+		postChildData(unSyncedChildStates);
 
-		List<RapidproState> motherStates = getUnSyncedRapidProStates(CARETAKER.name(), REGISTRATION_DATA.name()).stream()
+		List<RapidproState> unSyncedMotherStates = getUnSyncedRapidProStates(CARETAKER.name(),
+				REGISTRATION_DATA.name()).stream()
 				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
-		postMotherData(motherStates);
+		postMotherData(unSyncedMotherStates);
 	}
 
-	private void postChildData(List<RapidproState> childStates) {
-		if (childStates != null && !childStates.isEmpty()) {
-			ZeirChildClientConverter childConverter = new ZeirChildClientConverter(this);
-			ZeirVaccinationConverter vaccinationConverter = new ZeirVaccinationConverter();
-			ZeirGrowthMonitoringConverter growthMonitoringConverter = new ZeirGrowthMonitoringConverter();
+	private void postChildData(List<RapidproState> unSyncedChildStates) {
 
-			for (RapidproState childState : childStates) {
+		ZeirChildClientConverter childConverter = new ZeirChildClientConverter(this);
+		ZeirVaccinationConverter vaccinationConverter = new ZeirVaccinationConverter();
+		ZeirGrowthMonitoringConverter growthMonitoringConverter = new ZeirGrowthMonitoringConverter();
 
-				Client childClient = clientService.getByBaseEntityId(childState.getPropertyKey());
+		if (unSyncedChildStates != null && !unSyncedChildStates.isEmpty()) {
+			for (RapidproState unSyncedChildState : unSyncedChildStates) {
+
+				Client childClient = clientService.getByBaseEntityId(unSyncedChildState.getPropertyKey());
 				RapidProContact childContact = childConverter.convertClientToContact(childClient);
 
 				//Get vaccination and growth monitoring events and use them to update the child's RapidProContact
@@ -117,7 +120,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				logger.warn("Found {} VACCINATION and {} GROWTH MONITORING UN_SYNCED events for child identified as {}",
 						vaccinationStates.size(), growthMonitoringStates.size(), childClient.getBaseEntityId());
 
-				if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(childState.getUuid())) {
+				if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(unSyncedChildState.getUuid())) {
 					if (childClient.getRelationships() != null && childClient.getRelationships()
 							.containsKey(RapidProConstants.MOTHER)) {
 
@@ -132,18 +135,66 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 						}
 						processVaccinationStates(vaccinationStates, childContact, vaccinationConverter);
 						processGrowthMonitoringStates(growthMonitoringStates, childContact, growthMonitoringConverter);
-						postDataAndUpdateUuids(childContact, childState, vaccinationStates, growthMonitoringStates);
+						postDataAndUpdateUuids(childContact, unSyncedChildState, vaccinationStates, growthMonitoringStates);
 					}
-				} else {
-					processVaccinationStates(vaccinationStates, childContact, vaccinationConverter);
-					processGrowthMonitoringStates(growthMonitoringStates, childContact, growthMonitoringConverter);
-					postExistingChildData(childState, childContact, vaccinationStates, growthMonitoringStates);
+				}
+			}
+		}
+
+		postExistingChildData(childConverter, vaccinationConverter, growthMonitoringConverter);
+	}
+
+	/**
+	 * Some events may arrive late after the Child's registration data is synced. This method handles such scenario. E.g.
+	 * is posting vaccination data for existing child.
+	 *
+	 * @param childConverter            convert child registration event to RapidPro contact
+	 * @param vaccinationConverter      convert vaccination event properties to RapidPro field properties
+	 * @param growthMonitoringConverter convert growth monitoring event properties to RapidPro field properties
+	 */
+	private void postExistingChildData(
+			ZeirChildClientConverter childConverter,
+			ZeirVaccinationConverter vaccinationConverter,
+			ZeirGrowthMonitoringConverter growthMonitoringConverter) {
+
+		//Select un synced data distinctly by baseEntityId.
+		Set<String> baseEntityIds = getRapidProStatesByUuid(RapidProConstants.UNPROCESSED_UUID, CHILD.name(),
+				GROWTH_MONITORING_DATA.name()).stream()
+				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT)
+				.map(RapidproState::getPropertyKey)
+				.collect(Collectors.toSet());
+
+		if (!baseEntityIds.isEmpty()) {
+			for (String baseEntityId : baseEntityIds) {
+
+				Client childClient = clientService.getByBaseEntityId(baseEntityId);
+				RapidProContact childContact = childConverter.convertClientToContact(childClient);
+
+				//Get un synced Growth Monitoring and Vaccination data for the child
+				List<RapidproState> vaccinationStates = getStatesByPropertyKey(RapidProConstants.UNPROCESSED_UUID,
+						CHILD.name(), VACCINATION_DATA.name(), baseEntityId);
+
+				List<RapidproState> growthMonitoringStates = getStatesByPropertyKey(RapidProConstants.UNPROCESSED_UUID,
+						CHILD.name(), GROWTH_MONITORING_DATA.name(), baseEntityId);
+
+				processVaccinationStates(vaccinationStates, childContact, vaccinationConverter);
+				processGrowthMonitoringStates(growthMonitoringStates, childContact, growthMonitoringConverter);
+
+				Optional<RapidproState> registrationState = getUuid(baseEntityId);
+				if (registrationState.isPresent() && !RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(
+						registrationState.get().getUuid())) {
+					postExistingChildData(registrationState.get().getUuid(), childContact, vaccinationStates,
+							growthMonitoringStates);
 				}
 			}
 		}
 	}
 
-	private void postExistingChildData(RapidproState childState, RapidProContact childContact,
+	private Optional<RapidproState> getUuid(String baseEntityId) {
+		return getStatesByPropertyKey(CHILD.name(), REGISTRATION_DATA.name(), baseEntityId).stream().findFirst();
+	}
+
+	private void postExistingChildData(String uuid, RapidProContact childContact,
 			List<RapidproState> vaccinationStates, List<RapidproState> growthMonitoringStates) {
 		List<Long> primaryKeys = getPrimaryKeys(vaccinationStates);
 		primaryKeys.addAll(getPrimaryKeys(growthMonitoringStates));
@@ -154,7 +205,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				try {
 					String fieldsJson = objectMapper.writeValueAsString(childContact.getFields());
 					JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, new JSONObject(fieldsJson));
-					postAndUpdateStatus(primaryKeys, childState.getUuid(), payload.toString(), true);
+					postAndUpdateStatus(primaryKeys, uuid, payload.toString(), true);
 				}
 				catch (JSONException jsonException) {
 					logger.warn("Error creating fields Json", jsonException);

@@ -90,4 +90,15 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 				.andPropertyKeyEqualTo(propertyKey);
 		return rapidproStateMapper.selectByExample(rapidproStateExample);
 	}
+
+	@Override
+	public List<RapidproState> getByStatesPropertyKey(String uuid, String entity, String property, String propertyKey) {
+		RapidproStateExample rapidproStateExample = new RapidproStateExample();
+		rapidproStateExample.createCriteria()
+				.andUuidEqualTo(uuid)
+				.andEntityEqualTo(entity)
+				.andPropertyEqualTo(property)
+				.andPropertyKeyEqualTo(propertyKey);
+		return rapidproStateMapper.selectByExample(rapidproStateExample);
+	}
 }
