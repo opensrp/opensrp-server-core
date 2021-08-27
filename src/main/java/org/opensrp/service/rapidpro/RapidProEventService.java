@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,12 +91,13 @@ public class RapidProEventService {
 	private void saveRapidProState(Event event) {
 		String property;
 		String entity = ZeirRapidProEntity.CHILD.name();
-		String eventType = event.getEventType();
-		switch (eventType) {
+		switch (event.getEventType()) {
 			case EventConstants.BIRTH_REGISTRATION_EVENT:
+			case EventConstants.UPDATE_BIRTH_REGISTRATION:
 				property = ZeirRapidProEntityProperty.REGISTRATION_DATA.name();
 				break;
 			case EventConstants.NEW_WOMAN_REGISTRATION_EVENT:
+			case EventConstants.UPDATE_MOTHER_DETAILS:
 				entity = ZeirRapidProEntity.CARETAKER.name();
 				property = ZeirRapidProEntityProperty.REGISTRATION_DATA.name();
 				break;
@@ -106,24 +108,26 @@ public class RapidProEventService {
 				property = ZeirRapidProEntityProperty.GROWTH_MONITORING_DATA.name();
 				break;
 			default:
-				property = null;
+				property = "";
 				break;
 		}
 
-		List<RapidproState> existingRapidProState = rapidProStateService.getUnSyncedRapidProStates(entity, property).stream()
-				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
+		//To avoid creating multiple RapidPro contact for the same client
+		List<RapidproState> existingRapidProState = new ArrayList<>();
+		if (ZeirRapidProEntityProperty.REGISTRATION_DATA.name().equalsIgnoreCase(property)) {
+			existingRapidProState = rapidProStateService.getUnSyncedRapidProStates(entity, property).stream()
+					.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
+		}
 
-		if (existingRapidProState.isEmpty()) {
-			if (StringUtils.isNotBlank(property)) {
-				RapidproState rapidproState = new RapidproState();
-				rapidproState.setUuid(RapidProConstants.UNPROCESSED_UUID);
-				rapidproState.setEntity(entity);
-				rapidproState.setProperty(property);
-				rapidproState.setPropertyKey(event.getBaseEntityId());
-				rapidproState.setPropertyValue(event.getFormSubmissionId());
-				rapidproState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
-				rapidProStateService.saveRapidProState(rapidproState);
-			}
+		if (existingRapidProState.isEmpty() && StringUtils.isNotBlank(property)) {
+			RapidproState rapidproState = new RapidproState();
+			rapidproState.setUuid(RapidProConstants.UNPROCESSED_UUID);
+			rapidproState.setEntity(entity);
+			rapidproState.setProperty(property);
+			rapidproState.setPropertyKey(event.getBaseEntityId());
+			rapidproState.setPropertyValue(event.getFormSubmissionId());
+			rapidproState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
+			rapidProStateService.saveRapidProState(rapidproState);
 		} else {
 			logger.warn("{}, {} for client identified by {} has already been registered/synced to RapidPro", entity,
 					property, event.getBaseEntityId());
