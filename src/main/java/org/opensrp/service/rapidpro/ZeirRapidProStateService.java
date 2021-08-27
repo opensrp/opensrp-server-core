@@ -263,9 +263,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 											httpResponse.getEntity());
 									RapidProContact newMotherContact =
 											objectMapper.readValue(rapidProContactJson, RapidProContact.class);
-									updateUuids(Collections.singletonList(motherState.getId()),
-											newMotherContact.getUuid());
-									addContactToGroup(CARETAKER, motherState.getUuid());
+									updateUuids(Collections.singletonList(motherState.getId()), newMotherContact.getUuid());
+									addContactToGroup(CARETAKER, newMotherContact.getUuid());
 								}
 								logger.warn("Mother contact {} created and their UUID updated",
 										motherContact.getUuid());
