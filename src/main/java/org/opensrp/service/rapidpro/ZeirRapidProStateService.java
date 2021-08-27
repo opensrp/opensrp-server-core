@@ -114,9 +114,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				List<RapidproState> growthMonitoringStates = getStatesByPropertyKey(CHILD.name(),
 						GROWTH_MONITORING_DATA.name(), childClient.getBaseEntityId());
 
-				logger.warn("Found {} UN_SYNCED Vaccination and Growth Monitoring {} for child identifier as {}",
-						vaccinationStates.size(),
-						growthMonitoringStates.size(), childClient.getBaseEntityId());
+				logger.warn("Found {} VACCINATION and {} GROWTH MONITORING UN_SYNCED events for child identified as {}",
+						vaccinationStates.size(), growthMonitoringStates.size(), childClient.getBaseEntityId());
 
 				if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(childState.getUuid())) {
 					if (childClient.getRelationships() != null && childClient.getRelationships()
