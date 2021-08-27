@@ -1,11 +1,14 @@
 package org.opensrp.service.rapidpro;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.opensrp.domain.postgres.RapidproState;
 import org.opensrp.domain.rapidpro.RapidProStateSyncStatus;
 import org.opensrp.domain.rapidpro.ZeirRapidProEntity;
 import org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty;
 import org.opensrp.service.ClientService;
+import org.opensrp.util.RapidProUtils;
 import org.opensrp.util.constants.EventConstants;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
@@ -14,8 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class RapidProEventService {
+
+	private final Logger logger = LogManager.getLogger(getClass());
 
 	@Value("#{opensrp['rapidpro.project']}")
 	protected String rapidProProject;
@@ -44,6 +52,7 @@ public class RapidProEventService {
 		Client currentClient = clientService.getByBaseEntityId(event.getBaseEntityId());
 		if (currentClient != null) {
 			if (EventConstants.BIRTH_REGISTRATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
+					EventConstants.UPDATE_BIRTH_REGISTRATION.equalsIgnoreCase(event.getEventType()) ||
 					EventConstants.VACCINATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
 					EventConstants.GROWTH_MONITORING_EVENT.equalsIgnoreCase(event.getEventType())) {
 
@@ -56,7 +65,8 @@ public class RapidProEventService {
 					}
 				}
 
-			} else if (EventConstants.NEW_WOMAN_REGISTRATION_EVENT.equalsIgnoreCase(event.getEventType())) {
+			} else if (EventConstants.NEW_WOMAN_REGISTRATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
+					EventConstants.UPDATE_MOTHER_DETAILS.equalsIgnoreCase(event.getEventType())) {
 				if (motherNotRegisteredFromMvacc(currentClient)) {
 					saveRapidProState(event);
 				}
@@ -100,15 +110,23 @@ public class RapidProEventService {
 				break;
 		}
 
-		if (StringUtils.isNotBlank(property)) {
-			RapidproState rapidproState = new RapidproState();
-			rapidproState.setUuid(RapidProConstants.UNPROCESSED_UUID);
-			rapidproState.setEntity(entity);
-			rapidproState.setProperty(property);
-			rapidproState.setPropertyKey(event.getBaseEntityId());
-			rapidproState.setPropertyValue(event.getFormSubmissionId());
-			rapidproState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
-			rapidProStateService.saveRapidProState(rapidproState);
+		List<RapidproState> existingRapidProState = rapidProStateService.getUnSyncedRapidProStates(entity, property).stream()
+				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
+
+		if (existingRapidProState.isEmpty()) {
+			if (StringUtils.isNotBlank(property)) {
+				RapidproState rapidproState = new RapidproState();
+				rapidproState.setUuid(RapidProConstants.UNPROCESSED_UUID);
+				rapidproState.setEntity(entity);
+				rapidproState.setProperty(property);
+				rapidproState.setPropertyKey(event.getBaseEntityId());
+				rapidproState.setPropertyValue(event.getFormSubmissionId());
+				rapidproState.setSyncStatus(RapidProStateSyncStatus.UN_SYNCED.name());
+				rapidProStateService.saveRapidProState(rapidproState);
+			}
+		} else {
+			logger.warn("{}, {} for client identified by {} has already been registered/synced to RapidPro", entity,
+					property, event.getBaseEntityId());
 		}
 	}
 }

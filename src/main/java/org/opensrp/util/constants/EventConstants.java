@@ -25,4 +25,6 @@ public interface EventConstants {
 	String YES = "yes";
 	String PLAN_IDENTIFIER = "planIdentifier";
 	String NEW_WOMAN_REGISTRATION_EVENT = "New Woman Registration";
+	String UPDATE_MOTHER_DETAILS = "Update Mother Details";
+	String UPDATE_BIRTH_REGISTRATION = "Update Birth Registration";
 }
