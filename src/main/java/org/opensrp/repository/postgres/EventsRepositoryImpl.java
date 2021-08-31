@@ -23,6 +23,7 @@ import org.opensrp.search.EventSearchBean;
 import org.smartregister.converters.EventConverter;
 import org.smartregister.domain.Event;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -715,6 +716,9 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		        .collect(Collectors.toList());
 		/**@formatter:on*/
 	}
-	
-	
+
+	@Override
+	public boolean checkEventExists(@NonNull String caseNumber, @NonNull String flag) {
+		return eventMapper.selectCaseTriggeredEventExists(caseNumber, flag);
+	}
 }

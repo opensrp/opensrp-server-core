@@ -5,15 +5,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyObject;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.opensrp.common.AllConstants.Event.OPENMRS_UUID_IDENTIFIER_TYPE;
 import static org.opensrp.repository.postgres.EventsRepositoryTest.createFlagProblemEvent;
+import static org.opensrp.util.constants.EventConstants.CASE_NUMBER;
+import static org.opensrp.util.constants.EventConstants.EVENT_TYPE_CASE_DETAILS;
+import static org.opensrp.util.constants.EventConstants.FLAG;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -136,6 +139,11 @@ public class EventServiceTest extends BaseRepositoryTest {
 		eventsRepository.safeRemove(eventService.find(event));
 		assertNull(eventService.find(event));
 	}
+
+	@Test
+	public void testFindByEventIdReturnsNullWhenIdEmpty(){
+		assertNull(eventService.findById(""));
+	}
 	
 	@Test
 	public void testFindByEventId() {
@@ -224,6 +232,34 @@ public class EventServiceTest extends BaseRepositoryTest {
 		eventService.addEvent(event, username);
 		verify(planRepository, times(1)).get(stringArgumentCaptor.capture());
 		verify(taskGenerator, times(1)).processPlanEvaluation(planDefinitionArgumentCaptor.capture(),stringArgumentCaptor.capture(),eventArgumentCaptor.capture());
+	}
+
+	@Test(expected = DuplicateKeyException.class)
+	public void testAddCaseTriggeredEventThrowsExceptionOnDuplicate() {
+		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
+		Event event = new Event()
+				.withBaseEntityId("4355345345488")
+				.withEventType(EVENT_TYPE_CASE_DETAILS)
+				.withFormSubmissionId("gjhg34534 nvbnv3345345__16")
+				.withEventDate(new DateTime())
+				.withObs(obs);
+		event.addDetails(CASE_NUMBER, "141311000005892210504");
+		event.addDetails(FLAG, "Source");
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("identifier");
+
+		when(planRepository.get(anyString())).thenReturn(plan);
+		Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), anyString(), any(Event.class));
+		eventService.addEvent(event, username);
+
+		Event savedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__16");
+		assertNotNull(savedEvent);
+		assertNotNull(savedEvent.getId());
+		assertNotNull(eventService.getById(savedEvent.getId()));
+
+		// add as duplicate with different FormSubmissionId
+		Event duplicateEvent = event.withFormSubmissionId("gjhg34534 nvbnv3345345__3444556");
+		eventService.addEvent(duplicateEvent, username);
 	}
 	
 	@Test

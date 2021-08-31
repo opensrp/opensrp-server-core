@@ -134,5 +134,12 @@
 			 and e.date_deleted is null
 	</select>
 
+	<select id="selectCaseTriggeredEventExists"  resultType="boolean" useCache="false">
+		select EXISTS(
+			select id
+			from core.event
+			where json->'details'->>'case_number'= #{caseNumber,jdbcType=VARCHAR}
+				and json->'details'->>'flag'=#{flag,jdbcType=VARCHAR})
+	</select>
 
 </mapper>

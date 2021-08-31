@@ -34,4 +34,7 @@ public interface CustomEventMapper extends EventMapper {
 	
 	int updateByPrimaryKeyAndGenerateServerVersion(Event record);
 
+	boolean selectCaseTriggeredEventExists(@Param("caseNumber") String caseNumber,
+			@Param("flag") String flag);
+
 }

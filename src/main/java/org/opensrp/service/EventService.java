@@ -24,18 +24,34 @@ import org.smartregister.domain.Obs;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.opensrp.util.constants.EventConstants.BIRTH_REGISTRATION_EVENT;
 import static org.opensrp.util.constants.EventConstants.CARD_ID_PREFIX;
+import static org.opensrp.util.constants.EventConstants.CASE_NUMBER;
 import static org.opensrp.util.constants.EventConstants.CODED;
 import static org.opensrp.util.constants.EventConstants.CONCEPT;
 import static org.opensrp.util.constants.EventConstants.DATE;
 import static org.opensrp.util.constants.EventConstants.DOSE;
+import static org.opensrp.util.constants.EventConstants.EVENT_TYPE_CASE_DETAILS;
+import static org.opensrp.util.constants.EventConstants.FLAG;
 import static org.opensrp.util.constants.EventConstants.GROWTH_MONITORING_EVENT;
 import static org.opensrp.util.constants.EventConstants.NFC_CARD_IDENTIFIER;
 import static org.opensrp.util.constants.EventConstants.NUMERIC;
@@ -187,6 +203,18 @@ public class EventService {
 				&& getByBaseEntityAndFormSubmissionId(event.getBaseEntityId(), event.getFormSubmissionId()) != null) {
 			throw new IllegalArgumentException(
 					"An event already exists with given baseEntity and formSubmission combination. Consider updating");
+		}
+
+		if (event.getEventType() != null
+				&& event.getEventType().equals(EVENT_TYPE_CASE_DETAILS)
+				&& event.getDetails() != null
+				&& StringUtils.isNotBlank(event.getDetails().get(CASE_NUMBER))){
+			String caseNumber = event.getDetails().get(CASE_NUMBER);
+			String flag = event.getDetails().get(FLAG);
+			boolean caseEventExists = checkIfEventExists(caseNumber, flag);
+			if (caseEventExists){
+				throw new DuplicateKeyException("An event already exists with case_number " + caseNumber + ", and flag '" + flag + "'");
+			}
 		}
 
 		event.setDateCreated(DateTime.now());
@@ -672,6 +700,10 @@ public class EventService {
 		exportImagesSummary.setServicePoints(servicePoints);
 		return exportImagesSummary;
 
+	}
+
+	public boolean checkIfEventExists(@NonNull String caseNumber, @NonNull String flag){
+		return allEvents.checkEventExists(caseNumber, flag);
 	}
 
 }
