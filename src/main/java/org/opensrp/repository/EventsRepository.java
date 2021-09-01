@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.smartregister.domain.Event;
 import org.smartregister.pathevaluator.dao.EventDao;
 import org.opensrp.search.EventSearchBean;
+import org.springframework.lang.NonNull;
 
 public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	
@@ -95,5 +96,13 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	List<String> findBaseEntityIdsByLocation(String locationId);
 
 	List<org.opensrp.domain.postgres.Event> getEventData(String planIdentifier, String eventType, Date fromDate, Date toDate);
+
+	/**
+	 * Checks if events exists
+	 * @param caseNumber
+	 * @param flag
+	 * @return true if exists else false
+	 */
+	boolean checkEventExists(@NonNull String caseNumber, @NonNull String flag);
 	
 }
