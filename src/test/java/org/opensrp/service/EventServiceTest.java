@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -172,6 +173,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		eventService.addEvent(event, username);
 		
 		event = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
+		assertNotNull(eventService.getById(event.getId()));
 		assertEquals("435534534543", event.getBaseEntityId());
 		assertEquals("Growth Monitoring", event.getEventType());
 		assertEquals(1, event.getObs().size());
@@ -234,8 +236,8 @@ public class EventServiceTest extends BaseRepositoryTest {
 		verify(taskGenerator, times(1)).processPlanEvaluation(planDefinitionArgumentCaptor.capture(),stringArgumentCaptor.capture(),eventArgumentCaptor.capture());
 	}
 
-	@Test(expected = DuplicateKeyException.class)
-	public void testAddCaseTriggeredEventThrowsExceptionOnDuplicate() {
+	@Test
+	public void testCheckIfCaseTriggeredEventExistsReturnsForCaseTriggeredEvent() {
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		Event event = new Event()
 				.withBaseEntityId("4355345345488")
@@ -252,14 +254,29 @@ public class EventServiceTest extends BaseRepositoryTest {
 		Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), anyString(), any(Event.class));
 		eventService.addEvent(event, username);
 
-		Event savedEvent = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__16");
-		assertNotNull(savedEvent);
-		assertNotNull(savedEvent.getId());
-		assertNotNull(eventService.getById(savedEvent.getId()));
-
 		// add as duplicate with different FormSubmissionId
 		Event duplicateEvent = event.withFormSubmissionId("gjhg34534 nvbnv3345345__3444556");
-		eventService.addEvent(duplicateEvent, username);
+		assertTrue(eventService.checkIfCaseTriggeredEventExists(duplicateEvent));
+	}
+
+	@Test
+	public void testCheckIfCaseTriggeredEventExists() {
+		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
+		Event event = new Event()
+				.withBaseEntityId("4355345")
+				.withFormSubmissionId("gjhg34534 nvb__16")
+				.withEventDate(new DateTime())
+				.withObs(obs);
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("identifier");
+
+		when(planRepository.get(anyString())).thenReturn(plan);
+		Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), anyString(), any(Event.class));
+		eventService.addEvent(event, username);
+
+		// add as duplicate with different FormSubmissionId
+		Event duplicateEvent = event.withFormSubmissionId("gjhg34534 nvb__16");
+		assertFalse(eventService.checkIfCaseTriggeredEventExists(duplicateEvent));
 	}
 	
 	@Test

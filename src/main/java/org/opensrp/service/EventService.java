@@ -205,18 +205,6 @@ public class EventService {
 					"An event already exists with given baseEntity and formSubmission combination. Consider updating");
 		}
 
-		if (event.getEventType() != null
-				&& event.getEventType().equals(EVENT_TYPE_CASE_DETAILS)
-				&& event.getDetails() != null
-				&& StringUtils.isNotBlank(event.getDetails().get(CASE_NUMBER))){
-			String caseNumber = event.getDetails().get(CASE_NUMBER);
-			String flag = event.getDetails().get(FLAG);
-			boolean caseEventExists = checkIfEventExists(caseNumber, flag);
-			if (caseEventExists){
-				throw new DuplicateKeyException("An event already exists with case_number " + caseNumber + ", and flag '" + flag + "'");
-			}
-		}
-
 		event.setDateCreated(DateTime.now());
 		allEvents.add(event);
 		triggerPlanEvaluation(event, username);
@@ -702,8 +690,16 @@ public class EventService {
 
 	}
 
-	public boolean checkIfEventExists(@NonNull String caseNumber, @NonNull String flag){
-		return allEvents.checkEventExists(caseNumber, flag);
+	public boolean checkIfCaseTriggeredEventExists(@NonNull Event event){
+		if (StringUtils.isNotBlank(event.getEventType())
+				&& event.getEventType().equals(EVENT_TYPE_CASE_DETAILS)
+				&& event.getDetails() != null
+				&& StringUtils.isNotBlank(event.getDetails().get(CASE_NUMBER))) {
+			String caseNumber = event.getDetails().get(CASE_NUMBER);
+			String flag = event.getDetails().get(FLAG);
+			return allEvents.checkEventExists(caseNumber, flag);
+		}
+		return false;
 	}
 
 }
