@@ -257,7 +257,9 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		List<RapidProContact> motherList = rapidProContacts.stream()
 				.filter(rapidProContact ->
 						RapidProConstants.CARETAKER.equalsIgnoreCase(rapidProContact.getFields().getPosition()) &&
+								StringUtils.isNotBlank(motherName) &&
 								motherName.equalsIgnoreCase(rapidProContact.getName()) &&
+								rapidProContact.getUrns() != null &&
 								rapidProContact.getUrns().stream().anyMatch(urn -> urn.contains(motherPhone)))
 				.collect(Collectors.toList());
 		if (motherList.isEmpty()) {
