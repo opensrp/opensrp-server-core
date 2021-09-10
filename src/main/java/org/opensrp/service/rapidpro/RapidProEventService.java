@@ -51,41 +51,59 @@ public class RapidProEventService {
 
 	public void handleZeirEvent(Event event) {
 		Client currentClient = clientService.getByBaseEntityId(event.getBaseEntityId());
-		if (currentClient != null) {
-			if (EventConstants.BIRTH_REGISTRATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
-					EventConstants.UPDATE_BIRTH_REGISTRATION.equalsIgnoreCase(event.getEventType()) ||
-					EventConstants.VACCINATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
-					EventConstants.GROWTH_MONITORING_EVENT.equalsIgnoreCase(event.getEventType())) {
 
-				if (currentClient.getRelationships() != null &&
-						currentClient.getRelationships().containsKey(RapidProConstants.MOTHER)) {
-					String motherEntityId = currentClient.getRelationships().get(RapidProConstants.MOTHER).get(0);
-					Client motherClient = clientService.getByBaseEntityId(motherEntityId);
-					if (motherNotRegisteredFromMvacc(motherClient)) {
+		if (currentClient != null) {
+			if (EventConstants.NEW_WOMAN_REGISTRATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
+					EventConstants.UPDATE_MOTHER_DETAILS.equalsIgnoreCase(event.getEventType())) {
+				if (optInForSMSFromOpenSRP(currentClient)) {
+					saveRapidProState(event);
+				}
+			} else {
+				Client motherClient = getMotherClient(currentClient);
+				boolean optInForSMSFromOpenSRP = optInForSMSFromOpenSRP(motherClient);
+				if ((EventConstants.BIRTH_REGISTRATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
+						EventConstants.UPDATE_BIRTH_REGISTRATION.equalsIgnoreCase(event.getEventType()))
+						&& optInForSMSFromOpenSRP) {
+					saveRapidProState(event);
+				} else if (EventConstants.VACCINATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
+						EventConstants.GROWTH_MONITORING_EVENT.equalsIgnoreCase(event.getEventType())) {
+					if (registeredFromMVACC(motherClient) || subscribedForSMSReminder(motherClient)) {
 						saveRapidProState(event);
 					}
-				}
-
-			} else if (EventConstants.NEW_WOMAN_REGISTRATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
-					EventConstants.UPDATE_MOTHER_DETAILS.equalsIgnoreCase(event.getEventType())) {
-				if (motherNotRegisteredFromMvacc(currentClient)) {
-					saveRapidProState(event);
 				}
 			}
 		}
 	}
 
-	private boolean motherNotRegisteredFromMvacc(Client motherClient) {
+	private Client getMotherClient(Client childClient) {
+		Client motherClient = null;
+		if (childClient.getRelationships() != null &&
+				childClient.getRelationships().containsKey(RapidProConstants.MOTHER)) {
+			String motherEntityId = childClient.getRelationships().get(RapidProConstants.MOTHER).get(0);
+			motherClient = clientService.getByBaseEntityId(motherEntityId);
+		}
+		return motherClient;
+	}
+
+	private boolean optInForSMSFromOpenSRP(Client motherClient) {
 		if (motherClient == null) {
 			return false;
 		}
-		String systemOfReg = (String) motherClient.getAttribute(RapidProConstants.SYSTEM_OF_REGISTRATION);
+		return !registeredFromMVACC(motherClient) && subscribedForSMSReminder(motherClient);
+	}
+
+	private boolean subscribedForSMSReminder(Client motherClient) {
 		String smsReminder = (String) motherClient.getAttribute(RapidProConstants.SMS_REMINDER);
 		String formattedPhone = (String) motherClient.getAttribute(RapidProConstants.SMS_REMINDER_PHONE_FORMATTED);
-		return (systemOfReg == null || StringUtils.isNotBlank(systemOfReg) &&
-				!RapidProConstants.MVACC.equalsIgnoreCase(systemOfReg)) &&
-				StringUtils.isNotBlank(smsReminder) && RapidProConstants.YES.equalsIgnoreCase(smsReminder) &&
-				StringUtils.isNotBlank(formattedPhone) && !"0".equals(formattedPhone);
+		return StringUtils.isNotBlank(smsReminder) &&
+				RapidProConstants.YES.equalsIgnoreCase(smsReminder) &&
+				StringUtils.isNotBlank(formattedPhone) &&
+				!"0".equals(formattedPhone);
+	}
+
+	private boolean registeredFromMVACC(Client motherClient) {
+		String systemOfReg = (String) motherClient.getAttribute(RapidProConstants.SYSTEM_OF_REGISTRATION);
+		return StringUtils.isNotBlank(systemOfReg) && RapidProConstants.MVACC.equalsIgnoreCase(systemOfReg);
 	}
 
 	private void saveRapidProState(Event event) {
