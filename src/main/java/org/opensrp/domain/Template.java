@@ -3,16 +3,16 @@ package org.opensrp.domain;
 import java.io.Serializable;
 
 public class Template implements Serializable {
-    private int templateId;
+    private Integer templateId;
     private String template;
     private String Type;
     private int version;
 
-    public int getTemplateId() {
+    public Integer getTemplateId() {
         return templateId;
     }
 
-    public void setTemplateId(int templateId) {
+    public void setTemplateId(Integer templateId) {
         this.templateId = templateId;
     }
 
