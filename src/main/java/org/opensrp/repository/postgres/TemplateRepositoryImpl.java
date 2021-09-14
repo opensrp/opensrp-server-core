@@ -1,7 +1,6 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.Template;
 import org.opensrp.domain.postgres.TemplateExample;
 import org.opensrp.repository.TemplateRepository;
