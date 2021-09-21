@@ -270,4 +270,14 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
     public long countAllPractitioners() {
       return practitionerMapper.countByExample(new PractitionerExample());
     }
+
+    @Override
+    public Practitioner getPractitionerByIdentifier(String practitionerIdentifier) {
+        org.opensrp.domain.postgres.Practitioner practitioner = getPractitioner(practitionerIdentifier);
+        if (practitioner != null) {
+            return convert(practitioner);
+        } else {
+            return null;
+        }
+    }
 }

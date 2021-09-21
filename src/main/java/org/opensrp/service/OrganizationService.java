@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
 import org.opensrp.repository.LocationRepository;
@@ -278,5 +279,16 @@ public class OrganizationService {
 
 	public long countAllOrganizations() {
 		return organizationRepository.countAllOrganizations();
+	}
+
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'ORGANIZATION_VIEW')")
+	public List<Organization> getAllOrganizationsByOrganizationIds(List<Long> organizationIds) {
+		return organizationRepository.getOrganizationsByIds(organizationIds);
+	}
+
+	public List<Organization> getOrganizationsByPractitionerIdentifier(String practitionerIdentifier) {
+		ImmutablePair<Practitioner, List<Long>> practitionerOrganizationIds = practitionerService.getOrganizationsByPractitionerIdentifier(practitionerIdentifier);
+		return practitionerOrganizationIds != null && practitionerOrganizationIds.getRight() != null && practitionerOrganizationIds.getRight().size() > 0 ? getAllOrganizationsByOrganizationIds(practitionerOrganizationIds.getRight()) : null;
 	}
 }
