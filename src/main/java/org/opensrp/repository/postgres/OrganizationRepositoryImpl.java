@@ -371,4 +371,11 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		return organizationMapper.countByExample(new OrganizationExample());
 	}
 
+	@Override
+	public List<Organization> getOrganizationsByIds(List<Long> organizationIds) {
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectByOrganizationIds(organizationIds);
+		return organizations.isEmpty() ? null : convert(organizations);
+
+	}
+
 }
