@@ -723,12 +723,15 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	}
 
 	@Override
-	public Event findByDbId(Long id) {
+	public Event findByDbId(Long id, boolean includeArchived) {
 		if (id == null) {
 			return null;
 		}
 		EventMetadataExample example = new EventMetadataExample();
-		example.createCriteria().andIdEqualTo(id);
+		Criteria criteria = example.createCriteria().andIdEqualTo(id);
+		if (!includeArchived) {
+			criteria.andDateDeletedIsNull();
+		}
 		List<Event> events = convert(eventMetadataMapper.selectMany(example));
 		return events != null && !events.isEmpty() ? events.get(0) : null;
 	}
