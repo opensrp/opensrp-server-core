@@ -1,5 +1,6 @@
 package org.opensrp.service;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -221,6 +222,25 @@ public class PractitionerServiceTest {
 		practitioners.add(practitioner2);
 		doReturn((long)practitioners.size()).when(practitionerRepository).countAllPractitioners();
 		assertEquals(2, practitionerService.countAllPractitioners());
+	}
+
+	@Test
+	public void testGetOrganizationsByPractitionerIdentifier() {
+		Practitioner practitioner = initTestPractitioner();
+		List<org.opensrp.domain.postgres.PractitionerRole> roles = new ArrayList<>();
+		List<Long> organizationIds = Arrays.asList(11l, 40l,7667l);
+		for(long id:organizationIds) {
+			org.opensrp.domain.postgres.PractitionerRole role = new org.opensrp.domain.postgres.PractitionerRole();
+			role.setOrganizationId(id);
+			roles.add(role);
+		}
+		when(practitionerRepository.getPractitionerByIdentifier(anyString())).thenReturn(practitioner);
+		when(practitionerRoleService.getPgRolesForPractitioner(anyString())).thenReturn(roles);
+		ImmutablePair<Practitioner, List<Long>> practitioneroOrganizationIds = practitionerService.getOrganizationsByPractitionerIdentifier("test-practitioner");
+		assertNotNull(practitioneroOrganizationIds);
+		assertEquals(practitioner, practitioneroOrganizationIds.getLeft());
+		assertEquals("practitoner-1-identifier", practitioneroOrganizationIds.getLeft().getIdentifier());
+		assertEquals(3, practitioneroOrganizationIds.getRight().size());
 	}
 
     private Practitioner initTestPractitioner(){
