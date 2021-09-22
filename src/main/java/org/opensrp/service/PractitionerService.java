@@ -113,8 +113,8 @@ public class PractitionerService {
 		
 	}
 
-	@PreAuthorize("hasRole('PRACTITIONER_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'PRACTITIONER_VIEW')")
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'ORGANIZATION_VIEW')")
 	public ImmutablePair<Practitioner, List<Long>> getOrganizationsByPractitionerIdentifier(String practitionerIdentifier) {
 		Practitioner practioner = getPractitionerRepository().getPractitionerByIdentifier(practitionerIdentifier);
 		List<Long> organizationIds = new ArrayList<>();

@@ -366,6 +366,8 @@ public class OrganizationService {
 		return organizationRepository.getOrganizationsByIds(organizationIds);
 	}
 
+	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'ORGANIZATION_VIEW')")
 	public List<Organization> getOrganizationsByPractitionerIdentifier(String practitionerIdentifier) {
 		ImmutablePair<Practitioner, List<Long>> practitionerOrganizationIds = practitionerService.getOrganizationsByPractitionerIdentifier(practitionerIdentifier);
 		return practitionerOrganizationIds != null && practitionerOrganizationIds.getRight() != null && practitionerOrganizationIds.getRight().size() > 0 ? getAllOrganizationsByOrganizationIds(practitionerOrganizationIds.getRight()) : null;
