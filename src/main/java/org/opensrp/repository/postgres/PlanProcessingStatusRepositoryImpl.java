@@ -99,6 +99,17 @@ public class PlanProcessingStatusRepositoryImpl extends  BaseRepositoryImpl<Plan
     }
 
     @Override
+    public List<PlanProcessingStatus>  getByStatus(Integer status) {
+        if (status == null) {
+            return null;
+        }
+        PlanProcessingStatusExample example = new PlanProcessingStatusExample();
+        example.createCriteria().andStatusEqualTo(status);
+
+        return planProcessingStatusMapper.selectByExample(example);
+    }
+
+    @Override
     protected Long retrievePrimaryKey(PlanProcessingStatus planProcessingStatus) {
         Object uniqueId = getUniqueField(planProcessingStatus);
         if (uniqueId == null) {

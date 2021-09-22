@@ -5,6 +5,8 @@ import org.opensrp.repository.PlanProcessingStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PlanProcessingStatusService {
 
@@ -19,7 +21,7 @@ public class PlanProcessingStatusService {
         return planProcessingStatusRepository;
     }
 
-    public PlanProcessingStatus getTemplateByTemplateId(Long eventId) {
+    public PlanProcessingStatus getProcessingStatusByEventId(Long eventId) {
         return getPlanProcessingStatusRepository().getByEventId(eventId);
     }
 
@@ -34,6 +36,10 @@ public class PlanProcessingStatusService {
             getPlanProcessingStatusRepository().add(planProcessingStatus);
         }
         return planProcessingStatus;
+    }
+
+    public List<PlanProcessingStatus> getProcessingStatusByStatus(Integer status) {
+        return getPlanProcessingStatusRepository().getByStatus(status);
     }
 
 }
