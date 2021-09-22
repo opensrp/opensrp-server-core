@@ -533,7 +533,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 	}
 
 	@Test
-	public void GetOrganizationsByIds() {
+	public void testGetOrganizationsByIds() {
 		List<Long> organizationIds = new ArrayList<>();
 		organizationIds.add(1l);
 		organizationIds.add(2l);
