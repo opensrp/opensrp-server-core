@@ -721,4 +721,15 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	public boolean checkEventExists(@NonNull String caseNumber, @NonNull String flag) {
 		return eventMapper.selectCaseTriggeredEventExists(caseNumber, flag);
 	}
+
+	@Override
+	public Event findByDbId(Long id) {
+		if (id == null) {
+			return null;
+		}
+		EventMetadataExample example = new EventMetadataExample();
+		example.createCriteria().andIdEqualTo(id);
+		List<Event> events = convert(eventMetadataMapper.selectMany(example));
+		return events != null && !events.isEmpty() ? events.get(0) : null;
+	}
 }
