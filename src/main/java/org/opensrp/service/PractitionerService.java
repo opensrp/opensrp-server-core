@@ -98,33 +98,6 @@ public class PractitionerService {
 
 	}
 
-	@PreAuthorize("hasRole('PRACTITIONER_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'PRACTITIONER_VIEW')")
-	public ImmutablePair<Practitioner, List<Long>> getOrganizationsByPractitionerIdentifier(String practitionerIdentifier) {
-		Practitioner practioner = getPractitionerRepository().getPractitionerByIdentifier(practitionerIdentifier);
-		List<Long> organizationIds = new ArrayList<>();
-		if (practioner != null && practioner.getIdentifier() != null) {
-			for (PractitionerRole practitionerRole : practitionerRoleService
-					.getPgRolesForPractitioner(practioner.getIdentifier())) {
-				organizationIds.add(practitionerRole.getOrganizationId());
-			}
-		}
-		return new ImmutablePair<>(practioner, organizationIds);
-	}
-
-	@PreAuthorize("hasRole('PRACTITIONER_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'PRACTITIONER_VIEW')")
-	public ImmutablePair<Practitioner, List<Long>> getOrganizationsByPractitionerIdentifier(String practitionerIdentifier) {
-		Practitioner practioner = getPractitionerRepository().getPractitionerByIdentifier(practitionerIdentifier);
-		List<Long> organizationIds = new ArrayList<>();
-		if (practioner != null && practioner.getIdentifier() != null) {
-			for (PractitionerRole practitionerRole : practitionerRoleService
-					.getPgRolesForPractitioner(practioner.getIdentifier())) {
-				organizationIds.add(practitionerRole.getOrganizationId());
-			}
-		}
-		return new ImmutablePair<>(practioner, organizationIds);
-	}
 
 	/**
 	 * Get practitioner using username
@@ -197,4 +170,17 @@ public class PractitionerService {
 	public long countAllPractitioners () {
 		return getPractitionerRepository().countAllPractitioners();
 	}
+
+	public ImmutablePair<Practitioner, List<Long>> getOrganizationsByPractitionerIdentifier(String practitionerIdentifier) {
+		Practitioner practioner = getPractitionerRepository().getPractitionerByIdentifier(practitionerIdentifier);
+		List<Long> organizationIds = new ArrayList<>();
+		if (practioner != null && practioner.getIdentifier() != null) {
+			for (PractitionerRole practitionerRole : practitionerRoleService
+					.getPgRolesForPractitioner(practioner.getIdentifier())) {
+				organizationIds.add(practitionerRole.getOrganizationId());
+			}
+		}
+		return new ImmutablePair<>(practioner, organizationIds);
+	}
+
 }

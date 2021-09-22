@@ -16,6 +16,7 @@ import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
+import org.smartregister.domain.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,9 @@ public class OrganizationService {
 	private LocationRepository locationRepository;
 
 	private PlanRepository planRepository;
+
+	@Autowired
+	private PractitionerService practitionerService;
 
 	/**
 	 * Get all organizations
@@ -281,8 +285,6 @@ public class OrganizationService {
 		return organizationRepository.countAllOrganizations();
 	}
 
-	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'ORGANIZATION_VIEW')")
 	public List<Organization> getAllOrganizationsByOrganizationIds(List<Long> organizationIds) {
 		return organizationRepository.getOrganizationsByIds(organizationIds);
 	}
