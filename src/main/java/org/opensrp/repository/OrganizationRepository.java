@@ -82,4 +82,6 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	void unassignLocationAndPlan(Long planId);
 
 	long countAllOrganizations();
+
+	List<Organization> getOrganizationsByIds(List<Long> organizationIds);
 }
