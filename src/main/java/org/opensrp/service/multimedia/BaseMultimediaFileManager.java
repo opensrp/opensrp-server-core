@@ -152,6 +152,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                 fileExt = ".png";
                 break;
             case "text/csv":
+            case "application/vnd.ms-excel":
                 multimediaDirPath += CSV_DIR;
                 fileExt = ".csv";
                 break;
