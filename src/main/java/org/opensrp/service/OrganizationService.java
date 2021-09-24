@@ -252,7 +252,16 @@ public class OrganizationService {
 	public void setPlanRepository(PlanRepository planRepository) {
 		this.planRepository = planRepository;
 	}
-	
+
+
+	/**
+	 * @param practitionerService the practitionerService to set
+	 */
+	public void setPractitionerService(PractitionerService practitionerService) {
+		this.practitionerService = practitionerService;
+	}
+
+
 	public List<Organization> getSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findSearchOrganizations(organizationSearchBean);
 	}

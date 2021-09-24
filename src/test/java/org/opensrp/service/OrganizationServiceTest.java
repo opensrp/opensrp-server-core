@@ -11,7 +11,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -23,6 +25,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
@@ -33,6 +36,7 @@ import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.Practitioner;
 
 /**
  * @author Samuel Githengi created on 09/17/19
@@ -48,6 +52,8 @@ public class OrganizationServiceTest {
 
 	private LocationRepository locationRepository;
 
+	private PractitionerService practitionerService;
+
 	private Organization organization;
 
 	private String identifier = UUID.randomUUID().toString();
@@ -59,10 +65,12 @@ public class OrganizationServiceTest {
 		organizationRepository = mock(OrganizationRepository.class);
 		planRepository = mock(PlanRepository.class);
 		locationRepository = mock(LocationRepository.class);
+		practitionerService = mock(PractitionerService.class);
 		organizationService = new OrganizationService();
 		organizationService.setOrganizationRepository(organizationRepository);
 		organizationService.setPlanRepository(planRepository);
 		organizationService.setLocationRepository(locationRepository);
+		organizationService.setPractitionerService(practitionerService);
 		organization = new Organization();
 		organization.setIdentifier(identifier);
 
@@ -303,6 +311,17 @@ public class OrganizationServiceTest {
 		List<Organization> organizations = organizationService.getSearchOrganizations(organizationSearchBean);
 		verify(organizationRepository).findSearchOrganizations(organizationSearchBean);
 		assertEquals(expected, organizations);
+	}
+
+
+	private Practitioner initTestPractitioner() {
+		Practitioner practitioner = new Practitioner();
+		practitioner.setIdentifier("practitoner-1-identifier");
+		practitioner.setActive(true);
+		practitioner.setName("Practitioner");
+		practitioner.setUsername("Practioner1");
+		practitioner.setUserId("user1");
+		return practitioner;
 	}
 
 	@Test
