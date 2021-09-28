@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
 import org.opensrp.repository.LocationRepository;
@@ -15,6 +16,7 @@ import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
+import org.smartregister.domain.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,9 @@ public class OrganizationService {
 	private LocationRepository locationRepository;
 
 	private PlanRepository planRepository;
+
+	@Autowired
+	private PractitionerService practitionerService;
 
 	/**
 	 * Get all organizations
@@ -247,7 +252,16 @@ public class OrganizationService {
 	public void setPlanRepository(PlanRepository planRepository) {
 		this.planRepository = planRepository;
 	}
-	
+
+
+	/**
+	 * @param practitionerService the practitionerService to set
+	 */
+	public void setPractitionerService(PractitionerService practitionerService) {
+		this.practitionerService = practitionerService;
+	}
+
+
 	public List<Organization> getSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findSearchOrganizations(organizationSearchBean);
 	}
@@ -278,5 +292,14 @@ public class OrganizationService {
 
 	public long countAllOrganizations() {
 		return organizationRepository.countAllOrganizations();
+	}
+
+	public List<Organization> getAllOrganizationsByOrganizationIds(List<Long> organizationIds) {
+		return organizationRepository.getOrganizationsByIds(organizationIds);
+	}
+
+	public List<Organization> getOrganizationsByPractitionerIdentifier(String practitionerIdentifier) {
+		ImmutablePair<Practitioner, List<Long>> practitionerOrganizationIds = practitionerService.getOrganizationsByPractitionerIdentifier(practitionerIdentifier);
+		return practitionerOrganizationIds != null && practitionerOrganizationIds.getRight() != null && practitionerOrganizationIds.getRight().size() > 0 ? getAllOrganizationsByOrganizationIds(practitionerOrganizationIds.getRight()) : null;
 	}
 }

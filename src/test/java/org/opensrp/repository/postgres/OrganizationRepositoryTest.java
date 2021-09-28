@@ -532,6 +532,32 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals(3, organizationRepository.countAllOrganizations());
 	}
 
+	@Test
+	public void testGetOrganizationsByIds() {
+		List<Long> organizationIds = new ArrayList<>();
+		organizationIds.add(1l);
+		organizationIds.add(2l);
+		organizationIds.add(3l);
+		List<Organization> organizations = organizationRepository.getOrganizationsByIds(organizationIds);
+		assertNotNull(organizations);
+		assertEquals(3, organizations.size());
+		assertEquals(new Long(1), organizations.get(0).getId());
+		assertEquals("fcc19470-d599-11e9-bb65-2a2ae2dbcce4", organizations.get(0).getIdentifier());
+		assertEquals("The Luang", organizations.get(0).getName());
+		assertEquals(1, organizations.get(0).getType().getCoding().size());
+		Code code = organizations.get(0).getType().getCoding().get(0);
+		assertEquals("http://terminology.hl7.org/CodeSystem/organization-type", code.getSystem());
+		assertEquals("team", code.getCode());
+		assertEquals("Team", code.getDisplay());
+		assertNull(organizations.get(0).getPartOf());
+
+		assertEquals(new Long(3), organizations.get(1).getId());
+		assertEquals("4c506c98-d3a9-11e9-bb65-2a2ae2dbcce4", organizations.get(1).getIdentifier());
+
+		assertEquals(new Long(2), organizations.get(2).getId());
+		assertEquals("d23f7350-d406-11e9-bb65-2a2ae2dbcce4", organizations.get(2).getIdentifier());
+	}
+
 	private static PractitionerRole initTestPractitionerRole() {
 		PractitionerRole practitionerRole = new PractitionerRole();
 		practitionerRole.setIdentifier("pr3-identifier");

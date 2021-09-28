@@ -32,4 +32,6 @@ public interface PractitionerRepository extends BaseRepository<Practitioner> {
 	List<Practitioner> getAllPractitionersByIdentifiers(List<String> practitionerIdentifiers);
 
 	long countAllPractitioners();
+
+	Practitioner getPractitionerByIdentifier(String practitionerIdentifier);
 }
