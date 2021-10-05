@@ -35,14 +35,19 @@
             resultMap="org.opensrp.repository.postgres.mapper.TemplateMapper.BaseResultMap">
         select
         <include
-                refid="org.opensrp.repository.postgres.mapper.TemplateMapper.Base_Column_List" />
-        from team.practitioner_role pr
+                refid="org.opensrp.repository.postgres.mapper.TemplateMapper.Base_Column_List"/>
+        from core.template ct
         <if test="_parameter != null">
-            <include refid="Example_Where_Clause" />
+            <include refid="Example_Where_Clause"/>
         </if>
-        <if test="example.orderByClause != null">
-            order by pr.${example.orderByClause}
-        </if>
+        <choose>
+            <when test="example.orderByClause != null">
+                order by ct.${example.orderByClause}
+            </when>
+            <otherwise>
+                ORDER BY ct.version DESC, ct.id DESC
+            </otherwise>
+        </choose>
         LIMIT #{limit} OFFSET #{offset}
     </select>
 

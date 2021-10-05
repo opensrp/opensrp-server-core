@@ -5,6 +5,8 @@ import org.opensrp.repository.TemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class TemplateService {
 
@@ -18,6 +20,12 @@ public class TemplateService {
     public TemplateRepository getTemplateRepository() {
         return templateRepository;
     }
+
+    public List<Template> getAll(){
+        return templateRepository.getAll();
+    }
+
+    public List<Template> getAll(int limit) { return templateRepository.getAll(limit);}
 
     public Template getTemplateByTemplateId(int templateId) {
         return getTemplateRepository().getTemplateByTemplateId(templateId);

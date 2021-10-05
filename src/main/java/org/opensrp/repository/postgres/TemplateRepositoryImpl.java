@@ -71,6 +71,13 @@ public class TemplateRepositoryImpl extends BaseRepositoryImpl<Template> impleme
     }
 
     @Override
+    public List<Template> getAll(int limit) {
+        TemplateExample templateExample = new TemplateExample();
+        List<org.opensrp.domain.postgres.Template> pgTemplateList = templateMapper.selectMany(templateExample, 0, limit);
+        return convert(pgTemplateList);
+    }
+
+    @Override
     public void safeRemove(Template template) {
         if (template == null) {
             return;
