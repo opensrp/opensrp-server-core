@@ -1,6 +1,7 @@
 package org.opensrp.domain.rapidpro.converter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.opensrp.common.util.DateUtil;
 import org.opensrp.domain.postgres.Organization;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
@@ -30,6 +31,9 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 	}
 
 	protected void addCommonEventProperties(RapidProContact rapidProContact, Event event) {
+		DateTime now = DateTime.now();
+		event.setEventDate(now);
+		event.setDateCreated(now);
 		event.setBaseEntityId(rapidProContact.getUuid());
 		event.setFormSubmissionId(UUID.randomUUID().toString());
 		RapidProFields fields = rapidProContact.getFields();

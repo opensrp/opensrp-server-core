@@ -31,6 +31,7 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 		RapidProFields fields = rapidProContact.getFields();
 		client.addAttribute(RapidProConstants.IS_REGISTRATION_COMPLETE, false);
 		client.addAttribute(RapidProConstants.SYSTEM_OF_REGISTRATION, RapidProConstants.MVACC);
+		client.setDateCreated(DateTime.now());
 		if (StringUtils.isNoneBlank(rapidProContact.getName())) {
 			String[] nameSplit = rapidProContact.getName().split(" ");
 			if (nameSplit.length == 1) {
