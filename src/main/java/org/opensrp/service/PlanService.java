@@ -341,4 +341,14 @@ public class PlanService {
 		return historicalIntervention != null ? historicalIntervention : PlanConstants.BEDNET_DISTRIBUTION;
 	}
 
+	public boolean validateCaseDetailsEvent (Event caseDetailsEvent) {
+		return caseDetailsEvent != null
+				&& StringUtils.isNotEmpty(caseDetailsEvent.getId())
+				&& caseDetailsEvent.getDetails() !=null
+				&& StringUtils.isNotEmpty(caseDetailsEvent.getDetails().get(PlanConstants.CASE_NUMBER))
+				&& StringUtils.isNotEmpty(caseDetailsEvent.getDetails().get(PlanConstants.FOCUS_ID))
+				&& StringUtils.isNotEmpty(caseDetailsEvent.getDetails().get(PlanConstants.FOCUS_STATUS))
+				&& StringUtils.isNotEmpty(caseDetailsEvent.getDetails().get(PlanConstants.FLAG));
+	}
+
 }

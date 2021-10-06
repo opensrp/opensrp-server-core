@@ -8,8 +8,11 @@ public interface PlanConstants {
     String B2 = "B2";
     String IRS = "IRS";
     String LOCAL = "local";
+    String FOCUS_ID = "focus_id";
+    String CASE_NUMBER = "case_number";
     String FOCUS_STATUS = "focus_status";
     String CASE_CLASSIFICATION = "case_classification";
     String BEDNET_DISTRIBUTION = "Bednet Distribution";
+    String FLAG = "flag";
 
 }
