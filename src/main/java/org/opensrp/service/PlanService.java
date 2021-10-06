@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +12,9 @@ import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.PlanSearchBean;
+import org.opensrp.util.constants.PlanConstants;
+import org.smartregister.domain.Action;
+import org.smartregister.domain.Event;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
@@ -293,4 +297,48 @@ public class PlanService {
 		}
 		return 0l;
 	}
+
+	public Integer getPlanTemplate(Event event) {
+		String historicalIntervention = getHistoricalIntervention(Collections.singletonList(event.getLocationId()));
+		Integer planTemplateId = null;
+		if (event == null || event.getDetails() == null) {
+			return null;
+		}
+		if (PlanConstants.A1.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))
+				|| PlanConstants.A2.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))) {
+			planTemplateId = 1;
+		} else if ((PlanConstants.B1.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))
+				|| PlanConstants.B2.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS)))
+				&& PlanConstants.LOCAL.equalsIgnoreCase(event.getDetails().get(PlanConstants.CASE_CLASSIFICATION))
+		) {
+			if (PlanConstants.BEDNET_DISTRIBUTION.equalsIgnoreCase(historicalIntervention)) {
+				planTemplateId = 1;
+			} else if (PlanConstants.IRS.equalsIgnoreCase(historicalIntervention)) {
+				planTemplateId = 1;
+			}
+		} else if (PlanConstants.B1.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))) {
+			planTemplateId = 2;
+		}
+		return planTemplateId;
+	}
+
+	public String getHistoricalIntervention(List<String> operationalAreaIds) {
+		String historicalIntervention = null;
+		List<PlanDefinition> planList = getPlansByServerVersionAndOperationalArea(0, operationalAreaIds, false);
+		for (PlanDefinition plan: planList ) {
+			for (Action action: plan.getActions() ) {
+				if (action.getCode() != null) {
+					if (PlanConstants.BEDNET_DISTRIBUTION.equalsIgnoreCase(action.getCode())) {
+						historicalIntervention = PlanConstants.BEDNET_DISTRIBUTION;
+						break;
+					} else if (PlanConstants.IRS.equalsIgnoreCase(action.getCode())) {
+						historicalIntervention = PlanConstants.IRS;
+						break;
+					}
+				}
+			}
+		}
+		return historicalIntervention != null ? historicalIntervention : PlanConstants.BEDNET_DISTRIBUTION;
+	}
+
 }
