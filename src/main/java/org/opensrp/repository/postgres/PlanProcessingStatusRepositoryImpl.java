@@ -10,6 +10,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomPlanProcessingStatusM
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -119,19 +120,28 @@ public class PlanProcessingStatusRepositoryImpl extends  BaseRepositoryImpl<Plan
     }
 
     @Override
-    public void updatePlanProcessingStatus(String eventIdentifier, String planIdentifier, int status) {
-
+    public void addPlanProcessingStatus(String eventIdentifier, int status) {
+        Event pgEvent = allEvents.getDbEventByIdentifier(eventIdentifier);
         PlanProcessingStatus processingStatus = new PlanProcessingStatus();
         processingStatus.setStatus(status);
+        processingStatus.setEventId(pgEvent.getId());
+        add(processingStatus);
+    }
+
+    @Override
+    public void updatePlanProcessingStatus(PlanProcessingStatus planProcessingStatus, String eventIdentifier, String planIdentifier, int status) {
+
+        planProcessingStatus.setStatus(status);
+        planProcessingStatus.setDateEdited(new Date());
         if (StringUtils.isNotBlank(eventIdentifier)) {
             Event pgEvent = allEvents.getDbEventByIdentifier(eventIdentifier);
-            processingStatus.setEventId(pgEvent.getId());
+            planProcessingStatus.setEventId(pgEvent.getId());
         }
         if (StringUtils.isNotBlank(planIdentifier)){
             Long planId = planRepository.retrievePrimaryKey(planIdentifier);
-            processingStatus.setPlanId(planId);
+            planProcessingStatus.setPlanId(planId);
         }
-        add(processingStatus);
+        update(planProcessingStatus);
     }
 
     @Override
