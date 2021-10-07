@@ -86,17 +86,21 @@ public abstract class BaseRapidProStateService {
 		if (uuid == null || RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(uuid)) {
 			return;
 		}
+		logger.warn("Posting and updating synced OpenSRP state for RapidPro contact identified with {} ", uuid);
 		try (CloseableHttpResponse httpResponse = postToRapidPro(payload, getContactUrl(existing, uuid))) {
 			if (httpResponse != null) {
 				RapidProUtils.logResponseStatusCode(httpResponse, logger);
 				if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK && existing) {
+					logger.warn("Contact identified by {} successfully created/updated", uuid);
 					for (Long id : ids) {
 						updateRapidProState(id, uuid, RapidProStateSyncStatus.SYNCED);
+						logger.warn("Corresponding OpenSRP state with id {} updated for contact identified as {} ", id, uuid);
 					}
 				}
 			}
 		}
 		catch (IOException exception) {
+			logger.error("An exception encountered while posting data to RapidPro and updating state");
 			logger.error(exception);
 		}
 	}

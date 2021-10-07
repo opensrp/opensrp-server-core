@@ -105,6 +105,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		ZeirGrowthMonitoringConverter growthMonitoringConverter = new ZeirGrowthMonitoringConverter();
 
 		if (unSyncedChildStates != null && !unSyncedChildStates.isEmpty()) {
+			logger.warn("Syncing {} client(s) created from OpenSRP to RapidPro", unSyncedChildStates.size());
 			for (RapidproState unSyncedChildState : unSyncedChildStates) {
 
 				Client childClient = clientService.getByBaseEntityId(unSyncedChildState.getPropertyKey());
@@ -139,6 +140,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					}
 				}
 			}
+			logger.warn("Synced {} client(s) created from OpenSRP to RapidPro", unSyncedChildStates.size());
 		}
 
 		postExistingChildData(childConverter, vaccinationConverter, growthMonitoringConverter);
@@ -345,6 +347,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 
 		if (!unSyncedStates.isEmpty()) {
+			logger.warn("Syncing {} record(s) of type {}  from OpenSRP to RapidPro", unSyncedStates.size(), entity.name());
 			for (RapidproState rapidproState : unSyncedStates) {
 				synchronized (this) {
 					try {
@@ -360,6 +363,9 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					}
 				}
 			}
+			logger.warn("Synced all {} record(s) of type {} from OpenSRP to RapidPro", unSyncedStates.size(), entity.name());
+		} else {
+			logger.warn("No OpenSRP record(s) of type {} available for sync to RapidPro", entity.name());
 		}
 	}
 
