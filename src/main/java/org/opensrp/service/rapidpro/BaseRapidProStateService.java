@@ -75,11 +75,15 @@ public abstract class BaseRapidProStateService {
 	}
 
 	public List<RapidproState> getStatesByPropertyKey(String entity, String property, String propertyKey) {
-		return rapidProStateRepository.getByStatesPropertyKey(entity, property, propertyKey);
+		return rapidProStateRepository.getStatesByPropertyKey(entity, property, propertyKey);
 	}
 
 	public List<RapidproState> getStatesByPropertyKey(String uuid, String entity, String property, String propertyKey) {
-		return rapidProStateRepository.getByStatesPropertyKey(uuid, entity, property, propertyKey);
+		return rapidProStateRepository.getStatesByPropertyKey(uuid, entity, property, propertyKey);
+	}
+
+	public List<RapidproState> getDistinctStatesByUuidAndSyncStatus(String uuid, String syncStatus) {
+		return rapidProStateRepository.getDistinctStatesByUuidAndSyncStatus(uuid, syncStatus);
 	}
 
 	public void postAndUpdateStatus(List<Long> ids, String uuid, String payload, boolean existing) throws IOException {

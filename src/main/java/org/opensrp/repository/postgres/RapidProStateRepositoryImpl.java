@@ -83,7 +83,7 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 	}
 
 	@Override
-	public List<RapidproState> getByStatesPropertyKey(String entity, String property, String propertyKey) {
+	public List<RapidproState> getStatesByPropertyKey(String entity, String property, String propertyKey) {
 		RapidproStateExample rapidproStateExample = new RapidproStateExample();
 		rapidproStateExample.createCriteria()
 				.andEntityEqualTo(entity)
@@ -93,13 +93,23 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 	}
 
 	@Override
-	public List<RapidproState> getByStatesPropertyKey(String uuid, String entity, String property, String propertyKey) {
+	public List<RapidproState> getStatesByPropertyKey(String uuid, String entity, String property, String propertyKey) {
 		RapidproStateExample rapidproStateExample = new RapidproStateExample();
 		rapidproStateExample.createCriteria()
 				.andUuidEqualTo(uuid)
 				.andEntityEqualTo(entity)
 				.andPropertyEqualTo(property)
 				.andPropertyKeyEqualTo(propertyKey);
+		return rapidproStateMapper.selectByExample(rapidproStateExample);
+	}
+
+	@Override
+	public List<RapidproState> getDistinctStatesByUuidAndSyncStatus(String uuid, String syncStatus) {
+		RapidproStateExample rapidproStateExample = new RapidproStateExample();
+		rapidproStateExample.setDistinct(true);
+		rapidproStateExample.createCriteria()
+				.andUuidEqualTo(uuid)
+				.andSyncStatusEqualTo(syncStatus);
 		return rapidproStateMapper.selectByExample(rapidproStateExample);
 	}
 }

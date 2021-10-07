@@ -12,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.opensrp.domain.postgres.RapidproState;
+import org.opensrp.domain.rapidpro.RapidProStateSyncStatus;
 import org.opensrp.domain.rapidpro.ZeirRapidProEntity;
 import org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
@@ -141,6 +142,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				}
 			}
 			logger.warn("Synced {} client(s) created from OpenSRP to RapidPro", unSyncedChildStates.size());
+		} else {
+			logger.warn("No new child client(s) created from OpenSRP available for sync to RapidPro");
 		}
 
 		postExistingChildData(childConverter, vaccinationConverter, growthMonitoringConverter);
@@ -160,8 +163,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 			ZeirGrowthMonitoringConverter growthMonitoringConverter) {
 
 		//Select un synced data distinctly by baseEntityId.
-		Set<String> baseEntityIds = getRapidProStatesByUuid(RapidProConstants.UNPROCESSED_UUID, CHILD.name(),
-				GROWTH_MONITORING_DATA.name()).stream()
+		Set<String> baseEntityIds = getDistinctStatesByUuidAndSyncStatus(RapidProConstants.UNPROCESSED_UUID,
+				RapidProStateSyncStatus.UN_SYNCED.name()).stream()
 				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT)
 				.map(RapidproState::getPropertyKey)
 				.collect(Collectors.toSet());
@@ -189,6 +192,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 							growthMonitoringStates);
 				}
 			}
+		} else {
+			logger.warn("No new vaccination/growth monitoring events generated from OpenSRP available for sync to RapidPro");
 		}
 	}
 
@@ -202,12 +207,13 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		primaryKeys.addAll(getPrimaryKeys(growthMonitoringStates));
 
 		if (!primaryKeys.isEmpty()) {
+			logger.warn("Updating vaccination/growth monitoring fields for contact identified by {}", uuid);
 			synchronized (this) {
 				try {
 					String fieldsJson = objectMapper.writeValueAsString(childContact.getFields());
 					JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, new JSONObject(fieldsJson));
 					postAndUpdateStatus(primaryKeys, uuid, payload.toString(), true);
-					logger.warn("Updated RapidProContact: " + uuid);
+					logger.warn("Updated vaccination/growth monitoring fields for contact identified by " + uuid);
 				}
 				catch (JSONException jsonException) {
 					logger.warn("Error creating fields Json", jsonException);
@@ -288,8 +294,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		}
 	}
 
-	private List<Long> getPrimaryKeys(List<RapidproState> rapidproStates) {
-		return rapidproStates.stream().map(RapidproState::getId).collect(Collectors.toList());
+	private List<Long> getPrimaryKeys(List<RapidproState> rapidProStates) {
+		return rapidProStates.stream().map(RapidproState::getId).collect(Collectors.toList());
 	}
 
 	private synchronized void postMotherData(List<RapidproState> motherStates) {
@@ -329,6 +335,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					}
 				}
 			}
+		} else {
+			logger.warn("No new mother client(s) created from OpenSRP available for sync to RapidPro");
 		}
 	}
 

@@ -19,7 +19,9 @@ public interface RapidProStateRepository {
 
 	boolean updateUuids(List<Long> ids, String uuid);
 
-	List<RapidproState> getByStatesPropertyKey(String entity, String property, String propertyKey);
+	List<RapidproState> getStatesByPropertyKey(String entity, String property, String propertyKey);
 
-	List<RapidproState> getByStatesPropertyKey(String uuid, String entity, String property, String propertyKey);
+	List<RapidproState> getStatesByPropertyKey(String uuid, String entity, String property, String propertyKey);
+
+	List<RapidproState> getDistinctStatesByUuidAndSyncStatus(String uuid, String syncStatus);
 }
