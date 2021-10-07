@@ -355,7 +355,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", assignedLocations.get(0).getJurisdictionId());
 		assertEquals("7f2ae03f-9569-5535-918c-9d976b3ae5f8", assignedLocations.get(0).getPlanId());
 		assertEquals("2019-09-10", dateFormat.format(assignedLocations.get(0).getFromDate()));
-		assertEquals("2021-09-10", dateFormat.format(assignedLocations.get(0).getToDate()));
+		assertEquals("5021-09-10", dateFormat.format(assignedLocations.get(0).getToDate()));
 		
 	}
 	
@@ -370,7 +370,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", assignedLocations.get(0).getJurisdictionId());
 		assertEquals("7f2ae03f-9569-5535-918c-9d976b3ae5f8", assignedLocations.get(0).getPlanId());
 		assertEquals("2019-09-10", dateFormat.format(assignedLocations.get(0).getFromDate()));
-		assertEquals("2021-09-10", dateFormat.format(assignedLocations.get(0).getToDate()));
+		assertEquals("5021-09-10", dateFormat.format(assignedLocations.get(0).getToDate()));
 		
 		assignedLocations = organizationRepository.findAssignedLocations(Arrays.asList(1l, 2l), true);
 		assertEquals(3, assignedLocations.size());
@@ -530,6 +530,32 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		organizationRepository.add(organization1);
 		organizationRepository.add(organization2);
 		assertEquals(3, organizationRepository.countAllOrganizations());
+	}
+
+	@Test
+	public void testGetOrganizationsByIds() {
+		List<Long> organizationIds = new ArrayList<>();
+		organizationIds.add(1l);
+		organizationIds.add(2l);
+		organizationIds.add(3l);
+		List<Organization> organizations = organizationRepository.getOrganizationsByIds(organizationIds);
+		assertNotNull(organizations);
+		assertEquals(3, organizations.size());
+		assertEquals(new Long(1), organizations.get(0).getId());
+		assertEquals("fcc19470-d599-11e9-bb65-2a2ae2dbcce4", organizations.get(0).getIdentifier());
+		assertEquals("The Luang", organizations.get(0).getName());
+		assertEquals(1, organizations.get(0).getType().getCoding().size());
+		Code code = organizations.get(0).getType().getCoding().get(0);
+		assertEquals("http://terminology.hl7.org/CodeSystem/organization-type", code.getSystem());
+		assertEquals("team", code.getCode());
+		assertEquals("Team", code.getDisplay());
+		assertNull(organizations.get(0).getPartOf());
+
+		assertEquals(new Long(3), organizations.get(1).getId());
+		assertEquals("4c506c98-d3a9-11e9-bb65-2a2ae2dbcce4", organizations.get(1).getIdentifier());
+
+		assertEquals(new Long(2), organizations.get(2).getId());
+		assertEquals("d23f7350-d406-11e9-bb65-2a2ae2dbcce4", organizations.get(2).getIdentifier());
 	}
 
 	private static PractitionerRole initTestPractitionerRole() {

@@ -35,4 +35,6 @@ public interface CustomOrganizationMapper extends OrganizationMapper {
 	int selectOrganizationCount(@Param("searchBean") OrganizationSearchBean searchBean);
 
 	List<Organization> selectOrganizationsEncompassLocations(@Param("identifier") String identifier, @Param("activeDate") Date activeDate);
+
+	List<Organization> selectByOrganizationIds(@Param("organizationIds") List<Long> organizationIds);
 }
