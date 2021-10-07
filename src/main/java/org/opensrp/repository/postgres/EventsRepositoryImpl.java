@@ -735,4 +735,12 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		List<Event> events = convert(eventMetadataMapper.selectMany(example));
 		return events != null && !events.isEmpty() ? events.get(0) : null;
 	}
+
+	@Override
+	public org.opensrp.domain.postgres.Event getDbEventByIdentifier(String identifier) {
+		if (StringUtils.isBlank(identifier)) {
+			return null;
+		}
+		return eventMetadataMapper.selectByDocumentId(identifier);
+	}
 }

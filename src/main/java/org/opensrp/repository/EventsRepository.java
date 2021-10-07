@@ -106,5 +106,7 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	boolean checkEventExists(@NonNull String caseNumber, @NonNull String flag);
 
 	Event findByDbId(Long id, boolean includeArchived);
+
+	org.opensrp.domain.postgres.Event getDbEventByIdentifier(String identifier);
 	
 }

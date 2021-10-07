@@ -1,7 +1,9 @@
 package org.opensrp.repository.postgres;
 
+import org.opensrp.domain.postgres.Event;
 import org.opensrp.domain.postgres.PlanProcessingStatus;
 import org.opensrp.domain.postgres.PlanProcessingStatusExample;
+import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanProcessingStatusRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPlanProcessingStatusMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,9 @@ public class PlanProcessingStatusRepositoryImpl extends  BaseRepositoryImpl<Plan
 
     @Autowired
     private CustomPlanProcessingStatusMapper planProcessingStatusMapper;
+
+    @Autowired
+    private EventsRepository allEvents;
 
     @Override
     public PlanProcessingStatus get(String id) {
@@ -107,6 +112,15 @@ public class PlanProcessingStatusRepositoryImpl extends  BaseRepositoryImpl<Plan
         example.createCriteria().andStatusEqualTo(status);
 
         return planProcessingStatusMapper.selectByExample(example);
+    }
+
+    @Override
+    public void updatePlanProcessingStatus(String eventIdentifier, int status) {
+        Event pgEvent = allEvents.getDbEventByIdentifier(eventIdentifier);
+        PlanProcessingStatus processingStatus = new PlanProcessingStatus();
+        processingStatus.setStatus(status);
+        processingStatus.setEventId(pgEvent.getId());
+        add(processingStatus);
     }
 
     @Override
