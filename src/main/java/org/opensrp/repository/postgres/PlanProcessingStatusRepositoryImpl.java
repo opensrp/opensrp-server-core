@@ -1,5 +1,6 @@
 package org.opensrp.repository.postgres;
 
+import org.apache.commons.lang.StringUtils;
 import org.opensrp.domain.postgres.Event;
 import org.opensrp.domain.postgres.PlanProcessingStatus;
 import org.opensrp.domain.postgres.PlanProcessingStatusExample;
@@ -19,6 +20,9 @@ public class PlanProcessingStatusRepositoryImpl extends  BaseRepositoryImpl<Plan
 
     @Autowired
     private EventsRepository allEvents;
+
+    @Autowired
+    private PlanRepositoryImpl planRepository;
 
     @Override
     public PlanProcessingStatus get(String id) {
@@ -115,11 +119,18 @@ public class PlanProcessingStatusRepositoryImpl extends  BaseRepositoryImpl<Plan
     }
 
     @Override
-    public void updatePlanProcessingStatus(String eventIdentifier, int status) {
-        Event pgEvent = allEvents.getDbEventByIdentifier(eventIdentifier);
+    public void updatePlanProcessingStatus(String eventIdentifier, String planIdentifier, int status) {
+
         PlanProcessingStatus processingStatus = new PlanProcessingStatus();
         processingStatus.setStatus(status);
-        processingStatus.setEventId(pgEvent.getId());
+        if (StringUtils.isNotBlank(eventIdentifier)) {
+            Event pgEvent = allEvents.getDbEventByIdentifier(eventIdentifier);
+            processingStatus.setEventId(pgEvent.getId());
+        }
+        if (StringUtils.isNotBlank(planIdentifier)){
+            Long planId = planRepository.retrievePrimaryKey(planIdentifier);
+            processingStatus.setPlanId(planId);
+        }
         add(processingStatus);
     }
 

@@ -42,8 +42,8 @@ public class PlanProcessingStatusService {
         return getPlanProcessingStatusRepository().getByStatus(status);
     }
 
-    public void updatePlanProcessingStatus(String eventIdentifier, int status) {
-        getPlanProcessingStatusRepository().updatePlanProcessingStatus(eventIdentifier, status);
+    public void updatePlanProcessingStatus(String eventIdentifier, String planIdentifier, int status) {
+        getPlanProcessingStatusRepository().updatePlanProcessingStatus(eventIdentifier, planIdentifier, status);
     }
 
 }
