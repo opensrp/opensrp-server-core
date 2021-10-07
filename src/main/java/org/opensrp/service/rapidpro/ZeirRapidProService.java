@@ -58,6 +58,8 @@ import static org.opensrp.util.RapidProUtils.setupRapidproRequest;
 @Service
 public class ZeirRapidProService extends BaseRapidProService implements RapidProResponseCallback {
 
+	public static final String ZAMBIA_COUNTRY_CODE = "+260";
+
 	/**
 	 * Process the RapidPro contacts retrieved from the server. At this time of execution, the RapidProContact has already been
 	 * updated with the location id of the provider. If location Id is not provided for some reasons for instance RapidPro
@@ -116,7 +118,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 					try {
 						//Only process child contacts
 						RapidProFields fields = rapidProContact.getFields();
-						if (StringUtils.isBlank(fields.getSupervisorPhone())) {
+						if (StringUtils.isBlank(fields.getSupervisorPhone()) &&
+								StringUtils.isNotBlank(fields.getPosition())) {
 							logger.error("Supervisor phone not provided for contact of type {}", fields.getPosition());
 						}
 						if (StringUtils.isNotBlank(fields.getSupervisorPhone()) && RapidProConstants.CHILD
@@ -130,9 +133,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 							if (StringUtils.isNotBlank(locationId)) {
 								updateExistingClientUuid(rapidProContact, ZeirRapidProEntity.CHILD);
 								fields.setFacilityLocationId(locationId);
-								processRegistrationEventClient(rapidProContact, rapidProContacts);
-								processVaccinationEvent(rapidProContact);
-								processGrowthMonitoringEvent(rapidProContact);
+								processRegistrationAndRelatedEvents(rapidProContact, rapidProContacts);
 							}
 						}//TODO Add implementation for processing supervisor for instance when their location is updated;
 					}
@@ -209,11 +210,11 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	 * @param childContact     Current contact
 	 * @param rapidProContacts All RapidPro contacts used to filter mother contact
 	 */
-	public void processRegistrationEventClient(RapidProContact childContact, List<RapidProContact> rapidProContacts) {
+	public void processRegistrationAndRelatedEvents(RapidProContact childContact, List<RapidProContact> rapidProContacts) {
 		RapidProFields fields = childContact.getFields();
 		if (RapidProConstants.CHILD.equalsIgnoreCase(fields.getPosition())) {
 			RapidProContact motherContact =
-					getMotherContact(fields.getMotherName(), fields.getMotherPhone(), rapidProContacts);
+					getMotherContact(fields.getMotherPhone(), rapidProContacts);
 
 			if (motherContact != null) {
 				updateExistingClientUuid(motherContact, ZeirRapidProEntity.CARETAKER);
@@ -230,6 +231,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 						saveEvent(motherContact, new ZeirMotherRegistrationConverter(organizationService));
 					}
 				}
+				processVaccinationEvent(childContact);
+				processGrowthMonitoringEvent(childContact);
 			}
 		}
 	}
@@ -258,17 +261,17 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		}
 	}
 
-	private RapidProContact getMotherContact(String motherName, String motherPhone, List<RapidProContact> rapidProContacts) {
+	private RapidProContact getMotherContact(String motherPhone, List<RapidProContact> rapidProContacts) {
 		if (StringUtils.isBlank(motherPhone)) {
 			return null;
 		}
 		List<RapidProContact> motherList = rapidProContacts.stream()
 				.filter(rapidProContact ->
 						RapidProConstants.CARETAKER.equalsIgnoreCase(rapidProContact.getFields().getPosition()) &&
-								StringUtils.isNotBlank(motherName) &&
-								motherName.equalsIgnoreCase(rapidProContact.getName()) &&
 								rapidProContact.getUrns() != null &&
-								rapidProContact.getUrns().stream().anyMatch(urn -> urn.contains(motherPhone)))
+								rapidProContact.getUrns().stream().anyMatch(urn ->
+										urn.contains(motherPhone.startsWith(ZAMBIA_COUNTRY_CODE) ?
+												StringUtils.removeStart(motherPhone, ZAMBIA_COUNTRY_CODE) : motherPhone)))
 				.collect(Collectors.toList());
 		if (motherList.isEmpty()) {
 			return null;
