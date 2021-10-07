@@ -116,13 +116,13 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 					try {
 						//Only process child contacts
 						RapidProFields fields = rapidProContact.getFields();
-						if (StringUtils.isNoneBlank(fields.getSupervisorPhone())) {
+						if (StringUtils.isBlank(fields.getSupervisorPhone())) {
 							logger.error("Supervisor phone not provided for contact of type {}", fields.getPosition());
 						}
-						if (fields.getSupervisorPhone() != null && RapidProConstants.CHILD
+						if (StringUtils.isNotBlank(fields.getSupervisorPhone()) && RapidProConstants.CHILD
 								.equalsIgnoreCase(fields.getPosition())) {
 							String locationId = getLocationId(rapidProContact, rapidProContacts);
-							if (StringUtils.isNoneBlank(locationId)) {
+							if (StringUtils.isBlank(locationId)) {
 								logger.error(
 										"Supervisor identified with phone number '{}' not tagged to an exising OpenSRP location",
 										fields.getSupervisorPhone());
