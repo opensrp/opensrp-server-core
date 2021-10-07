@@ -141,4 +141,12 @@
 	
 	</select>
 
+    <select id="selectByOrganizationIds" resultMap="org.opensrp.repository.postgres.mapper.OrganizationMapper.BaseResultMap">
+
+        select
+        <include
+                refid="org.opensrp.repository.postgres.mapper.OrganizationMapper.Base_Column_List" />
+        from team.organization
+        where id IN <foreach item="organizationId" collection="organizationIds" open="(" separator="," close=")">#{organizationId}</foreach>
+    </select>
 </mapper>

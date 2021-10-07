@@ -386,4 +386,12 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		return null;
 	}
 
+	@Override
+	public List<Organization> getOrganizationsByIds(List<Long> organizationIds) {
+		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectByOrganizationIds(
+				organizationIds);
+		return organizations.isEmpty() ? null : convert(organizations);
+
+	}
+
 }

@@ -5,22 +5,21 @@ package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +34,7 @@ import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.Practitioner;
 
 /**
  * @author Samuel Githengi created on 09/17/19
@@ -50,6 +50,8 @@ public class OrganizationServiceTest {
 
 	private LocationRepository locationRepository;
 
+	private PractitionerService practitionerService;
+
 	private Organization organization;
 
 	private String identifier = UUID.randomUUID().toString();
@@ -61,10 +63,12 @@ public class OrganizationServiceTest {
 		organizationRepository = mock(OrganizationRepository.class);
 		planRepository = mock(PlanRepository.class);
 		locationRepository = mock(LocationRepository.class);
+		practitionerService = mock(PractitionerService.class);
 		organizationService = new OrganizationService();
 		organizationService.setOrganizationRepository(organizationRepository);
 		organizationService.setPlanRepository(planRepository);
 		organizationService.setLocationRepository(locationRepository);
+		organizationService.setPractitionerService(practitionerService);
 		organization = new Organization();
 		organization.setIdentifier(identifier);
 
@@ -307,9 +311,40 @@ public class OrganizationServiceTest {
 		assertEquals(expected, organizations);
 	}
 
+
+	private Practitioner initTestPractitioner() {
+		Practitioner practitioner = new Practitioner();
+		practitioner.setIdentifier("practitoner-1-identifier");
+		practitioner.setActive(true);
+		practitioner.setName("Practitioner");
+		practitioner.setUsername("Practioner1");
+		practitioner.setUserId("user1");
+		return practitioner;
+	}
+
 	@Test
 	public void testCountAllOrganizations() {
 		doReturn(2L).when(organizationRepository).countAllOrganizations();
 		assertEquals(2L, organizationService.countAllOrganizations());
+	}
+
+	@Test
+	public void testGetOrganizationsByPractitionerIdentifier() {
+		Practitioner practitioner = initTestPractitioner();
+		List<Long> organizationIds = new ArrayList<>();
+		organizationIds.add(1l);
+		organizationIds.add(2l);
+		organizationIds.add(3l);
+
+		List<Organization> organizationList = new ArrayList<>();
+		Organization organization = new Organization();
+		organization.setIdentifier("test-identifier");
+		organizationList.add(organization);
+		ImmutablePair<Practitioner, List<Long>> practitionerOrganizationIds = new ImmutablePair<>(practitioner,organizationIds);
+		when(practitionerService.getOrganizationsByPractitionerIdentifier(anyString())).thenReturn(practitionerOrganizationIds);
+		when(organizationRepository.getOrganizationsByIds(anyList())).thenReturn(organizationList);
+		List<Organization> organizations = organizationService.getOrganizationsByPractitionerIdentifier("practitioner-1-identifier");
+		assertEquals(1, organizations.size());
+		assertEquals("test-identifier", organizations.get(0).getIdentifier());
 	}
 }

@@ -27,4 +27,7 @@ public interface EventConstants {
 	String NEW_WOMAN_REGISTRATION_EVENT = "New Woman Registration";
 	String UPDATE_MOTHER_DETAILS = "Update Mother Details";
 	String UPDATE_BIRTH_REGISTRATION = "Update Birth Registration";
+	String CASE_NUMBER = "case_number";
+	String FLAG = "flag";
+	String EVENT_TYPE_CASE_DETAILS = "Case_Details";
 }

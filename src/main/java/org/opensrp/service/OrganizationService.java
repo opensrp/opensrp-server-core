@@ -4,6 +4,7 @@
 package org.opensrp.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
 import org.opensrp.repository.LocationRepository;
@@ -12,6 +13,7 @@ import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
+import org.smartregister.domain.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,9 @@ public class OrganizationService {
 	private LocationRepository locationRepository;
 
 	private PlanRepository planRepository;
+
+	@Autowired
+	private PractitionerService practitionerService;
 
 	/**
 	 * Get all organizations
@@ -51,7 +56,7 @@ public class OrganizationService {
 	/**
 	 * Get the organization that has the identifier
 	 * 
-	 * @param identifier
+	 * @param identifier UUID for organization
 	 * @return organization with matching identifier
 	 */
 	public Organization getOrganization(String identifier) {
@@ -61,7 +66,7 @@ public class OrganizationService {
 	/**
 	 * Get the organization that has the identifier
 	 * 
-	 * @param identifier
+	 * @param id organizaiton id
 	 * @return organization with matching identifier
 	 */
 	public Organization getOrganization(Long id) {
@@ -117,12 +122,12 @@ public class OrganizationService {
 
 	/**
 	 * Assigns the jurisdiction and /or plan to the organization with organizationId
-	 * 
-	 * @param organizationId the id of the organization
+	 *
+	 * @param identifier UUID of the organization
 	 * @param jurisdictionId the identifier of the jurisdiction
 	 * @param planId         the identifier of the plan
-	 * @param fromDate
-	 * @param toDate
+	 * @param fromDate date first created
+	 * @param toDate expiration date
 	 */
 	public void assignLocationAndPlan(String identifier, String jurisdictionId, String planId, Date fromDate,
 			Date toDate) {
@@ -247,7 +252,16 @@ public class OrganizationService {
 	public void setPlanRepository(PlanRepository planRepository) {
 		this.planRepository = planRepository;
 	}
-	
+
+
+	/**
+	 * @param practitionerService the practitionerService to set
+	 */
+	public void setPractitionerService(PractitionerService practitionerService) {
+		this.practitionerService = practitionerService;
+	}
+
+
 	public List<Organization> getSearchOrganizations(OrganizationSearchBean organizationSearchBean) {
 		return organizationRepository.findSearchOrganizations(organizationSearchBean);
 	}
@@ -283,5 +297,14 @@ public class OrganizationService {
 	public org.opensrp.domain.postgres.Organization getOrganizationByLocationId(String jurisdictionId) {
 		Long primaryKey = locationRepository.retrievePrimaryKey(jurisdictionId, true);
 		return organizationRepository.getLastAssignedOrganization(primaryKey);
+	}
+
+	public List<Organization> getAllOrganizationsByOrganizationIds(List<Long> organizationIds) {
+		return organizationRepository.getOrganizationsByIds(organizationIds);
+	}
+
+	public List<Organization> getOrganizationsByPractitionerIdentifier(String practitionerIdentifier) {
+		ImmutablePair<Practitioner, List<Long>> practitionerOrganizationIds = practitionerService.getOrganizationsByPractitionerIdentifier(practitionerIdentifier);
+		return practitionerOrganizationIds != null && practitionerOrganizationIds.getRight() != null && practitionerOrganizationIds.getRight().size() > 0 ? getAllOrganizationsByOrganizationIds(practitionerOrganizationIds.getRight()) : null;
 	}
 }

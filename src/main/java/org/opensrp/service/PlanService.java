@@ -293,5 +293,4 @@ public class PlanService {
 		}
 		return 0l;
 	}
-	
 }
