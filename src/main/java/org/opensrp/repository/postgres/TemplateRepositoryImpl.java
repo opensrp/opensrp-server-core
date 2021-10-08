@@ -1,6 +1,8 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.json.JSONObject;
+import org.opensrp.domain.PlanTemplate;
 import org.opensrp.domain.Template;
 import org.opensrp.domain.postgres.TemplateExample;
 import org.opensrp.repository.TemplateRepository;
@@ -57,8 +59,8 @@ public class TemplateRepositoryImpl extends BaseRepositoryImpl<Template> impleme
 
         org.opensrp.domain.postgres.Template pgTemplate = convert(template);
 
-        pgTemplate.setId(id);
-        templateMapper.updateByPrimaryKey(pgTemplate);
+        pgTemplate.setId(id);templateMapper.updateByPrimaryKeySelective(pgTemplate);
+        //templateMapper.updateByPrimaryKey(pgTemplate);
     }
 
     @Override
@@ -143,7 +145,7 @@ public class TemplateRepositoryImpl extends BaseRepositoryImpl<Template> impleme
             return null;
         }
         Template template = new Template();
-        template.setTemplate(pgTemplate.getTemplate().toString());
+        template.setTemplate((PlanTemplate) pgTemplate.getTemplate());
         template.setTemplateId(pgTemplate.getTemplateId());
         template.setVersion(pgTemplate.getVersion());
         template.setType(pgTemplate.getType());
@@ -156,7 +158,7 @@ public class TemplateRepositoryImpl extends BaseRepositoryImpl<Template> impleme
             return null;
         }
         org.opensrp.domain.postgres.Template pgTemplate = new org.opensrp.domain.postgres.Template();
-        pgTemplate.setTemplate(template.getTemplate());
+        pgTemplate.setTemplate(new JSONObject(template.getTemplate()));
         pgTemplate.setTemplateId(template.getTemplateId());
         pgTemplate.setVersion(template.getVersion());
         pgTemplate.setType(template.getType());

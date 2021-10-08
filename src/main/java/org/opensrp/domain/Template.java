@@ -1,11 +1,18 @@
 package org.opensrp.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.io.Serializable;
 
 public class Template implements Serializable {
+    private static final long serialVersionUID = 1L;
+    @JsonProperty
     private Integer templateId;
-    private String template;
-    private String Type;
+    @JsonProperty
+    private PlanTemplate template;
+    @JsonProperty
+    private String type;
+    @JsonProperty
     private int version;
 
     public Integer getTemplateId() {
@@ -16,20 +23,20 @@ public class Template implements Serializable {
         this.templateId = templateId;
     }
 
-    public String getTemplate() {
+    public PlanTemplate getTemplate() {
         return template;
     }
 
-    public void setTemplate(String template) {
+    public void setTemplate(PlanTemplate template) {
         this.template = template;
     }
 
     public String getType() {
-        return Type;
+        return type;
     }
 
     public void setType(String type) {
-        Type = type;
+        type = type;
     }
 
     public int getVersion() {
