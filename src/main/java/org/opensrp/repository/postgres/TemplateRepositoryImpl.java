@@ -158,7 +158,7 @@ public class TemplateRepositoryImpl extends BaseRepositoryImpl<Template> impleme
             return null;
         }
         org.opensrp.domain.postgres.Template pgTemplate = new org.opensrp.domain.postgres.Template();
-        pgTemplate.setTemplate(new JSONObject(template.getTemplate()));
+        pgTemplate.setTemplate(template.getTemplate());
         pgTemplate.setTemplateId(template.getTemplateId());
         pgTemplate.setVersion(template.getVersion());
         pgTemplate.setType(template.getType());
