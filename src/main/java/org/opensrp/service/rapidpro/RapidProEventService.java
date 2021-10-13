@@ -52,7 +52,8 @@ public class RapidProEventService {
 	public void handleZeirEvent(Event event) {
 		Client currentClient = clientService.getByBaseEntityId(event.getBaseEntityId());
 
-		if (currentClient != null) {
+		if (currentClient != null && (event.getDetails() == null || (event.getDetails() != null && !event.getDetails()
+				.containsKey(RapidProConstants.SYSTEM_OF_REGISTRATION)))) {
 			if (EventConstants.NEW_WOMAN_REGISTRATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
 					EventConstants.UPDATE_MOTHER_DETAILS.equalsIgnoreCase(event.getEventType())) {
 				if (optInForSMSFromOpenSRP(currentClient)) {
