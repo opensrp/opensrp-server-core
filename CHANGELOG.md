@@ -10,4 +10,4 @@ This document will assist in keeping track of how the feature set is evolving. T
 
 ### What’s New
 
-  - Added CHANGELOG.md file to document changes
+- Added CHANGELOG.md file to document changes
