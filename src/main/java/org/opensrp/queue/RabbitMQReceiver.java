@@ -47,7 +47,6 @@ public class RabbitMQReceiver {
 
 	@PostConstruct
 	public void init() {
-		planEvaluator = new PlanEvaluator("",queueHelper);
 		fhirParser = FHIRParser.parser(Format.JSON);
 	}
 
@@ -55,7 +54,10 @@ public class RabbitMQReceiver {
 	public void receiver(PlanEvaluatorMessage planEvaluatorMessage) {
 		logger.info("PlanEvaluatorMessage listener invoked - Consuming Message with Plan Definition Identifier : " + planEvaluatorMessage.getPlanIdentifier());
 
-		if (planEvaluatorMessage != null) {
+		if(planEvaluator == null)
+			planEvaluator = new PlanEvaluator(planEvaluatorMessage.getUsername(), queueHelper);
+
+		if (planEvaluatorMessage != null && planEvaluator != null) {
 			PlanDefinition planDefinition = planService.getPlan(planEvaluatorMessage.getPlanIdentifier());
 			if (planDefinition != null && planDefinition.getActions() != null && planEvaluatorMessage.getJurisdiction() != null) {
 				planEvaluator.evaluatePlan(planDefinition,
