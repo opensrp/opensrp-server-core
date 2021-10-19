@@ -3,6 +3,7 @@ package org.opensrp.service.rapidpro;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -198,7 +199,13 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	}
 
 	private Optional<RapidproState> getUuid(String baseEntityId) {
-		return getStatesByPropertyKey(CHILD.name(), REGISTRATION_DATA.name(), baseEntityId).stream().findFirst();
+		Optional<RapidproState> childRegData = getStatesByPropertyKey(CHILD.name(), REGISTRATION_DATA.name(),
+				baseEntityId).stream().findFirst();
+		if (childRegData.isPresent() && !RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(
+				childRegData.get().getUuid())) {
+			return childRegData;
+		}
+		return getStatesByPropertyKey(CHILD.name(), IDENTIFIER.name(), baseEntityId).stream().findFirst();
 	}
 
 	private void postExistingChildData(String uuid, RapidProContact childContact,
