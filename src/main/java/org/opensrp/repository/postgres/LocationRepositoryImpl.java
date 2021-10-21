@@ -1033,10 +1033,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long countStructuresByProperties(String parentId, Map<String, String> properties) {
+	public long countStructuresByProperties(List<String> parentIds, Map<String, String> properties) {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
-		if (StringUtils.isNotBlank(parentId)) {
-			structureMetadataExample.createCriteria().andParentIdEqualTo(parentId);
+		if (parentIds != null && !parentIds.isEmpty()) {
+			structureMetadataExample.createCriteria().andParentIdIn(parentIds);
 		}
 		return structureMetadataMapper.countManyByProperties(structureMetadataExample, properties);
 	}
