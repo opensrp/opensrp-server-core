@@ -295,4 +295,13 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return count of jurisdictions matching the params
 	 */
 	long countLocationsByProperties(String parentId, Map<String, String> properties);
+
+	/**
+	 * This methods returns a count of structures using the parentId and structure properties
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * @param parentId string the parent id of the jurisdiction being searched. If empty search for ROOT location.
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @return count of jurisdictions matching the params
+	 */
+	long countStructuresByProperties(String parentId, Map<String, String> properties);
 }

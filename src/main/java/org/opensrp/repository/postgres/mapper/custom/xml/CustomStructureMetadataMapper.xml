@@ -261,4 +261,23 @@
 		OFFSET #{offset}
 	</select>
 
+	<select id="countManyByProperties"
+			resultType="long">
+		select count(sm.id)
+
+		from core.structure_metadata sm
+		join core.structure s on sm.structure_id = s.id
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="properties != null" >
+			<trim prefix="and "  >
+				<foreach collection="properties" index="propertyName"
+						 item="propertyValue" separator=" and ">
+					json -> 'properties' ->> #{propertyName,jdbcType=VARCHAR} = #{propertyValue,jdbcType=VARCHAR}
+				</foreach>
+			</trim>
+		</if>
+	</select>
+
 </mapper>

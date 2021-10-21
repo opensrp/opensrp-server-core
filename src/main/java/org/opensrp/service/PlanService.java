@@ -348,7 +348,6 @@ public class PlanService {
 				case "Mosquito Collection":
 					// get mosquito collection task counts
 					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Mosquito Collection");
-					locationService.findLocationsByProperties()
 					planTaskCount.setMosquitoCollectionActualTaskCount(actualTaskCount);
 					break;
 				default:
