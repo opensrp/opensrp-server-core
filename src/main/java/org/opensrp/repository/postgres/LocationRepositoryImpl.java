@@ -763,7 +763,6 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		    returnGeometry, 0, limit));
 	}
 
-
 	private PhysicalLocationAndStocks convertToPhysicalLocationAndStock(LocationAndStock entity) {
 		if (entity == null || entity.getJson() == null || !(entity.getJson() instanceof PhysicalLocation)) {
 			return null;
@@ -1019,5 +1018,14 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
 		return locations.stream().map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
 		        .collect(Collectors.toList());
+	}
+
+	@Override
+	public long countLocationsByProperties(String parentId, Map<String, String> properties) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		if (parentId != null) {
+			locationMetadataExample.createCriteria().andParentIdEqualTo(parentId);
+		}
+		return locationMetadataMapper.countManyByProperties(locationMetadataExample, properties);
 	}
 }
