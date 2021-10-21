@@ -1021,10 +1021,10 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	}
 
 	@Override
-	public long countLocationsByProperties(String parentId, Map<String, String> properties) {
+	public long countLocationsByProperties(List<String> parentIds, Map<String, String> properties) {
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
-		if (parentId != null) {
-			locationMetadataExample.createCriteria().andParentIdEqualTo(parentId);
+		if (parentIds != null && !parentIds.isEmpty()) {
+			locationMetadataExample.createCriteria().andParentIdIn(parentIds);
 		}
 		return locationMetadataMapper.countManyByProperties(locationMetadataExample, properties);
 	}

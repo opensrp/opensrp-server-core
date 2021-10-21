@@ -560,12 +560,12 @@ public class PhysicalLocationService {
 	/**
 	 * This methods returns a count of jurisdictions using the parentId and location properties
 	 * It returns the Geometry optionally if @param returnGeometry is set to true.
-	 * @param parentId string the parent id of the jurisdiction being searched. If empty search for ROOT location.
+	 * @param parentIds list of the parent ids of the jurisdiction being searched. If empty search for ROOT location.
 	 * @param properties map of location properties to filter with, each entry in map has property name and value
 	 * @return count of jurisdictions matching the params
 	 */
-	long countLocationsByProperties(String parentId, Map<String, String> properties) {
-		return locationRepository.countLocationsByProperties(parentId, properties);
+	long countLocationsByProperties(List<String> parentIds, Map<String, String> properties) {
+		return locationRepository.countLocationsByProperties(parentIds, properties);
 	}
 
 	/**
