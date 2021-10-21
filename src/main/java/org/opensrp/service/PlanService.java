@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.PlanTaskCount;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.PlanSearchBean;
+import org.smartregister.domain.Action;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
@@ -292,5 +294,39 @@ public class PlanService {
 			return countPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
 		}
 		return 0l;
+	}
+
+	public List<PlanTaskCount> getPlanTaskCounts(PlanDefinition plan) {
+		List<PlanTaskCount> planTaskCounts = new ArrayList<>();
+
+		for (Action action: plan.getActions()) {
+			switch (action.getCode()) {
+				case "Case Confirmation":
+					// get case confirmation task counts
+					break;
+				case "BCC":
+					// get BCC task counts
+					break;
+				case "RACD Register Family":
+					// get register family task counts
+					break;
+				case "Blood Screening":
+					// get blood screening task counts
+					break;
+				case "Bednet Distribution":
+					// get bednet distribution task counts
+					break;
+				case "Larval Dipping":
+					// get larval dipping task counts
+					break;
+				case "Mosquito Collection":
+					// get mosquito collection task counts
+					break;
+				default:
+					// do nothing
+					break;
+			}
+		}
+		return planTaskCounts;
 	}
 }
