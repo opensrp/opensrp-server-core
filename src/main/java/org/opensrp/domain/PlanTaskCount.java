@@ -6,49 +6,49 @@ public class PlanTaskCount implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public String planIdentifier;
+    private String planIdentifier;
 
-    public Long familyRegActualTaskCount;
+    private Long familyRegActualTaskCount;
 
-    public Long familyRegExpectedTaskCount;
+    private Long familyRegExpectedTaskCount;
 
-    public Long familyRegVariationTaskCount;
+    private Long familyRegVariationTaskCount;
 
-    public Long bednetDistributionActualTaskCount;
+    private Long bednetDistributionActualTaskCount;
 
-    public Long bednetDistributionExpectedTaskCount;
+    private Long bednetDistributionExpectedTaskCount;
 
-    public Long bednetDistributionVariationTaskCount;
+    private Long bednetDistributionVariationTaskCount;
 
-    public Long bloodScreeningActualTaskCount;
+    private Long bloodScreeningActualTaskCount;
 
-    public Long bloodScreeningExpectedTaskCount;
+    private Long bloodScreeningExpectedTaskCount;
 
-    public Long bloodScreeningVariationTaskCount;
+    private Long bloodScreeningVariationTaskCount;
 
-    public Long bccActualTaskCount;
+    private Long bccActualTaskCount;
 
-    public Long bccExpectedTaskCount;
+    private Long bccExpectedTaskCount;
 
-    public Long bccVariationTaskCount;
+    private Long bccVariationTaskCount;
 
-    public Long caseConfirmationActualTaskCount;
+    private Long caseConfirmationActualTaskCount;
 
-    public Long caseConfirmationExpectedTaskCount;
+    private Long caseConfirmationExpectedTaskCount;
 
-    public Long caseConfirmationVariationTaskCount;
+    private Long caseConfirmationVariationTaskCount;
 
-    public Long larvalDippingActualTaskCount;
+    private Long larvalDippingActualTaskCount;
 
-    public Long larvalDippingExpectedTaskCount;
+    private Long larvalDippingExpectedTaskCount;
 
-    public Long larvalDippingVariationTaskCount;
+    private Long larvalDippingVariationTaskCount;
 
-    public Long mosquitoCollectionActualTaskCount;
+    private Long mosquitoCollectionActualTaskCount;
 
-    public Long mosquitoCollectionExpectedTaskCount;
+    private Long mosquitoCollectionExpectedTaskCount;
 
-    public Long mosquitoCollectionVariationTaskCount;
+    private Long mosquitoCollectionVariationTaskCount;
 
     public String getPlanIdentifier() {
         return planIdentifier;

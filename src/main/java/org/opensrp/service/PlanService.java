@@ -2,7 +2,9 @@ package org.opensrp.service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -13,6 +15,7 @@ import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.PlanSearchBean;
 import org.smartregister.domain.Action;
+import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
@@ -21,21 +24,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PlanService {
-	
+
 	private PlanRepository planRepository;
-	
+
 	private PractitionerService practitionerService;
-	
+
 	private PractitionerRoleService practitionerRoleService;
-	
+
 	private OrganizationService organizationService;
 
 	private TaskService taskService;
 
 	private PhysicalLocationService locationService;
-	
+
 	private TaskGenerator taskGenerator;
-	
+
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
 	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService,
@@ -48,15 +51,15 @@ public class PlanService {
 		this.taskService = taskService;
 		this.locationService = locationService;
 	}
-	
+
 	public PlanRepository getPlanRepository() {
 		return planRepository;
 	}
-	
+
 	public List<PlanDefinition> getAllPlans(PlanSearchBean planSearchBean) {
 		return getPlanRepository().getAllPlans(planSearchBean);
 	}
-	
+
 	public void addOrUpdatePlan(PlanDefinition plan, String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
 			throw new IllegalArgumentException("Identifier not specified");
@@ -68,7 +71,7 @@ public class PlanService {
 			addPlan(plan, username);
 		}
 	}
-	
+
 	@CachePut(value = "plans", key = "#plan.identifier")
 	public PlanDefinition addPlan(PlanDefinition plan, String username) {
 		if (StringUtils.isBlank(plan.getIdentifier())) {
@@ -101,18 +104,18 @@ public class PlanService {
 		}
 		return plan;
 	}
-	
+
 	@Cacheable(value = "plans", key = "#identifier")
 	public PlanDefinition getPlan(String identifier) {
 		return StringUtils.isBlank(identifier) ? null : getPlanRepository().get(identifier);
 	}
-	
+
 	public List<PlanDefinition> getPlansByServerVersionAndOperationalArea(long serverVersion,
 	        List<String> operationalAreaIds, boolean experimental) {
 		return getPlanRepository().getPlansByServerVersionAndOperationalAreas(serverVersion, operationalAreaIds,
 		    experimental);
 	}
-	
+
 	/**
 	 * This method searches for plans using a list of provided plan identifiers and returns a subset of
 	 * fields determined by the list of provided fields If no plan identifier(s) are provided the method
@@ -126,7 +129,7 @@ public class PlanService {
 	        boolean experimental) {
 		return getPlanRepository().getPlansByIdsReturnOptionalFields(ids, fields, experimental);
 	}
-	
+
 	/**
 	 * Gets the plans using organization Ids that have server version >= the server version param
 	 *
@@ -136,7 +139,7 @@ public class PlanService {
 	 */
 	public List<PlanDefinition> getPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion,
 	        boolean experimental) {
-		
+
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 		        .findAssignedLocationsAndPlans(organizationIds);
 		List<String> planIdentifiers = new ArrayList<>();
@@ -145,7 +148,7 @@ public class PlanService {
 		}
 		return planRepository.getPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion, experimental);
 	}
-	
+
 	/**
 	 * Gets the plan identifiers using organization Ids
 	 *
@@ -153,7 +156,7 @@ public class PlanService {
 	 * @return the plan identifiers matching the above
 	 */
 	public List<String> getPlanIdentifiersByOrganizations(List<Long> organizationIds) {
-		
+
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 		        .findAssignedLocationsAndPlans(organizationIds);
 		List<String> planIdentifiers = new ArrayList<>();
@@ -162,7 +165,7 @@ public class PlanService {
 		}
 		return planIdentifiers;
 	}
-	
+
 	/**
 	 * Gets the plans that a user has access to according to the plan location assignment that have
 	 * server version >= the server version param
@@ -173,14 +176,14 @@ public class PlanService {
 	 */
 	public List<PlanDefinition> getPlansByUsernameAndServerVersion(String username, long serverVersion,
 	        boolean experimental) {
-		
+
 		List<Long> organizationIds = getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
 			return getPlansByOrganizationsAndServerVersion(organizationIds, serverVersion, experimental);
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Gets the plan identifiers that a user has access to according to the plan location assignment
 	 *
@@ -194,7 +197,7 @@ public class PlanService {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Gets the organization ids that a user is assigned to according to the plan location assignment
 	 *
@@ -212,10 +215,10 @@ public class PlanService {
 				organizationIds.add(role.getOrganizationId());
 			return organizationIds;
 		}
-		
+
 		return null;
 	}
-	
+
 	/**
 	 * This method searches for plans ordered by serverVersion ascending
 	 *
@@ -248,10 +251,10 @@ public class PlanService {
 	public Pair<List<String>, Long> findAllIds(Long serverVersion, int limit, boolean isDeleted) {
 		return planRepository.findAllIds(serverVersion, limit, isDeleted);
 	}
-	
+
 	/**
 	 * overloads {@link #findAllIds(Long, int, boolean)} by adding date/time filters
-	 * 
+	 *
 	 * @param serverVersion
 	 * @param limit
 	 * @param isDeleted
@@ -263,7 +266,7 @@ public class PlanService {
 	        Date toDate) {
 		return planRepository.findAllIds(serverVersion, limit, isDeleted, fromDate, toDate);
 	}
-	
+
 	/**
 	 * Gets the count of plans using organization Ids that have server version >= the server version
 	 * param
@@ -273,7 +276,7 @@ public class PlanService {
 	 * @return the count plans matching the above
 	 */
 	public Long countPlansByOrganizationsAndServerVersion(List<Long> organizationIds, long serverVersion) {
-		
+
 		List<AssignedLocations> assignedPlansAndLocations = organizationService
 		        .findAssignedLocationsAndPlans(organizationIds);
 		/* @formatter:off */
@@ -284,7 +287,7 @@ public class PlanService {
 		/* @formatter:on */
 		return planRepository.countPlansByIdentifiersAndServerVersion(planIdentifiers, serverVersion);
 	}
-	
+
 	/**
 	 * Gets the count of plans that a user has access to according to the plan location assignment that
 	 * have server version >= the server version param
@@ -294,7 +297,7 @@ public class PlanService {
 	 * @return the count of plans a user has access to
 	 */
 	public Long countPlansByUsernameAndServerVersion(String username, long serverVersion) {
-		
+
 		List<Long> organizationIds = getOrganizationIdsByUserName(username);
 		if (organizationIds != null) {
 			return countPlansByOrganizationsAndServerVersion(organizationIds, serverVersion);
@@ -307,8 +310,15 @@ public class PlanService {
 
 		for (Action action: plan.getActions()) {
 			PlanTaskCount planTaskCount = new PlanTaskCount();
-			Long actualTaskCount = null;
-			Long expectedTaskCount = null;
+			Long actualTaskCount;
+			Long expectedTaskCount;
+			List<String> planJurisdictionIds = new ArrayList<>();
+			Map<String, String> properties = new HashMap<>();
+			for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
+				if (StringUtils.isNotBlank(jurisdiction.getCode())) {
+					planJurisdictionIds.add(jurisdiction.getCode());
+				}
+			}
 			switch (action.getCode()) {
 				case "Case Confirmation":
 					// get case confirmation task counts
@@ -344,11 +354,21 @@ public class PlanService {
 					// get larval dipping task counts
 					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Larval Dipping");
 					planTaskCount.setLarvalDippingActualTaskCount(actualTaskCount);
+					properties.put("type", "Larval Breeding Site");
+					expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
+					planTaskCount.setLarvalDippingExpectedTaskCount(expectedTaskCount);
+					planTaskCount.setLarvalDippingVariationTaskCount(planTaskCount.getLarvalDippingExpectedTaskCount()
+							- planTaskCount.getLarvalDippingExpectedTaskCount());
 					break;
 				case "Mosquito Collection":
 					// get mosquito collection task counts
 					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Mosquito Collection");
 					planTaskCount.setMosquitoCollectionActualTaskCount(actualTaskCount);
+					properties.put("type", "Mosquito Collection Point");
+					expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
+					planTaskCount.setMosquitoCollectionExpectedTaskCount(expectedTaskCount);
+					planTaskCount.setMosquitoCollectionVariationTaskCount(planTaskCount.getMosquitoCollectionExpectedTaskCount()
+					- planTaskCount.getMosquitoCollectionActualTaskCount());
 					break;
 				default:
 					// do nothing
