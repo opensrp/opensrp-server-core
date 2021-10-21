@@ -8,47 +8,47 @@ public class PlanTaskCount implements Serializable {
 
     public String planIdentifier;
 
-    public Integer familyRegActualTaskCount;
+    public Long familyRegActualTaskCount;
 
-    public Integer familyRegExpectedTaskCount;
+    public Long familyRegExpectedTaskCount;
 
-    public Integer familyRegVariationTaskCount;
+    public Long familyRegVariationTaskCount;
 
-    public Integer bednetDistributionActualTaskCount;
+    public Long bednetDistributionActualTaskCount;
 
-    public Integer bednetDistributionExpectedTaskCount;
+    public Long bednetDistributionExpectedTaskCount;
 
-    public Integer bednetDistributionVariationTaskCount;
+    public Long bednetDistributionVariationTaskCount;
 
-    public Integer bloodScreeningActualTaskCount;
+    public Long bloodScreeningActualTaskCount;
 
-    public Integer bloodScreeningExpectedTaskCount;
+    public Long bloodScreeningExpectedTaskCount;
 
-    public Integer bloodScreeningVariationTaskCount;
+    public Long bloodScreeningVariationTaskCount;
 
-    public Integer bccActualTaskCount;
+    public Long bccActualTaskCount;
 
-    public Integer bccExpectedTaskCount;
+    public Long bccExpectedTaskCount;
 
-    public Integer bccVariationTaskCount;
+    public Long bccVariationTaskCount;
 
-    public Integer caseConfirmationActualTaskCount;
+    public Long caseConfirmationActualTaskCount;
 
-    public Integer caseConfirmationExpectedTaskCount;
+    public Long caseConfirmationExpectedTaskCount;
 
-    public Integer caseConfirmationVariationTaskCount;
+    public Long caseConfirmationVariationTaskCount;
 
-    public Integer larvalDippingActualTaskCount;
+    public Long larvalDippingActualTaskCount;
 
-    public Integer larvalDippingExpectedTaskCount;
+    public Long larvalDippingExpectedTaskCount;
 
-    public Integer larvalDippingVariationTaskCount;
+    public Long larvalDippingVariationTaskCount;
 
-    public Integer mosquitoCollectionActualTaskCount;
+    public Long mosquitoCollectionActualTaskCount;
 
-    public Integer mosquitoCollectionExpectedTaskCount;
+    public Long mosquitoCollectionExpectedTaskCount;
 
-    public Integer mosquitoCollectionVariationTaskCount;
+    public Long mosquitoCollectionVariationTaskCount;
 
     public String getPlanIdentifier() {
         return planIdentifier;
@@ -58,171 +58,171 @@ public class PlanTaskCount implements Serializable {
         this.planIdentifier = planIdentifier;
     }
 
-    public Integer getFamilyRegActualTaskCount() {
+    public Long getFamilyRegActualTaskCount() {
         return familyRegActualTaskCount;
     }
 
-    public void setFamilyRegActualTaskCount(Integer familyRegActualTaskCount) {
+    public void setFamilyRegActualTaskCount(Long familyRegActualTaskCount) {
         this.familyRegActualTaskCount = familyRegActualTaskCount;
     }
 
-    public Integer getFamilyRegExpectedTaskCount() {
+    public Long getFamilyRegExpectedTaskCount() {
         return familyRegExpectedTaskCount;
     }
 
-    public void setFamilyRegExpectedTaskCount(Integer familyRegExpectedTaskCount) {
+    public void setFamilyRegExpectedTaskCount(Long familyRegExpectedTaskCount) {
         this.familyRegExpectedTaskCount = familyRegExpectedTaskCount;
     }
 
-    public Integer getFamilyRegVariationTaskCount() {
+    public Long getFamilyRegVariationTaskCount() {
         return familyRegVariationTaskCount;
     }
 
-    public void setFamilyRegVariationTaskCount(Integer familyRegVariationTaskCount) {
+    public void setFamilyRegVariationTaskCount(Long familyRegVariationTaskCount) {
         this.familyRegVariationTaskCount = familyRegVariationTaskCount;
     }
 
-    public Integer getBednetDistributionActualTaskCount() {
+    public Long getBednetDistributionActualTaskCount() {
         return bednetDistributionActualTaskCount;
     }
 
-    public void setBednetDistributionActualTaskCount(Integer bednetDistributionActualTaskCount) {
+    public void setBednetDistributionActualTaskCount(Long bednetDistributionActualTaskCount) {
         this.bednetDistributionActualTaskCount = bednetDistributionActualTaskCount;
     }
 
-    public Integer getBednetDistributionExpectedTaskCount() {
+    public Long getBednetDistributionExpectedTaskCount() {
         return bednetDistributionExpectedTaskCount;
     }
 
-    public void setBednetDistributionExpectedTaskCount(Integer bednetDistributionExpectedTaskCount) {
+    public void setBednetDistributionExpectedTaskCount(Long bednetDistributionExpectedTaskCount) {
         this.bednetDistributionExpectedTaskCount = bednetDistributionExpectedTaskCount;
     }
 
-    public Integer getBednetDistributionVariationTaskCount() {
+    public Long getBednetDistributionVariationTaskCount() {
         return bednetDistributionVariationTaskCount;
     }
 
-    public void setBednetDistributionVariationTaskCount(Integer bednetDistributionVariationTaskCount) {
+    public void setBednetDistributionVariationTaskCount(Long bednetDistributionVariationTaskCount) {
         this.bednetDistributionVariationTaskCount = bednetDistributionVariationTaskCount;
     }
 
-    public Integer getBloodScreeningActualTaskCount() {
+    public Long getBloodScreeningActualTaskCount() {
         return bloodScreeningActualTaskCount;
     }
 
-    public void setBloodScreeningActualTaskCount(Integer bloodScreeningActualTaskCount) {
+    public void setBloodScreeningActualTaskCount(Long bloodScreeningActualTaskCount) {
         this.bloodScreeningActualTaskCount = bloodScreeningActualTaskCount;
     }
 
-    public Integer getBloodScreeningExpectedTaskCount() {
+    public Long getBloodScreeningExpectedTaskCount() {
         return bloodScreeningExpectedTaskCount;
     }
 
-    public void setBloodScreeningExpectedTaskCount(Integer bloodScreeningExpectedTaskCount) {
+    public void setBloodScreeningExpectedTaskCount(Long bloodScreeningExpectedTaskCount) {
         this.bloodScreeningExpectedTaskCount = bloodScreeningExpectedTaskCount;
     }
 
-    public Integer getBloodScreeningVariationTaskCount() {
+    public Long getBloodScreeningVariationTaskCount() {
         return bloodScreeningVariationTaskCount;
     }
 
-    public void setBloodScreeningVariationTaskCount(Integer bloodScreeningVariationTaskCount) {
+    public void setBloodScreeningVariationTaskCount(Long bloodScreeningVariationTaskCount) {
         this.bloodScreeningVariationTaskCount = bloodScreeningVariationTaskCount;
     }
 
-    public Integer getBccActualTaskCount() {
+    public Long getBccActualTaskCount() {
         return bccActualTaskCount;
     }
 
-    public void setBccActualTaskCount(Integer bccActualTaskCount) {
+    public void setBccActualTaskCount(Long bccActualTaskCount) {
         this.bccActualTaskCount = bccActualTaskCount;
     }
 
-    public Integer getBccExpectedTaskCount() {
+    public Long getBccExpectedTaskCount() {
         return bccExpectedTaskCount;
     }
 
-    public void setBccExpectedTaskCount(Integer bccExpectedTaskCount) {
+    public void setBccExpectedTaskCount(Long bccExpectedTaskCount) {
         this.bccExpectedTaskCount = bccExpectedTaskCount;
     }
 
-    public Integer getBccVariationTaskCount() {
+    public Long getBccVariationTaskCount() {
         return bccVariationTaskCount;
     }
 
-    public void setBccVariationTaskCount(Integer bccVariationTaskCount) {
+    public void setBccVariationTaskCount(Long bccVariationTaskCount) {
         this.bccVariationTaskCount = bccVariationTaskCount;
     }
 
-    public Integer getCaseConfirmationActualTaskCount() {
+    public Long getCaseConfirmationActualTaskCount() {
         return caseConfirmationActualTaskCount;
     }
 
-    public void setCaseConfirmationActualTaskCount(Integer caseConfirmationActualTaskCount) {
+    public void setCaseConfirmationActualTaskCount(Long caseConfirmationActualTaskCount) {
         this.caseConfirmationActualTaskCount = caseConfirmationActualTaskCount;
     }
 
-    public Integer getCaseConfirmationExpectedTaskCount() {
+    public Long getCaseConfirmationExpectedTaskCount() {
         return caseConfirmationExpectedTaskCount;
     }
 
-    public void setCaseConfirmationExpectedTaskCount(Integer caseConfirmationExpectedTaskCount) {
+    public void setCaseConfirmationExpectedTaskCount(Long caseConfirmationExpectedTaskCount) {
         this.caseConfirmationExpectedTaskCount = caseConfirmationExpectedTaskCount;
     }
 
-    public Integer getCaseConfirmationVariationTaskCount() {
+    public Long getCaseConfirmationVariationTaskCount() {
         return caseConfirmationVariationTaskCount;
     }
 
-    public void setCaseConfirmationVariationTaskCount(Integer caseConfirmationVariationTaskCount) {
+    public void setCaseConfirmationVariationTaskCount(Long caseConfirmationVariationTaskCount) {
         this.caseConfirmationVariationTaskCount = caseConfirmationVariationTaskCount;
     }
 
-    public Integer getLarvalDippingActualTaskCount() {
+    public Long getLarvalDippingActualTaskCount() {
         return larvalDippingActualTaskCount;
     }
 
-    public void setLarvalDippingActualTaskCount(Integer larvalDippingActualTaskCount) {
+    public void setLarvalDippingActualTaskCount(Long larvalDippingActualTaskCount) {
         this.larvalDippingActualTaskCount = larvalDippingActualTaskCount;
     }
 
-    public Integer getLarvalDippingExpectedTaskCount() {
+    public Long getLarvalDippingExpectedTaskCount() {
         return larvalDippingExpectedTaskCount;
     }
 
-    public void setLarvalDippingExpectedTaskCount(Integer larvalDippingExpectedTaskCount) {
+    public void setLarvalDippingExpectedTaskCount(Long larvalDippingExpectedTaskCount) {
         this.larvalDippingExpectedTaskCount = larvalDippingExpectedTaskCount;
     }
 
-    public Integer getLarvalDippingVariationTaskCount() {
+    public Long getLarvalDippingVariationTaskCount() {
         return larvalDippingVariationTaskCount;
     }
 
-    public void setLarvalDippingVariationTaskCount(Integer larvalDippingVariationTaskCount) {
+    public void setLarvalDippingVariationTaskCount(Long larvalDippingVariationTaskCount) {
         this.larvalDippingVariationTaskCount = larvalDippingVariationTaskCount;
     }
 
-    public Integer getMosquitoCollectionActualTaskCount() {
+    public Long getMosquitoCollectionActualTaskCount() {
         return mosquitoCollectionActualTaskCount;
     }
 
-    public void setMosquitoCollectionActualTaskCount(Integer mosquitoCollectionActualTaskCount) {
+    public void setMosquitoCollectionActualTaskCount(Long mosquitoCollectionActualTaskCount) {
         this.mosquitoCollectionActualTaskCount = mosquitoCollectionActualTaskCount;
     }
 
-    public Integer getMosquitoCollectionExpectedTaskCount() {
+    public Long getMosquitoCollectionExpectedTaskCount() {
         return mosquitoCollectionExpectedTaskCount;
     }
 
-    public void setMosquitoCollectionExpectedTaskCount(Integer mosquitoCollectionExpectedTaskCount) {
+    public void setMosquitoCollectionExpectedTaskCount(Long mosquitoCollectionExpectedTaskCount) {
         this.mosquitoCollectionExpectedTaskCount = mosquitoCollectionExpectedTaskCount;
     }
 
-    public Integer getMosquitoCollectionVariationTaskCount() {
+    public Long getMosquitoCollectionVariationTaskCount() {
         return mosquitoCollectionVariationTaskCount;
     }
 
-    public void setMosquitoCollectionVariationTaskCount(Integer mosquitoCollectionVariationTaskCount) {
+    public void setMosquitoCollectionVariationTaskCount(Long mosquitoCollectionVariationTaskCount) {
         this.mosquitoCollectionVariationTaskCount = mosquitoCollectionVariationTaskCount;
     }
 }

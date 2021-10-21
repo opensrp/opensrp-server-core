@@ -29,18 +29,21 @@ public class PlanService {
 	private PractitionerRoleService practitionerRoleService;
 	
 	private OrganizationService organizationService;
+
+	private TaskService taskService;
 	
 	private TaskGenerator taskGenerator;
 	
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
 	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService,
-	    TaskGenerator taskGenerator) {
+	    TaskGenerator taskGenerator, TaskService taskService) {
 		this.planRepository = planRepository;
 		this.practitionerService = practitionerService;
 		this.practitionerRoleService = practitionerRoleService;
 		this.organizationService = organizationService;
 		this.taskGenerator = taskGenerator;
+		this.taskService = taskService;
 	}
 	
 	public PlanRepository getPlanRepository() {
@@ -300,32 +303,50 @@ public class PlanService {
 		List<PlanTaskCount> planTaskCounts = new ArrayList<>();
 
 		for (Action action: plan.getActions()) {
+			PlanTaskCount planTaskCount = new PlanTaskCount();
+			Long actualTaskCount = null;
+			Long expectedTaskCount = null;
 			switch (action.getCode()) {
 				case "Case Confirmation":
 					// get case confirmation task counts
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Case Confirmation");
+					planTaskCount.setCaseConfirmationActualTaskCount(actualTaskCount);
 					break;
 				case "BCC":
 					// get BCC task counts
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "BCC");
+					planTaskCount.setBccActualTaskCount(actualTaskCount);
 					break;
 				case "RACD Register Family":
 					// get register family task counts
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family");
+					planTaskCount.setFamilyRegActualTaskCount(actualTaskCount);
 					break;
 				case "Blood Screening":
 					// get blood screening task counts
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Blood Screening");
+					planTaskCount.setBloodScreeningActualTaskCount(actualTaskCount);
 					break;
 				case "Bednet Distribution":
 					// get bednet distribution task counts
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Bednet Distribution");
+					planTaskCount.setBednetDistributionActualTaskCount(actualTaskCount);
 					break;
 				case "Larval Dipping":
 					// get larval dipping task counts
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Larval Dipping");
+					planTaskCount.setLarvalDippingActualTaskCount(actualTaskCount);
 					break;
 				case "Mosquito Collection":
 					// get mosquito collection task counts
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Mosquito Collection");
+					planTaskCount.setMosquitoCollectionActualTaskCount(actualTaskCount);
 					break;
 				default:
 					// do nothing
 					break;
 			}
+			planTaskCounts.add(planTaskCount);
 		}
 		return planTaskCounts;
 	}
