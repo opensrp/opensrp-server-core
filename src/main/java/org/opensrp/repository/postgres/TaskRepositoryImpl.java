@@ -449,6 +449,13 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		return taskMetadataMapper.selectTaskCount(taskSearchBean);
 	}
 
+	@Override
+	public Long countTasksByPlanAndCode(String plan, String code) {
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		taskMetadataExample.createCriteria().andPlanIdentifierEqualTo(plan).andCodeEqualTo(code);
+		return taskMetadataMapper.countByExample(taskMetadataExample);
+	}
+
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
 		return tasks.stream().map(task -> TaskConverter.convertTasktoFihrResource(task)).collect(Collectors.toList());
 	}

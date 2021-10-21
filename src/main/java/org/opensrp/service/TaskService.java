@@ -220,4 +220,15 @@ public class TaskService {
 	public int findTaskCountBySearchBean(TaskSearchBean taskSearchBean) {
 		return taskRepository.getTaskCount(taskSearchBean);
 	}
+
+	/**
+	 * This method returns a count of tasks with a particular code for a plan
+	 *
+	 * @param plan plan identifier for the task
+	 * @param code the code for the task
+	 * @return count of tasks with a particular code for a plan
+	 */
+	public Long countTasksByPlanAndCode(String plan, String code) {
+		return taskRepository.countTasksByPlanAndCode(plan, code);
+	}
 }
