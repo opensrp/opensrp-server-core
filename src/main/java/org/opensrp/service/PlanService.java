@@ -31,19 +31,22 @@ public class PlanService {
 	private OrganizationService organizationService;
 
 	private TaskService taskService;
+
+	private PhysicalLocationService locationService;
 	
 	private TaskGenerator taskGenerator;
 	
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
 	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService,
-	    TaskGenerator taskGenerator, TaskService taskService) {
+	    TaskGenerator taskGenerator, TaskService taskService, PhysicalLocationService locationService) {
 		this.planRepository = planRepository;
 		this.practitionerService = practitionerService;
 		this.practitionerRoleService = practitionerRoleService;
 		this.organizationService = organizationService;
 		this.taskGenerator = taskGenerator;
 		this.taskService = taskService;
+		this.locationService = locationService;
 	}
 	
 	public PlanRepository getPlanRepository() {
@@ -311,11 +314,16 @@ public class PlanService {
 					// get case confirmation task counts
 					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Case Confirmation");
 					planTaskCount.setCaseConfirmationActualTaskCount(actualTaskCount);
+					planTaskCount.setCaseConfirmationExpectedTaskCount(1l);
+					planTaskCount.setCaseConfirmationVariationTaskCount(planTaskCount.getCaseConfirmationExpectedTaskCount()
+							- planTaskCount.getCaseConfirmationActualTaskCount());
 					break;
 				case "BCC":
 					// get BCC task counts
 					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "BCC");
 					planTaskCount.setBccActualTaskCount(actualTaskCount);
+					planTaskCount.setBccExpectedTaskCount(1l);
+					planTaskCount.setBccVariationTaskCount(planTaskCount.getBccExpectedTaskCount() - planTaskCount.getBccActualTaskCount());
 					break;
 				case "RACD Register Family":
 					// get register family task counts
@@ -340,6 +348,7 @@ public class PlanService {
 				case "Mosquito Collection":
 					// get mosquito collection task counts
 					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Mosquito Collection");
+					locationService.findLocationsByProperties()
 					planTaskCount.setMosquitoCollectionActualTaskCount(actualTaskCount);
 					break;
 				default:

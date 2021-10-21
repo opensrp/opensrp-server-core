@@ -58,12 +58,15 @@ public class PlanServiceTest {
 
 	@Mock
 	private TaskService taskService;
+
+	@Mock
+	private PhysicalLocationService locationService;
 	
 	private String user="johndoe";
 	
 	@Before
 	public void setUp() {
-		planService = new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService,taskGenerator, taskService);
+		planService = new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService,taskGenerator, taskService, locationService);
 	}
 	
 	@Test
