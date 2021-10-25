@@ -37,12 +37,15 @@ public class PlanService {
 
 	private PhysicalLocationService locationService;
 
+	private ClientService clientService;
+
 	private TaskGenerator taskGenerator;
 
 	@Autowired
 	public PlanService(PlanRepository planRepository, PractitionerService practitionerService,
 	    PractitionerRoleService practitionerRoleService, OrganizationService organizationService,
-	    TaskGenerator taskGenerator, TaskService taskService, PhysicalLocationService locationService) {
+	    TaskGenerator taskGenerator, TaskService taskService, PhysicalLocationService locationService,
+					   ClientService clientService) {
 		this.planRepository = planRepository;
 		this.practitionerService = practitionerService;
 		this.practitionerRoleService = practitionerRoleService;
@@ -50,6 +53,7 @@ public class PlanService {
 		this.taskGenerator = taskGenerator;
 		this.taskService = taskService;
 		this.locationService = locationService;
+		this.clientService = clientService;
 	}
 
 	public PlanRepository getPlanRepository() {
@@ -344,6 +348,10 @@ public class PlanService {
 					// get blood screening task counts
 					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Blood Screening");
 					planTaskCount.setBloodScreeningActualTaskCount(actualTaskCount);
+					expectedTaskCount = clientService.countFamilyMembersByLocation(planJurisdictionIds, 5);
+					planTaskCount.setBloodScreeningExpectedTaskCount(expectedTaskCount);
+					planTaskCount.setBloodScreeningVariationTaskCount(planTaskCount.getBloodScreeningExpectedTaskCount() -
+							planTaskCount.getBloodScreeningActualTaskCount());
 					break;
 				case "Bednet Distribution":
 					// get bednet distribution task counts
