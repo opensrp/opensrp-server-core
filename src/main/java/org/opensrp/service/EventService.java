@@ -570,7 +570,7 @@ public class EventService {
 		return allEvents.findEvents(eventSearchBean, sortBy, sortOrder, limit);
 	}
 
-	@PreAuthorize("hasRole('EVENT_VIEW')")
+	@PreAuthorize("hasRole('EVENT_OUT_OF_CATCHMENT_VIEW')")
 	public List<Event> findOutOfCatchmentEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit) {
 		return allEvents.findEvents(eventSearchBean, sortBy, sortOrder, limit);
 	}
