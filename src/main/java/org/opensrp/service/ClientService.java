@@ -257,6 +257,11 @@ public class ClientService {
 		return allClients.findByFieldValue(field, ids);
 	}
 
+	@PreAuthorize("hasRole('CLIENT_OUT_OF_CATCHMENT_VIEW')")
+	public List<Client> findOutOfCatchmentByFieldValue(String field, List<String> ids) {
+		return allClients.findByFieldValue(field, ids);
+	}
+
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByFieldValue(String id) {
