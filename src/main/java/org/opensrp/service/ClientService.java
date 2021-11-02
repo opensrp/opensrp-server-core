@@ -271,7 +271,7 @@ public class ClientService {
 	@PreAuthorize("((hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE'))) and"
 			+ " (hasPermission(#client,'Client','CLIENT_CREATE') or hasPermission(#client,'Client','CLIENT_UPDATE')))"
 			+ " or (hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE')) or"
-			+ " hasRole('CLIENT_OUT_OF_CATCHMENT_CREATE') or (hasRole('CLIENT_OUT_OF_CATCHMENT_UPDATE')))")
+			+ " hasRole('CLIENT_OUT_OF_CATCHMENT_CREATE') or hasRole('CLIENT_OUT_OF_CATCHMENT_UPDATE'))")
 	public Client addorUpdate(Client client) {
 		if (client.getBaseEntityId() == null) {
 			throw new RuntimeException("No baseEntityId");

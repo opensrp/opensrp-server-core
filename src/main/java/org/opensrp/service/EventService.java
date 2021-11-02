@@ -471,7 +471,8 @@ public class EventService {
 		return clients;
 	}
 
-	@PreAuthorize("hasPermission(#event,'Event', 'EVENT_CREATE') and hasPermission(#event,'Event', 'EVENT_UPDATE')")
+	@PreAuthorize("(hasPermission(#event,'Event', 'EVENT_CREATE') and hasPermission(#event,'Event', 'EVENT_UPDATE'))"
+			+ " or (hasRole('EVENT_OUT_OF_CATCHMENT_CREATE') or hasRole('EVENT_OUT_OF_CATCHMENT_UPDATE'))")
 	public synchronized Event addorUpdateEvent(Event event, String username) {
 		Event existingEvent = findByIdOrFormSubmissionId(event.getId(), event.getFormSubmissionId());
 		if (existingEvent != null) {
