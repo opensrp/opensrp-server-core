@@ -268,24 +268,15 @@ public class ClientService {
 		return allClients.findByRelationShip(id);
 	}
 
-	@PreAuthorize("(hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE'))) and"
-			+ " (hasPermission(#client,'Client','CLIENT_CREATE') or hasPermission(#client,'Client','CLIENT_UPDATE'))")
+	@PreAuthorize("((hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE'))) and"
+			+ " (hasPermission(#client,'Client','CLIENT_CREATE') or hasPermission(#client,'Client','CLIENT_UPDATE')))"
+			+ " or (hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE')) or"
+			+ " hasRole('CLIENT_OUT_OF_CATCHMENT_CREATE') or (hasRole('CLIENT_OUT_OF_CATCHMENT_UPDATE')))")
 	public Client addorUpdate(Client client) {
-		return addOrUpdateClient(client);
-	}
-
-	@PreAuthorize("hasRole('CLIENT_OUT_OF_CATCHMENT_CREATE') or (hasRole('CLIENT_OUT_OF_CATCHMENT_UPDATE'))")
-	public Client addOrUpdateOutOfCatchment(Client client) {
-		return addOrUpdateClient(client);
-	}
-
-	private Client addOrUpdateClient(Client client) {
 		if (client.getBaseEntityId() == null) {
 			throw new RuntimeException("No baseEntityId");
 		}
-
 		Client c = findClient(client);
-
 		if (c != null) {
 			client.setRevision(c.getRevision());
 			client.setId(c.getId());
