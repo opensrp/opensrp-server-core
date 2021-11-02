@@ -271,17 +271,27 @@ public class ClientService {
 	@PreAuthorize("(hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE'))) and"
 			+ " (hasPermission(#client,'Client','CLIENT_CREATE') or hasPermission(#client,'Client','CLIENT_UPDATE'))")
 	public Client addorUpdate(Client client) {
+		return addOrUpdateClient(client);
+	}
+
+	@PreAuthorize("hasRole('CLIENT_OUT_OF_CATCHMENT_CREATE') or (hasRole('CLIENT_OUT_OF_CATCHMENT_UPDATE'))")
+	public Client addOrUpdateOutOfCatchment(Client client) {
+		return addOrUpdateClient(client);
+	}
+
+	private Client addOrUpdateClient(Client client) {
 		if (client.getBaseEntityId() == null) {
 			throw new RuntimeException("No baseEntityId");
 		}
+
 		Client c = findClient(client);
+
 		if (c != null) {
 			client.setRevision(c.getRevision());
 			client.setId(c.getId());
 			client.setDateEdited(DateTime.now());
 			client.addIdentifier("OPENMRS_UUID", c.getIdentifier("OPENMRS_UUID"));
 			allClients.update(client);
-			
 		} else {
 			client.setDateCreated(DateTime.now());
 			allClients.add(client);
