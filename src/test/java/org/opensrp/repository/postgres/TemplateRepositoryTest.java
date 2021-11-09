@@ -28,7 +28,7 @@ public class TemplateRepositoryTest extends BaseRepositoryTest{
     }
 
     @Test
-    public void testAddShouldAddnewTemplate() {
+    public void testAddShouldAddNewTemplate() {
         PlanTemplate planTemplate = new PlanTemplate();
 
         List<Jurisdiction> jurisdictions = new ArrayList<>();
@@ -45,6 +45,8 @@ public class TemplateRepositoryTest extends BaseRepositoryTest{
 
         List<Template> actualTemplates = templateRepository.getAll();
         Assert.assertNotNull(actualTemplates);
+        Assert.assertEquals(1, actualTemplates.get(0).getTemplateId().intValue());
+        Assert.assertEquals("operation_area_1", actualTemplates.get(0).getTemplate().getJurisdiction().get(0).getCode());
     }
 
 }
