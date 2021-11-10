@@ -70,6 +70,17 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 	}
 
 	@Override
+	public List<RapidproState> getAllStates(String entity, String property) {
+		RapidproStateExample rapidproStateExample = new RapidproStateExample();
+		rapidproStateExample.createCriteria()
+				.andEntityEqualTo(entity)
+				.andPropertyEqualTo(property)
+				.andSyncStatusEqualTo(RapidProStateSyncStatus.SYNCED.name());
+		rapidproStateExample.setOrderByClause(RapidProConstants.ORDER_BY_ID_CLAUSE);
+		return rapidproStateMapper.selectByExample(rapidproStateExample);
+	}
+
+	@Override
 	public boolean updateUuids(List<Long> ids, String uuid) {
 		int counter = 0;
 		for (Long id : ids) {

@@ -3,7 +3,6 @@ package org.opensrp.service.rapidpro;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -90,9 +89,16 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		updateContactFields(CHILD, IDENTIFIER);
 		updateContactFields(SUPERVISOR, LOCATION_ID);
 
-		List<RapidproState> unSyncedChildStates = getUnSyncedRapidProStates(CHILD.name(), REGISTRATION_DATA.name()).stream()
-				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
-		postChildData(unSyncedChildStates);
+		List<RapidproState> unSyncedChildFromOpenSRPStates =
+				getAllRapidProStates(CHILD.name(), REGISTRATION_DATA.name()).stream()
+						.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
+
+		List<RapidproState> unSyncedChildFromRapidProStates =
+				getAllRapidProStates(CHILD.name(), IDENTIFIER.name()).stream()
+						.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
+		unSyncedChildFromOpenSRPStates.addAll(unSyncedChildFromRapidProStates);
+		logger.info("Found {} In the unsynced list. ", unSyncedChildFromOpenSRPStates.size());
+		postChildData(unSyncedChildFromOpenSRPStates);
 
 		List<RapidproState> unSyncedMotherStates = getUnSyncedRapidProStates(CARETAKER.name(),
 				REGISTRATION_DATA.name()).stream()
@@ -109,8 +115,15 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		if (unSyncedChildStates != null && !unSyncedChildStates.isEmpty()) {
 			logger.warn("Syncing {} client(s) created from OpenSRP to RapidPro", unSyncedChildStates.size());
 			for (RapidproState unSyncedChildState : unSyncedChildStates) {
+				Client childClient;
+				if (!unSyncedChildState.getEntity().equalsIgnoreCase(REGISTRATION_DATA.name())) {
+					childClient = clientService.getByBaseEntityId(unSyncedChildState.getUuid());
+					logger.info("Child is from RapidPro Base Entity id {}", childClient.getBaseEntityId());
+				} else {
+					childClient = clientService.getByBaseEntityId(unSyncedChildState.getPropertyKey());
+					logger.info("Child is from OpenSRp. Base Entity id {}", childClient.getBaseEntityId());
+				}
 
-				Client childClient = clientService.getByBaseEntityId(unSyncedChildState.getPropertyKey());
 				RapidProContact childContact = childConverter.convertClientToContact(childClient);
 
 				//Get vaccination and growth monitoring events and use them to update the child's RapidProContact
@@ -199,13 +212,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	}
 
 	private Optional<RapidproState> getUuid(String baseEntityId) {
-		Optional<RapidproState> childRegData = getStatesByPropertyKey(CHILD.name(), REGISTRATION_DATA.name(),
-				baseEntityId).stream().findFirst();
-		if (childRegData.isPresent() && !RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(
-				childRegData.get().getUuid())) {
-			return childRegData;
-		}
-		return getStatesByPropertyKey(CHILD.name(), IDENTIFIER.name(), baseEntityId).stream().findFirst();
+		return getStatesByPropertyKey(CHILD.name(), REGISTRATION_DATA.name(), baseEntityId).stream().findFirst();
 	}
 
 	private void postExistingChildData(String uuid, RapidProContact childContact,

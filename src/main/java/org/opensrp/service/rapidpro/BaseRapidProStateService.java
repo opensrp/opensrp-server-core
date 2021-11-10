@@ -54,6 +54,10 @@ public abstract class BaseRapidProStateService {
 		return rapidProStateRepository.getUnSyncedStates(entity, property);
 	}
 
+	public List<RapidproState> getAllRapidProStates(String entity, String property) {
+		return rapidProStateRepository.getAllStates(entity, property);
+	}
+
 	public List<RapidproState> getRapidProState(String entity, String property, String propertyKey) {
 		return rapidProStateRepository.getState(entity, property, propertyKey);
 	}
