@@ -47,15 +47,15 @@ public class RabbitMQReceiver {
 
 	@PostConstruct
 	public void init() {
-		planEvaluator = new PlanEvaluator("",queueHelper);
 		fhirParser = FHIRParser.parser(Format.JSON);
 	}
 
 	@RabbitHandler
 	public void receiver(PlanEvaluatorMessage planEvaluatorMessage) {
 		logger.info("PlanEvaluatorMessage listener invoked - Consuming Message with Plan Definition Identifier : " + planEvaluatorMessage.getPlanIdentifier());
+		initializePathEvaluator(planEvaluatorMessage.getUsername());
 
-		if (planEvaluatorMessage != null) {
+		if (planEvaluatorMessage != null && planEvaluator != null) {
 			PlanDefinition planDefinition = planService.getPlan(planEvaluatorMessage.getPlanIdentifier());
 			if (planDefinition != null && planDefinition.getActions() != null && planEvaluatorMessage.getJurisdiction() != null) {
 				planEvaluator.evaluatePlan(planDefinition,
@@ -75,9 +75,11 @@ public class RabbitMQReceiver {
 				if (stream != null) {
 					Resource resource = fhirParser.parse(stream);
 					logger.info("Resource id is : " + resource.getId());
+					initializePathEvaluator(resourceEvaluatorMessage.getUsername());
 					if (resource != null && resourceEvaluatorMessage != null
 							&& resourceEvaluatorMessage.getAction() != null
-							&& resourceEvaluatorMessage.getAction().getCondition() != null) {
+							&& resourceEvaluatorMessage.getAction().getCondition() != null
+							&& planEvaluator != null) {
 						planEvaluator.evaluateResource(resource, resourceEvaluatorMessage.getQuestionnaireResponse(),
 								resourceEvaluatorMessage.getAction(), resourceEvaluatorMessage.getPlanIdentifier(),
 								resourceEvaluatorMessage.getJurisdictionCode(), resourceEvaluatorMessage.getTriggerType());
@@ -88,6 +90,11 @@ public class RabbitMQReceiver {
 				logger.error("FHIRParserException occurred " + e.getMessage());
 			}
 		}
+	}
+
+	private void initializePathEvaluator(String username) {
+		if(planEvaluator == null)
+			planEvaluator = new PlanEvaluator(username, queueHelper);
 	}
 
 }
