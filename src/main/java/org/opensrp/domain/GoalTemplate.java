@@ -1,5 +1,6 @@
 package org.opensrp.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
@@ -11,6 +12,7 @@ public class GoalTemplate implements Serializable {
     private String id;
     private String description;
     private String priority;
+    @JsonProperty("target")
     @SerializedName("target")
     private List<TargetTemplate> targets;
 

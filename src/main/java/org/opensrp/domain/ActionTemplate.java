@@ -1,5 +1,6 @@
 package org.opensrp.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
 import org.smartregister.domain.Condition;
 import org.smartregister.domain.DynamicValue;
@@ -170,12 +171,16 @@ public class ActionTemplate  implements Serializable {
     }
 
     public static enum ActionType {
+        @JsonProperty("create")
         @SerializedName("create")
         CREATE,
+        @JsonProperty("update")
         @SerializedName("update")
         UPDATE,
+        @JsonProperty("remove")
         @SerializedName("remove")
         REMOVE,
+        @JsonProperty("fire-event")
         @SerializedName("fire-event")
         FIRE_EVENT;
 

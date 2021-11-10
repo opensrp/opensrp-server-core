@@ -31,10 +31,10 @@ public class PlanTemplate  implements Serializable {
     @JsonProperty
     private List<Jurisdiction> jurisdiction;
     private Long serverVersion;
-    @JsonProperty
+    @JsonProperty("goal")
     @SerializedName("goal")
     private List<GoalTemplate> goals;
-    @JsonProperty
+    @JsonProperty("action")
     @SerializedName("action")
     private List<ActionTemplate> actions;
     @JsonProperty
