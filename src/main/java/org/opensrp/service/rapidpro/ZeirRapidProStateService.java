@@ -3,6 +3,7 @@ package org.opensrp.service.rapidpro;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -17,6 +18,7 @@ import org.opensrp.domain.rapidpro.ZeirRapidProEntity;
 import org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProContact;
 import org.opensrp.domain.rapidpro.contact.zeir.RapidProFields;
+import org.opensrp.domain.rapidpro.converter.BaseRapidProClientConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirChildClientConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirGrowthMonitoringConverter;
 import org.opensrp.domain.rapidpro.converter.zeir.ZeirGrowthMonitoringConverter.GMEvent;
@@ -47,6 +49,7 @@ import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.GROWTH_MONI
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.IDENTIFIER;
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.LOCATION_ID;
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.REGISTRATION_DATA;
+import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.UPDATE_REGISTRATION_DATA;
 import static org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty.VACCINATION_DATA;
 
 /**
@@ -87,6 +90,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	 */
 	public void postDataToRapidPro() {
 		updateContactFields(CHILD, IDENTIFIER);
+		updateContactFields(CHILD, UPDATE_REGISTRATION_DATA);
+		updateContactFields(CARETAKER, UPDATE_REGISTRATION_DATA);
 		updateContactFields(SUPERVISOR, LOCATION_ID);
 
 		List<RapidproState> unSyncedChildFromOpenSRPStates =
@@ -224,8 +229,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 			logger.warn("Updating vaccination/growth monitoring fields for contact identified by {}", uuid);
 			synchronized (this) {
 				try {
-					String fieldsJson = objectMapper.writeValueAsString(childContact.getFields());
-					JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, new JSONObject(fieldsJson));
+					JSONObject payload = extractRapidProFieldsJSONObjectFromContact(childContact);
 					postAndUpdateStatus(primaryKeys, uuid, payload.toString(), true);
 					logger.warn("Updated vaccination/growth monitoring fields for contact identified by " + uuid);
 				}
@@ -240,6 +244,12 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				}
 			}
 		}
+	}
+
+	private JSONObject extractRapidProFieldsJSONObjectFromContact(RapidProContact childContact) throws JsonProcessingException {
+		String fieldsJson = objectMapper.writeValueAsString(childContact.getFields());
+		JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, new JSONObject(fieldsJson));
+		return payload;
 	}
 
 	private void processVaccinationStates(List<RapidproState> vaccinationStates, RapidProContact childContact,
@@ -367,13 +377,14 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	private void updateContactFields(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property) {
 		List<RapidproState> unSyncedStates = getUnSyncedRapidProStates(entity.name(), property.name()).stream()
 				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
-
+		ZeirChildClientConverter childConverter = new ZeirChildClientConverter(this);
+		ZeirMotherClientConverter motherConverter = new ZeirMotherClientConverter();
 		if (!unSyncedStates.isEmpty()) {
 			logger.warn("Syncing {} record(s) of type {}  from OpenSRP to RapidPro", unSyncedStates.size(), entity.name());
 			for (RapidproState rapidproState : unSyncedStates) {
 				synchronized (this) {
 					try {
-						JSONObject fields = getPayload(entity, property, rapidproState);
+						JSONObject fields = getPayload(entity, property, rapidproState, childConverter, motherConverter);
 						if (fields != null) {
 							JSONObject payload = new JSONObject().put(RapidProConstants.FIELDS, fields);
 							postAndUpdateStatus(Collections.singletonList(rapidproState.getId()),
@@ -392,7 +403,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 	}
 
 	private JSONObject getPayload(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property,
-			RapidproState rapidproState) {
+			RapidproState rapidproState, ZeirChildClientConverter childConverter,
+			ZeirMotherClientConverter motherConverter) throws JsonProcessingException {
 		JSONObject fields = null;
 		switch (entity) {
 			case CHILD:
@@ -401,16 +413,29 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					fields.put(RapidProConstants.OPENSRP_ID, rapidproState.getPropertyValue())
 							.put(RapidProConstants.REGISTRATION_PROCESSED, "true")
 							.put(RapidProConstants.SYSTEM_OF_REGISTRATION, RapidProConstants.MVACC);
+				} else if (property == UPDATE_REGISTRATION_DATA) {
+					RapidProContact childRapidProContact = getContactFromClient(rapidproState, childConverter);
+					fields = extractRapidProFieldsJSONObjectFromContact(childRapidProContact);
 				}
 				break;
 			case SUPERVISOR:
 				fields = new JSONObject().put(RapidProConstants.FACILITY_LOCATION_ID, rapidproState.getPropertyValue());
 				break;
 			case CARETAKER:
+				if (property == UPDATE_REGISTRATION_DATA) {
+					RapidProContact motherRapidProContact = getContactFromClient(rapidproState, motherConverter);
+					fields = extractRapidProFieldsJSONObjectFromContact(motherRapidProContact);
+				}
 			default:
 				break;
 		}
 		return fields;
+	}
+
+	private RapidProContact getContactFromClient(RapidproState rapidproState,
+			BaseRapidProClientConverter rapidProClientConverter) {
+		Client childClient = clientService.getByBaseEntityId(rapidproState.getPropertyKey());
+		return rapidProClientConverter.convertClientToContact(childClient);
 	}
 
 	synchronized public void addContactToGroup(ZeirRapidProEntity entity, String uuid) throws IOException {

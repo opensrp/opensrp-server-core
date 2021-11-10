@@ -8,7 +8,6 @@ import org.opensrp.domain.rapidpro.RapidProStateSyncStatus;
 import org.opensrp.domain.rapidpro.ZeirRapidProEntity;
 import org.opensrp.domain.rapidpro.ZeirRapidProEntityProperty;
 import org.opensrp.service.ClientService;
-import org.opensrp.util.RapidProUtils;
 import org.opensrp.util.constants.EventConstants;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Client;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RapidProEventService {
@@ -131,16 +129,43 @@ public class RapidProEventService {
 				break;
 		}
 
-		//To avoid creating multiple RapidPro contact for the same client
-		List<RapidproState> existingRapidProState = new ArrayList<>();
-		if (ZeirRapidProEntityProperty.REGISTRATION_DATA.name().equalsIgnoreCase(property)) {
-			existingRapidProState = rapidProStateService.getUnSyncedRapidProStates(entity, property).stream()
-					.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
-		}
+		// Child registered in ZEIR
+		List<RapidproState> clientStates = rapidProStateService.getRapidProState(ZeirRapidProEntity.CHILD.name(),
+				ZeirRapidProEntityProperty.REGISTRATION_DATA.name(), event.getBaseEntityId());
 
-		if (existingRapidProState.isEmpty() && StringUtils.isNotBlank(property)) {
+		//Child registered in Rapidpro (uses the uuid (base_entity_id),  entity, property)
+		List<RapidproState> clientStatesRapidPro = rapidProStateService.getRapidProStatesByUuid(event.getBaseEntityId(),
+				ZeirRapidProEntity.CHILD.name(), ZeirRapidProEntityProperty.IDENTIFIER.name());
+
+		List<RapidproState> combinedStates = new ArrayList<>();
+		combinedStates.addAll(clientStates);
+		combinedStates.addAll(clientStatesRapidPro);
+
+		switch (event.getEventType()) {
+			case EventConstants.UPDATE_BIRTH_REGISTRATION:
+			case EventConstants.UPDATE_MOTHER_DETAILS:
+				if (!combinedStates.isEmpty()) {
+					property = ZeirRapidProEntityProperty.UPDATE_REGISTRATION_DATA.name();
+					saveRapidProState(event, property, entity, combinedStates.get(0).getUuid());
+				} else {
+					saveRapidProState(event, property, entity, RapidProConstants.UNPROCESSED_UUID);
+				}
+				break;
+			case EventConstants.NEW_WOMAN_REGISTRATION_EVENT:
+			case EventConstants.BIRTH_REGISTRATION_EVENT:
+			case EventConstants.VACCINATION_EVENT:
+			case EventConstants.GROWTH_MONITORING_EVENT:
+				saveRapidProState(event, property, entity, RapidProConstants.UNPROCESSED_UUID);
+				break;
+			default:
+				break;
+		}
+	}
+
+	private void saveRapidProState(Event event, String property, String entity, String uuid) {
+		if (StringUtils.isNotBlank(property)) {
 			RapidproState rapidproState = new RapidproState();
-			rapidproState.setUuid(RapidProConstants.UNPROCESSED_UUID);
+			rapidproState.setUuid(uuid);
 			rapidproState.setEntity(entity);
 			rapidproState.setProperty(property);
 			rapidproState.setPropertyKey(event.getBaseEntityId());
