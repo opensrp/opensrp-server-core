@@ -35,9 +35,6 @@ public class PlanProcessingStatusRepositoryImpl extends  BaseRepositoryImpl<Plan
         if (planProcessingStatus == null) {
             return;
         }
-        if (getUniqueField(planProcessingStatus) == null) {
-            return;
-        }
 
         if (retrievePrimaryKey(planProcessingStatus) != null) {
             return; // planProcessingStatus already added
@@ -151,7 +148,11 @@ public class PlanProcessingStatusRepositoryImpl extends  BaseRepositoryImpl<Plan
             return null;
         }
 
-        return (Long) uniqueId;
+        PlanProcessingStatus processingStatus = getByPrimaryKey((Long) uniqueId);
+        if (processingStatus == null) {
+            return null;
+        }
+        return processingStatus.getId();
     }
 
     @Override
