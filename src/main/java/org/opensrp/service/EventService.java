@@ -441,10 +441,15 @@ public class EventService {
 	}
 
 	private Event getNewOutOfAreaServiceEvent(Event event, Event birthRegEvent, String eventType) {
+		String eventId = event.getBaseEntityId();
+		if (StringUtils.isEmpty(eventId)) {
+			eventId = birthRegEvent.getBaseEntityId();
+		}
+
 		event.setBaseEntityId(birthRegEvent.getBaseEntityId());
 		removeIdentifier(event); //Remove identifier from the old event first because entity id is found
 		Event newEvent = new Event();
-		newEvent.withBaseEntityId(event.getBaseEntityId())
+		newEvent.withBaseEntityId(eventId)
 				.withEventType(eventType)
 				.withEventDate(event.getEventDate())
 				.withEntityType(event.getEntityType())
@@ -654,7 +659,7 @@ public class EventService {
 	 */
 	public Long countEvents(EventSearchBean eventSearchBean) {
 		return allEvents.countEvents(eventSearchBean);
-	};
+	}
 
 	/**
 	 * This method is similar to {@link #findEventsByConceptAndValue(String, String)}. This method however does not enforce ACL
