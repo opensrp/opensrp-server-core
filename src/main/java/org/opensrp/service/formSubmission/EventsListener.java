@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
@@ -70,6 +71,8 @@ public class EventsListener {
 			sort(events, serverVersionComparator());
 			
 			for (Event event : events) {
+				logger.info("Processing event: " + event.getFormSubmissionId() + " - " + (new Gson().toJson(event)));
+
 				try {
 					event = eventService.processOutOfArea(event);
 					eventsRouter.route(event);

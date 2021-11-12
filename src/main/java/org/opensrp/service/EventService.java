@@ -254,8 +254,13 @@ public class EventService {
 	 */
 	public synchronized Event processOutOfArea(Event event) {
 		try {
-			String identifier = StringUtils.isBlank(event.getIdentifier(Client.ZEIR_ID)) ?
-					event.getIdentifier(OPENSRP_ID) : event.getIdentifier(Client.ZEIR_ID);
+			String programClientId = event.getDetails().getOrDefault("program_client_id", "");
+
+			String identifier = StringUtils.isBlank(event.getIdentifier(Client.ZEIR_ID))
+					? (StringUtils.isBlank(event.getIdentifier(OPENSRP_ID)) ? programClientId : event.getIdentifier(OPENSRP_ID))
+					: event.getIdentifier(Client.ZEIR_ID);
+
+			logger.info("Processing out of area event: baseEntityId=" + event.getBaseEntityId() + "; identifier=" + identifier);
 
 			if (StringUtils.isNotBlank(event.getBaseEntityId()) || StringUtils.isBlank(identifier)) {
 				return event;
