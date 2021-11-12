@@ -326,6 +326,9 @@ public class PlanService {
 		String historicalIntervention = null;
 		List<PlanDefinition> planList = getPlansByServerVersionAndOperationalArea(0, operationalAreaIds, false);
 		for (PlanDefinition plan: planList ) {
+			if(plan.getActions() == null || plan.getActions().isEmpty()){
+				continue;
+			}
 			for (Action action: plan.getActions() ) {
 				if (action.getCode() != null) {
 					if (PlanConstants.BEDNET_DISTRIBUTION.equalsIgnoreCase(action.getCode())) {
