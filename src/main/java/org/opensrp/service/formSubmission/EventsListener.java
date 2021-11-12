@@ -58,7 +58,7 @@ public class EventsListener {
 			logger.info("Fetching Events");
 			long version = getVersion();
 			
-			List<Event> events = eventService.findByServerVersion(version);
+			List<Event> events = eventService.findByServerVersionUnfiltered(version);
 			
 			if (events.isEmpty()) {
 				logger.info("No new events found. Export token: " + version);

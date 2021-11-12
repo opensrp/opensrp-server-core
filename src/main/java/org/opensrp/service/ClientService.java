@@ -54,6 +54,10 @@ public class ClientService {
 		return allClients.findAllByIdentifier(identifierType, identifier);
 	}
 
+	public List<Client> findAllByIdentifierUnfiltered(String identifierType, String identifier) {
+		return allClients.findAllByIdentifier(identifierType, identifier);
+	}
+
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByRelationshipIdAndDateCreated(String relationalId, String dateFrom, String dateTo) {
@@ -75,6 +79,10 @@ public class ClientService {
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllByAttribute(String attributeType, String attribute) {
+		return allClients.findAllByAttribute(attributeType, attribute);
+	}
+
+	public List<Client> findAllByAttributeUnfiltered(String attributeType, String attribute) {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
 

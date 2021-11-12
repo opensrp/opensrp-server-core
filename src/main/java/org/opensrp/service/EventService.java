@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -223,6 +224,25 @@ public class EventService {
 		return event;
 	}
 
+	public synchronized Event addEventUnfiltered(Event event, String username) {
+		Event e = find(event);
+		if (e != null) {
+			throw new IllegalArgumentException(
+					"An event already exists with given list of identifiers. Consider updating data.[" + e + "]");
+		}
+
+		if (event.getFormSubmissionId() != null
+				&& getByBaseEntityAndFormSubmissionId(event.getBaseEntityId(), event.getFormSubmissionId()) != null) {
+			throw new IllegalArgumentException(
+					"An event already exists with given baseEntity and formSubmission combination. Consider updating");
+		}
+
+		event.setDateCreated(DateTime.now());
+		allEvents.add(event);
+		triggerPlanEvaluation(event, username);
+		return event;
+	}
+
 	/**
 	 * An out of area event is used to record services offered outside a client's catchment area. The
 	 * event usually will have a client unique identifier(ZEIR_ID) as the only way to identify the
@@ -241,18 +261,20 @@ public class EventService {
 				return event;
 			}
 
-			List<org.smartregister.domain.Client> clients =
-					identifier.startsWith(CARD_ID_PREFIX) ? clientService
-							.findAllByAttribute(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
-							: getClientByIdentifier(identifier);
+			List<org.smartregister.domain.Client> clients = identifier.startsWith(CARD_ID_PREFIX)
+							? clientService.findAllByAttributeUnfiltered(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
+							: getClientByIdentifierUnfiltered(identifier);
+
+			logger.debug("Out of Area clients: " + clients.size());
 
 			if (clients == null || clients.isEmpty()) {
 				return event;
 			}
 
 			for (org.smartregister.domain.Client client : clients) {
+				logger.debug("Out of Area client: " + (new Gson().toJson(client)));
 
-				List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);
+				List<Event> existingEvents = findByBaseEntityAndTypeUnfiltered(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);
 
 				if (existingEvents == null || existingEvents.isEmpty()) {
 					return event;
@@ -286,7 +308,7 @@ public class EventService {
 
 					if (actualEventType != null) {
 						Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, actualEventType);
-						addEvent(newEvent, birthRegEvent.getProviderId());
+						addEventUnfiltered(newEvent, birthRegEvent.getProviderId());
 					}
 				} else if (eventTypeLowercase.contains(RECURRING_SERVICE.toLowerCase()) ||
 						eventTypeLowercase.contains(RECURRING_SERVICE_UNDERSCORED)) {
@@ -476,6 +498,14 @@ public class EventService {
 		return clients;
 	}
 
+	private List<org.smartregister.domain.Client> getClientByIdentifierUnfiltered(String identifier) {
+		List<org.smartregister.domain.Client> clients = clientService.findAllByIdentifierUnfiltered(Client.ZEIR_ID, identifier);
+		if (clients != null && clients.isEmpty()) {
+			clients = clientService.findAllByIdentifierUnfiltered(Client.ZEIR_ID.toUpperCase(), identifier);
+		}
+		return clients;
+	}
+
 	@PreAuthorize("(hasPermission(#event,'Event', 'EVENT_CREATE') and hasPermission(#event,'Event', 'EVENT_UPDATE'))"
 			+ " or (hasRole('EVENT_OUT_OF_CATCHMENT_CREATE') or hasRole('EVENT_OUT_OF_CATCHMENT_UPDATE'))")
 	public synchronized Event addorUpdateEvent(Event event, String username) {
@@ -552,6 +582,10 @@ public class EventService {
 		return allEvents.findByServerVersion(serverVersion);
 	}
 
+	public List<Event> findByServerVersionUnfiltered(long serverVersion) {
+		return allEvents.findByServerVersion(serverVersion);
+	}
+
 	@PreAuthorize("hasRole('EVENT_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> notInOpenMRSByServerVersion(long serverVersion, Calendar calendar) {
@@ -597,6 +631,11 @@ public class EventService {
 	@PreAuthorize("hasRole('EVENT_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findByBaseEntityAndType(String baseEntityId, String eventType) {
+		return allEvents.findByBaseEntityAndType(baseEntityId, eventType);
+
+	}
+
+	public List<Event> findByBaseEntityAndTypeUnfiltered(String baseEntityId, String eventType) {
 		return allEvents.findByBaseEntityAndType(baseEntityId, eventType);
 
 	}
