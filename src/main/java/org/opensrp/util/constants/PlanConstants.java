@@ -17,5 +17,8 @@ public interface PlanConstants {
     String CASE_CLASSIFICATION = "case_classification";
     String BEDNET_DISTRIBUTION = "Bednet Distribution";
     String FLAG = "flag";
+    String FIRST_NAME = "first_name";
+    String SURNAME = "surname";
+    String FAMILY_NAME = "family_name";
 
 }
