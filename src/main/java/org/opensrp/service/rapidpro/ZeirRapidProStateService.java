@@ -154,9 +154,9 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				logger.warn("Found {} VACCINATION and {} GROWTH MONITORING UN_SYNCED events for child identified as {}",
 						vaccinationStates.size(), growthMonitoringStates.size(), childClient.getBaseEntityId());
 
-				if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(unSyncedChildState.getUuid())) {
-					if (childClient.getRelationships() != null && childClient.getRelationships()
-							.containsKey(RapidProConstants.MOTHER)) {
+				if (RapidProConstants.UNPROCESSED_UUID.equalsIgnoreCase(unSyncedChildState.getUuid()) &&
+						childClient.getRelationships() != null &&
+						childClient.getRelationships().containsKey(RapidProConstants.MOTHER)) {
 
 						String motherBaseEntityId = childClient.getRelationships().get(RapidProConstants.MOTHER).get(0);
 						Client motherClient = clientService.getByBaseEntityId(motherBaseEntityId);
@@ -171,7 +171,6 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 						processGrowthMonitoringStates(growthMonitoringStates, childContact, growthMonitoringConverter);
 						postDataAndUpdateUuids(childContact, unSyncedChildState, vaccinationStates, growthMonitoringStates);
 					}
-				}
 			}
 			logger.warn("Synced {} client(s) created from OpenSRP to RapidPro", unSyncedChildStates.size());
 		} else {
@@ -444,14 +443,15 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				}
 				break;
 			case SUPERVISOR:
-				fields = new JSONObject().put(RapidProConstants.FACILITY_LOCATION_ID, rapidproState.getPropertyValue());
-				fields = new JSONObject().put(RapidProConstants.FIELDS, fields);
+				fields = new JSONObject().put(RapidProConstants.FIELDS,
+						new JSONObject().put(RapidProConstants.FACILITY_LOCATION_ID, rapidproState.getPropertyValue()));
 				break;
 			case CARETAKER:
 				if (property == UPDATE_REGISTRATION_DATA) {
 					RapidProContact motherRapidProContact = getContactFromClient(rapidproState, motherConverter);
 					fields = new JSONObject(objectMapper.writeValueAsString(motherRapidProContact));
 				}
+				break;
 			default:
 				break;
 		}

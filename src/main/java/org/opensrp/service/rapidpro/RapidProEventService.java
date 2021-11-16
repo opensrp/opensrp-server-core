@@ -65,10 +65,10 @@ public class RapidProEventService {
 						&& optInForSMSFromOpenSRP) {
 					saveRapidProState(event);
 				} else if (EventConstants.VACCINATION_EVENT.equalsIgnoreCase(event.getEventType()) ||
-						EventConstants.GROWTH_MONITORING_EVENT.equalsIgnoreCase(event.getEventType())) {
-					if (registeredFromMVACC(motherClient) || subscribedForSMSReminder(motherClient)) {
-						saveRapidProState(event);
-					}
+						EventConstants.GROWTH_MONITORING_EVENT.equalsIgnoreCase(event.getEventType()) &&
+								(registeredFromMVACC(motherClient) || subscribedForSMSReminder(motherClient))
+				) {
+					saveRapidProState(event);
 				}
 			}
 		}
