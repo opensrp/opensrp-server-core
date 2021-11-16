@@ -51,7 +51,7 @@ public abstract class BaseRapidProClientConverter implements RapidProContactClie
 
 	protected void addZeirClientIdentifier(RapidProContact rapidProContact, Client client, String identifierType) {
 		List<IdentifierSource> identifierSources = identifierSourceService.findAllIdentifierSources();
-		if (identifierSources != null && !identifierSources.isEmpty()) {
+		if (rapidProContact!= null && identifierSources != null && !identifierSources.isEmpty()) {
 			IdentifierSource identifierSource = identifierSources.get(0);
 			List<String> uniqueIds = uniqueIdentifierService
 					.generateIdentifiers(identifierSource, 1, rapidProContact.getFields().getSupervisorPhone());

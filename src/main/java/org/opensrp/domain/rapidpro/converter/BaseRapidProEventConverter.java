@@ -12,6 +12,7 @@ import org.opensrp.util.DateParserUtils;
 import org.opensrp.util.constants.RapidProConstants;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
+import org.springframework.lang.NonNull;
 
 import java.util.Collections;
 import java.util.Date;
@@ -30,7 +31,7 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 		this.organizationService = organizationService;
 	}
 
-	protected void addCommonEventProperties(RapidProContact rapidProContact, Event event) {
+	protected void addCommonEventProperties(@NonNull RapidProContact rapidProContact, Event event) {
 		DateTime now = DateTime.now();
 		event.setEventDate(now);
 		event.setDateCreated(now);
@@ -65,7 +66,7 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 				.withFieldDataType(RapidProConstants.CALCULATE);
 	}
 
-	protected String getVaccineSequence(ZeirVaccine vaccine) {
+	protected String getVaccineSequence(@NonNull ZeirVaccine vaccine) {
 		String[] splitVaccine = vaccine.name().split("_");
 		if (splitVaccine.length <= 1) {
 			return "1";
@@ -104,6 +105,9 @@ public abstract class BaseRapidProEventConverter implements RapidProContactEvent
 	}
 
 	public String readObsValue(Event event, String formSubmissionField) {
+		if (event == null) {
+			return null;
+		}
 		Optional<Obs> optionalObs = event.getObs().stream()
 				.filter(it -> formSubmissionField.equalsIgnoreCase(it.getFormSubmissionField()))
 				.findFirst();

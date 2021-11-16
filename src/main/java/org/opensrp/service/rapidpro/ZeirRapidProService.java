@@ -116,26 +116,7 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 					}
 
 					try {
-						//Only process child contacts
-						RapidProFields fields = rapidProContact.getFields();
-						if (StringUtils.isBlank(fields.getSupervisorPhone()) &&
-								StringUtils.isNotBlank(fields.getPosition())) {
-							logger.error("Supervisor phone not provided for contact of type {}", fields.getPosition());
-						}
-						if (StringUtils.isNotBlank(fields.getSupervisorPhone()) && RapidProConstants.CHILD
-								.equalsIgnoreCase(fields.getPosition())) {
-							String locationId = getLocationId(rapidProContact, rapidProContacts);
-							if (StringUtils.isBlank(locationId)) {
-								logger.error(
-										"Supervisor identified with phone number '{}' not tagged to an exising OpenSRP location",
-										fields.getSupervisorPhone());
-							}
-							if (StringUtils.isNotBlank(locationId)) {
-								updateExistingClientUuid(rapidProContact, ZeirRapidProEntity.CHILD);
-								fields.setFacilityLocationId(locationId);
-								processRegistrationAndRelatedEvents(rapidProContact, rapidProContacts);
-							}
-						}//TODO Add implementation for processing supervisor for instance when their location is updated;
+						processRapidProContacts(rapidProContacts, rapidProContact);
 					}
 					catch (Exception exception) {
 						logger.error(exception.getMessage(), exception);
@@ -162,6 +143,29 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		catch (IOException exception) {
 			logger.error(exception.getMessage(), exception);
 		}
+	}
+
+	private void processRapidProContacts(List<RapidProContact> rapidProContacts, RapidProContact rapidProContact) {
+		//Only process child contacts
+		RapidProFields fields = rapidProContact.getFields();
+		if (StringUtils.isBlank(fields.getSupervisorPhone()) &&
+				StringUtils.isNotBlank(fields.getPosition())) {
+			logger.error("Supervisor phone not provided for contact of type {}", fields.getPosition());
+		}
+		if (StringUtils.isNotBlank(fields.getSupervisorPhone()) && RapidProConstants.CHILD
+				.equalsIgnoreCase(fields.getPosition())) {
+			String locationId = getLocationId(rapidProContact, rapidProContacts);
+			if (StringUtils.isBlank(locationId)) {
+				logger.error(
+						"Supervisor identified with phone number '{}' not tagged to an exising OpenSRP location",
+						fields.getSupervisorPhone());
+			}
+			if (StringUtils.isNotBlank(locationId)) {
+				updateExistingClientUuid(rapidProContact, ZeirRapidProEntity.CHILD);
+				fields.setFacilityLocationId(locationId);
+				processRegistrationAndRelatedEvents(rapidProContact, rapidProContacts);
+			}
+		}//TODO Add implementation for processing supervisor for instance when their location is updated;
 	}
 
 	private void updateExistingClientUuid(RapidProContact rapidProContact, ZeirRapidProEntity entity) {

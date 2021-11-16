@@ -53,7 +53,9 @@ public interface RapidProConstants {
 	String ACTION = "action";
 	String GROUP = "group";
 	String ADD = "add";
+	String CONTACT_ACTION_URL_PATH = "/contact_actions.json";
 	int OPENMRS_CONCEPT_REQUIRED_LENGTH = 36;
+	String CONTACTS_JSON_URN_TEL = "/contacts.json?urn=tel:";
 
 	interface RapidProProjects {
 		String ZEIR_RAPIDPRO = "zeir";

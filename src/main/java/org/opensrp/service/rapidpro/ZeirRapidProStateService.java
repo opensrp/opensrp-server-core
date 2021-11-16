@@ -471,7 +471,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		String group = entity == CHILD ? RapidProConstants.CHILDREN : RapidProConstants.CARETAKERS;
 		payload.put(RapidProConstants.GROUP, group);
 		try (CloseableHttpResponse httpResponse = postToRapidPro(payload.toString(),
-				RapidProUtils.getBaseUrl(rapidProUrl) + "/contact_actions.json")) {
+				RapidProUtils.getBaseUrl(rapidProUrl) + RapidProConstants.CONTACT_ACTION_URL_PATH)) {
 			if (httpResponse != null) {
 				RapidProUtils.logResponseStatusCode(httpResponse, logger);
 				StatusLine statusLine = httpResponse.getStatusLine();
@@ -481,7 +481,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 			}
 		}
 		catch (IOException exception) {
-			logger.error(exception.getMessage(), exception.fillInStackTrace().toString());
+			logger.error(exception);
 		}
 	}
 }

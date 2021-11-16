@@ -113,7 +113,7 @@ public class RapidProUtils {
 			}
 		}
 		catch (JSONException | IOException exception) {
-			logger.error(exception.getMessage(), exception.fillInStackTrace().toString());
+			logger.error(exception);
 		}
 		return null;
 	}
@@ -136,7 +136,7 @@ public class RapidProUtils {
 	}
 
 	public static HttpGet contactByPhoneRequest(String phone, String rapidProUrl, String rapidProToken) {
-		return (HttpGet) setupRapidproRequest(getBaseUrl(rapidProUrl) + "/contacts.json?urn=tel:" + phone,
+		return (HttpGet) setupRapidproRequest(getBaseUrl(rapidProUrl) + RapidProConstants.CONTACTS_JSON_URN_TEL + phone,
 				new HttpGet(), rapidProToken);
 	}
 }
