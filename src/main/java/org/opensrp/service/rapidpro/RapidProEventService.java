@@ -101,8 +101,11 @@ public class RapidProEventService {
 	}
 
 	private boolean registeredFromMVACC(Client motherClient) {
-		String systemOfReg = (String) motherClient.getAttribute(RapidProConstants.SYSTEM_OF_REGISTRATION);
-		return StringUtils.isNotBlank(systemOfReg) && RapidProConstants.MVACC.equalsIgnoreCase(systemOfReg);
+		if (motherClient != null) {
+			String systemOfReg = (String) motherClient.getAttribute(RapidProConstants.SYSTEM_OF_REGISTRATION);
+			return StringUtils.isNotBlank(systemOfReg) && RapidProConstants.MVACC.equalsIgnoreCase(systemOfReg);
+		}
+		return false;
 	}
 
 	private void saveRapidProState(Event event) {
@@ -133,13 +136,24 @@ public class RapidProEventService {
 		List<RapidproState> clientStates = rapidProStateService.getRapidProState(ZeirRapidProEntity.CHILD.name(),
 				ZeirRapidProEntityProperty.REGISTRATION_DATA.name(), event.getBaseEntityId());
 
+		// Mother registered in ZEIR
+		List<RapidproState> motherClientStates = rapidProStateService.getRapidProState(ZeirRapidProEntity.CARETAKER.name(),
+				ZeirRapidProEntityProperty.REGISTRATION_DATA.name(), event.getBaseEntityId());
+
 		//Child registered in Rapidpro (uses the uuid (base_entity_id),  entity, property)
 		List<RapidproState> clientStatesRapidPro = rapidProStateService.getRapidProStatesByUuid(event.getBaseEntityId(),
 				ZeirRapidProEntity.CHILD.name(), ZeirRapidProEntityProperty.IDENTIFIER.name());
 
+		//Mother registered in Rapidpro (uses the uuid (base_entity_id),  entity, property)
+		List<RapidproState> motherClientStatesRapidPro =
+				rapidProStateService.getRapidProStatesByUuid(event.getBaseEntityId(),
+						ZeirRapidProEntity.CARETAKER.name(), ZeirRapidProEntityProperty.IDENTIFIER.name());
+
 		List<RapidproState> combinedStates = new ArrayList<>();
 		combinedStates.addAll(clientStates);
+		combinedStates.addAll(motherClientStates);
 		combinedStates.addAll(clientStatesRapidPro);
+		combinedStates.addAll(motherClientStatesRapidPro);
 
 		switch (event.getEventType()) {
 			case EventConstants.UPDATE_BIRTH_REGISTRATION:

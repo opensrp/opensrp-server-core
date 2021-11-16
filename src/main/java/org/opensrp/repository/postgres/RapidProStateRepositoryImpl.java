@@ -74,8 +74,7 @@ public class RapidProStateRepositoryImpl implements RapidProStateRepository {
 		RapidproStateExample rapidproStateExample = new RapidproStateExample();
 		rapidproStateExample.createCriteria()
 				.andEntityEqualTo(entity)
-				.andPropertyEqualTo(property)
-				.andSyncStatusEqualTo(RapidProStateSyncStatus.SYNCED.name());
+				.andPropertyEqualTo(property);
 		rapidproStateExample.setOrderByClause(RapidProConstants.ORDER_BY_ID_CLAUSE);
 		return rapidproStateMapper.selectByExample(rapidproStateExample);
 	}
