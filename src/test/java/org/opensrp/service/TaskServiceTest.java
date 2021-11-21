@@ -20,6 +20,7 @@ import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
@@ -302,6 +303,16 @@ public class TaskServiceTest {
 		int count = taskService.findTaskCountBySearchBean(taskSearchBean);
 		verify(taskRepository).getTaskCount(taskSearchBean);
 		assertEquals(1, count);
+	}
+
+	@Test
+	public void testSaveTasks() {
+		List<Task> tasks = new ArrayList<>();
+		Task task = initializeTask();
+		task.setIdentifier(UUID.randomUUID().toString());
+		tasks.add(task);
+		taskService.saveTasks(tasks);
+		verify(taskRepository).add(tasks.get(0));
 	}
 
 }
