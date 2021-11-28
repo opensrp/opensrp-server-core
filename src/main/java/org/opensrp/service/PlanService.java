@@ -316,6 +316,8 @@ public class PlanService {
 			PlanTaskCount planTaskCount = new PlanTaskCount();
 			Long actualTaskCount;
 			Long expectedTaskCount;
+			List<String> residentialStructureIds;
+			long otherPlanFamRegCount;
 			List<String> planJurisdictionIds = new ArrayList<>();
 			Map<String, String> properties = new HashMap<>();
 			for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
@@ -326,7 +328,7 @@ public class PlanService {
 			switch (action.getCode()) {
 				case "Case Confirmation":
 					// get case confirmation task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Case Confirmation");
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Case Confirmation", false);
 					planTaskCount.setCaseConfirmationActualTaskCount(actualTaskCount);
 					planTaskCount.setCaseConfirmationExpectedTaskCount(1l);
 					planTaskCount.setCaseConfirmationVariationTaskCount(planTaskCount.getCaseConfirmationExpectedTaskCount()
@@ -334,19 +336,24 @@ public class PlanService {
 					break;
 				case "BCC":
 					// get BCC task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "BCC");
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "BCC", false);
 					planTaskCount.setBccActualTaskCount(actualTaskCount);
 					planTaskCount.setBccExpectedTaskCount(1l);
 					planTaskCount.setBccVariationTaskCount(planTaskCount.getBccExpectedTaskCount() - planTaskCount.getBccActualTaskCount());
 					break;
 				case "RACD Register Family":
 					// get register family task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family");
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", false);
 					planTaskCount.setFamilyRegActualTaskCount(actualTaskCount);
+					properties.put("type", "Residential Structure");
+					residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
+					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", true);
+					planTaskCount.setFamilyRegExpectedTaskCount(residentialStructureIds.size() - otherPlanFamRegCount);
+					planTaskCount.setFamilyRegVariationTaskCount(planTaskCount.getFamilyRegExpectedTaskCount() - planTaskCount.getFamilyRegActualTaskCount());
 					break;
 				case "Blood Screening":
 					// get blood screening task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Blood Screening");
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Blood Screening", false);
 					planTaskCount.setBloodScreeningActualTaskCount(actualTaskCount);
 					expectedTaskCount = clientService.countFamilyMembersByLocation(planJurisdictionIds, 5);
 					planTaskCount.setBloodScreeningExpectedTaskCount(expectedTaskCount);
@@ -355,12 +362,17 @@ public class PlanService {
 					break;
 				case "Bednet Distribution":
 					// get bednet distribution task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Bednet Distribution");
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Bednet Distribution", false);
 					planTaskCount.setBednetDistributionActualTaskCount(actualTaskCount);
+					properties.put("type", "Residential Structure");
+					residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
+					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", true);
+					planTaskCount.setBednetDistributionExpectedTaskCount(residentialStructureIds.size() - otherPlanFamRegCount);
+					planTaskCount.setBednetDistributionVariationTaskCount(planTaskCount.getBednetDistributionExpectedTaskCount() - planTaskCount.getBednetDistributionActualTaskCount());
 					break;
 				case "Larval Dipping":
 					// get larval dipping task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Larval Dipping");
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Larval Dipping", false);
 					planTaskCount.setLarvalDippingActualTaskCount(actualTaskCount);
 					properties.put("type", "Larval Breeding Site");
 					expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
@@ -370,7 +382,7 @@ public class PlanService {
 					break;
 				case "Mosquito Collection":
 					// get mosquito collection task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Mosquito Collection");
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Mosquito Collection", false);
 					planTaskCount.setMosquitoCollectionActualTaskCount(actualTaskCount);
 					properties.put("type", "Mosquito Collection Point");
 					expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);

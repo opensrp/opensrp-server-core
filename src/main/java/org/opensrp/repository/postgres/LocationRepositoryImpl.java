@@ -1040,4 +1040,20 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		}
 		return structureMetadataMapper.countManyByProperties(structureMetadataExample, properties);
 	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<String> findStructureIdsByProperties(List<String> parentIds, Map<String, String> properties, int limit) {
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		if (parentIds != null && !parentIds.isEmpty()) {
+			structureMetadataExample.createCriteria().andParentIdIn(parentIds);
+		}
+		List<String> structureIds = structureMetadataMapper.selectManyIdsByProperties(structureMetadataExample, properties,
+				 0, fetchLimit);
+		return structureIds;
+	}
 }

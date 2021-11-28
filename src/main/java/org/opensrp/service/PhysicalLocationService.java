@@ -578,4 +578,14 @@ public class PhysicalLocationService {
 	long countStructuresByProperties(List<String> parentIds, Map<String, String> properties) {
 		return locationRepository.countStructuresByProperties(parentIds,properties);
 	}
+
+	/**
+	 * This methods searches for structures ids using the parentId and location properties
+	 * @param parentIds list of the parent ids of the structure being searched
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @return structure ids matching the params
+	 */
+	public List<String> findStructureIdsByProperties(List<String> parentIds, Map<String, String> properties, int limit){
+		return locationRepository.findStructureIdsByProperties(parentIds,properties,limit);
+	}
 }

@@ -304,4 +304,12 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return count of jurisdictions matching the params
 	 */
 	long countStructuresByProperties(List<String> parentIds, Map<String, String> properties);
+
+	/**
+	 * This methods searches for structures ids using the parentId and location properties
+	 * @param parentIds list of the parent ids of the structure being searched
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @return structure ids matching the params
+	 */
+	List<String> findStructureIdsByProperties(List<String> parentIds, Map<String, String> properties,int limit);
 }

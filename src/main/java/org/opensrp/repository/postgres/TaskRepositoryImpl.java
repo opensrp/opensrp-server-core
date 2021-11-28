@@ -450,9 +450,16 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	}
 
 	@Override
-	public Long countTasksByPlanAndCode(String plan, String code) {
+	public Long countTasksByPlanAndCode(String plan, String code, boolean excludePlanTasks) {
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
-		taskMetadataExample.createCriteria().andPlanIdentifierEqualTo(plan).andCodeEqualTo(code);
+		TaskMetadataExample.Criteria criteria = taskMetadataExample.createCriteria();
+		criteria.andCodeEqualTo(code);
+		if (excludePlanTasks){
+			criteria.andPlanIdentifierNotEqualTo(plan);
+		} else {
+			criteria.andPlanIdentifierEqualTo(plan);
+		}
+
 		return taskMetadataMapper.countByExample(taskMetadataExample);
 	}
 

@@ -226,9 +226,10 @@ public class TaskService {
 	 *
 	 * @param plan plan identifier for the task
 	 * @param code the code for the task
+	 * @param excludePlanTasks whether to exclude tasks from the current plan in the count
 	 * @return count of tasks with a particular code for a plan
 	 */
-	public Long countTasksByPlanAndCode(String plan, String code) {
-		return taskRepository.countTasksByPlanAndCode(plan, code);
+	public Long countTasksByPlanAndCode(String plan, String code, boolean excludePlanTasks) {
+		return taskRepository.countTasksByPlanAndCode(plan, code, excludePlanTasks);
 	}
 }
