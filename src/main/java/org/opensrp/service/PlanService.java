@@ -309,15 +309,25 @@ public class PlanService {
 		return 0l;
 	}
 
-	public List<PlanTaskCount> getPlanTaskCounts(PlanDefinition plan) {
+	public List<PlanTaskCount> getPlanTaskCounts(String planIdentifier) {
 		List<PlanTaskCount> planTaskCounts = new ArrayList<>();
+		PlanTaskCount planTaskCount = getPlanTaskCount(getPlan(planIdentifier));
+		if ( planTaskCount !=null){
+			planTaskCounts.add(planTaskCount);
+		}
+		return planTaskCounts;
+	}
 
+	public PlanTaskCount getPlanTaskCount(PlanDefinition plan) {
+		PlanTaskCount planTaskCount = null;
+		boolean hasMissingTasks = false;
 		for (Action action: plan.getActions()) {
-			PlanTaskCount planTaskCount = new PlanTaskCount();
+			planTaskCount = new PlanTaskCount();
 			Long actualTaskCount;
 			Long expectedTaskCount;
 			List<String> residentialStructureIds;
 			long otherPlanFamRegCount;
+			long missingTaskCount;
 			List<String> planJurisdictionIds = new ArrayList<>();
 			Map<String, String> properties = new HashMap<>();
 			for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
@@ -328,74 +338,85 @@ public class PlanService {
 			switch (action.getCode()) {
 				case "Case Confirmation":
 					// get case confirmation task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Case Confirmation", false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Case Confirmation", null, false);
 					planTaskCount.setCaseConfirmationActualTaskCount(actualTaskCount);
 					planTaskCount.setCaseConfirmationExpectedTaskCount(1l);
-					planTaskCount.setCaseConfirmationVariationTaskCount(planTaskCount.getCaseConfirmationExpectedTaskCount()
-							- planTaskCount.getCaseConfirmationActualTaskCount());
+					missingTaskCount = planTaskCount.getCaseConfirmationExpectedTaskCount()
+							- planTaskCount.getCaseConfirmationActualTaskCount();
+					hasMissingTasks = missingTaskCount > 0;
+					planTaskCount.setCaseConfirmationVariationTaskCount(missingTaskCount);
 					break;
 				case "BCC":
 					// get BCC task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "BCC", false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "BCC", null,false);
 					planTaskCount.setBccActualTaskCount(actualTaskCount);
 					planTaskCount.setBccExpectedTaskCount(1l);
-					planTaskCount.setBccVariationTaskCount(planTaskCount.getBccExpectedTaskCount() - planTaskCount.getBccActualTaskCount());
+					missingTaskCount = planTaskCount.getBccExpectedTaskCount() - planTaskCount.getBccActualTaskCount();
+					hasMissingTasks = missingTaskCount > 0;
+					planTaskCount.setBccVariationTaskCount(missingTaskCount);
 					break;
 				case "RACD Register Family":
 					// get register family task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", null,false);
 					planTaskCount.setFamilyRegActualTaskCount(actualTaskCount);
 					properties.put("type", "Residential Structure");
 					residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
-					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", true);
+					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", residentialStructureIds,true);
 					planTaskCount.setFamilyRegExpectedTaskCount(residentialStructureIds.size() - otherPlanFamRegCount);
-					planTaskCount.setFamilyRegVariationTaskCount(planTaskCount.getFamilyRegExpectedTaskCount() - planTaskCount.getFamilyRegActualTaskCount());
+					missingTaskCount = planTaskCount.getFamilyRegExpectedTaskCount() - planTaskCount.getFamilyRegActualTaskCount();
+					hasMissingTasks = missingTaskCount > 0;
+					planTaskCount.setFamilyRegVariationTaskCount(missingTaskCount);
 					break;
 				case "Blood Screening":
 					// get blood screening task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Blood Screening", false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Blood Screening", null,false);
 					planTaskCount.setBloodScreeningActualTaskCount(actualTaskCount);
 					expectedTaskCount = clientService.countFamilyMembersByLocation(planJurisdictionIds, 5);
 					planTaskCount.setBloodScreeningExpectedTaskCount(expectedTaskCount);
-					planTaskCount.setBloodScreeningVariationTaskCount(planTaskCount.getBloodScreeningExpectedTaskCount() -
-							planTaskCount.getBloodScreeningActualTaskCount());
+					missingTaskCount = planTaskCount.getBloodScreeningExpectedTaskCount() -
+							planTaskCount.getBloodScreeningActualTaskCount();
+					hasMissingTasks = missingTaskCount > 0;
+					planTaskCount.setBloodScreeningVariationTaskCount(missingTaskCount);
 					break;
 				case "Bednet Distribution":
 					// get bednet distribution task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Bednet Distribution", false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Bednet Distribution", null,false);
 					planTaskCount.setBednetDistributionActualTaskCount(actualTaskCount);
 					properties.put("type", "Residential Structure");
 					residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
-					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", true);
+					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", residentialStructureIds, true);
 					planTaskCount.setBednetDistributionExpectedTaskCount(residentialStructureIds.size() - otherPlanFamRegCount);
-					planTaskCount.setBednetDistributionVariationTaskCount(planTaskCount.getBednetDistributionExpectedTaskCount() - planTaskCount.getBednetDistributionActualTaskCount());
+					missingTaskCount = planTaskCount.getBednetDistributionExpectedTaskCount() - planTaskCount.getBednetDistributionActualTaskCount();
+					hasMissingTasks = missingTaskCount > 0;
+					planTaskCount.setBednetDistributionVariationTaskCount(missingTaskCount);
 					break;
 				case "Larval Dipping":
 					// get larval dipping task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Larval Dipping", false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Larval Dipping", null,false);
 					planTaskCount.setLarvalDippingActualTaskCount(actualTaskCount);
 					properties.put("type", "Larval Breeding Site");
 					expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
 					planTaskCount.setLarvalDippingExpectedTaskCount(expectedTaskCount);
-					planTaskCount.setLarvalDippingVariationTaskCount(planTaskCount.getLarvalDippingExpectedTaskCount()
-							- planTaskCount.getLarvalDippingExpectedTaskCount());
+					missingTaskCount = planTaskCount.getLarvalDippingExpectedTaskCount() -  planTaskCount.getLarvalDippingExpectedTaskCount();
+					hasMissingTasks = missingTaskCount > 0;
+					planTaskCount.setLarvalDippingVariationTaskCount(missingTaskCount);
 					break;
 				case "Mosquito Collection":
 					// get mosquito collection task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Mosquito Collection", false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Mosquito Collection", null,false);
 					planTaskCount.setMosquitoCollectionActualTaskCount(actualTaskCount);
 					properties.put("type", "Mosquito Collection Point");
 					expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
 					planTaskCount.setMosquitoCollectionExpectedTaskCount(expectedTaskCount);
-					planTaskCount.setMosquitoCollectionVariationTaskCount(planTaskCount.getMosquitoCollectionExpectedTaskCount()
-					- planTaskCount.getMosquitoCollectionActualTaskCount());
+					missingTaskCount = planTaskCount.getMosquitoCollectionExpectedTaskCount() - planTaskCount.getMosquitoCollectionActualTaskCount();
+					hasMissingTasks = missingTaskCount > 0;
+					planTaskCount.setMosquitoCollectionVariationTaskCount(missingTaskCount);
 					break;
 				default:
 					// do nothing
 					break;
 			}
-			planTaskCounts.add(planTaskCount);
 		}
-		return planTaskCounts;
+		return hasMissingTasks ? planTaskCount : null;
 	}
 }

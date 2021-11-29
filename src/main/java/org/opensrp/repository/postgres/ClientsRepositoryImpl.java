@@ -767,7 +767,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	public Long countFamilyMembersByLocation(List<String> locationIds, Integer ageLowerBound) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		Criteria criteria = clientMetadataExample.createCriteria();
-		criteria.andLocationIdIn(locationIds).andClientTypeNotEqualTo("Family");
+		criteria.andLocationIdIn(locationIds).andClientTypeIsNull();
 		if (ageLowerBound != null) {
 			Calendar calendar = Calendar.getInstance();
 			calendar.add(Calendar.YEAR, -5);
