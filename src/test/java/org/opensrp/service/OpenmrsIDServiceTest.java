@@ -105,7 +105,7 @@ public class OpenmrsIDServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testCheckClientWithInvalidData() throws SQLException {
 		Client client = this.createClient("*", "Jane", "Doe", "Female", "*");
-		assertNull(openmrsIDService.checkIfClientExists(client));
+		assertFalse(openmrsIDService.checkIfClientExists(client));
 	}
 	
 	@Test
