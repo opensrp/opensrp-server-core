@@ -407,10 +407,10 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             PlanExample.Criteria criteria = planExample.createCriteria();
             if (toDate == null && fromDate == null){
                 Calendar calendar = Calendar.getInstance();
-                toDate = calendar.getTime();
+                Date localToDate = calendar.getTime();
                 calendar.add(Calendar.DATE, -1);
-                fromDate = calendar.getTime();
-                criteria.andDateEditedBetween( fromDate, toDate);
+                Date localFromDate = calendar.getTime();
+                criteria.andDateEditedBetween( localFromDate, localToDate);
             } else if (fromDate == null) {
                 criteria.andDateEditedLessThanOrEqualTo(toDate);
             } else if (toDate == null) {
