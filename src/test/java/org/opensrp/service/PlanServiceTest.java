@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -337,6 +338,18 @@ public class PlanServiceTest {
 		doReturn(1l).when(planRepository).countAllPlans(anyLong(), eq(true));
 		planService.countAllPlans(0l, true);
 		verify(planRepository, times(1)).countAllPlans(eq(0l), eq(true));
+	}
+
+	@Test
+	public void testGetPlansByIdentifiersAndStatusAndDateEditedWithPlanIdentifersOnly() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("a8b3010c-1ba5-556d-8b16-71266397b8b9");
+		List<String> planIdentifiers = Collections.singletonList("a8b3010c-1ba5-556d-8b16-71266397b8b9");
+		when(planRepository.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, null, null)).thenReturn(Collections.singletonList(plan));
+		List<PlanDefinition> actualPlans = planService.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, null, null);
+		assertNotNull(actualPlans);
+		assertEquals(1, actualPlans.size());
+		assertEquals("a8b3010c-1ba5-556d-8b16-71266397b8b9", actualPlans.get(0).getIdentifier());
 	}
 
 }
