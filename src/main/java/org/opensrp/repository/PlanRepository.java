@@ -87,4 +87,12 @@ public interface PlanRepository extends BaseRepository<PlanDefinition>, PlanDao 
 	Long countPlansByIdentifiersAndServerVersion(List<String> planIdentifiers, Long serverVersion);
 
 	List<PlanDefinition> getAllPlans(PlanSearchBean planSearchBean);
+
+	/** Gets the plans using the plan identifiers filtered by date edited and status
+	 * @param planIdentifiers the plan identifiers
+	 * @param fromDate
+	 * @param toDate
+	 * @return plans with the identifiers and server version greater than or equal to server version param
+	 */
+	List<PlanDefinition> getPlansByIdentifiersAndStatusAndDateEdited(List<String> planIdentifiers, Date fromDate, Date toDate);
 }

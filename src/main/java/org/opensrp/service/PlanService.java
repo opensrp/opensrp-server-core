@@ -309,12 +309,19 @@ public class PlanService {
 		return 0l;
 	}
 
-	public List<PlanTaskCount> getPlanTaskCounts(String planIdentifier) {
+	public List<PlanTaskCount> getPlanTaskCounts(List<String> planIdentifiers, Date fromDate, Date toDate) {
+		List<PlanDefinition> plans = getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, fromDate, toDate);
 		List<PlanTaskCount> planTaskCounts = new ArrayList<>();
-		PlanTaskCount planTaskCount = getPlanTaskCount(getPlan(planIdentifier));
-		if ( planTaskCount !=null){
-			planTaskCounts.add(planTaskCount);
+		if (plans == null || plans.isEmpty()) {
+			return planTaskCounts;
 		}
+		for (PlanDefinition plan : plans) {
+			PlanTaskCount planTaskCount = getPlanTaskCount(getPlan(plan.getIdentifier()));
+			if ( planTaskCount !=null){
+				planTaskCounts.add(planTaskCount);
+			}
+		}
+
 		return planTaskCounts;
 	}
 
@@ -419,4 +426,15 @@ public class PlanService {
 		}
 		return hasMissingTasks ? planTaskCount : null;
 	}
+
+
+	/** Gets the plans using the plan identifiers filtered by date edited and status
+	 * @param planIdentifiers the plan identifiers
+	 * @param fromDate
+	 * @param toDate
+	 * @return plans with the identifiers and server version greater than or equal to server version param
+	 */
+	List<PlanDefinition> getPlansByIdentifiersAndStatusAndDateEdited(List<String> planIdentifiers, Date fromDate, Date toDate){
+		return planRepository.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, fromDate, toDate);
+	};
 }
