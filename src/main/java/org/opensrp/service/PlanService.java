@@ -14,6 +14,7 @@ import org.opensrp.domain.PlanTaskCount;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.PlanSearchBean;
+import org.opensrp.util.constants.PlanConstants;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
@@ -343,9 +344,9 @@ public class PlanService {
 				}
 			}
 			switch (action.getCode()) {
-				case "Case Confirmation":
+				case PlanConstants.CASE_CONFIRMATION:
 					// get case confirmation task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Case Confirmation", null, false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.CASE_CONFIRMATION, null, false);
 					planTaskCount.setCaseConfirmationActualTaskCount(actualTaskCount);
 					planTaskCount.setCaseConfirmationExpectedTaskCount(1l);
 					missingTaskCount = planTaskCount.getCaseConfirmationExpectedTaskCount()
@@ -353,30 +354,30 @@ public class PlanService {
 					hasMissingTasks = missingTaskCount > 0;
 					planTaskCount.setCaseConfirmationVariationTaskCount(missingTaskCount);
 					break;
-				case "BCC":
+				case PlanConstants.BCC:
 					// get BCC task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "BCC", null,false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BCC, null,false);
 					planTaskCount.setBccActualTaskCount(actualTaskCount);
 					planTaskCount.setBccExpectedTaskCount(1l);
 					missingTaskCount = planTaskCount.getBccExpectedTaskCount() - planTaskCount.getBccActualTaskCount();
 					hasMissingTasks = missingTaskCount > 0;
 					planTaskCount.setBccVariationTaskCount(missingTaskCount);
 					break;
-				case "RACD Register Family":
+				case PlanConstants.RACD_REGISTER_FAMILY:
 					// get register family task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", null,false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, null,false);
 					planTaskCount.setFamilyRegActualTaskCount(actualTaskCount);
-					properties.put("type", "Residential Structure");
+					properties.put("type", PlanConstants.RESIDENTIAL_STRUCTURE);
 					residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
-					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", residentialStructureIds,true);
+					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, residentialStructureIds,true);
 					planTaskCount.setFamilyRegExpectedTaskCount(residentialStructureIds.size() - otherPlanFamRegCount);
 					missingTaskCount = planTaskCount.getFamilyRegExpectedTaskCount() - planTaskCount.getFamilyRegActualTaskCount();
 					hasMissingTasks = missingTaskCount > 0;
 					planTaskCount.setFamilyRegVariationTaskCount(missingTaskCount);
 					break;
-				case "Blood Screening":
+				case PlanConstants.BLOOD_SCREENING:
 					// get blood screening task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Blood Screening", null,false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BLOOD_SCREENING, null,false);
 					planTaskCount.setBloodScreeningActualTaskCount(actualTaskCount);
 					expectedTaskCount = clientService.countFamilyMembersByLocation(planJurisdictionIds, 5);
 					planTaskCount.setBloodScreeningExpectedTaskCount(expectedTaskCount);
@@ -385,34 +386,34 @@ public class PlanService {
 					hasMissingTasks = missingTaskCount > 0;
 					planTaskCount.setBloodScreeningVariationTaskCount(missingTaskCount);
 					break;
-				case "Bednet Distribution":
+				case PlanConstants.BEDNET_DISTRIBUTION:
 					// get bednet distribution task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Bednet Distribution", null,false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION, null,false);
 					planTaskCount.setBednetDistributionActualTaskCount(actualTaskCount);
-					properties.put("type", "Residential Structure");
+					properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
 					residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
-					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "RACD Register Family", residentialStructureIds, true);
+					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, residentialStructureIds, true);
 					planTaskCount.setBednetDistributionExpectedTaskCount(residentialStructureIds.size() - otherPlanFamRegCount);
 					missingTaskCount = planTaskCount.getBednetDistributionExpectedTaskCount() - planTaskCount.getBednetDistributionActualTaskCount();
 					hasMissingTasks = missingTaskCount > 0;
 					planTaskCount.setBednetDistributionVariationTaskCount(missingTaskCount);
 					break;
-				case "Larval Dipping":
+				case PlanConstants.LARVAL_DIPPING:
 					// get larval dipping task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Larval Dipping", null,false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.LARVAL_DIPPING, null,false);
 					planTaskCount.setLarvalDippingActualTaskCount(actualTaskCount);
-					properties.put("type", "Larval Breeding Site");
+					properties.put(PlanConstants.TYPE, PlanConstants.LARVAL_DIPPING_SITE);
 					expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
 					planTaskCount.setLarvalDippingExpectedTaskCount(expectedTaskCount);
 					missingTaskCount = planTaskCount.getLarvalDippingExpectedTaskCount() -  planTaskCount.getLarvalDippingExpectedTaskCount();
 					hasMissingTasks = missingTaskCount > 0;
 					planTaskCount.setLarvalDippingVariationTaskCount(missingTaskCount);
 					break;
-				case "Mosquito Collection":
+				case PlanConstants.MOSQUITO_COLLECTION:
 					// get mosquito collection task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), "Mosquito Collection", null,false);
+					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.MOSQUITO_COLLECTION, null,false);
 					planTaskCount.setMosquitoCollectionActualTaskCount(actualTaskCount);
-					properties.put("type", "Mosquito Collection Point");
+					properties.put(PlanConstants.TYPE, PlanConstants.MOSQUITO_COLLECTION_POINT);
 					expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
 					planTaskCount.setMosquitoCollectionExpectedTaskCount(expectedTaskCount);
 					missingTaskCount = planTaskCount.getMosquitoCollectionExpectedTaskCount() - planTaskCount.getMosquitoCollectionActualTaskCount();
