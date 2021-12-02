@@ -1291,5 +1291,36 @@ public class LocationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("90397", locations.get(0).getId());
 		assertEquals("90398", locations.get(1).getId());
 	}
+
+	@Test
+	public void testCountLocationsByProperties() {
+		List<String> parentIds = Collections.singletonList("21");
+		Map<String, String> properties = new HashMap<>();
+		properties.put("status", "Active");
+
+		long actualLocations = locationRepository.countLocationsByProperties(parentIds,properties);
+		assertEquals(1l, actualLocations);
+	}
+
+	@Test
+	public void testCountStructuresByProperties() {
+		List<String> parentIds = Collections.singletonList("3734");
+		Map<String, String> properties = new HashMap<>();
+		properties.put("geographicLevel", "5");
+
+		long actualStructures = locationRepository.countStructuresByProperties(parentIds,properties);
+		assertEquals(1l, actualStructures);
+	}
+
+	@Test
+	public void testFindStructureIdsByProperties() {
+		List<String> parentIds = Collections.singletonList("3734");
+		Map<String, String> properties = new HashMap<>();
+		properties.put("geographicLevel", "5");
+
+		List<String> actualStructureIds = locationRepository.findStructureIdsByProperties(parentIds, properties, 5);
+		assertEquals(1l, actualStructureIds.size());
+		assertEquals("90397", actualStructureIds.get(0));
+	}
 	
 }
