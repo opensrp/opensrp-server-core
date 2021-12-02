@@ -126,7 +126,7 @@ public class OpenmrsIDService {
 		}
 	}
 	
-	public Boolean checkIfClientExists(Client client) throws SQLException {
+	public Boolean checkIfClientExists(Client client)  {
 		try {
 			String location = client.getAddress("usual_residence").getAddressField("address2");
 
