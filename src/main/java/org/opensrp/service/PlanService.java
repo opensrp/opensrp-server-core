@@ -331,13 +331,7 @@ public class PlanService {
 		boolean hasMissingTasks = false;
 		for (Action action: plan.getActions()) {
 			planTaskCount = new PlanTaskCount();
-			Long actualTaskCount;
-			Long expectedTaskCount;
-			List<String> residentialStructureIds;
-			long otherPlanFamRegCount;
-			long missingTaskCount;
 			List<String> planJurisdictionIds = new ArrayList<>();
-			Map<String, String> properties = new HashMap<>();
 			for (Jurisdiction jurisdiction : plan.getJurisdiction()) {
 				if (StringUtils.isNotBlank(jurisdiction.getCode())) {
 					planJurisdictionIds.add(jurisdiction.getCode());
@@ -346,79 +340,31 @@ public class PlanService {
 			switch (action.getCode()) {
 				case PlanConstants.CASE_CONFIRMATION:
 					// get case confirmation task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.CASE_CONFIRMATION, null, false);
-					planTaskCount.setCaseConfirmationActualTaskCount(actualTaskCount);
-					planTaskCount.setCaseConfirmationExpectedTaskCount(1l);
-					missingTaskCount = planTaskCount.getCaseConfirmationExpectedTaskCount()
-							- planTaskCount.getCaseConfirmationActualTaskCount();
-					hasMissingTasks = missingTaskCount > 0;
-					planTaskCount.setCaseConfirmationVariationTaskCount(missingTaskCount);
+					hasMissingTasks = populateCaseConfirmationCounts(plan, planTaskCount);
 					break;
 				case PlanConstants.BCC:
 					// get BCC task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BCC, null,false);
-					planTaskCount.setBccActualTaskCount(actualTaskCount);
-					planTaskCount.setBccExpectedTaskCount(1l);
-					missingTaskCount = planTaskCount.getBccExpectedTaskCount() - planTaskCount.getBccActualTaskCount();
-					hasMissingTasks = missingTaskCount > 0;
-					planTaskCount.setBccVariationTaskCount(missingTaskCount);
+					hasMissingTasks = populateBCCCounts(plan, planTaskCount);
 					break;
 				case PlanConstants.RACD_REGISTER_FAMILY:
 					// get register family task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, null,false);
-					planTaskCount.setFamilyRegActualTaskCount(actualTaskCount);
-					properties.put("type", PlanConstants.RESIDENTIAL_STRUCTURE);
-					residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
-					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, residentialStructureIds,true);
-					planTaskCount.setFamilyRegExpectedTaskCount(residentialStructureIds.size() - otherPlanFamRegCount);
-					missingTaskCount = planTaskCount.getFamilyRegExpectedTaskCount() - planTaskCount.getFamilyRegActualTaskCount();
-					hasMissingTasks = missingTaskCount > 0;
-					planTaskCount.setFamilyRegVariationTaskCount(missingTaskCount);
+					hasMissingTasks = populateFamilyRegistrationCounts(plan, planTaskCount,planJurisdictionIds);
 					break;
 				case PlanConstants.BLOOD_SCREENING:
 					// get blood screening task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BLOOD_SCREENING, null,false);
-					planTaskCount.setBloodScreeningActualTaskCount(actualTaskCount);
-					expectedTaskCount = clientService.countFamilyMembersByLocation(planJurisdictionIds, 5);
-					planTaskCount.setBloodScreeningExpectedTaskCount(expectedTaskCount);
-					missingTaskCount = planTaskCount.getBloodScreeningExpectedTaskCount() -
-							planTaskCount.getBloodScreeningActualTaskCount();
-					hasMissingTasks = missingTaskCount > 0;
-					planTaskCount.setBloodScreeningVariationTaskCount(missingTaskCount);
+					hasMissingTasks = populateBloodScreeningCounts(plan, planTaskCount, planJurisdictionIds);
 					break;
 				case PlanConstants.BEDNET_DISTRIBUTION:
 					// get bednet distribution task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION, null,false);
-					planTaskCount.setBednetDistributionActualTaskCount(actualTaskCount);
-					properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
-					residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
-					otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, residentialStructureIds, true);
-					planTaskCount.setBednetDistributionExpectedTaskCount(residentialStructureIds.size() - otherPlanFamRegCount);
-					missingTaskCount = planTaskCount.getBednetDistributionExpectedTaskCount() - planTaskCount.getBednetDistributionActualTaskCount();
-					hasMissingTasks = missingTaskCount > 0;
-					planTaskCount.setBednetDistributionVariationTaskCount(missingTaskCount);
+					hasMissingTasks = populateBedNetDistributionCounts(plan, planTaskCount,planJurisdictionIds);
 					break;
 				case PlanConstants.LARVAL_DIPPING:
 					// get larval dipping task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.LARVAL_DIPPING, null,false);
-					planTaskCount.setLarvalDippingActualTaskCount(actualTaskCount);
-					properties.put(PlanConstants.TYPE, PlanConstants.LARVAL_DIPPING_SITE);
-					expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
-					planTaskCount.setLarvalDippingExpectedTaskCount(expectedTaskCount);
-					missingTaskCount = planTaskCount.getLarvalDippingExpectedTaskCount() -  planTaskCount.getLarvalDippingExpectedTaskCount();
-					hasMissingTasks = missingTaskCount > 0;
-					planTaskCount.setLarvalDippingVariationTaskCount(missingTaskCount);
+					hasMissingTasks = populateLarvalDippingCounts(plan,planTaskCount,planJurisdictionIds);
 					break;
 				case PlanConstants.MOSQUITO_COLLECTION:
 					// get mosquito collection task counts
-					actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.MOSQUITO_COLLECTION, null,false);
-					planTaskCount.setMosquitoCollectionActualTaskCount(actualTaskCount);
-					properties.put(PlanConstants.TYPE, PlanConstants.MOSQUITO_COLLECTION_POINT);
-					expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
-					planTaskCount.setMosquitoCollectionExpectedTaskCount(expectedTaskCount);
-					missingTaskCount = planTaskCount.getMosquitoCollectionExpectedTaskCount() - planTaskCount.getMosquitoCollectionActualTaskCount();
-					hasMissingTasks = missingTaskCount > 0;
-					planTaskCount.setMosquitoCollectionVariationTaskCount(missingTaskCount);
+					hasMissingTasks = populateMosquitoCollectionCounts(plan,planTaskCount,planJurisdictionIds);
 					break;
 				default:
 					// do nothing
@@ -426,6 +372,97 @@ public class PlanService {
 			}
 		}
 		return hasMissingTasks ? planTaskCount : null;
+	}
+
+	private boolean populateCaseConfirmationCounts(PlanDefinition plan, PlanTaskCount planTaskCount) {
+		long actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.CASE_CONFIRMATION, null, false);
+		planTaskCount.setCaseConfirmationActualTaskCount(actualTaskCount);
+		planTaskCount.setCaseConfirmationExpectedTaskCount(1l);
+		long missingTaskCount = planTaskCount.getCaseConfirmationExpectedTaskCount()
+				- planTaskCount.getCaseConfirmationActualTaskCount();
+		planTaskCount.setCaseConfirmationVariationTaskCount(missingTaskCount);
+		boolean hasMissingTasks = missingTaskCount > 0;
+		return hasMissingTasks;
+	}
+
+	private boolean populateBCCCounts(PlanDefinition plan, PlanTaskCount planTaskCount) {
+		long actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BCC, null,false);
+		planTaskCount.setBccActualTaskCount(actualTaskCount);
+		planTaskCount.setBccExpectedTaskCount(1l);
+		long missingTaskCount = planTaskCount.getBccExpectedTaskCount() - planTaskCount.getBccActualTaskCount();
+		planTaskCount.setBccVariationTaskCount(missingTaskCount);
+		boolean hasMissingTasks = missingTaskCount > 0;
+		return hasMissingTasks;
+	}
+
+	private boolean populateFamilyRegistrationCounts(PlanDefinition plan, PlanTaskCount planTaskCount, List<String> planJurisdictionIds) {
+		long actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, null,false);
+		planTaskCount.setFamilyRegActualTaskCount(actualTaskCount);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
+		List<String> residentialStructureIds;
+		long otherPlanFamRegCount;
+		residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
+		otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, residentialStructureIds,true);
+		planTaskCount.setFamilyRegExpectedTaskCount(residentialStructureIds.size() - otherPlanFamRegCount);
+		long missingTaskCount = planTaskCount.getFamilyRegExpectedTaskCount() - planTaskCount.getFamilyRegActualTaskCount();
+		planTaskCount.setFamilyRegVariationTaskCount(missingTaskCount);
+		boolean hasMissingTasks = missingTaskCount > 0;
+		return hasMissingTasks;
+	}
+
+	private boolean populateBloodScreeningCounts(PlanDefinition plan, PlanTaskCount planTaskCount, List<String> planJurisdictionIds) {
+		long actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BLOOD_SCREENING, null,false);
+		planTaskCount.setBloodScreeningActualTaskCount(actualTaskCount);
+		long expectedTaskCount = clientService.countFamilyMembersByLocation(planJurisdictionIds, 5);
+		planTaskCount.setBloodScreeningExpectedTaskCount(expectedTaskCount);
+		long missingTaskCount = planTaskCount.getBloodScreeningExpectedTaskCount() -
+				planTaskCount.getBloodScreeningActualTaskCount();
+		planTaskCount.setBloodScreeningVariationTaskCount(missingTaskCount);
+		boolean hasMissingTasks = missingTaskCount > 0;
+		return hasMissingTasks;
+	}
+
+	private boolean populateBedNetDistributionCounts(PlanDefinition plan, PlanTaskCount planTaskCount, List<String> planJurisdictionIds) {
+		long actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION, null,false);
+		planTaskCount.setBednetDistributionActualTaskCount(actualTaskCount);
+		List<String> residentialStructureIds;
+		long otherPlanFamRegCount;
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
+		residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
+		otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, residentialStructureIds, true);
+		planTaskCount.setBednetDistributionExpectedTaskCount(residentialStructureIds.size() - otherPlanFamRegCount);
+		long missingTaskCount = planTaskCount.getBednetDistributionExpectedTaskCount() - planTaskCount.getBednetDistributionActualTaskCount();
+		planTaskCount.setBednetDistributionVariationTaskCount(missingTaskCount);
+		boolean hasMissingTasks = missingTaskCount > 0;
+		return  hasMissingTasks;
+	}
+
+	private boolean populateLarvalDippingCounts(PlanDefinition plan, PlanTaskCount planTaskCount, List<String> planJurisdictionIds) {
+		long actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.LARVAL_DIPPING, null,false);
+		planTaskCount.setLarvalDippingActualTaskCount(actualTaskCount);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.LARVAL_DIPPING_SITE);
+		long expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
+		planTaskCount.setLarvalDippingExpectedTaskCount(expectedTaskCount);
+		long missingTaskCount = planTaskCount.getLarvalDippingExpectedTaskCount() -  planTaskCount.getLarvalDippingExpectedTaskCount();
+		planTaskCount.setLarvalDippingVariationTaskCount(missingTaskCount);
+		boolean hasMissingTasks = missingTaskCount > 0;
+		return hasMissingTasks;
+	}
+
+	private boolean populateMosquitoCollectionCounts(PlanDefinition plan, PlanTaskCount planTaskCount, List<String> planJurisdictionIds) {
+		long actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.MOSQUITO_COLLECTION, null,false);
+		planTaskCount.setMosquitoCollectionActualTaskCount(actualTaskCount);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.MOSQUITO_COLLECTION_POINT);
+		long expectedTaskCount = locationService.countStructuresByProperties(planJurisdictionIds,properties);
+		planTaskCount.setMosquitoCollectionExpectedTaskCount(expectedTaskCount);
+		long missingTaskCount = planTaskCount.getMosquitoCollectionExpectedTaskCount() - planTaskCount.getMosquitoCollectionActualTaskCount();
+		planTaskCount.setMosquitoCollectionVariationTaskCount(missingTaskCount);
+		boolean hasMissingTasks = missingTaskCount > 0;
+		return hasMissingTasks;
 	}
 
 
