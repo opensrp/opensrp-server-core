@@ -137,7 +137,9 @@ public class ClientFormRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testGetShouldReturnNullWhenIdIsNotValidLong() {
-		assertNull(clientFormRepository.get("isd98"));
+		String id="isd98";
+        id = id.matches(".*[a-zA-Z]+.*") ? "0000000000" : id;
+        assertNull(clientFormRepository.get(id));
 	}
 
 	@Test
