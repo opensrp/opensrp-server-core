@@ -707,6 +707,16 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
+    public void testGetAllPlansWithStatusParam() {
+        PlanSearchBean planSearchBean = new PlanSearchBean();
+        planSearchBean.setPlanStatus(PlanDefinition.PlanStatus.ACTIVE);
+        planSearchBean.setExperimental(false);
+
+        List<PlanDefinition> planDefinitions = planRepository.getAllPlans(planSearchBean);
+        assertEquals(4l, planDefinitions.size());
+    }
+
+    @Test
     public void testGetPlansByIdentifiersAndStatusAndDateEditedWithPlanIdentifersOnly() {
         List<String> planIdentifiers = Collections.singletonList("a8b3010c-1ba5-556d-8b16-71266397b8b9");
         List<PlanDefinition> actualPlans = planRepository.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, null, null);

@@ -158,10 +158,10 @@
 		<where>
 			<trim prefixOverrides="and">
 				<if test="searchBean.planStatus != null">
-					and json->>'status' = #{searchBean.planStatus,jdbcType=VARCHAR}
+					and json->>'status' = #{searchBean.planStatus.value,jdbcType=VARCHAR}
 				</if>
 				<if test="searchBean.isExperimental != null">
-					p.experimental = #{searchBean.isExperimental,jdbcType=BIT}
+					and p.experimental = #{searchBean.isExperimental,jdbcType=BIT}
 				</if>
 				<if test="searchBean.useContexts != null">
 					<trim prefix="and ">
