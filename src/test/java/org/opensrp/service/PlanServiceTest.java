@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
