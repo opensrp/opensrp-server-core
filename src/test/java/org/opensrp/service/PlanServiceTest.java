@@ -18,7 +18,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
@@ -30,6 +32,9 @@ import org.mockito.junit.MockitoRule;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.PlanTaskCount;
 import org.opensrp.search.PlanSearchBean;
+import org.opensrp.util.constants.PlanConstants;
+import org.smartregister.domain.Action;
+import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
@@ -376,6 +381,78 @@ public class PlanServiceTest {
 		assertEquals(1l, actualPlanTaskCounts.get(0).getBccActualTaskCount().longValue());
 		assertEquals(1l, actualPlanTaskCounts.get(0).getBccVariationTaskCount().longValue());
 		assertEquals(2l, actualPlanTaskCounts.get(0).getBccExpectedTaskCount().longValue());
+	}
+
+	@Test
+	public void testPopulatePlanTaskCountForCaseConfirmation() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("case-confirmation-plan");
+		Action action = new Action();
+		action.setIdentifier("case_confirmation-action");
+		action.setCode(PlanConstants.CASE_CONFIRMATION);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.CASE_CONFIRMATION,
+				null, false)).thenReturn(0l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		assertEquals(1l, planTaskCount.getCaseConfirmationExpectedTaskCount().longValue());
+		assertEquals(0l, planTaskCount.getCaseConfirmationActualTaskCount().longValue());
+		assertEquals(1l, planTaskCount.getCaseConfirmationVariationTaskCount().longValue());
+
+	}
+
+	@Test
+	public void testPopulatePlanTaskCountForBCC() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("bcc-plan");
+		Action action = new Action();
+		action.setIdentifier("bcc-action");
+		action.setCode(PlanConstants.BCC);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BCC,
+				null, false)).thenReturn(0l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		assertEquals(1l, planTaskCount.getBccExpectedTaskCount().longValue());
+		assertEquals(0l, planTaskCount.getBccActualTaskCount().longValue());
+		assertEquals(1l, planTaskCount.getBccVariationTaskCount().longValue());
+
+	}
+
+	@Test
+	public void testPopulateTaskCountForFamilyRegistration() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("family-reg-plan");
+		Action action = new Action();
+		action.setIdentifier("family-reg-action");
+		action.setCode(PlanConstants.RACD_REGISTER_FAMILY);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY,
+				null, false)).thenReturn(2l);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
+		List<String> structureIds = new ArrayList<>();
+		structureIds.add("structure-id-1");
+		structureIds.add("structure-id-2");
+		structureIds.add("structure-id-3");
+		when(locationService.findStructureIdsByProperties(Collections.singletonList("location-id1"),
+						properties, Integer.MAX_VALUE)).thenReturn(structureIds);
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY,
+				null,false)).thenReturn(1l);
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY,
+				structureIds,true)).thenReturn(1l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		assertEquals(2l, planTaskCount.getFamilyRegExpectedTaskCount().longValue());
+		assertEquals(1l, planTaskCount.getFamilyRegActualTaskCount().longValue());
+		assertEquals(1l, planTaskCount.getFamilyRegVariationTaskCount().longValue());
+
 	}
 
 }
