@@ -317,7 +317,7 @@ public class PlanService {
 			return planTaskCounts;
 		}
 		for (PlanDefinition plan : plans) {
-			PlanTaskCount planTaskCount = getPlanTaskCount(getPlan(plan.getIdentifier()));
+			PlanTaskCount planTaskCount = populatePlanTaskCount(getPlan(plan.getIdentifier()));
 			if ( planTaskCount !=null){
 				planTaskCounts.add(planTaskCount);
 			}
@@ -326,7 +326,10 @@ public class PlanService {
 		return planTaskCounts;
 	}
 
-	public PlanTaskCount getPlanTaskCount(PlanDefinition plan) {
+	public PlanTaskCount populatePlanTaskCount(PlanDefinition plan) {
+		if (plan.getActions() == null) {
+			return null;
+		}
 		PlanTaskCount planTaskCount = null;
 		boolean hasMissingTasks = false;
 		for (Action action: plan.getActions()) {

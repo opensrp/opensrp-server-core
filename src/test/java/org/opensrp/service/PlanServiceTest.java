@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.PlanTaskCount;
 import org.opensrp.search.PlanSearchBean;
 import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
@@ -350,6 +352,30 @@ public class PlanServiceTest {
 		assertNotNull(actualPlans);
 		assertEquals(1, actualPlans.size());
 		assertEquals("a8b3010c-1ba5-556d-8b16-71266397b8b9", actualPlans.get(0).getIdentifier());
+	}
+
+	@Test
+	public void testGetPlanTaskCounts() {
+		planService = spy(planService);
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("d2ac9f2b-91a5-4273-bf97-7c78ae154bce");
+		List<PlanDefinition> plans = Collections.singletonList(plan);
+		PlanTaskCount expectedPlanTaskCount = new PlanTaskCount();
+		expectedPlanTaskCount.setBccActualTaskCount(1l);
+		expectedPlanTaskCount.setBccExpectedTaskCount(2l);
+		expectedPlanTaskCount.setBccVariationTaskCount(1l);
+		when(planRepository.getPlansByIdentifiersAndStatusAndDateEdited(any(), any(), any()))
+				.thenReturn(plans);
+		when(planService.getPlan(any())).thenReturn(plan);
+		when(planService.populatePlanTaskCount(plan)).thenReturn(expectedPlanTaskCount);
+
+		List<PlanTaskCount> actualPlanTaskCounts = planService.getPlanTaskCounts(null, null, null);
+		verify(planRepository).getPlansByIdentifiersAndStatusAndDateEdited(any(), any(), any());
+		verify(planService).getPlan(any());
+		verify(planService).populatePlanTaskCount(any());
+		assertEquals(1l, actualPlanTaskCounts.get(0).getBccActualTaskCount().longValue());
+		assertEquals(1l, actualPlanTaskCounts.get(0).getBccVariationTaskCount().longValue());
+		assertEquals(2l, actualPlanTaskCounts.get(0).getBccExpectedTaskCount().longValue());
 	}
 
 }
