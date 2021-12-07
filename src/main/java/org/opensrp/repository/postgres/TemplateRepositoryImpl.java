@@ -58,8 +58,8 @@ public class TemplateRepositoryImpl extends BaseRepositoryImpl<Template> impleme
 
         org.opensrp.domain.postgres.Template pgTemplate = convert(template);
 
-        pgTemplate.setId(id);templateMapper.updateByPrimaryKeySelective(pgTemplate);
-        //templateMapper.updateByPrimaryKey(pgTemplate);
+        pgTemplate.setId(id);
+        templateMapper.updateByPrimaryKey(pgTemplate);
     }
 
     @Override

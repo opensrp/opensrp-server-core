@@ -36,7 +36,7 @@ public class Template implements Serializable {
     }
 
     public void setType(String type) {
-        type = type;
+        this.type = type;
     }
 
     public int getVersion() {
