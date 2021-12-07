@@ -122,14 +122,17 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 	private Pair<Instant, Instant> updateLastModifiedDate(RapidProContact rapidProContact, Instant earliestDateModified,
 			Instant latestDateModified) throws DateTimeParseException {
 		//Update last modified date to use the earliest
+		Instant earliestDateModifiedCopy = earliestDateModified;
+		Instant latestDateModifiedCopy = latestDateModified;
+
 		Instant modifiedOn = Instant.parse(rapidProContact.getModifiedOn());
 		if (modifiedOn.isBefore(earliestDateModified)) {
-			earliestDateModified = modifiedOn;
+			earliestDateModifiedCopy = modifiedOn;
 		}
 		if (modifiedOn.isAfter(latestDateModified)) {
-			latestDateModified = modifiedOn;
+			latestDateModifiedCopy = modifiedOn;
 		}
-		return Pair.of(earliestDateModified, latestDateModified);
+		return Pair.of(earliestDateModifiedCopy, latestDateModifiedCopy);
 	}
 
 	private List<RapidProContact> parseRapidProContactResponse(JSONArray results) {
