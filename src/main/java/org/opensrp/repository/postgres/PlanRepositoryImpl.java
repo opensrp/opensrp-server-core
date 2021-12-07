@@ -3,6 +3,7 @@ package org.opensrp.repository.postgres;
 import static org.opensrp.util.Utils.isEmptyList;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -393,4 +394,35 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 	public PlanDefinition findPlanByIdentifier(String identifier) {
 		return get(identifier);
 	}
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<PlanDefinition> getPlansByIdentifiersAndStatusAndDateEdited(List<String> planIdentifiers, PlanDefinition.PlanStatus status, Date fromDate, Date toDate) {
+        if (toDate == null && fromDate == null && planIdentifiers != null) {
+            return getPlansByIdentifiersAndServerVersion(planIdentifiers,0l, false);
+        } else {
+            PlanExample planExample = new PlanExample();
+            PlanExample.Criteria criteria = planExample.createCriteria();
+            if (toDate == null && fromDate == null){
+                Calendar calendar = Calendar.getInstance();
+                Date localToDate = calendar.getTime();
+                calendar.add(Calendar.DATE, -1);
+                Date localFromDate = calendar.getTime();
+                criteria.andDateEditedBetween( localFromDate, localToDate);
+            } else if (fromDate == null) {
+                criteria.andDateEditedLessThanOrEqualTo(toDate);
+            } else if (toDate == null) {
+                criteria.andDateEditedGreaterThanOrEqualTo(fromDate);
+            } else {
+                criteria.andDateEditedBetween( fromDate, toDate);
+            }
+            criteria.andExperimentalEqualTo(false);
+
+            List<Plan> plans = planMapper.selectManyByStatus(planExample, status,0, Integer.MAX_VALUE);
+
+            return convert(plans);
+        }
+    }
 }

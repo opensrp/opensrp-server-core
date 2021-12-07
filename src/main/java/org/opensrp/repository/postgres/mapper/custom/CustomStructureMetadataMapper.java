@@ -36,4 +36,11 @@ public interface CustomStructureMetadataMapper extends StructureMetadataMapper {
 		@Param("properties") Map<String, String> properties, @Param("geometry") boolean returnGeometry,
 		@Param("offset") int offset, @Param("limit") int limit);
 
+	long countManyByProperties(@Param("example") StructureMetadataExample locationMetadataExample,
+										  @Param("properties") Map<String, String> properties);
+
+	List<String> selectManyIdsByProperties(@Param("example") StructureMetadataExample locationMetadataExample,
+										  @Param("properties") Map<String, String> properties,
+										  @Param("offset") int offset, @Param("limit") int limit);
+
 }

@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -9,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,7 +18,9 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
@@ -26,7 +30,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.domain.AssignedLocations;
+import org.opensrp.domain.PlanTaskCount;
+import org.opensrp.domain.TaskCount;
 import org.opensrp.search.PlanSearchBean;
+import org.opensrp.util.constants.PlanConstants;
+import org.smartregister.domain.Action;
+import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
 import org.opensrp.repository.PlanRepository;
@@ -55,12 +64,22 @@ public class PlanServiceTest {
 	
 	@Mock
 	private TaskGenerator taskGenerator;
+
+	@Mock
+	private TaskService taskService;
+
+	@Mock
+	private PhysicalLocationService locationService;
+
+	@Mock
+	private ClientService clientService;
 	
 	private String user="johndoe";
 	
 	@Before
 	public void setUp() {
-		planService = new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService,taskGenerator);
+		planService = new PlanService(planRepository, practitionerService, practitionerRoleService, organizationService,
+				taskGenerator, taskService, locationService, clientService);
 	}
 	
 	@Test
@@ -327,6 +346,123 @@ public class PlanServiceTest {
 		doReturn(1l).when(planRepository).countAllPlans(anyLong(), eq(true));
 		planService.countAllPlans(0l, true);
 		verify(planRepository, times(1)).countAllPlans(eq(0l), eq(true));
+	}
+
+	@Test
+	public void testGetPlansByIdentifiersAndStatusAndDateEditedWithPlanIdentifersOnly() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("a8b3010c-1ba5-556d-8b16-71266397b8b9");
+		List<String> planIdentifiers = Collections.singletonList("a8b3010c-1ba5-556d-8b16-71266397b8b9");
+		when(planRepository.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, PlanDefinition.PlanStatus.ACTIVE,null, null)).thenReturn(Collections.singletonList(plan));
+		List<PlanDefinition> actualPlans = planService.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, PlanDefinition.PlanStatus.ACTIVE,null, null);
+		assertNotNull(actualPlans);
+		assertEquals(1, actualPlans.size());
+		assertEquals("a8b3010c-1ba5-556d-8b16-71266397b8b9", actualPlans.get(0).getIdentifier());
+	}
+
+	@Test
+	public void testGetPlanTaskCounts() {
+		planService = spy(planService);
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("d2ac9f2b-91a5-4273-bf97-7c78ae154bce");
+		List<PlanDefinition> plans = Collections.singletonList(plan);
+		PlanTaskCount expectedPlanTaskCount = new PlanTaskCount();
+		TaskCount taskCount = new TaskCount();
+		taskCount.setActualCount(1l);
+		taskCount.setExpectedCount(2l);
+		taskCount.setMissingCount(1l);
+		expectedPlanTaskCount.setTaskCounts(Collections.singletonList(taskCount));
+		when(planRepository.getPlansByIdentifiersAndStatusAndDateEdited(any(), any(), any(), any()))
+				.thenReturn(plans);
+		when(planService.getPlan(any())).thenReturn(plan);
+		when(planService.populatePlanTaskCount(plan)).thenReturn(expectedPlanTaskCount);
+
+		List<PlanTaskCount> actualPlanTaskCounts = planService.getPlanTaskCounts(null, null, null);
+		verify(planRepository).getPlansByIdentifiersAndStatusAndDateEdited(any(), any(), any(),any());
+		verify(planService).getPlan(any());
+		verify(planService).populatePlanTaskCount(any());
+		TaskCount actualTaskCount = actualPlanTaskCounts.get(0).getTaskCounts().get(0);
+		assertEquals(1l, actualTaskCount.getActualCount());
+		assertEquals(1l, actualTaskCount.getMissingCount());
+		assertEquals(2l, actualTaskCount.getExpectedCount());
+	}
+
+	@Test
+	public void testPopulatePlanTaskCountForCaseConfirmation() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("case-confirmation-plan");
+		Action action = new Action();
+		action.setIdentifier("case_confirmation-action");
+		action.setCode(PlanConstants.CASE_CONFIRMATION);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.CASE_CONFIRMATION,
+				null, false)).thenReturn(0l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("case-confirmation-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(1l, actualTaskCount.getExpectedCount());
+		assertEquals(0l,  actualTaskCount.getActualCount());
+		assertEquals(1l, actualTaskCount.getMissingCount());
+
+	}
+
+	@Test
+	public void testPopulatePlanTaskCountForBCC() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("bcc-plan");
+		Action action = new Action();
+		action.setIdentifier("bcc-action");
+		action.setCode(PlanConstants.BCC);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BCC,
+				null, false)).thenReturn(0l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("bcc-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(1l, actualTaskCount.getExpectedCount());
+		assertEquals(0l, actualTaskCount.getActualCount());
+		assertEquals(1l, actualTaskCount.getMissingCount());
+
+	}
+
+	@Test
+	public void testPopulateTaskCountForFamilyRegistration() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("family-reg-plan");
+		Action action = new Action();
+		action.setIdentifier("family-reg-action");
+		action.setCode(PlanConstants.RACD_REGISTER_FAMILY);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY,
+				null, false)).thenReturn(2l);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
+		List<String> structureIds = new ArrayList<>();
+		structureIds.add("structure-id-1");
+		structureIds.add("structure-id-2");
+		structureIds.add("structure-id-3");
+		when(locationService.findStructureIdsByProperties(Collections.singletonList("location-id1"),
+						properties, Integer.MAX_VALUE)).thenReturn(structureIds);
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY,
+				null,false)).thenReturn(1l);
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY,
+				structureIds,true)).thenReturn(1l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("family-reg-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(2l, actualTaskCount.getExpectedCount());
+		assertEquals(1l,  actualTaskCount.getActualCount());
+		assertEquals(1l, actualTaskCount.getMissingCount());
+
 	}
 
 }

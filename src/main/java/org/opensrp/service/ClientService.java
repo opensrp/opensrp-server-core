@@ -372,5 +372,9 @@ public class ClientService {
 	public Client findById(String id) {
 		return allClients.findById(id);
 	}
+
+	public Long countFamilyMembersByLocation(List<String> locationIds, Integer ageLowerBound) {
+		return allClients.countFamilyMembersByLocation(locationIds, ageLowerBound);
+	}
 	
 }

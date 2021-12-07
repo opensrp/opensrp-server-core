@@ -19,6 +19,7 @@ import org.smartregister.domain.Task.TaskStatus;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -313,6 +314,19 @@ public class TaskServiceTest {
 		tasks.add(task);
 		taskService.saveTasks(tasks);
 		verify(taskRepository).add(tasks.get(0));
+	}
+
+	@Test
+	public void testCountTasksByPlanAndCode() {
+
+		when(taskRepository.countTasksByPlanAndCode("IRS_2018_S1", "IRS",
+				Collections.singletonList("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc"), false))
+				.thenReturn(1l);
+		long taskCounts = taskRepository.countTasksByPlanAndCode("IRS_2018_S1", "IRS",
+				Collections.singletonList("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc"), false);
+		assertEquals(1l, taskCounts);
+		verify(taskRepository).countTasksByPlanAndCode("IRS_2018_S1", "IRS",
+				Collections.singletonList("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc"), false);
 	}
 
 }
