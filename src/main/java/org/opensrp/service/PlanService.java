@@ -318,6 +318,7 @@ public class PlanService {
 		}
 		for (PlanDefinition plan : plans) {
 			PlanTaskCount planTaskCount = populatePlanTaskCount(getPlan(plan.getIdentifier()));
+			planTaskCount.setPlanIdentifier(plan.getIdentifier());
 			if ( planTaskCount !=null){
 				planTaskCounts.add(planTaskCount);
 			}
