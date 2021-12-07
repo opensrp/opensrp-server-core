@@ -2,6 +2,7 @@ package org.opensrp.service.rapidpro;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -77,45 +78,18 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		}
 		JSONObject responseJson = new JSONObject(response);
 		JSONArray results = RapidProUtils.getResults(responseJson);
-		List<RapidProContact> rapidProContacts = new ArrayList<>();
 
 		if (results != null) {
-			try {
-				rapidProContacts = RapidProUtils.getRapidProContacts(results, objectMapper);
-			}
-			catch (JsonProcessingException jsonProcessingException) {
-				logger.error(jsonProcessingException);
-			}
-			logger.info("Found " + rapidProContacts.size() + " modified RapidPro contacts");
-
-			Instant firstContactDateModified;
-			try {
-				firstContactDateModified = Instant.parse(rapidProContacts.get(0).getModifiedOn());
-			}
-			catch (DateTimeParseException parseException) {
-				firstContactDateModified = Instant.now();
-			}
-
-			Instant earliestDateModified = firstContactDateModified;
-			Instant latestDateModified = earliestDateModified;
-
+			List<RapidProContact> rapidProContacts = parseRapidProContactResponse(results);
 			if (!rapidProContacts.isEmpty()) {
+				Instant earliestDateModified = getFirstContactDateModified(rapidProContacts);
+				Instant latestDateModified = earliestDateModified;
 				for (RapidProContact rapidProContact : rapidProContacts) {
-					//Update last modified date to use the earliest
 					try {
-						Instant modifiedOn = Instant.parse(rapidProContact.getModifiedOn());
-						if (modifiedOn.isBefore(earliestDateModified)) {
-							earliestDateModified = modifiedOn;
-						}
-						if (modifiedOn.isAfter(latestDateModified)) {
-							latestDateModified = modifiedOn;
-						}
-					}
-					catch (DateTimeParseException parseException) {
-						logger.error("Error parsing RapidProContact modified date: ", parseException);
-					}
-
-					try {
+						Pair<Instant, Instant> dateModifierPair = updateLastModifiedDate(rapidProContact,
+								earliestDateModified, latestDateModified);
+						earliestDateModified = dateModifierPair.getLeft();
+						latestDateModified = dateModifierPair.getRight();
 						processRapidProContacts(rapidProContacts, rapidProContact);
 					}
 					catch (Exception exception) {
@@ -126,11 +100,11 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 						return;
 					}
 				}
+				//Use the latest date modified for the processed contacts
+				configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN,
+						latestDateModified.toString());
+				onTaskComplete.completeTask();
 			}
-			//Use the latest date modified for the processed contacts
-			configService.updateAppStateToken(RapidProStateToken.RAPIDPRO_STATE_TOKEN,
-					latestDateModified.toString());
-			onTaskComplete.completeTask();
 		}
 		if (responseJson.isNull(RapidProConstants.NEXT)) {
 			return;
@@ -143,6 +117,43 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		catch (IOException exception) {
 			logger.error(exception.getMessage(), exception);
 		}
+	}
+
+	private Pair<Instant, Instant> updateLastModifiedDate(RapidProContact rapidProContact, Instant earliestDateModified,
+			Instant latestDateModified) throws DateTimeParseException {
+		//Update last modified date to use the earliest
+		Instant modifiedOn = Instant.parse(rapidProContact.getModifiedOn());
+		if (modifiedOn.isBefore(earliestDateModified)) {
+			earliestDateModified = modifiedOn;
+		}
+		if (modifiedOn.isAfter(latestDateModified)) {
+			latestDateModified = modifiedOn;
+		}
+		return Pair.of(earliestDateModified, latestDateModified);
+	}
+
+	private List<RapidProContact> parseRapidProContactResponse(JSONArray results) {
+		List<RapidProContact> rapidProContacts = new ArrayList<>();
+		try {
+			rapidProContacts = RapidProUtils.getRapidProContacts(results, objectMapper);
+			logger.info("Found " + rapidProContacts.size() + " modified RapidPro contacts");
+		}
+		catch (JsonProcessingException jsonProcessingException) {
+			logger.error(jsonProcessingException);
+		}
+
+		return rapidProContacts;
+	}
+
+	private Instant getFirstContactDateModified(List<RapidProContact> rapidProContacts) {
+		Instant firstContactDateModified;
+		try {
+			firstContactDateModified = Instant.parse(rapidProContacts.get(0).getModifiedOn());
+		}
+		catch (DateTimeParseException parseException) {
+			firstContactDateModified = Instant.now();
+		}
+		return firstContactDateModified;
 	}
 
 	private void processRapidProContacts(List<RapidProContact> rapidProContacts, RapidProContact rapidProContact) {

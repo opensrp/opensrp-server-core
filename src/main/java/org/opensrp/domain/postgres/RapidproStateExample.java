@@ -174,24 +174,21 @@ public class RapidproStateExample {
         }
 
         protected void addCriterion(String condition) {
-            if (condition == null) {
-                throw new NullPointerException("Value for condition cannot be null");
+            if (condition != null) {
+                criteria.add(new Criterion(condition));
             }
-            criteria.add(new Criterion(condition));
         }
 
         protected void addCriterion(String condition, Object value, String property) {
-            if (value == null) {
-                throw new NullPointerException("Value for " + property + " cannot be null");
+            if (value != null) {
+                criteria.add(new Criterion(condition, value));
             }
-            criteria.add(new Criterion(condition, value));
         }
 
         protected void addCriterion(String condition, Object value1, Object value2, String property) {
-            if (value1 == null || value2 == null) {
-                throw new NullPointerException("Between values for " + property + " cannot be null");
+            if (value1 != null || value2 != null) {
+                criteria.add(new Criterion(condition, value1, value2));
             }
-            criteria.add(new Criterion(condition, value1, value2));
         }
 
         public Criteria andIdIsNull() {
