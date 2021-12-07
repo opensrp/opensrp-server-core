@@ -90,9 +90,11 @@ public interface PlanRepository extends BaseRepository<PlanDefinition>, PlanDao 
 
 	/** Gets the plans using the plan identifiers filtered by date edited and status
 	 * @param planIdentifiers the plan identifiers
-	 * @param fromDate
-	 * @param toDate
-	 * @return plans with the identifiers and server version greater than or equal to server version param
+	 * @param status status of the plan
+	 * @param fromDate lower bound of when the plan was edited
+	 * @param toDate upper bound of when the plan was edited
+	 * @return plans with the identifiers filtered by date edited and status
 	 */
-	List<PlanDefinition> getPlansByIdentifiersAndStatusAndDateEdited(List<String> planIdentifiers, Date fromDate, Date toDate);
+	List<PlanDefinition> getPlansByIdentifiersAndStatusAndDateEdited(List<String> planIdentifiers, PlanDefinition.PlanStatus status,
+																	 Date fromDate, Date toDate);
 }

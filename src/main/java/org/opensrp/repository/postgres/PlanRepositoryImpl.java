@@ -399,7 +399,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
      * {@inheritDoc}
      */
     @Override
-    public List<PlanDefinition> getPlansByIdentifiersAndStatusAndDateEdited(List<String> planIdentifiers, Date fromDate, Date toDate) {
+    public List<PlanDefinition> getPlansByIdentifiersAndStatusAndDateEdited(List<String> planIdentifiers, PlanDefinition.PlanStatus status, Date fromDate, Date toDate) {
         if (toDate == null && fromDate == null && planIdentifiers != null) {
             return getPlansByIdentifiersAndServerVersion(planIdentifiers,0l, false);
         } else {
@@ -420,7 +420,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             }
             criteria.andExperimentalEqualTo(false);
 
-            List<Plan> plans = planMapper.selectMany(planExample, 0, Integer.MAX_VALUE);
+            List<Plan> plans = planMapper.selectManyByStatus(planExample, status,0, Integer.MAX_VALUE);
 
             return convert(plans);
         }

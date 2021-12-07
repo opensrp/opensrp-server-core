@@ -352,8 +352,8 @@ public class PlanServiceTest {
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("a8b3010c-1ba5-556d-8b16-71266397b8b9");
 		List<String> planIdentifiers = Collections.singletonList("a8b3010c-1ba5-556d-8b16-71266397b8b9");
-		when(planRepository.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, null, null)).thenReturn(Collections.singletonList(plan));
-		List<PlanDefinition> actualPlans = planService.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, null, null);
+		when(planRepository.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, PlanDefinition.PlanStatus.ACTIVE,null, null)).thenReturn(Collections.singletonList(plan));
+		List<PlanDefinition> actualPlans = planService.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, PlanDefinition.PlanStatus.ACTIVE,null, null);
 		assertNotNull(actualPlans);
 		assertEquals(1, actualPlans.size());
 		assertEquals("a8b3010c-1ba5-556d-8b16-71266397b8b9", actualPlans.get(0).getIdentifier());
@@ -369,13 +369,13 @@ public class PlanServiceTest {
 		expectedPlanTaskCount.setBccActualTaskCount(1l);
 		expectedPlanTaskCount.setBccExpectedTaskCount(2l);
 		expectedPlanTaskCount.setBccVariationTaskCount(1l);
-		when(planRepository.getPlansByIdentifiersAndStatusAndDateEdited(any(), any(), any()))
+		when(planRepository.getPlansByIdentifiersAndStatusAndDateEdited(any(), any(), any(), any()))
 				.thenReturn(plans);
 		when(planService.getPlan(any())).thenReturn(plan);
 		when(planService.populatePlanTaskCount(plan)).thenReturn(expectedPlanTaskCount);
 
 		List<PlanTaskCount> actualPlanTaskCounts = planService.getPlanTaskCounts(null, null, null);
-		verify(planRepository).getPlansByIdentifiersAndStatusAndDateEdited(any(), any(), any());
+		verify(planRepository).getPlansByIdentifiersAndStatusAndDateEdited(any(), any(), any(),any());
 		verify(planService).getPlan(any());
 		verify(planService).populatePlanTaskCount(any());
 		assertEquals(1l, actualPlanTaskCounts.get(0).getBccActualTaskCount().longValue());
