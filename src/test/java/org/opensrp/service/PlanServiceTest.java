@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.PlanTaskCount;
+import org.opensrp.domain.TaskCount;
 import org.opensrp.search.PlanSearchBean;
 import org.opensrp.util.constants.PlanConstants;
 import org.smartregister.domain.Action;
@@ -366,9 +367,11 @@ public class PlanServiceTest {
 		plan.setIdentifier("d2ac9f2b-91a5-4273-bf97-7c78ae154bce");
 		List<PlanDefinition> plans = Collections.singletonList(plan);
 		PlanTaskCount expectedPlanTaskCount = new PlanTaskCount();
-		expectedPlanTaskCount.setBccActualTaskCount(1l);
-		expectedPlanTaskCount.setBccExpectedTaskCount(2l);
-		expectedPlanTaskCount.setBccVariationTaskCount(1l);
+		TaskCount taskCount = new TaskCount();
+		taskCount.setActualCount(1l);
+		taskCount.setExpectedCount(2l);
+		taskCount.setMissingCount(1l);
+		expectedPlanTaskCount.setTaskCounts(Collections.singletonList(taskCount));
 		when(planRepository.getPlansByIdentifiersAndStatusAndDateEdited(any(), any(), any(), any()))
 				.thenReturn(plans);
 		when(planService.getPlan(any())).thenReturn(plan);
@@ -378,9 +381,10 @@ public class PlanServiceTest {
 		verify(planRepository).getPlansByIdentifiersAndStatusAndDateEdited(any(), any(), any(),any());
 		verify(planService).getPlan(any());
 		verify(planService).populatePlanTaskCount(any());
-		assertEquals(1l, actualPlanTaskCounts.get(0).getBccActualTaskCount().longValue());
-		assertEquals(1l, actualPlanTaskCounts.get(0).getBccVariationTaskCount().longValue());
-		assertEquals(2l, actualPlanTaskCounts.get(0).getBccExpectedTaskCount().longValue());
+		TaskCount actualTaskCount = actualPlanTaskCounts.get(0).getTaskCounts().get(0);
+		assertEquals(1l, actualTaskCount.getActualCount());
+		assertEquals(1l, actualTaskCount.getMissingCount());
+		assertEquals(2l, actualTaskCount.getExpectedCount());
 	}
 
 	@Test
@@ -397,9 +401,10 @@ public class PlanServiceTest {
 
 		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
 		assertNotNull(planTaskCount);
-		assertEquals(1l, planTaskCount.getCaseConfirmationExpectedTaskCount().longValue());
-		assertEquals(0l, planTaskCount.getCaseConfirmationActualTaskCount().longValue());
-		assertEquals(1l, planTaskCount.getCaseConfirmationVariationTaskCount().longValue());
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals(1l, actualTaskCount.getExpectedCount());
+		assertEquals(0l,  actualTaskCount.getActualCount());
+		assertEquals(1l, actualTaskCount.getMissingCount());
 
 	}
 
@@ -417,9 +422,10 @@ public class PlanServiceTest {
 
 		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
 		assertNotNull(planTaskCount);
-		assertEquals(1l, planTaskCount.getBccExpectedTaskCount().longValue());
-		assertEquals(0l, planTaskCount.getBccActualTaskCount().longValue());
-		assertEquals(1l, planTaskCount.getBccVariationTaskCount().longValue());
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals(1l, actualTaskCount.getExpectedCount());
+		assertEquals(0l, actualTaskCount.getActualCount());
+		assertEquals(1l, actualTaskCount.getMissingCount());
 
 	}
 
@@ -449,9 +455,10 @@ public class PlanServiceTest {
 
 		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
 		assertNotNull(planTaskCount);
-		assertEquals(2l, planTaskCount.getFamilyRegExpectedTaskCount().longValue());
-		assertEquals(1l, planTaskCount.getFamilyRegActualTaskCount().longValue());
-		assertEquals(1l, planTaskCount.getFamilyRegVariationTaskCount().longValue());
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals(2l, actualTaskCount.getExpectedCount());
+		assertEquals(1l,  actualTaskCount.getActualCount());
+		assertEquals(1l, actualTaskCount.getMissingCount());
 
 	}
 
