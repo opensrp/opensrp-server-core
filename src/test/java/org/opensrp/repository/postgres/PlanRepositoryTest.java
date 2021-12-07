@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -703,6 +704,55 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         assertEquals(1l, planDefinitions.size());
         assertEquals(1l, planDefinitions.get(0).getUseContext().size());
         assertEquals("test-identifier", planDefinitions.get(0).getIdentifier());
+    }
+
+    @Test
+    public void testGetAllPlansWithStatusParam() {
+        PlanSearchBean planSearchBean = new PlanSearchBean();
+        planSearchBean.setPlanStatus(PlanDefinition.PlanStatus.ACTIVE);
+        planSearchBean.setExperimental(false);
+
+        List<PlanDefinition> planDefinitions = planRepository.getAllPlans(planSearchBean);
+        assertEquals(3l, planDefinitions.size());
+    }
+
+    @Test
+    public void testGetPlansByIdentifiersAndStatusAndDateEditedWithPlanIdentifersOnly() {
+        List<String> planIdentifiers = Collections.singletonList("a8b3010c-1ba5-556d-8b16-71266397b8b9");
+        List<PlanDefinition> actualPlans = planRepository.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers,
+                PlanDefinition.PlanStatus.ACTIVE,null, null);
+        assertNotNull(actualPlans);
+        assertEquals(1, actualPlans.size());
+        assertEquals("a8b3010c-1ba5-556d-8b16-71266397b8b9", actualPlans.get(0).getIdentifier());
+    }
+
+    @Test
+    public void testGetPlansByIdentifiersAndStatusAndDateEditedWithNullParams() {
+
+        List<PlanDefinition> actualPlans = planRepository.getPlansByIdentifiersAndStatusAndDateEdited(null,
+                null,null, null);
+        assertNotNull(actualPlans);
+        assertEquals(4, actualPlans.size());
+    }
+
+    @Test
+    public void testGetPlansByIdentifiersAndStatusAndDateEditedWithToDateOnly() {
+
+        List<PlanDefinition> actualPlans = planRepository.getPlansByIdentifiersAndStatusAndDateEdited(null,
+                null,null, new Date());
+        assertNotNull(actualPlans);
+        assertEquals(4, actualPlans.size());
+    }
+
+    @Test
+    public void testGetPlansByIdentifiersAndStatusAndDateEditedWithStatusOnly() {
+
+        List<PlanDefinition> actualPlans = planRepository.getPlansByIdentifiersAndStatusAndDateEdited(null,
+                PlanDefinition.PlanStatus.DRAFT,null, null);
+        assertNotNull(actualPlans);
+        assertEquals(1, actualPlans.size());
+        assertEquals("0004c-1ba5-556d-8b16-71266397b8b9", actualPlans.get(0).getIdentifier());
+        assertEquals(PlanDefinition.PlanStatus.DRAFT, actualPlans.get(0).getStatus());
     }
 
 }

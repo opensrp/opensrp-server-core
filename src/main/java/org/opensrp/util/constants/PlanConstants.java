@@ -15,10 +15,20 @@ public interface PlanConstants {
     String PATIENT_NAME = "patient_name";
     String PATIENT_SURNAME = "patient_surname";
     String CASE_CLASSIFICATION = "case_classification";
-    String BEDNET_DISTRIBUTION = "Bednet Distribution";
     String FLAG = "flag";
     String FIRST_NAME = "first_name";
     String SURNAME = "surname";
     String FAMILY_NAME = "family_name";
 
+    String CASE_CONFIRMATION = "Case Confirmation";
+    String BCC = "BCC";
+    String RACD_REGISTER_FAMILY =  "RACD Register Family";
+    String BLOOD_SCREENING = "Blood Screening";
+    String BEDNET_DISTRIBUTION = "Bednet Distribution";
+    String LARVAL_DIPPING = "Larval Dipping";
+    String LARVAL_DIPPING_SITE = "Larval Breeding Site";
+    String MOSQUITO_COLLECTION = "Mosquito Collection";
+    String MOSQUITO_COLLECTION_POINT = "Mosquito Collection Point";
+    String RESIDENTIAL_STRUCTURE = "Residential Structure";
+    String TYPE = "type";
 }
