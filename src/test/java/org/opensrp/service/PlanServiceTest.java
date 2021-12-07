@@ -402,6 +402,7 @@ public class PlanServiceTest {
 		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
 		assertNotNull(planTaskCount);
 		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("case-confirmation-plan", planTaskCount.getPlanIdentifier());
 		assertEquals(1l, actualTaskCount.getExpectedCount());
 		assertEquals(0l,  actualTaskCount.getActualCount());
 		assertEquals(1l, actualTaskCount.getMissingCount());
@@ -423,6 +424,7 @@ public class PlanServiceTest {
 		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
 		assertNotNull(planTaskCount);
 		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("bcc-plan", planTaskCount.getPlanIdentifier());
 		assertEquals(1l, actualTaskCount.getExpectedCount());
 		assertEquals(0l, actualTaskCount.getActualCount());
 		assertEquals(1l, actualTaskCount.getMissingCount());
@@ -456,6 +458,7 @@ public class PlanServiceTest {
 		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
 		assertNotNull(planTaskCount);
 		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("family-reg-plan", planTaskCount.getPlanIdentifier());
 		assertEquals(2l, actualTaskCount.getExpectedCount());
 		assertEquals(1l,  actualTaskCount.getActualCount());
 		assertEquals(1l, actualTaskCount.getMissingCount());
