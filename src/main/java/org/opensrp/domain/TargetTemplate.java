@@ -49,9 +49,6 @@ public class TargetTemplate implements Serializable {
         private TargetTemplate.Measure high;
         private TargetTemplate.Measure low;
 
-        MeasureRange() {
-        }
-
         public TargetTemplate.Measure getHigh() {
             return this.high;
         }
@@ -73,9 +70,6 @@ public class TargetTemplate implements Serializable {
         private float value;
         private String comparator;
         private String unit;
-
-        Measure() {
-        }
 
         public float getValue() {
             return this.value;

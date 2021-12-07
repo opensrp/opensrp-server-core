@@ -197,9 +197,6 @@ public class PlanTemplate  implements Serializable {
         private String code;
         private String valueCodableConcept;
 
-        public UseContext() {
-        }
-
         public String getCode() {
             return this.code;
         }

@@ -91,7 +91,6 @@ public class PlanProcessingStatusRepositoryTest extends BaseRepositoryTest{
     }
 
     @Test
-    @Ignore
     public void testAddPlanProcessingStatus() {
         List<PlanProcessingStatus> statusList = planProcessingStatusRepository.getByStatus(PlanProcessingStatusConstants.COMPLETE);
         assertTrue(statusList.isEmpty());
