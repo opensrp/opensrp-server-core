@@ -40,9 +40,6 @@ public class PlanTemplate  implements Serializable {
     @JsonProperty
     private boolean experimental;
 
-    public PlanTemplate() {
-    }
-
     public String getIdentifier() {
         return this.identifier;
     }

@@ -9,9 +9,6 @@ public class TargetTemplate implements Serializable {
     private TargetTemplate.Detail detail;
     private String due;
 
-    public TargetTemplate() {
-    }
-
     public String getMeasure() {
         return this.measure;
     }
@@ -38,9 +35,6 @@ public class TargetTemplate implements Serializable {
 
     static class DetailCodableConcept {
         private String text;
-
-        DetailCodableConcept() {
-        }
 
         public String getText() {
             return this.text;
@@ -112,9 +106,6 @@ public class TargetTemplate implements Serializable {
         private TargetTemplate.Measure detailQuantity;
         private TargetTemplate.MeasureRange detailRange;
         private AbstractMap.SimpleEntry<String, String> detailCodableConcept;
-
-        Detail() {
-        }
 
         public TargetTemplate.Measure getDetailQuantity() {
             return this.detailQuantity;

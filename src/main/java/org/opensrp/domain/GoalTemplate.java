@@ -16,9 +16,6 @@ public class GoalTemplate implements Serializable {
     @SerializedName("target")
     private List<TargetTemplate> targets;
 
-    public GoalTemplate() {
-    }
-
     public String getId() {
         return this.id;
     }

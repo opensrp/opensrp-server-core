@@ -184,7 +184,5 @@ public class ActionTemplate  implements Serializable {
         @SerializedName("fire-event")
         FIRE_EVENT;
 
-        private ActionType() {
-        }
     }
 }
