@@ -13,6 +13,8 @@ TRUNCATE TABLE core.plan_metadata CASCADE;
 
 TRUNCATE TABLE core.plan_processing_status CASCADE;
 
+ALTER SEQUENCE core.plan_processing_status_id_seq RESTART WITH 6;
+
 --insert data
 INSERT INTO core.event (id, json, date_deleted) VALUES
 (1, '{"_id": "fa2242d1-cf34-454a-8c06-7bd55e408044", "obs": [{"values": ["2018-03-14"], "fieldCode": "1410AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "fieldType": "concept", "parentCode": "36AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "fieldDataType": "date", "formSubmissionField": "measles_1", "humanReadableValues": []}, {"values": ["1"], "fieldCode": "1418AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "fieldType": "concept", "parentCode": "36AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", "fieldDataType": "calculate", "formSubmissionField": "measles_1_dose", "humanReadableValues": []}], "type": "Event", "version": 1521033238310, "duration": 0, "_rev": "1-dff06b7575a5177c7200b08570d14f4b", "eventDate": "2018-03-14T19:09:51.379+03:00", "eventType": "Vaccination", "entityType": "vaccination", "locationId": "42b88545-7ebb-4e11-8d1a-3d3a924c8af4", "providerId": "biddemo", "dateCreated": "2018-03-19T17:27:28.750+03:00", "identifiers": {}, "baseEntityId": "ea1f9439-a663-4073-93b9-6ef2b8bca3c1", "serverVersion": 1521033533700, "formSubmissionId": "bfbfabe8-d4ae-4db2-940f-a6f126ef7829"}', null),
