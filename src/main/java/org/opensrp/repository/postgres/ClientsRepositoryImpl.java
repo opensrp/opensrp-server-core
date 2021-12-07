@@ -385,7 +385,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		
 		return convertedClients;
 	}
-	
+
 	private Client convert(org.opensrp.domain.postgres.Client client) {
 		if (client == null || client.getJson() == null || !(client.getJson() instanceof Client)) {
 			return null;
@@ -761,6 +761,20 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		List<org.opensrp.domain.postgres.Client> clients = clientMetadataMapper.selectByLocationIdAndNotOfType(locationId,
 				clientType);
 		return convert(clients);
+	}
+
+	@Override
+	public Long countFamilyMembersByLocation(List<String> locationIds, Integer ageLowerBound) {
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		Criteria criteria = clientMetadataExample.createCriteria();
+		criteria.andLocationIdIn(locationIds).andClientTypeIsNull();
+		if (ageLowerBound != null) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.YEAR, -5);
+			Date date = calendar.getTime();
+			criteria.andBirthDateLessThan(date);
+		}
+		return clientMetadataMapper.countMany(clientMetadataExample);
 	}
 
 	private List<Patient> convertToFHIR(List<Client> clients) {

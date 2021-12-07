@@ -220,6 +220,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		OrganizationLocationExample example = new OrganizationLocationExample();
 		example.createCriteria().andOrganizationIdIn(organizationIds).andFromDateLessThanOrEqualTo(currentDate);
 		AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean = new AssignedLocationAndPlanSearchBean();
+		assignedLocationAndPlanSearchBean.setPageSize(Integer.MAX_VALUE);
 		Pair<Integer,Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(assignedLocationAndPlanSearchBean);
 		return organizationLocationMapper.findAssignedlocationsAndPlans(assignedLocationAndPlanSearchBean,
 				pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft(), example.getOredCriteria(),currentDate);

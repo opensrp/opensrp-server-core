@@ -11,6 +11,7 @@ import static org.opensrp.common.AllConstants.Client.OPENMRS_UUID_IDENTIFIER_TYP
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -822,6 +823,19 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		boolean allHaveLocationIdExcludingFamilyType = clients.stream()
 				.allMatch(client -> (client.getClientType() == null || !client.getClientType().equalsIgnoreCase("Family")));
 		assertTrue(allHaveLocationIdExcludingFamilyType);
+	}
+
+	@Test
+	public void testCountFamilyMembersByLocation() {
+		String locationId = "eace6e9a-55b8-11ec-bf63-0242ac130002";
+		Client client = new Client("04907d48-0c10-4159-bc3d-dc2f6f24614e").withBirthdate(new DateTime("1990-03-31"), true)
+				.withGender("Male").withFirstName("Nelson").withLastName("Kimanzi").withLocationId(locationId);
+
+		client.withIdentifier("ZEIR_ID", "893864-8").withAttribute("Home_Facility", "Tunza");
+		clientsRepository.add(client);
+
+		Long actualClients = clientsRepository.countFamilyMembersByLocation(Collections.singletonList(locationId), 30);
+		assertEquals(1l, actualClients.longValue());
 	}
 
 }

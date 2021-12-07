@@ -412,4 +412,23 @@
 
 	</select>
 
+	<select id="countManyByProperties"
+			resultType="long">
+		select count(lm.id)
+
+		from core.location_metadata lm
+		join core.location l on lm.location_id = l.id
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="properties != null" >
+			<trim prefix="and "  >
+				<foreach collection="properties" index="propertyName"
+						 item="propertyValue" separator=" and ">
+					json -> 'properties' ->> #{propertyName,jdbcType=VARCHAR} = #{propertyValue,jdbcType=VARCHAR}
+				</foreach>
+			</trim>
+		</if>
+	</select>
+
 </mapper>
