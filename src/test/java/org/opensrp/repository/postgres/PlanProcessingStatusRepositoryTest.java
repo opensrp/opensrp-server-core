@@ -1,7 +1,6 @@
 package org.opensrp.repository.postgres;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opensrp.domain.postgres.PlanProcessingStatus;
 import org.opensrp.repository.PlanProcessingStatusRepository;
