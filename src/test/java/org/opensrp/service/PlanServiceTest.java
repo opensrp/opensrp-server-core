@@ -465,4 +465,123 @@ public class PlanServiceTest {
 
 	}
 
+	@Test
+	public void testPopulateTaskCountForBedNetDistribution() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("bednet-distribution-plan");
+		Action action = new Action();
+		action.setIdentifier("bednet-distribution-action");
+		action.setCode(PlanConstants.BEDNET_DISTRIBUTION);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION,
+				null, false)).thenReturn(2l);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
+		List<String> structureIds = new ArrayList<>();
+		structureIds.add("structure-id-1");
+		structureIds.add("structure-id-2");
+		structureIds.add("structure-id-3");
+		when(locationService.findStructureIdsByProperties(Collections.singletonList("location-id1"),
+				properties, Integer.MAX_VALUE)).thenReturn(structureIds);
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION,
+				null,false)).thenReturn(1l);
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION,
+				structureIds,true)).thenReturn(1l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("bednet-distribution-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(2l, actualTaskCount.getExpectedCount());
+		assertEquals(1l,  actualTaskCount.getActualCount());
+		assertEquals(1l, actualTaskCount.getMissingCount());
+
+	}
+
+	@Test
+	public void testPopulateTaskCountForLarvalDipping() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("larval-dipping-plan");
+		Action action = new Action();
+		action.setIdentifier("larval-dipping-action");
+		action.setCode(PlanConstants.LARVAL_DIPPING);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.LARVAL_DIPPING,
+				null, false)).thenReturn(1l);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.LARVAL_DIPPING_SITE);
+		List<String> structureIds = new ArrayList<>();
+		structureIds.add("structure-id-1");
+		structureIds.add("structure-id-2");
+		structureIds.add("structure-id-3");
+		when(locationService.countStructuresByProperties(Collections.singletonList("location-id1"),
+				properties)).thenReturn(3l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("larval-dipping-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(3l, actualTaskCount.getExpectedCount());
+		assertEquals(1l,  actualTaskCount.getActualCount());
+		assertEquals(2l, actualTaskCount.getMissingCount());
+
+	}
+
+	@Test
+	public void testPopulateTaskCountForMosquitoCollection() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("mosquito-collection-plan");
+		Action action = new Action();
+		action.setIdentifier("mosquito-collection-action");
+		action.setCode(PlanConstants.MOSQUITO_COLLECTION);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.MOSQUITO_COLLECTION,
+				null, false)).thenReturn(1l);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.MOSQUITO_COLLECTION_POINT);
+		List<String> structureIds = new ArrayList<>();
+		structureIds.add("structure-id-1");
+		structureIds.add("structure-id-2");
+		structureIds.add("structure-id-3");
+		when(locationService.countStructuresByProperties(Collections.singletonList("location-id1"),
+				properties)).thenReturn(3l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("mosquito-collection-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(3l, actualTaskCount.getExpectedCount());
+		assertEquals(1l,  actualTaskCount.getActualCount());
+		assertEquals(2l, actualTaskCount.getMissingCount());
+
+	}
+
+	@Test
+	public void testPopulateTaskCountForBloodScreening() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("blood-screening-plan");
+		Action action = new Action();
+		action.setIdentifier("blood-screening-action");
+		action.setCode(PlanConstants.BLOOD_SCREENING);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BLOOD_SCREENING,
+				null, false)).thenReturn(1l);
+
+		when(clientService.countFamilyMembersByLocation(Collections.singletonList("location-id1"),
+				5)).thenReturn(3l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("blood-screening-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(3l, actualTaskCount.getExpectedCount());
+		assertEquals(1l,  actualTaskCount.getActualCount());
+		assertEquals(2l, actualTaskCount.getMissingCount());
+
+	}
+
 }

@@ -467,7 +467,7 @@ public class PlanService {
 		Map<String, String> properties = new HashMap<>();
 		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
 		residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
-		otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, residentialStructureIds, true);
+		otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION, residentialStructureIds, true);
 
 		long expectedTaskCount = residentialStructureIds.size() - otherPlanFamRegCount;
 		long missingTaskCount = expectedTaskCount - actualTaskCount;
