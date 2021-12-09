@@ -2,11 +2,20 @@ package org.opensrp.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
-import org.smartregister.domain.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.smartregister.domain.Jurisdiction;
+import org.smartregister.domain.PlanDefinition;
 
 import java.io.Serializable;
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlanTemplate  implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -39,118 +48,6 @@ public class PlanTemplate  implements Serializable {
     private List<ActionTemplate> actions;
     @JsonProperty
     private boolean experimental;
-
-    public String getIdentifier() {
-        return this.identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public String getVersion() {
-        return this.version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getStatus() {
-        return this.status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public String getDate() {
-        return this.date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    public PeriodTemplate getEffectivePeriod() {
-        return this.effectivePeriod;
-    }
-
-    public void setEffectivePeriod(PeriodTemplate effectivePeriod) {
-        this.effectivePeriod = effectivePeriod;
-    }
-
-    public List<PlanDefinition.UseContext> getUseContext() {
-        return this.useContext;
-    }
-
-    public void setUseContext(List<PlanDefinition.UseContext> useContext) {
-        this.useContext = useContext;
-    }
-
-    public List<Jurisdiction> getJurisdiction() {
-        return this.jurisdiction;
-    }
-
-    public void setJurisdiction(List<Jurisdiction> jurisdiction) {
-        this.jurisdiction = jurisdiction;
-    }
-
-    public List<GoalTemplate> getGoals() {
-        return this.goals;
-    }
-
-    public void setGoals(List<GoalTemplate> goals) {
-        this.goals = goals;
-    }
-
-    public List<ActionTemplate> getActions() {
-        return this.actions;
-    }
-
-    public void setActions(List<ActionTemplate> actions) {
-        this.actions = actions;
-    }
-
-    public Long getServerVersion() {
-        return this.serverVersion;
-    }
-
-    public void setServerVersion(Long serverVersion) {
-        this.serverVersion = serverVersion;
-    }
-
-    public boolean isExperimental() {
-        return this.experimental;
-    }
-
-    public void setExperimental(boolean experimental) {
-        this.experimental = experimental;
-    }
-
-    public String getDescription() {
-        return this.description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public int compareTo(PlanDefinition o) {
         return this.getName().equals(o.getName()) ? this.getName().compareTo(o.getIdentifier()) : this.getName().compareTo(o.getName());
@@ -193,24 +90,13 @@ public class PlanTemplate  implements Serializable {
         }
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UseContext implements Serializable {
         private String code;
         private String valueCodableConcept;
 
-        public String getCode() {
-            return this.code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
-
-        public String getValueCodableConcept() {
-            return this.valueCodableConcept;
-        }
-
-        public void setValueCodableConcept(String valueCodableConcept) {
-            this.valueCodableConcept = valueCodableConcept;
-        }
     }
 }
