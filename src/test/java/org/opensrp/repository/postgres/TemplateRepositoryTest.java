@@ -3,9 +3,15 @@ package org.opensrp.repository.postgres;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.opensrp.domain.ActionTemplate;
+import org.opensrp.domain.GoalTemplate;
+import org.opensrp.domain.PeriodTemplate;
+import org.opensrp.domain.TargetTemplate;
 import org.opensrp.domain.PlanTemplate;
 import org.opensrp.domain.Template;
 import org.opensrp.repository.TemplateRepository;
+import org.smartregister.domain.Condition;
+import org.smartregister.domain.Expression;
 import org.smartregister.domain.Jurisdiction;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -135,6 +141,28 @@ public class TemplateRepositoryTest extends BaseRepositoryTest{
         jurisdictions.add(jurisdiction);
         planTemplate.setJurisdiction(jurisdictions);
 
+        ActionTemplate action = new ActionTemplate();
+        action.setCode("Blood Screening");
+        action.setIdentifier("id-1");
+        Condition condition = new Condition();
+        condition.setExpression(new Expression());
+        action.setCondition(Collections.singleton(condition));
+        action.setGoalId("goal");
+        planTemplate.setActions(Collections.singletonList(action));
+
+        GoalTemplate goalTemplate = new GoalTemplate();
+        goalTemplate.setId("goal-id");
+        goalTemplate.setDescription("Blood screening goal");
+        goalTemplate.setPriority("Routine");
+        TargetTemplate target = new TargetTemplate();
+        target.setDue("Now");
+        target.setMeasure("90");
+        goalTemplate.setTargets(Collections.singletonList(target));
+        planTemplate.setGoals(Collections.singletonList(goalTemplate));
+        PeriodTemplate period = new PeriodTemplate();
+        period.setEnd("2026-12-12");
+        period.setStart("2022-12-12");
+        planTemplate.setEffectivePeriod(period);
         Template template = new Template();
         template.setTemplate(planTemplate);
         template.setTemplateId(1);
