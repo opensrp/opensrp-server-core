@@ -19,6 +19,8 @@ public interface PlanConstants {
     String FIRST_NAME = "first_name";
     String SURNAME = "surname";
     String FAMILY_NAME = "family_name";
+    int PLAN_TEMPLATE_1 = 1;
+    int PLAN_TEMPLATE_2 = 2;
 
     String CASE_CONFIRMATION = "Case Confirmation";
     String BCC = "BCC";

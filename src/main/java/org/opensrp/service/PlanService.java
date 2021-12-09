@@ -19,14 +19,15 @@ import org.opensrp.search.PlanSearchBean;
 import org.opensrp.util.constants.PlanConstants;
 import org.smartregister.domain.Action;
 import org.smartregister.domain.Event;
-import org.opensrp.util.constants.PlanConstants;
-import org.smartregister.domain.Action;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import static org.opensrp.util.constants.PlanConstants.PLAN_TEMPLATE_1;
+import static org.opensrp.util.constants.PlanConstants.PLAN_TEMPLATE_2;
 
 @Service
 public class PlanService {
@@ -542,18 +543,18 @@ public class PlanService {
 		}
 		if (PlanConstants.A1.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))
 				|| PlanConstants.A2.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))) {
-			planTemplateId = 1;
+			planTemplateId = PLAN_TEMPLATE_1;
 		} else if ((PlanConstants.B1.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))
 				|| PlanConstants.B2.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS)))
 				&& PlanConstants.LOCAL.equalsIgnoreCase(event.getDetails().get(PlanConstants.CASE_CLASSIFICATION))
 		) {
 			if (PlanConstants.BEDNET_DISTRIBUTION.equalsIgnoreCase(historicalIntervention)) {
-				planTemplateId = 1;
+				planTemplateId = PLAN_TEMPLATE_1;
 			} else if (PlanConstants.IRS.equalsIgnoreCase(historicalIntervention)) {
-				planTemplateId = 1;
+				planTemplateId = PLAN_TEMPLATE_1;
 			}
 		} else if (PlanConstants.B1.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))) {
-			planTemplateId = 2;
+			planTemplateId = PLAN_TEMPLATE_2;
 		}
 		return planTemplateId;
 	}
