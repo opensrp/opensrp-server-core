@@ -1,5 +1,7 @@
 package org.opensrp.service;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,6 +37,7 @@ import org.opensrp.domain.TaskCount;
 import org.opensrp.search.PlanSearchBean;
 import org.opensrp.util.constants.PlanConstants;
 import org.smartregister.domain.Action;
+import org.smartregister.domain.Event;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.opensrp.domain.postgres.PractitionerRole;
@@ -463,6 +466,260 @@ public class PlanServiceTest {
 		assertEquals(1l,  actualTaskCount.getActualCount());
 		assertEquals(1l, actualTaskCount.getMissingCount());
 
+	}
+
+	@Test
+	public void testPopulateTaskCountForBedNetDistribution() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("bednet-distribution-plan");
+		Action action = new Action();
+		action.setIdentifier("bednet-distribution-action");
+		action.setCode(PlanConstants.BEDNET_DISTRIBUTION);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION,
+				null, false)).thenReturn(2l);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
+		List<String> structureIds = new ArrayList<>();
+		structureIds.add("structure-id-1");
+		structureIds.add("structure-id-2");
+		structureIds.add("structure-id-3");
+		when(locationService.findStructureIdsByProperties(Collections.singletonList("location-id1"),
+				properties, Integer.MAX_VALUE)).thenReturn(structureIds);
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION,
+				null,false)).thenReturn(1l);
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION,
+				structureIds,true)).thenReturn(1l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("bednet-distribution-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(2l, actualTaskCount.getExpectedCount());
+		assertEquals(1l,  actualTaskCount.getActualCount());
+		assertEquals(1l, actualTaskCount.getMissingCount());
+
+	}
+
+	@Test
+	public void testPopulateTaskCountForLarvalDipping() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("larval-dipping-plan");
+		Action action = new Action();
+		action.setIdentifier("larval-dipping-action");
+		action.setCode(PlanConstants.LARVAL_DIPPING);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.LARVAL_DIPPING,
+				null, false)).thenReturn(1l);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.LARVAL_DIPPING_SITE);
+		List<String> structureIds = new ArrayList<>();
+		structureIds.add("structure-id-1");
+		structureIds.add("structure-id-2");
+		structureIds.add("structure-id-3");
+		when(locationService.countStructuresByProperties(Collections.singletonList("location-id1"),
+				properties)).thenReturn(3l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("larval-dipping-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(3l, actualTaskCount.getExpectedCount());
+		assertEquals(1l,  actualTaskCount.getActualCount());
+		assertEquals(2l, actualTaskCount.getMissingCount());
+
+	}
+
+	@Test
+	public void testPopulateTaskCountForMosquitoCollection() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("mosquito-collection-plan");
+		Action action = new Action();
+		action.setIdentifier("mosquito-collection-action");
+		action.setCode(PlanConstants.MOSQUITO_COLLECTION);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.MOSQUITO_COLLECTION,
+				null, false)).thenReturn(1l);
+		Map<String, String> properties = new HashMap<>();
+		properties.put(PlanConstants.TYPE, PlanConstants.MOSQUITO_COLLECTION_POINT);
+		List<String> structureIds = new ArrayList<>();
+		structureIds.add("structure-id-1");
+		structureIds.add("structure-id-2");
+		structureIds.add("structure-id-3");
+		when(locationService.countStructuresByProperties(Collections.singletonList("location-id1"),
+				properties)).thenReturn(3l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("mosquito-collection-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(3l, actualTaskCount.getExpectedCount());
+		assertEquals(1l,  actualTaskCount.getActualCount());
+		assertEquals(2l, actualTaskCount.getMissingCount());
+
+	}
+
+	@Test
+	public void testPopulateTaskCountForBloodScreening() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("blood-screening-plan");
+		Action action = new Action();
+		action.setIdentifier("blood-screening-action");
+		action.setCode(PlanConstants.BLOOD_SCREENING);
+		plan.setActions(Collections.singletonList(action));
+		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
+		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BLOOD_SCREENING,
+				null, false)).thenReturn(1l);
+
+		when(clientService.countFamilyMembersByLocation(Collections.singletonList("location-id1"),
+				5)).thenReturn(3l);
+
+		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
+		assertNotNull(planTaskCount);
+		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);
+		assertEquals("blood-screening-plan", planTaskCount.getPlanIdentifier());
+		assertEquals(3l, actualTaskCount.getExpectedCount());
+		assertEquals(1l,  actualTaskCount.getActualCount());
+		assertEquals(2l, actualTaskCount.getMissingCount());
+
+	}
+
+	@Test
+	public void testValidateCaseDetailsEvent() {
+		Event event = initTestCaseDetailsEvent();
+		assertTrue(planService.validateCaseDetailsEvent(event));
+
+		event.setDetails(null);
+		assertFalse(planService.validateCaseDetailsEvent(event));
+
+		event = initTestCaseDetailsEvent();
+		event.getDetails().remove(PlanConstants.CASE_NUMBER);
+		assertFalse(planService.validateCaseDetailsEvent(event));
+
+		event = initTestCaseDetailsEvent();
+		event.getDetails().remove(PlanConstants.FOCUS_ID);
+		assertFalse(planService.validateCaseDetailsEvent(event));
+
+		event = initTestCaseDetailsEvent();
+		event.getDetails().remove(PlanConstants.FOCUS_STATUS);
+		assertFalse(planService.validateCaseDetailsEvent(event));
+
+		event = initTestCaseDetailsEvent();
+		event.getDetails().remove(PlanConstants.FLAG);
+		assertFalse(planService.validateCaseDetailsEvent(event));
+	}
+
+	@Test
+	public void testGetPlanTemplateWhenFocusStateIsA1() {
+		Event event = initTestCaseDetailsEvent();
+		event.getDetails().put(PlanConstants.FOCUS_STATUS, PlanConstants.A1);
+		int planTemplate = planService.getPlanTemplate(event);
+		assertEquals(1, planTemplate);
+	}
+
+	@Test
+	public void testGetPlanTemplateWhenFocusStateIsB1AndCaseClassificationIsLocal() {
+		Event event = initTestCaseDetailsEvent();
+		event.getDetails().put(PlanConstants.FOCUS_STATUS, PlanConstants.B1);
+		event.getDetails().put(PlanConstants.CASE_CLASSIFICATION, PlanConstants.LOCAL);
+		planService = spy(planService);
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("bednet-distribution-plan");
+		Action action = new Action();
+		action.setIdentifier("bednet-distribution-action");
+		action.setCode(PlanConstants.BEDNET_DISTRIBUTION);
+		plan.setActions(Collections.singletonList(action));
+		List<String> operationalAreaIds = Collections.singletonList("location-id-1");
+		planService = spy(planService);
+		when(planService.getPlansByServerVersionAndOperationalArea(0,
+				operationalAreaIds,false))
+				.thenReturn(Collections.singletonList(plan));
+		int planTemplate = planService.getPlanTemplate(event);
+		assertEquals(1, planTemplate);
+	}
+
+	@Test
+	public void testGetPlanTemplateWhenFocusStateIsB1AndCaseClassificationIsLocalAndIRSHistoricalEvent() {
+		Event event = initTestCaseDetailsEvent();
+		event.getDetails().put(PlanConstants.FOCUS_STATUS, PlanConstants.B1);
+		event.getDetails().put(PlanConstants.CASE_CLASSIFICATION, PlanConstants.LOCAL);
+		planService = spy(planService);
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("irs-plan");
+		Action action = new Action();
+		action.setIdentifier("irs-action");
+		action.setCode(PlanConstants.IRS);
+		plan.setActions(Collections.singletonList(action));
+		List<String> operationalAreaIds = Collections.singletonList("location-id-1");
+		planService = spy(planService);
+		when(planService.getPlansByServerVersionAndOperationalArea(0,
+				operationalAreaIds,false))
+				.thenReturn(Collections.singletonList(plan));
+		int planTemplate = planService.getPlanTemplate(event);
+		assertEquals(1, planTemplate);
+	}
+
+	@Test
+	public void testGetPlanTemplateWhenFocusStateIsB1AndCaseClassificationIsBF() {
+		Event event = initTestCaseDetailsEvent();
+		event.getDetails().put(PlanConstants.FOCUS_STATUS, PlanConstants.B1);
+		event.getDetails().put(PlanConstants.CASE_CLASSIFICATION, "BF");
+		int planTemplate = planService.getPlanTemplate(event);
+		assertEquals(2, planTemplate);
+	}
+
+	@Test
+	public void testGetHistoricalInterventionForBedNetDistribution() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("bednet-distribution-plan");
+		Action action = new Action();
+		action.setIdentifier("bednet-distribution-action");
+		action.setCode(PlanConstants.BEDNET_DISTRIBUTION);
+		plan.setActions(Collections.singletonList(action));
+		List<String> operationalAreaIds = Collections.singletonList("location-id-1");
+		planService = spy(planService);
+		when(planService.getPlansByServerVersionAndOperationalArea(0,
+				operationalAreaIds,false))
+				.thenReturn(Collections.singletonList(plan));
+
+		String historicalIntervention = planService.getHistoricalIntervention(operationalAreaIds);
+		assertEquals(PlanConstants.BEDNET_DISTRIBUTION, historicalIntervention);
+
+	}
+
+	@Test
+	public void testGetHistoricalInterventionForIRS() {
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("irs-plan");
+		Action action = new Action();
+		action.setIdentifier("irs-action");
+		action.setCode(PlanConstants.IRS);
+		plan.setActions(Collections.singletonList(action));
+		List<String> operationalAreaIds = Collections.singletonList("location-id-1");
+		planService = spy(planService);
+		when(planService.getPlansByServerVersionAndOperationalArea(0,
+				operationalAreaIds,false))
+				.thenReturn(Collections.singletonList(plan));
+
+		String historicalIntervention = planService.getHistoricalIntervention(operationalAreaIds);
+		assertEquals(PlanConstants.IRS, historicalIntervention);
+
+	}
+
+	private Event initTestCaseDetailsEvent() {
+		Event event = new Event();
+		event.setId("case-details-event-id");
+		event.setLocationId("location-id");
+		Map<String,String> details = new HashMap<>();
+		details.put(PlanConstants.CASE_NUMBER, "case-number");
+		details.put(PlanConstants.FOCUS_ID, "focus-id");
+		details.put(PlanConstants.FOCUS_STATUS, "focus-status");
+		details.put(PlanConstants.FLAG, "flag");
+		event.setDetails(details);
+		return event;
 	}
 
 }

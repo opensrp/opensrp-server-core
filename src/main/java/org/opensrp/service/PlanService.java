@@ -1,6 +1,7 @@
 package org.opensrp.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +18,16 @@ import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.PlanSearchBean;
 import org.opensrp.util.constants.PlanConstants;
 import org.smartregister.domain.Action;
+import org.smartregister.domain.Event;
 import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import static org.opensrp.util.constants.PlanConstants.PLAN_TEMPLATE_1;
+import static org.opensrp.util.constants.PlanConstants.PLAN_TEMPLATE_2;
 
 @Service
 public class PlanService {
@@ -463,7 +468,7 @@ public class PlanService {
 		Map<String, String> properties = new HashMap<>();
 		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
 		residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
-		otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, residentialStructureIds, true);
+		otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION, residentialStructureIds, true);
 
 		long expectedTaskCount = residentialStructureIds.size() - otherPlanFamRegCount;
 		long missingTaskCount = expectedTaskCount - actualTaskCount;
@@ -529,4 +534,61 @@ public class PlanService {
 																	 Date fromDate, Date toDate){
 		return planRepository.getPlansByIdentifiersAndStatusAndDateEdited(planIdentifiers, status, fromDate, toDate);
 	};
+
+	public Integer getPlanTemplate(Event event) {
+		String historicalIntervention = getHistoricalIntervention(Collections.singletonList(event.getLocationId()));
+		Integer planTemplateId = null;
+		if (event == null || event.getDetails() == null) {
+			return null;
+		}
+		if (PlanConstants.A1.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))
+				|| PlanConstants.A2.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))) {
+			planTemplateId = PLAN_TEMPLATE_1;
+		} else if ((PlanConstants.B1.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))
+				|| PlanConstants.B2.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS)))
+				&& PlanConstants.LOCAL.equalsIgnoreCase(event.getDetails().get(PlanConstants.CASE_CLASSIFICATION))
+		) {
+			if (PlanConstants.BEDNET_DISTRIBUTION.equalsIgnoreCase(historicalIntervention)) {
+				planTemplateId = PLAN_TEMPLATE_1;
+			} else if (PlanConstants.IRS.equalsIgnoreCase(historicalIntervention)) {
+				planTemplateId = PLAN_TEMPLATE_1;
+			}
+		} else if (PlanConstants.B1.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))) {
+			planTemplateId = PLAN_TEMPLATE_2;
+		}
+		return planTemplateId;
+	}
+
+	public String getHistoricalIntervention(List<String> operationalAreaIds) {
+		String historicalIntervention = null;
+		List<PlanDefinition> planList = getPlansByServerVersionAndOperationalArea(0, operationalAreaIds, false);
+		for (PlanDefinition plan: planList ) {
+			if(plan.getActions() == null || plan.getActions().isEmpty()){
+				continue;
+			}
+			for (Action action: plan.getActions() ) {
+				if (action.getCode() != null) {
+					if (PlanConstants.BEDNET_DISTRIBUTION.equalsIgnoreCase(action.getCode())) {
+						historicalIntervention = PlanConstants.BEDNET_DISTRIBUTION;
+						break;
+					} else if (PlanConstants.IRS.equalsIgnoreCase(action.getCode())) {
+						historicalIntervention = PlanConstants.IRS;
+						break;
+					}
+				}
+			}
+		}
+		return historicalIntervention != null ? historicalIntervention : PlanConstants.BEDNET_DISTRIBUTION;
+	}
+
+	public boolean validateCaseDetailsEvent (Event caseDetailsEvent) {
+		return caseDetailsEvent != null
+				&& StringUtils.isNotEmpty(caseDetailsEvent.getId())
+				&& caseDetailsEvent.getDetails() !=null
+				&& StringUtils.isNotEmpty(caseDetailsEvent.getDetails().get(PlanConstants.CASE_NUMBER))
+				&& StringUtils.isNotEmpty(caseDetailsEvent.getDetails().get(PlanConstants.FOCUS_ID))
+				&& StringUtils.isNotEmpty(caseDetailsEvent.getDetails().get(PlanConstants.FOCUS_STATUS))
+				&& StringUtils.isNotEmpty(caseDetailsEvent.getDetails().get(PlanConstants.FLAG));
+	}
+
 }
