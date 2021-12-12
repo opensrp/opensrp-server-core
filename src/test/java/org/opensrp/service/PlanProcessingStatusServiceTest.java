@@ -76,9 +76,9 @@ public class PlanProcessingStatusServiceTest {
     public void testUpdatePlanProcessingStatusCallsRepositoryMethod() {
         PlanProcessingStatus status = initTestPlanProcessingStatus();
         planProcessingStatusService.updatePlanProcessingStatus(
-                status,"event-identifier","plan-identifier",1);
+                status,"event-identifier","plan-identifier",1, "missing location");
         verify(planProcessingStatusRepository).updatePlanProcessingStatus(
-                status,"event-identifier","plan-identifier",1);
+                status,"event-identifier","plan-identifier",1, "missing location");
     }
 
     private PlanProcessingStatus initTestPlanProcessingStatus() {

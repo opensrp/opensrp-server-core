@@ -14,5 +14,6 @@ public interface PlanProcessingStatusRepository extends BaseRepository<PlanProce
 
     void addPlanProcessingStatus(String eventIdentifier, int status);
 
-    void updatePlanProcessingStatus(PlanProcessingStatus planProcessingStatus, String eventIdentifier, String planIdentifier, int status);
+    void updatePlanProcessingStatus(PlanProcessingStatus planProcessingStatus, String eventIdentifier,
+                                    String planIdentifier, int status, String errorLog);
 }
