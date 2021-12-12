@@ -123,6 +123,26 @@ public class PlanProcessingStatusRepositoryTest extends BaseRepositoryTest{
     }
 
     @Test
+    public void testUpdatePlanProcessingStatusWithErrorLog() {
+        PlanProcessingStatus status = planProcessingStatusRepository.getByPrimaryKey(1l);
+        assertEquals(PlanProcessingStatusConstants.INITIAL, status.getStatus().intValue());
+        assertEquals(1l, status.getPlanId().longValue());
+        assertEquals(1l, status.getTemplateId().longValue());
+        assertEquals(1l, status.getEventId().longValue());
+        assertNull(status.getErrorLog());
+
+        planProcessingStatusRepository.updatePlanProcessingStatus(status, null,null,
+        PlanProcessingStatusConstants.FAILED, "Missing jurisdiction");
+
+        PlanProcessingStatus updatedStatus = planProcessingStatusRepository.getByPrimaryKey(1l);
+        assertEquals(PlanProcessingStatusConstants.FAILED, updatedStatus.getStatus().intValue());
+        assertEquals(1l, updatedStatus.getPlanId().longValue());
+        assertEquals(1l, updatedStatus.getTemplateId().longValue());
+        assertEquals(1l, updatedStatus.getEventId().longValue());
+        assertEquals("Missing jurisdiction", updatedStatus.getErrorLog());
+    }
+
+    @Test
     public void testAddShouldCreateNewPlanProcessingStatus() {
 
         List<PlanProcessingStatus> statusList = planProcessingStatusRepository.getByStatus(PlanProcessingStatusConstants.COMPLETE);
