@@ -77,4 +77,9 @@ public class SettingServiceTest {
         settingService.findSettingsByIdentifier("identifier-1");
         verify(settingRepository).findSettingsAndSettingsMetadataByIdentifier("identifier-1");
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSaveSettingsThrowsExceptionWhenJsonSettingConfigurationIsNull() {
+        settingService.saveSetting(null);
+    }
 }
