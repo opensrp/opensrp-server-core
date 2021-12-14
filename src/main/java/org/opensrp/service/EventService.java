@@ -1,7 +1,6 @@
 package org.opensrp.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
