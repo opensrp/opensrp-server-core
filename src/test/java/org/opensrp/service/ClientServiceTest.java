@@ -1,5 +1,6 @@
 package org.opensrp.service;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -7,6 +8,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opensrp.common.AllConstants.Client.OPENMRS_UUID_IDENTIFIER_TYPE;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -243,5 +245,20 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		List<Client> clients = clientService.findAllByAttribute("Father_NRC_Number","721345/67/8");
 		assertNotNull(clients);
 		assertEquals("86c039a2-0b68-4166-849e-f49897e3a510", clients.get(0).getBaseEntityId());
+	}
+
+	@Test
+	public void testFindAllByAttributeOutOfCatchment() {
+		List<Client> clients = clientService.findAllByAttributeOutOfCatchment("Father_NRC_Number","721345/67/8");
+		assertNotNull(clients);
+		assertEquals("86c039a2-0b68-4166-849e-f49897e3a510", clients.get(0).getBaseEntityId());
+	}
+
+	@Test
+	public void testFindAllByAttributes() {
+		List<String> attributes = asList("Dar Naim", "Happy Kids Clinic");
+		List<Client> clients = clientService.findAllByAttributes("Home_Facility",attributes);
+		assertNotNull(clients);
+		assertEquals(9, clients.size());
 	}
 }
