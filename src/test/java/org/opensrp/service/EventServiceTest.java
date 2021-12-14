@@ -235,7 +235,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 
 		Event outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(22, eventService.getAll().size());
+		assertEquals(21, eventService.getAll().size());
 		
 		//Test with card identifier type. Should not create any service because there is no client with that identifier
 		event = new Event().withEventType("Out of Area Service - Vaccination").withProviderId("tester112")
@@ -244,7 +244,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(22, eventService.getAll().size());
+		assertEquals(21, eventService.getAll().size());
 		
 		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
 		event = new Event().withEventType("Out of Area Service - Growth Monitoring")
@@ -254,7 +254,7 @@ public class EventServiceTest extends BaseRepositoryTest {
 		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
 		
-		assertEquals(23, eventService.getAll().size());
+		assertEquals(21, eventService.getAll().size());
 		
 	}
 
