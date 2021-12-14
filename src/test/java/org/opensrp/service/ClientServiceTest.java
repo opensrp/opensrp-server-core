@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opensrp.common.AllConstants.Client.OPENMRS_UUID_IDENTIFIER_TYPE;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,8 +16,6 @@ import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
-import org.opensrp.common.AllConstants;
-import org.opensrp.domain.postgres.ClientFormMetadata;
 import org.smartregister.domain.Address;
 import org.smartregister.domain.Client;
 import org.opensrp.repository.ClientsRepository;
