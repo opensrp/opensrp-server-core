@@ -176,7 +176,33 @@ public class EventServiceTest extends BaseRepositoryTest {
 		eventService.addEvent(event,username);
 		assertNull(eventService.findByFormSubmissionId(event.getFormSubmissionId()));
 	}
-	
+
+	@Test
+	public void testAddEventOutOfCatchment() {
+		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
+		Event event = new Event().withBaseEntityId("435534534543").withEventType("Growth Monitoring")
+				.withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs);
+		PlanDefinition plan = new PlanDefinition();
+		plan.setIdentifier("identifier");
+
+		when(planRepository.get(anyString())).thenReturn(plan);
+		Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), anyString(), any(Event.class));
+		eventService.addEvent(event, username);
+
+		event = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
+		assertEquals("435534534543", event.getBaseEntityId());
+		assertEquals("Growth Monitoring", event.getEventType());
+		assertEquals(1, event.getObs().size());
+		assertEquals("3.5", event.getObs(null, "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA").getValue());
+
+		//test if an event with voided date add event as deleted
+		event = new Event().withBaseEntityId("2423nj-sdfsd-sf2dfsd-2399d").withEventType("Vaccination")
+				.withFormSubmissionId("hshj2342_jsjs-jhjsdfds-23").withEventDate(new DateTime()).withObs(obs);
+		event.setDateVoided(new DateTime());
+		eventService.addEventOutOfCatchment(event, username);
+		assertNull(eventService.findByFormSubmissionId(event.getFormSubmissionId()));
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testAddEventForExistingEvent() {
 		Event event = eventService.findById("05934ae338431f28bf6793b241bdc44a");
