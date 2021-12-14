@@ -111,13 +111,35 @@ public class PlanProcessingStatusRepositoryTest extends BaseRepositoryTest{
         assertEquals(1l, status.getEventId().longValue());
 
         planProcessingStatusRepository.updatePlanProcessingStatus(status, "1c3f6eac-a765-4423-bbda-c01ed6430ae8",
-                "3450034c-1ba5-556d-8b16-71266397b8b9", PlanProcessingStatusConstants.PROCESSING);
+                "3450034c-1ba5-556d-8b16-71266397b8b9", PlanProcessingStatusConstants.PROCESSING,
+                "missing location");
 
         PlanProcessingStatus updatedStatus = planProcessingStatusRepository.getByPrimaryKey(1l);
         assertEquals(PlanProcessingStatusConstants.PROCESSING, updatedStatus.getStatus().intValue());
         assertEquals(2l, updatedStatus.getPlanId().longValue());
         assertEquals(1l, updatedStatus.getTemplateId().longValue());
         assertEquals(2l, updatedStatus.getEventId().longValue());
+        assertEquals("missing location", updatedStatus.getErrorLog());
+    }
+
+    @Test
+    public void testUpdatePlanProcessingStatusWithErrorLog() {
+        PlanProcessingStatus status = planProcessingStatusRepository.getByPrimaryKey(1l);
+        assertEquals(PlanProcessingStatusConstants.INITIAL, status.getStatus().intValue());
+        assertEquals(1l, status.getPlanId().longValue());
+        assertEquals(1l, status.getTemplateId().longValue());
+        assertEquals(1l, status.getEventId().longValue());
+        assertNull(status.getErrorLog());
+
+        planProcessingStatusRepository.updatePlanProcessingStatus(status, null,null,
+        PlanProcessingStatusConstants.FAILED, "Missing jurisdiction");
+
+        PlanProcessingStatus updatedStatus = planProcessingStatusRepository.getByPrimaryKey(1l);
+        assertEquals(PlanProcessingStatusConstants.FAILED, updatedStatus.getStatus().intValue());
+        assertEquals(1l, updatedStatus.getPlanId().longValue());
+        assertEquals(1l, updatedStatus.getTemplateId().longValue());
+        assertEquals(1l, updatedStatus.getEventId().longValue());
+        assertEquals("Missing jurisdiction", updatedStatus.getErrorLog());
     }
 
     @Test

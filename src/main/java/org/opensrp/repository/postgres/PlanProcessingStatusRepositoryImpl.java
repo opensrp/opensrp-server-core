@@ -126,7 +126,8 @@ public class PlanProcessingStatusRepositoryImpl extends  BaseRepositoryImpl<Plan
     }
 
     @Override
-    public void updatePlanProcessingStatus(PlanProcessingStatus planProcessingStatus, String eventIdentifier, String planIdentifier, int status) {
+    public void updatePlanProcessingStatus(PlanProcessingStatus planProcessingStatus, String eventIdentifier,
+                                           String planIdentifier, int status, String errorLog) {
 
         planProcessingStatus.setStatus(status);
         planProcessingStatus.setDateEdited(new Date());
@@ -137,6 +138,9 @@ public class PlanProcessingStatusRepositoryImpl extends  BaseRepositoryImpl<Plan
         if (StringUtils.isNotBlank(planIdentifier)){
             Long planId = planRepository.retrievePrimaryKey(planIdentifier);
             planProcessingStatus.setPlanId(planId);
+        }
+        if (StringUtils.isNotBlank(errorLog)){
+            planProcessingStatus.setErrorLog(errorLog);
         }
         update(planProcessingStatus);
     }

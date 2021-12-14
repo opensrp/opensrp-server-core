@@ -47,8 +47,10 @@ public class PlanProcessingStatusService {
     }
 
 
-    public void updatePlanProcessingStatus(PlanProcessingStatus planProcessingStatus, String eventIdentifier, String planIdentifier, int status) {
-        getPlanProcessingStatusRepository().updatePlanProcessingStatus(planProcessingStatus, eventIdentifier, planIdentifier, status);
+    public void updatePlanProcessingStatus(PlanProcessingStatus planProcessingStatus, String eventIdentifier,
+                                           String planIdentifier, int status, String errorLog) {
+        getPlanProcessingStatusRepository().updatePlanProcessingStatus(planProcessingStatus, eventIdentifier,
+                planIdentifier, status, errorLog);
     }
 
 }
