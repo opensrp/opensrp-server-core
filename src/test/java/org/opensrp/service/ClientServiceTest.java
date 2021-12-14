@@ -254,8 +254,15 @@ public class ClientServiceTest extends BaseRepositoryTest {
 	@Test
 	public void testFindAllByAttributes() {
 		List<String> attributes = asList("Dar Naim", "Happy Kids Clinic");
-		List<Client> clients = clientService.findAllByAttributes("Home_Facility",attributes);
+		List<Client> clients = clientService.findAllByAttributes("Home_Facility", attributes);
 		assertNotNull(clients);
 		assertEquals(9, clients.size());
+	}
+
+	@Test
+	public void testFindAllByMatchingName() {
+		List<Client> clients = clientService.findAllByMatchingName("Child");
+		assertNotNull(clients);
+		assertEquals(6, clients.size());
 	}
 }
