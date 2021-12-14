@@ -54,6 +54,10 @@ public class ClientService {
 		return allClients.findAllByIdentifier(identifierType, identifier);
 	}
 
+	public List<Client> findAllByIdentifierOutOfCatchment(String identifierType, String identifier) {
+		return allClients.findAllByIdentifier(identifierType, identifier);
+	}
+
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByRelationshipIdAndDateCreated(String relationalId, String dateFrom, String dateTo) {
@@ -75,6 +79,10 @@ public class ClientService {
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllByAttribute(String attributeType, String attribute) {
+		return allClients.findAllByAttribute(attributeType, attribute);
+	}
+
+	public List<Client> findAllByAttributeOutOfCatchment(String attributeType, String attribute) {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
 
@@ -257,14 +265,21 @@ public class ClientService {
 		return allClients.findByFieldValue(field, ids);
 	}
 
+	@PreAuthorize("hasRole('CLIENT_VIEW') or hasRole('CLIENT_OUT_OF_CATCHMENT_VIEW')")
+	public List<Client> findByFieldValueOutOfCatchment(String field, List<String> ids) {
+		return allClients.findByFieldValue(field, ids);
+	}
+
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
 	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByFieldValue(String id) {
 		return allClients.findByRelationShip(id);
 	}
 
-	@PreAuthorize("(hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE'))) and"
-			+ " (hasPermission(#client,'Client','CLIENT_CREATE') or hasPermission(#client,'Client','CLIENT_UPDATE'))")
+	@PreAuthorize("((hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE'))) and"
+			+ " (hasPermission(#client,'Client','CLIENT_CREATE') or hasPermission(#client,'Client','CLIENT_UPDATE')))"
+			+ " or ((hasRole('CLIENT_CREATE') or (hasRole('CLIENT_UPDATE')) or"
+			+ " hasRole('CLIENT_OUT_OF_CATCHMENT_CREATE') or hasRole('CLIENT_OUT_OF_CATCHMENT_UPDATE')))")
 	public Client addorUpdate(Client client) {
 		if (client.getBaseEntityId() == null) {
 			throw new RuntimeException("No baseEntityId");
@@ -276,7 +291,6 @@ public class ClientService {
 			client.setDateEdited(DateTime.now());
 			client.addIdentifier("OPENMRS_UUID", c.getIdentifier("OPENMRS_UUID"));
 			allClients.update(client);
-			
 		} else {
 			client.setDateCreated(DateTime.now());
 			allClients.add(client);
