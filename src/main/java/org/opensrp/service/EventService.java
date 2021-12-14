@@ -224,7 +224,7 @@ public class EventService {
 		return event;
 	}
 
-	public synchronized Event addEventUnfiltered(Event event, String username) {
+	public synchronized Event addEventOutOfCatchment(Event event, String username) {
 		Event e = find(event);
 		if (e != null) {
 			throw new IllegalArgumentException(
@@ -267,19 +267,15 @@ public class EventService {
 			}
 
 			List<org.smartregister.domain.Client> clients = identifier.startsWith(CARD_ID_PREFIX)
-							? clientService.findAllByAttributeUnfiltered(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
-							: getClientByIdentifierUnfiltered(identifier);
-
-			logger.debug("Out of Area clients: " + clients.size());
+							? clientService.findAllByAttributeOutOfCatchment(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
+							: getClientByIdentifierOutOfCatchment(identifier);
 
 			if (clients == null || clients.isEmpty()) {
 				return event;
 			}
 
 			for (org.smartregister.domain.Client client : clients) {
-				logger.debug("Out of Area client: " + (new Gson().toJson(client)));
-
-				List<Event> existingEvents = findByBaseEntityAndTypeUnfiltered(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);
+				List<Event> existingEvents = findByBaseEntityAndTypeOutOfCatchment(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);
 
 				if (existingEvents == null || existingEvents.isEmpty()) {
 					return event;
@@ -313,7 +309,7 @@ public class EventService {
 
 					if (actualEventType != null) {
 						Event newEvent = getNewOutOfAreaServiceEvent(event, birthRegEvent, actualEventType);
-						addEventUnfiltered(newEvent, birthRegEvent.getProviderId());
+						addEventOutOfCatchment(newEvent, birthRegEvent.getProviderId());
 					}
 				} else if (eventTypeLowercase.contains(RECURRING_SERVICE.toLowerCase()) ||
 						eventTypeLowercase.contains(RECURRING_SERVICE_UNDERSCORED)) {
@@ -503,10 +499,10 @@ public class EventService {
 		return clients;
 	}
 
-	private List<org.smartregister.domain.Client> getClientByIdentifierUnfiltered(String identifier) {
-		List<org.smartregister.domain.Client> clients = clientService.findAllByIdentifierUnfiltered(Client.ZEIR_ID, identifier);
+	private List<org.smartregister.domain.Client> getClientByIdentifierOutOfCatchment(String identifier) {
+		List<org.smartregister.domain.Client> clients = clientService.findAllByIdentifierOutOfCatchment(Client.ZEIR_ID, identifier);
 		if (clients != null && clients.isEmpty()) {
-			clients = clientService.findAllByIdentifierUnfiltered(Client.ZEIR_ID.toUpperCase(), identifier);
+			clients = clientService.findAllByIdentifierOutOfCatchment(Client.ZEIR_ID.toUpperCase(), identifier);
 		}
 		return clients;
 	}
@@ -587,7 +583,7 @@ public class EventService {
 		return allEvents.findByServerVersion(serverVersion);
 	}
 
-	public List<Event> findByServerVersionUnfiltered(long serverVersion) {
+	public List<Event> findByServerVersionOutOfCatchment(long serverVersion) {
 		return allEvents.findByServerVersion(serverVersion);
 	}
 
@@ -615,7 +611,7 @@ public class EventService {
 		return allEvents.findEvents(eventSearchBean, sortBy, sortOrder, limit);
 	}
 
-	@PreAuthorize("hasRole('EVENT_OUT_OF_CATCHMENT_VIEW')")
+	@PreAuthorize("hasRole('EVENT_VIEW') or hasRole('EVENT_OUT_OF_CATCHMENT_VIEW')")
 	public List<Event> findOutOfCatchmentEvents(EventSearchBean eventSearchBean, String sortBy, String sortOrder, int limit) {
 		return allEvents.findEvents(eventSearchBean, sortBy, sortOrder, limit);
 	}
@@ -637,12 +633,10 @@ public class EventService {
 	@PostFilter("hasPermission(filterObject, 'EVENT_VIEW')")
 	public List<Event> findByBaseEntityAndType(String baseEntityId, String eventType) {
 		return allEvents.findByBaseEntityAndType(baseEntityId, eventType);
-
 	}
 
-	public List<Event> findByBaseEntityAndTypeUnfiltered(String baseEntityId, String eventType) {
+	public List<Event> findByBaseEntityAndTypeOutOfCatchment(String baseEntityId, String eventType) {
 		return allEvents.findByBaseEntityAndType(baseEntityId, eventType);
-
 	}
 
 	@PreAuthorize("hasRole('EVENT_VIEW')")

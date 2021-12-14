@@ -54,7 +54,7 @@ public class ClientService {
 		return allClients.findAllByIdentifier(identifierType, identifier);
 	}
 
-	public List<Client> findAllByIdentifierUnfiltered(String identifierType, String identifier) {
+	public List<Client> findAllByIdentifierOutOfCatchment(String identifierType, String identifier) {
 		return allClients.findAllByIdentifier(identifierType, identifier);
 	}
 
@@ -82,7 +82,7 @@ public class ClientService {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
 
-	public List<Client> findAllByAttributeUnfiltered(String attributeType, String attribute) {
+	public List<Client> findAllByAttributeOutOfCatchment(String attributeType, String attribute) {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
 
@@ -265,8 +265,8 @@ public class ClientService {
 		return allClients.findByFieldValue(field, ids);
 	}
 
-	@PreAuthorize("hasRole('CLIENT_OUT_OF_CATCHMENT_VIEW')")
-	public List<Client> findOutOfCatchmentByFieldValue(String field, List<String> ids) {
+	@PreAuthorize("hasRole('CLIENT_VIEW') or hasRole('CLIENT_OUT_OF_CATCHMENT_VIEW')")
+	public List<Client> findByFieldValueOutOfCatchment(String field, List<String> ids) {
 		return allClients.findByFieldValue(field, ids);
 	}
 
