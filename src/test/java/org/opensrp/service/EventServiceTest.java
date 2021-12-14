@@ -593,4 +593,11 @@ public class EventServiceTest extends BaseRepositoryTest {
 		exportFlagProblemEventImageMetadata.setServicePointName("EPP Ambodisatrana 2");
 		return exportFlagProblemEventImageMetadata;
 	}
+
+	@Test
+	public void testFindByServerVersion() {
+		List<Event> events = eventService.findByServerVersion(0L);
+
+		assertEquals(22, events.size());
+	}
 }
