@@ -11,7 +11,7 @@
     <result column="identifier" jdbcType="VARCHAR" property="identifier" />
     <result column="active" jdbcType="BIT" property="active" />
     <result column="name" jdbcType="VARCHAR" property="name" />
-    <result column="type" jdbcType="OTHER" property="type" />
+    <result column="type" jdbcType="OTHER" property="type" typeHandler="org.opensrp.repository.postgres.handler.CodeSystemTypeHandler" />
     <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted" />
     <result column="parent_id" jdbcType="BIGINT" property="parentId" />
     <result column="date_created" jdbcType="TIMESTAMP" property="dateCreated" />
@@ -47,6 +47,25 @@
                 </when>
               </choose>
             </foreach>
+            <foreach collection="criteria.typeCriteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler} and #{criterion.secondValue,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
           </trim>
         </if>
       </foreach>
@@ -77,6 +96,25 @@
                   and ${criterion.condition}
                   <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
                     #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.typeCriteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler} and #{criterion.secondValue,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
                   </foreach>
                 </when>
               </choose>
@@ -156,8 +194,8 @@
       parent_id, date_created, date_edited, 
       server_version)
     values (#{id,jdbcType=BIGINT}, #{identifier,jdbcType=VARCHAR}, #{active,jdbcType=BIT}, 
-      #{name,jdbcType=VARCHAR}, #{type,jdbcType=OTHER}, #{dateDeleted,jdbcType=TIMESTAMP}, 
-      #{parentId,jdbcType=BIGINT}, #{dateCreated,jdbcType=TIMESTAMP}, #{dateEdited,jdbcType=TIMESTAMP}, 
+      #{name,jdbcType=VARCHAR}, #{type,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}, #{dateDeleted,jdbcType=TIMESTAMP},
+      #{parentId,jdbcType=BIGINT}, #{dateCreated,jdbcType=TIMESTAMP}, #{dateEdited,jdbcType=TIMESTAMP},
       #{serverVersion,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.Organization">
@@ -213,7 +251,7 @@
         #{name,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
-        #{type,jdbcType=OTHER},
+        #{type,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler},
       </if>
       <if test="dateDeleted != null">
         #{dateDeleted,jdbcType=TIMESTAMP},
@@ -264,7 +302,7 @@
         name = #{record.name,jdbcType=VARCHAR},
       </if>
       <if test="record.type != null">
-        type = #{record.type,jdbcType=OTHER},
+        type = #{record.type,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler},
       </if>
       <if test="record.dateDeleted != null">
         date_deleted = #{record.dateDeleted,jdbcType=TIMESTAMP},
@@ -297,7 +335,7 @@
       identifier = #{record.identifier,jdbcType=VARCHAR},
       active = #{record.active,jdbcType=BIT},
       name = #{record.name,jdbcType=VARCHAR},
-      type = #{record.type,jdbcType=OTHER},
+      type = #{record.type,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler},
       date_deleted = #{record.dateDeleted,jdbcType=TIMESTAMP},
       parent_id = #{record.parentId,jdbcType=BIGINT},
       date_created = #{record.dateCreated,jdbcType=TIMESTAMP},
@@ -325,7 +363,7 @@
         name = #{name,jdbcType=VARCHAR},
       </if>
       <if test="type != null">
-        type = #{type,jdbcType=OTHER},
+        type = #{type,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler},
       </if>
       <if test="dateDeleted != null">
         date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
@@ -355,7 +393,7 @@
     set identifier = #{identifier,jdbcType=VARCHAR},
       active = #{active,jdbcType=BIT},
       name = #{name,jdbcType=VARCHAR},
-      type = #{type,jdbcType=OTHER},
+      type = #{type,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler},
       date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
       parent_id = #{parentId,jdbcType=BIGINT},
       date_created = #{dateCreated,jdbcType=TIMESTAMP},
