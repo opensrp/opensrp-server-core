@@ -71,8 +71,6 @@ public class EventsListener {
 			sort(events, serverVersionComparator());
 			
 			for (Event event : events) {
-				logger.info("Processing event: " + event.getFormSubmissionId() + " - " + (new Gson().toJson(event)));
-
 				try {
 					event = eventService.processOutOfArea(event);
 					eventsRouter.route(event);
