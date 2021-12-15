@@ -66,5 +66,20 @@
         </if>
         LIMIT #{limit} OFFSET #{offset}
     </select>
-
+    <update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Practitioner">
+        update team.practitioner
+        set identifier = #{identifier,jdbcType=VARCHAR},
+        active = #{active,jdbcType=BIT},
+        name = #{name,jdbcType=VARCHAR},
+        user_id = #{userId,jdbcType=VARCHAR},
+        username = #{username,jdbcType=VARCHAR},
+        date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
+        date_created = #{dateCreated,jdbcType=TIMESTAMP},
+        date_edited = #{dateEdited,jdbcType=TIMESTAMP},
+        server_version = nextVal('team.practitioner_server_version_seq'),
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="selectServerVersionByPrimaryKey" parameterType="java.lang.Long" resultType="long">
+        select server_version from team.practitioner where id = #{id,jdbcType=BIGINT}
+    </select>
 </mapper>
