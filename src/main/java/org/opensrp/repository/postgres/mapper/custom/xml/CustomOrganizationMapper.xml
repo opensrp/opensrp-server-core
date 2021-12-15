@@ -149,4 +149,20 @@
         from team.organization
         where id IN <foreach item="organizationId" collection="organizationIds" open="(" separator="," close=")">#{organizationId}</foreach>
     </select>
+    <update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Organization">
+        update team.organization
+        set identifier = #{identifier,jdbcType=VARCHAR},
+        active = #{active,jdbcType=BIT},
+        name = #{name,jdbcType=VARCHAR},
+        type = #{type,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler},
+        date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
+        parent_id = #{parentId,jdbcType=BIGINT},
+        date_created = #{dateCreated,jdbcType=TIMESTAMP},
+        date_edited = #{dateEdited,jdbcType=TIMESTAMP},
+        server_version = nextVal('team.organization_server_version_seq'),
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="selectServerVersionByPrimaryKey" parameterType="java.lang.Long" resultType="long">
+        select server_version from team.organization where id = #{id,jdbcType=BIGINT}
+    </select>
 </mapper>
