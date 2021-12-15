@@ -3,6 +3,8 @@
  */
 package org.opensrp.domain;
 
+import org.joda.time.DateTime;
+
 import java.io.Serializable;
 import java.util.Set;
 
@@ -26,6 +28,12 @@ public class Organization implements Serializable {
 	public CodeSystem type;
 
 	private Set<AssignedLocations> assignedLocations;
+
+	private DateTime dateCreated;
+
+	private DateTime dateEdited;
+
+	private long serverVersion;
 
 	private Integer memberCount;
 
@@ -93,4 +101,27 @@ public class Organization implements Serializable {
 		this.memberCount = memberCount;
 	}
 
+	public DateTime getDateCreated() {
+		return dateCreated;
+	}
+
+	public void setDateCreated(DateTime dateCreated) {
+		this.dateCreated = dateCreated;
+	}
+
+	public DateTime getDateEdited() {
+		return dateEdited;
+	}
+
+	public void setDateEdited(DateTime dateEdited) {
+		this.dateEdited = dateEdited;
+	}
+
+	public long getServerVersion() {
+		return serverVersion;
+	}
+
+	public void setServerVersion(long serverVersion) {
+		this.serverVersion = serverVersion;
+	}
 }
