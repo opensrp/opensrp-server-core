@@ -701,4 +701,8 @@ public class EventService {
 		return false;
 	}
 
+	public Event findByDbId(Long id, boolean includeArchived) {
+		return allEvents.findByDbId(id, includeArchived);
+	}
+
 }

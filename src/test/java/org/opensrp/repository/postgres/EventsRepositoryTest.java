@@ -776,4 +776,11 @@ public class EventsRepositoryTest extends BaseRepositoryTest {
 		assertTrue(eventsRepository.findEventsByJurisdictionIdAndPlan("test-location-id1","plan-id-12345").isEmpty());
 	}
 
+	@Test
+	public void testFindByDbId() {
+		Event event = eventsRepository.findByDbId(25l, false);
+		assertNotNull(event);
+		assertEquals("d945f800-eeca-415e-b737-e5611e19f706", event.getId());
+	}
+
 }

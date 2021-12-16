@@ -408,7 +408,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             if (toDate == null && fromDate == null){
                 Calendar calendar = Calendar.getInstance();
                 Date localToDate = calendar.getTime();
-                calendar.add(Calendar.DATE, -1);
+                calendar.add(Calendar.DATE, -7);
                 Date localFromDate = calendar.getTime();
                 criteria.andDateEditedBetween( localFromDate, localToDate);
             } else if (fromDate == null) {
