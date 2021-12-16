@@ -66,6 +66,69 @@
         </if>
         LIMIT #{limit} OFFSET #{offset}
     </select>
+    <insert id="insertSelectiveAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Practitioner">
+        insert into team.practitioner
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="identifier != null">
+                identifier,
+            </if>
+            <if test="active != null">
+                active,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="username != null">
+                username,
+            </if>
+            <if test="dateDeleted != null">
+                date_deleted,
+            </if>
+            <if test="dateCreated != null">
+                date_created,
+            </if>
+            <if test="dateEdited != null">
+                date_edited,
+            </if>
+            server_version
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="identifier != null">
+                #{identifier,jdbcType=VARCHAR},
+            </if>
+            <if test="active != null">
+                #{active,jdbcType=BIT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="dateDeleted != null">
+                #{dateDeleted,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dateCreated != null">
+                #{dateCreated,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dateEdited != null">
+                #{dateEdited,jdbcType=TIMESTAMP},
+            </if>
+            nextVal('team.practitioner_server_version_seq')
+        </trim>
+    </insert>
     <update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Practitioner">
         update team.practitioner
         set identifier = #{identifier,jdbcType=VARCHAR},
@@ -76,7 +139,7 @@
         date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
         date_created = #{dateCreated,jdbcType=TIMESTAMP},
         date_edited = #{dateEdited,jdbcType=TIMESTAMP},
-        server_version = nextVal('team.practitioner_server_version_seq'),
+        server_version = nextVal('team.practitioner_server_version_seq')
         where id = #{id,jdbcType=BIGINT}
     </update>
     <select id="selectServerVersionByPrimaryKey" parameterType="java.lang.Long" resultType="long">
