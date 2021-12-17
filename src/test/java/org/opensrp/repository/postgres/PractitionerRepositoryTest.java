@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.joda.time.DateTime;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.smartregister.domain.Practitioner;
@@ -48,6 +49,9 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals("Practitioner",practitioners.get(0).getName());
         assertEquals("Practioner1",practitioners.get(0).getUsername());
         assertEquals("user1",practitioners.get(0).getUserId());
+        assertNotNull(practitioners.get(0).getDateEdited());
+        assertNotNull(practitioners.get(0).getDateCreated());
+        assertTrue(practitioners.get(0).getServerVersion() > 0);
     }
 
     @Test
@@ -127,15 +131,17 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals(true, addedPractitioner.getActive());
         assertEquals("Practitioner", addedPractitioner.getName());
 
-        practitioner1.setActive(false);
-        practitioner1.setName("First Practitioner");
-        practitionerRepository.update(practitioner1);
+        addedPractitioner.setActive(false);
+        addedPractitioner.setName("First Practitioner");
+        practitionerRepository.update(addedPractitioner);
 
-        Practitioner updatedPractitioner = practitionerRepository.get(practitioner1.getIdentifier());
-        assertNotNull(addedPractitioner);
+        Practitioner updatedPractitioner = practitionerRepository.get(addedPractitioner.getIdentifier());
+        assertNotNull(updatedPractitioner);
         assertEquals("practitoner-1-identifier", updatedPractitioner.getIdentifier());
         assertEquals(false, updatedPractitioner.getActive());
         assertEquals("First Practitioner", updatedPractitioner.getName());
+        assertEquals(addedPractitioner.getDateCreated(), updatedPractitioner.getDateCreated());
+        assertEquals(addedPractitioner.getServerVersion() + 1, updatedPractitioner.getServerVersion());
     }
 
     @Test
@@ -287,8 +293,6 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         Practitioner actualPractitioner = practitionerRepository.getPractitionerByUserId(expectedPractitioner.getUserId());
         assertNull(actualPractitioner);
     }
-    
-    
 
     @Test
     public void testGetPractitionerByUsername() {

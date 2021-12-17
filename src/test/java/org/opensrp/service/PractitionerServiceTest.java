@@ -52,7 +52,7 @@ public class PractitionerServiceTest {
     }
 
     @Test
-    public void testgetAllPractitioners() {
+    public void testGetAllPractitioners() {
         List<Practitioner> expectedPractitioners = new ArrayList<>();
         expectedPractitioners.add(initTestPractitioner());
         when(practitionerRepository.getAllPractitioners(any(PractitionerSearchBean.class))).thenReturn(expectedPractitioners);
@@ -87,7 +87,7 @@ public class PractitionerServiceTest {
     }
 
     @Test
-    public void testAddOrUpdateShouldCallRepostoryAddMethod() {
+    public void testAddOrUpdateShouldCallRepositoryAddMethod() {
         when(practitionerRepository.get(anyString())).thenReturn(null);
         Practitioner practitioner = initTestPractitioner();
         practitionerService.addOrUpdatePractitioner(practitioner);
@@ -95,7 +95,7 @@ public class PractitionerServiceTest {
     }
 
     @Test
-    public void testAddOrUpdateShouldCallRepostoryUpdateMethod() {
+    public void testAddOrUpdateShouldCallRepositoryUpdateMethod() {
         when(practitionerRepository.get(anyString())).thenReturn(initTestPractitioner());
         Practitioner practitioner = initTestPractitioner();
         practitionerService.addOrUpdatePractitioner(practitioner);
@@ -112,7 +112,7 @@ public class PractitionerServiceTest {
 
 
     @Test
-    public void testDeleteShouldCallRepostorySafeRemoveMethod() {
+    public void testDeleteShouldCallRepositorySafeRemoveMethod() {
         when(practitionerRepository.get(anyString())).thenReturn(initTestPractitioner());
         Practitioner practitioner = initTestPractitioner();
         practitionerService.deletePractitioner(practitioner);
@@ -158,7 +158,7 @@ public class PractitionerServiceTest {
     }
 
 	@Test
-	public void testGetPractionerByUsername() {
+	public void testGetPractitionerByUsername() {
 		String username = "janedoe";
 		Practitioner practitioner = initTestPractitioner();
 		when(practitionerRepository.getPractitionerByUsername(username)).thenReturn(practitioner);
