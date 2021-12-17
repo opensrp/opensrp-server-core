@@ -110,6 +110,9 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Ateam", savedOrganization.getName());
 		assertNull(savedOrganization.getType());
 		assertEquals(1, savedOrganization.getPartOf(), 0);
+		assertNotNull(savedOrganization.getDateEdited());
+		assertNotNull(savedOrganization.getDateCreated());
+		assertEquals(3, savedOrganization.getServerVersion());
 		
 	}
 	
@@ -130,6 +133,9 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("Ateam", updatedOrganization.getName());
 		assertNull(updatedOrganization.getType());
 		assertEquals(1l, updatedOrganization.getPartOf(), 0);
+		assertNotNull(updatedOrganization.getDateEdited());
+		assertNotNull(updatedOrganization.getDateCreated());
+		assertEquals(3, updatedOrganization.getServerVersion());
 		
 	}
 	
