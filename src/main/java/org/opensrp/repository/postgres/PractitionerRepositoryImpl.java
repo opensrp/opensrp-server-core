@@ -242,7 +242,8 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
             practitioner.setDateCreated(new DateTime(pgPractitioner.getDateCreated()));
         if (pgPractitioner.getDateEdited() != null)
             practitioner.setDateEdited(new DateTime(pgPractitioner.getDateEdited()));
-        practitioner.setServerVersion(pgPractitioner.getServerVersion());
+        if (pgPractitioner.getServerVersion() != null)
+            practitioner.setServerVersion(pgPractitioner.getServerVersion());
         return practitioner;
     }
 
