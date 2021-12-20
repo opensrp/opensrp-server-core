@@ -728,7 +728,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 			return null;
 		}
 		EventMetadataExample example = new EventMetadataExample();
-		Criteria criteria = example.createCriteria().andIdEqualTo(id);
+		Criteria criteria = example.createCriteria().andEventIdEqualTo(id);
 		if (!includeArchived) {
 			criteria.andDateDeletedIsNull();
 		}
