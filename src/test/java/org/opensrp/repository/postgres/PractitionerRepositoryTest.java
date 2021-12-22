@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Set;
 
-import org.joda.time.DateTime;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.smartregister.domain.Practitioner;
