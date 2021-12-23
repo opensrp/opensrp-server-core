@@ -344,6 +344,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         PractitionerSearchBean practitionerSearchBean = PractitionerSearchBean.builder().
                 orderByType(BaseSearchBean.OrderByType.DESC).
                 orderByFieldName(BaseSearchBean.FieldName.id).build();
+        practitionerSearchBean.setServerVersion(1l);
         List<Practitioner> practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
         assertNotNull(practitioners);
         assertEquals(2,practitioners.size());
@@ -352,6 +353,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
 
         practitionerSearchBean = PractitionerSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).
                 orderByFieldName(BaseSearchBean.FieldName.id).build();
+        practitionerSearchBean.setServerVersion(1l);
         practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
         assertNotNull(practitioners);
         assertEquals(2,practitioners.size());
