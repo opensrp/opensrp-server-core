@@ -472,6 +472,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		OrganizationSearchBean organizationSearchBean = new OrganizationSearchBean();
 		organizationSearchBean.setOrderByType(OrderByType.ASC);
 		organizationSearchBean.setOrderByFieldName(FieldName.id);
+		organizationSearchBean.setServerVersion(1l);
 		assertEquals(3, organizationRepository.getAllOrganizations(organizationSearchBean).size());
 
 		Organization organization = new Organization();
