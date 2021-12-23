@@ -196,6 +196,9 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         if(practitionerSearchBean.getOrderByFieldName() != null && practitionerSearchBean.getOrderByType() != null) {
             practitionerExample.setOrderByClause(practitionerSearchBean.getOrderByFieldName() + " " + practitionerSearchBean.getOrderByType());
         }
+        if (practitionerSearchBean.getServerVersion() != null) {
+            practitionerExample.createCriteria().andServerVersionGreaterThanOrEqualTo(practitionerSearchBean.getServerVersion());
+        }
         List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
         return convert(pgPractitionerList);
     }
