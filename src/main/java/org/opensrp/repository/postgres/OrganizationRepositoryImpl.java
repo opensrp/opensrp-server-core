@@ -362,6 +362,9 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		if(organizationSearchBean.getOrderByFieldName() != null && organizationSearchBean.getOrderByType() != null) {
 			example.setOrderByClause(organizationSearchBean.getOrderByFieldName() + " " + organizationSearchBean.getOrderByType());
 		}
+		if (organizationSearchBean.getServerVersion() != null) {
+			example.createCriteria().andServerVersionGreaterThanOrEqualTo(organizationSearchBean.getServerVersion());
+		}
 		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectMany(example, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
 		return convert(organizations);
 	}
