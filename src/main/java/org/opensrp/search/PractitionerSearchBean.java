@@ -11,10 +11,6 @@ public class PractitionerSearchBean extends BaseSearchBean {
 
 	private Long serverVersion;
 
-	public PractitionerSearchBean() {
-		// Empty constructor
-	}
-
 	public Long getServerVersion() {
 		return serverVersion;
 	}
