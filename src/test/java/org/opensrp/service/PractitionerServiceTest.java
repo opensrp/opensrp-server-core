@@ -57,11 +57,11 @@ public class PractitionerServiceTest {
         expectedPractitioners.add(initTestPractitioner());
         when(practitionerRepository.getAllPractitioners(any(PractitionerSearchBean.class))).thenReturn(expectedPractitioners);
 
-        PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean();
-        List<Practitioner> actutalPractitioners = practitionerService.getAllPractitioners(practitionerSearchBean);
+        PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean(0L);
+        List<Practitioner> actualPractitioners = practitionerService.getAllPractitioners(practitionerSearchBean);
         verify(practitionerRepository).getAllPractitioners(practitionerSearchBean);
-        assertEquals(1, actutalPractitioners.size());
-        assertEquals("practitoner-1-identifier", actutalPractitioners.get(0).getIdentifier());
+        assertEquals(1, actualPractitioners.size());
+        assertEquals("practitoner-1-identifier", actualPractitioners.get(0).getIdentifier());
     }
 
     @Test
