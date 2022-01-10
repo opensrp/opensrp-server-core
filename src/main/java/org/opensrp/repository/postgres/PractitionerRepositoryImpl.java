@@ -205,7 +205,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 
 	@Override
 	public List<Practitioner> getAllPractitionersByIdentifiers(List<String> practitionerIdentifiers) {
-    	PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean();
+    	PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean(null);
 		Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean);
 		PractitionerExample practitionerExample = new PractitionerExample();
 		practitionerExample.createCriteria().andDateDeletedIsNull().andIdentifierIn(practitionerIdentifiers);
