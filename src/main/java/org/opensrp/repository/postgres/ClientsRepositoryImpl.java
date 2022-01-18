@@ -32,6 +32,7 @@ import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
 import org.smartregister.converters.ClientConverter;
 import org.smartregister.domain.Client;
+import org.smartregister.pathevaluator.dao.ClientProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -774,6 +775,15 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 			Date date = calendar.getTime();
 			criteria.andBirthDateLessThan(date);
 		}
+		return clientMetadataMapper.countMany(clientMetadataExample);
+	}
+
+	@Override
+	public Long countFamiliesByLocation(List<String> locationIds) {
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		Criteria criteria = clientMetadataExample.createCriteria();
+		criteria.andLocationIdIn(locationIds).andClientTypeEqualTo(ClientProvider.FAMILY);
+
 		return clientMetadataMapper.countMany(clientMetadataExample);
 	}
 
