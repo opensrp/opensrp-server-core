@@ -30,9 +30,9 @@ import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
+import org.opensrp.util.constants.EventConstants;
 import org.smartregister.converters.ClientConverter;
 import org.smartregister.domain.Client;
-import org.smartregister.pathevaluator.dao.ClientProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -782,7 +782,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	public Long countFamiliesByLocation(List<String> locationIds) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
 		Criteria criteria = clientMetadataExample.createCriteria();
-		criteria.andLocationIdIn(locationIds).andClientTypeEqualTo(ClientProvider.FAMILY);
+		criteria.andLocationIdIn(locationIds).andClientTypeEqualTo(EventConstants.CLIENT_TYPE_FAMILY);
 
 		return clientMetadataMapper.countMany(clientMetadataExample);
 	}
