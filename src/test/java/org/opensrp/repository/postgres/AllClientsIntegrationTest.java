@@ -13,10 +13,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.junit.Before;
@@ -45,7 +41,7 @@ public class AllClientsIntegrationTest extends BaseRepositoryTest{
 	
 	@Autowired
 	private ClientsRepository ac;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		tableNames=Collections.singletonList("core.client");
@@ -53,17 +49,6 @@ public class AllClientsIntegrationTest extends BaseRepositoryTest{
 		truncateTables();
 		System.out.println("Removed");
 		initMocks(this);
-		
-		FileAppender fa = new FileAppender();
-		fa.setName("FileLogger");
-		fa.setFile("d:\\opensrp-logger.log");
-		fa.setLayout(new PatternLayout("%d %-5p [%c{1}] %m%n"));
-		fa.setThreshold(Level.INFO);
-		fa.setAppend(true);
-		fa.activateOptions();
-		
-		// add appender to any Logger (here is root)
-		Logger.getRootLogger().addAppender(fa);
 	}
 	
 	private void addClients() {
@@ -129,18 +114,7 @@ public class AllClientsIntegrationTest extends BaseRepositoryTest{
 		for (int i = 0; i < 100; i++) {
 			addClient(i, false);
 		}
-		Logger.getLogger("FileLogger").info(
-		    "10K entries complete at " + new DateTime() + " in " + ((System.currentTimeMillis() - start) / 1000) + " sec");
-		
-		Logger.getLogger("FileLogger").info("Going for First search by Couch");
 		clientService.findAllByIdentifier("1234556" + "786");
-		Logger.getLogger("FileLogger").info("Completed First search by Couch");
-		
-		Logger.getLogger("FileLogger").info("Going for 2nd search by Couch");
-		clientService.findAllByIdentifier("1234556" + "786");
-		Logger.getLogger("FileLogger").info("Completed 2nd search by Couch");
-		
-		Logger.getLogger("FileLogger").info("Going for First search by Lucene");
 		ClientSearchBean clientSearchBean = new ClientSearchBean();
 		clientSearchBean.setNameLike("first");
 		clientSearchBean.setGender("MALE");
