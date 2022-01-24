@@ -781,8 +781,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 	@Override
 	public Long countFamiliesByLocation(List<String> locationIds) {
 		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
-		Criteria criteria = clientMetadataExample.createCriteria();
-		criteria.andLocationIdIn(locationIds).andClientTypeEqualTo(EventConstants.CLIENT_TYPE_FAMILY);
+		clientMetadataExample.createCriteria().andLocationIdIn(locationIds).andDateDeletedIsNull().andLastNameEqualTo(EventConstants.CLIENT_TYPE_FAMILY);
 
 		return clientMetadataMapper.countMany(clientMetadataExample);
 	}
