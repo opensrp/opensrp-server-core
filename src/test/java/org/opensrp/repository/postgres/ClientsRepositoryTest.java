@@ -838,4 +838,17 @@ public class ClientsRepositoryTest extends BaseRepositoryTest {
 		assertEquals(1l, actualClients.longValue());
 	}
 
+	@Test
+	public void testCountFamiliessByLocation() {
+		String locationId = "ba829d98-1a24-411b-8a92-ddf003d7c2df";
+		Client client = new Client("845a12de-82b0-11ec-a8a3-0242ac120002").withBirthdate(new DateTime("1990-03-31"), true)
+				.withGender("Male").withFirstName("Nelson").withLastName("Family").withLocationId(locationId);
+
+		client.withIdentifier("ZEIR_ID", "893864-8").withAttribute("Home_Facility", "Tunza");
+		clientsRepository.add(client);
+
+		Long actualClients = clientsRepository.countFamiliesByLocation(Collections.singletonList(locationId));
+		assertEquals(1l, actualClients.longValue());
+	}
+
 }
