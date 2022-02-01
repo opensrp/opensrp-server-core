@@ -427,10 +427,9 @@ public class PlanService {
 		Map<String, String> properties = new HashMap<>();
 		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
 		List<String> residentialStructureIds;
-		long otherPlanFamRegCount;
 		residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
-		otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY, residentialStructureIds,true);
-		long expectedTaskCount = residentialStructureIds.size() - otherPlanFamRegCount;
+		long registeredFamilyCount = clientService.countFamiliesByLocation(planJurisdictionIds);
+		long expectedTaskCount = residentialStructureIds.size() - registeredFamilyCount;
 		long missingTaskCount = expectedTaskCount - actualTaskCount;
 		boolean hasMissingTasks = missingTaskCount > 0;
 		if (hasMissingTasks) {
@@ -463,14 +462,7 @@ public class PlanService {
 
 	private boolean populateBedNetDistributionCounts(PlanDefinition plan, List<TaskCount> taskCountList, List<String> planJurisdictionIds, boolean planHasMissingTasks) {
 		long actualTaskCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION, null,false);
-		List<String> residentialStructureIds;
-		long otherPlanFamRegCount;
-		Map<String, String> properties = new HashMap<>();
-		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
-		residentialStructureIds = locationService.findStructureIdsByProperties(planJurisdictionIds, properties, Integer.MAX_VALUE);
-		otherPlanFamRegCount = taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION, residentialStructureIds, true);
-
-		long expectedTaskCount = residentialStructureIds.size() - otherPlanFamRegCount;
+		long expectedTaskCount = clientService.countFamiliesByLocation(planJurisdictionIds);
 		long missingTaskCount = expectedTaskCount - actualTaskCount;
 		boolean hasMissingTasks = missingTaskCount > 0;
 		if (hasMissingTasks) {

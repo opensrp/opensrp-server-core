@@ -444,7 +444,7 @@ public class PlanServiceTest {
 		plan.setActions(Collections.singletonList(action));
 		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
 		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY,
-				null, false)).thenReturn(2l);
+				null, false)).thenReturn(1l);
 		Map<String, String> properties = new HashMap<>();
 		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
 		List<String> structureIds = new ArrayList<>();
@@ -453,10 +453,8 @@ public class PlanServiceTest {
 		structureIds.add("structure-id-3");
 		when(locationService.findStructureIdsByProperties(Collections.singletonList("location-id1"),
 						properties, Integer.MAX_VALUE)).thenReturn(structureIds);
-		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY,
-				null,false)).thenReturn(1l);
-		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.RACD_REGISTER_FAMILY,
-				structureIds,true)).thenReturn(1l);
+
+		when(clientService.countFamiliesByLocation(Collections.singletonList("location-id1"))).thenReturn(1l);
 
 		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
 		assertNotNull(planTaskCount);
@@ -478,7 +476,7 @@ public class PlanServiceTest {
 		plan.setActions(Collections.singletonList(action));
 		plan.setJurisdiction(Collections.singletonList(new Jurisdiction("location-id1")));
 		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION,
-				null, false)).thenReturn(2l);
+				null, false)).thenReturn(1l);
 		Map<String, String> properties = new HashMap<>();
 		properties.put(PlanConstants.TYPE, PlanConstants.RESIDENTIAL_STRUCTURE);
 		List<String> structureIds = new ArrayList<>();
@@ -487,11 +485,7 @@ public class PlanServiceTest {
 		structureIds.add("structure-id-3");
 		when(locationService.findStructureIdsByProperties(Collections.singletonList("location-id1"),
 				properties, Integer.MAX_VALUE)).thenReturn(structureIds);
-		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION,
-				null,false)).thenReturn(1l);
-		when(taskService.countTasksByPlanAndCode(plan.getIdentifier(), PlanConstants.BEDNET_DISTRIBUTION,
-				structureIds,true)).thenReturn(1l);
-
+		when(clientService.countFamiliesByLocation(Collections.singletonList("location-id1"))).thenReturn(2l);
 		PlanTaskCount planTaskCount = planService.populatePlanTaskCount(plan);
 		assertNotNull(planTaskCount);
 		TaskCount actualTaskCount = planTaskCount.getTaskCounts().get(0);

@@ -27,4 +27,5 @@ public interface EventConstants {
 	String CASE_NUMBER = "case_number";
 	String FLAG = "flag";
 	String EVENT_TYPE_CASE_DETAILS = "Case_Details";
+	String CLIENT_TYPE_FAMILY = "Family";
 }
