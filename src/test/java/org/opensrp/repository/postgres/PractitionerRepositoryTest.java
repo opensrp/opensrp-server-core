@@ -80,7 +80,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         Practitioner practitioner2 = initTestPractitioner2();
         practitionerRepository.add(practitioner2);
 
-        Practitioner practitioner = practitionerRepository.get("practitoner-2-identifier");
+        Practitioner practitioner = practitionerRepository.get("practitioner-2-identifier");
         assertNotNull(practitioner);
         assertEquals("practitioner-2-identifier", practitioner.getIdentifier());
         assertEquals(false, practitioner.getActive());
@@ -320,10 +320,10 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
 
     private Practitioner initTestPractitioner2(){
         Practitioner practitioner = new Practitioner();
-        practitioner.setIdentifier("practitoner-2-identifier");
+        practitioner.setIdentifier("practitioner-2-identifier");
         practitioner.setActive(false);
         practitioner.setName("Second Practitioner");
-        practitioner.setUsername("Practioner2");
+        practitioner.setUsername("Practitioner2");
         practitioner.setUserId("user2");
         return practitioner;
     }
