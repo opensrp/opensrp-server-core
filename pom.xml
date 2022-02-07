@@ -521,6 +521,10 @@
 				<configuration>
 					<destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
 					<dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+					<excludes>
+						<exclude>org/opensrp/domain/postgres/*</exclude>
+						<exclude>org/opensrp/repository/postgres/mapper/*</exclude>
+					</excludes>
 				</configuration>
 				<executions>
 					<execution>
