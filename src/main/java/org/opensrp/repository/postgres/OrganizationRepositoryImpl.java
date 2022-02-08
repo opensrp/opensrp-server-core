@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.CodeSystem;
@@ -67,7 +68,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			return;
 		}
 		
-		organizationMapper.insertSelective(pgOrganization);
+		organizationMapper.insertSelectiveAndGenerateServerVersion(pgOrganization);
 	}
 	
 	@Override
@@ -86,7 +87,7 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 			return;
 		}
 		
-		organizationMapper.updateByPrimaryKeySelective(pgOrganization);
+		organizationMapper.updateByPrimaryKeySelectiveAndGenerateServerVersion(pgOrganization);
 		
 	}
 	
@@ -284,6 +285,13 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		organization.setName(pgEntity.getName());
 		organization.setId(pgEntity.getId());
 		organization.setPartOf(pgEntity.getParentId());
+		if (pgEntity.getDateCreated() != null)
+			organization.setDateCreated(new DateTime(pgEntity.getDateCreated()));
+		if (pgEntity.getDateEdited() != null)
+			organization.setDateEdited(new DateTime(pgEntity.getDateEdited()));
+		if (pgEntity.getServerVersion() != null)
+			organization.setServerVersion(pgEntity.getServerVersion());
+
 		if (pgEntity.getType() instanceof CodeSystem) {
 			organization.setType((CodeSystem) pgEntity.getType());
 		}
@@ -310,6 +318,12 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		pgOrganization.setName(organization.getName());
 		pgOrganization.setType(organization.getType());
 		pgOrganization.setParentId(organization.getPartOf());
+		if (organization.getDateCreated() != null)
+			pgOrganization.setDateCreated(organization.getDateCreated().toDate());
+		if (organization.getDateEdited() != null)
+			pgOrganization.setDateEdited(organization.getDateEdited().toDate());
+		pgOrganization.setServerVersion(organization.getServerVersion());
+
 		return pgOrganization;
 	}
 	
@@ -347,6 +361,9 @@ public class OrganizationRepositoryImpl extends BaseRepositoryImpl<Organization>
 		example.createCriteria().andDateDeletedIsNull();
 		if(organizationSearchBean.getOrderByFieldName() != null && organizationSearchBean.getOrderByType() != null) {
 			example.setOrderByClause(organizationSearchBean.getOrderByFieldName() + " " + organizationSearchBean.getOrderByType());
+		}
+		if (organizationSearchBean.getServerVersion() != null) {
+			example.createCriteria().andServerVersionGreaterThanOrEqualTo(organizationSearchBean.getServerVersion());
 		}
 		List<org.opensrp.domain.postgres.Organization> organizations = organizationMapper.selectMany(example, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
 		return convert(organizations);

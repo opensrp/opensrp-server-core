@@ -48,16 +48,16 @@ public class PractitionerServiceTest {
     }
 
     @Test
-    public void testgetAllPractitioners() {
+    public void testGetAllPractitioners() {
         List<Practitioner> expectedPractitioners = new ArrayList<>();
         expectedPractitioners.add(initTestPractitioner());
         when(practitionerRepository.getAllPractitioners(any(PractitionerSearchBean.class))).thenReturn(expectedPractitioners);
 
-        PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean();
-        List<Practitioner> actutalPractitioners = practitionerService.getAllPractitioners(practitionerSearchBean);
+        PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean(0L);
+        List<Practitioner> actualPractitioners = practitionerService.getAllPractitioners(practitionerSearchBean);
         verify(practitionerRepository).getAllPractitioners(practitionerSearchBean);
-        assertEquals(1, actutalPractitioners.size());
-        assertEquals("practitoner-1-identifier", actutalPractitioners.get(0).getIdentifier());
+        assertEquals(1, actualPractitioners.size());
+        assertEquals("practitoner-1-identifier", actualPractitioners.get(0).getIdentifier());
     }
 
     @Test
@@ -83,7 +83,7 @@ public class PractitionerServiceTest {
     }
 
     @Test
-    public void testAddOrUpdateShouldCallRepostoryAddMethod() {
+    public void testAddOrUpdateShouldCallRepositoryAddMethod() {
         when(practitionerRepository.get(anyString())).thenReturn(null);
         Practitioner practitioner = initTestPractitioner();
         practitionerService.addOrUpdatePractitioner(practitioner);
@@ -91,7 +91,7 @@ public class PractitionerServiceTest {
     }
 
     @Test
-    public void testAddOrUpdateShouldCallRepostoryUpdateMethod() {
+    public void testAddOrUpdateShouldCallRepositoryUpdateMethod() {
         when(practitionerRepository.get(anyString())).thenReturn(initTestPractitioner());
         Practitioner practitioner = initTestPractitioner();
         practitionerService.addOrUpdatePractitioner(practitioner);
@@ -108,7 +108,7 @@ public class PractitionerServiceTest {
 
 
     @Test
-    public void testDeleteShouldCallRepostorySafeRemoveMethod() {
+    public void testDeleteShouldCallRepositorySafeRemoveMethod() {
         when(practitionerRepository.get(anyString())).thenReturn(initTestPractitioner());
         Practitioner practitioner = initTestPractitioner();
         practitionerService.deletePractitioner(practitioner);
@@ -147,7 +147,7 @@ public class PractitionerServiceTest {
     }
 
 	@Test
-	public void testGetPractionerByUsername() {
+	public void testGetPractitionerByUsername() {
 		String username = "janedoe";
 		Practitioner practitioner = initTestPractitioner();
 		when(practitionerRepository.getPractitionerByUsername(username)).thenReturn(practitioner);

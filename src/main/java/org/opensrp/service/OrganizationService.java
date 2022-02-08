@@ -10,6 +10,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.joda.time.DateTime;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
 import org.opensrp.repository.LocationRepository;
@@ -119,8 +120,10 @@ public class OrganizationService {
 		validateIdentifier(organization);
 		Organization entity = organizationRepository.get(organization.getIdentifier());
 		if (entity != null) {
+			entity.setDateEdited(DateTime.now());
 			organizationRepository.update(entity);
 		} else {
+			organization.setDateCreated(DateTime.now());
 			organizationRepository.add(organization);
 		}
 		

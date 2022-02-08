@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.joda.time.DateTime;
 import org.opensrp.domain.Organization;
 import org.smartregister.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerRole;
@@ -73,8 +74,10 @@ public class PractitionerService {
 		}
 		
 		if (getPractitionerRepository().get(practitioner.getIdentifier()) != null) {
+			practitioner.setDateEdited(DateTime.now());
 			getPractitionerRepository().update(practitioner);
 		} else {
+			practitioner.setDateCreated(DateTime.now());
 			getPractitionerRepository().add(practitioner);
 		}
 		return practitioner;
