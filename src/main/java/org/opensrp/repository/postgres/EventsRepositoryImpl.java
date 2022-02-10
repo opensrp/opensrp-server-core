@@ -743,4 +743,9 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		}
 		return eventMetadataMapper.selectByDocumentId(identifier);
 	}
+
+	@Override
+	public List<String> fetchCaseTriggeredPlan(String caseNumber, String flag) {
+		return eventMapper.fetchCaseTriggeredPlan(caseNumber, flag);
+	}
 }
