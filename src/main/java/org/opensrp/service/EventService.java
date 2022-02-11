@@ -697,7 +697,8 @@ public class EventService {
 				&& StringUtils.isNotBlank(event.getDetails().get(CASE_NUMBER))) {
 			String caseNumber = event.getDetails().get(CASE_NUMBER);
 			String flag = event.getDetails().get(FLAG);
-			return allEvents.checkEventExists(caseNumber, flag);
+			List<String> existingPlaIdentifiers = allEvents.fetchCaseTriggeredPlan(caseNumber, flag);
+			return existingPlaIdentifiers != null && !existingPlaIdentifiers.isEmpty();
 		}
 		return false;
 	}
