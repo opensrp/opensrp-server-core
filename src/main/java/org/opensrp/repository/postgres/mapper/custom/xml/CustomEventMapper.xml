@@ -143,7 +143,7 @@
 	</select>
 
 
-	<select id="selectCaseTriggeredEventExists"  resultType="java.lang.String" >
+	<select id="fetchCaseTriggeredPlan"  resultType="java.lang.String" >
 		SELECT plan_identifier
 		FROM (
 		SELECT plan_identifier,
