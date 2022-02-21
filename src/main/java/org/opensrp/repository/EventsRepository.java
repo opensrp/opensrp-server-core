@@ -98,12 +98,12 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	List<org.opensrp.domain.postgres.Event> getEventData(String planIdentifier, String eventType, Date fromDate, Date toDate);
 
 	/**
-	 * Checks if events exists
+	 * Get Case Details event
 	 * @param caseNumber
 	 * @param flag
-	 * @return true if exists else false
+	 * @return case details event
 	 */
-	boolean checkEventExists(@NonNull String caseNumber, @NonNull String flag);
+	Event findCaseDetailsEvent(@NonNull String caseNumber, @NonNull String flag);
 
 	Event findByDbId(Long eventId, boolean includeArchived);
 
