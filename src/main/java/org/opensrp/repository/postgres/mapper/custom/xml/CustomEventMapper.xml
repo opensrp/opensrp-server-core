@@ -142,18 +142,4 @@
 				and json->'details'->>'flag'=#{flag,jdbcType=VARCHAR})
 	</select>
 
-
-	<select id="fetchCaseTriggeredPlan"  resultType="java.lang.String" >
-		SELECT plan_identifier
-		FROM (
-		SELECT plan_identifier,
-		(json_object_agg(context_obj->>'code', context_obj->>'valueCodableConcept') :: jsonb) as formattedJson
-		FROM (SELECT json_array_elements(to_json(plan.json->'useContext')) as context_obj,
-		plan.identifier as plan_identifier
-		FROM core.plan) useContexts
-		GROUP BY useContexts.plan_identifier) formatted_plans
-		INNER JOIN core.event event ON event.json->>'_id' = formatted_plans.formattedJson->>'opensrpEventId' AND  event.json->'details'->>'flag' = #{flag,jdbcType=VARCHAR}
-		WHERE formatted_plans.formattedJson->>'caseNum' = #{caseNumber,jdbcType=VARCHAR};
-	</select>
-
 </mapper>

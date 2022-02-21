@@ -37,6 +37,4 @@ public interface CustomEventMapper extends EventMapper {
 	boolean selectCaseTriggeredEventExists(@Param("caseNumber") String caseNumber,
 			@Param("flag") String flag);
 
-	List<String>  fetchCaseTriggeredPlan(@Param("caseNumber") String caseNumber,
-										   @Param("flag") String flag);
 }

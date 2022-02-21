@@ -109,6 +109,4 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 
 	org.opensrp.domain.postgres.Event getDbEventByIdentifier(String identifier);
 
-	List<String> fetchCaseTriggeredPlan(@NonNull String caseNumber, @NonNull String flag);
-	
 }
