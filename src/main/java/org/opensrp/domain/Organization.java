@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.opensrp.domain;
 
@@ -26,8 +26,9 @@ public class Organization implements Serializable {
 	public CodeSystem type;
 
 	private Set<AssignedLocations> assignedLocations;
-	
+
 	private Integer memberCount;
+
 	public Long getId() {
 		return id;
 	}
@@ -87,7 +88,7 @@ public class Organization implements Serializable {
 	public Integer getMemberCount() {
 		return memberCount;
 	}
-	
+
 	public void setMemberCount(Integer memberCount) {
 		this.memberCount = memberCount;
 	}
