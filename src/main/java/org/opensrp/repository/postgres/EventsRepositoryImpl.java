@@ -718,7 +718,31 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	}
 
 	@Override
-	public boolean checkEventExists(@NonNull String caseNumber, @NonNull String flag) {
-		return eventMapper.selectCaseTriggeredEventExists(caseNumber, flag);
+	public Event findCaseDetailsEvent(@NonNull String caseNumber, @NonNull String flag) {
+		List<Event> events = convert(eventMapper.selectCaseDetailsEvents(caseNumber, flag));
+		return events != null && !events.isEmpty() ? events.get(0) : null;
 	}
+
+	@Override
+	public Event findByDbId(Long eventId, boolean includeArchived) {
+		if (eventId == null) {
+			return null;
+		}
+		EventMetadataExample example = new EventMetadataExample();
+		Criteria criteria = example.createCriteria().andEventIdEqualTo(eventId);
+		if (!includeArchived) {
+			criteria.andDateDeletedIsNull();
+		}
+		List<Event> events = convert(eventMetadataMapper.selectMany(example));
+		return events != null && !events.isEmpty() ? events.get(0) : null;
+	}
+
+	@Override
+	public org.opensrp.domain.postgres.Event getDbEventByIdentifier(String identifier) {
+		if (StringUtils.isBlank(identifier)) {
+			return null;
+		}
+		return eventMetadataMapper.selectByDocumentId(identifier);
+	}
+
 }

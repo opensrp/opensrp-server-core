@@ -30,6 +30,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomClientMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomClientMetadataMapper;
 import org.opensrp.search.AddressSearchBean;
 import org.opensrp.search.ClientSearchBean;
+import org.opensrp.util.constants.EventConstants;
 import org.smartregister.converters.ClientConverter;
 import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -385,7 +386,7 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		
 		return convertedClients;
 	}
-	
+
 	private Client convert(org.opensrp.domain.postgres.Client client) {
 		if (client == null || client.getJson() == null || !(client.getJson() instanceof Client)) {
 			return null;
@@ -761,6 +762,28 @@ public class ClientsRepositoryImpl extends BaseRepositoryImpl<Client> implements
 		List<org.opensrp.domain.postgres.Client> clients = clientMetadataMapper.selectByLocationIdAndNotOfType(locationId,
 				clientType);
 		return convert(clients);
+	}
+
+	@Override
+	public Long countFamilyMembersByLocation(List<String> locationIds, Integer ageLowerBound) {
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		Criteria criteria = clientMetadataExample.createCriteria();
+		criteria.andLocationIdIn(locationIds).andClientTypeIsNull();
+		if (ageLowerBound != null) {
+			Calendar calendar = Calendar.getInstance();
+			calendar.add(Calendar.YEAR, -5);
+			Date date = calendar.getTime();
+			criteria.andBirthDateLessThan(date);
+		}
+		return clientMetadataMapper.countMany(clientMetadataExample);
+	}
+
+	@Override
+	public Long countFamiliesByLocation(List<String> locationIds) {
+		ClientMetadataExample clientMetadataExample = new ClientMetadataExample();
+		clientMetadataExample.createCriteria().andLocationIdIn(locationIds).andDateDeletedIsNull().andLastNameEqualTo(EventConstants.CLIENT_TYPE_FAMILY);
+
+		return clientMetadataMapper.countMany(clientMetadataExample);
 	}
 
 	private List<Patient> convertToFHIR(List<Client> clients) {

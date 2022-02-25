@@ -97,4 +97,15 @@ public interface TaskRepository extends BaseRepository<Task>, TaskDao {
 
 	int getTaskCount(TaskSearchBean searchBean);
 
-}
+	/**
+	 * This method returns a count of tasks with a particular code for a plan
+	 *
+	 * @param plan plan identifier for the task
+	 * @param code the code for the task
+	 * @param entityIds Ids for entities the tasks are generated against
+	 * @param excludePlanTasks whether to exclude tasks from the current plan in the count
+	 * @return count of tasks with a particular code for a plan
+	 */
+	Long countTasksByPlanAndCode(String plan, String code, List<String> entityIds, boolean excludePlanTasks);
+
+	}
