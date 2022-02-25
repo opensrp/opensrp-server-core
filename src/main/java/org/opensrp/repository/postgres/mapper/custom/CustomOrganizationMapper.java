@@ -37,4 +37,11 @@ public interface CustomOrganizationMapper extends OrganizationMapper {
 	List<Organization> selectOrganizationsEncompassLocations(@Param("identifier") String identifier, @Param("activeDate") Date activeDate);
 
 	List<Organization> selectByOrganizationIds(@Param("organizationIds") List<Long> organizationIds);
+
+	int insertSelectiveAndGenerateServerVersion(Organization organization);
+
+	int updateByPrimaryKeySelectiveAndGenerateServerVersion(Organization organization);
+
+	Long selectServerVersionByPrimaryKey(Long id);
+
 }
