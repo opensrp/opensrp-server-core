@@ -1,5 +1,8 @@
 package org.opensrp.util.constants;
 
+import java.util.Arrays;
+import java.util.List;
+
 public interface PlanConstants {
 
     String A1 = "A1";
@@ -38,4 +41,6 @@ public interface PlanConstants {
     String MOSQUITO_COLLECTION_POINT = "Mosquito Collection Point";
     String RESIDENTIAL_STRUCTURE = "Residential Structure";
     String TYPE = "type";
+
+    List<String> LOCAL_CASE_CLASSIFICATIONS = Arrays.asList("A", "F");
 }
