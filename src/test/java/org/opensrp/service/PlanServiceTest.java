@@ -618,7 +618,7 @@ public class PlanServiceTest {
 	public void testGetPlanTemplateWhenFocusStateIsB1AndCaseClassificationIsLocal() {
 		Event event = initTestCaseDetailsEvent();
 		event.getDetails().put(PlanConstants.FOCUS_STATUS, PlanConstants.B1);
-		event.getDetails().put(PlanConstants.CASE_CLASSIFICATION, PlanConstants.LOCAL);
+		event.getDetails().put(PlanConstants.CASE_CLASSIFICATION, "F");
 		planService = spy(planService);
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("bednet-distribution-plan");
@@ -639,7 +639,7 @@ public class PlanServiceTest {
 	public void testGetPlanTemplateWhenFocusStateIsB1AndCaseClassificationIsLocalAndIRSHistoricalEvent() {
 		Event event = initTestCaseDetailsEvent();
 		event.getDetails().put(PlanConstants.FOCUS_STATUS, PlanConstants.B1);
-		event.getDetails().put(PlanConstants.CASE_CLASSIFICATION, PlanConstants.LOCAL);
+		event.getDetails().put(PlanConstants.CASE_CLASSIFICATION, "A");
 		planService = spy(planService);
 		PlanDefinition plan = new PlanDefinition();
 		plan.setIdentifier("irs-plan");

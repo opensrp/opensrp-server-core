@@ -538,7 +538,7 @@ public class PlanService {
 			planTemplateId = PLAN_TEMPLATE_1;
 		} else if ((PlanConstants.B1.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS))
 				|| PlanConstants.B2.equalsIgnoreCase(event.getDetails().get(PlanConstants.FOCUS_STATUS)))
-				&& PlanConstants.LOCAL.equalsIgnoreCase(event.getDetails().get(PlanConstants.CASE_CLASSIFICATION))
+				&& PlanConstants.LOCAL_CASE_CLASSIFICATIONS.contains(event.getDetails().get(PlanConstants.CASE_CLASSIFICATION))
 		) {
 			if (PlanConstants.BEDNET_DISTRIBUTION.equalsIgnoreCase(historicalIntervention)) {
 				planTemplateId = PLAN_TEMPLATE_1;
