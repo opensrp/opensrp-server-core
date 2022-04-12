@@ -5,14 +5,14 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>3.1.0-SNAPSHOT</version>
+	<version>3.1.1-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>https://github.com/OpenSRP/opensrp-server-core</url>
 
 	<properties>
 		<main.basedir>${project.basedir}</main.basedir>
-		<spring.version>5.2.19.RELEASE</spring.version>
+		<spring.version>5.2.20.RELEASE</spring.version>
 		<spring.data.version>2.2.13.RELEASE</spring.data.version>
 		<spring.security.version>5.2.15.RELEASE</spring.security.version>
 		<mybatis.version>3.5.7</mybatis.version>
@@ -22,7 +22,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<nexus-staging-maven-plugin.version>1.5.1</nexus-staging-maven-plugin.version>
 
-		<opensrp.api.version>1.1.1-SNAPSHOT</opensrp.api.version>
+		<opensrp.api.version>1.1.2-SNAPSHOT</opensrp.api.version>
 		<opensrp.interface.version>2.0.1-SNAPSHOT</opensrp.interface.version>
 		<opensrp.plan.evaluator.version>1.6.7-SNAPSHOT</opensrp.plan.evaluator.version>
 		<jackson.version>2.12.6</jackson.version>
