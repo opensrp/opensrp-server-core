@@ -537,7 +537,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		    identifiers, 0, limit);
 		return convert(locations);
 	}
-	
+
+	@Override
+	public long getStructureNextServerVersion() {
+		return 0;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
