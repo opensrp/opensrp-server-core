@@ -37,13 +37,16 @@ public class ActionTemplate  implements Serializable {
         this.type = ActionTemplate.ActionType.CREATE;
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
     public static class SubjectConcept implements Serializable {
         private String text;
 
+        public String getText() {
+            return text;
+        }
 
+        public void setText(String text) {
+            this.text = text;
+        }
     }
 
     public static enum ActionType {

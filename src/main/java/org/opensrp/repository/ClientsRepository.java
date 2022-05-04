@@ -127,5 +127,7 @@ public interface ClientsRepository extends BaseRepository<Client>, ClientDao {
 	List<Client> convert(List<org.opensrp.domain.postgres.Client> clients);
 
 	Long countFamilyMembersByLocation(List<String> locationIds, Integer ageLowerBound);
+
+	Long countFamiliesByLocation(List<String> locationIds);
 	
 }

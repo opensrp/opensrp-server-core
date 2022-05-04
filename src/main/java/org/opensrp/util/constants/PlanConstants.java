@@ -1,5 +1,8 @@
 package org.opensrp.util.constants;
 
+import java.util.Arrays;
+import java.util.List;
+
 public interface PlanConstants {
 
     String A1 = "A1";
@@ -10,6 +13,7 @@ public interface PlanConstants {
     String LOCAL = "local";
     String FOCUS_ID = "focus_id";
     String FOCUS_NAME = "focus_name";
+    String FOCUS_REASON = "focus_reason";
     String FOCUS_STATUS = "focus_status";
     String CASE_NUMBER = "case_number";
     String PATIENT_NAME = "patient_name";
@@ -19,6 +23,10 @@ public interface PlanConstants {
     String FIRST_NAME = "first_name";
     String SURNAME = "surname";
     String FAMILY_NAME = "family_name";
+    String AGE = "age";
+    String BFID = "bfid";
+    String SPECIES = "species";
+    String HOUSE_NUMBER = "house_number";
     int PLAN_TEMPLATE_1 = 1;
     int PLAN_TEMPLATE_2 = 2;
 
@@ -33,4 +41,6 @@ public interface PlanConstants {
     String MOSQUITO_COLLECTION_POINT = "Mosquito Collection Point";
     String RESIDENTIAL_STRUCTURE = "Residential Structure";
     String TYPE = "type";
+
+    List<String> LOCAL_CASE_CLASSIFICATIONS = Arrays.asList("A", "F");
 }

@@ -718,17 +718,18 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	}
 
 	@Override
-	public boolean checkEventExists(@NonNull String caseNumber, @NonNull String flag) {
-		return eventMapper.selectCaseTriggeredEventExists(caseNumber, flag);
+	public Event findCaseDetailsEvent(@NonNull String caseNumber, @NonNull String flag) {
+		List<Event> events = convert(eventMapper.selectCaseDetailsEvents(caseNumber, flag));
+		return events != null && !events.isEmpty() ? events.get(0) : null;
 	}
 
 	@Override
-	public Event findByDbId(Long id, boolean includeArchived) {
-		if (id == null) {
+	public Event findByDbId(Long eventId, boolean includeArchived) {
+		if (eventId == null) {
 			return null;
 		}
 		EventMetadataExample example = new EventMetadataExample();
-		Criteria criteria = example.createCriteria().andIdEqualTo(id);
+		Criteria criteria = example.createCriteria().andEventIdEqualTo(eventId);
 		if (!includeArchived) {
 			criteria.andDateDeletedIsNull();
 		}
@@ -743,4 +744,5 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 		}
 		return eventMetadataMapper.selectByDocumentId(identifier);
 	}
+
 }

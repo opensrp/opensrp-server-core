@@ -376,5 +376,9 @@ public class ClientService {
 	public Long countFamilyMembersByLocation(List<String> locationIds, Integer ageLowerBound) {
 		return allClients.countFamilyMembersByLocation(locationIds, ageLowerBound);
 	}
+
+	Long countFamiliesByLocation(List<String> locationIds) {
+		return allClients.countFamiliesByLocation(locationIds);
+	};
 	
 }
