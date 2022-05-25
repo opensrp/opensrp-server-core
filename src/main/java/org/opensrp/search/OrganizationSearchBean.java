@@ -9,7 +9,7 @@ public class OrganizationSearchBean {
 	};
 	
 	public enum FieldName {
-		id, identifier, name, parent_id, member_count
+		id, identifier, name, parent_id, member_count, server_version
 	};
 	
 	private String name;
