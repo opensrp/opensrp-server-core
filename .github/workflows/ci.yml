@@ -8,10 +8,12 @@ on:
     branches:
       - master
       - v2
+      - v2.2
   pull_request:
     branches:
       - master
       - v2
+      - v2.2
 
 jobs:
   run-unit-tests:
