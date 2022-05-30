@@ -98,31 +98,28 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 		ZeirVaccinationConverter vaccinationConverter = new ZeirVaccinationConverter();
 		ZeirGrowthMonitoringConverter growthMonitoringConverter = new ZeirGrowthMonitoringConverter();
 
-		getChildRegistrationData(childConverter, vaccinationConverter, growthMonitoringConverter);
-		getMotherRegistrationData();
+		List<RapidproState> rapidProChildren = getChildrenFromOpenSRPStates();
+		rapidProChildren.addAll(getChildrenFromRapidProStates());
+		logger.info("Found {} children in rapid pro list ", rapidProChildren.size());
+		postChildData(rapidProChildren, childConverter, vaccinationConverter, growthMonitoringConverter);
+
+		List<RapidproState> unsyncedMotherStates = getMotherRegistrationData();
+		postMotherData(unsyncedMotherStates);
+
 		postExistingChildData(childConverter, vaccinationConverter, growthMonitoringConverter);
 	}
 
-	private void getMotherRegistrationData() {
-		List<RapidproState> unSyncedMotherStates = getUnSyncedRapidProStates(CARETAKER.name(),
-				REGISTRATION_DATA.name()).stream()
-				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
-		postMotherData(unSyncedMotherStates);
+	private List<RapidproState> getMotherRegistrationData() {
+		return getUnSyncedRapidProStates(CARETAKER.name(),
+				REGISTRATION_DATA.name());
 	}
 
-	private void getChildRegistrationData(ZeirChildClientConverter childConverter,
-			ZeirVaccinationConverter vaccinationConverter,
-			ZeirGrowthMonitoringConverter growthMonitoringConverter) {
-		List<RapidproState> unSyncedChildFromOpenSRPStates =
-				getAllRapidProStates(CHILD.name(), REGISTRATION_DATA.name()).stream()
-						.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
+	private List<RapidproState> getChildrenFromOpenSRPStates() {
+		return getAllRapidProStates(CHILD.name(), REGISTRATION_DATA.name());
+	}
 
-		List<RapidproState> unSyncedChildFromRapidProStates =
-				getAllRapidProStates(CHILD.name(), IDENTIFIER.name()).stream()
-						.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
-		unSyncedChildFromOpenSRPStates.addAll(unSyncedChildFromRapidProStates);
-		logger.info("Found {} In the unsynced list. ", unSyncedChildFromOpenSRPStates.size());
-		postChildData(unSyncedChildFromOpenSRPStates, childConverter, vaccinationConverter, growthMonitoringConverter);
+	private List<RapidproState> getChildrenFromRapidProStates() {
+		return getAllRapidProStates(CHILD.name(), IDENTIFIER.name());
 	}
 
 	private void postChildData(List<RapidproState> unSyncedChildStates,
@@ -332,6 +329,8 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 						addContactToGroup(CHILD, rapidProContact.getUuid());
 						logger.info("Successfully synced {} OpenSRP child client(s) data to RapidPro", primaryKeys.size());
 					}
+
+					// TODO: Update the synced status to SYNCED
 				}
 			}
 			catch (IOException exception) {
@@ -401,7 +400,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 		ZeirChildClientConverter childConverter = new ZeirChildClientConverter(this);
 		ZeirMotherClientConverter motherConverter = new ZeirMotherClientConverter();
-		if (!unSyncedStates.isEmpty()) {
+		while (!unSyncedStates.isEmpty()) {
 			logger.warn("Syncing {} record(s) of type {}  from OpenSRP to RapidPro", unSyncedStates.size(), entity.name());
 			for (RapidproState rapidproState : unSyncedStates) {
 				synchronized (this) {
@@ -420,9 +419,12 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					}
 				}
 			}
-		} else {
-			logger.warn("No OpenSRP record(s) of type {} available for sync to RapidPro", entity.name());
+
+			unSyncedStates = getUnSyncedRapidProStates(entity.name(), property.name()).stream()
+					.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 		}
+
+		logger.warn("No OpenSRP record(s) of type {} available for sync to RapidPro", entity.name());
 	}
 
 	private JSONObject getPayload(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property,
