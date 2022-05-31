@@ -190,7 +190,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 
     @Override
     public List<Practitioner> getAllPractitioners(PractitionerSearchBean practitionerSearchBean) {
-        Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean);
+        Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean.getPageNumber(), practitionerSearchBean.getPageSize());
         PractitionerExample practitionerExample = new PractitionerExample();
         practitionerExample.createCriteria().andDateDeletedIsNull();
         if(practitionerSearchBean.getOrderByFieldName() != null && practitionerSearchBean.getOrderByType() != null) {
@@ -205,8 +205,8 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 
 	@Override
 	public List<Practitioner> getAllPractitionersByIdentifiers(List<String> practitionerIdentifiers) {
-    	PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean(null);
-		Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean);
+    	PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean();
+		Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean.getPageNumber(), practitionerSearchBean.getPageSize());
 		PractitionerExample practitionerExample = new PractitionerExample();
 		practitionerExample.createCriteria().andDateDeletedIsNull().andIdentifierIn(practitionerIdentifiers);
 		List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
