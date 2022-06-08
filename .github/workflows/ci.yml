@@ -60,10 +60,7 @@ jobs:
        
     - name: Show running services
       run: sudo netstat -tuplen # listing all the port for debug purpose.
-      
-    - name: Configure migrations
-      run: chmod +x configs/assets/migrations/run_mybatis_migrations.sh && sudo ./configs/assets/migrations/run_mybatis_migrations.sh
-      
+
     - name: Create multimedia dir
       run: sudo mkdir -p /opt/multimedia/patient_images && id
 
