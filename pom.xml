@@ -405,10 +405,6 @@
 				<targetPath>org/opensrp/repository/postgres/mapper/custom/xml</targetPath>
 			</resource>
 			<resource>
-				<directory>configs/assets/migrations/data_migration_scripts</directory>
-				<targetPath>mybatis/data_migration_scripts</targetPath>
-			</resource>
-			<resource>
 				<directory>configs/assets/migrations/environments</directory>
 				<targetPath>mybatis/environments</targetPath>
 			</resource>
