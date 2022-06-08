@@ -5,11 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -19,14 +17,10 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(MockitoJUnitRunner.class)
 public class MybatisMigrationTest {
 
-	@Mock
-	private DataSource dataSource;
-
 	private MybatisMigration mybatisMigration;
 
 	@Before
 	public void setUp() {
-		dataSource = Mockito.mock(DataSource.class);
 		mybatisMigration = Mockito.spy(new MybatisMigration());
 	}
 
