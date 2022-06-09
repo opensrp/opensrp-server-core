@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.ArgumentCaptor;
+import org.opensrp.TestRabbitMQInstance;
 import org.opensrp.queue.sender.RabbitMQSenderImpl;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.service.PlanService;
@@ -55,7 +56,7 @@ import static org.mockito.Mockito.never;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
 @ActiveProfiles(profiles = { "rabbitmq" })
-public class QueueHelperTest {
+public class QueueHelperTest extends TestRabbitMQInstance {
 
 	@Mock
 	private PlanService planService;
