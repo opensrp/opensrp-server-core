@@ -1,0 +1,22 @@
+package org.opensrp;
+
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.DockerImageName;
+
+public abstract class TestPostgresInstance {
+
+	protected static final String POSTGRES_USER = "opensrp_admin";
+	protected static final String POSTGRES_PASSWORD = "admin";
+	protected static final String POSTGRES_DB = "opensrp_test";
+	private static final String DOCKER_IMAGE_NAME = "docker.io/postgres:14-alpine";
+
+	public static final GenericContainer<?> postgresContainer = new GenericContainer<>(DockerImageName.parse(DOCKER_IMAGE_NAME))
+			.withEnv("POSTGRES_PASSWORD", POSTGRES_PASSWORD)
+			.withEnv("POSTGRES_USER", POSTGRES_USER)
+			.withEnv("POSTGRES_DB", POSTGRES_DB)
+		.withExposedPorts(5432);
+
+	static {
+		postgresContainer.start();
+	}
+}
