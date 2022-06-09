@@ -8,7 +8,7 @@ public abstract class TestPostgresInstance {
 	protected static final String POSTGRES_USER = "opensrp_admin";
 	protected static final String POSTGRES_PASSWORD = "admin";
 	protected static final String POSTGRES_DB = "opensrp_test";
-	private static final String DOCKER_IMAGE_NAME = "docker.io/postgres:14-alpine";
+	private static final String DOCKER_IMAGE_NAME = "postgis/postgis:12-2.5-alpine";
 
 	public static final GenericContainer<?> postgresContainer = new GenericContainer<>(DockerImageName.parse(DOCKER_IMAGE_NAME))
 			.withEnv("POSTGRES_PASSWORD", POSTGRES_PASSWORD)
