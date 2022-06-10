@@ -397,6 +397,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 
 	private void updateContactFields(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property) {
 		List<RapidproState> unSyncedStates = getUnSyncedRapidProStates(entity.name(), property.name()).stream()
+				.filter(state -> !state.getUuid().equals(RapidProConstants.UNPROCESSED_UUID))
 				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 		ZeirChildClientConverter childConverter = new ZeirChildClientConverter(this);
 		ZeirMotherClientConverter motherConverter = new ZeirMotherClientConverter();
@@ -421,6 +422,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 			}
 
 			unSyncedStates = getUnSyncedRapidProStates(entity.name(), property.name()).stream()
+					.filter(state -> !state.getUuid().equals(RapidProConstants.UNPROCESSED_UUID))
 					.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 		}
 
