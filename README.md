@@ -18,3 +18,15 @@ Postgres, couchdb, lucene and scheduler domain objects, repositories and service
   * [Ansible Playbooks](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/540901377/Ansible+Playbooks)
 * [Postgres Database Support](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/251068417/Postgres+Database+Support+as+Main+Datastore)
 * [OpenSRP Load Testing](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/268075009/OpenSRP+Load+Testing)
+
+
+## Running Integration Test
+We use [test-containers](https://github.com/testcontainers/testcontainers-java) to create ephemeral instances of the postgres database and rabbitmq server for the integration tests. This means that one does not have to set up any instance to run the integration tests on one's machine.
+### How It works
+When an integration test is run/executed:
+- Test-Containers will pull a docker image and/or start a docker container needed.
+- Test-Containers will then provide a dynamic port to connect to, from the hosts network.
+- A single instance is created for all the tests. 
+- The docker container will be killed once all the tests have been executed.
+
+The above step is repeated each time a test is executed.
