@@ -5,7 +5,7 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>3.1.2-SNAPSHOT</version>
+	<version>3.2.0-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>https://github.com/OpenSRP/opensrp-server-core</url>
@@ -335,6 +335,12 @@
 			<artifactId>log4j-core</artifactId>
 			<version>${log4j.version}</version>
 		  </dependency>
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-migrations -->
+		<dependency>
+			<groupId>org.mybatis</groupId>
+			<artifactId>mybatis-migrations</artifactId>
+			<version>3.3.10</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.data</groupId>
@@ -418,6 +424,14 @@
 			<resource>
 				<directory>src/main/java/org/opensrp/repository/postgres/mapper/custom/xml</directory>
 				<targetPath>org/opensrp/repository/postgres/mapper/custom/xml</targetPath>
+			</resource>
+			<resource>
+				<directory>configs/assets/migrations/environments</directory>
+				<targetPath>mybatis/environments</targetPath>
+			</resource>
+			<resource>
+				<directory>configs/assets/migrations/scripts</directory>
+				<targetPath>mybatis/scripts</targetPath>
 			</resource>
 		</resources>
 		<plugins>
