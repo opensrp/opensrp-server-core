@@ -15,7 +15,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.smartregister.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
-import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.PractitionerSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -351,7 +350,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals("practitioner-2-identifier",practitioners.get(0).getIdentifier());
         assertEquals("practitioner-1-identifier",practitioners.get(1).getIdentifier());
 
-        practitionerSearchBean.setOrderByType(PractitionerSearchBean.OrderByType.DESC);
+        practitionerSearchBean.setOrderByType(PractitionerSearchBean.OrderByType.ASC);
         practitionerSearchBean.setServerVersion(1l);
         practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
         assertNotNull(practitioners);
