@@ -1,127 +1,127 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.opensrp.repository.postgres.mapper.custom.CustomClientMapper">
-	
-	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Client"
-		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		insert into core.client
-		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				id,
-			</if>
-			<if test="json != null">
-				json,
-			</if>
-			 <if test="dateDeleted != null">
-		        date_deleted,
-		     </if>
-			server_version
-		</trim>
-		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="id != null">
-				#{id,jdbcType=BIGINT},
-			</if>
-			<if test="json != null">
-				#{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ClientTypeHandler},
-			</if>
-			<if test="dateDeleted != null">
-		        #{dateDeleted,jdbcType=TIMESTAMP},
-		     </if>
-			nextVal('core.client_server_version_seq')
-		</trim>
-	</insert>
-	<update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Client">
-	    update core.client
-	    set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ClientTypeHandler},
-	      date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
-	      server_version = nextVal('core.client_server_version_seq')
-	    where id = #{id,jdbcType=BIGINT}
+
+    <insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Client"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into core.client
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="json != null">
+                json,
+            </if>
+            <if test="dateDeleted != null">
+                date_deleted,
+            </if>
+            server_version
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="json != null">
+                #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ClientTypeHandler},
+            </if>
+            <if test="dateDeleted != null">
+                #{dateDeleted,jdbcType=TIMESTAMP},
+            </if>
+            nextVal('core.client_server_version_seq')
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Client">
+        update core.client
+        set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ClientTypeHandler},
+        date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
+        server_version = nextVal('core.client_server_version_seq')
+        where id = #{id,jdbcType=BIGINT}
     </update>
-  	<select id="selectServerVersionByPrimaryKey"
-		parameterType="java.lang.Long" resultType="long">
-		select server_version from core.client where id = #{id,jdbcType=BIGINT}
-	</select>
-	
-	<select id="selectByDocumentId" parameterType="java.lang.String"
-		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
-		select
-		<include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List" />
-		from core.client
-		WHERE json ->> 'id' = #{documentId,jdbcType=VARCHAR} and date_deleted is null
-	</select>
-	
-	
-	<select id="selectByIdentifier" parameterType="java.lang.String"
-		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
-		select
-		<include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List" />
-		from core.client
-		join jsonb_each_text(core.client.json -> 'identifiers') j on true
-		where j.value = #{identifier,jdbcType=VARCHAR} and date_deleted is null
-	</select>
-	
-	
-	<select id="selectByIdentifierOfType" parameterType="map"
-		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
-		select
-		<include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List" />
-		from core.client
-		where json -> 'identifiers' ->> #{identifierType,jdbcType=VARCHAR} = #{identifier,jdbcType=VARCHAR}
-		and date_deleted is null
-	</select>
-	
-	
-	<select id="selectByAttributeOfType" parameterType="map"
-		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
-		select
-		<include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List" />
-		from core.client
-		where json -> 'attributes' ->> #{attributeType,jdbcType=VARCHAR} = #{attribute,jdbcType=VARCHAR}
-		and date_deleted is null
-	</select>
+    <select id="selectServerVersionByPrimaryKey"
+            parameterType="java.lang.Long" resultType="long">
+        select server_version from core.client where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByDocumentId" parameterType="java.lang.String"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
+        select
+        <include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List"/>
+        from core.client
+        WHERE json ->> 'id' = #{documentId,jdbcType=VARCHAR} and date_deleted is null
+    </select>
 
 
-	<select id="selectByAttributesOfType" parameterType="map"
-			resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
-		select
-		<include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List" />
-		from core.client
-		where json -> 'attributes' ->> #{attributeType,jdbcType=VARCHAR} IN
-		<foreach collection="attributes" item="value"  open="(" separator="," close=")">
-			#{value}
-		</foreach>
-		and date_deleted is null
-	</select>
-	
-	
-	<select id="selectByRelationshipIdAndDateCreated" parameterType="map"
-		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
-		select
-		<include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List" />
-		from core.client
-		join jsonb_each(json -> 'relationships') j on true
-		where j.value  ?? #{relationalId,jdbcType=VARCHAR}  and date_deleted is null
-			and (json ->> 'dateCreated')::date between #{dateFrom,jdbcType=DATE} and #{dateTo,jdbcType=DATE}
-	</select>
-	
-	
-	<select id="selectByRelationshipIdOfType" 
-		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
-		select
-		<include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List" />
-		from core.client
-		where json -> 'relationships'->#{relationshipType} ->>0 =  #{relationshipId}
-		and date_deleted is null
-	</select>
-	
-	
-	<select id="selectByRelationShip" parameterType="java.lang.String"
-		resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
-		select
-		<include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List" />
-		from core.client
-		join jsonb_each(json -> 'relationships') j on true
-		where j.value ??  #{relationshipId,jdbcType=VARCHAR}  and date_deleted is null
-	</select>
-		
+    <select id="selectByIdentifier" parameterType="java.lang.String"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
+        select
+        <include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List"/>
+        from core.client
+        join jsonb_each_text(core.client.json -> 'identifiers') j on true
+        where j.value = #{identifier,jdbcType=VARCHAR} and date_deleted is null
+    </select>
+
+
+    <select id="selectByIdentifierOfType" parameterType="map"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
+        select
+        <include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List"/>
+        from core.client
+        where json -> 'identifiers' ->> #{identifierType,jdbcType=VARCHAR} = #{identifier,jdbcType=VARCHAR}
+        and date_deleted is null
+    </select>
+
+
+    <select id="selectByAttributeOfType" parameterType="map"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
+        select
+        <include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List"/>
+        from core.client
+        where json -> 'attributes' ->> #{attributeType,jdbcType=VARCHAR} = #{attribute,jdbcType=VARCHAR}
+        and date_deleted is null
+    </select>
+
+
+    <select id="selectByAttributesOfType" parameterType="map"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
+        select
+        <include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List"/>
+        from core.client
+        where json -> 'attributes' ->> #{attributeType,jdbcType=VARCHAR} IN
+        <foreach collection="attributes" item="value" open="(" separator="," close=")">
+            #{value}
+        </foreach>
+        and date_deleted is null
+    </select>
+
+
+    <select id="selectByRelationshipIdAndDateCreated" parameterType="map"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
+        select
+        <include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List"/>
+        from core.client
+        join jsonb_each(json -> 'relationships') j on true
+        where j.value ?? #{relationalId,jdbcType=VARCHAR} and date_deleted is null
+        and (json ->> 'dateCreated')::date between #{dateFrom,jdbcType=DATE} and #{dateTo,jdbcType=DATE}
+    </select>
+
+
+    <select id="selectByRelationshipIdOfType"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
+        select
+        <include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List"/>
+        from core.client
+        where json -> 'relationships'->#{relationshipType} ->>0 = #{relationshipId}
+        and date_deleted is null
+    </select>
+
+
+    <select id="selectByRelationShip" parameterType="java.lang.String"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMapper.BaseResultMap">
+        select
+        <include refid="org.opensrp.repository.postgres.mapper.ClientMapper.Base_Column_List"/>
+        from core.client
+        join jsonb_each(json -> 'relationships') j on true
+        where j.value ?? #{relationshipId,jdbcType=VARCHAR} and date_deleted is null
+    </select>
+
 </mapper>

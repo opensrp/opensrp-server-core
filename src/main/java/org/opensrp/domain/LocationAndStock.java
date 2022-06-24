@@ -15,6 +15,6 @@ import java.util.List;
 @Setter
 public class LocationAndStock extends Location {
 
-	private List<Stock> stocks;
+    private List<Stock> stocks;
 
 }

@@ -110,7 +110,7 @@
     </select>
 
     <select id="selectManyWithOrdering"
-        resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
+            resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
         select
         <if test="example.distinct">
             distinct
@@ -123,7 +123,7 @@
         <if test="example.orderByClause != null">
             order by m.${example.orderByClause}
         </if>
-        ORDER BY  created_at DESC
+        ORDER BY created_at DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
@@ -136,7 +136,7 @@
         ORDER BY app_version DESC, created_at DESC LIMIT 10
     </select>
 
-    <select id="selectByAppIdAndAppVersion"  parameterType="map"
+    <select id="selectByAppIdAndAppVersion" parameterType="map"
             resultMap="org.opensrp.repository.postgres.mapper.ManifestMapper.BaseResultMap">
         SELECT *
         FROM core.manifest

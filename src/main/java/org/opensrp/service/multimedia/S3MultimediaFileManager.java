@@ -9,7 +9,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.opensrp.repository.MultimediaRepository;
 import org.opensrp.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,19 +26,19 @@ import java.io.InputStream;
 @Component("S3MultimediaFileManager")
 public class S3MultimediaFileManager extends ObjectStorageMultimediaFileManager {
 
-	private AmazonS3 s3Client;
+    private AmazonS3 s3Client;
 
     @Autowired
     public S3MultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
         super(multimediaRepository, clientService);
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void persistFileToStorage(String fileName, byte[] fileBytes) throws IOException {
-	    File multimediaFile = bytesToFile(fileName, fileBytes);
+        File multimediaFile = bytesToFile(fileName, fileBytes);
         byte[] md5 = DigestUtils.md5(new FileInputStream(multimediaFile));
         InputStream inputStream = new FileInputStream(multimediaFile);
         ObjectMetadata metadata = new ObjectMetadata();
@@ -50,9 +49,9 @@ public class S3MultimediaFileManager extends ObjectStorageMultimediaFileManager 
         multimediaFile.delete();
     }
 
-	/**
-	 * {@inheritDoc}
-	 */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public File retrieveFile(String filePath) {
         File file = null;
@@ -64,18 +63,17 @@ public class S3MultimediaFileManager extends ObjectStorageMultimediaFileManager 
         return file;
     }
 
-	/**
-	 *
-	 * Converts {@link File} to {@link File}
-	 *
-	 * @param fileName
-	 * @param fileBytes
-	 * @return
-	 * @throws IOException
-	 */
-	private File bytesToFile(String fileName, byte[] fileBytes) throws IOException {
+    /**
+     * Converts {@link File} to {@link File}
+     *
+     * @param fileName
+     * @param fileBytes
+     * @return
+     * @throws IOException
+     */
+    private File bytesToFile(String fileName, byte[] fileBytes) throws IOException {
         File tempFile = new File(fileName);
-		copyBytesToFile(tempFile, fileBytes);
+        copyBytesToFile(tempFile, fileBytes);
         tempFile.deleteOnExit();
         return tempFile;
     }
@@ -86,7 +84,7 @@ public class S3MultimediaFileManager extends ObjectStorageMultimediaFileManager 
         if (s3Client == null) {
             s3Client = AmazonS3ClientBuilder.standard()
                     .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(objectStorageAccessKeyId,
-		                    objectStorageSecretAccessKey)))
+                            objectStorageSecretAccessKey)))
                     .withRegion(objectStorageRegion)
                     .build();
         }

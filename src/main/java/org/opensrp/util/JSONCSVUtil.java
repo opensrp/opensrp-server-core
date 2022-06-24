@@ -25,14 +25,14 @@ public class JSONCSVUtil {
         for (Map.Entry<String, String> value :
                 csvValues.entrySet()) {
             List<CSVRowConfig> configs = configGroup.get(value.getKey());
-            for(CSVRowConfig config : configs){
+            for (CSVRowConfig config : configs) {
                 if (config == null)
                     throw new IllegalStateException("Column" + value.getKey() + " is missing a config");
 
                 if (config.validate(value.getValue())) {
                     if (StringUtils.isNotBlank(value.getValue()))
                         addNodeToJson(config.getFieldMapping(), value.getValue(), jsonObject);
-                }else{
+                } else {
                     throw new IllegalStateException("CSV has an invalid value for field " + config.getColumnName() + " mapping " + config.getFieldMapping());
                 }
             }
@@ -49,7 +49,7 @@ public class JSONCSVUtil {
      */
     public static List<String> jsonToString(JSONObject jsonObject, List<String> fieldMapping) {
         List<String> values = new ArrayList<>();
-        for(String mapping :  fieldMapping){
+        for (String mapping : fieldMapping) {
             values.add(readNodeFromJson(mapping, jsonObject));
         }
         return values;
@@ -73,14 +73,14 @@ public class JSONCSVUtil {
             if (arrayPosition > -1) {
                 // add a json array to the position and
                 JSONArray jsonArray = currentNode.has(node) ? currentNode.getJSONArray(node) : null;
-                if(jsonArray != null && jsonArray.length() > arrayPosition){
+                if (jsonArray != null && jsonArray.length() > arrayPosition) {
 
                     if (pos != (nodeAddress.length - 1)) {
                         currentNode = jsonArray.getJSONObject(arrayPosition);
-                    }else{
+                    } else {
                         return jsonArray.getString(arrayPosition);
                     }
-                }else{
+                } else {
                     return "";
                 }
             } else if (pos == (nodeAddress.length - 1)) {
@@ -90,9 +90,9 @@ public class JSONCSVUtil {
 
             } else {
                 // add the object as a json node
-                if(currentNode.has(node)) {
+                if (currentNode.has(node)) {
                     currentNode = currentNode.getJSONObject(node);
-                }else{
+                } else {
                     return "";
                 }
             }

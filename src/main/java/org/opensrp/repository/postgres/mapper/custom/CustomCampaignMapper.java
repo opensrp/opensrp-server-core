@@ -5,6 +5,6 @@ import org.opensrp.repository.postgres.mapper.CampaignMapper;
 
 public interface CustomCampaignMapper extends CampaignMapper {
 
-	int insertSelectiveAndSetId(Campaign campaign);
+    int insertSelectiveAndSetId(Campaign campaign);
 
 }

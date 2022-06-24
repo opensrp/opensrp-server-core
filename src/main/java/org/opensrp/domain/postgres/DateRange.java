@@ -1,12 +1,12 @@
 /**
- * 
+ *
  */
 package org.opensrp.domain.postgres;
 
-import java.util.Date;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @author Samuel Githengi created on 09/25/20
@@ -14,8 +14,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DateRange {
-	
-	private Date fromdate;
-	
-	private Date toDate;
+
+    private Date fromdate;
+
+    private Date toDate;
 }

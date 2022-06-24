@@ -1,12 +1,8 @@
 package org.opensrp.domain;
 
-import java.io.Serializable;
+import lombok.*;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.io.Serializable;
 
 @NoArgsConstructor
 @Getter
@@ -15,11 +11,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class StructureCount implements Serializable {
 
-	private static final long serialVersionUID = -6553112674200592573L;
+    public static final String STRUCTURE_COUNT = "structureCount";
+    private static final long serialVersionUID = -6553112674200592573L;
+    private String parentId;
 
-	public static final String STRUCTURE_COUNT = "structureCount";
-
-	private String parentId;
-
-	private int count;
+    private int count;
 }

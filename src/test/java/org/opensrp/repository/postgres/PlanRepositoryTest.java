@@ -1,20 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -28,6 +13,10 @@ import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.*;
+
+import static org.junit.Assert.*;
+
 /**
  * Created by Vincent Karuri on 03/05/2019
  */
@@ -38,7 +27,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
     @BeforeClass
     public static void bootStrap() {
-        tableNames=Arrays.asList("core.plan","core.plan_metadata");
+        tableNames = Arrays.asList("core.plan", "core.plan_metadata");
     }
 
     @Override
@@ -76,9 +65,9 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         ids.add("identifier_1");
         ids.add("identifier_2");
         assertTrue(testIfAllIdsExists(plans, ids));
-        
-        for(PlanDefinition pl:plans) {
-        	 MatcherAssert.assertThat(pl.getServerVersion(),Matchers.greaterThan(0l));
+
+        for (PlanDefinition pl : plans) {
+            MatcherAssert.assertThat(pl.getServerVersion(), Matchers.greaterThan(0l));
         }
     }
 
@@ -165,7 +154,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         jurisdictions.add(jurisdiction);
         plan.setJurisdiction(jurisdictions);
         plan.setServerVersion(1l);
-        Long serverVersion=plan.getServerVersion();
+        Long serverVersion = plan.getServerVersion();
         planRepository.update(plan);
 
         result = planRepository.get("identifier_5");
@@ -196,7 +185,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         planRepository.add(plan);
 
         List<PlanDefinition> plans = planRepository.getAll();
-        assertEquals(6,plans.size());
+        assertEquals(6, plans.size());
 
         Set<String> ids = new HashSet<>();
         ids.add("identifier_6");
@@ -270,7 +259,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         plan.setServerVersion(3l);
         planRepository.add(plan);
 
-        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(2l, null,false);
+        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(2l, null, false);
         assertEquals(3, plans.size());
         testIfAllIdsExists(plans, ids);
     }
@@ -314,7 +303,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
         List<String> operationalAreaIds = new ArrayList<>();
         operationalAreaIds.add("operation_area_2");
-        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(2l, operationalAreaIds,false);
+        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(2l, operationalAreaIds, false);
         assertEquals(plans.size(), 2);
         testIfAllIdsExists(plans, ids);
     }
@@ -358,7 +347,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
         List<String> operationalAreaIds = new ArrayList<>();
         operationalAreaIds.add("operation_area_1");
-        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(0l, operationalAreaIds,false);
+        List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreas(0l, operationalAreaIds, false);
 
         assertEquals(plans.size(), 1);
         testIfAllIdsExists(plans, ids);
@@ -388,7 +377,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         fields.add("identifier");
         fields.add("name");
 
-        plans = planRepository.getPlansByIdsReturnOptionalFields(Collections.singletonList("identifier_7"), fields,false);
+        plans = planRepository.getPlansByIdsReturnOptionalFields(Collections.singletonList("identifier_7"), fields, false);
         assertEquals(1, plans.size());
         assertEquals("identifier_7", plans.get(0).getIdentifier());
         assertEquals("Focus Investigation", plans.get(0).getName());
@@ -397,10 +386,10 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         assertEquals(null, plans.get(0).getStatus());
 
     }
-    
+
     @Test
     public void getGetPlansByIdentifiersAndServerVersion() {
-    	PlanDefinition plan = new PlanDefinition();
+        PlanDefinition plan = new PlanDefinition();
         plan.setIdentifier("identifier_7");
 
         List<Jurisdiction> jurisdictions = new ArrayList<>();
@@ -426,24 +415,23 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
         List<String> operationalAreaIds = new ArrayList<>();
         operationalAreaIds.add("operation_area_1");
-        List<PlanDefinition> plans = planRepository.getPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7","identifier_8"), 0l,false);
+        List<PlanDefinition> plans = planRepository.getPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7", "identifier_8"), 0l, false);
 
-        assertEquals(2,plans.size());
+        assertEquals(2, plans.size());
         testIfAllIdsExists(plans, ids);
-        
-        
-        
-        plans = planRepository.getPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7","identifier_8"), 2l,false);
-        assertEquals(2,plans.size());
-        assertEquals("identifier_7",plans.get(0).getIdentifier());
-        
-        
-        plans = planRepository.getPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7","identifier_8"), 3l,false);
-        assertEquals(2,plans.size());
-        
-        
-        plans = planRepository.getPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_70"), 0l,false);
-        assertEquals(0,plans.size());
+
+
+        plans = planRepository.getPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7", "identifier_8"), 2l, false);
+        assertEquals(2, plans.size());
+        assertEquals("identifier_7", plans.get(0).getIdentifier());
+
+
+        plans = planRepository.getPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7", "identifier_8"), 3l, false);
+        assertEquals(2, plans.size());
+
+
+        plans = planRepository.getPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_70"), 0l, false);
+        assertEquals(0, plans.size());
 
     }
 
@@ -517,7 +505,7 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
         String date1 = "2019-09-25T10:00:00+0300";
         String date2 = "2019-09-29T10:00:00+0300";
         Pair<List<String>, Long> planIdsObject = planRepository.findAllIds(0L, 3, false,
-                new DateTime(date1, DateTimeZone.UTC).toDate(), new DateTime(date2,DateTimeZone.UTC).toDate());
+                new DateTime(date1, DateTimeZone.UTC).toDate(), new DateTime(date2, DateTimeZone.UTC).toDate());
         List<String> planids = planIdsObject.getLeft();
         assertEquals(3, planids.size());
     }
@@ -610,22 +598,22 @@ public class PlanRepositoryTest extends BaseRepositoryTest {
 
         List<String> operationalAreaIds = new ArrayList<>();
         operationalAreaIds.add("operation_area_1");
-        Long plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7","identifier_8"), 0l);
-        assertEquals(2,plans.longValue());
+        Long plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7", "identifier_8"), 0l);
+        assertEquals(2, plans.longValue());
 
-        plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7","identifier_8"), 2l);
-        assertEquals(2,plans.longValue());
+        plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7", "identifier_8"), 2l);
+        assertEquals(2, plans.longValue());
 
-        plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7","identifier_8"), 3l);
-        assertEquals(2,plans.longValue());
+        plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_7", "identifier_8"), 3l);
+        assertEquals(2, plans.longValue());
 
         plans = planRepository.countPlansByIdentifiersAndServerVersion(Arrays.asList("identifier_70"), 0l);
-        assertEquals(0,plans.longValue());
+        assertEquals(0, plans.longValue());
 
     }
 
     @Test
-    public void testCountAllPlanShouldReturnCorrectValue(){
+    public void testCountAllPlanShouldReturnCorrectValue() {
         PlanDefinition plan = new PlanDefinition();
         plan.setIdentifier("x_identifier_1");
 

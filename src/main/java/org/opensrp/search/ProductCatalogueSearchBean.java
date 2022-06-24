@@ -7,9 +7,9 @@ import lombok.Setter;
 @Setter
 public class ProductCatalogueSearchBean {
 
-	private Long uniqueId;
+    private Long uniqueId;
 
-	private String productName;
+    private String productName;
 
-	private Long serverVersion;
+    private Long serverVersion;
 }

@@ -6,14 +6,14 @@ import org.opensrp.repository.postgres.mapper.StockMapper;
 import org.springframework.lang.NonNull;
 
 public interface CustomStockMapper extends StockMapper {
-	
-	int insertSelectiveAndSetId(Stock stock);
 
-	Stock selectByIdentifierAndLocationId(@Param("identifier") @NonNull String identifier,
-			@Param("locationId") @NonNull String locationId);
-	
-	Long selectServerVersionByPrimaryKey(Long id);
-	
-	int updateByPrimaryKeyAndGenerateServerVersion(Stock record);
+    int insertSelectiveAndSetId(Stock stock);
+
+    Stock selectByIdentifierAndLocationId(@Param("identifier") @NonNull String identifier,
+                                          @Param("locationId") @NonNull String locationId);
+
+    Long selectServerVersionByPrimaryKey(Long id);
+
+    int updateByPrimaryKeyAndGenerateServerVersion(Stock record);
 
 }

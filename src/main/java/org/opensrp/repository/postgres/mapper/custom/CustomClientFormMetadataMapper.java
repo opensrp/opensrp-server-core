@@ -10,22 +10,22 @@ import java.util.List;
 
 public interface CustomClientFormMetadataMapper extends ClientFormMetadataMapper {
 
-	int countClientFormMetadataByFormIdentifier(@Param("formIdentifier") String formIdentifier,
-			@Param("isJsonValidator") boolean isJsonValidator);
+    int countClientFormMetadataByFormIdentifier(@Param("formIdentifier") String formIdentifier,
+                                                @Param("isJsonValidator") boolean isJsonValidator);
 
-	ClientFormMetadata selectClientFormMetadataByFormVersionAndIdentifier(@Param("formVersion") @NonNull String formVersion,
-			@Param("formIdentifier") @NonNull String formIdentifier, @Param("isJsonValidator") boolean isJsonValidator);
+    ClientFormMetadata selectClientFormMetadataByFormVersionAndIdentifier(@Param("formVersion") @NonNull String formVersion,
+                                                                          @Param("formIdentifier") @NonNull String formIdentifier, @Param("isJsonValidator") boolean isJsonValidator);
 
-	int insertClientFormMetadata(@NonNull ClientFormMetadata clientFormMetadata);
+    int insertClientFormMetadata(@NonNull ClientFormMetadata clientFormMetadata);
 
-	List<IdVersionTuple> getAvailableClientFormVersions(@Param("formIdentifier") @NonNull String formIdentifier,
-			@Param("isJsonValidator") boolean isJsonValidator);
+    List<IdVersionTuple> getAvailableClientFormVersions(@Param("formIdentifier") @NonNull String formIdentifier,
+                                                        @Param("isJsonValidator") boolean isJsonValidator);
 
-	List<ClientFormMetadata> getDraftClientFormMetadata(boolean isDraft);
+    List<ClientFormMetadata> getDraftClientFormMetadata(boolean isDraft);
 
-	List<ClientFormMetadata> getJsonWidgetValidatorClientFormMetadata(boolean isJsonValidator);
+    List<ClientFormMetadata> getJsonWidgetValidatorClientFormMetadata(boolean isJsonValidator);
 
-	List<ClientFormMetadata> getAllClientFormMetadata();
+    List<ClientFormMetadata> getAllClientFormMetadata();
 
-	void updateClientMetadataIsDraftByVersion(@Param("isDraft") boolean isDraft, @Param("version")  String version);
+    void updateClientMetadataIsDraftByVersion(@Param("isDraft") boolean isDraft, @Param("version") String version);
 }
