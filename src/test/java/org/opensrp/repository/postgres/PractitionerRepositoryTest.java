@@ -15,7 +15,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.smartregister.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
-import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.PractitionerSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -341,9 +340,9 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         practitionerRepository.add(practitioner1);
         Practitioner practitioner2 = initTestPractitioner2();
         practitionerRepository.add(practitioner2);
-        PractitionerSearchBean practitionerSearchBean = PractitionerSearchBean.builder().
-                orderByType(BaseSearchBean.OrderByType.DESC).
-                orderByFieldName(BaseSearchBean.FieldName.id).build();
+        PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean();
+        practitionerSearchBean.setOrderByFieldName(PractitionerSearchBean.FieldName.id);
+        practitionerSearchBean.setOrderByType(PractitionerSearchBean.OrderByType.DESC);
         practitionerSearchBean.setServerVersion(1l);
         List<Practitioner> practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
         assertNotNull(practitioners);
@@ -351,8 +350,7 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals("practitioner-2-identifier",practitioners.get(0).getIdentifier());
         assertEquals("practitioner-1-identifier",practitioners.get(1).getIdentifier());
 
-        practitionerSearchBean = PractitionerSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).
-                orderByFieldName(BaseSearchBean.FieldName.id).build();
+        practitionerSearchBean.setOrderByType(PractitionerSearchBean.OrderByType.ASC);
         practitionerSearchBean.setServerVersion(1l);
         practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
         assertNotNull(practitioners);
