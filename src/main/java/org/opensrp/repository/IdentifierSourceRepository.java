@@ -4,11 +4,11 @@ import org.opensrp.domain.IdentifierSource;
 
 
 public interface IdentifierSourceRepository extends BaseRepository<IdentifierSource> {
-	
-	IdentifierSource findByIdentifier(String identifier);
 
-	void update(IdentifierSource identifierSource);
+    IdentifierSource findByIdentifier(String identifier);
 
-	void updateIdSourceWithSequenceValue(IdentifierSource identifierSource, Long sequenceValue);
+    void update(IdentifierSource identifierSource);
+
+    void updateIdSourceWithSequenceValue(IdentifierSource identifierSource, Long sequenceValue);
 
 }

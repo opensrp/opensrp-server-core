@@ -56,7 +56,7 @@ public class UploadValidationBean {
     }
 
     public void addError(String error) {
-        if(this.errors == null)
+        if (this.errors == null)
             this.errors = new ArrayList<>();
 
         this.errors.add(error);

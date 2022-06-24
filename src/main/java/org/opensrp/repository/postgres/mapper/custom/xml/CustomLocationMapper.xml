@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper
-	namespace="org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper">
-
-	
-	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Location"
-		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		insert into core.location
-	    <trim prefix="(" suffix=")" suffixOverrides=",">
-	      <if test="id != null">
-	        id,
-	      </if>
-	      <if test="json != null">
-	        json,
-	      </if>
-	      server_version
-	    </trim>
-	    <trim prefix="values (" suffix=")" suffixOverrides=",">
-	      <if test="id != null">
-	        #{id,jdbcType=BIGINT},
-	      </if>
-	      <if test="json != null">
-	        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
-	      </if>
-	      nextVal('core.location_server_version_seq')
-	    </trim>
-	</insert>
-	
-	<update id="updateByPrimaryKeyAndGenerateServerVersion"
-		parameterType="org.opensrp.domain.postgres.Location">
-		update core.location
-    	set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
-    	server_version=nextVal('core.location_server_version_seq')
-    	where id = #{id,jdbcType=BIGINT}
-	</update>
+        namespace="org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper">
 
 
-	<select id="selectServerVersionByPrimaryKey"
-		parameterType="java.lang.Long" resultType="long">
-		select server_version from core.location where id = #{id,jdbcType=BIGINT}
-	</select>
-		
+    <insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Location"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into core.location
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="json != null">
+                json,
+            </if>
+            server_version
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="json != null">
+                #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
+            </if>
+            nextVal('core.location_server_version_seq')
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeyAndGenerateServerVersion"
+            parameterType="org.opensrp.domain.postgres.Location">
+        update core.location
+        set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
+        server_version=nextVal('core.location_server_version_seq')
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+
+    <select id="selectServerVersionByPrimaryKey"
+            parameterType="java.lang.Long" resultType="long">
+        select server_version from core.location where id = #{id,jdbcType=BIGINT}
+    </select>
+
 </mapper>

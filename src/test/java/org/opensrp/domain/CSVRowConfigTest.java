@@ -6,7 +6,7 @@ import org.junit.Test;
 public class CSVRowConfigTest {
 
     @Test
-    public void testConfigAccessors(){
+    public void testConfigAccessors() {
 
         CSVRowConfig csvRowConfig = new CSVRowConfig();
         csvRowConfig.setColumnName("column_name");
@@ -19,11 +19,11 @@ public class CSVRowConfigTest {
         Assert.assertTrue(csvRowConfig.isRequired());
 
         csvRowConfig.setRegex("1235");
-        Assert.assertEquals("1235",csvRowConfig.getRegex());
+        Assert.assertEquals("1235", csvRowConfig.getRegex());
     }
 
     @Test
-    public void testConfigValidation(){
+    public void testConfigValidation() {
         CSVRowConfig csvRowConfig = new CSVRowConfig();
         csvRowConfig.setRequired(true);
         csvRowConfig.setRegex("[0-9]+");

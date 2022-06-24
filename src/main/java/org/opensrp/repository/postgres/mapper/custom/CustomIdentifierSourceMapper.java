@@ -9,12 +9,12 @@ import java.util.List;
 
 public interface CustomIdentifierSourceMapper extends IdentifierSourceMapper {
 
-	List<IdentifierSource> selectMany(@Param("example") IdentifierSourceExample example, @Param("offset") int offset,
-			@Param("limit") int limit);
+    List<IdentifierSource> selectMany(@Param("example") IdentifierSourceExample example, @Param("offset") int offset,
+                                      @Param("limit") int limit);
 
-	IdentifierSource selectByIdentifier(String identifier);
+    IdentifierSource selectByIdentifier(String identifier);
 
-	IdentifierSource selectOne(@Param("example") IdentifierSourceExample example);
+    IdentifierSource selectOne(@Param("example") IdentifierSourceExample example);
 
-	int insertSelectiveAndSetId(IdentifierSource record);
+    int insertSelectiveAndSetId(IdentifierSource record);
 }

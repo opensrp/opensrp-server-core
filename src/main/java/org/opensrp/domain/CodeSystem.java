@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.opensrp.domain;
 
@@ -11,16 +11,16 @@ import java.util.List;
  */
 public class CodeSystem implements Serializable {
 
-	private static final long serialVersionUID = -2587903025581183298L;
+    private static final long serialVersionUID = -2587903025581183298L;
 
-	private List<Code> coding;
+    private List<Code> coding;
 
-	public List<Code> getCoding() {
-		return coding;
-	}
+    public List<Code> getCoding() {
+        return coding;
+    }
 
-	public void setCoding(List<Code> coding) {
-		this.coding = coding;
-	}
+    public void setCoding(List<Code> coding) {
+        this.coding = coding;
+    }
 
 }

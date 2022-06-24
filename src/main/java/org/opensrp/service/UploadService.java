@@ -11,18 +11,18 @@ import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opensrp.domain.CSVRowConfig;
-import org.opensrp.repository.LocationRepository;
-import org.smartregister.domain.Client;
-import org.smartregister.domain.Event;
 import org.opensrp.domain.setting.Setting;
 import org.opensrp.domain.setting.SettingConfiguration;
 import org.opensrp.repository.ClientsRepository;
+import org.opensrp.repository.LocationRepository;
 import org.opensrp.repository.SettingRepository;
 import org.opensrp.search.SettingSearchBean;
 import org.opensrp.search.UploadValidationBean;
+import org.opensrp.util.JSONCSVUtil;
+import org.smartregister.domain.Client;
+import org.smartregister.domain.Event;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.utils.DateTimeTypeConverter;
-import org.opensrp.util.JSONCSVUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,16 +36,13 @@ public class UploadService {
 
     //TODO : Add annotations of spring-security
 
-    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-            .registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
-
     public static final String CLIENT = "client";
     public static final String EVENT = "event";
     public static final String DEFAULT_RESIDENCE = "default_residence";
-
     private static final Logger logger = LogManager.getLogger(UploadService.class.toString());
     public static String CSV_UPLOAD_SETTING = "csv_upload_config";
-
+    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+            .registerTypeAdapter(DateTime.class, new DateTimeTypeConverter()).create();
     private SettingRepository settingRepository;
 
     private ClientsRepository clientsRepository;
@@ -86,7 +83,7 @@ public class UploadService {
                 .stream()
                 .collect(Collectors.groupingBy(CSVRowConfig::getColumnName));
 
-        if(csvClients.size() > 0 && csvClients.get(0).size() != configs.size())
+        if (csvClients.size() > 0 && csvClients.get(0).size() != configs.size())
             throw new IllegalArgumentException("The number of rows must be equal to the mappings size");
 
         int rowNumber = 1;
@@ -105,7 +102,7 @@ public class UploadService {
                     client.setBaseEntityId(baseEntityID);
                     // Get structure by Id
                     String uploadedStructureId = (String) client.getAttribute(DEFAULT_RESIDENCE);
-                    dbStructure = locationRepository.getStructure(uploadedStructureId,false);
+                    dbStructure = locationRepository.getStructure(uploadedStructureId, false);
                     if (dbStructure == null) {
                         throw new IllegalArgumentException("Structure with id " + uploadedStructureId + " does not exist");
                     }
@@ -160,7 +157,7 @@ public class UploadService {
         SettingSearchBean settingSearchBean = new SettingSearchBean();
         settingSearchBean.setIdentifier(CSV_UPLOAD_SETTING);
         settingSearchBean.setServerVersion(0L);
-        List<SettingConfiguration> configurations = settingRepository.findSettings(settingSearchBean,null);
+        List<SettingConfiguration> configurations = settingRepository.findSettings(settingSearchBean, null);
 
         int count = 0;
         while (count < configurations.size()) {

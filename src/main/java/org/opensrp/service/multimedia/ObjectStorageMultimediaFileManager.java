@@ -11,32 +11,32 @@ import java.io.File;
  * Created by Vincent Karuri on 20/05/2020
  */
 public abstract class ObjectStorageMultimediaFileManager extends BaseMultimediaFileManager {
-	
-	@Value("#{opensrp['object.storage.access.key.id'] ?: ''}")
-	protected String objectStorageAccessKeyId;
 
-	@Value("#{opensrp['object.storage.secret.access.key'] ?: ''}")
-	protected String objectStorageSecretAccessKey;
+    @Value("#{opensrp['object.storage.access.key.id'] ?: ''}")
+    protected String objectStorageAccessKeyId;
 
-	@Value("#{opensrp['object.storage.region'] ?: ''}")
-	protected String objectStorageRegion;
+    @Value("#{opensrp['object.storage.secret.access.key'] ?: ''}")
+    protected String objectStorageSecretAccessKey;
 
-	@Value("#{opensrp['object.storage.bucket.name'] ?: ''}")
-	protected String objectStorageBucketName;
+    @Value("#{opensrp['object.storage.region'] ?: ''}")
+    protected String objectStorageRegion;
 
-	@Value("#{opensrp['object.storage.bucket.folder.path'] ?: ''}")
-	protected String objectStorageBucketFolderPath;
+    @Value("#{opensrp['object.storage.bucket.name'] ?: ''}")
+    protected String objectStorageBucketName;
 
-	public ObjectStorageMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
-		super(multimediaRepository, clientService);
-	}
+    @Value("#{opensrp['object.storage.bucket.folder.path'] ?: ''}")
+    protected String objectStorageBucketFolderPath;
 
-	@Override
-	protected String getBaseMultiMediaDir() {
-		return File.separator + "tmp" + File.separator;
-	}
+    public ObjectStorageMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
+        super(multimediaRepository, clientService);
+    }
 
-	public String getObjectStorageFilePath(String localFilePath) {
-		return StringUtils.isBlank(localFilePath) ? "" : objectStorageBucketFolderPath + File.separator + localFilePath.replace(getBaseMultiMediaDir(), "");
-	}
+    @Override
+    protected String getBaseMultiMediaDir() {
+        return File.separator + "tmp" + File.separator;
+    }
+
+    public String getObjectStorageFilePath(String localFilePath) {
+        return StringUtils.isBlank(localFilePath) ? "" : objectStorageBucketFolderPath + File.separator + localFilePath.replace(getBaseMultiMediaDir(), "");
+    }
 }

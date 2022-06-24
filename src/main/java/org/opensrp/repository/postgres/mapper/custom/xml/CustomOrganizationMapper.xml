@@ -1,153 +1,162 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper
-	namespace="org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper">
+        namespace="org.opensrp.repository.postgres.mapper.custom.CustomOrganizationMapper">
 
-	<select id="selectMany"
-		resultMap="org.opensrp.repository.postgres.mapper.OrganizationMapper.BaseResultMap">
-		select
-		<if test="example.distinct">
-			distinct
-		</if>
-		<include
-			refid="org.opensrp.repository.postgres.mapper.OrganizationMapper.Base_Column_List" />
-		from team.organization o
-		<if test="_parameter != null">
-			<include refid="Example_Where_Clause" />
-		</if>
-		<if test="example.orderByClause != null">
-			order by o.${example.orderByClause}
-		</if>
-		LIMIT #{limit} OFFSET #{offset}
-	</select>
+    <select id="selectMany"
+            resultMap="org.opensrp.repository.postgres.mapper.OrganizationMapper.BaseResultMap">
+        select
+        <if test="example.distinct">
+            distinct
+        </if>
+        <include
+                refid="org.opensrp.repository.postgres.mapper.OrganizationMapper.Base_Column_List"/>
+        from team.organization o
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="example.orderByClause != null">
+            order by o.${example.orderByClause}
+        </if>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
 
     <select id="selectOrganizationsEncompassLocations"
             resultMap="org.opensrp.repository.postgres.mapper.OrganizationMapper.BaseResultMap">
         select
         <include
-                refid="org.opensrp.repository.postgres.mapper.OrganizationMapper.Base_Column_List" />
+                refid="org.opensrp.repository.postgres.mapper.OrganizationMapper.Base_Column_List"/>
         from team.organization o
-        where o.id  in (
-            WITH RECURSIVE locations
-            AS
-            (
-                SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
-                FROM core.location_metadata lm1 where geojson_id  = #{identifier,jdbcType=VARCHAR} or
-                geojson_id  in (
-                    select parent_id from core.structure_metadata sm
-                    where geojson_id  = #{identifier,jdbcType=VARCHAR}
-                )
-                UNION
-                SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
-                FROM locations lm1
-                INNER JOIN core.location_metadata lm2 on lm2.geojson_id = lm1.parent_id
-            )
-            SELECT ol.organization_id  FROM locations l
-            inner join team.organization_location ol on ol.location_id = l.location_id
-            where #{activeDate,jdbcType=DATE} >= ol.from_date and (to_date is null or to_date  > #{activeDate,jdbcType=DATE})
+        where o.id in (
+        WITH RECURSIVE locations
+        AS
+        (
+        SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+        FROM core.location_metadata lm1 where geojson_id = #{identifier,jdbcType=VARCHAR} or
+        geojson_id in (
+        select parent_id from core.structure_metadata sm
+        where geojson_id = #{identifier,jdbcType=VARCHAR}
+        )
+        UNION
+        SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+        FROM locations lm1
+        INNER JOIN core.location_metadata lm2 on lm2.geojson_id = lm1.parent_id
+        )
+        SELECT ol.organization_id FROM locations l
+        inner join team.organization_location ol on ol.location_id = l.location_id
+        where #{activeDate,jdbcType=DATE} >= ol.from_date and (to_date is null or to_date > #{activeDate,jdbcType=DATE})
         )
     </select>
 
-<sql id="Example_Where_Clause">
-    <where>
-      <foreach collection="example.oredCriteria" item="criteria" separator="or">
-        <if test="criteria.valid">
-          <trim prefix="(" prefixOverrides="and" suffix=")">
-            <foreach collection="criteria.criteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
-                  and ${criterion.condition}
-                </when>
-                <when test="criterion.singleValue">
-                  and ${criterion.condition} #{criterion.value}
-                </when>
-                <when test="criterion.betweenValue">
-                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                </when>
-                <when test="criterion.listValue">
-                  and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
-                    #{listItem}
-                  </foreach>
-                </when>
-              </choose>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                        <foreach collection="criteria.typeCriteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and ${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and ${criterion.condition}
+                                    #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and ${criterion.condition}
+                                    #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
+                                    and
+                                    #{criterion.secondValue,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and ${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
+                                        #{listItem,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
             </foreach>
-            <foreach collection="criteria.typeCriteria" item="criterion">
-              <choose>
-                <when test="criterion.noValue">
-                  and ${criterion.condition}
-                </when>
-                <when test="criterion.singleValue">
-                  and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
-                </when>
-                <when test="criterion.betweenValue">
-                  and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler} and #{criterion.secondValue,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
-                </when>
-                <when test="criterion.listValue">
-                  and ${criterion.condition}
-                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
-                    #{listItem,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}
-                  </foreach>
-                </when>
-              </choose>
-            </foreach>
-          </trim>
-        </if>
-      </foreach>
-    </where>
-  </sql>
-	<resultMap id="resultMap" type="org.opensrp.domain.Organization">    
-	    <id column="id" jdbcType="BIGINT" property="id" />
-	    <result column="identifier" jdbcType="VARCHAR" property="identifier" />
-	    <result column="active" jdbcType="BIT" property="active" />
-	    <result column="name" jdbcType="VARCHAR" property="name" />    
-	    <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted" />
-	    <result column="parent_id" jdbcType="BIGINT" property="partOf" />
-	    <result column="member_count" jdbcType="BIGINT" property="memberCount" />
-	    
-  	</resultMap>
-  	<sql id="query">
-		
-		from team.organization as o
-		left join team.practitioner_role as pr on o.id = pr.organization_id
-		left join team.organization_location  ol on ol.organization_id =o.id
-		<where> 
-			o.date_deleted is null	
-			<if test="searchBean.name != null">
-			<bind name="name" value="'%' + searchBean.name + '%'" />
-				and o."name" ilike #{name} 
-			</if>
-			<if test="searchBean.locations != null">
-				and ol.location_id in
-				<foreach close=")" collection="searchBean.locations" item="listItem" open="(" separator=",">
-					#{listItem}
-				</foreach>
-			</if>
-		</where>
-		
-	</sql>
-	<select id="selectSearchOrganizations" resultMap="resultMap">
-		select o.id,o.identifier,o."name",o."type",o.parent_id,count(distinct(pr.id))as member_count 
-		<include refid="query"/>	
-		group by o.id,o.identifier,o."name",o."type",o.parent_id
-		<if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
-			order by ${searchBean.orderByFieldName}  ${searchBean.orderByType}  
-		</if>		
-		LIMIT #{limit} OFFSET #{offset}	
-	</select>
-	<select id="selectOrganizationCount" resultType="Integer">	
-		select count(distinct o.id)
-		<include refid="query"/>
-	
-	</select>
+        </where>
+    </sql>
+    <resultMap id="resultMap" type="org.opensrp.domain.Organization">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="identifier" jdbcType="VARCHAR" property="identifier"/>
+        <result column="active" jdbcType="BIT" property="active"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="date_deleted" jdbcType="TIMESTAMP" property="dateDeleted"/>
+        <result column="parent_id" jdbcType="BIGINT" property="partOf"/>
+        <result column="member_count" jdbcType="BIGINT" property="memberCount"/>
 
-    <select id="selectByOrganizationIds" resultMap="org.opensrp.repository.postgres.mapper.OrganizationMapper.BaseResultMap">
+    </resultMap>
+    <sql id="query">
+
+        from team.organization as o
+        left join team.practitioner_role as pr on o.id = pr.organization_id
+        left join team.organization_location ol on ol.organization_id =o.id
+        <where>
+            o.date_deleted is null
+            <if test="searchBean.name != null">
+                <bind name="name" value="'%' + searchBean.name + '%'"/>
+                and o."name" ilike #{name}
+            </if>
+            <if test="searchBean.locations != null">
+                and ol.location_id in
+                <foreach close=")" collection="searchBean.locations" item="listItem" open="(" separator=",">
+                    #{listItem}
+                </foreach>
+            </if>
+        </where>
+
+    </sql>
+    <select id="selectSearchOrganizations" resultMap="resultMap">
+        select o.id,o.identifier,o."name",o."type",o.parent_id,count(distinct(pr.id))as member_count
+        <include refid="query"/>
+        group by o.id,o.identifier,o."name",o."type",o.parent_id
+        <if test="searchBean.orderByFieldName!=null and searchBean.orderByType!=null">
+            order by ${searchBean.orderByFieldName} ${searchBean.orderByType}
+        </if>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+    <select id="selectOrganizationCount" resultType="Integer">
+        select count(distinct o.id)
+        <include refid="query"/>
+
+    </select>
+
+    <select id="selectByOrganizationIds"
+            resultMap="org.opensrp.repository.postgres.mapper.OrganizationMapper.BaseResultMap">
 
         select
         <include
-                refid="org.opensrp.repository.postgres.mapper.OrganizationMapper.Base_Column_List" />
+                refid="org.opensrp.repository.postgres.mapper.OrganizationMapper.Base_Column_List"/>
         from team.organization
-        where id IN <foreach item="organizationId" collection="organizationIds" open="(" separator="," close=")">#{organizationId}</foreach>
+        where id IN
+        <foreach item="organizationId" collection="organizationIds" open="(" separator="," close=")">#{organizationId}
+        </foreach>
     </select>
     <insert id="insertSelectiveAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Organization">
         insert into team.organization
@@ -212,7 +221,8 @@
             nextVal('team.organization_server_version_seq')
         </trim>
     </insert>
-    <update id="updateByPrimaryKeySelectiveAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Organization">
+    <update id="updateByPrimaryKeySelectiveAndGenerateServerVersion"
+            parameterType="org.opensrp.domain.postgres.Organization">
         update team.organization
         <set>
             <if test="identifier != null">

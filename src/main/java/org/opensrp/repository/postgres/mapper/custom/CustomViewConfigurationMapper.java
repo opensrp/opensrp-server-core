@@ -4,10 +4,10 @@ import org.opensrp.domain.postgres.ViewConfiguration;
 import org.opensrp.repository.postgres.mapper.ViewConfigurationMapper;
 
 public interface CustomViewConfigurationMapper extends ViewConfigurationMapper {
-	
-	int insertSelectiveAndSetId(ViewConfiguration viewConfiguration);
-	
-	Long selectServerVersionByPrimaryKey(Long id);
-	
-	int updateByPrimaryKeyAndGenerateServerVersion(ViewConfiguration viewConfiguration);
+
+    int insertSelectiveAndSetId(ViewConfiguration viewConfiguration);
+
+    Long selectServerVersionByPrimaryKey(Long id);
+
+    int updateByPrimaryKeyAndGenerateServerVersion(ViewConfiguration viewConfiguration);
 }

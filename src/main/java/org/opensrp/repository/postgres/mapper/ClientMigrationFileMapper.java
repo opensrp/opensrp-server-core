@@ -1,9 +1,10 @@
 package org.opensrp.repository.postgres.mapper;
 
-import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.opensrp.domain.postgres.ClientMigrationFile;
 import org.opensrp.domain.postgres.ClientMigrationFileExample;
+
+import java.util.List;
 
 public interface ClientMigrationFileMapper {
     /**

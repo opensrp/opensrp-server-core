@@ -22,13 +22,13 @@ public class ManifestService {
 
     private ManifestRepository manifestRepository;
 
+    public ManifestRepository getManifestRepository() {
+        return manifestRepository;
+    }
+
     @Autowired
     public void setManifestRepository(ManifestRepository manifestRepository) {
         this.manifestRepository = manifestRepository;
-    }
-
-    public ManifestRepository getManifestRepository() {
-        return manifestRepository;
     }
 
     @PreAuthorize("hasRole('MANIFEST_VIEW')")
@@ -37,7 +37,9 @@ public class ManifestService {
     }
 
     @PreAuthorize("hasRole('MANIFEST_VIEW')")
-    public List<Manifest> getAllManifest(int limit) { return manifestRepository.getAll(limit);}
+    public List<Manifest> getAllManifest(int limit) {
+        return manifestRepository.getAll(limit);
+    }
 
     @PreAuthorize("hasRole('MANIFEST_CREATE') or hasRole('MANIFEST_UPDATE')")
     public void addOrUpdateManifest(Manifest manifest) {
@@ -60,7 +62,7 @@ public class ManifestService {
         manifest.setUpdatedAt(new DateTime());
         manifestRepository.add(manifest);
         return manifest;
-        
+
     }
 
     @PreAuthorize("hasRole('MANIFEST_UPDATE')")

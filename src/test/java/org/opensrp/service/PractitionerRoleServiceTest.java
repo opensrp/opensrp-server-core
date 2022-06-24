@@ -15,35 +15,49 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 public class PractitionerRoleServiceTest {
 
-	@InjectMocks
+    @InjectMocks
     private PractitionerRoleService practitionerRoleService;
 
-	@Mock
+    @Mock
     private PractitionerRoleRepository practitionerRoleRepository;
 
-	@Mock
+    @Mock
     private OrganizationService organizationService;
 
-	@Mock
+    @Mock
     private PractitionerService practitionerService;
 
-   
+    private static PractitionerRole initTestPractitionerRole() {
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier("pr1-identifier");
+        practitionerRole.setActive(true);
+        practitionerRole.setOrganizationIdentifier("org-identifier");
+        practitionerRole.setPractitionerIdentifier("p1-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr1Code");
+        practitionerRole.setCode(code);
+        return practitionerRole;
+    }
+
+    private static PractitionerRole initTestPractitionerRole2() {
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier("pr2-identifier");
+        practitionerRole.setActive(true);
+        practitionerRole.setOrganizationIdentifier("org1");
+        practitionerRole.setPractitionerIdentifier("p2-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr2Code");
+        practitionerRole.setCode(code);
+        return practitionerRole;
+    }
+
     @Test
     public void testGetAllPractitionerRoles() {
         List<PractitionerRole> expectedPractitionerRoles = new ArrayList<>();
@@ -136,16 +150,15 @@ public class PractitionerRoleServiceTest {
         organization.setId(1l);
         when(organizationService.getOrganization(anyString())).thenReturn(organization);
 
-       org.opensrp.domain.postgres.Practitioner pgPractitioner = new org.opensrp.domain.postgres.Practitioner();
-       pgPractitioner.setId(1l);
-       
+        org.opensrp.domain.postgres.Practitioner pgPractitioner = new org.opensrp.domain.postgres.Practitioner();
+        pgPractitioner.setId(1l);
+
         when(practitionerService.getPgPractitioner(anyString())).thenReturn(pgPractitioner);
 
         PractitionerRole practitionerRole = initTestPractitionerRole();
         practitionerRoleService.deletePractitionerRole(practitionerRole.getIdentifier(), practitionerRole.getOrganizationIdentifier());
         verify(practitionerRoleRepository).safeRemove(anyLong(), anyLong());
     }
-
 
     @Test
     public void testGetRolesForPractitionerShouldCallGetRolesForPractitionerMethod() {
@@ -211,14 +224,14 @@ public class PractitionerRoleServiceTest {
 
     }
 
-	@Test
-	public void testCountAllPractitionerRoles() {
-		PractitionerRole practitionerRole = initTestPractitionerRole();
-		doReturn((long) Collections.singletonList(practitionerRole).size()).when(practitionerRoleRepository).countAllPractitionerRoles();
-		assertEquals(1, practitionerRoleService.countAllPractitionerRoles());
-	}
+    @Test
+    public void testCountAllPractitionerRoles() {
+        PractitionerRole practitionerRole = initTestPractitionerRole();
+        doReturn((long) Collections.singletonList(practitionerRole).size()).when(practitionerRoleRepository).countAllPractitionerRoles();
+        assertEquals(1, practitionerRoleService.countAllPractitionerRoles());
+    }
 
-	@Test
+    @Test
     public void testAssignPractitionerRole() {
         String practitionerIdentifier = "p1-identifier";
         org.opensrp.domain.postgres.Practitioner practitioner = new org.opensrp.domain.postgres.Practitioner();
@@ -247,29 +260,5 @@ public class PractitionerRoleServiceTest {
         doReturn(practitioner.getId()).when(practitionerService).getPractitionerIdByIdentifier(practitionerIdentifier);
         PractitionerRole practitionerRole = initTestPractitionerRole();
         practitionerRoleService.assignPractitionerRole(organizationId, practitionerIdentifier, code, practitionerRole);
-    }
-
-    private static PractitionerRole initTestPractitionerRole(){
-        PractitionerRole practitionerRole = new PractitionerRole();
-        practitionerRole.setIdentifier("pr1-identifier");
-        practitionerRole.setActive(true);
-        practitionerRole.setOrganizationIdentifier("org-identifier");
-        practitionerRole.setPractitionerIdentifier("p1-identifier");
-        PractitionerRoleCode code = new PractitionerRoleCode();
-        code.setText("pr1Code");
-        practitionerRole.setCode(code);
-        return practitionerRole;
-    }
-
-    private static PractitionerRole initTestPractitionerRole2(){
-        PractitionerRole practitionerRole = new PractitionerRole();
-        practitionerRole.setIdentifier("pr2-identifier");
-        practitionerRole.setActive(true);
-        practitionerRole.setOrganizationIdentifier("org1");
-        practitionerRole.setPractitionerIdentifier("p2-identifier");
-        PractitionerRoleCode code = new PractitionerRoleCode();
-        code.setText("pr2Code");
-        practitionerRole.setCode(code);
-        return practitionerRole;
     }
 }

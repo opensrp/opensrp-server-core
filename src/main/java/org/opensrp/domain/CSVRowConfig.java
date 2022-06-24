@@ -52,8 +52,8 @@ public class CSVRowConfig {
         this.regex = regex;
     }
 
-    public boolean validate(String value){
-        if(required && StringUtils.isBlank(value))
+    public boolean validate(String value) {
+        if (required && StringUtils.isBlank(value))
             return false;
 
         return StringUtils.isBlank(value) || StringUtils.isBlank(regex) || Pattern.matches(regex, value);

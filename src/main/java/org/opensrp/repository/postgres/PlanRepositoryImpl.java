@@ -1,13 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import static org.opensrp.util.Utils.isEmptyList;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.domain.postgres.Plan;
@@ -23,6 +15,10 @@ import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.*;
+
+import static org.opensrp.util.Utils.isEmptyList;
 
 /**
  * Created by Vincent Karuri on 02/05/2019
@@ -51,17 +47,17 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         return isEmptyList(plan) ? null : plan.get(0);
     }
-    
+
     private void updateServerVersion(Plan pgPlan, PlanDefinition entity) {
-		long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
-		entity.setServerVersion(serverVersion);
-		pgPlan.setJson(entity);
-		pgPlan.setServerVersion(null);
-		int rowsAffected = planMapper.updateByPrimaryKeySelective(pgPlan);
-		if (rowsAffected < 1) {
-			throw new IllegalStateException();
-		}
-	}
+        long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
+        entity.setServerVersion(serverVersion);
+        pgPlan.setJson(entity);
+        pgPlan.setServerVersion(null);
+        int rowsAffected = planMapper.updateByPrimaryKeySelective(pgPlan);
+        if (rowsAffected < 1) {
+            throw new IllegalStateException();
+        }
+    }
 
     @Override
     public void add(PlanDefinition plan) {
@@ -83,9 +79,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         if (rowsAffected < 1) {
             throw new IllegalStateException();
         }
-        
+
         updateServerVersion(pgPlan, plan);
-       
+
         insertPlanMetadata(plan, pgPlan.getId());
     }
 
@@ -114,7 +110,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         }
 
         updateServerVersion(pgPlan, plan);
-        
+
         updatePlanMetadata(plan, pgPlan.getId());
     }
 
@@ -223,9 +219,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
             if (toDate != null && fromDate != null) {
                 criteria.andDateCreatedBetween(fromDate, toDate);
-            } else if(fromDate !=null){
+            } else if (fromDate != null) {
                 criteria.andDateCreatedGreaterThanOrEqualTo(fromDate);
-            } else{
+            } else {
                 criteria.andDateCreatedLessThanOrEqualTo(toDate);
             }
 
@@ -386,11 +382,11 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
 
     private Pair<Integer, Integer> getPageSizeAndOffset(PlanSearchBean planSearchBean) {
-       return RepositoryUtil.getPageSizeAndOffset(planSearchBean.getPageNumber(), planSearchBean.getPageSize());
+        return RepositoryUtil.getPageSizeAndOffset(planSearchBean.getPageNumber(), planSearchBean.getPageSize());
     }
 
-	@Override
-	public PlanDefinition findPlanByIdentifier(String identifier) {
-		return get(identifier);
-	}
+    @Override
+    public PlanDefinition findPlanByIdentifier(String identifier) {
+        return get(identifier);
+    }
 }

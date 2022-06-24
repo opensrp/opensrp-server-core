@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ExportFlagProblemEventImageMetadata {
 
-	private String stockId;
-	private String servicePointName;
-	private String productName;
+    private String stockId;
+    private String servicePointName;
+    private String productName;
 }
