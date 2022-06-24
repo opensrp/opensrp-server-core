@@ -59,10 +59,17 @@ public class S3MultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
         Whitebox.setInternalState(s3MultimediaFileManager, "objectStorageBucketFolderPath", getTestFileFolder());
 
         byte[] testBytes = new byte[10];
+<<<<<<< HEAD
         s3MultimediaFileManager = spy(s3MultimediaFileManager);
         s3MultimediaFileManager.persistFileToStorage(getTestFilePath(), testBytes);
 
         verify(s3MultimediaFileManager).copyBytesToFile(fileArgumentCaptor.capture(), eq(testBytes));
+=======
+        s3MultimediaFileManager = Mockito.spy(s3MultimediaFileManager);
+        s3MultimediaFileManager.persistFileToStorage(getTestFilePath(), testBytes);
+
+        verify(s3MultimediaFileManager).copyBytesToFile(fileArgumentCaptor.capture(), Mockito.eq(testBytes));
+>>>>>>> 4dd439d2 (reformat server-core code)
         verify(s3Client).putObject(putObjectRequestArgumentCaptor.capture());
 
         PutObjectRequest putObjectRequest = putObjectRequestArgumentCaptor.getValue();

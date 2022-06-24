@@ -150,9 +150,15 @@ public class OrganizationService {
     /**
      * Assigns the jurisdiction and /or plan to the organization with organizationId
      *
+<<<<<<< HEAD
      * @param identifier     the id of the organization
      * @param jurisdictionId the identifier of the jurisdiction
      * @param planId         the identifier of the plan
+=======
+     * @param identifier the id of the organization
+     * @param jurisdictionId the identifier of the jurisdiction
+     * @param planId the identifier of the plan
+>>>>>>> 4dd439d2 (reformat server-core code)
      * @param fromDate
      * @param toDate
      */
@@ -176,7 +182,11 @@ public class OrganizationService {
     /**
      * Gets the locations and Plans assigned to an organization
      *
+<<<<<<< HEAD
      * @param identifier              the organization identifier
+=======
+     * @param identifier the organization identifier
+>>>>>>> 4dd439d2 (reformat server-core code)
      * @param returnFutureAssignments flag to control if future assignments are returned
      * @return the assigned locations and plans
      */
@@ -205,7 +215,11 @@ public class OrganizationService {
     /**
      * Gets the locations and Plans assigned to a list of organizations
      *
+<<<<<<< HEAD
      * @param organizationIds         the organization ids
+=======
+     * @param organizationIds the organization ids
+>>>>>>> 4dd439d2 (reformat server-core code)
      * @param returnFutureAssignments flag to control if future assignments are returned
      * @return the assigned locations and plans
      */

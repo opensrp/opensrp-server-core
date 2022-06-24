@@ -430,7 +430,11 @@ public class PhysicalLocationServiceTest {
         StructureDetails structure = new StructureDetails(UUID.randomUUID().toString(), "3221", "Mosquito Point");
         expectedDetails.add(structure);
 
+<<<<<<< HEAD
         when(locationRepository.findStructureAndFamilyDetails(anyDouble(), anyDouble(), anyDouble()))
+=======
+        when(locationRepository.findStructureAndFamilyDetails(Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyDouble()))
+>>>>>>> 4dd439d2 (reformat server-core code)
                 .thenReturn(expectedDetails);
         Collection<StructureDetails> detailsFromService = locationService.findStructuresWithinRadius(latitude, longitude,
                 1000);
