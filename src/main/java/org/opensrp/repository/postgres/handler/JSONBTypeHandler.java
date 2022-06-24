@@ -13,34 +13,33 @@ import java.sql.SQLException;
 
 public class JSONBTypeHandler extends BaseTypeHandler<Object> {
 
-	private static final PGobject jsonObject = new PGobject();
+    private static final PGobject jsonObject = new PGobject();
 
-	@Override
-	public void setNonNullParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
-		jsonObject.setType("json");
+    @Override
+    public void setNonNullParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException {
+        jsonObject.setType("json");
 
-		try {
-			jsonObject.setValue(new ObjectMapper().writeValueAsString(parameter));  //Converting java objects to json strings
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+        try {
+            jsonObject.setValue(new ObjectMapper().writeValueAsString(parameter));  //Converting java objects to json strings
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-		ps.setObject(i, jsonObject);
-	}
+        ps.setObject(i, jsonObject);
+    }
 
-	@Override
-	public Object getNullableResult(ResultSet rs, String columnName) throws SQLException {
-		return rs.getString(columnName);                                 // Return to String
-	}
+    @Override
+    public Object getNullableResult(ResultSet rs, String columnName) throws SQLException {
+        return rs.getString(columnName);                                 // Return to String
+    }
 
-	@Override
-	public Object getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-		return rs.getString(columnIndex);
-	}
+    @Override
+    public Object getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+        return rs.getString(columnIndex);
+    }
 
-	@Override
-	public Object getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
-		return cs.getString(columnIndex);
-	}
+    @Override
+    public Object getNullableResult(CallableStatement cs, int columnIndex) throws SQLException {
+        return cs.getString(columnIndex);
+    }
 }

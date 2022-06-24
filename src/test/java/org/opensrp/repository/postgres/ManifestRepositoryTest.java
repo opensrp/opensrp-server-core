@@ -1,11 +1,7 @@
 package org.opensrp.repository.postgres;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import org.joda.time.DateTime;
+import org.junit.Test;
 import org.opensrp.domain.Manifest;
 import org.opensrp.repository.ManifestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +10,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class ManifestRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private ManifestRepository manifestRepository;
-
-    @Override
-    protected Set<String> getDatabaseScripts() {
-        Set<String> scripts = new HashSet<String>();
-        scripts.add("manifest.sql");
-        return scripts;
-    }
 
     private static Manifest initTestManifest() {
         Manifest manifest = new Manifest();
@@ -58,6 +47,12 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
         return manifest;
     }
 
+    @Override
+    protected Set<String> getDatabaseScripts() {
+        Set<String> scripts = new HashSet<String>();
+        scripts.add("manifest.sql");
+        return scripts;
+    }
 
     @Test
     public void testGet() {

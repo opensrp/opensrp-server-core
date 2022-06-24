@@ -6,94 +6,94 @@ import org.smartregister.domain.Task.TaskStatus;
 
 public class Campaign {
 
-	private String identifier;
+    private String identifier;
 
-	private String title;
+    private String title;
 
-	private String description;
+    private String description;
 
-	private TaskStatus status;
+    private TaskStatus status;
 
-	private Period executionPeriod;
+    private Period executionPeriod;
 
-	private DateTime authoredOn;
+    private DateTime authoredOn;
 
-	private DateTime lastModified;
+    private DateTime lastModified;
 
-	private String owner;
+    private String owner;
 
-	private long serverVersion;
+    private long serverVersion;
 
-	public String getIdentifier() {
-		return identifier;
-	}
+    public String getIdentifier() {
+        return identifier;
+    }
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public TaskStatus getStatus() {
-		return status;
-	}
+    public TaskStatus getStatus() {
+        return status;
+    }
 
-	public void setStatus(TaskStatus status) {
-		this.status = status;
-	}
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
 
-	public Period getExecutionPeriod() {
-		return executionPeriod;
-	}
+    public Period getExecutionPeriod() {
+        return executionPeriod;
+    }
 
-	public void setExecutionPeriod(Period executionPeriod) {
-		this.executionPeriod = executionPeriod;
-	}
+    public void setExecutionPeriod(Period executionPeriod) {
+        this.executionPeriod = executionPeriod;
+    }
 
-	public DateTime getAuthoredOn() {
-		return authoredOn;
-	}
+    public DateTime getAuthoredOn() {
+        return authoredOn;
+    }
 
-	public void setAuthoredOn(DateTime authoredOn) {
-		this.authoredOn = authoredOn;
-	}
+    public void setAuthoredOn(DateTime authoredOn) {
+        this.authoredOn = authoredOn;
+    }
 
-	public DateTime getLastModified() {
-		return lastModified;
-	}
+    public DateTime getLastModified() {
+        return lastModified;
+    }
 
-	public void setLastModified(DateTime lastModified) {
-		this.lastModified = lastModified;
-	}
+    public void setLastModified(DateTime lastModified) {
+        this.lastModified = lastModified;
+    }
 
-	public String getOwner() {
-		return owner;
-	}
+    public String getOwner() {
+        return owner;
+    }
 
-	public void setOwner(String owner) {
-		this.owner = owner;
-	}
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 
-	public long getServerVersion() {
-		return serverVersion;
-	}
+    public long getServerVersion() {
+        return serverVersion;
+    }
 
-	public void setServerVersion(long serverVersion) {
-		this.serverVersion = serverVersion;
-	}
+    public void setServerVersion(long serverVersion) {
+        this.serverVersion = serverVersion;
+    }
 
 }

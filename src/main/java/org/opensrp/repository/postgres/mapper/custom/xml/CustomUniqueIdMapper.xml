@@ -20,7 +20,8 @@
                                 </when>
                                 <when test="criterion.listValue">
                                     and ${criterion.condition}
-                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
                                         #{listItem}
                                     </foreach>
                                 </when>
@@ -36,10 +37,10 @@
             resultMap="org.opensrp.repository.postgres.mapper.UniqueIdMapper.BaseResultMap">
         select
         <include
-                refid="org.opensrp.repository.postgres.mapper.UniqueIdMapper.Base_Column_List" />
+                refid="org.opensrp.repository.postgres.mapper.UniqueIdMapper.Base_Column_List"/>
         from core.unique_id ui
         <if test="_parameter != null">
-            <include refid="Example_Where_Clause" />
+            <include refid="Example_Where_Clause"/>
         </if>
         <if test="example.orderByClause != null">
             order by ui.${example.orderByClause}
@@ -55,7 +56,7 @@
         openmrs_id
         from core.unique_id ui
         <if test="_parameter != null">
-            <include refid="Example_Where_Clause" />
+            <include refid="Example_Where_Clause"/>
         </if>
         <if test="example.orderByClause != null">
             order by tm.${example.orderByClause}
@@ -65,71 +66,71 @@
 
     <insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.UniqueId"
             useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-    insert into core.unique_id
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-        <if test="id != null">
-            id,
-        </if>
-        <if test="location != null">
-            location,
-        </if>
-        <if test="openmrsId != null">
-            openmrs_id,
-        </if>
-        <if test="status != null">
-            status,
-        </if>
-        <if test="usedBy != null">
-            used_by,
-        </if>
-        <if test="updatedAt != null">
-            updated_at,
-        </if>
-        <if test="createdAt != null">
-            created_at,
-        </if>
-        <if test="identifier != null">
-            identifier,
-        </if>
-        <if test="idSource != null">
-            id_source,
-        </if>
-        <if test="isReserved != null">
-            is_reserved,
-        </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-        <if test="id != null">
-            #{id,jdbcType=BIGINT},
-        </if>
-        <if test="location != null">
-            #{location,jdbcType=VARCHAR},
-        </if>
-        <if test="openmrsId != null">
-            #{openmrsId,jdbcType=VARCHAR},
-        </if>
-        <if test="status != null">
-            #{status,jdbcType=VARCHAR},
-        </if>
-        <if test="usedBy != null">
-            #{usedBy,jdbcType=VARCHAR},
-        </if>
-        <if test="updatedAt != null">
-            #{updatedAt,jdbcType=TIMESTAMP},
-        </if>
-        <if test="createdAt != null">
-            #{createdAt,jdbcType=TIMESTAMP},
-        </if>
-        <if test="identifier != null">
-            #{identifier,jdbcType=VARCHAR},
-        </if>
-        <if test="idSource != null">
-            #{idSource,jdbcType=BIGINT},
-        </if>
-        <if test="isReserved != null">
-            #{isReserved,jdbcType=BIT},
-        </if>
-    </trim>
+        insert into core.unique_id
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="location != null">
+                location,
+            </if>
+            <if test="openmrsId != null">
+                openmrs_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="usedBy != null">
+                used_by,
+            </if>
+            <if test="updatedAt != null">
+                updated_at,
+            </if>
+            <if test="createdAt != null">
+                created_at,
+            </if>
+            <if test="identifier != null">
+                identifier,
+            </if>
+            <if test="idSource != null">
+                id_source,
+            </if>
+            <if test="isReserved != null">
+                is_reserved,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="location != null">
+                #{location,jdbcType=VARCHAR},
+            </if>
+            <if test="openmrsId != null">
+                #{openmrsId,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="usedBy != null">
+                #{usedBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updatedAt != null">
+                #{updatedAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createdAt != null">
+                #{createdAt,jdbcType=TIMESTAMP},
+            </if>
+            <if test="identifier != null">
+                #{identifier,jdbcType=VARCHAR},
+            </if>
+            <if test="idSource != null">
+                #{idSource,jdbcType=BIGINT},
+            </if>
+            <if test="isReserved != null">
+                #{isReserved,jdbcType=BIT},
+            </if>
+        </trim>
     </insert>
 
 </mapper>

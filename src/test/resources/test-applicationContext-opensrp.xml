@@ -1,43 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
                http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd 
                http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd">
 
-	<context:property-placeholder
-		location="classpath:maven.properties,classpath:opensrp.properties" />
-	<util:properties id="opensrp" location="classpath:/opensrp.properties" />
+    <context:property-placeholder
+            location="classpath:maven.properties,classpath:opensrp.properties"/>
+    <util:properties id="opensrp" location="classpath:/opensrp.properties"/>
 
 
-	<import resource="test-persistence-postgres.xml"/>
+    <import resource="test-persistence-postgres.xml"/>
 
-	<bean class="org.opensrp.config.RedisConfig"/>
+    <bean class="org.opensrp.config.RedisConfig"/>
 
-	<context:annotation-config />
+    <context:annotation-config/>
 
-	<context:component-scan base-package="org.opensrp.domain" />
-	<context:component-scan base-package="org.opensrp.repository" />
-	<!-- TODO delete after removing the motech scheduling package
-	<context:component-scan base-package="org.opensrp.scheduler" />  -->
-	<context:component-scan base-package="org.opensrp.form" />
-	<context:component-scan base-package="org.opensrp.generator" />
-	<context:component-scan base-package="org.opensrp.config"/>
-	<context:component-scan base-package="org.opensrp.queue"/>
-	<context:component-scan base-package="org.opensrp.validator"/>
-	<context:component-scan base-package="org.opensrp.migrations"/>
-	<context:component-scan base-package="org.opensrp.service">
-		<!--These classes are excluded to enable the context load. This is because
-			EventsListener has EventsRouter as a dependency, problem is that IHandlerMapper
-			in EventsRouter is an interface that has its implementation in opensrp-register
-			and the module(opensrp-register) isn't a dependency of this module. -->
-		<context:exclude-filter type="regex"
-			expression="org.opensrp.service.formSubmission.EventsListener" />
-		<context:exclude-filter type="regex"
-			expression="org.opensrp.service.formSubmission.handler.EventsRouter" />
+    <context:component-scan base-package="org.opensrp.domain"/>
+    <context:component-scan base-package="org.opensrp.repository"/>
+    <!-- TODO delete after removing the motech scheduling package
+    <context:component-scan base-package="org.opensrp.scheduler" />  -->
+    <context:component-scan base-package="org.opensrp.form"/>
+    <context:component-scan base-package="org.opensrp.generator"/>
+    <context:component-scan base-package="org.opensrp.config"/>
+    <context:component-scan base-package="org.opensrp.queue"/>
+    <context:component-scan base-package="org.opensrp.validator"/>
+    <context:component-scan base-package="org.opensrp.migrations"/>
+    <context:component-scan base-package="org.opensrp.service">
+        <!--These classes are excluded to enable the context load. This is because
+            EventsListener has EventsRouter as a dependency, problem is that IHandlerMapper
+            in EventsRouter is an interface that has its implementation in opensrp-register
+            and the module(opensrp-register) isn't a dependency of this module. -->
+        <context:exclude-filter type="regex"
+                                expression="org.opensrp.service.formSubmission.EventsListener"/>
+        <context:exclude-filter type="regex"
+                                expression="org.opensrp.service.formSubmission.handler.EventsRouter"/>
 
-	</context:component-scan>
+    </context:component-scan>
 
-	<alias name="${multimedia.file.manager}" alias="multimedia.file.manager"/>
+    <alias name="${multimedia.file.manager}" alias="multimedia.file.manager"/>
 </beans>

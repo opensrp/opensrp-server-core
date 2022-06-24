@@ -1,415 +1,422 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper
-	namespace="org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper">
+        namespace="org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper">
 
-	<sql id="Base_Column_List">
-		l.id, l.json
-	</sql>
-	
-	<sql id="No_Geometry_Column_List">
-		l.id, l.json - 'geometry' as json
-	</sql>	
+    <sql id="Base_Column_List">
+        l.id, l.json
+    </sql>
 
-	<select id="findById" parameterType="java.lang.String"
-		resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
-		select
-		<if test="geometry">
-			<include refid="Base_Column_List" />
-		</if>
+    <sql id="No_Geometry_Column_List">
+        l.id, l.json - 'geometry' as json
+    </sql>
 
-		<if test="!geometry">
-			<include refid="No_Geometry_Column_List" />
-		</if>
-		from core.location_metadata lm
-		join core.location l on lm.location_id = l.id
-		where lm.geojson_id = #{id,jdbcType=VARCHAR}
-		<if test="!includeInactive">
-			and lm.status IN ('ACTIVE', 'PENDING_REVIEW')
-		</if>
-	</select>
-
-
-	<sql id="Example_Where_Clause">
-		<where>
-			<foreach collection="example.oredCriteria" item="criteria" separator="or">
-				<if test="criteria.valid">
-					<trim prefix="(" prefixOverrides="and" suffix=")">
-						<foreach collection="criteria.criteria" item="criterion">
-							<choose>
-								<when test="criterion.noValue">
-									and lm.${criterion.condition}
-								</when>
-								<when test="criterion.singleValue">
-									and lm.${criterion.condition} #{criterion.value}
-								</when>
-								<when test="criterion.betweenValue">
-									and lm.${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-								</when>
-								<when test="criterion.listValue">
-									and lm.${criterion.condition}
-									<foreach close=")" collection="criterion.value" item="listItem"
-										open="(" separator=",">
-										#{listItem}
-									</foreach>
-								</when>
-							</choose>
-						</foreach>
-					</trim>
-				</if>
-			</foreach>
-		</where>
-	</sql>
-
-	<select id="selectMany"
-		resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
-		select
-		<if test="example.distinct">
-			distinct
-		</if>
-		<include refid="Base_Column_List" />
-		from core.location_metadata lm
-		join core.location l on lm.location_id = l.id
-		<if test="_parameter != null">
-			<include refid="Example_Where_Clause" />
-		</if>
-		<if test="example.orderByClause != null">
-			order by lm.${example.orderByClause}
-		</if>
-		LIMIT #{limit} OFFSET #{offset}
-	</select>
-	
-	
-	<select id="selectManyByProperties"
-		resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
-		select
-		<if test="example.distinct">
-			distinct
-		</if>
-
-		<if test="geometry">
-				<include refid="Base_Column_List" />
-		</if>
-
-		<if test="!geometry">
-				<include refid="No_Geometry_Column_List" />
-		</if>
-
-		from core.location_metadata lm
-		join core.location l on lm.location_id = l.id
-		<if test="_parameter != null">
-			<include refid="Example_Where_Clause" />
-		</if>
-		<if test="properties != null" >
-			<trim prefix="and "  >		
-				<foreach collection="properties" index="propertyName"
-					item="propertyValue" separator=" and ">
-					json -> 'properties' ->> #{propertyName,jdbcType=VARCHAR} = #{propertyValue,jdbcType=VARCHAR}
-				</foreach>
-			</trim>
-		</if>
-		<if test="example.orderByClause != null">
-			order by lm.${example.orderByClause}
-		</if>
-		LIMIT #{limit} OFFSET #{offset}
-	</select>
-
-	<select id="selectManyWithOptionalGeometry"
-			resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
-
-		select
-		<if test="example.distinct">
-			distinct
-		</if>
-
-		<if test="geometry">
-			<include refid="Base_Column_List" />
-		</if>
-
-		<if test="!geometry">
-			<include refid="No_Geometry_Column_List" />
-		</if>
-
-		from core.location_metadata lm
-		join core.location l on lm.location_id = l.id
-
-		<if test="_parameter != null">
-			<include refid="Example_Where_Clause" />
-		</if>
-		<if test="example.orderByClause != null">
-			order by lm.${example.orderByClause}
-		</if>
-		LIMIT #{limit} OFFSET #{offset}
-	</select>
-
-	<select id="countMany"
-			resultType="long">
-		select
-		count(lm.id)
-	    from core.location_metadata lm
-		join core.location l on lm.location_id = l.id
-
-		<if test="_parameter != null">
-			<include refid="Example_Where_Clause" />
-		</if>
-	</select>
-
-	<select id="selectWithChildren"
-			resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
-
-		select
-		<if test="example.distinct">
-			distinct
-		</if>
-
-		<if test="geometry">
-			<include refid="Base_Column_List" />
-		</if>
-
-		<if test="!geometry">
-			<include refid="No_Geometry_Column_List" />
-		</if>
-		from core.location l
-		Where l.id in
-		(
-		WITH RECURSIVE locations
-		AS
-		( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
-		FROM core.location_metadata lm1 WHERE 
-		lm1.geojson_id IN
-		<foreach collection="locationIds" item="value"  open="(" separator="," close=")">
-	       			#{value}
-	   			</foreach>
-	   			AND lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
-		UNION
-		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
-		FROM locations lm1
-		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id AND status IN ('ACTIVE', 'PENDING_REVIEW') )
-		SELECT location_id FROM locations
-		)
-
-		<if test="example.orderByClause != null">
-			order by lm.${example.orderByClause}
-		</if>
-		LIMIT #{limit} OFFSET #{offset}
-
-	</select>
-	
-	<select id="selectLocationHierachy"
-			resultMap="DetailsResultMap">
-		select lm.geojson_id identifier ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,
-		<if test="tags">
-		string_agg(lt."name",',') tags,
-		</if>
-		l.json->'properties'->>'geographicLevel' geographic_level,
-		record.level
-		from core.location_metadata lm
-		<if test="tags">
-		left join core.location_tag_map ltm on ltm.location_id =lm.location_id 
-		left join core.location_tag lt on lt.id =ltm.location_tag_id
-		</if>
-		INNER join core.location l on l.id = lm.location_id
-		JOIN
-		(
-			WITH RECURSIVE locations
-			AS
-			( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, 0 as level
-				FROM core.location_metadata lm1 WHERE geojson_id  IN
-			 	<foreach collection="identifiers" item="value"  open="(" separator="," close=")">
-	       			#{value}
-	   			</foreach>
-		        AND lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
-				UNION
-				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id,level+1 as level
-				FROM locations lm1
-				INNER JOIN core.location_metadata lm2 on lm2.geojson_id = lm1.parent_id  AND lm2.status IN ('ACTIVE', 'PENDING_REVIEW')
-			)
-			SELECT location_id, level FROM locations
-		) record
-		on lm.location_id =record.location_id
-		<if test="tags">
-		group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id, geographic_level, record.level
-		</if>
-		order by record.level
-	</select>
-
-	<resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetail">
-		<result column="identifier" jdbcType="VARCHAR" property="identifier" />
-		<result column="name" jdbcType="VARCHAR" property="name" />
-		<result column="voided" jdbcType="BOOLEAN" property="voided" />
-	    <result column="location_id" jdbcType="VARCHAR" property="id" />
-	    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
-	    <result column="tags" jdbcType="VARCHAR" property="tags" />
-		<result column="geographic_level" jdbcType="INTEGER" property="geographicLevel" />
-	</resultMap>
-
-	<select id="selectDetailsByPlanId"
-			resultMap="DetailsResultMap">
-
-		select
-		<if test="example.distinct">
-			distinct
-		</if>
-
-		pm.operational_area_id as identifier,  lm.name
-		FROM core.plan_metadata pm
-		JOIN core.location_metadata lm ON pm.operational_area_id = lm.geojson_id
-		AND pm.identifier = #{planIdentifier,jdbcType=VARCHAR}
-		<if test="_parameter != null">
-			<include refid="Example_Where_Clause" />
-		</if>
-
-		<if test="example.orderByClause != null">
-			order by lm.${example.orderByClause}
-		</if>
-
-	</select>
-
-	<select id="selectManyIds"	resultType="java.lang.String">
-		select
-		<if test="example.distinct">
-			distinct
-		</if>
-		geojson_id
-		from core.location_metadata lm
-		<if test="_parameter != null">
-			<include refid="Example_Where_Clause" />
-		</if>
-		<if test="example.orderByClause != null">
-			order by lm.${example.orderByClause}
-		</if>
-		LIMIT #{limit} OFFSET #{offset}
-
-	</select>
-	<sql id="whereCondition">		
-		<where>
-			<trim prefixOverrides="and">
-				<if test="locationSearchBean.name != null">
-					lm.name ilike '%${locationSearchBean.name}%'
-				</if>
-				<if test="locationSearchBean.locationTagId != null">
-					and ltm.location_tag_id = #{locationSearchBean.locationTagId}
-				</if>
-				<if test="locationSearchBean.parentId != null">
-					and lm.parent_id::bigint = #{locationSearchBean.parentId}
-				</if>
-				<if test="locationSearchBean.status != null">
-					and lm.status = #{locationSearchBean.status}
-				</if>
-			</trim>
-		</where>
-	</sql>
-	<sql id="joinCondition">
-		from
-		core.location as l
-		join core.location_metadata as lm on
-		l.id = lm.location_id
-		left join core.location_metadata as plm on
-		lm.parent_id::bigint = plm.location_id
-		inner join core.location_tag_map as ltm on
-		lm.location_id = ltm.location_id	
-		inner join core.location_tag lt on
-		lt.id = ltm.location_tag_id
-	</sql>
-	
-    <select id="selectLocations" resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
-		select
-			l.id,
-			jsonb_set(jsonb_set(l.json-'geometry','{properties,parentName}',coalesce(to_jsonb(plm."name"),'""'),true),'{properties,tagName}',coalesce(to_jsonb(lt."name"),'""'),true) json			
-		<include refid="joinCondition"/>
-		<include refid="whereCondition"/>
-        <if test="locationSearchBean.orderByFieldName != null and locationSearchBean.orderByType != null">
-            order by ${locationSearchBean.orderByFieldName}  ${locationSearchBean.orderByType}
-		</if>
-        <if test="limit != null">
-			LIMIT #{limit} OFFSET #{offset}
+    <select id="findById" parameterType="java.lang.String"
+            resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+        select
+        <if test="geometry">
+            <include refid="Base_Column_List"/>
         </if>
-	</select>
-	<select id="selectCountLocations" resultType="Integer">
-		select
-			count(l.id)						
-		<include refid="joinCondition"/>
-        <include refid="whereCondition"/>
-        
+
+        <if test="!geometry">
+            <include refid="No_Geometry_Column_List"/>
+        </if>
+        from core.location_metadata lm
+        join core.location l on lm.location_id = l.id
+        where lm.geojson_id = #{id,jdbcType=VARCHAR}
+        <if test="!includeInactive">
+            and lm.status IN ('ACTIVE', 'PENDING_REVIEW')
+        </if>
     </select>
 
-	<select id="findByIdAndVersion" parameterType="java.lang.String"
-			resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
-		select
-		<if test="geometry">
-			<include refid="Base_Column_List" />
-		</if>
 
-		<if test="!geometry">
-			<include refid="No_Geometry_Column_List" />
-		</if>
-		from core.location_metadata lm
-		join core.location l on lm.location_id = l.id
-		where lm.geojson_id = #{id,jdbcType=VARCHAR}
-		and lm.version = #{version,jdbcType=INTEGER}
-	</select>
+    <sql id="Example_Where_Clause">
+        <where>
+            <foreach collection="example.oredCriteria" item="criteria" separator="or">
+                <if test="criteria.valid">
+                    <trim prefix="(" prefixOverrides="and" suffix=")">
+                        <foreach collection="criteria.criteria" item="criterion">
+                            <choose>
+                                <when test="criterion.noValue">
+                                    and lm.${criterion.condition}
+                                </when>
+                                <when test="criterion.singleValue">
+                                    and lm.${criterion.condition} #{criterion.value}
+                                </when>
+                                <when test="criterion.betweenValue">
+                                    and lm.${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                                </when>
+                                <when test="criterion.listValue">
+                                    and lm.${criterion.condition}
+                                    <foreach close=")" collection="criterion.value" item="listItem"
+                                             open="(" separator=",">
+                                        #{listItem}
+                                    </foreach>
+                                </when>
+                            </choose>
+                        </foreach>
+                    </trim>
+                </if>
+            </foreach>
+        </where>
+    </sql>
 
-	<select id="selectLocationWithDescendants"
-			resultMap="DetailsResultMap">
+    <select id="selectMany"
+            resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+        select
+        <if test="example.distinct">
+            distinct
+        </if>
+        <include refid="Base_Column_List"/>
+        from core.location_metadata lm
+        join core.location l on lm.location_id = l.id
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="example.orderByClause != null">
+            order by lm.${example.orderByClause}
+        </if>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
 
-		SELECT lm.geojson_id identifier,
-			lm."name",
-			lm.parent_id,
-			'false' voided,
-			lm.location_id,
-		    l.json->'properties'->>'geographicLevel' geographic_level
-		    ,record.level
 
-		<if test="tags">
-				, string_agg(lt."name", ',') tags
-			</if>
+    <select id="selectManyByProperties"
+            resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+        select
+        <if test="example.distinct">
+            distinct
+        </if>
 
-		FROM core.location_metadata lm
-		INNER join core.location l on l.id = lm.location_id
+        <if test="geometry">
+            <include refid="Base_Column_List"/>
+        </if>
 
-		<if test="tags">
-			LEFT join core.location_tag_map ltm ON ltm.location_id = lm.location_id
-			LEFT join core.location_tag lt ON lt.id = ltm.location_tag_id
-		</if>
+        <if test="!geometry">
+            <include refid="No_Geometry_Column_List"/>
+        </if>
 
-		JOIN
-		(
-			WITH RECURSIVE locations
-			AS
-			(
-				SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, 0 as level
-				FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}  AND lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
-				UNION
-				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id, level+1 as level
-				FROM locations lm1
-				INNER JOIN core.location_metadata lm2 ON lm2.parent_id = lm1.geojson_id AND lm2.status IN ('ACTIVE', 'PENDING_REVIEW')
-			)
-			SELECT location_id, level FROM locations
-		) record
-		on lm.location_id = record.location_id
-		<if test="tags">
-			GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id, geographic_level, record.level
-		</if>
-		order by record.level DESC, lm.name ASC
+        from core.location_metadata lm
+        join core.location l on lm.location_id = l.id
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="properties != null">
+            <trim prefix="and ">
+                <foreach collection="properties" index="propertyName"
+                         item="propertyValue" separator=" and ">
+                    json -> 'properties' ->> #{propertyName,jdbcType=VARCHAR} = #{propertyValue,jdbcType=VARCHAR}
+                </foreach>
+            </trim>
+        </if>
+        <if test="example.orderByClause != null">
+            order by lm.${example.orderByClause}
+        </if>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
 
-	</select>
+    <select id="selectManyWithOptionalGeometry"
+            resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
 
-	<select id="selectChildrenIds" resultType="String">
-		select *
-		from
-		(
-		WITH RECURSIVE locations
-		AS
-		( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
-		FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR}  AND status IN ('ACTIVE', 'PENDING_REVIEW')
-		UNION
-		SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
-		FROM locations lm1
-		INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id  AND status IN ('ACTIVE', 'PENDING_REVIEW'))
+        select
+        <if test="example.distinct">
+            distinct
+        </if>
 
-		SELECT geojson_id FROM locations
-		)  ids;
+        <if test="geometry">
+            <include refid="Base_Column_List"/>
+        </if>
 
-	</select>
+        <if test="!geometry">
+            <include refid="No_Geometry_Column_List"/>
+        </if>
+
+        from core.location_metadata lm
+        join core.location l on lm.location_id = l.id
+
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="example.orderByClause != null">
+            order by lm.${example.orderByClause}
+        </if>
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="countMany"
+            resultType="long">
+        select
+        count(lm.id)
+        from core.location_metadata lm
+        join core.location l on lm.location_id = l.id
+
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </select>
+
+    <select id="selectWithChildren"
+            resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+
+        select
+        <if test="example.distinct">
+            distinct
+        </if>
+
+        <if test="geometry">
+            <include refid="Base_Column_List"/>
+        </if>
+
+        <if test="!geometry">
+            <include refid="No_Geometry_Column_List"/>
+        </if>
+        from core.location l
+        Where l.id in
+        (
+        WITH RECURSIVE locations
+        AS
+        ( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+        FROM core.location_metadata lm1 WHERE
+        lm1.geojson_id IN
+        <foreach collection="locationIds" item="value" open="(" separator="," close=")">
+            #{value}
+        </foreach>
+        AND lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
+        UNION
+        SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+        FROM locations lm1
+        INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id AND status IN ('ACTIVE',
+        'PENDING_REVIEW') )
+        SELECT location_id FROM locations
+        )
+
+        <if test="example.orderByClause != null">
+            order by lm.${example.orderByClause}
+        </if>
+        LIMIT #{limit} OFFSET #{offset}
+
+    </select>
+
+    <select id="selectLocationHierachy"
+            resultMap="DetailsResultMap">
+        select lm.geojson_id identifier ,lm."name" ,lm.parent_id, 'false' voided, lm.location_id,
+        <if test="tags">
+            string_agg(lt."name",',') tags,
+        </if>
+        l.json->'properties'->>'geographicLevel' geographic_level,
+        record.level
+        from core.location_metadata lm
+        <if test="tags">
+            left join core.location_tag_map ltm on ltm.location_id =lm.location_id
+            left join core.location_tag lt on lt.id =ltm.location_tag_id
+        </if>
+        INNER join core.location l on l.id = lm.location_id
+        JOIN
+        (
+        WITH RECURSIVE locations
+        AS
+        ( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, 0 as level
+        FROM core.location_metadata lm1 WHERE geojson_id IN
+        <foreach collection="identifiers" item="value" open="(" separator="," close=")">
+            #{value}
+        </foreach>
+        AND lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
+        UNION
+        SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id,level+1 as level
+        FROM locations lm1
+        INNER JOIN core.location_metadata lm2 on lm2.geojson_id = lm1.parent_id AND lm2.status IN ('ACTIVE',
+        'PENDING_REVIEW')
+        )
+        SELECT location_id, level FROM locations
+        ) record
+        on lm.location_id =record.location_id
+        <if test="tags">
+            group by lm.geojson_id ,lm."name" ,lm.parent_id, voided, lm.location_id, geographic_level, record.level
+        </if>
+        order by record.level
+    </select>
+
+    <resultMap id="DetailsResultMap" type="org.opensrp.domain.LocationDetail">
+        <result column="identifier" jdbcType="VARCHAR" property="identifier"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="voided" jdbcType="BOOLEAN" property="voided"/>
+        <result column="location_id" jdbcType="VARCHAR" property="id"/>
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
+        <result column="tags" jdbcType="VARCHAR" property="tags"/>
+        <result column="geographic_level" jdbcType="INTEGER" property="geographicLevel"/>
+    </resultMap>
+
+    <select id="selectDetailsByPlanId"
+            resultMap="DetailsResultMap">
+
+        select
+        <if test="example.distinct">
+            distinct
+        </if>
+
+        pm.operational_area_id as identifier, lm.name
+        FROM core.plan_metadata pm
+        JOIN core.location_metadata lm ON pm.operational_area_id = lm.geojson_id
+        AND pm.identifier = #{planIdentifier,jdbcType=VARCHAR}
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+
+        <if test="example.orderByClause != null">
+            order by lm.${example.orderByClause}
+        </if>
+
+    </select>
+
+    <select id="selectManyIds" resultType="java.lang.String">
+        select
+        <if test="example.distinct">
+            distinct
+        </if>
+        geojson_id
+        from core.location_metadata lm
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="example.orderByClause != null">
+            order by lm.${example.orderByClause}
+        </if>
+        LIMIT #{limit} OFFSET #{offset}
+
+    </select>
+    <sql id="whereCondition">
+        <where>
+            <trim prefixOverrides="and">
+                <if test="locationSearchBean.name != null">
+                    lm.name ilike '%${locationSearchBean.name}%'
+                </if>
+                <if test="locationSearchBean.locationTagId != null">
+                    and ltm.location_tag_id = #{locationSearchBean.locationTagId}
+                </if>
+                <if test="locationSearchBean.parentId != null">
+                    and lm.parent_id::bigint = #{locationSearchBean.parentId}
+                </if>
+                <if test="locationSearchBean.status != null">
+                    and lm.status = #{locationSearchBean.status}
+                </if>
+            </trim>
+        </where>
+    </sql>
+    <sql id="joinCondition">
+        from
+        core.location as l
+        join core.location_metadata as lm on
+        l.id = lm.location_id
+        left join core.location_metadata as plm on
+        lm.parent_id::bigint = plm.location_id
+        inner join core.location_tag_map as ltm on
+        lm.location_id = ltm.location_id
+        inner join core.location_tag lt on
+        lt.id = ltm.location_tag_id
+    </sql>
+
+    <select id="selectLocations" resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+        select
+        l.id,
+        jsonb_set(jsonb_set(l.json-'geometry','{properties,parentName}',coalesce(to_jsonb(plm."name"),'""'),true),'{properties,tagName}',coalesce(to_jsonb(lt."name"),'""'),true)
+        json
+        <include refid="joinCondition"/>
+        <include refid="whereCondition"/>
+        <if test="locationSearchBean.orderByFieldName != null and locationSearchBean.orderByType != null">
+            order by ${locationSearchBean.orderByFieldName} ${locationSearchBean.orderByType}
+        </if>
+        <if test="limit != null">
+            LIMIT #{limit} OFFSET #{offset}
+        </if>
+    </select>
+    <select id="selectCountLocations" resultType="Integer">
+        select
+        count(l.id)
+        <include refid="joinCondition"/>
+        <include refid="whereCondition"/>
+
+    </select>
+
+    <select id="findByIdAndVersion" parameterType="java.lang.String"
+            resultMap="org.opensrp.repository.postgres.mapper.LocationMapper.BaseResultMap">
+        select
+        <if test="geometry">
+            <include refid="Base_Column_List"/>
+        </if>
+
+        <if test="!geometry">
+            <include refid="No_Geometry_Column_List"/>
+        </if>
+        from core.location_metadata lm
+        join core.location l on lm.location_id = l.id
+        where lm.geojson_id = #{id,jdbcType=VARCHAR}
+        and lm.version = #{version,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectLocationWithDescendants"
+            resultMap="DetailsResultMap">
+
+        SELECT lm.geojson_id identifier,
+        lm."name",
+        lm.parent_id,
+        'false' voided,
+        lm.location_id,
+        l.json->'properties'->>'geographicLevel' geographic_level
+        ,record.level
+
+        <if test="tags">
+            , string_agg(lt."name", ',') tags
+        </if>
+
+        FROM core.location_metadata lm
+        INNER join core.location l on l.id = lm.location_id
+
+        <if test="tags">
+            LEFT join core.location_tag_map ltm ON ltm.location_id = lm.location_id
+            LEFT join core.location_tag lt ON lt.id = ltm.location_tag_id
+        </if>
+
+        JOIN
+        (
+        WITH RECURSIVE locations
+        AS
+        (
+        SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, 0 as level
+        FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR} AND lm1.status IN ('ACTIVE',
+        'PENDING_REVIEW')
+        UNION
+        SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id, level+1 as level
+        FROM locations lm1
+        INNER JOIN core.location_metadata lm2 ON lm2.parent_id = lm1.geojson_id AND lm2.status IN ('ACTIVE',
+        'PENDING_REVIEW')
+        )
+        SELECT location_id, level FROM locations
+        ) record
+        on lm.location_id = record.location_id
+        <if test="tags">
+            GROUP BY lm.geojson_id, lm."name", lm.parent_id, voided, lm.location_id, geographic_level, record.level
+        </if>
+        order by record.level DESC, lm.name ASC
+
+    </select>
+
+    <select id="selectChildrenIds" resultType="String">
+        select *
+        from
+        (
+        WITH RECURSIVE locations
+        AS
+        ( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id
+        FROM core.location_metadata lm1 WHERE geojson_id = #{locationId,jdbcType=VARCHAR} AND status IN ('ACTIVE',
+        'PENDING_REVIEW')
+        UNION
+        SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id
+        FROM locations lm1
+        INNER JOIN core.location_metadata lm2 on lm2.parent_id = lm1.geojson_id AND status IN ('ACTIVE',
+        'PENDING_REVIEW'))
+
+        SELECT geojson_id FROM locations
+        ) ids;
+
+    </select>
 
 </mapper>

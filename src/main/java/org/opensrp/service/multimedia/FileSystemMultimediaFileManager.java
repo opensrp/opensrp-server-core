@@ -31,7 +31,7 @@ public class FileSystemMultimediaFileManager extends BaseMultimediaFileManager {
 
     @Override
     protected String getBaseMultiMediaDir() {
-       return baseMultimediaDirPath + File.separator;
+        return baseMultimediaDirPath + File.separator;
     }
 
     /**

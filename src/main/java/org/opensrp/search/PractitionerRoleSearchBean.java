@@ -7,6 +7,6 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @AllArgsConstructor
-public class PractitionerRoleSearchBean extends BaseSearchBean{
+public class PractitionerRoleSearchBean extends BaseSearchBean {
 
 }

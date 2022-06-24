@@ -1,14 +1,14 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
-import org.smartregister.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerExample;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerMapper;
 import org.opensrp.search.PractitionerSearchBean;
-import org.apache.commons.lang3.tuple.Pair;
 import org.opensrp.util.RepositoryUtil;
+import org.smartregister.domain.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -53,7 +53,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         PractitionerExample practitionerExample = new PractitionerExample();
         practitionerExample.createCriteria().andDateDeletedIsNull();
         List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectManyByOrgId(practitionerExample,
-                orgId,0, DEFAULT_FETCH_SIZE);
+                orgId, 0, DEFAULT_FETCH_SIZE);
         return convert(pgPractitionerList);
     }
 
@@ -105,7 +105,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         }
 
         Long id = retrievePrimaryKey(practitioner);
-        if ( id == null) {
+        if (id == null) {
             return; // practitioner does not exist
         }
 
@@ -153,7 +153,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         pgPractitioner.setDateDeleted(new Date());
         practitionerMapper.updateByPrimaryKey(pgPractitioner);
     }
-    
+
     @Override
     public Practitioner getPractitionerByUserId(String userId) {
         if (StringUtils.isBlank(userId)) {
@@ -165,15 +165,15 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 
         List<org.opensrp.domain.postgres.Practitioner> practitionerList = practitionerMapper.selectByExample(practitionerExample);
 
-        return  isEmptyList(practitionerList) ? null : convert(practitionerList.get(0));
+        return isEmptyList(practitionerList) ? null : convert(practitionerList.get(0));
 
     }
-    
-    
+
+
     @Override
-   /**
-    * {@inheritDoc}
-    */
+    /**
+     * {@inheritDoc}
+     */
     public Practitioner getPractitionerByUsername(String username) {
         if (StringUtils.isBlank(username)) {
             return null;
@@ -184,7 +184,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 
         List<org.opensrp.domain.postgres.Practitioner> practitionerList = practitionerMapper.selectByExample(practitionerExample);
 
-        return  isEmptyList(practitionerList) ? null : convert(practitionerList.get(0));
+        return isEmptyList(practitionerList) ? null : convert(practitionerList.get(0));
 
     }
 
@@ -193,7 +193,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean);
         PractitionerExample practitionerExample = new PractitionerExample();
         practitionerExample.createCriteria().andDateDeletedIsNull();
-        if(practitionerSearchBean.getOrderByFieldName() != null && practitionerSearchBean.getOrderByType() != null) {
+        if (practitionerSearchBean.getOrderByFieldName() != null && practitionerSearchBean.getOrderByType() != null) {
             practitionerExample.setOrderByClause(practitionerSearchBean.getOrderByFieldName() + " " + practitionerSearchBean.getOrderByType());
         }
         if (practitionerSearchBean.getServerVersion() != null) {
@@ -203,17 +203,17 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         return convert(pgPractitionerList);
     }
 
-	@Override
-	public List<Practitioner> getAllPractitionersByIdentifiers(List<String> practitionerIdentifiers) {
-    	PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean(null);
-		Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean);
-		PractitionerExample practitionerExample = new PractitionerExample();
-		practitionerExample.createCriteria().andDateDeletedIsNull().andIdentifierIn(practitionerIdentifiers);
-		List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
-		return convert(pgPractitionerList);
-	}
+    @Override
+    public List<Practitioner> getAllPractitionersByIdentifiers(List<String> practitionerIdentifiers) {
+        PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean(null);
+        Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean);
+        PractitionerExample practitionerExample = new PractitionerExample();
+        practitionerExample.createCriteria().andDateDeletedIsNull().andIdentifierIn(practitionerIdentifiers);
+        List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
+        return convert(pgPractitionerList);
+    }
 
-	@Override
+    @Override
     protected Long retrievePrimaryKey(Practitioner practitioner) {
         Object uniqueId = getUniqueField(practitioner);
         if (uniqueId == null) {
@@ -275,7 +275,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         if (isEmptyList(pgPractitioners)) {
             return practitioners;
         }
-        for(org.opensrp.domain.postgres.Practitioner pgPractitioner : pgPractitioners) {
+        for (org.opensrp.domain.postgres.Practitioner pgPractitioner : pgPractitioners) {
             practitioners.add(convert(pgPractitioner));
         }
         return practitioners;
@@ -283,7 +283,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 
     @Override
     public long countAllPractitioners() {
-      return practitionerMapper.countByExample(new PractitionerExample());
+        return practitionerMapper.countByExample(new PractitionerExample());
     }
 
     @Override

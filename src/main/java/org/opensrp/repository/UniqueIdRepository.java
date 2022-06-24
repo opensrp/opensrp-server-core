@@ -1,9 +1,9 @@
 package org.opensrp.repository;
 
+import org.opensrp.domain.UniqueId;
+
 import java.util.List;
 import java.util.Set;
-
-import org.opensrp.domain.UniqueId;
 
 public interface UniqueIdRepository extends BaseRepository<UniqueId> {
 
@@ -20,9 +20,8 @@ public interface UniqueIdRepository extends BaseRepository<UniqueId> {
     boolean checkIfClientExists(String usedBy, String location);
 
     UniqueId findByIdentifierSourceOrderByIdDesc(Long identifierSource);
-    
+
     Set<String> findReservedIdentifiers();
-    
-    
+
 
 }

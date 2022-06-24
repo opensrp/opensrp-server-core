@@ -1,7 +1,8 @@
 package org.opensrp.domain;
 
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class ManifestTest {
 
@@ -11,13 +12,13 @@ public class ManifestTest {
         String appVersion = "1234234";
         String json = "{}";
         String appId = "1234567op";
-        
+
         Manifest manifest = new Manifest();
         manifest.setAppId(appId);
         manifest.setAppVersion(appVersion);
         manifest.setIdentifier(identifier);
         manifest.setJson(json);
-        
+
         Manifest manifest1 = (Manifest) manifest;
         assertEquals(identifier, manifest1.getIdentifier());
         assertEquals(appVersion, manifest1.getAppVersion());

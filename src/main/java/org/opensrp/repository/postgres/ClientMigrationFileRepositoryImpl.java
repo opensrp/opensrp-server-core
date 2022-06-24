@@ -25,7 +25,7 @@ public class ClientMigrationFileRepositoryImpl extends BaseRepositoryImpl<Client
             return null;
         }
 
-        int idInt = 0 ;
+        int idInt = 0;
 
         try {
             idInt = Integer.parseInt(id);
@@ -115,7 +115,7 @@ public class ClientMigrationFileRepositoryImpl extends BaseRepositoryImpl<Client
         ArrayList<ClientMigrationFile> convertedMigrationFiles = new ArrayList<>();
         List<org.opensrp.domain.postgres.ClientMigrationFile> psqlMigrationFiles = clientMigrationFileMapper.selectByVersion(version);
 
-        for (org.opensrp.domain.postgres.ClientMigrationFile psqlMigrationFile: psqlMigrationFiles) {
+        for (org.opensrp.domain.postgres.ClientMigrationFile psqlMigrationFile : psqlMigrationFiles) {
             ClientMigrationFile migrationFile = convert(psqlMigrationFile);
 
             if (migrationFile != null) {
@@ -136,7 +136,7 @@ public class ClientMigrationFileRepositoryImpl extends BaseRepositoryImpl<Client
         ArrayList<ClientMigrationFile> convertedMigrationFiles = new ArrayList<>();
         List<org.opensrp.domain.postgres.ClientMigrationFile> psqlMigrationFiles = clientMigrationFileMapper.selectByManifestId(manifestId);
 
-        for (org.opensrp.domain.postgres.ClientMigrationFile psqlMigrationFile: psqlMigrationFiles) {
+        for (org.opensrp.domain.postgres.ClientMigrationFile psqlMigrationFile : psqlMigrationFiles) {
             ClientMigrationFile migrationFile = convert(psqlMigrationFile);
 
             if (migrationFile != null) {
@@ -175,7 +175,7 @@ public class ClientMigrationFileRepositoryImpl extends BaseRepositoryImpl<Client
         ArrayList<ClientMigrationFile> convertedMigrationFiles = new ArrayList<>();
         List<org.opensrp.domain.postgres.ClientMigrationFile> psqlMigrationFiles = clientMigrationFileMapper.getAll(0, limit);
 
-        for (org.opensrp.domain.postgres.ClientMigrationFile psqlMigrationFile: psqlMigrationFiles) {
+        for (org.opensrp.domain.postgres.ClientMigrationFile psqlMigrationFile : psqlMigrationFiles) {
             ClientMigrationFile migrationFile = convert(psqlMigrationFile);
 
             if (migrationFile != null) {

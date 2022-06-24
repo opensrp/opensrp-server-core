@@ -1,10 +1,5 @@
 package org.opensrp.repository.postgres;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.domain.postgres.UniqueIdExample;
@@ -13,6 +8,11 @@ import org.opensrp.repository.postgres.mapper.custom.CustomUniqueIdMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Repository
 public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> implements UniqueIdRepository {
 
@@ -20,7 +20,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
     private CustomUniqueIdMapper uniqueIdMapper;
 
     @Override
-    public List<UniqueId> getNotUsedIds( int limit) {
+    public List<UniqueId> getNotUsedIds(int limit) {
         UniqueIdExample example = new UniqueIdExample();
         example.createCriteria().andStatusEqualTo(UniqueId.STATUS_NOT_USED);
         int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
@@ -57,7 +57,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
             return null;
         }
 
-        for (org.opensrp.domain.postgres.UniqueId uniqueId: uniqueIdsToMarkAsUnused){
+        for (org.opensrp.domain.postgres.UniqueId uniqueId : uniqueIdsToMarkAsUnused) {
             uniqueId.setStatus(UniqueId.STATUS_USED);
             uniqueIdMapper.updateByPrimaryKey(uniqueId);
             updatedrecords.add(uniqueId.getId());
@@ -98,8 +98,8 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         example.createCriteria().andIsReservedEqualTo(Boolean.TRUE).andIdentifierIsNotNull();
 
         List<org.opensrp.domain.postgres.UniqueId> uniqueIds = uniqueIdMapper.selectByExample(example);
-       return getReservedIdentifiers(convert(uniqueIds));
-        
+        return getReservedIdentifiers(convert(uniqueIds));
+
     }
 
     @Override
@@ -108,7 +108,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
             return null;
         }
 
-         return convert(findUniqueIdByOpenMrsId(id));
+        return convert(findUniqueIdByOpenMrsId(id));
     }
 
     private org.opensrp.domain.postgres.UniqueId findUniqueIdByOpenMrsId(String openMrsId) {
@@ -128,7 +128,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
             return;
         }
 
-        if (retrievePrimaryKey(entity) != null){// unique id already exists
+        if (retrievePrimaryKey(entity) != null) {// unique id already exists
             return;
         }
 
@@ -142,12 +142,12 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
 
     @Override
     public void update(UniqueId entity) {
-        if (getUniqueField(entity) == null){
+        if (getUniqueField(entity) == null) {
             return;
         }
 
         Long id = retrievePrimaryKey(entity);
-        if (id == null){ // unique id does not exist
+        if (id == null) { // unique id does not exist
             return;
         }
 
@@ -167,12 +167,12 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
 
     @Override
     public void safeRemove(UniqueId entity) {
-        if (getUniqueField(entity) == null){
+        if (getUniqueField(entity) == null) {
             return;
         }
 
         Long id = retrievePrimaryKey(entity);
-        if (id == null){ // unique id does not exist
+        if (id == null) { // unique id does not exist
             return;
         }
 
@@ -182,7 +182,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
 
     private List<UniqueId> convert(List<org.opensrp.domain.postgres.UniqueId> pgEntities) {
         List<UniqueId> uniqueIds = new ArrayList<>();
-        for (org.opensrp.domain.postgres.UniqueId entity: pgEntities) {
+        for (org.opensrp.domain.postgres.UniqueId entity : pgEntities) {
             uniqueIds.add(convert(entity));
         }
         return uniqueIds;
@@ -199,7 +199,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         uniqueId.setIdentifier(pgUniqueId.getIdentifier());
         uniqueId.setIdSource(pgUniqueId.getIdSource());
         uniqueId.setReserved(pgUniqueId.getIsReserved());
-        return  uniqueId;
+        return uniqueId;
     }
 
     @Override
@@ -242,8 +242,8 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         }
         return uniqueId.getOpenmrsId();
     }
-    
-    protected  Object getUniqueIdentifierField(UniqueId uniqueId) {
+
+    protected Object getUniqueIdentifierField(UniqueId uniqueId) {
         if (uniqueId == null) {
             return null;
         }
@@ -266,16 +266,16 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         pgUniqueId.setIdentifier(uniqueId.getIdentifier());
         pgUniqueId.setIdSource(uniqueId.getIdSource());
         pgUniqueId.setIsReserved(uniqueId.isReserved());
-        
-        return  pgUniqueId;
+
+        return pgUniqueId;
     }
-    
+
     private Set<String> getReservedIdentifiers(List<UniqueId> uniqueIds) {
         Set<String> reservedIdentifiers = new HashSet<>();
-        for(UniqueId uniqueId : uniqueIds) {
+        for (UniqueId uniqueId : uniqueIds) {
             reservedIdentifiers.add(uniqueId.getIdentifier());
         }
         return reservedIdentifiers;
     }
-    
+
 }

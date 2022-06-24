@@ -14,26 +14,26 @@ import java.util.Map;
 
 public interface SettingRepository extends BaseRepository<SettingConfiguration> {
 
-	List<SettingConfiguration> findAllSettings();
-	
-	List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean,
-			Map<String, TreeNode<String, Location>> treeNodeHashMap );
-	
-	List<SettingConfiguration> findByEmptyServerVersion();
-	
-	SettingsMetadata getSettingMetadataByDocumentId(String documentId);
+    List<SettingConfiguration> findAllSettings();
 
-	SettingConfiguration findSetting(SettingSearchBean settingQueryBean,Map<String, TreeNode<String, Location>> treeNodeHashMap );
+    List<SettingConfiguration> findSettings(SettingSearchBean settingQueryBean,
+                                            Map<String, TreeNode<String, Location>> treeNodeHashMap);
 
-	List<SettingsMetadata> getAllSettingMetadataByDocumentId(String documentId);
-	
-	Settings getSettingById(Long id);
+    List<SettingConfiguration> findByEmptyServerVersion();
 
-	String addOrUpdate(Setting entity);
-	
-	void delete(Long settingId);
+    SettingsMetadata getSettingMetadataByDocumentId(String documentId);
 
-	String addSettings(SettingConfiguration entity);
+    SettingConfiguration findSetting(SettingSearchBean settingQueryBean, Map<String, TreeNode<String, Location>> treeNodeHashMap);
 
-	List<SettingsAndSettingsMetadataJoined> findSettingsAndSettingsMetadataByIdentifier(String identifier);
+    List<SettingsMetadata> getAllSettingMetadataByDocumentId(String documentId);
+
+    Settings getSettingById(Long id);
+
+    String addOrUpdate(Setting entity);
+
+    void delete(Long settingId);
+
+    String addSettings(SettingConfiguration entity);
+
+    List<SettingsAndSettingsMetadataJoined> findSettingsAndSettingsMetadataByIdentifier(String identifier);
 }

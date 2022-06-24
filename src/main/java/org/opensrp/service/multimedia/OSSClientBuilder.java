@@ -6,29 +6,29 @@ import com.aliyun.oss.OSSClient;
  * Created by Vincent Karuri on 26/05/2020
  */
 public class OSSClientBuilder {
-	
-	private String objectStorageAccessKeyId;
 
-	private String objectStorageSecretAccessKey;
-	
-	private String objectStorageRegion;
+    private String objectStorageAccessKeyId;
 
-	public OSSClientBuilder withObjectStorageAccessKeyId(String objectStorageAccessKeyId) {
-		this.objectStorageAccessKeyId = objectStorageAccessKeyId;
-		return this;
-	}
+    private String objectStorageSecretAccessKey;
 
-	public OSSClientBuilder withObjectStorageSecretAccessKey(String objectStorageSecretAccessKey) {
-		this.objectStorageSecretAccessKey = objectStorageSecretAccessKey;
-		return this;
-	}
+    private String objectStorageRegion;
 
-	public OSSClientBuilder withObjectStorageRegion(String objectStorageRegion) {
-		this.objectStorageRegion = objectStorageRegion;
-		return this;
-	}
+    public OSSClientBuilder withObjectStorageAccessKeyId(String objectStorageAccessKeyId) {
+        this.objectStorageAccessKeyId = objectStorageAccessKeyId;
+        return this;
+    }
 
-	public OSSClient getOssClient() {
-		return new OSSClient(objectStorageRegion, objectStorageAccessKeyId, objectStorageSecretAccessKey);
-	}
+    public OSSClientBuilder withObjectStorageSecretAccessKey(String objectStorageSecretAccessKey) {
+        this.objectStorageSecretAccessKey = objectStorageSecretAccessKey;
+        return this;
+    }
+
+    public OSSClientBuilder withObjectStorageRegion(String objectStorageRegion) {
+        this.objectStorageRegion = objectStorageRegion;
+        return this;
+    }
+
+    public OSSClient getOssClient() {
+        return new OSSClient(objectStorageRegion, objectStorageAccessKeyId, objectStorageSecretAccessKey);
+    }
 }

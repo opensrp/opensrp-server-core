@@ -11,7 +11,6 @@ import java.io.File;
 public interface MultimediaFileManager {
 
     /**
-     *
      * Persists a {@link byte[]} to storage
      *
      * @param multimedia
@@ -22,7 +21,6 @@ public interface MultimediaFileManager {
     String saveFile(MultimediaDTO multimedia, byte[] fileBytes, String originalFileName);
 
     /**
-     *
      * Retrieves a file from storage or null if it doesn't exist
      *
      * @param filePath
@@ -31,7 +29,6 @@ public interface MultimediaFileManager {
     File retrieveFile(String filePath);
 
     /**
-     *
      * Gets the path to the local (filesystem) multimedia file directory
      *
      * @return
@@ -40,7 +37,6 @@ public interface MultimediaFileManager {
 
 
     /**
-     *
      * Gets the the local (filesystem) path where a file should be saved
      *
      * @return
