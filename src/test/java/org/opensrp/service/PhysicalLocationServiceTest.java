@@ -431,10 +431,14 @@ public class PhysicalLocationServiceTest {
         expectedDetails.add(structure);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         when(locationRepository.findStructureAndFamilyDetails(anyDouble(), anyDouble(), anyDouble()))
 =======
         when(locationRepository.findStructureAndFamilyDetails(Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyDouble()))
 >>>>>>> 4dd439d2 (reformat server-core code)
+=======
+        when(locationRepository.findStructureAndFamilyDetails(anyDouble(), anyDouble(), anyDouble()))
+>>>>>>> 21476fad (fix codacy issues)
                 .thenReturn(expectedDetails);
         Collection<StructureDetails> detailsFromService = locationService.findStructuresWithinRadius(latitude, longitude,
                 1000);
