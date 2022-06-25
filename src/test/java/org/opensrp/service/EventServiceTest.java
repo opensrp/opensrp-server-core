@@ -142,7 +142,7 @@ public class EventServiceTest extends BaseRepositoryTest {
         plan.setIdentifier("identifier");
 
         when(planRepository.get(anyString())).thenReturn(plan);
-        Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), anyString(), any(Event.class));
+        doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), anyString(), any(Event.class));
         eventService.addEvent(event, username);
 
         event = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
@@ -228,7 +228,7 @@ public class EventServiceTest extends BaseRepositoryTest {
         plan.setEffectivePeriod(executionPeriod);
 
         when(planRepository.get("plan-id-1")).thenReturn(plan);
-        Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), any(PlanDefinition.class), anyString());
+        doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), any(PlanDefinition.class), anyString());
         eventService.addEvent(event, username);
         verify(planRepository, times(1)).get(stringArgumentCaptor.capture());
         verify(taskGenerator, times(1)).processPlanEvaluation(planDefinitionArgumentCaptor.capture(), stringArgumentCaptor.capture(), eventArgumentCaptor.capture());

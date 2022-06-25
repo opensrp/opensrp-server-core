@@ -265,12 +265,12 @@ public class EventService {
         if (event.getEventType() != null) {
             //Remove identifier since entity id is present, also create new service with the right location and provider
             String eventTypeLowercase = event.getEventType().toLowerCase();
-            if ((event.getEventType().startsWith(EventConstants.OUT_OF_AREA_SERVICE) || event.getEventType()
-                    .startsWith(EventConstants.NEW_OUT_OF_AREA_SERVICE))) {
+            if ((event.getEventType().startsWith(OUT_OF_AREA_SERVICE) || event.getEventType()
+                    .startsWith(NEW_OUT_OF_AREA_SERVICE))) {
 
                 boolean hasGrowthMonitoring =
-                        eventTypeLowercase.contains(EventConstants.GROWTH_MONITORING_EVENT.toLowerCase()) ||
-                                eventTypeLowercase.contains(EventConstants.GROWTH_MONITORING_EVENT_UNDERSCORED);
+                        eventTypeLowercase.contains(GROWTH_MONITORING_EVENT.toLowerCase()) ||
+                                eventTypeLowercase.contains(GROWTH_MONITORING_EVENT_UNDERSCORED);
 
                 if (hasGrowthMonitoring || eventTypeLowercase.contains(VACCINATION_EVENT.toLowerCase())) {
 
@@ -353,8 +353,7 @@ public class EventService {
                 break;
         }
         List<Obs> obsList = new ArrayList<>();
-        obsList.add(getServiceObs(submissionField, codedFieldCode, CODED, values, Collections.singletonList(
-                EventConstants.YES)));
+        obsList.add(getServiceObs(submissionField, codedFieldCode, CODED, values, Collections.singletonList(YES)));
         obsList.add(getServiceObs(submissionField + _DOSE, ObsConstants.NUMERIC_FIELD_CODE, NUMERIC,
                 Collections.singletonList(String.valueOf(1)), Collections.emptyList()));
 
@@ -677,7 +676,7 @@ public class EventService {
     }
 
     private void triggerPlanEvaluation(Event event, String username) {
-        String planIdentifier = event.getDetails() != null ? event.getDetails().get(EventConstants.PLAN_IDENTIFIER) : null;
+        String planIdentifier = event.getDetails() != null ? event.getDetails().get(PLAN_IDENTIFIER) : null;
         if (isPlanEvaluationEnabled && planIdentifier != null) {
             PlanDefinition plan = planRepository.get(planIdentifier);
             if (plan != null && plan.getStatus().equals(PlanDefinition.PlanStatus.ACTIVE) && (
