@@ -16,7 +16,6 @@ import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.EventSearchBean;
 import org.opensrp.util.Utils;
-import org.opensrp.util.constants.EventConstants;
 import org.opensrp.util.constants.ObsConstants;
 import org.opensrp.util.constants.RecurringServiceConstants;
 import org.smartregister.domain.Event;
