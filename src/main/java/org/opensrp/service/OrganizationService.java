@@ -150,9 +150,9 @@ public class OrganizationService {
     /**
      * Assigns the jurisdiction and /or plan to the organization with organizationId
      *
-     * @param identifier the id of the organization
+     * @param identifier     the id of the organization
      * @param jurisdictionId the identifier of the jurisdiction
-     * @param planId the identifier of the plan
+     * @param planId         the identifier of the plan
      * @param fromDate
      * @param toDate
      */
@@ -176,7 +176,7 @@ public class OrganizationService {
     /**
      * Gets the locations and Plans assigned to an organization
      *
-     * @param identifier the organization identifier
+     * @param identifier              the organization identifier
      * @param returnFutureAssignments flag to control if future assignments are returned
      * @return the assigned locations and plans
      */
@@ -205,7 +205,7 @@ public class OrganizationService {
     /**
      * Gets the locations and Plans assigned to a list of organizations
      *
-     * @param organizationIds the organization ids
+     * @param organizationIds         the organization ids
      * @param returnFutureAssignments flag to control if future assignments are returned
      * @return the assigned locations and plans
      */
