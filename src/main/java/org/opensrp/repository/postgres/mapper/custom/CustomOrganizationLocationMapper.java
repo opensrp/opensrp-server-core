@@ -35,7 +35,7 @@ public interface CustomOrganizationLocationMapper extends OrganizationLocationMa
      * @param orderByClause the order by clause
      * @param currentDate   todays date
      * @return organization locations and plans assigned to an organization valid
-     *         until now
+     * until now
      */
     List<OrganizationLocation> selectByExampleAndDateTo(@Param("oredCriteria") List<Criteria> oredCriteria,
                                                         @Param("orderByClause") String orderByClause, @Param("currentDate") Date currentDate);
