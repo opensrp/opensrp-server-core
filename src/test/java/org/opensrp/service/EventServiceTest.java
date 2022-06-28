@@ -168,7 +168,7 @@ public class EventServiceTest extends BaseRepositoryTest {
         plan.setIdentifier("identifier");
 
         when(planRepository.get(anyString())).thenReturn(plan);
-        Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), anyString(), any(Event.class));
+        doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), anyString(), any(Event.class));
         eventService.addEvent(event, username);
 
         event = eventService.findByFormSubmissionId("gjhg34534 nvbnv3345345__4");
