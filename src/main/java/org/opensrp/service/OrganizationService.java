@@ -151,6 +151,7 @@ public class OrganizationService {
      * Assigns the jurisdiction and /or plan to the organization with organizationId
      *
 <<<<<<< HEAD
+<<<<<<< HEAD
      * @param identifier     the id of the organization
      * @param jurisdictionId the identifier of the jurisdiction
      * @param planId         the identifier of the plan
@@ -159,6 +160,11 @@ public class OrganizationService {
      * @param jurisdictionId the identifier of the jurisdiction
      * @param planId the identifier of the plan
 >>>>>>> 4dd439d2 (reformat server-core code)
+=======
+     * @param identifier     the id of the organization
+     * @param jurisdictionId the identifier of the jurisdiction
+     * @param planId         the identifier of the plan
+>>>>>>> 342d08ef (update charges to fix merge conflict)
      * @param fromDate
      * @param toDate
      */
@@ -183,10 +189,14 @@ public class OrganizationService {
      * Gets the locations and Plans assigned to an organization
      *
 <<<<<<< HEAD
+<<<<<<< HEAD
      * @param identifier              the organization identifier
 =======
      * @param identifier the organization identifier
 >>>>>>> 4dd439d2 (reformat server-core code)
+=======
+     * @param identifier              the organization identifier
+>>>>>>> 342d08ef (update charges to fix merge conflict)
      * @param returnFutureAssignments flag to control if future assignments are returned
      * @return the assigned locations and plans
      */
@@ -216,10 +226,14 @@ public class OrganizationService {
      * Gets the locations and Plans assigned to a list of organizations
      *
 <<<<<<< HEAD
+<<<<<<< HEAD
      * @param organizationIds         the organization ids
 =======
      * @param organizationIds the organization ids
 >>>>>>> 4dd439d2 (reformat server-core code)
+=======
+     * @param organizationIds         the organization ids
+>>>>>>> 342d08ef (update charges to fix merge conflict)
      * @param returnFutureAssignments flag to control if future assignments are returned
      * @return the assigned locations and plans
      */
