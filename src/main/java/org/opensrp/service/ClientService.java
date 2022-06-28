@@ -244,7 +244,7 @@ public class ClientService {
 	}
 
 	@PreAuthorize("hasRole('CLIENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
+	@PostFilter("hasRole('CLIENT_VIEW_GLOBAL') or hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findByServerVersion(long serverVersion, Integer limit) {
 		return allClients.findByServerVersion(serverVersion, limit);
 	}
