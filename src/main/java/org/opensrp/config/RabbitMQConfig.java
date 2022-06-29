@@ -49,6 +49,9 @@ public class RabbitMQConfig {
 	@Value("${rabbitmq.host}")
 	private String host;
 
+	@Value("${rabbitmq.port}")
+	private int port;
+
 	@Value("${rabbitmq.virtualhost}")
 	private String virtualHost;
 
@@ -88,6 +91,7 @@ public class RabbitMQConfig {
 		CachingConnectionFactory connectionFactory = new CachingConnectionFactory();
 		connectionFactory.setVirtualHost(virtualHost);
 		connectionFactory.setHost(host);
+		connectionFactory.setPort(port);
 		connectionFactory.setUsername(username);
 		connectionFactory.setPassword(password);
 		return connectionFactory;
