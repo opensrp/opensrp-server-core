@@ -22,42 +22,11 @@ jobs:
     - uses: actions/checkout@v2
       with:
        submodules: recursive
+
     - name: Set up JDK 11
       uses: actions/setup-java@v1
       with:
         java-version: 11
-
-    - name: Setup Postgres
-      uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version:  '10'  # See https://hub.docker.com/_/postgres for available versions
-        postgresql db:       'opensrp_test'
-        postgresql user:     'opensrp_admin'
-        postgresql password: 'admin'
-    - name: Configure Postgres repository
-      run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "echo "deb http://apt.postgresql.org/pub/repos/apt/ `lsb_release -cs`-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list"
-
-    - name: Install PostGIS packages
-      run: docker exec -u 0 `docker ps -q --filter ancestor=postgres:10` bash -c  "apt-get -y update && apt-get -y install postgresql-client-10 postgresql-10-postgis-2.4 postgresql-10-postgis-2.4-scripts"
- 
-    - name: Install Postgres client
-      run: sudo apt-get -y update &&  sudo apt-get -y install postgresql-client-10
-      
-    - name: Create PostGIS extension
-      run: psql -p 5432 -c "create extension postgis" -U opensrp_admin -d opensrp_test -h localhost
-      env:
-        PGPASSWORD: 'admin'
-    - name: Setup rabbitmq
-      uses: getong/rabbitmq-action@v1.2
-      with:
-       rabbitmq version: '3.8.2-management-alpine'
-       host port: 5672
-       rabbitmq user: 'guest'
-       rabbitmq password: 'guest'
-       rabbitmq vhost: '/'
-       
-    - name: Show running services
-      run: sudo netstat -tuplen # listing all the port for debug purpose.
 
     - name: Create multimedia dir
       run: sudo mkdir -p /opt/multimedia/patient_images && id
