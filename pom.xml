@@ -5,7 +5,7 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>3.2.2-SNAPSHOT</version>
+	<version>3.2.3-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>https://github.com/OpenSRP/opensrp-server-core</url>
@@ -398,7 +398,12 @@
 			<version>2.2</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>testcontainers</artifactId>
+			<version>1.17.1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
