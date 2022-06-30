@@ -11,8 +11,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@Getter
-@Setter
 public class PractitionerSearchBean {
 
 	private Long serverVersion;
