@@ -340,9 +340,9 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         practitionerRepository.add(practitioner1);
         Practitioner practitioner2 = initTestPractitioner2();
         practitionerRepository.add(practitioner2);
-        PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean();
-        practitionerSearchBean.setOrderByFieldName(PractitionerSearchBean.FieldName.id);
-        practitionerSearchBean.setOrderByType(PractitionerSearchBean.OrderByType.DESC);
+        PractitionerSearchBean practitionerSearchBean = PractitionerSearchBean.builder().
+                orderByType(PractitionerSearchBean.OrderByType.DESC).
+                orderByFieldName(PractitionerSearchBean.FieldName.id).build();
         practitionerSearchBean.setServerVersion(1l);
         List<Practitioner> practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
         assertNotNull(practitioners);
@@ -350,7 +350,8 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals("practitioner-2-identifier",practitioners.get(0).getIdentifier());
         assertEquals("practitioner-1-identifier",practitioners.get(1).getIdentifier());
 
-        practitionerSearchBean.setOrderByType(PractitionerSearchBean.OrderByType.ASC);
+        practitionerSearchBean = PractitionerSearchBean.builder().orderByType(PractitionerSearchBean.OrderByType.ASC).
+                orderByFieldName(PractitionerSearchBean.FieldName.id).build();
         practitionerSearchBean.setServerVersion(1l);
         practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
         assertNotNull(practitioners);

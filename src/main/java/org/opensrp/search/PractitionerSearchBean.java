@@ -1,65 +1,35 @@
 package org.opensrp.search;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@SuperBuilder
+@Getter
+@Setter
 public class PractitionerSearchBean {
 
-
-	private Integer pageNumber = 0;
-
-	private Integer pageSize = 0;
-
-	private FieldName orderByFieldName;
-
-	private OrderByType orderByType;
+	private Long serverVersion;
 
 	public enum OrderByType {
 		ASC, DESC
 	}
 
-
 	public enum FieldName {
-		id, identifier, server_version
+		id, server_version
 	}
 
-	private Long serverVersion;
+	private Integer pageNumber = 0;
 
-	public Long getServerVersion() {
-		return serverVersion;
-	}
+	private Integer pageSize = 0;
 
-	public void setServerVersion(Long serverVersion) {
-		this.serverVersion = serverVersion;
-	}
+	private OrderByType orderByType;
 
-	public Integer getPageNumber() {
-		return pageNumber;
-	}
-
-	public void setPageNumber(Integer pageNumber) {
-		this.pageNumber = pageNumber;
-	}
-
-	public Integer getPageSize() {
-		return pageSize;
-	}
-
-	public void setPageSize(Integer pageSize) {
-		this.pageSize = pageSize;
-	}
-
-	public FieldName getOrderByFieldName() {
-		return orderByFieldName;
-	}
-
-	public void setOrderByFieldName(FieldName orderByFieldName) {
-		this.orderByFieldName = orderByFieldName;
-	}
-
-	public OrderByType getOrderByType() {
-		return orderByType;
-	}
-
-	public void setOrderByType(OrderByType orderByType) {
-		this.orderByType = orderByType;
-	}
+	private FieldName orderByFieldName;
 }
