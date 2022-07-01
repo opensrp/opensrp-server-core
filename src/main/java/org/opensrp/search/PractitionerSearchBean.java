@@ -12,13 +12,4 @@ import lombok.experimental.SuperBuilder;
 public class PractitionerSearchBean extends BaseSearchBean {
 
 	private Long serverVersion;
-
-	public enum OrderByType {
-		ASC, DESC
-	}
-
-	public enum FieldName {
-		id, server_version
-	}
-
 }

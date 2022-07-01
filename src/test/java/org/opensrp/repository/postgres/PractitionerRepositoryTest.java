@@ -13,9 +13,9 @@ import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.opensrp.search.BaseSearchBean;
 import org.smartregister.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
+import org.opensrp.search.BaseSearchBean;
 import org.opensrp.search.PractitionerSearchBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
