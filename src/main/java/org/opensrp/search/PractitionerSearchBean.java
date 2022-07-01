@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-public class PractitionerSearchBean {
+public class PractitionerSearchBean extends BaseSearchBean {
 
 	private Long serverVersion;
 
@@ -21,11 +21,4 @@ public class PractitionerSearchBean {
 		id, server_version
 	}
 
-	private Integer pageNumber = 0;
-
-	private Integer pageSize = 0;
-
-	private OrderByType orderByType;
-
-	private FieldName orderByFieldName;
 }
