@@ -10,12 +10,4 @@ import lombok.experimental.SuperBuilder;
 public class PractitionerSearchBean extends BaseSearchBean {
 
 	private Long serverVersion;
-
-	public Long getServerVersion() {
-		return serverVersion;
-	}
-
-	public void setServerVersion(Long serverVersion) {
-		this.serverVersion = serverVersion;
-	}
 }
