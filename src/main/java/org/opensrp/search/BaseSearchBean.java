@@ -16,7 +16,7 @@ public class BaseSearchBean {
 	}
 
 	public enum FieldName {
-		id
+		id, server_version
 	}
 
 	private Integer pageNumber = 0;
