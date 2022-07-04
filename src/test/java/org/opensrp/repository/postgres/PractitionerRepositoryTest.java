@@ -359,6 +359,27 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals(2,practitioners.size());
         assertEquals("practitioner-1-identifier",practitioners.get(0).getIdentifier());
         assertEquals("practitioner-2-identifier",practitioners.get(1).getIdentifier());
+
+        practitionerSearchBean = PractitionerSearchBean.builder().orderByType(BaseSearchBean.OrderByType.DESC).
+                orderByFieldName(BaseSearchBean.FieldName.server_version).build();
+        practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
+        assertNotNull(practitioners);
+        assertEquals(2,practitioners.size());
+        assertTrue(String.format(
+                "Expected serverVersion  %d for practitioner at index 0 to be greater than serverVersion %d for practitioner at index 1",
+                practitioners.get(0).getServerVersion(), practitioners.get(1).getServerVersion()),
+                practitioners.get(0).getServerVersion()>practitioners.get(1).getServerVersion());
+
+
+        practitionerSearchBean = PractitionerSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).
+                orderByFieldName(BaseSearchBean.FieldName.server_version).build();
+        practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
+        assertNotNull(practitioners);
+        assertEquals(2,practitioners.size());
+        assertTrue(String.format(
+                "Expected serverVersion  %d for practitioner at index 0 to be less than serverVersion %d for practitioner at index 1",
+                practitioners.get(0).getServerVersion(), practitioners.get(1).getServerVersion()),
+                practitioners.get(0).getServerVersion()<practitioners.get(1).getServerVersion());
     }
 
     @Test
