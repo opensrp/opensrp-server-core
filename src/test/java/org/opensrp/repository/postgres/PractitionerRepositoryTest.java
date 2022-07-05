@@ -422,22 +422,22 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
     }
 
     @Test
-    public void testGetPractitionerByPrimaryKey() {
+    public void testGetPractitionerByPrimaryKeyShouldInvokeSelectByExample() {
         CustomPractitionerMapper realPractitionerMapper = Whitebox.getInternalState(practitionerRepository, "practitionerMapper");
+        CustomPractitionerMapper spyCustomPractitionerMapper = Mockito.spy(CustomPractitionerMapper.class);
 
-        CustomPractitionerMapper customPractitionerMapperMock = Mockito.mock(CustomPractitionerMapper.class);
-        List<Practitioner> practitioners = new ArrayList<>();
-        Mockito.doReturn(practitioners).when(customPractitionerMapperMock).selectByExample(Mockito.any());
-        Whitebox.setInternalState(practitionerRepository, "practitionerMapper", customPractitionerMapperMock);
-        practitionerRepository.getByPrimaryKey(1L);
-        Mockito.verify(customPractitionerMapperMock).selectByExample(Mockito.any());
+        List<org.opensrp.domain.postgres.Practitioner> pgPractitioners = new ArrayList<>();
+                Whitebox.setInternalState(practitionerRepository, "practitionerMapper", spyCustomPractitionerMapper);
+        Mockito.doReturn(pgPractitioners).when(spyCustomPractitionerMapper).selectByExample(Mockito.any());
+        practitionerRepository.getByPrimaryKey((1L));
+        Mockito.verify(spyCustomPractitionerMapper).selectByExample(Mockito.any());
 
         // restore actual practitioner mapper so that proceeding tests do not fail
         Whitebox.setInternalState(practitionerRepository, "practitionerMapper", realPractitionerMapper);
     }
 
     @Test
-    public void testGetPractitionerByPrimaryKeyWithNullId() {
+    public void testGetPractitionerByPrimaryKeyWithNullIdShouldReturnNull() {
         assertNull(practitionerRepository.getByPrimaryKey(null));
     }
 
