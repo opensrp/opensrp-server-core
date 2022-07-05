@@ -14,7 +14,6 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.opensrp.domain.postgres.PractitionerExample;
 import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerMapper;
 import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.Practitioner;
