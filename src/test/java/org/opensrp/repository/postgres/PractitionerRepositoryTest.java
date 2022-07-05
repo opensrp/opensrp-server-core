@@ -13,6 +13,10 @@ import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.opensrp.domain.postgres.PractitionerExample;
+import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerMapper;
+import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.search.BaseSearchBean;
@@ -416,6 +420,26 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals(expectedPractitioner.getName(),actualPractitioner.getName());
         assertEquals(expectedPractitioner.getUserId(),actualPractitioner.getUserId());
         assertEquals(expectedPractitioner.getUsername(),actualPractitioner.getUsername());
+    }
+
+    @Test
+    public void testGetPractitionerByPrimaryKey() {
+        CustomPractitionerMapper realPractitionerMapper = Whitebox.getInternalState(practitionerRepository, "practitionerMapper");
+
+        CustomPractitionerMapper customPractitionerMapperMock = Mockito.mock(CustomPractitionerMapper.class);
+        List<Practitioner> practitioners = new ArrayList<>();
+        Mockito.doReturn(practitioners).when(customPractitionerMapperMock).selectByExample(Mockito.any());
+        Whitebox.setInternalState(practitionerRepository, "practitionerMapper", customPractitionerMapperMock);
+        practitionerRepository.getByPrimaryKey(1L);
+        Mockito.verify(customPractitionerMapperMock).selectByExample(Mockito.any());
+
+        // restore actual practitioner mapper so that proceeding tests do not fail
+        Whitebox.setInternalState(practitionerRepository, "practitionerMapper", realPractitionerMapper);
+    }
+
+    @Test
+    public void testGetPractitionerByPrimaryKeyWithNullId() {
+        assertNull(practitionerRepository.getByPrimaryKey(null));
     }
 
 }
