@@ -223,16 +223,22 @@ public class EventService {
 	 */
 	public synchronized Event processOutOfArea(Event event) {
 		try {
-			String identifier = StringUtils.isBlank(event.getIdentifier(Client.ZEIR_ID)) ?
-					event.getIdentifier(OPENSRP_ID) : event.getIdentifier(Client.ZEIR_ID);
+			String programClientId = event.getDetails() != null
+					? event.getDetails().getOrDefault("program_client_id", "")
+					: "";
+
+			String identifier = StringUtils.isBlank(event.getIdentifier(Client.ZEIR_ID))
+					? (StringUtils.isBlank(event.getIdentifier(OPENSRP_ID)) ? programClientId : event.getIdentifier(OPENSRP_ID))
+					: event.getIdentifier(Client.ZEIR_ID);
+
+			logger.info("Processing out of area event: baseEntityId=" + event.getBaseEntityId() + "; identifier=" + identifier);
 
 			if (StringUtils.isNotBlank(event.getBaseEntityId()) || StringUtils.isBlank(identifier)) {
 				return event;
 			}
 
-			List<org.smartregister.domain.Client> clients =
-					identifier.startsWith(CARD_ID_PREFIX) ? clientService
-							.findAllByAttribute(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
+			List<org.smartregister.domain.Client> clients = identifier.startsWith(CARD_ID_PREFIX)
+							? clientService.findAllByAttribute(NFC_CARD_IDENTIFIER, identifier.substring(CARD_ID_PREFIX.length()))
 							: getClientByIdentifier(identifier);
 
 			if (clients == null || clients.isEmpty()) {
@@ -240,7 +246,6 @@ public class EventService {
 			}
 
 			for (org.smartregister.domain.Client client : clients) {
-
 				List<Event> existingEvents = findByBaseEntityAndType(client.getBaseEntityId(), BIRTH_REGISTRATION_EVENT);
 
 				if (existingEvents == null || existingEvents.isEmpty()) {
@@ -557,7 +562,6 @@ public class EventService {
 
 	public List<Event> findByBaseEntityAndType(String baseEntityId, String eventType) {
 		return allEvents.findByBaseEntityAndType(baseEntityId, eventType);
-
 	}
 
 	private Event getUniqueEventFromEventList(List<Event> events) throws IllegalArgumentException {
