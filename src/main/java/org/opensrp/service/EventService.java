@@ -253,7 +253,9 @@ public class EventService {
 	 */
 	public synchronized Event processOutOfArea(Event event) {
 		try {
-			String programClientId = event.getDetails().getOrDefault("program_client_id", "");
+			String programClientId = event.getDetails() != null
+					? event.getDetails().getOrDefault("program_client_id", "")
+					: "";
 
 			String identifier = StringUtils.isBlank(event.getIdentifier(Client.ZEIR_ID))
 					? (StringUtils.isBlank(event.getIdentifier(OPENSRP_ID)) ? programClientId : event.getIdentifier(OPENSRP_ID))
