@@ -10,6 +10,7 @@ Postgres, couchdb, lucene and scheduler domain objects, repositories and service
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 9848f012 (update to remove conflicts)
@@ -25,9 +26,22 @@ Postgres, couchdb, lucene and scheduler domain objects, repositories and service
 <<<<<<< HEAD
 =======
 >>>>>>> 6315adea (fix codacy)
+=======
+  * OpenSRP Server Refactor and Cleanup
+    * [Refactor and Cleanup](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/562659330/OpenSRP+Server+Refactor+and+Clean+up)
+    * [How to upload and use maven jar artifacts](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/564428801/How+to+upload+and+use+maven+jar+artifacts)
+    * [Managing Server Wide Properties](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/602570753/Managing+Server+Wide+Properties)
+    * [Server Web Build](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/616595457/Server+Web+Build)
 
-* [OpenSRP Server Build](https://smartregister.atlassian.net/wiki/display/Documentation/OpenSRP+Server+Build)
+  * [OpenSRP Server Build](https://smartregister.atlassian.net/wiki/display/Documentation/OpenSRP+Server+Build)
+>>>>>>> 25dec5fa (update README.md codacy issue)
 
+  * Deployment
+    * [Docker Setup](https://smartregister.atlassian.net/wiki/display/Documentation/Docker+Setup)
+    * [Docker Compose Setup](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/52690976/Docker+Compose+Setup)
+    * [Ansible Playbooks](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/540901377/Ansible+Playbooks)
+
+<<<<<<< HEAD
 
 <<<<<<< HEAD
 =======
@@ -51,6 +65,10 @@ Postgres, couchdb, lucene and scheduler domain objects, repositories and service
 >>>>>>> 6315adea (fix codacy)
 * [Postgres Database Support](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/251068417/Postgres+Database+Support+as+Main+Datastore)
 * [OpenSRP Load Testing](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/268075009/OpenSRP+Load+Testing)
+=======
+  * [Postgres Database Support](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/251068417/Postgres+Database+Support+as+Main+Datastore)
+  * [OpenSRP Load Testing](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/268075009/OpenSRP+Load+Testing)
+>>>>>>> 25dec5fa (update README.md codacy issue)
 
 ## Running Integration Tests
 
@@ -62,6 +80,7 @@ instance to run the integration tests on one's machine.
 
 When an integration test is run/executed:
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 *   Test-Containers will pull a docker image and/or start a docker container needed.
@@ -83,3 +102,9 @@ For more on publishing this artifact see [Publishing via Tag](https://smartregis
 >>>>>>> ba07477e (update to remove conflicts)
 =======
 >>>>>>> 9848f012 (update to remove conflicts)
+=======
+  * Test-Containers will pull a docker image and/or start a docker container needed.
+  * Test-Containers will then provide a dynamic port to connect to, from the hosts network.
+  * A single instance is created for all the tests.
+  * The docker container will be killed once all the tests have been executed.
+>>>>>>> 25dec5fa (update README.md codacy issue)
