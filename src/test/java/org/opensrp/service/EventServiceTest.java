@@ -253,35 +253,52 @@ public class EventServiceTest extends BaseRepositoryTest {
 	}
 	
 	@Test
-	public void testProcessOutOfArea() throws SQLException {
-		scripts.add("client.sql");
+	public void testProcessOutOfAreaDoesNotAddOutOfCatchmentEventWhenClientIdentifierIsInvalid() throws SQLException {
 		populateDatabase();
-		Event event = new Event().withEventType("Out of Area Service - Vaccination").withProviderId("tester111")
-		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "218229-3");
 
+		Event event = new Event().withEventType("Out of Area Service - Vaccination")
+				.withProviderId("tester112")
+				.withLocationId("2242342-23dsfsdfds")
+				.withIdentifier(Client.ZEIR_ID, "c_2182291985");
+
+		int prevCount = eventService.getAll().size();
 		Event outOfAreaEvent = eventService.processOutOfArea(event);
-		assertEquals(event, outOfAreaEvent);
-		assertEquals(21, eventService.getAll().size());
-		
-		//Test with card identifier type. Should not create any service because there is no client with that identifier
-		event = new Event().withEventType("Out of Area Service - Vaccination").withProviderId("tester112")
-		        .withLocationId("2242342-23dsfsdfds").withIdentifier(Client.ZEIR_ID, "c_2182291985");
-
-		outOfAreaEvent = eventService.processOutOfArea(event);
 		assertNotNull(outOfAreaEvent);
 		assertEquals(event, outOfAreaEvent);
-		assertEquals(21, eventService.getAll().size());
-		
-		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
-		event = new Event().withEventType("Out of Area Service - Growth Monitoring")
-		        .withFormSubmissionId("gjhg34534 nvbnv3345345__4").withEventDate(new DateTime()).withObs(obs)
-		        .withIdentifier(Client.ZEIR_ID, "218229-3");
-		
-		outOfAreaEvent = eventService.processOutOfArea(event);
+		assertEquals(prevCount, eventService.getAll().size());
+	}
+
+	@Test
+	public void testProcessOutOfAreaAddsOutOfCatchmentVaccinationEventWhenEventHasValidClientIdentifier() throws SQLException {
+		populateDatabase();
+
+		Event event = new Event()
+				.withEventType("Out of Area Service - Vaccination")
+				.withProviderId("tester111")
+		        .withLocationId("2242342-23dsfsdfds")
+				.withIdentifier(Client.ZEIR_ID, "218229-3");
+
+		int prevCount = eventService.getAll().size();
+		Event outOfAreaEvent = eventService.processOutOfArea(event);
 		assertEquals(event, outOfAreaEvent);
-		
-		assertEquals(21, eventService.getAll().size());
-		
+		assertEquals(prevCount + 1, eventService.getAll().size());
+	}
+
+	@Test
+	public void testProcessOutOfAreaAddsOutOfCatchmentGrowthMonitoringEventWhenEventHasValidClientIdentifier() throws SQLException {
+		populateDatabase();
+
+		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
+		Event event = new Event()
+				.withEventType("Out of Area Service - Growth Monitoring")
+				.withFormSubmissionId("gjhg34534 nvbnv3345345__4")
+				.withEventDate(new DateTime()).withObs(obs)
+				.withIdentifier(Client.ZEIR_ID, "218229-3");
+
+		int prevCount = eventService.getAll().size();
+		Event outOfAreaEvent = eventService.processOutOfArea(event);
+		assertEquals(event, outOfAreaEvent);
+		assertEquals(prevCount + 1, eventService.getAll().size());
 	}
 
 	@Test

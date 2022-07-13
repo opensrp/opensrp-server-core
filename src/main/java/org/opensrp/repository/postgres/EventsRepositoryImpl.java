@@ -51,7 +51,7 @@ public class EventsRepositoryImpl extends BaseRepositoryImpl<Event> implements E
 	@Override
 	public void add(Event entity) {
 		if (entity == null || entity.getBaseEntityId() == null) {
-			return;
+			throw new IllegalArgumentException("Empty event or missing baseEntityId");
 		}
 		
 		if (retrievePrimaryKey(entity) != null) { // Event already added
