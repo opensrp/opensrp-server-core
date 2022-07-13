@@ -384,10 +384,10 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest {
         practitionerRepository.add(expectedPractitioner);
         Practitioner actualPractitioner = practitionerRepository.getPractitionerByIdentifier(expectedPractitioner.getIdentifier());
         assertNotNull(actualPractitioner);
-        assertEquals(expectedPractitioner.getIdentifier(),actualPractitioner.getIdentifier());
-        assertEquals(expectedPractitioner.getName(),actualPractitioner.getName());
-        assertEquals(expectedPractitioner.getUserId(),actualPractitioner.getUserId());
-        assertEquals(expectedPractitioner.getUsername(),actualPractitioner.getUsername());
+        assertEquals(expectedPractitioner.getIdentifier(), actualPractitioner.getIdentifier());
+        assertEquals(expectedPractitioner.getName(), actualPractitioner.getName());
+        assertEquals(expectedPractitioner.getUserId(), actualPractitioner.getUserId());
+        assertEquals(expectedPractitioner.getUsername(), actualPractitioner.getUsername());
     }
 
 }
