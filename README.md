@@ -17,6 +17,7 @@ Postgres, couchdb, lucene and scheduler domain objects, repositories and service
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 =======
 >>>>>>> 9848f012 (update to remove conflicts)
@@ -120,9 +121,16 @@ Postgres, couchdb, lucene and scheduler domain objects, repositories and service
 >>>>>>> 43e38c25 (update README.md)
 =======
 >>>>>>> f5d93686 (update README.md)
+=======
+  * OpenSRP Server Refactor and Cleanup
+    * [Refactor and Cleanup](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/562659330/OpenSRP+Server+Refactor+and+Clean+up)
+      * [How to upload and use maven jar artifacts](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/564428801/How+to+upload+and+use+maven+jar+artifacts)
+      * [Managing Server Wide Properties](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/602570753/Managing+Server+Wide+Properties)
+      * [Server Web Build](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/616595457/Server+Web+Build)
+>>>>>>> a6db8543 (update README.md)
 
-* [OpenSRP Server Build](https://smartregister.atlassian.net/wiki/display/Documentation/OpenSRP+Server+Build)
-    * Deployment
+  * [OpenSRP Server Build](https://smartregister.atlassian.net/wiki/display/Documentation/OpenSRP+Server+Build)
+  * Deployment
       * [Docker Setup](https://smartregister.atlassian.net/wiki/display/Documentation/Docker+Setup)
       * [Docker Compose Setup](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/52690976/Docker+Compose+Setup)
       * [Ansible Playbooks](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/540901377/Ansible+Playbooks)
