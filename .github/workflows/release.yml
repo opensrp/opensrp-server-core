@@ -36,14 +36,10 @@ jobs:
         env:
           SETTINGS_FILE: ${{ secrets.SETTINGS_XML }}
 
-      - name: Create multimedia dir
-        run: sudo mkdir -p /opt/multimedia/patient_images && id
-
-      - name: Grant read and write permissions to multimedia directory
-        run: sudo chmod a+rwx /opt/multimedia/patient_images
-
-     # - name: Run Unit tests with Maven
-      #  run: mvn -B clean test --file pom.xml --no-transfer-progress  
-
       - name: Generate & upload library snapshot artifact JAR (Java Archive) file
         run: mvn clean deploy -Dmaven.test.skip=true --no-transfer-progress 
+
+      - name: Github Release
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: ${{ contains(github.ref, '-alpha') || contains(github.ref, '-beta') }}
