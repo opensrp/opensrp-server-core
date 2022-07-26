@@ -41,4 +41,4 @@ jobs:
       #  run: mvn -B clean test --file pom.xml --no-transfer-progress  
 
       - name: Generate & upload library snapshot artifact JAR (Java Archive) file
-        run: mvn clean deploy -Dmaven.test.skip=true "-DsonatypeUsername=${{ secrets.NEXUS_USERNAME }}" "-DsonatypePassword=${{ secrets.NEXUS_PASSWORD }}"
+        run: mvn clean deploy -Dmaven.test.skip=true -DsonatypeUsername=${{ secrets.NEXUS_USERNAME }} -DsonatypePassword=${{ secrets.NEXUS_PASSWORD }}
