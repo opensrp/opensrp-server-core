@@ -1,8 +1,8 @@
 # opensrp-server-core
 
-[![Build Status](https://travis-ci.org/OpenSRP/opensrp-server-core.svg?branch=master)](https://travis-ci.org/OpenSRP/opensrp-server-core)
+![Build Status](https://github.com/opensrp/opensrp-server-core/actions/workflows/ci.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/opensrp/opensrp-server-core/badge.svg?branch=v2)](https://coveralls.io/github/opensrp/opensrp-server-core?branch=v2)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/97b0f387f0fa484caffea641f4762fbe)](https://www.codacy.com/app/OpenSRP/opensrp-server-core?utm\_source=github.com\&utm\_medium=referral\&utm\_content=OpenSRP/opensrp-server-core\&utm\_campaign=Badge\_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a149805a96c547acaa3bca1d25858e0b)](https://www.codacy.com/gh/opensrp/opensrp-server-core/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OpenSRP/opensrp-server-core&amp;utm_campaign=Badge_Grade)
 
 Postgres, couchdb, lucene and scheduler domain objects, repositories and services
 
@@ -33,3 +33,7 @@ When an integration test is run/executed:
 *   Test-Containers will then provide a dynamic port to connect to, from the hosts network.
 *   A single instance is created for all the tests.
 *   The docker container will be killed once all the tests have been executed.
+
+## Publishing artifacts
+
+For more on publishing this artifact see [Publishing via Tag](https://smartregister.atlassian.net/wiki/spaces/Documentation/pages/3013902337/How+to+set+up+Server+Library+artifact+CI+CD+on+Github#Publishing-via-TAG)

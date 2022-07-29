@@ -8,10 +8,7 @@ on:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+-SNAPSHOT
       - v[0-9]+.[0-9]+.[0-9]+-[0-9a-zA-Z]+-SNAPSHOT
-      - v[0-9]+.[0-9]+.[0-9]+-[0-9a-zA-Z]+-[0-9a-zA-Z]+-SNAPSHOT
-env: 
- NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
- NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
+      - v[0-9]+.[0-9]+.[0-9]+-[0-9a-zA-Z]+-[0-9a-zA-Z]+-SNAPSHOT 
 
 jobs:
   release:
