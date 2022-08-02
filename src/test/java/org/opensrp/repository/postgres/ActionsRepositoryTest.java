@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -85,6 +86,9 @@ public class ActionsRepositoryTest extends BaseRepositoryTest {
 		List<String> ids = Arrays.asList("05934ae338431f28bf6793b241645f1f", "05934ae338431f28bf6793b24164a5d7",
 		    "05934ae338431f28bf6793b2417c5aae");
 		int found = 0;
+		AtomicInteger found1=new AtomicInteger(0);
+
+
 		for (Action act : actions) {
 			assertNotEquals("05934ae338431f28bf6793b2417c98f9", act.getId());
 			if (ids.contains(act.getId()))
