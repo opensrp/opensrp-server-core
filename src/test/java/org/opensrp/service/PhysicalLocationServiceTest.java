@@ -3,6 +3,7 @@ package org.opensrp.service;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
@@ -430,15 +431,7 @@ public class PhysicalLocationServiceTest {
         StructureDetails structure = new StructureDetails(UUID.randomUUID().toString(), "3221", "Mosquito Point");
         expectedDetails.add(structure);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
         when(locationRepository.findStructureAndFamilyDetails(anyDouble(), anyDouble(), anyDouble()))
-=======
-        when(locationRepository.findStructureAndFamilyDetails(Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyDouble()))
->>>>>>> 4dd439d2 (reformat server-core code)
-=======
-        when(locationRepository.findStructureAndFamilyDetails(anyDouble(), anyDouble(), anyDouble()))
->>>>>>> 21476fad (fix codacy issues)
                 .thenReturn(expectedDetails);
         Collection<StructureDetails> detailsFromService = locationService.findStructuresWithinRadius(latitude, longitude,
                 1000);

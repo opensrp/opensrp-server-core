@@ -3,6 +3,7 @@ package org.opensrp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+
 import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -227,63 +228,6 @@ public class EventServiceTest extends BaseRepositoryTest {
         executionPeriod.setEnd(new LocalDate().plusYears(2).toDateTimeAtStartOfDay());
         plan.setEffectivePeriod(executionPeriod);
 
-<<<<<<< HEAD
-		when(planRepository.get("plan-id-1")).thenReturn(plan);
-		Mockito.doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), any(PlanDefinition.class), anyString());
-		eventService.addEvent(event, username);
-		verify(planRepository, times(1)).get(stringArgumentCaptor.capture());
-		verify(taskGenerator, times(1)).processPlanEvaluation(planDefinitionArgumentCaptor.capture(),stringArgumentCaptor.capture(),eventArgumentCaptor.capture());
-	}
-	
-	@Test
-	public void testProcessOutOfAreaDoesNotAddOutOfCatchmentEventWhenClientIdentifierIsInvalid() throws SQLException {
-		populateDatabase();
-
-		Event event = new Event().withEventType("Out of Area Service - Vaccination")
-				.withProviderId("tester112")
-				.withLocationId("2242342-23dsfsdfds")
-				.withIdentifier(Client.ZEIR_ID, "c_2182291985");
-
-		int prevCount = eventService.getAll().size();
-		Event outOfAreaEvent = eventService.processOutOfArea(event);
-		assertNotNull(outOfAreaEvent);
-		assertEquals(event, outOfAreaEvent);
-		assertEquals(prevCount, eventService.getAll().size());
-	}
-
-	@Test
-	public void testProcessOutOfAreaAddsOutOfCatchmentVaccinationEventWhenEventHasValidClientIdentifier() throws SQLException {
-		populateDatabase();
-
-		Event event = new Event()
-				.withEventType("Out of Area Service - Vaccination")
-				.withProviderId("tester111")
-		        .withLocationId("2242342-23dsfsdfds")
-				.withIdentifier(Client.ZEIR_ID, "218229-3");
-
-		int prevCount = eventService.getAll().size();
-		Event outOfAreaEvent = eventService.processOutOfArea(event);
-		assertEquals(event, outOfAreaEvent);
-		assertEquals(prevCount + 1, eventService.getAll().size());
-	}
-
-	@Test
-	public void testProcessOutOfAreaAddsOutOfCatchmentGrowthMonitoringEventWhenEventHasValidClientIdentifier() throws SQLException {
-		populateDatabase();
-
-		Obs obs = new Obs("concept", "decimal", "1730AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA", null, "3.5", null, "weight");
-		Event event = new Event()
-				.withEventType("Out of Area Service - Growth Monitoring")
-				.withFormSubmissionId("gjhg34534 nvbnv3345345__4")
-				.withEventDate(new DateTime()).withObs(obs)
-				.withIdentifier(Client.ZEIR_ID, "218229-3");
-
-		int prevCount = eventService.getAll().size();
-		Event outOfAreaEvent = eventService.processOutOfArea(event);
-		assertEquals(event, outOfAreaEvent);
-		assertEquals(prevCount + 1, eventService.getAll().size());
-	}
-=======
         when(planRepository.get("plan-id-1")).thenReturn(plan);
         doNothing().when(taskGenerator).processPlanEvaluation(any(PlanDefinition.class), any(PlanDefinition.class), anyString());
         eventService.addEvent(event, username);
@@ -301,7 +245,6 @@ public class EventServiceTest extends BaseRepositoryTest {
         Event outOfAreaEvent = eventService.processOutOfArea(event);
         assertEquals(event, outOfAreaEvent);
         assertEquals(21, eventService.getAll().size());
->>>>>>> 4dd439d2 (reformat server-core code)
 
         //Test with card identifier type. Should not create any service because there is no client with that identifier
         event = new Event().withEventType("Out of Area Service - Vaccination").withProviderId("tester112")
