@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.opensrp.domain;
 
@@ -11,62 +11,62 @@ import java.util.Date;
  */
 public class AssignedLocations implements Serializable {
 
-	private String organizationId;
+    private String organizationId;
 
-	private String jurisdictionId;
+    private String jurisdictionId;
 
-	private String planId;
+    private String planId;
 
-	private Date fromDate;
+    private Date fromDate;
 
-	private Date toDate;
+    private Date toDate;
 
-	public AssignedLocations(String jurisdictionId, String planId) {
-		setJurisdictionId(jurisdictionId);
-		setPlanId(planId);
-	}
-	
-	public AssignedLocations() {//Default constructor, needed by mybatis
-	}
+    public AssignedLocations(String jurisdictionId, String planId) {
+        setJurisdictionId(jurisdictionId);
+        setPlanId(planId);
+    }
 
-	public String getOrganizationId() {
-		return organizationId;
-	}
+    public AssignedLocations() {//Default constructor, needed by mybatis
+    }
 
-	public void setOrganizationId(String organizationId) {
-		this.organizationId = organizationId;
-	}
+    public String getOrganizationId() {
+        return organizationId;
+    }
 
-	public String getJurisdictionId() {
-		return jurisdictionId;
-	}
+    public void setOrganizationId(String organizationId) {
+        this.organizationId = organizationId;
+    }
 
-	public void setJurisdictionId(String jurisdictionId) {
-		this.jurisdictionId = jurisdictionId;
-	}
+    public String getJurisdictionId() {
+        return jurisdictionId;
+    }
 
-	public String getPlanId() {
-		return planId;
-	}
+    public void setJurisdictionId(String jurisdictionId) {
+        this.jurisdictionId = jurisdictionId;
+    }
 
-	public void setPlanId(String planId) {
-		this.planId = planId;
-	}
+    public String getPlanId() {
+        return planId;
+    }
 
-	public Date getFromDate() {
-		return fromDate;
-	}
+    public void setPlanId(String planId) {
+        this.planId = planId;
+    }
 
-	public void setFromDate(Date fromDate) {
-		this.fromDate = fromDate;
-	}
+    public Date getFromDate() {
+        return fromDate;
+    }
 
-	public Date getToDate() {
-		return toDate;
-	}
+    public void setFromDate(Date fromDate) {
+        this.fromDate = fromDate;
+    }
 
-	public void setToDate(Date toDate) {
-		this.toDate = toDate;
-	}
+    public Date getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(Date toDate) {
+        this.toDate = toDate;
+    }
 
 }

@@ -10,23 +10,23 @@ import static org.junit.Assert.assertNotNull;
 
 public class ThreadPoolExecutorConfigTest {
 
-	private ThreadPoolExecutorConfig poolExecutorConfig;
+    private ThreadPoolExecutorConfig poolExecutorConfig;
 
-	@Before
-	public void setUp() {
-		poolExecutorConfig = new ThreadPoolExecutorConfig();
-	}
+    @Before
+    public void setUp() {
+        poolExecutorConfig = new ThreadPoolExecutorConfig();
+    }
 
-	@Test
-	public void testTaskExecutorShouldReturnTaskExecutor() {
-		int threadPoolCoreSize = 3;
-		int threadPoolMaxSize = 4;
-		WhiteboxImpl.setInternalState(poolExecutorConfig, "threadPoolCoreSize", threadPoolCoreSize);
-		WhiteboxImpl.setInternalState(poolExecutorConfig, "threadPoolMaxSize", threadPoolMaxSize);
+    @Test
+    public void testTaskExecutorShouldReturnTaskExecutor() {
+        int threadPoolCoreSize = 3;
+        int threadPoolMaxSize = 4;
+        WhiteboxImpl.setInternalState(poolExecutorConfig, "threadPoolCoreSize", threadPoolCoreSize);
+        WhiteboxImpl.setInternalState(poolExecutorConfig, "threadPoolMaxSize", threadPoolMaxSize);
 
-		ThreadPoolTaskExecutor taskExecutor = poolExecutorConfig.taskExecutor();
-		assertNotNull(taskExecutor);
-		assertEquals(threadPoolCoreSize, taskExecutor.getCorePoolSize());
-		assertEquals(threadPoolMaxSize, taskExecutor.getMaxPoolSize());
-	}
+        ThreadPoolTaskExecutor taskExecutor = poolExecutorConfig.taskExecutor();
+        assertNotNull(taskExecutor);
+        assertEquals(threadPoolCoreSize, taskExecutor.getCorePoolSize());
+        assertEquals(threadPoolMaxSize, taskExecutor.getMaxPoolSize());
+    }
 }

@@ -9,12 +9,12 @@ import org.opensrp.repository.postgres.mapper.StructureMapper;
 
 public interface CustomStructureMapper extends StructureMapper {
 
-	int insertSelectiveAndSetId(Structure structure);
+    int insertSelectiveAndSetId(Structure structure);
 
-	List<StructureFamilyDetails> selectStructureAndFamilyWithinRadius(@Param("latitude") double latitude,
-			@Param("longitude") double longitude, @Param("radius") double radius);
-	
-	Long selectServerVersionByPrimaryKey(Long id);
-	
-	int updateByPrimaryKeyAndGenerateServerVersion(Structure structure);
+    List<StructureFamilyDetails> selectStructureAndFamilyWithinRadius(@Param("latitude") double latitude,
+                                                                      @Param("longitude") double longitude, @Param("radius") double radius);
+
+    Long selectServerVersionByPrimaryKey(Long id);
+
+    int updateByPrimaryKeyAndGenerateServerVersion(Structure structure);
 }

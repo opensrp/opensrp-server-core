@@ -21,13 +21,6 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
     @Autowired
     private ManifestRepository manifestRepository;
 
-    @Override
-    protected Set<String> getDatabaseScripts() {
-        Set<String> scripts = new HashSet<String>();
-        scripts.add("manifest.sql");
-        return scripts;
-    }
-
     private static Manifest initTestManifest() {
         Manifest manifest = new Manifest();
         String identifier = "7";
@@ -58,6 +51,12 @@ public class ManifestRepositoryTest extends BaseRepositoryTest {
         return manifest;
     }
 
+    @Override
+    protected Set<String> getDatabaseScripts() {
+        Set<String> scripts = new HashSet<String>();
+        scripts.add("manifest.sql");
+        return scripts;
+    }
 
     @Test
     public void testGet() {

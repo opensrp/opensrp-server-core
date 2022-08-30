@@ -56,7 +56,7 @@
     </select>
 
     <select id="getJsonWidgetValidatorClientFormMetadata" parameterType="boolean"
-        resultMap="BaseClientFormMetadataResultMap">
+            resultMap="BaseClientFormMetadataResultMap">
         SELECT * FROM core.client_form_metadata WHERE is_json_validator = #{isJsonValidator, jdbcType=BIT}
     </select>
 

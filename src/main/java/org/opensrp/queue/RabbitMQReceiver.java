@@ -28,73 +28,67 @@ import com.ibm.fhir.model.resource.Resource;
 @RabbitListener(queues = "rabbitmq.task.queue", id = "listener")
 public class RabbitMQReceiver {
 
-	private PlanEvaluator planEvaluator;
+    private static Logger logger = LogManager.getLogger(RabbitMQReceiver.class.toString());
+    private PlanEvaluator planEvaluator;
+    @Autowired
+    private PlanService planService;
+    @Autowired
+    private QueueHelper queueHelper;
+    //import task generator to guarantee PathEvaluatorLibrary is instantiated first
+    @SuppressWarnings("unused")
+    @Autowired
+    private TaskGenerator taskGenerator;
+    private FHIRParser fhirParser;
 
-	@Autowired
-	private PlanService planService;
-	
-	@Autowired
-	private QueueHelper queueHelper;
-	
-	//import task generator to guarantee PathEvaluatorLibrary is instantiated first
-	@SuppressWarnings("unused")
-	@Autowired
-	private TaskGenerator taskGenerator;
+    @PostConstruct
+    public void init() {
+        fhirParser = FHIRParser.parser(Format.JSON);
+    }
 
-	private FHIRParser fhirParser;
+    @RabbitHandler
+    public void receiver(PlanEvaluatorMessage planEvaluatorMessage) {
+        logger.info("PlanEvaluatorMessage listener invoked - Consuming Message with Plan Definition Identifier : " + planEvaluatorMessage.getPlanIdentifier());
+        initializePathEvaluator(planEvaluatorMessage.getUsername());
 
-	private static Logger logger = LogManager.getLogger(RabbitMQReceiver.class.toString());
+        if (planEvaluatorMessage != null && planEvaluator != null) {
+            PlanDefinition planDefinition = planService.getPlan(planEvaluatorMessage.getPlanIdentifier());
+            if (planDefinition != null && planDefinition.getActions() != null && planEvaluatorMessage.getJurisdiction() != null) {
+                planEvaluator.evaluatePlan(planDefinition,
+                        planEvaluatorMessage.getTriggerType(),
+                        planEvaluatorMessage.getJurisdiction(), null);
+            }
+        }
+    }
 
-	@PostConstruct
-	public void init() {
-		fhirParser = FHIRParser.parser(Format.JSON);
-	}
+    @RabbitHandler
+    public void receiver(ResourceEvaluatorMessage resourceEvaluatorMessage) {
+        logger.info("ResourceEvaluatorMessage invoked - Consuming Message");
+        if (resourceEvaluatorMessage != null) {
+            InputStream stream = resourceEvaluatorMessage.getResource() != null ? new ByteArrayInputStream(
+                    resourceEvaluatorMessage.getResource().getBytes(StandardCharsets.UTF_8)) : null;
+            try {
+                if (stream != null) {
+                    Resource resource = fhirParser.parse(stream);
+                    logger.info("Resource id is : " + resource.getId());
+                    initializePathEvaluator(resourceEvaluatorMessage.getUsername());
+                    if (resource != null && resourceEvaluatorMessage != null
+                            && resourceEvaluatorMessage.getAction() != null
+                            && resourceEvaluatorMessage.getAction().getCondition() != null
+                            && planEvaluator != null) {
+                        planEvaluator.evaluateResource(resource, resourceEvaluatorMessage.getQuestionnaireResponse(),
+                                resourceEvaluatorMessage.getAction(), resourceEvaluatorMessage.getPlanIdentifier(),
+                                resourceEvaluatorMessage.getJurisdictionCode(), resourceEvaluatorMessage.getTriggerType());
+                    }
+                }
+            } catch (FHIRParserException e) {
+                logger.error("FHIRParserException occurred " + e.getMessage());
+            }
+        }
+    }
 
-	@RabbitHandler
-	public void receiver(PlanEvaluatorMessage planEvaluatorMessage) {
-		logger.info("PlanEvaluatorMessage listener invoked - Consuming Message with Plan Definition Identifier : " + planEvaluatorMessage.getPlanIdentifier());
-		initializePathEvaluator(planEvaluatorMessage.getUsername());
-
-		if (planEvaluatorMessage != null && planEvaluator != null) {
-			PlanDefinition planDefinition = planService.getPlan(planEvaluatorMessage.getPlanIdentifier());
-			if (planDefinition != null && planDefinition.getActions() != null && planEvaluatorMessage.getJurisdiction() != null) {
-				planEvaluator.evaluatePlan(planDefinition,
-						planEvaluatorMessage.getTriggerType(),
-						planEvaluatorMessage.getJurisdiction(), null);
-			}
-		}
-	}
-
-	@RabbitHandler
-	public void receiver(ResourceEvaluatorMessage resourceEvaluatorMessage) {
-		logger.info("ResourceEvaluatorMessage invoked - Consuming Message");
-		if (resourceEvaluatorMessage != null) {
-			InputStream stream = resourceEvaluatorMessage.getResource() != null ? new ByteArrayInputStream(
-					resourceEvaluatorMessage.getResource().getBytes(StandardCharsets.UTF_8)) : null;
-			try {
-				if (stream != null) {
-					Resource resource = fhirParser.parse(stream);
-					logger.info("Resource id is : " + resource.getId());
-					initializePathEvaluator(resourceEvaluatorMessage.getUsername());
-					if (resource != null && resourceEvaluatorMessage != null
-							&& resourceEvaluatorMessage.getAction() != null
-							&& resourceEvaluatorMessage.getAction().getCondition() != null
-							&& planEvaluator != null) {
-						planEvaluator.evaluateResource(resource, resourceEvaluatorMessage.getQuestionnaireResponse(),
-								resourceEvaluatorMessage.getAction(), resourceEvaluatorMessage.getPlanIdentifier(),
-								resourceEvaluatorMessage.getJurisdictionCode(), resourceEvaluatorMessage.getTriggerType());
-					}
-				}
-			}
-			catch (FHIRParserException e) {
-				logger.error("FHIRParserException occurred " + e.getMessage());
-			}
-		}
-	}
-
-	private void initializePathEvaluator(String username) {
-		if(planEvaluator == null)
-			planEvaluator = new PlanEvaluator(username, queueHelper);
-	}
+    private void initializePathEvaluator(String username) {
+        if (planEvaluator == null)
+            planEvaluator = new PlanEvaluator(username, queueHelper);
+    }
 
 }

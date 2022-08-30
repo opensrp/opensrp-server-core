@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.opensrp.queue.sender;
 
@@ -31,41 +31,40 @@ import com.ibm.fhir.model.resource.DomainResource;
 @Profile("!rabbitmq")
 @Component
 public class InternalSenderImpl implements MessageSender {
-	
-	private static Logger logger = LogManager.getLogger(InternalSenderImpl.class.toString());
-	
-	@Autowired
-	private PlanService planservice;
-	
-	@Autowired
-	@Lazy
-	private QueueHelper queueHelper;
 
-	
-	@Override
-	public void send(PlanEvaluatorMessage planMessage) {
-		PlanEvaluator planEvaluator = new PlanEvaluator(planMessage.getUsername(),queueHelper);
-		planEvaluator.evaluatePlan(planservice.getPlan(planMessage.getPlanIdentifier()), planMessage.getTriggerType(),
-		    planMessage.getJurisdiction(), null);
-		
-	}
-	
-	@Override
-	public void send(ResourceEvaluatorMessage resourceMessage) {
-		InputStream stream = new ByteArrayInputStream(resourceMessage.getResource().getBytes(StandardCharsets.UTF_8));
-		PlanEvaluator planEvaluator = new PlanEvaluator(resourceMessage.getUsername(),queueHelper);
-		try {
-			Resource domainResource = FHIRParser.parser(Format.JSON).parse(stream);
-			if (domainResource != null && resourceMessage != null && resourceMessage.getAction() != null) {
-				planEvaluator.evaluateResource(domainResource, resourceMessage.getQuestionnaireResponse(),
-				    resourceMessage.getAction(), resourceMessage.getPlanIdentifier(), resourceMessage.getJurisdictionCode(),
-				    resourceMessage.getTriggerType());
-			}
-		}
-		catch (FHIRParserException e) {
-			logger.error("FHIRParserException occurred " + e.getMessage());
-		}
-		
-	}
-	
+    private static Logger logger = LogManager.getLogger(InternalSenderImpl.class.toString());
+
+    @Autowired
+    private PlanService planservice;
+
+    @Autowired
+    @Lazy
+    private QueueHelper queueHelper;
+
+
+    @Override
+    public void send(PlanEvaluatorMessage planMessage) {
+        PlanEvaluator planEvaluator = new PlanEvaluator(planMessage.getUsername(), queueHelper);
+        planEvaluator.evaluatePlan(planservice.getPlan(planMessage.getPlanIdentifier()), planMessage.getTriggerType(),
+                planMessage.getJurisdiction(), null);
+
+    }
+
+    @Override
+    public void send(ResourceEvaluatorMessage resourceMessage) {
+        InputStream stream = new ByteArrayInputStream(resourceMessage.getResource().getBytes(StandardCharsets.UTF_8));
+        PlanEvaluator planEvaluator = new PlanEvaluator(resourceMessage.getUsername(), queueHelper);
+        try {
+            Resource domainResource = FHIRParser.parser(Format.JSON).parse(stream);
+            if (domainResource != null && resourceMessage != null && resourceMessage.getAction() != null) {
+                planEvaluator.evaluateResource(domainResource, resourceMessage.getQuestionnaireResponse(),
+                        resourceMessage.getAction(), resourceMessage.getPlanIdentifier(), resourceMessage.getJurisdictionCode(),
+                        resourceMessage.getTriggerType());
+            }
+        } catch (FHIRParserException e) {
+            logger.error("FHIRParserException occurred " + e.getMessage());
+        }
+
+    }
+
 }

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.opensrp.domain;
 
@@ -13,114 +13,108 @@ import java.util.Set;
  */
 public class Organization implements Serializable {
 
-	private static final long serialVersionUID = -9204925528493297488L;
+    private static final long serialVersionUID = -9204925528493297488L;
+    public CodeSystem type;
+    private Long id;
+    private String identifier;
+    private boolean active;
+    private String name;
+    private Long partOf;
+    private Set<AssignedLocations> assignedLocations;
 
-	private Long id;
+    private DateTime dateCreated;
 
-	private String identifier;
+    private DateTime dateEdited;
 
-	private boolean active;
+    private long serverVersion;
 
-	private String name;
+    private Integer memberCount;
 
-	private Long partOf;
+    public Long getId() {
+        return id;
+    }
 
-	public CodeSystem type;
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	private Set<AssignedLocations> assignedLocations;
+    public String getIdentifier() {
+        return identifier;
+    }
 
-	private DateTime dateCreated;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
-	private DateTime dateEdited;
+    public boolean isActive() {
+        return active;
+    }
 
-	private long serverVersion;
-	
-	private Integer memberCount;
-	public Long getId() {
-		return id;
-	}
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getIdentifier() {
-		return identifier;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
+    public Long getPartOf() {
+        return partOf;
+    }
 
-	public boolean isActive() {
-		return active;
-	}
+    public void setPartOf(Long partOf) {
+        this.partOf = partOf;
+    }
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+    public CodeSystem getType() {
+        return type;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setType(CodeSystem type) {
+        this.type = type;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public Set<AssignedLocations> getAssignedLocations() {
+        return assignedLocations;
+    }
 
-	public Long getPartOf() {
-		return partOf;
-	}
+    public void setAssignedLocations(Set<AssignedLocations> assignedLocations) {
+        this.assignedLocations = assignedLocations;
+    }
 
-	public void setPartOf(Long partOf) {
-		this.partOf = partOf;
-	}
+    public Integer getMemberCount() {
+        return memberCount;
+    }
 
-	public CodeSystem getType() {
-		return type;
-	}
+    public void setMemberCount(Integer memberCount) {
+        this.memberCount = memberCount;
+    }
 
-	public void setType(CodeSystem type) {
-		this.type = type;
-	}
+    public DateTime getDateCreated() {
+        return dateCreated;
+    }
 
-	public Set<AssignedLocations> getAssignedLocations() {
-		return assignedLocations;
-	}
+    public void setDateCreated(DateTime dateCreated) {
+        this.dateCreated = dateCreated;
+    }
 
-	public void setAssignedLocations(Set<AssignedLocations> assignedLocations) {
-		this.assignedLocations = assignedLocations;
-	}
+    public DateTime getDateEdited() {
+        return dateEdited;
+    }
 
-	public Integer getMemberCount() {
-		return memberCount;
-	}
-	
-	public void setMemberCount(Integer memberCount) {
-		this.memberCount = memberCount;
-	}
+    public void setDateEdited(DateTime dateEdited) {
+        this.dateEdited = dateEdited;
+    }
 
-	public DateTime getDateCreated() {
-		return dateCreated;
-	}
+    public long getServerVersion() {
+        return serverVersion;
+    }
 
-	public void setDateCreated(DateTime dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	public DateTime getDateEdited() {
-		return dateEdited;
-	}
-
-	public void setDateEdited(DateTime dateEdited) {
-		this.dateEdited = dateEdited;
-	}
-
-	public long getServerVersion() {
-		return serverVersion;
-	}
-
-	public void setServerVersion(long serverVersion) {
-		this.serverVersion = serverVersion;
-	}
+    public void setServerVersion(long serverVersion) {
+        this.serverVersion = serverVersion;
+    }
 }

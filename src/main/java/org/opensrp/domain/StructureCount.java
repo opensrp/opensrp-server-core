@@ -15,11 +15,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class StructureCount implements Serializable {
 
-	private static final long serialVersionUID = -6553112674200592573L;
+    public static final String STRUCTURE_COUNT = "structureCount";
+    private static final long serialVersionUID = -6553112674200592573L;
+    private String parentId;
 
-	public static final String STRUCTURE_COUNT = "structureCount";
-
-	private String parentId;
-
-	private int count;
+    private int count;
 }

@@ -80,7 +80,8 @@
         </where>
     </sql>
 
-    <select id="getAll" parameterType="map" resultMap="org.opensrp.repository.postgres.mapper.ClientMigrationFileMapper.BaseResultMap">
+    <select id="getAll" parameterType="map"
+            resultMap="org.opensrp.repository.postgres.mapper.ClientMigrationFileMapper.BaseResultMap">
         SELECT
         <include refid="Base_Column_List"/>
         FROM core.client_migration_file ORDER BY created_at LIMIT #{batchSize} OFFSET #{offset}

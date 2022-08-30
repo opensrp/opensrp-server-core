@@ -19,238 +19,238 @@ import org.springframework.stereotype.Repository;
 
 @Repository("productCatalogueRepositoryPostgres")
 public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCatalogue>
-		implements ProductCatalogueRepository {
+        implements ProductCatalogueRepository {
 
-	@Autowired
-	private CustomProductCatalogueMapper customProductCatalogueMapper;
+    @Autowired
+    private CustomProductCatalogueMapper customProductCatalogueMapper;
 
-	@Override
-	public ProductCatalogue get(String id) {
-		throw new NotImplementedException();
-	}
+    @Override
+    public ProductCatalogue get(String id) {
+        throw new NotImplementedException();
+    }
 
-	@Transactional
-	@Override
-	public void add(ProductCatalogue entity) {
+    @Transactional
+    @Override
+    public void add(ProductCatalogue entity) {
 
-		if (entity == null) {
-			return;
-		}
+        if (entity == null) {
+            return;
+        }
 
-		if (retrievePrimaryKey(entity) != null) { // ProductCatalogue already added
-			return;
-		}
+        if (retrievePrimaryKey(entity) != null) { // ProductCatalogue already added
+            return;
+        }
 
-		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = convert(entity, null);
-		if (pgProductCatalogue == null) {
-			throw new IllegalStateException();
-		}
+        org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = convert(entity, null);
+        if (pgProductCatalogue == null) {
+            throw new IllegalStateException();
+        }
 
-		int rowsAffected = customProductCatalogueMapper.insertSelectiveAndSetId(pgProductCatalogue);
-		if (rowsAffected < 1 || pgProductCatalogue.getUniqueId() == null) {
-			throw new IllegalStateException();
-		}
-		
-		updateServerVersion(pgProductCatalogue, entity);
-	}
+        int rowsAffected = customProductCatalogueMapper.insertSelectiveAndSetId(pgProductCatalogue);
+        if (rowsAffected < 1 || pgProductCatalogue.getUniqueId() == null) {
+            throw new IllegalStateException();
+        }
 
-	private void updateServerVersion(org.opensrp.domain.postgres.ProductCatalogue pgProductCatalog, ProductCatalogue entity) {
-		Long serverVersion = customProductCatalogueMapper.selectServerVersionByPrimaryKey(pgProductCatalog.getUniqueId());
-		entity.setServerVersion(serverVersion);
-		pgProductCatalog.setJson(entity);
-		pgProductCatalog.setServerVersion(serverVersion);
-		int rowsAffected = customProductCatalogueMapper.updateByPrimaryKeySelective(pgProductCatalog);
-		if (rowsAffected < 1) {
-			throw new IllegalStateException();
-		}
-	}
-	
-	@Transactional
-	@Override
-	public void update(ProductCatalogue entity) {
-		if (entity == null) {
-			return;
-		}
-		Long id = retrievePrimaryKey(entity);
+        updateServerVersion(pgProductCatalogue, entity);
+    }
 
-		if (id == null) { //Product Catalogues doesn't not exist
-			throw new IllegalStateException();
-		}
+    private void updateServerVersion(org.opensrp.domain.postgres.ProductCatalogue pgProductCatalog, ProductCatalogue entity) {
+        Long serverVersion = customProductCatalogueMapper.selectServerVersionByPrimaryKey(pgProductCatalog.getUniqueId());
+        entity.setServerVersion(serverVersion);
+        pgProductCatalog.setJson(entity);
+        pgProductCatalog.setServerVersion(serverVersion);
+        int rowsAffected = customProductCatalogueMapper.updateByPrimaryKeySelective(pgProductCatalog);
+        if (rowsAffected < 1) {
+            throw new IllegalStateException();
+        }
+    }
 
-		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = convert(entity, id);
-		int rowsAffected = customProductCatalogueMapper.updateByPrimaryKeyAndGenerateServerVersion(pgProductCatalogue);
-		if (rowsAffected < 1) {
-			throw new IllegalStateException();
-		}
-		updateServerVersion(pgProductCatalogue, entity);
-	}
+    @Transactional
+    @Override
+    public void update(ProductCatalogue entity) {
+        if (entity == null) {
+            return;
+        }
+        Long id = retrievePrimaryKey(entity);
 
-	@Override
-	public List<ProductCatalogue> getAll() {
-		throw new NotImplementedException();
-	}
+        if (id == null) { //Product Catalogues doesn't not exist
+            throw new IllegalStateException();
+        }
 
-	@Override
-	public List<ProductCatalogue> getAll(String baseUrl) {
-		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
-		productCatalogueExample.createCriteria().andUniqueIdIsNotNull();
-		List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues = customProductCatalogueMapper
-				.selectMany(productCatalogueExample, 0, DEFAULT_FETCH_SIZE);
-		return convert(productCatalogues, baseUrl);
-	}
+        org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = convert(entity, id);
+        int rowsAffected = customProductCatalogueMapper.updateByPrimaryKeyAndGenerateServerVersion(pgProductCatalogue);
+        if (rowsAffected < 1) {
+            throw new IllegalStateException();
+        }
+        updateServerVersion(pgProductCatalogue, entity);
+    }
 
-	@Override
-	public void safeRemove(ProductCatalogue entity) {
-		if (entity == null) {
-			return;
-		}
+    @Override
+    public List<ProductCatalogue> getAll() {
+        throw new NotImplementedException();
+    }
 
-		Long uniqueId = retrievePrimaryKey(entity);
-		if (uniqueId == null) {
-			return;
-		}
+    @Override
+    public List<ProductCatalogue> getAll(String baseUrl) {
+        ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
+        productCatalogueExample.createCriteria().andUniqueIdIsNotNull();
+        List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues = customProductCatalogueMapper
+                .selectMany(productCatalogueExample, 0, DEFAULT_FETCH_SIZE);
+        return convert(productCatalogues, baseUrl);
+    }
 
-		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
-		productCatalogueExample.createCriteria().andUniqueIdEqualTo(uniqueId);
-		int rowsAffected = customProductCatalogueMapper.deleteByPrimaryKey(uniqueId);
-		if (rowsAffected < 1) {
-			return;
-		}
+    @Override
+    public void safeRemove(ProductCatalogue entity) {
+        if (entity == null) {
+            return;
+        }
 
-	}
+        Long uniqueId = retrievePrimaryKey(entity);
+        if (uniqueId == null) {
+            return;
+        }
 
-	@Override
-	protected Long retrievePrimaryKey(ProductCatalogue productCatalogue) {
+        ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
+        productCatalogueExample.createCriteria().andUniqueIdEqualTo(uniqueId);
+        int rowsAffected = customProductCatalogueMapper.deleteByPrimaryKey(uniqueId);
+        if (rowsAffected < 1) {
+            return;
+        }
 
-		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
-		ProductCatalogueExample.Criteria criteria = productCatalogueExample.createCriteria();
-		if (productCatalogue.getUniqueId() != null && productCatalogue.getUniqueId() != 0) {
-			criteria.andUniqueIdEqualTo(productCatalogue.getUniqueId());
-		} else {
-			criteria.andProductNameEqualTo(productCatalogue.getProductName());
-		}
+    }
 
-		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = customProductCatalogueMapper
-				.selectOne(productCatalogueExample);
-		if (pgProductCatalogue == null) {
-			return null;
-		}
-		return pgProductCatalogue.getUniqueId();
-	}
+    @Override
+    protected Long retrievePrimaryKey(ProductCatalogue productCatalogue) {
 
-	@Override
-	protected Object getUniqueField(ProductCatalogue productCatalogue) {
-		if (productCatalogue == null) {
-			return null;
-		}
-		return productCatalogue.getUniqueId();
-	}
+        ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
+        ProductCatalogueExample.Criteria criteria = productCatalogueExample.createCriteria();
+        if (productCatalogue.getUniqueId() != null && productCatalogue.getUniqueId() != 0) {
+            criteria.andUniqueIdEqualTo(productCatalogue.getUniqueId());
+        } else {
+            criteria.andProductNameEqualTo(productCatalogue.getProductName());
+        }
 
-	@Override
-	public ProductCatalogue getById(Long uniqueId, String baseUrl) {
-		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
-		productCatalogueExample.createCriteria().andUniqueIdEqualTo(uniqueId);
+        org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = customProductCatalogueMapper
+                .selectOne(productCatalogueExample);
+        if (pgProductCatalogue == null) {
+            return null;
+        }
+        return pgProductCatalogue.getUniqueId();
+    }
 
-		List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues = customProductCatalogueMapper
-				.selectByExample(productCatalogueExample);
+    @Override
+    protected Object getUniqueField(ProductCatalogue productCatalogue) {
+        if (productCatalogue == null) {
+            return null;
+        }
+        return productCatalogue.getUniqueId();
+    }
 
-		return isEmptyList(productCatalogues) ? null : convert(productCatalogues.get(0), baseUrl);
-	}
+    @Override
+    public ProductCatalogue getById(Long uniqueId, String baseUrl) {
+        ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
+        productCatalogueExample.createCriteria().andUniqueIdEqualTo(uniqueId);
 
-	@Override
-	public List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean, int limit, String baseUrl) {
-		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
-		populateProductCatalogueSearchCriteria(productCatalogueSearchBean,
-				productCatalogueExample);
-		productCatalogueExample.setOrderByClause(this.getOrderByClause(SERVER_VERSION, ASCENDING));
-		return convert(customProductCatalogueMapper.selectMany(productCatalogueExample, 0, limit), baseUrl);
-	}
+        List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues = customProductCatalogueMapper
+                .selectByExample(productCatalogueExample);
 
-	@Override
-	public List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean, String baseUrl){
-		return getProductCataloguesBySearchBean(productCatalogueSearchBean, DEFAULT_FETCH_SIZE, baseUrl);
-	}
+        return isEmptyList(productCatalogues) ? null : convert(productCatalogues.get(0), baseUrl);
+    }
 
-	@Override
-	public void safeRemove(Long uniqueId) {
-		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
-		productCatalogueExample.createCriteria().andUniqueIdEqualTo(uniqueId);
-		customProductCatalogueMapper.deleteByPrimaryKey(uniqueId);
-	}
+    @Override
+    public List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean, int limit, String baseUrl) {
+        ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
+        populateProductCatalogueSearchCriteria(productCatalogueSearchBean,
+                productCatalogueExample);
+        productCatalogueExample.setOrderByClause(this.getOrderByClause(SERVER_VERSION, ASCENDING));
+        return convert(customProductCatalogueMapper.selectMany(productCatalogueExample, 0, limit), baseUrl);
+    }
 
-	@Override
-	public ProductCatalogue getProductCatalogueByName(String productName) {
-		ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
-		productCatalogueExample.createCriteria().andProductNameEqualTo(productName);
-		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = customProductCatalogueMapper
-				.selectOne(productCatalogueExample);
-		return convert(pgProductCatalogue, "");
-	}
+    @Override
+    public List<ProductCatalogue> getProductCataloguesBySearchBean(ProductCatalogueSearchBean productCatalogueSearchBean, String baseUrl) {
+        return getProductCataloguesBySearchBean(productCatalogueSearchBean, DEFAULT_FETCH_SIZE, baseUrl);
+    }
 
-	private List<ProductCatalogue> convert(List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues, String baseUrl) {
-		if (productCatalogues == null || productCatalogues.isEmpty()) {
-			return new ArrayList<>();
-		}
+    @Override
+    public void safeRemove(Long uniqueId) {
+        ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
+        productCatalogueExample.createCriteria().andUniqueIdEqualTo(uniqueId);
+        customProductCatalogueMapper.deleteByPrimaryKey(uniqueId);
+    }
 
-		List<ProductCatalogue> convertedProductCatalogues = new ArrayList<>();
-		for (org.opensrp.domain.postgres.ProductCatalogue productCatalogue : productCatalogues) {
-			ProductCatalogue convertedProductCatalogue = convert(productCatalogue, baseUrl);
-			if (convertedProductCatalogue != null) {
-				convertedProductCatalogues.add(convertedProductCatalogue);
-			}
-		}
+    @Override
+    public ProductCatalogue getProductCatalogueByName(String productName) {
+        ProductCatalogueExample productCatalogueExample = new ProductCatalogueExample();
+        productCatalogueExample.createCriteria().andProductNameEqualTo(productName);
+        org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = customProductCatalogueMapper
+                .selectOne(productCatalogueExample);
+        return convert(pgProductCatalogue, "");
+    }
 
-		return convertedProductCatalogues;
-	}
+    private List<ProductCatalogue> convert(List<org.opensrp.domain.postgres.ProductCatalogue> productCatalogues, String baseUrl) {
+        if (productCatalogues == null || productCatalogues.isEmpty()) {
+            return new ArrayList<>();
+        }
 
-	private ProductCatalogue convert(org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue, String baseUrl) {
-		if (pgProductCatalogue == null || pgProductCatalogue.getJson() == null || !(pgProductCatalogue
-				.getJson() instanceof ProductCatalogue)) {
-			return null;
-		}
-		ProductCatalogue productCatalogue = (ProductCatalogue) pgProductCatalogue.getJson();
-		productCatalogue.setUniqueId(pgProductCatalogue.getUniqueId());
-		String photoUrl = productCatalogue.getPhotoURL();
-		if(!StringUtils.isBlank(photoUrl)) {
-			productCatalogue.setPhotoURL(baseUrl + photoUrl);
-		}
-		return productCatalogue;
-	}
+        List<ProductCatalogue> convertedProductCatalogues = new ArrayList<>();
+        for (org.opensrp.domain.postgres.ProductCatalogue productCatalogue : productCatalogues) {
+            ProductCatalogue convertedProductCatalogue = convert(productCatalogue, baseUrl);
+            if (convertedProductCatalogue != null) {
+                convertedProductCatalogues.add(convertedProductCatalogue);
+            }
+        }
 
-	private org.opensrp.domain.postgres.ProductCatalogue convert(ProductCatalogue productCatalogue, Long primaryKey) {
-		if (productCatalogue == null) {
-			return null;
-		}
+        return convertedProductCatalogues;
+    }
 
-		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = new org.opensrp.domain.postgres.ProductCatalogue();
-		pgProductCatalogue.setUniqueId(primaryKey);
-		pgProductCatalogue.setJson(productCatalogue);
-		pgProductCatalogue.setProductName(productCatalogue.getProductName());
-		pgProductCatalogue.setServerVersion(productCatalogue.getServerVersion());
+    private ProductCatalogue convert(org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue, String baseUrl) {
+        if (pgProductCatalogue == null || pgProductCatalogue.getJson() == null || !(pgProductCatalogue
+                .getJson() instanceof ProductCatalogue)) {
+            return null;
+        }
+        ProductCatalogue productCatalogue = (ProductCatalogue) pgProductCatalogue.getJson();
+        productCatalogue.setUniqueId(pgProductCatalogue.getUniqueId());
+        String photoUrl = productCatalogue.getPhotoURL();
+        if (!StringUtils.isBlank(photoUrl)) {
+            productCatalogue.setPhotoURL(baseUrl + photoUrl);
+        }
+        return productCatalogue;
+    }
 
-		return pgProductCatalogue;
-	}
+    private org.opensrp.domain.postgres.ProductCatalogue convert(ProductCatalogue productCatalogue, Long primaryKey) {
+        if (productCatalogue == null) {
+            return null;
+        }
 
-	private ProductCatalogueExample.Criteria populateProductCatalogueSearchCriteria(
-			ProductCatalogueSearchBean productCatalogueSearchBean,
-			ProductCatalogueExample productCatalogueExample) {
+        org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = new org.opensrp.domain.postgres.ProductCatalogue();
+        pgProductCatalogue.setUniqueId(primaryKey);
+        pgProductCatalogue.setJson(productCatalogue);
+        pgProductCatalogue.setProductName(productCatalogue.getProductName());
+        pgProductCatalogue.setServerVersion(productCatalogue.getServerVersion());
 
-		ProductCatalogueExample.Criteria criteria = productCatalogueExample.createCriteria();
+        return pgProductCatalogue;
+    }
 
-		if (productCatalogueSearchBean.getServerVersion() != null && productCatalogueSearchBean.getServerVersion() >= 0) {
-			criteria.andServerVersionGreaterThanOrEqualTo(productCatalogueSearchBean.getServerVersion());
-		}
+    private ProductCatalogueExample.Criteria populateProductCatalogueSearchCriteria(
+            ProductCatalogueSearchBean productCatalogueSearchBean,
+            ProductCatalogueExample productCatalogueExample) {
 
-		if (StringUtils.isNotEmpty(productCatalogueSearchBean.getProductName()))
-			criteria.andProductNameEqualTo(productCatalogueSearchBean.getProductName());
+        ProductCatalogueExample.Criteria criteria = productCatalogueExample.createCriteria();
 
-		if (productCatalogueSearchBean.getUniqueId() != null && productCatalogueSearchBean.getUniqueId() != 0)
-			criteria.andUniqueIdEqualTo(productCatalogueSearchBean.getUniqueId());
+        if (productCatalogueSearchBean.getServerVersion() != null && productCatalogueSearchBean.getServerVersion() >= 0) {
+            criteria.andServerVersionGreaterThanOrEqualTo(productCatalogueSearchBean.getServerVersion());
+        }
 
-		if (!criteria.isValid())
-			throw new IllegalArgumentException("Atleast one search filter must be specified");
+        if (StringUtils.isNotEmpty(productCatalogueSearchBean.getProductName()))
+            criteria.andProductNameEqualTo(productCatalogueSearchBean.getProductName());
 
-		return criteria;
-	}
+        if (productCatalogueSearchBean.getUniqueId() != null && productCatalogueSearchBean.getUniqueId() != 0)
+            criteria.andUniqueIdEqualTo(productCatalogueSearchBean.getUniqueId());
+
+        if (!criteria.isValid())
+            throw new IllegalArgumentException("Atleast one search filter must be specified");
+
+        return criteria;
+    }
 
 }

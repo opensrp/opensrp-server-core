@@ -19,7 +19,7 @@ public interface CustomManifestMapper extends ManifestMapper {
                               @Param("offset") int offset, @Param("limit") int limit);
 
     List<Manifest> selectManyWithOrdering(@Param("example") ManifestExample manifestExample,
-            @Param("offset") int offset, @Param("limit") int limit);
+                                          @Param("offset") int offset, @Param("limit") int limit);
 
     List<Manifest> selectByAppId(@Param("appId") String appId);
 

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.opensrp.domain.postgres;
 
@@ -14,8 +14,8 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class DateRange {
-	
-	private Date fromdate;
-	
-	private Date toDate;
+
+    private Date fromdate;
+
+    private Date toDate;
 }

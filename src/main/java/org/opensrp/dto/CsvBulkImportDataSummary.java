@@ -13,10 +13,10 @@ import java.util.List;
 @AllArgsConstructor
 public class CsvBulkImportDataSummary {
 
-	private Integer numberOfCsvRows;
+    private Integer numberOfCsvRows;
 
-	private Integer numberOfRowsProcessed;
+    private Integer numberOfRowsProcessed;
 
-	private List<FailedRecordSummary> failedRecordSummaryList;
+    private List<FailedRecordSummary> failedRecordSummaryList;
 
 }

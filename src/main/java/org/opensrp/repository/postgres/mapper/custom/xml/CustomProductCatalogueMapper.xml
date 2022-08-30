@@ -13,8 +13,8 @@
     </sql>
 
     <sql id="Base_Table_List">
-		from core.product_catalogue p
-	</sql>
+        from core.product_catalogue p
+    </sql>
 
     <sql id="Example_Where_Clause">
         <where>
@@ -34,7 +34,8 @@
                                 </when>
                                 <when test="criterion.listValue">
                                     and ${criterion.condition}
-                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
                                         #{listItem}
                                     </foreach>
                                 </when>
@@ -46,14 +47,19 @@
                                     and ${criterion.condition}
                                 </when>
                                 <when test="criterion.singleValue">
-                                    and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler}
+                                    and ${criterion.condition}
+                                    #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler}
                                 </when>
                                 <when test="criterion.betweenValue">
-                                    and ${criterion.condition} #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler} and #{criterion.secondValue,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler}
+                                    and ${criterion.condition}
+                                    #{criterion.value,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler}
+                                    and
+                                    #{criterion.secondValue,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler}
                                 </when>
                                 <when test="criterion.listValue">
                                     and ${criterion.condition}
-                                    <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                                    <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                             separator=",">
                                         #{listItem,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler}
                                     </foreach>
                                 </when>
@@ -69,10 +75,10 @@
             resultMap="org.opensrp.repository.postgres.mapper.ProductCatalogueMapper.BaseResultMap">
         select
         <include
-                refid="org.opensrp.repository.postgres.mapper.ProductCatalogueMapper.Base_Column_List" />
+                refid="org.opensrp.repository.postgres.mapper.ProductCatalogueMapper.Base_Column_List"/>
         from core.product_catalogue p
         <if test="_parameter != null">
-            <include refid="Example_Where_Clause" />
+            <include refid="Example_Where_Clause"/>
         </if>
         <if test="example.orderByClause != null">
             order by p.${example.orderByClause}
@@ -112,22 +118,23 @@
     <select id="selectOne"
             resultMap="org.opensrp.repository.postgres.mapper.ProductCatalogueMapper.BaseResultMap">
         select
-        <include refid="Base_Column_List" />
-        <include refid="Base_Table_List" />
+        <include refid="Base_Column_List"/>
+        <include refid="Base_Table_List"/>
         <if test="_parameter != null">
-            <include refid="Example_Where_Clause" />
+            <include refid="Example_Where_Clause"/>
         </if>
     </select>
-   <update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.ProductCatalogue">
-    update core.product_catalogue
-    set product_name = #{productName,jdbcType=VARCHAR},
-      json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler},
-      server_version = nextVal('core.product_catalogue_server_version_seq')
-    where unique_id = #{uniqueId,jdbcType=BIGINT}
-  </update>
-  <select id="selectServerVersionByPrimaryKey"
-		parameterType="java.lang.Long" resultType="long">
-		select server_version from core.product_catalogue where unique_id = #{uniqueId,jdbcType=BIGINT}
-	</select>
+    <update id="updateByPrimaryKeyAndGenerateServerVersion"
+            parameterType="org.opensrp.domain.postgres.ProductCatalogue">
+        update core.product_catalogue
+        set product_name = #{productName,jdbcType=VARCHAR},
+        json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.ProductCatalogueTypeHandler},
+        server_version = nextVal('core.product_catalogue_server_version_seq')
+        where unique_id = #{uniqueId,jdbcType=BIGINT}
+    </update>
+    <select id="selectServerVersionByPrimaryKey"
+            parameterType="java.lang.Long" resultType="long">
+        select server_version from core.product_catalogue where unique_id = #{uniqueId,jdbcType=BIGINT}
+    </select>
 
 </mapper>

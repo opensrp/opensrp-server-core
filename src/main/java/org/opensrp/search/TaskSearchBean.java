@@ -12,13 +12,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class TaskSearchBean extends BaseSearchBean{
+public class TaskSearchBean extends BaseSearchBean {
 
-	@NotBlank
-	private String planIdentifier;
-	private List<String> groupIdentifiers;
-	private String code;
-	private String status;
-	private String businessStatus;
-	private boolean returnTaskCountOnly;
+    @NotBlank
+    private String planIdentifier;
+    private List<String> groupIdentifiers;
+    private String code;
+    private String status;
+    private String businessStatus;
+    private boolean returnTaskCountOnly;
 }

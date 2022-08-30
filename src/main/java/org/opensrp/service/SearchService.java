@@ -12,29 +12,29 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SearchService {
-	
-	private final SearchRepository search;
-	
-	@Autowired
-	public SearchService(SearchRepository search) {
-		this.search = search;
-	}
+
+    private final SearchRepository search;
+
+    @Autowired
+    public SearchService(SearchRepository search) {
+        this.search = search;
+    }
 
 
-	@PreAuthorize("hasRole('CLIENT_VIEW')")
-	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
-	public List<Client> searchClient(ClientSearchBean clientSearchBean, String firstName, String middleName, String lastName,
-	        Integer limit) {
-		return search.findByCriteria(clientSearchBean, firstName, middleName, lastName, limit);
-	}
+    @PreAuthorize("hasRole('CLIENT_VIEW')")
+    @PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
+    public List<Client> searchClient(ClientSearchBean clientSearchBean, String firstName, String middleName, String lastName,
+                                     Integer limit) {
+        return search.findByCriteria(clientSearchBean, firstName, middleName, lastName, limit);
+    }
 
-	/**
-	 * This method is similar to {@link #searchClient(ClientSearchBean, String, String, String, Integer)}. This method however does not enforce ACL
-	 * so that users can search clients globally and not just those within their jurisdiction.
-	 */
-	public List<Client> searchGlobalClient(ClientSearchBean clientSearchBean, String firstName, String middleName, String lastName,
-			Integer limit) {
-		return search.findByCriteria(clientSearchBean, firstName, middleName, lastName, limit);
-	}
-	
+    /**
+     * This method is similar to {@link #searchClient(ClientSearchBean, String, String, String, Integer)}. This method however does not enforce ACL
+     * so that users can search clients globally and not just those within their jurisdiction.
+     */
+    public List<Client> searchGlobalClient(ClientSearchBean clientSearchBean, String firstName, String middleName, String lastName,
+                                           Integer limit) {
+        return search.findByCriteria(clientSearchBean, firstName, middleName, lastName, limit);
+    }
+
 }

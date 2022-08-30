@@ -35,193 +35,184 @@ import static org.opensrp.util.constants.InventoryConstants.SETTINGS_CONFIGURATI
 @Component
 public class InventoryDataValidator {
 
-	@Autowired
-	private PhysicalLocationService physicalLocationService;
+    private static Logger logger = LogManager.getLogger(InventoryDataValidator.class.toString());
+    private static Pattern DATE_PATTERN = Pattern.compile("^\\d{2}/\\d{2}/\\d{4}$");
+    @Autowired
+    private PhysicalLocationService physicalLocationService;
+    @Autowired
+    private ProductCatalogueService productCatalogueService;
+    @Autowired
+    private SettingService settingService;
+    private List<String> validationErrors;
+    private List<String> validDonors;
+    private List<String> validUnicefSections;
 
-	@Autowired
-	private ProductCatalogueService productCatalogueService;
+    public InventoryDataValidator(List<String> validationErrors) {
+        this.validationErrors = validationErrors;
+    }
 
-	@Autowired
-	private SettingService settingService;
+    public InventoryDataValidator(PhysicalLocationService physicalLocationService,
+                                  ProductCatalogueService productCatalogueService, SettingService settingService) {
+        this.physicalLocationService = physicalLocationService;
+        this.productCatalogueService = productCatalogueService;
+        this.settingService = settingService;
+    }
 
-	private List<String> validationErrors;
+    public InventoryDataValidator() {
 
-	private List<String> validDonors;
+    }
 
-	private List<String> validUnicefSections;
+    public static Date convertStringToDate(String stringDate) throws ParseException {
+        return (stringDate != null) ? new SimpleDateFormat("dd/MM/yyyy").parse(stringDate) : null;
+    }
 
-	private static Logger logger = LogManager.getLogger(InventoryDataValidator.class.toString());
+    public static Boolean isWholeNumber(String number) {
+        try {
+            Integer parsedNumber = Integer.parseInt(number);
+            logger.info("Parsed Integer is : " + parsedNumber);
+            return true;
+        } catch (NumberFormatException numberFormatException) {
+            logger.error("Number Format Exception occurred : ", numberFormatException.getMessage());
+            return false;
+        }
+    }
 
-	private static Pattern DATE_PATTERN = Pattern.compile("^\\d{2}/\\d{2}/\\d{4}$");
+    public List<String> getValidationErrors(String locationId, String productCatalogId, String deliveryDateInString,
+                                            String section, String poNumber, String serialNumber, String quantity, String donor)
+            throws ParseException {
+        validationErrors = new ArrayList<>();
 
-	public InventoryDataValidator(List<String> validationErrors) {
-		this.validationErrors = validationErrors;
-	}
+        validDonors = getValidDonors();
+        validUnicefSections = getValidUnicefSections();
 
-	public InventoryDataValidator(PhysicalLocationService physicalLocationService,
-			ProductCatalogueService productCatalogueService, SettingService settingService) {
-		this.physicalLocationService = physicalLocationService;
-		this.productCatalogueService = productCatalogueService;
-		this.settingService = settingService;
-	}
+        ProductCatalogue productCatalogue;
+        PhysicalLocation physicalLocation;
+        productCatalogue = productCatalogId != null ?
+                productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId), "") :
+                null;
+        physicalLocation = locationId != null ? physicalLocationService.getStructure(locationId, true) : null;
 
-   public InventoryDataValidator() {
+        validateRequiredFields(locationId, productCatalogId, deliveryDateInString, section, poNumber);
+        validateSerialNumber(productCatalogue, serialNumber);
+        validateProductCatalogue(productCatalogue);
+        validateLocation(physicalLocation);
+        validateDeliveryDate(deliveryDateInString);
+        validateQuantity(quantity);
+        validateUnicefSection(section);
+        validateDonor(donor);
+        validatePoNumber(poNumber);
+        return validationErrors;
+    }
 
-   }
+    private void validateRequiredFields(String locationId, String productCatalogId, String deliveryDateInString,
+                                        String section, String poNumber) {
+        if (locationId == null || productCatalogId == null || deliveryDateInString == null || section == null
+                || poNumber == null) {
+            logger.error(MISSING_REQUIRED_FIELDS);
+            validationErrors.add(MISSING_REQUIRED_FIELDS);
+        }
+    }
 
-	public List<String> getValidationErrors(String locationId, String productCatalogId, String deliveryDateInString,
-			String section, String poNumber, String serialNumber, String quantity, String donor)
-			throws ParseException {
-		validationErrors = new ArrayList<>();
+    private void validateSerialNumber(ProductCatalogue productCatalogue, String serialNumber) {
+        if (productCatalogue != null && productCatalogue.getIsAttractiveItem() && serialNumber == null) {
+            logger.error(MISSING_SERIAL_NUMBER);
+            validationErrors.add(MISSING_SERIAL_NUMBER);
+        }
+    }
 
-		validDonors = getValidDonors();
-		validUnicefSections = getValidUnicefSections();
+    private void validateProductCatalogue(ProductCatalogue productCatalogue) {
+        if (productCatalogue == null) {
+            logger.error(PRODUCT_CATALOG_DOES_NOT_EXISTS);
+            validationErrors.add(PRODUCT_CATALOG_DOES_NOT_EXISTS);
+        }
+    }
 
-		ProductCatalogue productCatalogue;
-		PhysicalLocation physicalLocation;
-		productCatalogue = productCatalogId != null ?
-				productCatalogueService.getProductCatalogue(Long.valueOf(productCatalogId), "") :
-				null;
-		physicalLocation = locationId != null ? physicalLocationService.getStructure(locationId, true) : null;
+    private void validateLocation(PhysicalLocation physicalLocation) {
+        if (physicalLocation == null) {
+            logger.error(SERVICE_POINT_DOES_NOT_EXISTS);
+            validationErrors.add(SERVICE_POINT_DOES_NOT_EXISTS);
+        }
+    }
 
-		validateRequiredFields(locationId, productCatalogId, deliveryDateInString, section, poNumber);
-		validateSerialNumber(productCatalogue, serialNumber);
-		validateProductCatalogue(productCatalogue);
-		validateLocation(physicalLocation);
-		validateDeliveryDate(deliveryDateInString);
-		validateQuantity(quantity);
-		validateUnicefSection(section);
-		validateDonor(donor);
-		validatePoNumber(poNumber);
-		return validationErrors;
-	}
+    private void validateDeliveryDate(String deliveryDateInString) {
+        Date deliveryDate = null;
 
-	private void validateRequiredFields(String locationId, String productCatalogId, String deliveryDateInString,
-			String section, String poNumber) {
-		if (locationId == null || productCatalogId == null || deliveryDateInString == null || section == null
-				|| poNumber == null) {
-			logger.error(MISSING_REQUIRED_FIELDS);
-			validationErrors.add(MISSING_REQUIRED_FIELDS);
-		}
-	}
+        if (deliveryDateInString != null && !DATE_PATTERN.matcher(deliveryDateInString).matches()) {
+            validationErrors.add(INVALID_FORMAT_OF_DELIVERY_DATE);
+            return;
+        }
 
-	private void validateSerialNumber(ProductCatalogue productCatalogue, String serialNumber) {
-		if (productCatalogue != null && productCatalogue.getIsAttractiveItem() && serialNumber == null) {
-			logger.error(MISSING_SERIAL_NUMBER);
-			validationErrors.add(MISSING_SERIAL_NUMBER);
-		}
-	}
+        try {
+            deliveryDate = deliveryDateInString != null ? convertStringToDate(deliveryDateInString) : null;
+        } catch (ParseException e) {
+            logger.error("Parse Exception occurred" + e.getMessage());
+            validationErrors.add(INVALID_FORMAT_OF_DELIVERY_DATE);
+        }
 
-	private void validateProductCatalogue(ProductCatalogue productCatalogue) {
-		if (productCatalogue == null) {
-			logger.error(PRODUCT_CATALOG_DOES_NOT_EXISTS);
-			validationErrors.add(PRODUCT_CATALOG_DOES_NOT_EXISTS);
-		}
-	}
+        if (deliveryDate != null && deliveryDate.getTime() > new Date().getTime()) {
+            logger.error(INVALID_DELIVERY_DATE);
+            validationErrors.add(INVALID_DELIVERY_DATE);
+        }
+    }
 
-	private void validateLocation(PhysicalLocation physicalLocation) {
-		if (physicalLocation == null) {
-			logger.error(SERVICE_POINT_DOES_NOT_EXISTS);
-			validationErrors.add(SERVICE_POINT_DOES_NOT_EXISTS);
-		}
-	}
+    private void validateQuantity(String quantity) {
+        if (quantity != null && (!isWholeNumber(quantity) || Integer.valueOf(quantity) < 1)) {
+            logger.error(INVALID_QUANTITY);
+            validationErrors.add(INVALID_QUANTITY);
+        }
 
-	private void validateDeliveryDate(String deliveryDateInString) {
-		Date deliveryDate = null;
+    }
 
-		if (deliveryDateInString != null && !DATE_PATTERN.matcher(deliveryDateInString).matches()) {
-			validationErrors.add(INVALID_FORMAT_OF_DELIVERY_DATE);
-			return;
-		}
+    private void validateUnicefSection(String section) {
+        if (!validUnicefSections.contains(section)) {
+            logger.error(INVALID_UNICEF_SECTION);
+            validationErrors.add(INVALID_UNICEF_SECTION);
+        }
+    }
 
-		try {
-			deliveryDate = deliveryDateInString != null ? convertStringToDate(deliveryDateInString) : null;
-		}
-		catch (ParseException e) {
-			logger.error("Parse Exception occurred" + e.getMessage());
-			validationErrors.add(INVALID_FORMAT_OF_DELIVERY_DATE);
-		}
+    private void validateDonor(String donor) {
+        if (donor != null && !validDonors.contains(donor)) {
+            logger.error(INVALID_DONOR);
+            validationErrors.add(INVALID_DONOR);
+        }
+    }
 
-		if (deliveryDate != null && deliveryDate.getTime() > new Date().getTime()) {
-			logger.error(INVALID_DELIVERY_DATE);
-			validationErrors.add(INVALID_DELIVERY_DATE);
-		}
-	}
+    private void validatePoNumber(String poNumber) {
+        if (poNumber != null && !isWholeNumber(poNumber)) {
+            logger.error(INVALID_PO_NUMBER);
+            validationErrors.add(INVALID_PO_NUMBER);
+        }
+    }
 
-	private void validateQuantity(String quantity) {
-		if (quantity != null && (!isWholeNumber(quantity) || Integer.valueOf(quantity) < 1)) {
-			logger.error(INVALID_QUANTITY);
-			validationErrors.add(INVALID_QUANTITY);
-		}
+    public List<String> getValidDonors() {
+        List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = settingService
+                .findSettingsByIdentifier(SETTINGS_CONFIGURATION_DONOR_IDENTIFIER);
+        List<String> donors = new ArrayList<>();
 
-	}
+        if (settingsAndSettingsMetadataJoinedList != null) {
+            for (SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined : settingsAndSettingsMetadataJoinedList) {
+                if (settingsAndSettingsMetadataJoined.getSettingsMetadata() != null
+                        && settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue() != null) {
+                    donors.add(settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue());
+                }
+            }
+        }
+        return donors;
+    }
 
-	private void validateUnicefSection(String section) {
-		if (!validUnicefSections.contains(section)) {
-			logger.error(INVALID_UNICEF_SECTION);
-			validationErrors.add(INVALID_UNICEF_SECTION);
-		}
-	}
+    public List<String> getValidUnicefSections() {
+        List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = settingService
+                .findSettingsByIdentifier(SETTINGS_CONFIGURATION_SECTIONS_IDENTIFIER);
+        List<String> unicefSections = new ArrayList<>();
 
-	private void validateDonor(String donor) {
-		if (donor != null && !validDonors.contains(donor)) {
-			logger.error(INVALID_DONOR);
-			validationErrors.add(INVALID_DONOR);
-		}
-	}
-
-	private void validatePoNumber(String poNumber) {
-		if (poNumber != null && !isWholeNumber(poNumber)) {
-			logger.error(INVALID_PO_NUMBER);
-			validationErrors.add(INVALID_PO_NUMBER);
-		}
-	}
-
-	public List<String> getValidDonors() {
-		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = settingService
-				.findSettingsByIdentifier(SETTINGS_CONFIGURATION_DONOR_IDENTIFIER);
-		List<String> donors = new ArrayList<>();
-
-		if (settingsAndSettingsMetadataJoinedList != null) {
-			for (SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined : settingsAndSettingsMetadataJoinedList) {
-				if (settingsAndSettingsMetadataJoined.getSettingsMetadata() != null
-						&& settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue() != null) {
-					donors.add(settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue());
-				}
-			}
-		}
-		return donors;
-	}
-
-	public List<String> getValidUnicefSections() {
-		List<SettingsAndSettingsMetadataJoined> settingsAndSettingsMetadataJoinedList = settingService
-				.findSettingsByIdentifier(SETTINGS_CONFIGURATION_SECTIONS_IDENTIFIER);
-		List<String> unicefSections = new ArrayList<>();
-
-		if (settingsAndSettingsMetadataJoinedList != null) {
-			for (SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined : settingsAndSettingsMetadataJoinedList) {
-				if (settingsAndSettingsMetadataJoined.getSettingsMetadata() != null
-						&& settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue() != null) {
-					unicefSections.add(settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue());
-				}
-			}
-		}
-		return unicefSections;
-	}
-
-	public static Date convertStringToDate(String stringDate) throws ParseException {
-		return (stringDate != null) ? new SimpleDateFormat("dd/MM/yyyy").parse(stringDate) : null;
-	}
-
-	public static Boolean isWholeNumber(String number) {
-		try {
-			Integer parsedNumber = Integer.parseInt(number);
-			logger.info("Parsed Integer is : " + parsedNumber);
-			return true;
-		}
-		catch (NumberFormatException numberFormatException) {
-			logger.error("Number Format Exception occurred : ", numberFormatException.getMessage());
-			return false;
-		}
-	}
+        if (settingsAndSettingsMetadataJoinedList != null) {
+            for (SettingsAndSettingsMetadataJoined settingsAndSettingsMetadataJoined : settingsAndSettingsMetadataJoinedList) {
+                if (settingsAndSettingsMetadataJoined.getSettingsMetadata() != null
+                        && settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue() != null) {
+                    unicefSections.add(settingsAndSettingsMetadataJoined.getSettingsMetadata().getSettingValue());
+                }
+            }
+        }
+        return unicefSections;
+    }
 }

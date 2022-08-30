@@ -18,195 +18,195 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public class CampaignRepositoryImpl extends BaseRepositoryImpl<Campaign> implements CampaignRepository {
 
-	@Autowired
-	private CustomCampaignMapper campaignMapper;
+    @Autowired
+    private CustomCampaignMapper campaignMapper;
 
-	@Autowired
-	private CustomCampaignMetadataMapper campaignMetadataMapper;
+    @Autowired
+    private CustomCampaignMetadataMapper campaignMetadataMapper;
 
-	@Override
-	public Campaign get(String id) {
-		if (StringUtils.isBlank(id)) {
-			return null;
-		}
+    @Override
+    public Campaign get(String id) {
+        if (StringUtils.isBlank(id)) {
+            return null;
+        }
 
-		org.opensrp.domain.postgres.Campaign pgCampaign = campaignMetadataMapper.selectByIdentifier(id);
-		if (pgCampaign == null) {
-			return null;
-		}
-		return convert(pgCampaign);
-	}
+        org.opensrp.domain.postgres.Campaign pgCampaign = campaignMetadataMapper.selectByIdentifier(id);
+        if (pgCampaign == null) {
+            return null;
+        }
+        return convert(pgCampaign);
+    }
 
-	@Override
-	@Transactional
-	public void add(Campaign entity) {
-		if (getUniqueField(entity) == null) {
-			return;
-		}
+    @Override
+    @Transactional
+    public void add(Campaign entity) {
+        if (getUniqueField(entity) == null) {
+            return;
+        }
 
-		if (retrievePrimaryKey(entity) != null) { // Campaign already added
-			return;
-		}
+        if (retrievePrimaryKey(entity) != null) { // Campaign already added
+            return;
+        }
 
-		org.opensrp.domain.postgres.Campaign pgCampaign = convert(entity, null);
-		if (pgCampaign == null) {
-			return;
-		}
+        org.opensrp.domain.postgres.Campaign pgCampaign = convert(entity, null);
+        if (pgCampaign == null) {
+            return;
+        }
 
-		int rowsAffected = campaignMapper.insertSelectiveAndSetId(pgCampaign);
-		if (rowsAffected < 1 || pgCampaign.getId() == null) {
-			return;
-		}
+        int rowsAffected = campaignMapper.insertSelectiveAndSetId(pgCampaign);
+        if (rowsAffected < 1 || pgCampaign.getId() == null) {
+            return;
+        }
 
-		CampaignMetadata campaignMetadata = createMetadata(entity, pgCampaign.getId());
+        CampaignMetadata campaignMetadata = createMetadata(entity, pgCampaign.getId());
 
-		campaignMetadataMapper.insertSelective(campaignMetadata);
+        campaignMetadataMapper.insertSelective(campaignMetadata);
 
-	}
+    }
 
-	@Override
-	@Transactional
-	public void update(Campaign entity) {
-		if (getUniqueField(entity) == null) {
-			return;
-		}
+    @Override
+    @Transactional
+    public void update(Campaign entity) {
+        if (getUniqueField(entity) == null) {
+            return;
+        }
 
-		Long id = retrievePrimaryKey(entity);
-		if (id == null) { // Campaign does not exist
-			return;
-		}
+        Long id = retrievePrimaryKey(entity);
+        if (id == null) { // Campaign does not exist
+            return;
+        }
 
-		org.opensrp.domain.postgres.Campaign pgCampaign = convert(entity, id);
-		if (pgCampaign == null) {
-			return;
-		}
-		CampaignMetadata campaignMetadata = createMetadata(entity, pgCampaign.getId());
+        org.opensrp.domain.postgres.Campaign pgCampaign = convert(entity, id);
+        if (pgCampaign == null) {
+            return;
+        }
+        CampaignMetadata campaignMetadata = createMetadata(entity, pgCampaign.getId());
 
-		int rowsAffected = campaignMapper.updateByPrimaryKey(pgCampaign);
-		if (rowsAffected < 1) {
-			return;
-		}
+        int rowsAffected = campaignMapper.updateByPrimaryKey(pgCampaign);
+        if (rowsAffected < 1) {
+            return;
+        }
 
-		CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
-		campaignMetadataExample.createCriteria().andCampaignIdEqualTo(id);
-		campaignMetadata.setId(campaignMetadataMapper.selectByExample(campaignMetadataExample).get(0).getId());
-		campaignMetadataMapper.updateByPrimaryKey(campaignMetadata);
+        CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
+        campaignMetadataExample.createCriteria().andCampaignIdEqualTo(id);
+        campaignMetadata.setId(campaignMetadataMapper.selectByExample(campaignMetadataExample).get(0).getId());
+        campaignMetadataMapper.updateByPrimaryKey(campaignMetadata);
 
-	}
+    }
 
-	@Override
-	public List<Campaign> getAll() {
-		List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
-				.selectMany(new CampaignMetadataExample(), 0, DEFAULT_FETCH_SIZE);
-		return convert(campaigns);
-	}
+    @Override
+    public List<Campaign> getAll() {
+        List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
+                .selectMany(new CampaignMetadataExample(), 0, DEFAULT_FETCH_SIZE);
+        return convert(campaigns);
+    }
 
-	@Override
-	public List<Campaign> getCampaignsByServerVersion(long serverVersion) {
-		CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
-		campaignMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
-		List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
-				.selectMany(campaignMetadataExample, 0, DEFAULT_FETCH_SIZE);
-		return convert(campaigns);
-	}
+    @Override
+    public List<Campaign> getCampaignsByServerVersion(long serverVersion) {
+        CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
+        campaignMetadataExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion);
+        List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
+                .selectMany(campaignMetadataExample, 0, DEFAULT_FETCH_SIZE);
+        return convert(campaigns);
+    }
 
-	@Override
-	public List<Campaign> getCampaignsByIdentifiers(String identifiers) {
-		CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
-		campaignMetadataExample.createCriteria().andIdentifierIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(identifiers,",")));
-		List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
-				.selectMany(campaignMetadataExample, 0, DEFAULT_FETCH_SIZE);
-		return convert(campaigns);
-	}
+    @Override
+    public List<Campaign> getCampaignsByIdentifiers(String identifiers) {
+        CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
+        campaignMetadataExample.createCriteria().andIdentifierIn(Arrays.asList(org.apache.commons.lang.StringUtils.split(identifiers, ",")));
+        List<org.opensrp.domain.postgres.Campaign> campaigns = campaignMetadataMapper
+                .selectMany(campaignMetadataExample, 0, DEFAULT_FETCH_SIZE);
+        return convert(campaigns);
+    }
 
-	@Override
-	@Transactional
-	public void safeRemove(Campaign entity) {
-		if (entity == null) {
-			return;
-		}
+    @Override
+    @Transactional
+    public void safeRemove(Campaign entity) {
+        if (entity == null) {
+            return;
+        }
 
-		Long id = retrievePrimaryKey(entity);
-		if (id == null) {
-			return;
-		}
+        Long id = retrievePrimaryKey(entity);
+        if (id == null) {
+            return;
+        }
 
-		CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
-		campaignMetadataExample.createCriteria().andCampaignIdEqualTo(id);
-		int rowsAffected = campaignMetadataMapper.deleteByExample(campaignMetadataExample);
-		if (rowsAffected < 1) {
-			return;
-		}
+        CampaignMetadataExample campaignMetadataExample = new CampaignMetadataExample();
+        campaignMetadataExample.createCriteria().andCampaignIdEqualTo(id);
+        int rowsAffected = campaignMetadataMapper.deleteByExample(campaignMetadataExample);
+        if (rowsAffected < 1) {
+            return;
+        }
 
-		campaignMapper.deleteByPrimaryKey(id);
+        campaignMapper.deleteByPrimaryKey(id);
 
-	}
+    }
 
-	@Override
-	protected Long retrievePrimaryKey(Campaign campaign) {
-		Object uniqueId = getUniqueField(campaign);
-		if (uniqueId == null) {
-			return null;
-		}
+    @Override
+    protected Long retrievePrimaryKey(Campaign campaign) {
+        Object uniqueId = getUniqueField(campaign);
+        if (uniqueId == null) {
+            return null;
+        }
 
-		String identifier = uniqueId.toString();
+        String identifier = uniqueId.toString();
 
-		org.opensrp.domain.postgres.Campaign pgCampaign = campaignMetadataMapper.selectByIdentifier(identifier);
-		if (pgCampaign == null) {
-			return null;
-		}
-		return pgCampaign.getId();
-	}
+        org.opensrp.domain.postgres.Campaign pgCampaign = campaignMetadataMapper.selectByIdentifier(identifier);
+        if (pgCampaign == null) {
+            return null;
+        }
+        return pgCampaign.getId();
+    }
 
-	@Override
-	protected Object getUniqueField(Campaign campaign) {
-		if (campaign == null) {
-			return null;
-		}
-		return campaign.getIdentifier();
-	}
+    @Override
+    protected Object getUniqueField(Campaign campaign) {
+        if (campaign == null) {
+            return null;
+        }
+        return campaign.getIdentifier();
+    }
 
-	private Campaign convert(org.opensrp.domain.postgres.Campaign pgCampaign) {
-		if (pgCampaign == null || pgCampaign.getJson() == null || !(pgCampaign.getJson() instanceof Campaign)) {
-			return null;
-		}
-		return (Campaign) pgCampaign.getJson();
-	}
+    private Campaign convert(org.opensrp.domain.postgres.Campaign pgCampaign) {
+        if (pgCampaign == null || pgCampaign.getJson() == null || !(pgCampaign.getJson() instanceof Campaign)) {
+            return null;
+        }
+        return (Campaign) pgCampaign.getJson();
+    }
 
-	private org.opensrp.domain.postgres.Campaign convert(Campaign campaign, Long primaryKey) {
-		if (campaign == null) {
-			return null;
-		}
+    private org.opensrp.domain.postgres.Campaign convert(Campaign campaign, Long primaryKey) {
+        if (campaign == null) {
+            return null;
+        }
 
-		org.opensrp.domain.postgres.Campaign pgCampaign = new org.opensrp.domain.postgres.Campaign();
-		pgCampaign.setId(primaryKey);
-		pgCampaign.setJson(campaign);
+        org.opensrp.domain.postgres.Campaign pgCampaign = new org.opensrp.domain.postgres.Campaign();
+        pgCampaign.setId(primaryKey);
+        pgCampaign.setJson(campaign);
 
-		return pgCampaign;
-	}
+        return pgCampaign;
+    }
 
-	private List<Campaign> convert(List<org.opensrp.domain.postgres.Campaign> campaigns) {
-		if (campaigns == null || campaigns.isEmpty()) {
-			return new ArrayList<>();
-		}
+    private List<Campaign> convert(List<org.opensrp.domain.postgres.Campaign> campaigns) {
+        if (campaigns == null || campaigns.isEmpty()) {
+            return new ArrayList<>();
+        }
 
-		List<Campaign> convertedCampaigns = new ArrayList<>();
-		for (org.opensrp.domain.postgres.Campaign campaign : campaigns) {
-			Campaign convertedCampaign = convert(campaign);
-			if (convertedCampaign != null) {
-				convertedCampaigns.add(convertedCampaign);
-			}
-		}
+        List<Campaign> convertedCampaigns = new ArrayList<>();
+        for (org.opensrp.domain.postgres.Campaign campaign : campaigns) {
+            Campaign convertedCampaign = convert(campaign);
+            if (convertedCampaign != null) {
+                convertedCampaigns.add(convertedCampaign);
+            }
+        }
 
-		return convertedCampaigns;
-	}
+        return convertedCampaigns;
+    }
 
-	private CampaignMetadata createMetadata(Campaign entity, Long id) {
-		CampaignMetadata campaignMetadata = new CampaignMetadata();
-		campaignMetadata.setCampaignId(id);
-		campaignMetadata.setIdentifier(entity.getIdentifier());
-		campaignMetadata.setServerVersion(entity.getServerVersion());
-		return campaignMetadata;
-	}
+    private CampaignMetadata createMetadata(Campaign entity, Long id) {
+        CampaignMetadata campaignMetadata = new CampaignMetadata();
+        campaignMetadata.setCampaignId(id);
+        campaignMetadata.setIdentifier(entity.getIdentifier());
+        campaignMetadata.setServerVersion(entity.getServerVersion());
+        return campaignMetadata;
+    }
 
 }

@@ -20,9 +20,8 @@ public interface UniqueIdRepository extends BaseRepository<UniqueId> {
     boolean checkIfClientExists(String usedBy, String location);
 
     UniqueId findByIdentifierSourceOrderByIdDesc(Long identifierSource);
-    
+
     Set<String> findReservedIdentifiers();
-    
-    
+
 
 }

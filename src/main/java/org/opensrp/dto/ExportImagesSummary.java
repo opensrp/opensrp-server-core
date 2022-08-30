@@ -14,6 +14,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class ExportImagesSummary {
 
-	private List<ExportFlagProblemEventImageMetadata>  exportFlagProblemEventImageMetadataList;
-	private Set<String> servicePoints;
+    private List<ExportFlagProblemEventImageMetadata> exportFlagProblemEventImageMetadataList;
+    private Set<String> servicePoints;
 }

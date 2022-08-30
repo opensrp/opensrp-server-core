@@ -10,17 +10,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ViewConfigurationService {
-	
-	private ViewConfigurationRepository viewConfigurationRepository;
-	
-	@Autowired
-	public void setViewConfigurationRepository(ViewConfigurationRepository viewConfigurationRepository) {
-		this.viewConfigurationRepository = viewConfigurationRepository;
-	}
 
-	@PreAuthorize("hasRole('SYNC_VIEWCONFIGURATION')")
-	public List<ViewConfiguration> findViewConfigurationsByVersion(Long lastSyncedServerVersion) {
-		return viewConfigurationRepository.findViewConfigurationsByVersion(lastSyncedServerVersion);
-	}
-	
+    private ViewConfigurationRepository viewConfigurationRepository;
+
+    @Autowired
+    public void setViewConfigurationRepository(ViewConfigurationRepository viewConfigurationRepository) {
+        this.viewConfigurationRepository = viewConfigurationRepository;
+    }
+
+    @PreAuthorize("hasRole('SYNC_VIEWCONFIGURATION')")
+    public List<ViewConfiguration> findViewConfigurationsByVersion(Long lastSyncedServerVersion) {
+        return viewConfigurationRepository.findViewConfigurationsByVersion(lastSyncedServerVersion);
+    }
+
 }

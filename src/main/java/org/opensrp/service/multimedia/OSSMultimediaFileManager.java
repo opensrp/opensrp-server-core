@@ -25,73 +25,73 @@ import static org.opensrp.util.Utils.closeCloseable;
 @Component("OSSMultimediaFileManager")
 public class OSSMultimediaFileManager extends ObjectStorageMultimediaFileManager {
 
-	private Logger logger = LogManager.getLogger(OSSMultimediaFileManager.class.toString());
-	private OSSClientBuilder ossClientBuilder;
-	
-	@Autowired
-	public OSSMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
-		super(multimediaRepository, clientService);
-	}
+    private Logger logger = LogManager.getLogger(OSSMultimediaFileManager.class.toString());
+    private OSSClientBuilder ossClientBuilder;
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void persistFileToStorage(String fileName, byte[] fileBytes) {
-		OSSClient ossClient = getOssClient();
-		ossClient.putObject(objectStorageBucketName, getOSSObjectStorageFilePath(fileName), new ByteArrayInputStream(fileBytes));
-		ossClient.shutdown();
-	}
+    @Autowired
+    public OSSMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
+        super(multimediaRepository, clientService);
+    }
 
-	public String getOSSObjectStorageFilePath(String fileName) {
-		String objectStorageFilePath = getObjectStorageFilePath(fileName);
-		return objectStorageFilePath.charAt(0) == File.separatorChar
-				? objectStorageFilePath.substring(1) : objectStorageFilePath;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void persistFileToStorage(String fileName, byte[] fileBytes) {
+        OSSClient ossClient = getOssClient();
+        ossClient.putObject(objectStorageBucketName, getOSSObjectStorageFilePath(fileName), new ByteArrayInputStream(fileBytes));
+        ossClient.shutdown();
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public File retrieveFile(String filePath) {
-		File file = null;
-		OSSClient ossClient = getOssClient();
-		String filePathInBucket = getOSSObjectStorageFilePath(filePath);
-		if (!ossClient.doesObjectExist(objectStorageBucketName, filePathInBucket)) {
-			return file;
-		}
+    public String getOSSObjectStorageFilePath(String fileName) {
+        String objectStorageFilePath = getObjectStorageFilePath(fileName);
+        return objectStorageFilePath.charAt(0) == File.separatorChar
+                ? objectStorageFilePath.substring(1) : objectStorageFilePath;
+    }
 
-		InputStream content = null;
-		try {
-			content = ossClient.getObject(objectStorageBucketName, filePathInBucket).getObjectContent();
-			file = new File(filePath);
-			FileUtils.copyInputStreamToFile(content, file);
-		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
-		} catch (ClientException e) {
-			logger.error(e.getMessage(), e);
-		} catch (OSSException e) {
-			logger.error(e.getMessage(), e);
-		} finally {
-			closeCloseable(content);
-			ossClient.shutdown();
-		}
-		return file;
-	}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public File retrieveFile(String filePath) {
+        File file = null;
+        OSSClient ossClient = getOssClient();
+        String filePathInBucket = getOSSObjectStorageFilePath(filePath);
+        if (!ossClient.doesObjectExist(objectStorageBucketName, filePathInBucket)) {
+            return file;
+        }
 
-	private OSSClient getOssClient() {
-		return getOSSClientBuilder().getOssClient();
-	}
+        InputStream content = null;
+        try {
+            content = ossClient.getObject(objectStorageBucketName, filePathInBucket).getObjectContent();
+            file = new File(filePath);
+            FileUtils.copyInputStreamToFile(content, file);
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } catch (ClientException e) {
+            logger.error(e.getMessage(), e);
+        } catch (OSSException e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            closeCloseable(content);
+            ossClient.shutdown();
+        }
+        return file;
+    }
 
-	@PostConstruct
-	@SuppressWarnings("unused")
-	private OSSClientBuilder getOSSClientBuilder() {
-		if (ossClientBuilder == null) {
-			ossClientBuilder = new OSSClientBuilder();
-			ossClientBuilder.withObjectStorageAccessKeyId(objectStorageAccessKeyId)
-					.withObjectStorageSecretAccessKey(objectStorageSecretAccessKey)
-					.withObjectStorageRegion(objectStorageRegion);
-		}
-		return ossClientBuilder;
-	}
+    private OSSClient getOssClient() {
+        return getOSSClientBuilder().getOssClient();
+    }
+
+    @PostConstruct
+    @SuppressWarnings("unused")
+    private OSSClientBuilder getOSSClientBuilder() {
+        if (ossClientBuilder == null) {
+            ossClientBuilder = new OSSClientBuilder();
+            ossClientBuilder.withObjectStorageAccessKeyId(objectStorageAccessKeyId)
+                    .withObjectStorageSecretAccessKey(objectStorageSecretAccessKey)
+                    .withObjectStorageRegion(objectStorageRegion);
+        }
+        return ossClientBuilder;
+    }
 }

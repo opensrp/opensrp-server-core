@@ -14,26 +14,24 @@ import java.util.Map;
 @AllArgsConstructor
 public class PlanSearchBean {
 
-	public enum OrderByType {
-		ASC, DESC
-	};
+    private Integer pageNumber = 0;
 
-	public enum FieldName {
-		id
-	};
+    ;
+    private Integer pageSize = 0;
 
-	private Integer pageNumber = 0;
+    ;
+    private OrderByType orderByType = OrderByType.DESC;
+    private FieldName orderByFieldName = FieldName.id;
+    private PlanDefinition.PlanStatus planStatus;
+    private Map<String, String> useContexts;
+    private boolean isExperimental;
 
-	private Integer pageSize = 0;
+    public enum OrderByType {
+        ASC, DESC
+    }
 
-	private OrderByType orderByType = OrderByType.DESC;
-
-	private FieldName orderByFieldName = FieldName.id;
-
-	private PlanDefinition.PlanStatus planStatus;
-
-	private Map<String,String> useContexts;
-
-	private boolean isExperimental;
+    public enum FieldName {
+        id
+    }
 
 }
