@@ -14,34 +14,34 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 
 public class MultimediaTest {
-	
-	@Test
-	public void testEqualAndHashcodeContract() {
-		EqualsVerifier.forClass(Multimedia.class).withIgnoredFields("id", "revision").suppress(Warning.NONFINAL_FIELDS)
-		        .withRedefinedSuperclass().verify();
-	}
-	
-	@Test
-	public void testGetterAndSetter() {
-		Validator validator = ValidatorBuilder.create().with(new SetterTester()).with(new GetterTester()).build();
-		
-		validator.validate(PojoClassFactory.getPojoClass(Multimedia.class));
-	}
-	
-	@Test
-	public void testConstructor() {
-		String fileCategory = "fileCategory";
-		String filePath = "filePath";
-		String contentType = "contentType";
-		String providerId = "providerId";
-		String caseId = "caseId";
-		
-		Multimedia multimedia = new Multimedia(caseId, providerId, contentType, filePath, fileCategory);
-		
-		Multimedia multimedia1 = new Multimedia().withCaseId(caseId).withProviderId(providerId).withContentType(contentType)
-		        .withFilePath(filePath).withFileCategory(fileCategory);
-		
-		assertTrue(multimedia.equals(multimedia1));
-	}
-	
+
+    @Test
+    public void testEqualAndHashcodeContract() {
+        EqualsVerifier.forClass(Multimedia.class).withIgnoredFields("id", "revision").suppress(Warning.NONFINAL_FIELDS)
+                .withRedefinedSuperclass().verify();
+    }
+
+    @Test
+    public void testGetterAndSetter() {
+        Validator validator = ValidatorBuilder.create().with(new SetterTester()).with(new GetterTester()).build();
+
+        validator.validate(PojoClassFactory.getPojoClass(Multimedia.class));
+    }
+
+    @Test
+    public void testConstructor() {
+        String fileCategory = "fileCategory";
+        String filePath = "filePath";
+        String contentType = "contentType";
+        String providerId = "providerId";
+        String caseId = "caseId";
+
+        Multimedia multimedia = new Multimedia(caseId, providerId, contentType, filePath, fileCategory);
+
+        Multimedia multimedia1 = new Multimedia().withCaseId(caseId).withProviderId(providerId).withContentType(contentType)
+                .withFilePath(filePath).withFileCategory(fileCategory);
+
+        assertTrue(multimedia.equals(multimedia1));
+    }
+
 }

@@ -23,9 +23,9 @@ import java.sql.SQLException;
  */
 public class PlanTypeHandler extends BaseTypeHandler implements TypeHandler<PlanDefinition> {
 
-	public  Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
-			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
-	
+    public Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
+            .registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
+
     @Override
     public void setParameter(PreparedStatement ps, int i, PlanDefinition parameter, JdbcType jdbcType) throws SQLException {
         try {
@@ -36,8 +36,7 @@ public class PlanTypeHandler extends BaseTypeHandler implements TypeHandler<Plan
                 jsonObject.setValue(jsonString);
                 ps.setObject(i, jsonObject);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new SQLException(e);
         }
     }
@@ -49,10 +48,9 @@ public class PlanTypeHandler extends BaseTypeHandler implements TypeHandler<Plan
             if (StringUtils.isBlank(jsonString)) {
                 return null;
             }
-            PlanDefinition result =  gson.fromJson(jsonString, PlanDefinition.class);
+            PlanDefinition result = gson.fromJson(jsonString, PlanDefinition.class);
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new SQLException(e);
         }
     }
@@ -66,8 +64,7 @@ public class PlanTypeHandler extends BaseTypeHandler implements TypeHandler<Plan
             }
             PlanDefinition result = gson.fromJson(jsonString, PlanDefinition.class);
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new SQLException(e);
         }
     }
@@ -81,8 +78,7 @@ public class PlanTypeHandler extends BaseTypeHandler implements TypeHandler<Plan
             }
             PlanDefinition result = gson.fromJson(jsonString, PlanDefinition.class);
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new SQLException(e);
         }
     }

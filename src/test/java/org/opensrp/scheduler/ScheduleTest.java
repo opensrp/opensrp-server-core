@@ -13,32 +13,32 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 
 public class ScheduleTest {
-	
-	@Test(expected = JSONException.class)
-	public void testConstructorInvalidString() throws JSONException {
-		new Schedule(" dsf");
-	}
-	
-	@Test(expected = JSONException.class)
-	public void testWithInvalidJsonObject() throws JSONException {
-		new Schedule(new JSONObject());
-	}
-	
-	@Test(expected = Exception.class)
-	public void testCompilerExceptionInPassesValidation() throws IOException, JSONException {
-		String scheduleConfigPath = "/schedules/schedule-config.xls";
-		ResourceLoader loader = new DefaultResourceLoader();
-		scheduleConfigPath = loader.getResource(scheduleConfigPath).getURI().getPath();
-		
-		JSONArray xlsToJsonScheduleArray = Utils.getXlsToJson(scheduleConfigPath);
-		
-		String duplicatePassLogic = "${fs.pentavalent_2} !=s ${fs.pentavalent_2}";
-		Schedule schedule = new Schedule(xlsToJsonScheduleArray.getJSONObject(0).put("passLogic", duplicatePassLogic));
-		
-		Map<String, String> flvl = new HashMap<>();
-		
-		flvl.put("pentavalent_2", null);
-		schedule.passesValidations(flvl);
-		
-	}
+
+    @Test(expected = JSONException.class)
+    public void testConstructorInvalidString() throws JSONException {
+        new Schedule(" dsf");
+    }
+
+    @Test(expected = JSONException.class)
+    public void testWithInvalidJsonObject() throws JSONException {
+        new Schedule(new JSONObject());
+    }
+
+    @Test(expected = Exception.class)
+    public void testCompilerExceptionInPassesValidation() throws IOException, JSONException {
+        String scheduleConfigPath = "/schedules/schedule-config.xls";
+        ResourceLoader loader = new DefaultResourceLoader();
+        scheduleConfigPath = loader.getResource(scheduleConfigPath).getURI().getPath();
+
+        JSONArray xlsToJsonScheduleArray = Utils.getXlsToJson(scheduleConfigPath);
+
+        String duplicatePassLogic = "${fs.pentavalent_2} !=s ${fs.pentavalent_2}";
+        Schedule schedule = new Schedule(xlsToJsonScheduleArray.getJSONObject(0).put("passLogic", duplicatePassLogic));
+
+        Map<String, String> flvl = new HashMap<>();
+
+        flvl.put("pentavalent_2", null);
+        schedule.passesValidations(flvl);
+
+    }
 }

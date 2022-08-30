@@ -25,48 +25,44 @@ import java.util.Properties;
 @Component
 public class MybatisMigration {
 
-	private static Logger logger = LogManager.getLogger(MybatisMigration.class.getName());
+    private static final String CONFIG_FILE = "mybatis/environments/deployment.properties";
+    private static final String SCRIPTS_FOLDER = "mybatis/scripts";
+    private static Logger logger = LogManager.getLogger(MybatisMigration.class.getName());
+    @Autowired
+    private DataSource dataSource;
 
-	@Autowired
-	private DataSource dataSource;
+    @PostConstruct
+    public void initializeMybatisMigration() {
+        logger.info("Running migrations.");
+        Resource resource = new ClassPathResource(CONFIG_FILE);
+        try {
+            Properties props = PropertiesLoaderUtils.loadProperties(resource);
+            Gson gson = new GsonBuilder()
+                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                    .create();
 
-	private static final String CONFIG_FILE = "mybatis/environments/deployment.properties";
+            JSONObject dbOperationOptionObject = new JSONObject(gson.toJson(new DatabaseOperationOption()));
+            for (String key : dbOperationOptionObject.keySet()) {
+                if (props.containsKey(key)) {
+                    dbOperationOptionObject.put(key, props.getProperty(key));
+                }
+            }
 
-	private static final String SCRIPTS_FOLDER = "mybatis/scripts";
+            DatabaseOperationOption databaseOperationOption = gson.fromJson(dbOperationOptionObject.toString(), DatabaseOperationOption.class);
 
-	@PostConstruct
-	public void initializeMybatisMigration() {
-		logger.info("Running migrations.");
-		Resource resource = new ClassPathResource(CONFIG_FILE);
-		try {
-			Properties props = PropertiesLoaderUtils.loadProperties(resource);
-			Gson gson = new GsonBuilder()
-					.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-					.create();
+            runMigrationOperation(props, databaseOperationOption);
 
-			JSONObject dbOperationOptionObject = new JSONObject(gson.toJson(new DatabaseOperationOption()));
-			for(String key : dbOperationOptionObject.keySet()){
-				if(props.containsKey(key)){
-					dbOperationOptionObject.put(key, props.getProperty(key));
-				}
-			}
+            logger.info("Migration done.");
+        } catch (IOException e) {
+            logger.error(e);
+        }
+    }
 
-			DatabaseOperationOption databaseOperationOption = gson.fromJson(dbOperationOptionObject.toString(), DatabaseOperationOption.class);
-
-			runMigrationOperation(props, databaseOperationOption);
-
-			logger.info("Migration done.");
-		}
-		catch (IOException e) {
-			logger.error(e);
-		}
-	}
-
-	protected void runMigrationOperation(Properties props, DatabaseOperationOption databaseOperationOption) throws IOException {
-		new UpOperation().operate(
-				new DataSourceConnectionProvider(dataSource),
-				new FileMigrationLoader(new ClassPathResource(SCRIPTS_FOLDER).getFile(), StandardCharsets.UTF_8.toString(),
-						props), databaseOperationOption, System.out);
-	}
+    protected void runMigrationOperation(Properties props, DatabaseOperationOption databaseOperationOption) throws IOException {
+        new UpOperation().operate(
+                new DataSourceConnectionProvider(dataSource),
+                new FileMigrationLoader(new ClassPathResource(SCRIPTS_FOLDER).getFile(), StandardCharsets.UTF_8.toString(),
+                        props), databaseOperationOption, System.out);
+    }
 
 }

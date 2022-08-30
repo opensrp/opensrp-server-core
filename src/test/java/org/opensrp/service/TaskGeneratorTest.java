@@ -15,55 +15,55 @@ import org.smartregister.domain.PlanDefinition;
 
 public class TaskGeneratorTest {
 
-	@Rule
-	public MockitoRule rule = MockitoJUnit.rule();
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
-	private TaskGenerator taskGenerator;
+    private TaskGenerator taskGenerator;
 
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-		taskGenerator = new TaskGenerator();
-	}
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        taskGenerator = new TaskGenerator();
+    }
 
-	@Test
-	public void testIsInternalTaskGenerationPlanWithInternalTaskGenerationStatusReturnsTrue() {
+    @Test
+    public void testIsInternalTaskGenerationPlanWithInternalTaskGenerationStatusReturnsTrue() {
 
-		PlanDefinition plan = new PlanDefinition();
-		plan.setIdentifier("plan-id-1");
-		plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
-		Period executionPeriod = new Period();
-		executionPeriod.setEnd(new LocalDate().plusYears(2).toDateTimeAtStartOfDay());
-		plan.setEffectivePeriod(executionPeriod);
-		PlanDefinition.UseContext useContext = new PlanDefinition.UseContext();
-		useContext.setCode("taskGenerationStatus");
-		useContext.setValueCodableConcept("internal");
-		plan.setUseContext(Collections.singletonList(useContext));
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("plan-id-1");
+        plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
+        Period executionPeriod = new Period();
+        executionPeriod.setEnd(new LocalDate().plusYears(2).toDateTimeAtStartOfDay());
+        plan.setEffectivePeriod(executionPeriod);
+        PlanDefinition.UseContext useContext = new PlanDefinition.UseContext();
+        useContext.setCode("taskGenerationStatus");
+        useContext.setValueCodableConcept("internal");
+        plan.setUseContext(Collections.singletonList(useContext));
 
-		boolean isInternalTaskGeneration = taskGenerator.isInternalTaskGeneration(plan);
+        boolean isInternalTaskGeneration = taskGenerator.isInternalTaskGeneration(plan);
 
-		Assert.assertTrue(isInternalTaskGeneration);
+        Assert.assertTrue(isInternalTaskGeneration);
 
-	}
+    }
 
-	@Test
-	public void testIsInternalTaskGenerationPlanWithoutInternalTaskGenerationStatusReturnsTrue() {
+    @Test
+    public void testIsInternalTaskGenerationPlanWithoutInternalTaskGenerationStatusReturnsTrue() {
 
-		PlanDefinition plan = new PlanDefinition();
-		plan.setIdentifier("plan-id-1");
-		plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
-		Period executionPeriod = new Period();
-		executionPeriod.setEnd(new LocalDate().plusYears(2).toDateTimeAtStartOfDay());
-		plan.setEffectivePeriod(executionPeriod);
-		PlanDefinition.UseContext useContext = new PlanDefinition.UseContext();
-		useContext.setCode("taskGenerationStatus");
-		useContext.setValueCodableConcept("True");
-		plan.setUseContext(Collections.singletonList(useContext));
+        PlanDefinition plan = new PlanDefinition();
+        plan.setIdentifier("plan-id-1");
+        plan.setStatus(PlanDefinition.PlanStatus.ACTIVE);
+        Period executionPeriod = new Period();
+        executionPeriod.setEnd(new LocalDate().plusYears(2).toDateTimeAtStartOfDay());
+        plan.setEffectivePeriod(executionPeriod);
+        PlanDefinition.UseContext useContext = new PlanDefinition.UseContext();
+        useContext.setCode("taskGenerationStatus");
+        useContext.setValueCodableConcept("True");
+        plan.setUseContext(Collections.singletonList(useContext));
 
-		boolean isInternalTaskGeneration = taskGenerator.isInternalTaskGeneration(plan);
+        boolean isInternalTaskGeneration = taskGenerator.isInternalTaskGeneration(plan);
 
-		Assert.assertFalse(isInternalTaskGeneration);
+        Assert.assertFalse(isInternalTaskGeneration);
 
-	}
+    }
 
 }

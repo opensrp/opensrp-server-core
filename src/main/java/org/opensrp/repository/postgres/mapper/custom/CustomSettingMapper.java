@@ -4,10 +4,10 @@ import org.opensrp.domain.postgres.Settings;
 import org.opensrp.repository.postgres.mapper.SettingsMapper;
 
 public interface CustomSettingMapper extends SettingsMapper {
-	
-	int insertSelectiveAndSetId(Settings setting);
-	
-	Long selectServerVersionByPrimaryKey(Long id);
-	
-	int updateByPrimaryKeyAndGenerateServerVersion(Settings settings);
+
+    int insertSelectiveAndSetId(Settings setting);
+
+    Long selectServerVersionByPrimaryKey(Long id);
+
+    int updateByPrimaryKeyAndGenerateServerVersion(Settings settings);
 }

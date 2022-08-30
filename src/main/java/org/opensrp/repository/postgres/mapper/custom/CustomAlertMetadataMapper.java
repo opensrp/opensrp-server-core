@@ -8,9 +8,9 @@ import org.opensrp.domain.postgres.AlertMetadataExample;
 import org.opensrp.repository.postgres.mapper.AlertMetadataMapper;
 
 public interface CustomAlertMetadataMapper extends AlertMetadataMapper {
-	
-	Alert selectByDocumentId(String documentId);
-	
-	List<Alert> selectMany(@Param("example") AlertMetadataExample example, @Param("offset") int offset,
-	        @Param("limit") int limit);
+
+    Alert selectByDocumentId(String documentId);
+
+    List<Alert> selectMany(@Param("example") AlertMetadataExample example, @Param("offset") int offset,
+                           @Param("limit") int limit);
 }

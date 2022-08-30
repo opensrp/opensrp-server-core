@@ -26,20 +26,14 @@ import static org.opensrp.service.MultimediaService.VIDEOS_DIR;
 
 public abstract class BaseMultimediaFileManager implements MultimediaFileManager {
 
+    private static final String SUCCESS = "success";
+    private static final String FAIL = "fail";
+    private static Logger logger = LogManager.getLogger(BaseMultimediaFileManager.class.getName());
     private final MultimediaRepository multimediaRepository;
-
     private final ClientService clientService;
-
     protected String multimediaDirPath;
-
     @Value("#{opensrp['multimedia.directory.name']}")
     protected String baseMultimediaDirPath;
-
-    private static Logger logger = LogManager.getLogger(BaseMultimediaFileManager.class.getName());
-
-    private static final String SUCCESS = "success";
-
-    private static final String FAIL = "fail";
 
     public BaseMultimediaFileManager(MultimediaRepository multimediaRepository, ClientService clientService) {
         this.multimediaRepository = multimediaRepository;
@@ -61,6 +55,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
 
     /**
      * Persists a {@link byte[]} with the given {@param fileName} to storage
+     *
      * @param fileName
      * @param fileBytes
      * @throws IOException
@@ -108,10 +103,9 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
     /**
      * Saves a multi-part file uploaded to the server
      *
-     * @param multimediaDTO {@link MultimediaDTO} object populated with information about the file to be saved
-     * @param fileBytes {@link byte[]} bytes to save to disk
+     * @param multimediaDTO    {@link MultimediaDTO} object populated with information about the file to be saved
+     * @param fileBytes        {@link byte[]} bytes to save to disk
      * @param originalFileName {@link String} original name of the file
-     *
      * @return true if the file was saved else false
      */
     public boolean uploadFile(MultimediaDTO multimediaDTO, byte[] fileBytes, String originalFileName) {
@@ -159,7 +153,7 @@ public abstract class BaseMultimediaFileManager implements MultimediaFileManager
                 multimediaDirPath += OTHER_DIR;
                 fileExt = getFileExtension(originalFileName);
 
-                if(StringUtils.isBlank(fileExt))
+                if (StringUtils.isBlank(fileExt))
                     throw new IllegalArgumentException("Unknown content type : " + multimediaDTO.getContentType());
                 break;
         }

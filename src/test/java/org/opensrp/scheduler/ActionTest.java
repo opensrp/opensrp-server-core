@@ -12,18 +12,18 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.Warning;
 
 public class ActionTest {
-	
-	@Test
-	public void testEqualityAndHashCode() {
-		EqualsVerifier.forClass(Action.class).withIgnoredFields("id", "timeStamp", "revision")
-		        .suppress(Warning.NONFINAL_FIELDS).verify();
-	}
-	
-	@Test
-	public void testGetterAndSetter() {
-		Validator validator = ValidatorBuilder.create().with(new SetterTester()).with(new GetterTester()).build();
-		
-		validator.validate(PojoClassFactory.getPojoClass(Action.class));
-	}
-	
+
+    @Test
+    public void testEqualityAndHashCode() {
+        EqualsVerifier.forClass(Action.class).withIgnoredFields("id", "timeStamp", "revision")
+                .suppress(Warning.NONFINAL_FIELDS).verify();
+    }
+
+    @Test
+    public void testGetterAndSetter() {
+        Validator validator = ValidatorBuilder.create().with(new SetterTester()).with(new GetterTester()).build();
+
+        validator.validate(PojoClassFactory.getPojoClass(Action.class));
+    }
+
 }

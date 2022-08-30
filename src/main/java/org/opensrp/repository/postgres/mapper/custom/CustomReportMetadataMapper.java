@@ -8,10 +8,10 @@ import org.opensrp.domain.postgres.ReportMetadataExample;
 import org.opensrp.repository.postgres.mapper.ReportMetadataMapper;
 
 public interface CustomReportMetadataMapper extends ReportMetadataMapper {
-	
-	Report selectByDocumentId(String documentId);
-	
-	List<Report> selectMany(@Param("example") ReportMetadataExample example, @Param("offset") int offset,
-	        @Param("limit") int limit);
-	
+
+    Report selectByDocumentId(String documentId);
+
+    List<Report> selectMany(@Param("example") ReportMetadataExample example, @Param("offset") int offset,
+                            @Param("limit") int limit);
+
 }

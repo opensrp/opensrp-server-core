@@ -1,63 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper
-	namespace="org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper">
+        namespace="org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper">
 
-	
-	<insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Structure"
-		useGeneratedKeys="true" keyProperty="id" keyColumn="id">
-		insert into core.structure
-	    <trim prefix="(" suffix=")" suffixOverrides=",">
-	      <if test="id != null">
-	        id,
-	      </if>
-	      <if test="json != null">
-	        json,
-	      </if>
-	      server_version
-	    </trim>
-	    <trim prefix="values (" suffix=")" suffixOverrides=",">
-	      <if test="id != null">
-	        #{id,jdbcType=BIGINT},
-	      </if>
-	      <if test="json != null">
-	        #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
-	      </if>
-	       nextVal('core.structure_server_version_seq')
-	    </trim>
-	</insert>	
-	
-	<resultMap id="StructureFamilyDetailsMap" type="org.opensrp.domain.postgres.StructureFamilyDetails">
-    <id column="id" jdbcType="VARCHAR" property="id" />
-    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
-    <result column="type" jdbcType="VARCHAR" property="type" />
-    <result column="parent_id" jdbcType="VARCHAR" property="parentId" />
-    <result column="base_entity_id" jdbcType="VARCHAR" property="baseEntityId" />
-    <result column="relational_id" jdbcType="VARCHAR" property="relationalId" />
-    <result column="last_name" jdbcType="BIGINT" property="lastName" />
-  </resultMap>
-  
-	
-	<select id="selectStructureAndFamilyWithinRadius" parameterType="map"
-		resultMap="StructureFamilyDetailsMap">
-		select s.json->>'id' as id,s.json->'properties'->>'parentId' as parent_id ,s.json->'properties'->>'type' as type
-		,c.base_entity_id ,c.relational_id ,c.last_name 
-		from core.structure s
-		left join core.client_metadata c on c.residence=json->>'id'
-		where ST_DistanceSpheroid(ST_GeomFromGeoJSON(json->>'geometry'), ST_MakePoint(#{longitude,jdbcType=DOUBLE}, #{latitude,jdbcType=DOUBLE}),
-		      'SPHEROID["WGS 84",6378137,298.257223563]') &lt;= #{radius,jdbcType=DOUBLE}
 
-	</select>
-	
-	<update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Structure">
-	    update core.structure
-	    set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
-	      server_version = nextVal('core.structure_server_version_seq')
-	    where id = #{id,jdbcType=BIGINT}
+    <insert id="insertSelectiveAndSetId" parameterType="org.opensrp.domain.postgres.Structure"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into core.structure
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="json != null">
+                json,
+            </if>
+            server_version
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="json != null">
+                #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
+            </if>
+            nextVal('core.structure_server_version_seq')
+        </trim>
+    </insert>
+
+    <resultMap id="StructureFamilyDetailsMap" type="org.opensrp.domain.postgres.StructureFamilyDetails">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
+        <result column="base_entity_id" jdbcType="VARCHAR" property="baseEntityId"/>
+        <result column="relational_id" jdbcType="VARCHAR" property="relationalId"/>
+        <result column="last_name" jdbcType="BIGINT" property="lastName"/>
+    </resultMap>
+
+
+    <select id="selectStructureAndFamilyWithinRadius" parameterType="map"
+            resultMap="StructureFamilyDetailsMap">
+        select s.json->>'id' as id,s.json->'properties'->>'parentId' as parent_id ,s.json->'properties'->>'type' as type
+        ,c.base_entity_id ,c.relational_id ,c.last_name
+        from core.structure s
+        left join core.client_metadata c on c.residence=json->>'id'
+        where ST_DistanceSpheroid(ST_GeomFromGeoJSON(json->>'geometry'), ST_MakePoint(#{longitude,jdbcType=DOUBLE},
+        #{latitude,jdbcType=DOUBLE}),
+        'SPHEROID["WGS 84",6378137,298.257223563]') &lt;= #{radius,jdbcType=DOUBLE}
+
+    </select>
+
+    <update id="updateByPrimaryKeyAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Structure">
+        update core.structure
+        set json = #{json,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.LocationTypeHandler},
+        server_version = nextVal('core.structure_server_version_seq')
+        where id = #{id,jdbcType=BIGINT}
     </update>
-  	<select id="selectServerVersionByPrimaryKey"
-		parameterType="java.lang.Long" resultType="long">
-		select server_version from core.structure where id = #{id,jdbcType=BIGINT}
-	</select>
-		
+    <select id="selectServerVersionByPrimaryKey"
+            parameterType="java.lang.Long" resultType="long">
+        select server_version from core.structure where id = #{id,jdbcType=BIGINT}
+    </select>
+
 </mapper>

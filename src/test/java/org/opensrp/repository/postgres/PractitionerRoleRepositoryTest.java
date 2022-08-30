@@ -32,7 +32,31 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
 
     @BeforeClass
     public static void bootStrap() {
-        tableNames= Arrays.asList("team.organization","team.practitioner","team.practitioner_role");
+        tableNames = Arrays.asList("team.organization", "team.practitioner", "team.practitioner_role");
+    }
+
+    private static PractitionerRole initTestPractitionerRole1() {
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier("pr1-identifier");
+        practitionerRole.setActive(true);
+        practitionerRole.setOrganizationIdentifier("org1");
+        practitionerRole.setPractitionerIdentifier("p1-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr1Code");
+        practitionerRole.setCode(code);
+        return practitionerRole;
+    }
+
+    private static PractitionerRole initTestPractitionerRole2() {
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier("pr2-identifier");
+        practitionerRole.setActive(true);
+        practitionerRole.setOrganizationIdentifier("org1");
+        practitionerRole.setPractitionerIdentifier("p2-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr2Code");
+        practitionerRole.setCode(code);
+        return practitionerRole;
     }
 
     @Override
@@ -195,7 +219,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
 
         List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAll();
         assertNotNull(practitionerRoles);
-        assertEquals(2,practitionerRoles.size());
+        assertEquals(2, practitionerRoles.size());
 
         Set<String> ids = new HashSet<>();
         ids.add(practitionerRole1.getIdentifier());
@@ -213,7 +237,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
 
         List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAll();
         assertNotNull(practitionerRoles);
-        assertEquals(2,practitionerRoles.size());
+        assertEquals(2, practitionerRoles.size());
 
         practitionerRoleRepository.safeRemove(practitionerRole2);
 
@@ -230,7 +254,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
 
         List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAll();
         assertNotNull(practitionerRoles);
-        assertEquals(1,practitionerRoles.size());
+        assertEquals(1, practitionerRoles.size());
 
         practitionerRoleRepository.safeRemove(new PractitionerRole());
 
@@ -247,7 +271,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
 
         List<PractitionerRole> practitionerRoles = practitionerRoleRepository.getAll();
         assertNotNull(practitionerRoles);
-        assertEquals(1,practitionerRoles.size());
+        assertEquals(1, practitionerRoles.size());
 
         PractitionerRole practitionerRole2 = initTestPractitionerRole2();
         practitionerRoleRepository.safeRemove(practitionerRole2);
@@ -300,7 +324,7 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void testCountAllPractitionerRoles(){
+    public void testCountAllPractitionerRoles() {
         PractitionerRole practitionerRole1 = initTestPractitionerRole1();
         PractitionerRole practitionerRole2 = initTestPractitionerRole2();
         practitionerRoleRepository.add(practitionerRole1);
@@ -336,30 +360,6 @@ public class PractitionerRoleRepositoryTest extends BaseRepositoryTest {
         assertEquals(identifier, practitionerRoles.get(0).getOrganizationIdentifier());
         assertEquals("pr2Code", practitionerRoles.get(0).getCode().getText());
 
-    }
-
-    private static PractitionerRole initTestPractitionerRole1(){
-        PractitionerRole practitionerRole = new PractitionerRole();
-        practitionerRole.setIdentifier("pr1-identifier");
-        practitionerRole.setActive(true);
-        practitionerRole.setOrganizationIdentifier("org1");
-        practitionerRole.setPractitionerIdentifier("p1-identifier");
-        PractitionerRoleCode code = new PractitionerRoleCode();
-        code.setText("pr1Code");
-        practitionerRole.setCode(code);
-        return practitionerRole;
-    }
-
-    private static PractitionerRole initTestPractitionerRole2(){
-        PractitionerRole practitionerRole = new PractitionerRole();
-        practitionerRole.setIdentifier("pr2-identifier");
-        practitionerRole.setActive(true);
-        practitionerRole.setOrganizationIdentifier("org1");
-        practitionerRole.setPractitionerIdentifier("p2-identifier");
-        PractitionerRoleCode code = new PractitionerRoleCode();
-        code.setText("pr2Code");
-        practitionerRole.setCode(code);
-        return practitionerRole;
     }
 
     private boolean testIfAllIdsExists(List<PractitionerRole> practitionerRoles, Set<String> ids) {

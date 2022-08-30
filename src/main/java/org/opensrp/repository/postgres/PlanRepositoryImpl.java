@@ -51,17 +51,17 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         return isEmptyList(plan) ? null : plan.get(0);
     }
-    
+
     private void updateServerVersion(Plan pgPlan, PlanDefinition entity) {
-		long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
-		entity.setServerVersion(serverVersion);
-		pgPlan.setJson(entity);
-		pgPlan.setServerVersion(null);
-		int rowsAffected = planMapper.updateByPrimaryKeySelective(pgPlan);
-		if (rowsAffected < 1) {
-			throw new IllegalStateException();
-		}
-	}
+        long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
+        entity.setServerVersion(serverVersion);
+        pgPlan.setJson(entity);
+        pgPlan.setServerVersion(null);
+        int rowsAffected = planMapper.updateByPrimaryKeySelective(pgPlan);
+        if (rowsAffected < 1) {
+            throw new IllegalStateException();
+        }
+    }
 
     @Override
     public void add(PlanDefinition plan) {
@@ -83,9 +83,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         if (rowsAffected < 1) {
             throw new IllegalStateException();
         }
-        
+
         updateServerVersion(pgPlan, plan);
-       
+
         insertPlanMetadata(plan, pgPlan.getId());
     }
 
@@ -114,7 +114,7 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         }
 
         updateServerVersion(pgPlan, plan);
-        
+
         updatePlanMetadata(plan, pgPlan.getId());
     }
 
@@ -223,9 +223,9 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
             if (toDate != null && fromDate != null) {
                 criteria.andDateCreatedBetween(fromDate, toDate);
-            } else if(fromDate !=null){
+            } else if (fromDate != null) {
                 criteria.andDateCreatedGreaterThanOrEqualTo(fromDate);
-            } else{
+            } else {
                 criteria.andDateCreatedLessThanOrEqualTo(toDate);
             }
 
@@ -386,11 +386,11 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
 
     private Pair<Integer, Integer> getPageSizeAndOffset(PlanSearchBean planSearchBean) {
-       return RepositoryUtil.getPageSizeAndOffset(planSearchBean.getPageNumber(), planSearchBean.getPageSize());
+        return RepositoryUtil.getPageSizeAndOffset(planSearchBean.getPageNumber(), planSearchBean.getPageSize());
     }
 
-	@Override
-	public PlanDefinition findPlanByIdentifier(String identifier) {
-		return get(identifier);
-	}
+    @Override
+    public PlanDefinition findPlanByIdentifier(String identifier) {
+        return get(identifier);
+    }
 }

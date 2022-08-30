@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface PractitionerRoleRepository extends BaseRepository<PractitionerRole> {
 
-    List<PractitionerRole>  getRolesForPractitioner(String practitionerIdentifier);
+    List<PractitionerRole> getRolesForPractitioner(String practitionerIdentifier);
 
-    List<org.opensrp.domain.postgres.PractitionerRole>  getPgRolesForPractitioner(String practitionerIdentifier);
+    List<org.opensrp.domain.postgres.PractitionerRole> getPgRolesForPractitioner(String practitionerIdentifier);
 
     org.opensrp.domain.postgres.PractitionerRole getPractitionerRole(String id);
 
@@ -19,12 +19,12 @@ public interface PractitionerRoleRepository extends BaseRepository<PractitionerR
 
     void safeRemove(Long organizationId, Long practitionerId);
 
-    void assignPractitionerRole(Long organizationId,Long practitionerId, String practitionerIdentifier, String code,
-            PractitionerRole practitionerRole);
+    void assignPractitionerRole(Long organizationId, Long practitionerId, String practitionerIdentifier, String code,
+                                PractitionerRole practitionerRole);
 
     List<PractitionerRole> getAllPractitionerRoles(PractitionerRoleSearchBean practitionerRoleSearchBean);
 
-	List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code);
+    List<PractitionerRole> getPractitionerRolesByOrgIdAndCode(Long organizationId, String code);
 
-	long countAllPractitionerRoles();
+    long countAllPractitionerRoles();
 }

@@ -9,16 +9,16 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class AssignedLocationAndPlanSearchBean extends BaseSearchBean{
+public class AssignedLocationAndPlanSearchBean extends BaseSearchBean {
 
-	private String planIdentifier;
+    private String planIdentifier;
 
-	private String organizationIdentifier;
+    private String organizationIdentifier;
 
-	private Long planId;
+    private Long planId;
 
-	private Long organizationId;
+    private Long organizationId;
 
-	private boolean returnFutureAssignments;
+    private boolean returnFutureAssignments;
 
 }

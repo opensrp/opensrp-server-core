@@ -41,401 +41,392 @@ import static org.opensrp.validator.InventoryDataValidator.isWholeNumber;
 
 @Service
 public class StockService {
-	
-	private final StocksRepository allStocks;
 
-	private ProductCatalogueService productCatalogueService;
+    private static Logger logger = LogManager.getLogger(StockService.class.toString());
+    private final StocksRepository allStocks;
+    private ProductCatalogueService productCatalogueService;
+    private PhysicalLocationService physicalLocationService;
+    private InventoryDataValidator inventoryDataValidator;
 
-	private PhysicalLocationService physicalLocationService;
+    @Autowired
+    public StockService(StocksRepository allStocks, ProductCatalogueService productCatalogueService, PhysicalLocationService physicalLocationService,
+                        InventoryDataValidator inventoryDataValidator) {
+        this.allStocks = allStocks;
+        this.productCatalogueService = productCatalogueService;
+        this.physicalLocationService = physicalLocationService;
+        this.inventoryDataValidator = inventoryDataValidator;
+    }
 
-	private InventoryDataValidator inventoryDataValidator;
+    @PreAuthorize("hasRole('STOCK_VIEW')")
+    public List<Stock> findAllByProviderid(String providerid) {
+        return allStocks.findAllByProviderid(providerid);
+    }
 
-	private static Logger logger = LogManager.getLogger(StockService.class.toString());
+    @PreAuthorize("hasRole('STOCK_VIEW')")
+    public Stock getById(String id) {
+        return allStocks.findById(id);
+    }
 
-	@Autowired
-	public StockService(StocksRepository allStocks, ProductCatalogueService productCatalogueService, PhysicalLocationService physicalLocationService,
-			InventoryDataValidator inventoryDataValidator) {
-		this.allStocks = allStocks;
-		this.productCatalogueService = productCatalogueService;
-		this.physicalLocationService = physicalLocationService;
-		this.inventoryDataValidator = inventoryDataValidator;
-	}
+    @PreAuthorize("hasRole('STOCK_VIEW')")
+    public List<Stock> getAll() {
+        return allStocks.getAll();
+    }
 
-	@PreAuthorize("hasRole('STOCK_VIEW')")
-	public List<Stock> findAllByProviderid(String providerid) {
-		return allStocks.findAllByProviderid(providerid);
-	}
+    @PreAuthorize("hasRole('STOCK_VIEW')")
+    public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int limit) {
+        return allStocks.findStocks(searchBean, sortBy, sortOrder, 0, limit);
+    }
 
-	@PreAuthorize("hasRole('STOCK_VIEW')")
-	public Stock getById(String id) {
-		return allStocks.findById(id);
-	}
+    @PreAuthorize("hasRole('STOCK_VIEW')")
+    public List<Stock> findStocks(StockSearchBean searchBean) {
+        return allStocks.findStocks(searchBean);
+    }
 
-	@PreAuthorize("hasRole('STOCK_VIEW')")
-	public List<Stock> getAll() {
-		return allStocks.getAll();
-	}
+    @PreAuthorize("hasRole('STOCK_VIEW')")
+    public List<Stock> findAllStocks(Long serverVersion, Integer limit) {
+        return allStocks.findAllStocks(serverVersion, limit);
+    }
 
-	@PreAuthorize("hasRole('STOCK_VIEW')")
-	public List<Stock> findStocks(StockSearchBean searchBean, String sortBy, String sortOrder, int limit) {
-		return allStocks.findStocks(searchBean, sortBy, sortOrder, 0, limit);
-	}
+    public Stock find(Stock stock) {
+        Stock st = allStocks.findById(stock.getId());
+        if (st == null) {
+            return null;
+        } else {
+            return stock;
+        }
+    }
 
-	@PreAuthorize("hasRole('STOCK_VIEW')")
-	public List<Stock> findStocks(StockSearchBean searchBean) {
-		return allStocks.findStocks(searchBean);
-	}
+    @PreAuthorize("hasRole('STOCK_CREATE')")
+    public synchronized Stock addStock(Stock stock) {
+        Stock st = find(stock);
+        if (st != null) {
+            throw new IllegalArgumentException(
+                    "A stock already exists with given id. Consider updating data.[" + st.getId() + "]");
+        }
+        allStocks.add(stock);
+        return stock;
+    }
 
-	@PreAuthorize("hasRole('STOCK_VIEW')")
-	public List<Stock> findAllStocks(Long serverVersion, Integer limit) {
-		return allStocks.findAllStocks(serverVersion, limit);
-	}
+    @PreAuthorize("hasRole('STOCK_CREATE') or hasRole('STOCK_UPDATE')")
+    public synchronized Stock addorUpdateStock(Stock stock) {
+        if (stock.getId() != null && getById(stock.getId()) != null) {
+            stock.setDateEdited(DateTime.now());
+            stock.setRevision(getById(stock.getId()).getRevision());
+            allStocks.update(stock);
+        } else {
+            stock.setDateCreated(DateTime.now());
+            allStocks.add(stock);
+        }
+        return stock;
+    }
 
-	public Stock find(Stock stock) {
-		Stock st = allStocks.findById(stock.getId());
-		if (st == null) {
-			return null;
-		} else {
-			return stock;
-		}
-	}
+    @PreAuthorize("hasRole('STOCK_UPDATE')")
+    public void updateStock(Stock updatedStock) {
+        // If update is on original entity
+        if (updatedStock.isNew()) {
+            throw new IllegalArgumentException(
+                    "Stock to be updated is not an existing and persisting domain object. Update database object instead of new pojo");
+        }
 
-	@PreAuthorize("hasRole('STOCK_CREATE')")
-	public synchronized Stock addStock(Stock stock) {
-		Stock st = find(stock);
-		if (st != null) {
-			throw new IllegalArgumentException(
-			        "A stock already exists with given id. Consider updating data.[" + st.getId() + "]");
-		}
-		allStocks.add(stock);
-		return stock;
-	}
+        updatedStock.setDateEdited(DateTime.now());
+        allStocks.update(updatedStock);
+    }
 
-	@PreAuthorize("hasRole('STOCK_CREATE') or hasRole('STOCK_UPDATE')")
-	public synchronized Stock addorUpdateStock(Stock stock) {
-		if (stock.getId() != null && getById(stock.getId()) != null) {
-			stock.setDateEdited(DateTime.now());
-			stock.setRevision(getById(stock.getId()).getRevision());
-			allStocks.update(stock);
-		} else {
-			stock.setDateCreated(DateTime.now());
-			allStocks.add(stock);
-		}
-		return stock;
-	}
+    @PreAuthorize("hasRole('STOCK_VIEW')")
+    public Stock find(String uniqueId) {
+        List<Stock> sList = allStocks.findAllByProviderid(uniqueId);
+        if (sList.size() > 1) {
+            throw new IllegalArgumentException("Multiple events with identifier " + uniqueId + " exist.");
+        } else if (sList.size() != 0) {
+            return sList.get(0);
+        }
+        return null;
+    }
 
-	@PreAuthorize("hasRole('STOCK_UPDATE')")
-	public void updateStock(Stock updatedStock) {
-		// If update is on original entity
-		if (updatedStock.isNew()) {
-			throw new IllegalArgumentException(
-			        "Stock to be updated is not an existing and persisting domain object. Update database object instead of new pojo");
-		}
-		
-		updatedStock.setDateEdited(DateTime.now());
-		allStocks.update(updatedStock);
-	}
+    @PreAuthorize("hasRole('STOCK_UPDATE')")
+    public Stock mergeStock(Stock updatedStock) {
+        Stock original = find(updatedStock);
+        if (original == null) {
+            throw new IllegalArgumentException("No stock found with given id. Consider adding new!");
+        }
+        original.setDateEdited(DateTime.now());
+        allStocks.update(original);
+        return original;
+    }
 
-	@PreAuthorize("hasRole('STOCK_VIEW')")
-	public Stock find(String uniqueId) {
-		List<Stock> sList = allStocks.findAllByProviderid(uniqueId);
-		if (sList.size() > 1) {
-			throw new IllegalArgumentException("Multiple events with identifier " + uniqueId + " exist.");
-		} else if (sList.size() != 0) {
-			return sList.get(0);
-		}
-		return null;
-	}
+    @PreAuthorize("hasRole('STOCK_VIEW')")
+    public List<Stock> findStocksBy(StockSearchBean searchBean) {
+        return allStocks.findStocks(searchBean);
+    }
 
-	@PreAuthorize("hasRole('STOCK_UPDATE')")
-	public Stock mergeStock(Stock updatedStock) {
-		Stock original = find(updatedStock);
-		if (original == null) {
-			throw new IllegalArgumentException("No stock found with given id. Consider adding new!");
-		}
-		original.setDateEdited(DateTime.now());
-		allStocks.update(original);
-		return original;
-	}
+    public void addInventory(Inventory inventory, String userName) {
+        if (inventory == null) {
+            return;
+        }
+        validateFields(inventory);
 
-	@PreAuthorize("hasRole('STOCK_VIEW')")
-	public List<Stock> findStocksBy(StockSearchBean searchBean) {
-		return allStocks.findStocks(searchBean);
-	}
+        ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogueByName(inventory.getProductName());
+        if (productCatalogue == null) {
+            throw new IllegalArgumentException(
+                    "Invalid Product Name was selected");
+        }
 
-	public void addInventory(Inventory inventory, String userName) {
-		if(inventory == null) {
-			return;
-		}
-		validateFields(inventory);
+        if (productCatalogue != null && productCatalogue.getIsAttractiveItem() && inventory.getSerialNumber() == null) {
+            throw new IllegalArgumentException(MISSING_SERIAL_NUMBER);
+        }
 
-		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogueByName(inventory.getProductName());
-		if(productCatalogue == null) {
-			throw new IllegalArgumentException(
-					"Invalid Product Name was selected");
-		}
+        Stock existingStock = inventory.getStockId() != null ? getById(inventory.getStockId()) : null;
+        if (existingStock != null) {
+            throw new IllegalArgumentException(
+                    "A stock already exists with given id. Consider updating data.[" + existingStock.getId() + "]");
+        }
 
-		if (productCatalogue != null && productCatalogue.getIsAttractiveItem() && inventory.getSerialNumber() == null) {
-			throw new IllegalArgumentException(MISSING_SERIAL_NUMBER);
-		}
+        Stock stock = convertInventoryToStock(inventory, userName);
+        if (stock == null) {
+            return;
+        }
+        allStocks.add(stock);
+    }
 
-		Stock existingStock = inventory.getStockId() != null ? getById(inventory.getStockId()) : null;
-		if (existingStock != null) {
-			throw new IllegalArgumentException(
-					"A stock already exists with given id. Consider updating data.[" + existingStock.getId() + "]");
-		}
-
-		Stock stock = convertInventoryToStock(inventory, userName);
-		if (stock == null) {
-			return;
-		}
-		allStocks.add(stock);
-	}
-
-	public void updateInventory(Inventory inventory, String userName) {
-		validateFields(inventory);
-		if(inventory.getStockId() == null) {
-			return;
-		}
-		Stock stock = convertInventoryToStock(inventory, userName);
-		Stock existingStock = getById(inventory.getStockId());
-		if (existingStock == null) {
-			throw new IllegalArgumentException(
-					"Stock to be updated is not an existing and persisting domain object. Update database object instead of new pojo");
-		}
+    public void updateInventory(Inventory inventory, String userName) {
+        validateFields(inventory);
+        if (inventory.getStockId() == null) {
+            return;
+        }
+        Stock stock = convertInventoryToStock(inventory, userName);
+        Stock existingStock = getById(inventory.getStockId());
+        if (existingStock == null) {
+            throw new IllegalArgumentException(
+                    "Stock to be updated is not an existing and persisting domain object. Update database object instead of new pojo");
+        }
         stock.setId(existingStock.getId());
-		stock.setDateEdited(DateTime.now());
-		allStocks.update(stock);
-	}
+        stock.setDateEdited(DateTime.now());
+        allStocks.update(stock);
+    }
 
-	public Stock findByIdentifierAndServicePointId(String identifier, String locationId) {
-		return allStocks.findByIdentifierAndServicePointId(identifier,locationId);
-	}
+    public Stock findByIdentifierAndServicePointId(String identifier, String locationId) {
+        return allStocks.findByIdentifierAndServicePointId(identifier, locationId);
+    }
 
-	public void deleteStock(Long id) {
-		if (id != null) {
-			allStocks.delete(id);
-		}
-	}
+    public void deleteStock(Long id) {
+        if (id != null) {
+            allStocks.delete(id);
+        }
+    }
 
-	public List<Stock> getStocksByServicePointId(StockSearchBean stockSearchBean) {
-	  return allStocks.findStocksByLocationId(stockSearchBean);
-	}
+    public List<Stock> getStocksByServicePointId(StockSearchBean stockSearchBean) {
+        return allStocks.findStocksByLocationId(stockSearchBean);
+    }
 
-	public CsvBulkImportDataSummary validateBulkInventoryData(List<Map<String, String>> csvStocks) {
-		int rowCount = 0;
-		CsvBulkImportDataSummary csvBulkImportDataSummary = new CsvBulkImportDataSummary();
-		FailedRecordSummary failedRecordSummary;
-		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
-		Integer totalRows = csvStocks.size();
-		Integer rowsProcessed = 0;
+    public CsvBulkImportDataSummary validateBulkInventoryData(List<Map<String, String>> csvStocks) {
+        int rowCount = 0;
+        CsvBulkImportDataSummary csvBulkImportDataSummary = new CsvBulkImportDataSummary();
+        FailedRecordSummary failedRecordSummary;
+        List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
+        Integer totalRows = csvStocks.size();
+        Integer rowsProcessed = 0;
 
-		try {
-			failedRecordSummaries = validateInventoryData(csvStocks);
-		}
-		catch (ParseException e) {
-			logger.error("Parse Exception occurred : " + e.getMessage(), e);
-			failedRecordSummary = new FailedRecordSummary();
-			List<String> validationError = new ArrayList<>();
-			failedRecordSummary.setRowNumber(rowCount);
-			validationError.add("Parse Exception occurred");
-			failedRecordSummary.setReasonOfFailure(validationError);
-			failedRecordSummaries.add(failedRecordSummary);
-		}
+        try {
+            failedRecordSummaries = validateInventoryData(csvStocks);
+        } catch (ParseException e) {
+            logger.error("Parse Exception occurred : " + e.getMessage(), e);
+            failedRecordSummary = new FailedRecordSummary();
+            List<String> validationError = new ArrayList<>();
+            failedRecordSummary.setRowNumber(rowCount);
+            validationError.add("Parse Exception occurred");
+            failedRecordSummary.setReasonOfFailure(validationError);
+            failedRecordSummaries.add(failedRecordSummary);
+        }
 
-		csvBulkImportDataSummary.setFailedRecordSummaryList(failedRecordSummaries);
-		csvBulkImportDataSummary.setNumberOfCsvRows(totalRows);
-		csvBulkImportDataSummary.setNumberOfRowsProcessed(rowsProcessed);
-		return csvBulkImportDataSummary;
+        csvBulkImportDataSummary.setFailedRecordSummaryList(failedRecordSummaries);
+        csvBulkImportDataSummary.setNumberOfCsvRows(totalRows);
+        csvBulkImportDataSummary.setNumberOfRowsProcessed(rowsProcessed);
+        return csvBulkImportDataSummary;
 
-	}
+    }
 
-	public CsvBulkImportDataSummary convertandPersistInventorydata(List<Map<String, String>> csvStocks, String userName) {
-		int rowCount = 0;
-		CsvBulkImportDataSummary csvBulkImportDataSummary = new CsvBulkImportDataSummary();
-		FailedRecordSummary failedRecordSummary;
-		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
-		Inventory inventory;
-		Integer totalRows = csvStocks.size();
-		Integer rowsProcessed = 0;
+    public CsvBulkImportDataSummary convertandPersistInventorydata(List<Map<String, String>> csvStocks, String userName) {
+        int rowCount = 0;
+        CsvBulkImportDataSummary csvBulkImportDataSummary = new CsvBulkImportDataSummary();
+        FailedRecordSummary failedRecordSummary;
+        List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
+        Inventory inventory;
+        Integer totalRows = csvStocks.size();
+        Integer rowsProcessed = 0;
 
-		try {
-			failedRecordSummaries = validateInventoryData(csvStocks);
-		}
-		catch (ParseException e) {
-			logger.error("Parse Exception occurred : " + e.getMessage(), e);
-			failedRecordSummary = new FailedRecordSummary();
-			List<String> validationError = new ArrayList<>();
-			failedRecordSummary.setRowNumber(rowCount);
-			validationError.add("Parse Exception occurred");
-			failedRecordSummary.setReasonOfFailure(validationError);
-			failedRecordSummaries.add(failedRecordSummary);
-		}
+        try {
+            failedRecordSummaries = validateInventoryData(csvStocks);
+        } catch (ParseException e) {
+            logger.error("Parse Exception occurred : " + e.getMessage(), e);
+            failedRecordSummary = new FailedRecordSummary();
+            List<String> validationError = new ArrayList<>();
+            failedRecordSummary.setRowNumber(rowCount);
+            validationError.add("Parse Exception occurred");
+            failedRecordSummary.setReasonOfFailure(validationError);
+            failedRecordSummaries.add(failedRecordSummary);
+        }
 
-		if (failedRecordSummaries.size() == 0) {
-			for (Map<String, String> csvdata : csvStocks) {
-				try {
-					rowCount++;
-					inventory = createInventoryObject(csvdata);
-					addInventory(inventory, userName);
-					rowsProcessed++;
-				}
-				catch (Exception e) {
-					failedRecordSummary = new FailedRecordSummary();
-					List<String> validationError = new ArrayList<>();
-					failedRecordSummary.setRowNumber(rowCount);
-					validationError.add("Unknown error occurred");
-					failedRecordSummary.setReasonOfFailure(validationError);
-					failedRecordSummaries.add(failedRecordSummary);
-				}
-			}
-		}
+        if (failedRecordSummaries.size() == 0) {
+            for (Map<String, String> csvdata : csvStocks) {
+                try {
+                    rowCount++;
+                    inventory = createInventoryObject(csvdata);
+                    addInventory(inventory, userName);
+                    rowsProcessed++;
+                } catch (Exception e) {
+                    failedRecordSummary = new FailedRecordSummary();
+                    List<String> validationError = new ArrayList<>();
+                    failedRecordSummary.setRowNumber(rowCount);
+                    validationError.add("Unknown error occurred");
+                    failedRecordSummary.setReasonOfFailure(validationError);
+                    failedRecordSummaries.add(failedRecordSummary);
+                }
+            }
+        }
 
-		csvBulkImportDataSummary.setFailedRecordSummaryList(failedRecordSummaries);
-		csvBulkImportDataSummary.setNumberOfCsvRows(totalRows);
-		csvBulkImportDataSummary.setNumberOfRowsProcessed(rowsProcessed);
-		return csvBulkImportDataSummary;
+        csvBulkImportDataSummary.setFailedRecordSummaryList(failedRecordSummaries);
+        csvBulkImportDataSummary.setNumberOfCsvRows(totalRows);
+        csvBulkImportDataSummary.setNumberOfRowsProcessed(rowsProcessed);
+        return csvBulkImportDataSummary;
 
-	}
+    }
 
-	private List<FailedRecordSummary> validateInventoryData(List<Map<String, String>> csvRows) throws ParseException {
+    private List<FailedRecordSummary> validateInventoryData(List<Map<String, String>> csvRows) throws ParseException {
 
-		List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
-		FailedRecordSummary failedRecordSummary;
-		int rowNumber = 0;
-		List<String> validationErrors;
-		for (Map<String, String> csvdata : csvRows) {
-			failedRecordSummary = new FailedRecordSummary();
-			rowNumber++;
-			String locationId = getValueFromMap(SERVICE_POINT_ID, csvdata);
-			String productCatalogId = getValueFromMap(PRODUCT_ID, csvdata);
-			String deliveryDateInString = getValueFromMap(DELIVERY_DATE, csvdata);
-			String section = getValueFromMap(UNICEF_SECTION, csvdata);
-			String poNumber = getValueFromMap(PO_NUMBER, csvdata);
-			String serialNumber = getValueFromMap(SERIAL_NUMBER, csvdata);
-			String quantity = getValueFromMap(QUANTITY, csvdata);
-			String donor = getValueFromMap(DONOR, csvdata);
+        List<FailedRecordSummary> failedRecordSummaries = new ArrayList<>();
+        FailedRecordSummary failedRecordSummary;
+        int rowNumber = 0;
+        List<String> validationErrors;
+        for (Map<String, String> csvdata : csvRows) {
+            failedRecordSummary = new FailedRecordSummary();
+            rowNumber++;
+            String locationId = getValueFromMap(SERVICE_POINT_ID, csvdata);
+            String productCatalogId = getValueFromMap(PRODUCT_ID, csvdata);
+            String deliveryDateInString = getValueFromMap(DELIVERY_DATE, csvdata);
+            String section = getValueFromMap(UNICEF_SECTION, csvdata);
+            String poNumber = getValueFromMap(PO_NUMBER, csvdata);
+            String serialNumber = getValueFromMap(SERIAL_NUMBER, csvdata);
+            String quantity = getValueFromMap(QUANTITY, csvdata);
+            String donor = getValueFromMap(DONOR, csvdata);
 
-			validationErrors = inventoryDataValidator.getValidationErrors(locationId, productCatalogId, deliveryDateInString, section, poNumber,
-					serialNumber, quantity, donor);
+            validationErrors = inventoryDataValidator.getValidationErrors(locationId, productCatalogId, deliveryDateInString, section, poNumber,
+                    serialNumber, quantity, donor);
 
-			if (validationErrors.size() > 0) {
-				failedRecordSummary.setRowNumber(rowNumber);
-				failedRecordSummary.setReasonOfFailure(validationErrors);
-				failedRecordSummaries.add(failedRecordSummary);
-			}
-		}
-		return failedRecordSummaries;
-	}
+            if (validationErrors.size() > 0) {
+                failedRecordSummary.setRowNumber(rowNumber);
+                failedRecordSummary.setReasonOfFailure(validationErrors);
+                failedRecordSummaries.add(failedRecordSummary);
+            }
+        }
+        return failedRecordSummaries;
+    }
 
-	private Inventory createInventoryObject(Map<String, String> data) throws ParseException {
-		Inventory inventory = new Inventory();
-		String locationId = getValueFromMap(SERVICE_POINT_ID, data);
-		String productCatalogId = getValueFromMap(PRODUCT_ID, data);
-		String productName = getValueFromMap(PRODUCT_NAME, data);
-		String deliveryDateInString = getValueFromMap(DELIVERY_DATE, data);
-		String section = getValueFromMap(UNICEF_SECTION, data);
-		String poNumberFromCsv = getValueFromMap(PO_NUMBER, data);
-		String serialNumber = getValueFromMap(SERIAL_NUMBER, data);
-		String quantityFromCsv = getValueFromMap(QUANTITY, data);
-		String donor = getValueFromMap(DONOR, data);
-		int quantity = Integer.valueOf(quantityFromCsv);
-		int poNumber = Integer.valueOf(poNumberFromCsv);
+    private Inventory createInventoryObject(Map<String, String> data) throws ParseException {
+        Inventory inventory = new Inventory();
+        String locationId = getValueFromMap(SERVICE_POINT_ID, data);
+        String productCatalogId = getValueFromMap(PRODUCT_ID, data);
+        String productName = getValueFromMap(PRODUCT_NAME, data);
+        String deliveryDateInString = getValueFromMap(DELIVERY_DATE, data);
+        String section = getValueFromMap(UNICEF_SECTION, data);
+        String poNumberFromCsv = getValueFromMap(PO_NUMBER, data);
+        String serialNumber = getValueFromMap(SERIAL_NUMBER, data);
+        String quantityFromCsv = getValueFromMap(QUANTITY, data);
+        String donor = getValueFromMap(DONOR, data);
+        int quantity = Integer.valueOf(quantityFromCsv);
+        int poNumber = Integer.valueOf(poNumberFromCsv);
 
-		Long productId = Long.valueOf(productCatalogId);
-		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogue(productId, "");
-		String productCatalogueName = productCatalogue != null ? productCatalogue.getProductName() : productName;
+        Long productId = Long.valueOf(productCatalogId);
+        ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogue(productId, "");
+        String productCatalogueName = productCatalogue != null ? productCatalogue.getProductName() : productName;
 
-		inventory.setProductName(productCatalogueName);
-		inventory.setUnicefSection(section);
-		inventory.setQuantity(quantity);
-		inventory.setDeliveryDate(convertStringToDate(deliveryDateInString));
-		inventory.setDonor(donor);
-		inventory.setServicePointId(locationId);
-		inventory.setPoNumber(poNumber);
-		inventory.setSerialNumber(serialNumber);
+        inventory.setProductName(productCatalogueName);
+        inventory.setUnicefSection(section);
+        inventory.setQuantity(quantity);
+        inventory.setDeliveryDate(convertStringToDate(deliveryDateInString));
+        inventory.setDonor(donor);
+        inventory.setServicePointId(locationId);
+        inventory.setPoNumber(poNumber);
+        inventory.setSerialNumber(serialNumber);
 
-		return inventory;
-	}
+        return inventory;
+    }
 
-	private Stock convertInventoryToStock(Inventory inventory, String username) {
-		Stock stock = new Stock();
-		ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogueByName(inventory.getProductName());
-		if (inventory == null || productCatalogue == null) {
-			return null;
-		}
-		Date accountabilityEndDate = addMonthsToDate(inventory.getDeliveryDate(),
-				productCatalogue.getAccountabilityPeriod());
-		Map<String, String> customProperties = new HashMap<>();
+    private Stock convertInventoryToStock(Inventory inventory, String username) {
+        Stock stock = new Stock();
+        ProductCatalogue productCatalogue = productCatalogueService.getProductCatalogueByName(inventory.getProductName());
+        if (inventory == null || productCatalogue == null) {
+            return null;
+        }
+        Date accountabilityEndDate = addMonthsToDate(inventory.getDeliveryDate(),
+                productCatalogue.getAccountabilityPeriod());
+        Map<String, String> customProperties = new HashMap<>();
 
-		stock.setIdentifier(String.valueOf(productCatalogue.getUniqueId()));
-		if(inventory.getProviderId() != null && !inventory.getProviderId().isBlank()) {
-			stock.setProviderid(inventory.getProviderId());
-		}
-		else {
-			stock.setProviderid(username);
-		}
-		if(inventory.getQuantity() != null) {
-			stock.setValue(inventory.getQuantity());
-		}
-		else {
-			stock.setValue(1); //As discussed set default value to 1
-		}
-		stock.setTransactionType("Inventory");
-		stock.setLocationId(inventory.getServicePointId());
-		stock.setDeliveryDate(inventory.getDeliveryDate());
-		if (inventory.getAccountabilityEndDate() != null) {
-			stock.setAccountabilityEndDate(inventory.getAccountabilityEndDate());
-		} else {
-			stock.setAccountabilityEndDate(accountabilityEndDate);
-		}
-		stock.setDonor(inventory.getDonor());
-		stock.setSerialNumber(inventory.getSerialNumber());
-		customProperties.put("UNICEF section", inventory.getUnicefSection());
-		customProperties.put("PO Number", String.valueOf(inventory.getPoNumber()));
-		stock.setCustomProperties(customProperties);
-		if (inventory.getStockId() != null) {
-			stock.setId(inventory.getStockId());
-		}
-		return stock;
-	}
+        stock.setIdentifier(String.valueOf(productCatalogue.getUniqueId()));
+        if (inventory.getProviderId() != null && !inventory.getProviderId().isBlank()) {
+            stock.setProviderid(inventory.getProviderId());
+        } else {
+            stock.setProviderid(username);
+        }
+        if (inventory.getQuantity() != null) {
+            stock.setValue(inventory.getQuantity());
+        } else {
+            stock.setValue(1); //As discussed set default value to 1
+        }
+        stock.setTransactionType("Inventory");
+        stock.setLocationId(inventory.getServicePointId());
+        stock.setDeliveryDate(inventory.getDeliveryDate());
+        if (inventory.getAccountabilityEndDate() != null) {
+            stock.setAccountabilityEndDate(inventory.getAccountabilityEndDate());
+        } else {
+            stock.setAccountabilityEndDate(accountabilityEndDate);
+        }
+        stock.setDonor(inventory.getDonor());
+        stock.setSerialNumber(inventory.getSerialNumber());
+        customProperties.put("UNICEF section", inventory.getUnicefSection());
+        customProperties.put("PO Number", String.valueOf(inventory.getPoNumber()));
+        stock.setCustomProperties(customProperties);
+        if (inventory.getStockId() != null) {
+            stock.setId(inventory.getStockId());
+        }
+        return stock;
+    }
 
-	private Date addMonthsToDate(Date date, Integer monthsCount) {
-		DateTime dateTime = new DateTime(date).plusMonths(monthsCount);
-		return dateTime.toDate();
-	}
+    private Date addMonthsToDate(Date date, Integer monthsCount) {
+        DateTime dateTime = new DateTime(date).plusMonths(monthsCount);
+        return dateTime.toDate();
+    }
 
-	private void validateFields(Inventory inventory) {
-		PhysicalLocation physicalLocation = inventory.getServicePointId() != null ?
-				physicalLocationService.getStructure(inventory.getServicePointId(), true) :
-				null;
+    private void validateFields(Inventory inventory) {
+        PhysicalLocation physicalLocation = inventory.getServicePointId() != null ?
+                physicalLocationService.getStructure(inventory.getServicePointId(), true) :
+                null;
 
-		List<String> donors = inventoryDataValidator.getValidDonors();
-		List<String> unicefSections = inventoryDataValidator.getValidUnicefSections();
+        List<String> donors = inventoryDataValidator.getValidDonors();
+        List<String> unicefSections = inventoryDataValidator.getValidUnicefSections();
 
-		Date deliveryDate = inventory.getDeliveryDate();
-		if (inventory.getServicePointId() == null || inventory.getDeliveryDate() == null
-				|| inventory.getProductName() == null
-				|| inventory.getPoNumber() == null || inventory.getUnicefSection() == null) {
-			throw new IllegalArgumentException(MISSING_REQUIRED_FIELDS_V2);
-		} else if (physicalLocation == null) {
-			throw new IllegalArgumentException(SERVICE_POINT_DOES_NOT_EXISTS);
-		} else if (deliveryDate.getTime() > new Date().getTime()) {
-			throw new IllegalArgumentException(INVALID_DELIVERY_DATE);
-		} else if (inventory.getQuantity() != null && (!isWholeNumber(String.valueOf(inventory.getQuantity())) || inventory.getQuantity() < 1)) {
-			throw new IllegalArgumentException(INVALID_QUANTITY);
-		} else if (!unicefSections.contains(inventory.getUnicefSection())) {
-			throw new IllegalArgumentException(INVALID_UNICEF_SECTION);
-		} else if (inventory.getDonor() != null && !donors.contains(inventory.getDonor())) {
-			throw new IllegalArgumentException(INVALID_DONOR);
-		} else if (!isWholeNumber(String.valueOf(inventory.getPoNumber()))) {
-			throw new IllegalArgumentException(INVALID_PO_NUMBER);
-		} else {
-			logger.info("All validations on fields passed");
-		}
-	}
+        Date deliveryDate = inventory.getDeliveryDate();
+        if (inventory.getServicePointId() == null || inventory.getDeliveryDate() == null
+                || inventory.getProductName() == null
+                || inventory.getPoNumber() == null || inventory.getUnicefSection() == null) {
+            throw new IllegalArgumentException(MISSING_REQUIRED_FIELDS_V2);
+        } else if (physicalLocation == null) {
+            throw new IllegalArgumentException(SERVICE_POINT_DOES_NOT_EXISTS);
+        } else if (deliveryDate.getTime() > new Date().getTime()) {
+            throw new IllegalArgumentException(INVALID_DELIVERY_DATE);
+        } else if (inventory.getQuantity() != null && (!isWholeNumber(String.valueOf(inventory.getQuantity())) || inventory.getQuantity() < 1)) {
+            throw new IllegalArgumentException(INVALID_QUANTITY);
+        } else if (!unicefSections.contains(inventory.getUnicefSection())) {
+            throw new IllegalArgumentException(INVALID_UNICEF_SECTION);
+        } else if (inventory.getDonor() != null && !donors.contains(inventory.getDonor())) {
+            throw new IllegalArgumentException(INVALID_DONOR);
+        } else if (!isWholeNumber(String.valueOf(inventory.getPoNumber()))) {
+            throw new IllegalArgumentException(INVALID_PO_NUMBER);
+        } else {
+            logger.info("All validations on fields passed");
+        }
+    }
 
-	private String getValueFromMap(String key, Map<String, String> map) {
-		return map.get(key);
-	}
+    private String getValueFromMap(String key, Map<String, String> map) {
+        return map.get(key);
+    }
 }

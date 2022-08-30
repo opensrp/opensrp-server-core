@@ -13,15 +13,15 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 public class DateTypeConverter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
-	
-	@Override
-	public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
-	        throws JsonParseException {
-		return new LocalDate(json.getAsString());
-	}
-	
-	@Override
-	public JsonElement serialize(LocalDate src, Type typeOfSrc, JsonSerializationContext context) {
-		return new JsonPrimitive(src.toString());
-	}
+
+    @Override
+    public LocalDate deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+        return new LocalDate(json.getAsString());
+    }
+
+    @Override
+    public JsonElement serialize(LocalDate src, Type typeOfSrc, JsonSerializationContext context) {
+        return new JsonPrimitive(src.toString());
+    }
 }

@@ -23,35 +23,35 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(EntityUtils.class)
-@PowerMockIgnore({ "org.apache.http.ssl.*", "javax.net.ssl.*", "org.apache.http.conn.ssl.*" })
+@PowerMockIgnore({"org.apache.http.ssl.*", "javax.net.ssl.*", "org.apache.http.conn.ssl.*"})
 public class OpenmrsIDServiceUsingMockTest {
-	
-	OpenmrsIDService openmrsIDService;
-	
-	@Before
-	public void setUp() {
-		PowerMockito.mockStatic(EntityUtils.class);
-		
-	}
-	
-	@Ignore
-	@Test
-	public void testDownloadsOpenmrsIds() throws IOException {
-		openmrsIDService = OpenmrsIDService.createInstanceWithOpenMrsUrl("http://localhost/");
-		String jsonResponse = "{\"identifiers\":[\"1\",\"2\"]}";
-		BDDMockito.when(EntityUtils.toString(any(HttpEntity.class))).thenReturn(jsonResponse);
-		List<String> ids = openmrsIDService.downloadOpenmrsIds(2);
-		assertEquals(2, ids.size());
-		assertTrue(ids.contains("1"));
-		assertTrue(ids.contains("2"));
-		assertFalse(ids.contains("3"));
-	}
-	
-	@Ignore
-	@Test
-	public void testDownloadOpenmrsIdsWithInvalidUrl() {
-		openmrsIDService = OpenmrsIDService.createInstanceWithOpenMrsUrl("");
-		List<String> ids = openmrsIDService.downloadOpenmrsIds(2);
-		assertNull(ids);
-	}
+
+    OpenmrsIDService openmrsIDService;
+
+    @Before
+    public void setUp() {
+        PowerMockito.mockStatic(EntityUtils.class);
+
+    }
+
+    @Ignore
+    @Test
+    public void testDownloadsOpenmrsIds() throws IOException {
+        openmrsIDService = OpenmrsIDService.createInstanceWithOpenMrsUrl("http://localhost/");
+        String jsonResponse = "{\"identifiers\":[\"1\",\"2\"]}";
+        BDDMockito.when(EntityUtils.toString(any(HttpEntity.class))).thenReturn(jsonResponse);
+        List<String> ids = openmrsIDService.downloadOpenmrsIds(2);
+        assertEquals(2, ids.size());
+        assertTrue(ids.contains("1"));
+        assertTrue(ids.contains("2"));
+        assertFalse(ids.contains("3"));
+    }
+
+    @Ignore
+    @Test
+    public void testDownloadOpenmrsIdsWithInvalidUrl() {
+        openmrsIDService = OpenmrsIDService.createInstanceWithOpenMrsUrl("");
+        List<String> ids = openmrsIDService.downloadOpenmrsIds(2);
+        assertNull(ids);
+    }
 }

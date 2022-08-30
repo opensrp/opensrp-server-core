@@ -67,7 +67,7 @@ public class UploadServiceTest {
         LocationProperty locationProperty = new LocationProperty();
         locationProperty.setParentId("e6007660-ef0a-4dd9-b8f2-1bc9e21c4ab2");
         structure.setProperties(locationProperty);
-        Mockito.doReturn(structure).when(locationRepository).getStructure("school_id_1",false);
+        Mockito.doReturn(structure).when(locationRepository).getStructure("school_id_1", false);
 
         List<Map<String, String>> csvClients = new ArrayList<>();
 

@@ -19,20 +19,22 @@ public class ClientMigrationFileService {
 
     private ClientMigrationFileRepository clientMigrationFileRepository;
 
+    public ClientMigrationFileRepository getClientMigrationFileRepository() {
+        return clientMigrationFileRepository;
+    }
+
     @Autowired
     public void setClientMigrationFileRepository(ClientMigrationFileRepository clientMigrationFileRepository) {
         this.clientMigrationFileRepository = clientMigrationFileRepository;
-    }
-
-    public ClientMigrationFileRepository getClientMigrationFileRepository() {
-        return clientMigrationFileRepository;
     }
 
     public List<ClientMigrationFile> getAllClientMigrationFiles() {
         return clientMigrationFileRepository.getAll();
     }
 
-    public List<ClientMigrationFile> getAllClientMigrationFiles(int limit) { return clientMigrationFileRepository.getAll(limit);}
+    public List<ClientMigrationFile> getAllClientMigrationFiles(int limit) {
+        return clientMigrationFileRepository.getAll(limit);
+    }
 
     public void addOrUpdateClientMigrationFile(ClientMigrationFile clientMigrationFile) {
         if (StringUtils.isBlank(clientMigrationFile.getIdentifier()))
@@ -54,7 +56,7 @@ public class ClientMigrationFileService {
         clientMigrationFile.setCreatedAt(new Date());
         clientMigrationFileRepository.add(clientMigrationFile);
         return clientMigrationFile;
-        
+
     }
 
     public ClientMigrationFile updateClientMigrationFile(ClientMigrationFile clientMigrationFile) {

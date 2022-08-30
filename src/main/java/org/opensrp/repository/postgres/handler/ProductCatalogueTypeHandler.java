@@ -20,68 +20,64 @@ import java.sql.SQLException;
 public class ProductCatalogueTypeHandler extends BaseTypeHandler implements TypeHandler<ProductCatalogue> {
 
 
-	public Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
-			.registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
+    public Gson gson = new GsonBuilder().registerTypeAdapter(DateTime.class, new TaskDateTimeTypeConverter())
+            .registerTypeAdapter(LocalDate.class, new DateTypeConverter()).create();
 
-	@Override
-	public void setParameter(PreparedStatement ps, int i, ProductCatalogue parameter, JdbcType jdbcType) throws SQLException {
-		try {
-			if (parameter != null) {
-				String jsonString = gson.toJson(parameter);
-				PGobject jsonObject = new PGobject();
-				jsonObject.setType("jsonb");
-				jsonObject.setValue(jsonString);
-				ps.setObject(i, jsonObject);
-			}
-		}
-		catch (Exception e) {
-			throw new SQLException(e);
-		}
-	}
+    @Override
+    public void setParameter(PreparedStatement ps, int i, ProductCatalogue parameter, JdbcType jdbcType) throws SQLException {
+        try {
+            if (parameter != null) {
+                String jsonString = gson.toJson(parameter);
+                PGobject jsonObject = new PGobject();
+                jsonObject.setType("jsonb");
+                jsonObject.setValue(jsonString);
+                ps.setObject(i, jsonObject);
+            }
+        } catch (Exception e) {
+            throw new SQLException(e);
+        }
+    }
 
-	@Override
-	public ProductCatalogue getResult(ResultSet rs, String columnName) throws SQLException {
-		try {
-			String jsonString = rs.getString(columnName);
-			if (StringUtils.isBlank(jsonString)) {
-				return null;
-			}
-			ProductCatalogue result =  gson.fromJson(jsonString, ProductCatalogue.class);
-			return result;
-		}
-		catch (Exception e) {
-			throw new SQLException(e);
-		}
-	}
+    @Override
+    public ProductCatalogue getResult(ResultSet rs, String columnName) throws SQLException {
+        try {
+            String jsonString = rs.getString(columnName);
+            if (StringUtils.isBlank(jsonString)) {
+                return null;
+            }
+            ProductCatalogue result = gson.fromJson(jsonString, ProductCatalogue.class);
+            return result;
+        } catch (Exception e) {
+            throw new SQLException(e);
+        }
+    }
 
-	@Override
-	public ProductCatalogue getResult(ResultSet rs, int columnIndex) throws SQLException {
-		try {
-			String jsonString = rs.getString(columnIndex);
-			if (StringUtils.isBlank(jsonString)) {
-				return null;
-			}
-			ProductCatalogue result = gson.fromJson(jsonString, ProductCatalogue.class);
-			return result;
-		}
-		catch (Exception e) {
-			throw new SQLException(e);
-		}
-	}
+    @Override
+    public ProductCatalogue getResult(ResultSet rs, int columnIndex) throws SQLException {
+        try {
+            String jsonString = rs.getString(columnIndex);
+            if (StringUtils.isBlank(jsonString)) {
+                return null;
+            }
+            ProductCatalogue result = gson.fromJson(jsonString, ProductCatalogue.class);
+            return result;
+        } catch (Exception e) {
+            throw new SQLException(e);
+        }
+    }
 
-	@Override
-	public ProductCatalogue getResult(CallableStatement cs, int columnIndex) throws SQLException {
-		try {
-			String jsonString = cs.getString(columnIndex);
-			if (StringUtils.isBlank(jsonString)) {
-				return null;
-			}
-			ProductCatalogue result = gson.fromJson(jsonString, ProductCatalogue.class);
-			return result;
-		}
-		catch (Exception e) {
-			throw new SQLException(e);
-		}
-	}
+    @Override
+    public ProductCatalogue getResult(CallableStatement cs, int columnIndex) throws SQLException {
+        try {
+            String jsonString = cs.getString(columnIndex);
+            if (StringUtils.isBlank(jsonString)) {
+                return null;
+            }
+            ProductCatalogue result = gson.fromJson(jsonString, ProductCatalogue.class);
+            return result;
+        } catch (Exception e) {
+            throw new SQLException(e);
+        }
+    }
 
 }

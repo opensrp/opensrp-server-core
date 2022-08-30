@@ -5,8 +5,8 @@
     "bind_type": "demo_mother",
     "fields": [
       {
-          "name":"id",
-          "shouldLoadValue": true
+        "name": "id",
+        "shouldLoadValue": true
       },
       {
         "name": "location",

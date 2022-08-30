@@ -18,40 +18,40 @@ import org.opensrp.util.IdentifierValidatorAlgorithm;
 @ToString
 public class IdentifierSource {
 
-	@JsonProperty
-	private Long id;
+    @JsonProperty
+    private Long id;
 
-	@JsonProperty
-	private String identifier;
+    @JsonProperty
+    private String identifier;
 
-	@JsonProperty
-	private String description;
+    @JsonProperty
+    private String description;
 
-	@JsonProperty
-	private IdentifierValidatorAlgorithm identifierValidatorAlgorithm;
+    @JsonProperty
+    private IdentifierValidatorAlgorithm identifierValidatorAlgorithm;
 
-	@JsonProperty
-	private String baseCharacterSet;
+    @JsonProperty
+    private String baseCharacterSet;
 
-	@JsonProperty
-	private String firstIdentifierBase;
+    @JsonProperty
+    private String firstIdentifierBase;
 
-	@JsonProperty
-	private String prefix;
+    @JsonProperty
+    private String prefix;
 
-	@JsonProperty
-	private String suffix;
+    @JsonProperty
+    private String suffix;
 
-	@JsonProperty
-	private Integer minLength;
+    @JsonProperty
+    private Integer minLength;
 
-	@JsonProperty
-	private Integer maxLength;
+    @JsonProperty
+    private Integer maxLength;
 
-	@JsonProperty
-	private String regexFormat;
+    @JsonProperty
+    private String regexFormat;
 
-	@JsonIgnore
-	private Long sequenceValue;
+    @JsonIgnore
+    private Long sequenceValue;
 
 }

@@ -9,5 +9,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class PractitionerSearchBean extends BaseSearchBean {
 
-	private Long serverVersion;
+    private Long serverVersion;
 }

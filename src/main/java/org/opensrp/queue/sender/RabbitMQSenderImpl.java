@@ -12,37 +12,35 @@ import org.springframework.stereotype.Component;
 
 @Profile("rabbitmq")
 @Component
-public class RabbitMQSenderImpl implements MessageSender{
+public class RabbitMQSenderImpl implements MessageSender {
 
-	@Autowired
-	private AmqpTemplate rabbitTemplate;
+    private static Logger logger = LogManager.getLogger(RabbitMQSenderImpl.class.toString());
+    @Autowired
+    private AmqpTemplate rabbitTemplate;
+    @Autowired
+    private Queue queue;
 
-	@Autowired
-	private Queue queue;
+    public RabbitMQSenderImpl(AmqpTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
-	private static Logger logger = LogManager.getLogger(RabbitMQSenderImpl.class.toString());
+    @Override
+    public void send(PlanEvaluatorMessage planEvaluatorMessage) {
+        rabbitTemplate.convertAndSend(queue.getName(), planEvaluatorMessage);
+        logger.info("Send Message : " + planEvaluatorMessage.toString());
+    }
 
-	public RabbitMQSenderImpl(AmqpTemplate rabbitTemplate) {
-		this.rabbitTemplate = rabbitTemplate;
-	}
+    @Override
+    public void send(ResourceEvaluatorMessage resourceEvaluatorMessage) {
+        rabbitTemplate.convertAndSend(queue.getName(), resourceEvaluatorMessage);
+        logger.info("Send Message : " + resourceEvaluatorMessage.toString());
+    }
 
-	@Override
-	public void send(PlanEvaluatorMessage planEvaluatorMessage) {
-		rabbitTemplate.convertAndSend(queue.getName(), planEvaluatorMessage);
-		logger.info("Send Message : " + planEvaluatorMessage.toString());
-	}
+    public void setRabbitTemplate(AmqpTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
-	@Override
-	public void send(ResourceEvaluatorMessage resourceEvaluatorMessage) {
-		rabbitTemplate.convertAndSend(queue.getName(), resourceEvaluatorMessage);
-		logger.info("Send Message : " + resourceEvaluatorMessage.toString());
-	}
-
-	public void setRabbitTemplate(AmqpTemplate rabbitTemplate) {
-		this.rabbitTemplate = rabbitTemplate;
-	}
-
-	public void setQueue(Queue queue) {
-		this.queue = queue;
-	}
+    public void setQueue(Queue queue) {
+        this.queue = queue;
+    }
 }

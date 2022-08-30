@@ -39,6 +39,30 @@ public class PractitionerServiceTest {
     @Mock
     private OrganizationService organizationService;
 
+    private static PractitionerRole initTestPractitionerRole1() {
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier("pr1-identifier");
+        practitionerRole.setActive(true);
+        practitionerRole.setOrganizationIdentifier("org1");
+        practitionerRole.setPractitionerIdentifier("p1-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr1Code");
+        practitionerRole.setCode(code);
+        return practitionerRole;
+    }
+
+    private static PractitionerRole initTestPractitionerRole2() {
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier("pr2-identifier");
+        practitionerRole.setActive(true);
+        practitionerRole.setOrganizationIdentifier("org1");
+        practitionerRole.setPractitionerIdentifier("p2-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr2Code");
+        practitionerRole.setCode(code);
+        return practitionerRole;
+    }
+
     @Before
     public void setUp() {
         practitionerService = new PractitionerService(); //new PractitionerService(practitionerRepository,practitionerRoleService, organizationService);
@@ -106,7 +130,6 @@ public class PractitionerServiceTest {
         verify(practitionerRepository, never()).update(eq(practitioner));
     }
 
-
     @Test
     public void testDeleteShouldCallRepositorySafeRemoveMethod() {
         when(practitionerRepository.get(anyString())).thenReturn(initTestPractitioner());
@@ -146,104 +169,104 @@ public class PractitionerServiceTest {
 
     }
 
-	@Test
-	public void testGetPractitionerByUsername() {
-		String username = "janedoe";
-		Practitioner practitioner = initTestPractitioner();
-		when(practitionerRepository.getPractitionerByUsername(username)).thenReturn(practitioner);
+    @Test
+    public void testGetPractitionerByUsername() {
+        String username = "janedoe";
+        Practitioner practitioner = initTestPractitioner();
+        when(practitionerRepository.getPractitionerByUsername(username)).thenReturn(practitioner);
 
-		Practitioner actual = practitionerService.getPractionerByUsername("janedoe");
+        Practitioner actual = practitionerService.getPractionerByUsername("janedoe");
 
-		verify(practitionerRepository).getPractitionerByUsername(username);
-		assertEquals(practitioner, actual);
+        verify(practitionerRepository).getPractitionerByUsername(username);
+        assertEquals(practitioner, actual);
 
-	}
+    }
 
-	@Test
-	public void testGetPractitionersByIdentifiers() {
-		Practitioner practitioner1 = initTestPractitioner();
-		Practitioner practitioner2 = initTestPractitioner2();
-		List<Practitioner> practitioners = new ArrayList<>();
-		practitioners.add(practitioner1);
-		practitioners.add(practitioner2);
+    @Test
+    public void testGetPractitionersByIdentifiers() {
+        Practitioner practitioner1 = initTestPractitioner();
+        Practitioner practitioner2 = initTestPractitioner2();
+        List<Practitioner> practitioners = new ArrayList<>();
+        practitioners.add(practitioner1);
+        practitioners.add(practitioner2);
 
-		when(practitionerRepository.getAllPractitionersByIdentifiers(any(List.class))).thenReturn(practitioners);
+        when(practitionerRepository.getAllPractitionersByIdentifiers(any(List.class))).thenReturn(practitioners);
 
-		List<String> identifiers = new ArrayList<>();
-		identifiers.add("practitoner-1-identifier");
-		identifiers.add("practitoner-2-identifier");
-		List<Practitioner> actual = practitionerService.getPractitionersByIdentifiers(identifiers);
+        List<String> identifiers = new ArrayList<>();
+        identifiers.add("practitoner-1-identifier");
+        identifiers.add("practitoner-2-identifier");
+        List<Practitioner> actual = practitionerService.getPractitionersByIdentifiers(identifiers);
 
-		verify(practitionerRepository).getAllPractitionersByIdentifiers(identifiers);
-		assertEquals(practitioners.size(), actual.size());
-		assertEquals(practitioners.get(0).getName(), actual.get(0).getName());
-		assertEquals(practitioners.get(1).getName(), actual.get(1).getName());
-	}
+        verify(practitionerRepository).getAllPractitionersByIdentifiers(identifiers);
+        assertEquals(practitioners.size(), actual.size());
+        assertEquals(practitioners.get(0).getName(), actual.get(0).getName());
+        assertEquals(practitioners.get(1).getName(), actual.get(1).getName());
+    }
 
-	@Test
-	public void testGetAssignedPractitionersByIdentifierAndCode() {
-		PractitionerRole practitionerRole = initTestPractitionerRole1();
-		PractitionerRole practitionerRole2 = initTestPractitionerRole2();
+    @Test
+    public void testGetAssignedPractitionersByIdentifierAndCode() {
+        PractitionerRole practitionerRole = initTestPractitionerRole1();
+        PractitionerRole practitionerRole2 = initTestPractitionerRole2();
 
-		List<PractitionerRole> practitionerRoles = new ArrayList<>();
-		practitionerRoles.add(practitionerRole);
-		practitionerRoles.add(practitionerRole2);
+        List<PractitionerRole> practitionerRoles = new ArrayList<>();
+        practitionerRoles.add(practitionerRole);
+        practitionerRoles.add(practitionerRole2);
 
-		List<org.opensrp.domain.postgres.PractitionerRole> roles = new ArrayList<>();
-		List<Long> organizationIds = Arrays.asList(11l, 40l,7667l);
-		for(long id:organizationIds) {
-			org.opensrp.domain.postgres.PractitionerRole role = new org.opensrp.domain.postgres.PractitionerRole();
-			role.setOrganizationId(id);
-			roles.add(role);
-		}
+        List<org.opensrp.domain.postgres.PractitionerRole> roles = new ArrayList<>();
+        List<Long> organizationIds = Arrays.asList(11l, 40l, 7667l);
+        for (long id : organizationIds) {
+            org.opensrp.domain.postgres.PractitionerRole role = new org.opensrp.domain.postgres.PractitionerRole();
+            role.setOrganizationId(id);
+            roles.add(role);
+        }
 
-		Practitioner practitioner1 = initTestPractitioner();
-		Practitioner practitioner2 = initTestPractitioner2();
-		List<Practitioner> practitioners = new ArrayList<>();
-		practitioners.add(practitioner1);
-		practitioners.add(practitioner2);
-    	when(practitionerRoleService.getPgRolesForPractitioner(anyString())).thenReturn(roles);
-    	when(practitionerRoleService.getPractitionerRolesByOrgIdAndCode(anyLong(),anyString())).thenReturn(practitionerRoles);
-    	when(practitionerRepository.getAllPractitionersByIdentifiers(any(List.class))).thenReturn(practitioners);
+        Practitioner practitioner1 = initTestPractitioner();
+        Practitioner practitioner2 = initTestPractitioner2();
+        List<Practitioner> practitioners = new ArrayList<>();
+        practitioners.add(practitioner1);
+        practitioners.add(practitioner2);
+        when(practitionerRoleService.getPgRolesForPractitioner(anyString())).thenReturn(roles);
+        when(practitionerRoleService.getPractitionerRolesByOrgIdAndCode(anyLong(), anyString())).thenReturn(practitionerRoles);
+        when(practitionerRepository.getAllPractitionersByIdentifiers(any(List.class))).thenReturn(practitioners);
 
-		List<Practitioner> actual = practitionerService.getAssignedPractitionersByIdentifierAndCode("test-identifier","pr1Code");
+        List<Practitioner> actual = practitionerService.getAssignedPractitionersByIdentifierAndCode("test-identifier", "pr1Code");
 
-		assertEquals(practitioners.size(), actual.size());
-		assertEquals(practitioners.get(0).getName(), actual.get(0).getName());
-		assertEquals(practitioners.get(1).getName(), actual.get(1).getName());
-	}
+        assertEquals(practitioners.size(), actual.size());
+        assertEquals(practitioners.get(0).getName(), actual.get(0).getName());
+        assertEquals(practitioners.get(1).getName(), actual.get(1).getName());
+    }
 
-	@Test
-	public void testCountAllPractitioners() {
-		Practitioner practitioner1 = initTestPractitioner();
-		Practitioner practitioner2 = initTestPractitioner2();
-		List<Practitioner> practitioners = new ArrayList<>();
-		practitioners.add(practitioner1);
-		practitioners.add(practitioner2);
-		doReturn((long)practitioners.size()).when(practitionerRepository).countAllPractitioners();
-		assertEquals(2, practitionerService.countAllPractitioners());
-	}
+    @Test
+    public void testCountAllPractitioners() {
+        Practitioner practitioner1 = initTestPractitioner();
+        Practitioner practitioner2 = initTestPractitioner2();
+        List<Practitioner> practitioners = new ArrayList<>();
+        practitioners.add(practitioner1);
+        practitioners.add(practitioner2);
+        doReturn((long) practitioners.size()).when(practitionerRepository).countAllPractitioners();
+        assertEquals(2, practitionerService.countAllPractitioners());
+    }
 
-	@Test
-	public void testGetOrganizationsByPractitionerIdentifier() {
-		Practitioner practitioner = initTestPractitioner();
-		List<org.opensrp.domain.postgres.PractitionerRole> roles = new ArrayList<>();
-		List<Long> organizationIds = Arrays.asList(11l, 40l,7667l);
-		for(long id:organizationIds) {
-			org.opensrp.domain.postgres.PractitionerRole role = new org.opensrp.domain.postgres.PractitionerRole();
-			role.setOrganizationId(id);
-			roles.add(role);
-		}
-		when(practitionerRepository.getPractitionerByIdentifier(anyString())).thenReturn(practitioner);
-		when(practitionerRoleService.getPgRolesForPractitioner(anyString())).thenReturn(roles);
-		ImmutablePair<Practitioner, List<Long>> practitioneroOrganizationIds = practitionerService.getOrganizationsByPractitionerIdentifier("test-practitioner");
-		assertNotNull(practitioneroOrganizationIds);
-		assertEquals(practitioner, practitioneroOrganizationIds.getLeft());
-		assertEquals("practitoner-1-identifier", practitioneroOrganizationIds.getLeft().getIdentifier());
-		assertEquals(3, practitioneroOrganizationIds.getRight().size());
-	}
+    @Test
+    public void testGetOrganizationsByPractitionerIdentifier() {
+        Practitioner practitioner = initTestPractitioner();
+        List<org.opensrp.domain.postgres.PractitionerRole> roles = new ArrayList<>();
+        List<Long> organizationIds = Arrays.asList(11l, 40l, 7667l);
+        for (long id : organizationIds) {
+            org.opensrp.domain.postgres.PractitionerRole role = new org.opensrp.domain.postgres.PractitionerRole();
+            role.setOrganizationId(id);
+            roles.add(role);
+        }
+        when(practitionerRepository.getPractitionerByIdentifier(anyString())).thenReturn(practitioner);
+        when(practitionerRoleService.getPgRolesForPractitioner(anyString())).thenReturn(roles);
+        ImmutablePair<Practitioner, List<Long>> practitioneroOrganizationIds = practitionerService.getOrganizationsByPractitionerIdentifier("test-practitioner");
+        assertNotNull(practitioneroOrganizationIds);
+        assertEquals(practitioner, practitioneroOrganizationIds.getLeft());
+        assertEquals("practitoner-1-identifier", practitioneroOrganizationIds.getLeft().getIdentifier());
+        assertEquals(3, practitioneroOrganizationIds.getRight().size());
+    }
 
-    private Practitioner initTestPractitioner(){
+    private Practitioner initTestPractitioner() {
         Practitioner practitioner = new Practitioner();
         practitioner.setIdentifier("practitoner-1-identifier");
         practitioner.setActive(true);
@@ -253,37 +276,13 @@ public class PractitionerServiceTest {
         return practitioner;
     }
 
-	private Practitioner initTestPractitioner2(){
-		Practitioner practitioner = new Practitioner();
-		practitioner.setIdentifier("practitoner-2-identifier");
-		practitioner.setActive(true);
-		practitioner.setName("Practitioner 2");
-		practitioner.setUsername("Practioner2");
-		practitioner.setUserId("user2");
-		return practitioner;
-	}
-
-	private static PractitionerRole initTestPractitionerRole1(){
-		PractitionerRole practitionerRole = new PractitionerRole();
-		practitionerRole.setIdentifier("pr1-identifier");
-		practitionerRole.setActive(true);
-		practitionerRole.setOrganizationIdentifier("org1");
-		practitionerRole.setPractitionerIdentifier("p1-identifier");
-		PractitionerRoleCode code = new PractitionerRoleCode();
-		code.setText("pr1Code");
-		practitionerRole.setCode(code);
-		return practitionerRole;
-	}
-
-	private static PractitionerRole initTestPractitionerRole2(){
-		PractitionerRole practitionerRole = new PractitionerRole();
-		practitionerRole.setIdentifier("pr2-identifier");
-		practitionerRole.setActive(true);
-		practitionerRole.setOrganizationIdentifier("org1");
-		practitionerRole.setPractitionerIdentifier("p2-identifier");
-		PractitionerRoleCode code = new PractitionerRoleCode();
-		code.setText("pr2Code");
-		practitionerRole.setCode(code);
-		return practitionerRole;
-	}
+    private Practitioner initTestPractitioner2() {
+        Practitioner practitioner = new Practitioner();
+        practitioner.setIdentifier("practitoner-2-identifier");
+        practitioner.setActive(true);
+        practitioner.setName("Practitioner 2");
+        practitioner.setUsername("Practioner2");
+        practitioner.setUserId("user2");
+        return practitioner;
+    }
 }

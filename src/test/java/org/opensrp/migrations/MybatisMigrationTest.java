@@ -17,31 +17,31 @@ import static org.junit.Assert.assertNotNull;
 @RunWith(MockitoJUnitRunner.class)
 public class MybatisMigrationTest {
 
-	private MybatisMigration mybatisMigration;
+    private MybatisMigration mybatisMigration;
 
-	@Before
-	public void setUp() {
-		mybatisMigration = Mockito.spy(new MybatisMigration());
-	}
+    @Before
+    public void setUp() {
+        mybatisMigration = Mockito.spy(new MybatisMigration());
+    }
 
-	@Test
-	public void testInitializeMybatisMigrationShouldInvokeRunMigrationOperation() throws IOException {
-		Mockito.doNothing().when(mybatisMigration).runMigrationOperation(Mockito.any(Properties.class), Mockito.any(
-				DatabaseOperationOption.class));
+    @Test
+    public void testInitializeMybatisMigrationShouldInvokeRunMigrationOperation() throws IOException {
+        Mockito.doNothing().when(mybatisMigration).runMigrationOperation(Mockito.any(Properties.class), Mockito.any(
+                DatabaseOperationOption.class));
 
-		mybatisMigration.initializeMybatisMigration();
+        mybatisMigration.initializeMybatisMigration();
 
-		ArgumentCaptor<Properties> propertiesArgumentCaptor = ArgumentCaptor.forClass(Properties.class);
-		ArgumentCaptor<DatabaseOperationOption> databaseOperationOptionArgumentCaptor = ArgumentCaptor.forClass(
-				DatabaseOperationOption.class);
+        ArgumentCaptor<Properties> propertiesArgumentCaptor = ArgumentCaptor.forClass(Properties.class);
+        ArgumentCaptor<DatabaseOperationOption> databaseOperationOptionArgumentCaptor = ArgumentCaptor.forClass(
+                DatabaseOperationOption.class);
 
-		Mockito.verify(mybatisMigration).runMigrationOperation(propertiesArgumentCaptor.capture(),
-				databaseOperationOptionArgumentCaptor.capture());
+        Mockito.verify(mybatisMigration).runMigrationOperation(propertiesArgumentCaptor.capture(),
+                databaseOperationOptionArgumentCaptor.capture());
 
-		assertNotNull(databaseOperationOptionArgumentCaptor.getValue());
-		assertNotNull(propertiesArgumentCaptor.getValue());
+        assertNotNull(databaseOperationOptionArgumentCaptor.getValue());
+        assertNotNull(propertiesArgumentCaptor.getValue());
 
-		// Has to be set to false
-		assertFalse(databaseOperationOptionArgumentCaptor.getValue().isAutoCommit());
-	}
+        // Has to be set to false
+        assertFalse(databaseOperationOptionArgumentCaptor.getValue().isAutoCommit());
+    }
 }

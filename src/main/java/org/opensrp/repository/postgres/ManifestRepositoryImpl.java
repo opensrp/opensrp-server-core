@@ -90,7 +90,7 @@ public class ManifestRepositoryImpl extends BaseRepositoryImpl<Manifest> impleme
         }
 
         List<org.opensrp.domain.postgres.Manifest> manifestList = manifestMapper.selectByAppId(appId);
-        
+
         if (manifestList == null) {
             return null;
         }

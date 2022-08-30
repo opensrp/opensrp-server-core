@@ -11,14 +11,14 @@ import java.io.IOException;
 
 public class LocalDateSerializerTest {
 
-	@Test
-	public void testSerializer() throws IOException {
-		ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
-		LocalDate localDate = new LocalDate();
-		LocalDateSerializer localDateSerializer = new LocalDateSerializer();
-		SerializerProvider provider = Mockito.mock(SerializerProvider.class);
-		JsonGenerator jsonGen = Mockito.mock(JsonGenerator.class);
-		localDateSerializer.serialize(localDate, jsonGen, provider);
-		Mockito.verify(jsonGen, Mockito.atLeastOnce()).writeString(argumentCaptor.capture());
-	}
+    @Test
+    public void testSerializer() throws IOException {
+        ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
+        LocalDate localDate = new LocalDate();
+        LocalDateSerializer localDateSerializer = new LocalDateSerializer();
+        SerializerProvider provider = Mockito.mock(SerializerProvider.class);
+        JsonGenerator jsonGen = Mockito.mock(JsonGenerator.class);
+        localDateSerializer.serialize(localDate, jsonGen, provider);
+        Mockito.verify(jsonGen, Mockito.atLeastOnce()).writeString(argumentCaptor.capture());
+    }
 }

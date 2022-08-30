@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class FailedRecordSummary {
 
-	private Integer rowNumber;
-	private List<String> reasonOfFailure;
+    private Integer rowNumber;
+    private List<String> reasonOfFailure;
 }

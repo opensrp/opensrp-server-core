@@ -22,48 +22,46 @@ import org.utils.DbAccessUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
-@ActiveProfiles(profiles = { "jedis"})
+@ActiveProfiles(profiles = {"jedis"})
 public abstract class BaseRepositoryTest extends TestPostgresInstance {
-	private static String TEST_SCRIPTS_ROOT_DIRECTORY = "test-scripts/";
-	
-	@Autowired
-	private DataSource openSRPDataSource;
-	protected static List<String> tableNames = new ArrayList<>();
+    protected static List<String> tableNames = new ArrayList<>();
+    private static String TEST_SCRIPTS_ROOT_DIRECTORY = "test-scripts/";
+    @Autowired
+    private DataSource openSRPDataSource;
 
-	/**
-	 * Populates the configured {@link DataSource} with data from passed scripts
-	 * 
-	 * @param the scripts to load
-	 * @throws SQLException
-	 */
-	@Before
-	public void populateDatabase() throws SQLException {
-		truncateTables();
-		if (getDatabaseScripts() == null || getDatabaseScripts().isEmpty())
-			return;
-		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		for (String script : getDatabaseScripts()) {
-			populator.addScript(new ClassPathResource(TEST_SCRIPTS_ROOT_DIRECTORY + script));
-		}
-		
-		Connection connection = null;
-		
-		try {
-			connection = DataSourceUtils.getConnection(openSRPDataSource);
-			populator.populate(connection);
-		}
-		finally {
-			if (connection != null) {
-				DataSourceUtils.releaseConnection(connection, openSRPDataSource);
-			}
-		}
-	}
+    /**
+     * Populates the configured {@link DataSource} with data from passed scripts
+     *
+     * @param the scripts to load
+     * @throws SQLException
+     */
+    @Before
+    public void populateDatabase() throws SQLException {
+        truncateTables();
+        if (getDatabaseScripts() == null || getDatabaseScripts().isEmpty())
+            return;
+        ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+        for (String script : getDatabaseScripts()) {
+            populator.addScript(new ClassPathResource(TEST_SCRIPTS_ROOT_DIRECTORY + script));
+        }
 
-	protected void truncateTables() {
-		for (String tableName : tableNames) {
-			DbAccessUtils.truncateTable(tableName, openSRPDataSource);
-		}
-	}
-	
-	protected abstract Set<String> getDatabaseScripts();
+        Connection connection = null;
+
+        try {
+            connection = DataSourceUtils.getConnection(openSRPDataSource);
+            populator.populate(connection);
+        } finally {
+            if (connection != null) {
+                DataSourceUtils.releaseConnection(connection, openSRPDataSource);
+            }
+        }
+    }
+
+    protected void truncateTables() {
+        for (String tableName : tableNames) {
+            DbAccessUtils.truncateTable(tableName, openSRPDataSource);
+        }
+    }
+
+    protected abstract Set<String> getDatabaseScripts();
 }

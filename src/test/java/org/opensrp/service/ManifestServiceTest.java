@@ -26,21 +26,14 @@ import org.opensrp.domain.Manifest;
 
 @RunWith(PowerMockRunner.class)
 @PowerMockIgnore({"com.sun.org.apache.xerces.*", "javax.xml.*", "org.xml.*", "javax.management.*", "org.slf4j.*",
-		"org.apache.logging.log4j.*"})
+        "org.apache.logging.log4j.*"})
 public class ManifestServiceTest {
 
     private ManifestService manifestService;
 
     private ManifestRepository manifestRepository;
 
-    @Before
-    public void setUp() {
-        manifestRepository = mock(ManifestRepository.class);
-        manifestService = new ManifestService();
-        manifestService.setManifestRepository(manifestRepository);
-    }
-
-    private static Manifest initTestManifest(){
+    private static Manifest initTestManifest() {
         Manifest manifest = new Manifest();
         String identifier = "mani1234";
         String appVersion = "1234234";
@@ -54,7 +47,14 @@ public class ManifestServiceTest {
         return manifest;
     }
 
- @Test
+    @Before
+    public void setUp() {
+        manifestRepository = mock(ManifestRepository.class);
+        manifestService = new ManifestService();
+        manifestService.setManifestRepository(manifestRepository);
+    }
+
+    @Test
     public void testGetManifest() {
         List<Manifest> expectedManifest = new ArrayList<>();
         expectedManifest.add(initTestManifest());
@@ -93,38 +93,38 @@ public class ManifestServiceTest {
     public void testAddOrUpdateManifest() {
         when(manifestRepository.get(anyString())).thenReturn(null);
         Manifest manifest = initTestManifest();
-   	    assertNotNull(manifest);
+        assertNotNull(manifest);
         manifestService.addOrUpdateManifest(manifest);
-   	    verify(manifestRepository).add(eq(manifest));
+        verify(manifestRepository).add(eq(manifest));
     }
 
     @Test
     public void testAddManifest() {
-    	 when(manifestRepository.get(anyString())).thenReturn(null);
-    	 Manifest manifest = initTestManifest();
-    	 assertNotNull(manifest);
-         manifestService.addManifest(manifest);
-         verify(manifestRepository).add(eq(manifest));
+        when(manifestRepository.get(anyString())).thenReturn(null);
+        Manifest manifest = initTestManifest();
+        assertNotNull(manifest);
+        manifestService.addManifest(manifest);
+        verify(manifestRepository).add(eq(manifest));
     }
 
     @Test
     public void testUpdateManifest() {
-    	 when(manifestRepository.get(anyString())).thenReturn(null);
-    	 Manifest manifest = initTestManifest();
-    	 assertNotNull(manifest);
-         manifestService.updateManifest(manifest);
-         verify(manifestRepository).update(eq(manifest));
+        when(manifestRepository.get(anyString())).thenReturn(null);
+        Manifest manifest = initTestManifest();
+        assertNotNull(manifest);
+        manifestService.updateManifest(manifest);
+        verify(manifestRepository).update(eq(manifest));
     }
 
     @Test
     public void testSaveManifest() {
-    	 when(manifestRepository.get(anyString())).thenReturn(null);
-    	 List<Manifest> manifestList = new ArrayList<>();
-    	 Manifest manifest = initTestManifest();
-    	 assertNotNull(manifest);
-    	 manifestList.add(manifest);
-         manifestService.saveManifests(manifestList);
-         verify(manifestRepository).add(eq(manifest));
+        when(manifestRepository.get(anyString())).thenReturn(null);
+        List<Manifest> manifestList = new ArrayList<>();
+        Manifest manifest = initTestManifest();
+        assertNotNull(manifest);
+        manifestList.add(manifest);
+        manifestService.saveManifests(manifestList);
+        verify(manifestRepository).add(eq(manifest));
     }
 
     @Test

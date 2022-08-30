@@ -5,10 +5,10 @@ import org.opensrp.repository.postgres.mapper.LocationMapper;
 
 public interface CustomLocationMapper extends LocationMapper {
 
-	int insertSelectiveAndSetId(Location location);
-	
-	Long selectServerVersionByPrimaryKey(Long id);
-	
-	int updateByPrimaryKeyAndGenerateServerVersion(Location location);
+    int insertSelectiveAndSetId(Location location);
+
+    Long selectServerVersionByPrimaryKey(Long id);
+
+    int updateByPrimaryKeyAndGenerateServerVersion(Location location);
 
 }

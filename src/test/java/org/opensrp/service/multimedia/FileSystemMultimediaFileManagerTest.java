@@ -25,52 +25,52 @@ import static org.utils.TestUtils.getBasePackageFilePath;
  */
 public class FileSystemMultimediaFileManagerTest extends BaseMultimediaFileManagerTest {
 
-	private FileSystemMultimediaFileManager fileSystemMultimediaFileManager;
+    private FileSystemMultimediaFileManager fileSystemMultimediaFileManager;
 
-	@Value("#{opensrp['multimedia.directory.name']}")
-	private String baseMultimediaDirPath;
+    @Value("#{opensrp['multimedia.directory.name']}")
+    private String baseMultimediaDirPath;
 
-	@Captor
-	private ArgumentCaptor<File> fileArgumentCaptor = ArgumentCaptor.forClass(File.class);
+    @Captor
+    private ArgumentCaptor<File> fileArgumentCaptor = ArgumentCaptor.forClass(File.class);
 
-	@Mock
-	private ClientService clientService;
+    @Mock
+    private ClientService clientService;
 
-	@Mock
-	private MultimediaRepository multimediaRepository;
+    @Mock
+    private MultimediaRepository multimediaRepository;
 
-	@Before
-	public void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		super.setUp();
-		fileSystemMultimediaFileManager = new FileSystemMultimediaFileManager(multimediaRepository, clientService);
-	}
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        super.setUp();
+        fileSystemMultimediaFileManager = new FileSystemMultimediaFileManager(multimediaRepository, clientService);
+    }
 
-	@Test
-	public void testPersistFileToStorageShouldPersistFileToFileSystem() throws IOException {
-		byte[] testBytes = new byte[10];
-		fileSystemMultimediaFileManager = Mockito.spy(fileSystemMultimediaFileManager);
-		fileSystemMultimediaFileManager.persistFileToStorage("file_name", testBytes);
-		verify(fileSystemMultimediaFileManager).copyBytesToFile(fileArgumentCaptor.capture(), Mockito.eq(testBytes));
+    @Test
+    public void testPersistFileToStorageShouldPersistFileToFileSystem() throws IOException {
+        byte[] testBytes = new byte[10];
+        fileSystemMultimediaFileManager = Mockito.spy(fileSystemMultimediaFileManager);
+        fileSystemMultimediaFileManager.persistFileToStorage("file_name", testBytes);
+        verify(fileSystemMultimediaFileManager).copyBytesToFile(fileArgumentCaptor.capture(), Mockito.eq(testBytes));
 
-		File file = fileArgumentCaptor.getValue();
-		assertNotNull(file);
-		assertEquals(file.getPath(), "file_name");
-	}
+        File file = fileArgumentCaptor.getValue();
+        assertNotNull(file);
+        assertEquals(file.getPath(), "file_name");
+    }
 
-	@Test
-	public void testRetrieveFileShouldRetrieveFileFromFileSystem() {
-		String testFilePath = getBasePackageFilePath() + "/src/test/java/org/opensrp/service/multimedia/test_file";
-		assertNotNull(fileSystemMultimediaFileManager.retrieveFile(testFilePath));
-	}
+    @Test
+    public void testRetrieveFileShouldRetrieveFileFromFileSystem() {
+        String testFilePath = getBasePackageFilePath() + "/src/test/java/org/opensrp/service/multimedia/test_file";
+        assertNotNull(fileSystemMultimediaFileManager.retrieveFile(testFilePath));
+    }
 
-	@Test
-	public void testRetrieveFileShouldReturnNullForNonExistentFile() {
-		assertNull(fileSystemMultimediaFileManager.retrieveFile("non_existent_file"));
-	}
+    @Test
+    public void testRetrieveFileShouldReturnNullForNonExistentFile() {
+        assertNull(fileSystemMultimediaFileManager.retrieveFile("non_existent_file"));
+    }
 
-	@Test
-	public void testGetMultiMediaDirShouldReturnCorrectFilePath() {
-		assertEquals(baseMultimediaDirPath + File.separator, fileSystemMultimediaFileManager.getBaseMultiMediaDir());
-	}
+    @Test
+    public void testGetMultiMediaDirShouldReturnCorrectFilePath() {
+        assertEquals(baseMultimediaDirPath + File.separator, fileSystemMultimediaFileManager.getBaseMultiMediaDir());
+    }
 }

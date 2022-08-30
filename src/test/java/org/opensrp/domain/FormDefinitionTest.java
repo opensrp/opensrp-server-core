@@ -9,12 +9,12 @@ import com.openpojo.validation.test.impl.GetterTester;
 import com.openpojo.validation.test.impl.SetterTester;
 
 public class FormDefinitionTest {
-	
-	@Test
-	public void testGetterAndSetter() {
-		Validator validator = ValidatorBuilder.create().with(new SetterTester()).with(new GetterTester()).build();
-		
-		validator.validate(PojoClassFactory.getPojoClass(FormDefinition.class));
-	}
-	
+
+    @Test
+    public void testGetterAndSetter() {
+        Validator validator = ValidatorBuilder.create().with(new SetterTester()).with(new GetterTester()).build();
+
+        validator.validate(PojoClassFactory.getPojoClass(FormDefinition.class));
+    }
+
 }

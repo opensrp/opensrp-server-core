@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PgStockAndProductDetails {
 
-	private Stock stock;
-	private ProductCatalogue productCatalogue;
+    private Stock stock;
+    private ProductCatalogue productCatalogue;
 }
