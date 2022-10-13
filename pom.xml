@@ -5,7 +5,7 @@
 
 	<artifactId>opensrp-server-core</artifactId>
 	<packaging>jar</packaging>
-	<version>3.2.6-ALPHA1-SNAPSHOT</version>
+	<version>3.2.7-ALPHA1-SNAPSHOT</version>
 	<name>opensrp-server-core</name>
 	<description>OpenSRP Server Core module</description>
 	<url>https://github.com/OpenSRP/opensrp-server-core</url>
@@ -14,7 +14,7 @@
 		<main.basedir>${project.basedir}</main.basedir>
 		<spring.version>5.2.20.RELEASE</spring.version>
 		<spring.data.version>2.2.13.RELEASE</spring.data.version>
-		<spring.security.version>5.2.15.RELEASE</spring.security.version>
+		<spring.security.version>5.5.7</spring.security.version>
 		<mybatis.version>3.5.7</mybatis.version>
 		<mybatis.spring.version>2.0.6</mybatis.spring.version>
 		<hibernate.version>5.4.24.Final</hibernate.version>
