@@ -231,7 +231,7 @@ public class ReportsRepositoryImpl extends BaseRepositoryImpl<Report> implements
 		Criteria criteria = reportMetadataExample.createCriteria();
 		if (StringUtils.isNotBlank(baseEntityId))
 			criteria.andBaseEntityIdEqualTo(baseEntityId);
-		if (StringUtils.isNotBlank(locationId))
+		if (StringUtils.isNotBlank(reportType))
 			criteria.andReportTypeEqualTo(reportType);
 		if (StringUtils.isNotBlank(providerId))
 			criteria.andProviderIdEqualTo(providerId);

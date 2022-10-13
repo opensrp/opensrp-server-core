@@ -370,7 +370,18 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		    returnGeometry, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<PhysicalLocation> findLocationsByTagName(boolean returnGeometry, String tagName) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		List<Location> locations = locationMetadataMapper.selectManyByTagName(locationMetadataExample, tagName,
+				returnGeometry, 0, DEFAULT_FETCH_SIZE);
+		return convert(locations);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -526,7 +537,12 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		    identifiers, 0, limit);
 		return convert(locations);
 	}
-	
+
+	@Override
+	public long getStructureNextServerVersion() {
+		return 0;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

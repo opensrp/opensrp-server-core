@@ -37,7 +37,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 
 	/**
 	 * This methods searches for jurisdictions using the parentId and location properties
-	 * It returns the Geometry optionally if @param returnGeometry is set to true. 
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param parentId string the parent id of the jurisdiction being searched. If empty search for ROOT location.
 	 * @param properties map of location properties to filter with, each entry in map has property name and value
@@ -47,12 +47,22 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 			Map<String, String> properties);
 
 	/**
-	 * This methods searches for structures using the parentId and location properties
-	 * It returns the Geometry optionally if @param returnGeometry is set to true. 
+	 * Searches for jurisdictions using the location tag specified
+	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
-	 * @param parentId string the parent id of the structure being searched
-	 * @param properties map of location properties to filter with, each entry in map has property name and value
-	 * @return structures matching the params 
+	 * @param tagName        Name of location tag to filter by
+	 * @return Jurisdictions matching the params
+	 */
+	List<PhysicalLocation> findLocationsByTagName(boolean returnGeometry, String tagName);
+
+	/**
+	 * This methods searches for structures using the parentId and location properties
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 *
+	 * @param returnGeometry boolean which controls if geometry is returned
+	 * @param parentId       string the parent id of the structure being searched
+	 * @param properties     map of location properties to filter with, each entry in map has property name and value
+	 * @return structures matching the params
 	 */
 	List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
 			Map<String, String> properties);
@@ -60,10 +70,11 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	/**
 	 * This methods searches for structures using the parentId and location properties
 	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
-	 * @param parentId string the parent id of the structure being searched
-	 * @param properties map of location properties to filter with, each entry in map has property name and value
-	 * @param limit upper limit on number of structures to fetch
+	 * @param parentId       string the parent id of the structure being searched
+	 * @param properties     map of location properties to filter with, each entry in map has property name and value
+	 * @param limit          upper limit on number of structures to fetch
 	 * @return structures matching the params
 	 */
 	List<PhysicalLocation> findStructuresByProperties(boolean returnGeometry, String parentId,
@@ -72,43 +83,47 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	/**
 	 * This methods searches for locations using a list of provided location ids.
 	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
-	 * @param ids list of location ids
-	 * @param serverVersion server version if not null filter
+	 * @param ids            list of location ids
+	 * @param serverVersion  server version if not null filter
 	 * @return jurisdictions whose ids match the provided params
 	 */
-	List<PhysicalLocation> findLocationsByIds(boolean returnGeometry,	List<String> ids, Long serverVersion);
+	List<PhysicalLocation> findLocationsByIds(boolean returnGeometry, List<String> ids, Long serverVersion);
 
 	/**
 	 * This methods searches for a location and it's children using the provided location id
 	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
-	 * @param id location id
-	 * @param pageSize number of records to be returned
+	 * @param id             location id
+	 * @param pageSize       number of records to be returned
 	 * @return location together with it's children whose id matches the provided param
 	 */
-	List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry,	String id, int pageSize);
+	List<PhysicalLocation> findLocationByIdWithChildren(boolean returnGeometry, String id, int pageSize);
 
-    /**
+	/**
 	 * This methods searches for locations using a list of provided location ids.It returns location whose is in the list or whose parent is in list
 	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
-	 * @param ids list of location ids
+	 * @param ids            list of location ids
 	 * @return jurisdictions whose ids match the provided params
 	 */
 	List<PhysicalLocation> findLocationsByIdsOrParentIds(boolean returnGeometry, List<String> ids);
 
-    /**
-     * This method fetches all structure Ids
+	/**
+	 * This method fetches all structure Ids
 	 *
 	 * @param serverVersion
-	 * @param limit upper limit on number of structure ids to fetch
-     * @return a list of structure Ids and last server version
-     */
+	 * @param limit         upper limit on number of structure ids to fetch
+	 * @return a list of structure Ids and last server version
+	 */
 	Pair<List<String>, Long> findAllStructureIds(Long serverVersion, int limit);
 
 	/**
 	 * overloads {@link #findAllStructureIds(Long, int)} by adding date/time filters
+	 *
 	 * @param serverVersion
 	 * @param limit
 	 * @param fromDate
@@ -130,13 +145,14 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param serverVersion
-	 * @param limit upper limit on number of jurisdictions to fetch
+	 * @param limit          upper limit on number of jurisdictions to fetch
 	 * @return list of jurisdictions
 	 */
 	List<PhysicalLocation> findAllLocations(boolean returnGeometry, Long serverVersion, int limit, boolean includeInactive);
 
 	/**
 	 * counts all locations
+	 *
 	 * @param serverVersion
 	 * @return
 	 */
@@ -147,13 +163,14 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
 	 * @param serverVersion
-	 * @param limit upper limit on number of structures to fetch
+	 * @param limit          upper limit on number of structures to fetch
 	 * @return list of structures
 	 */
 	List<PhysicalLocation> findAllStructures(boolean returnGeometry, Long serverVersion, int limit, Integer pageNumber, String orderByType, String orderByFieldName);
 
 	/**
 	 * count all structures
+	 *
 	 * @param serverVersion
 	 * @return
 	 */
@@ -163,13 +180,14 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * This method fetches all location Ids
 	 *
 	 * @param serverVersion
-	 * @param limit upper limit on number of location ids to fetch
+	 * @param limit         upper limit on number of location ids to fetch
 	 * @return a list of location Ids
 	 */
 	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit);
 
 	/**
 	 * overloads {@link #findAllLocationIds(Long, int)} by adding date/time filters
+	 *
 	 * @param serverVersion
 	 * @param limit
 	 * @param fromDate
@@ -177,51 +195,54 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	 * @return
 	 */
 	Pair<List<String>, Long> findAllLocationIds(Long serverVersion, int limit, Date fromDate, Date toDate);
-	
+
 	List<PhysicalLocation> searchLocations(LocationSearchBean locationSearchBean);
 
 	int countSearchLocations(LocationSearchBean locationSearchBean);
 
 	/**
-	 * Gets the parent locations inclusive of the location of the identifiers. 
+	 * Gets the parent locations inclusive of the location of the identifiers.
 	 * This returns the details of ancestors including locations the identifiers
+	 *
 	 * @param identifiers the identifiers of locations to get the parent locations
-	 * @return the parent locations inclusive of the location of the identifiers 
+	 * @return the parent locations inclusive of the location of the identifiers
 	 */
 	Set<LocationDetail> findParentLocationsInclusive(Set<String> identifiers);
 
 	/**
 	 * Gets the parent locations inclusive of the location of the identifiers.
 	 * This returns the details of ancestors including locations the identifiers
+	 *
 	 * @param identifiers the identifiers of locations to get the parent locations
-	 * @param returnTags Whether or not to return location tags
+	 * @param returnTags  Whether or not to return location tags
 	 * @return the parent locations inclusive of the location of the identifiers
 	 */
 	Set<LocationDetail> findParentLocationsInclusive(Set<String> identifiers, boolean returnTags);
 
-
 	/**
 	 * This method is used to return a location based on the provided parameters
+	 *
 	 * @param identifier identifier of the location
-	 * @param status status of the location
+	 * @param status     status of the location
 	 * @return returns a location matching the passed parameters
 	 */
 	PhysicalLocation findLocationByIdentifierAndStatus(String identifier, List<String> status, boolean returnGeometry);
 
 	/**
 	 * Gets the location primary key
-	 * @param identifier of of the location
+	 *
+	 * @param identifier     of of the location
 	 * @param isJurisdiction whether the to search for jurisdiction or structure
 	 * @return the numerical primary key of a jurisdiction
 	 */
 	public Long retrievePrimaryKey(String identifier, boolean isJurisdiction);
 
-
 	PhysicalLocation get(String id, boolean returnGeometry, int version);
 
 	/**
 	 * This method is used to return a count of structure based on the provided parameters
-	 * @param parentId a string of comma separated ids for the parent locations
+	 *
+	 * @param parentId      a string of comma separated ids for the parent locations
 	 * @param serverVersion
 	 * @return returns a count of structures matching the passed parameters
 	 */
@@ -229,6 +250,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 
 	/**
 	 * This method is used to return a count of locations based on the provided parameters
+	 *
 	 * @param serverVersion
 	 * @return returns a count of locations matching the passed parameters
 	 */
@@ -236,6 +258,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 
 	/**
 	 * This method is used to return a count of locations based on the provided parameters
+	 *
 	 * @param locationNames A string of comma separated location names
 	 * @param serverVersion
 	 * @return returns a count of locations matching the passed parameters
@@ -252,6 +275,7 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 
 	/**
 	 * This method returns a map containing a location identifier and a count of associated structures
+	 *
 	 * @param locationIds
 	 * @return
 	 */
@@ -260,18 +284,26 @@ public interface LocationRepository extends BaseRepository<PhysicalLocation>, Lo
 	/**
 	 * This methods searches for a location and it's children using the provided location ids
 	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 *
 	 * @param returnGeometry boolean which controls if geometry is returned
-	 * @param identifiers location ids
-	 * @param pageSize number of records to be returned
+	 * @param identifiers    location ids
+	 * @param pageSize       number of records to be returned
 	 * @return location together with it's children whose id matches the provided param
 	 */
 	List<PhysicalLocation> findLocationByIdsWithChildren(boolean returnGeometry, Set<String> identifiers, int pageSize);
 
+	/**
+	 * Gets the next server version for structures
+	 *
+	 * @return the next sequence value
+	 */
+	long getStructureNextServerVersion();
 
 	/**
 	 * Gets the count of locations based on locationIds and server version
-	 * @param locationIds the list of locationIds to filter with
-	 * @param serverVersion the server version to filter with 
+	 *
+	 * @param locationIds   the list of locationIds to filter with
+	 * @param serverVersion the server version to filter with
 	 * @return number of records
 	 */
 	long countLocationsByIds(List<String> locationIds, long serverVersion);
