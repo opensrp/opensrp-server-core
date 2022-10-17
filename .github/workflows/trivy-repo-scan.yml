@@ -18,6 +18,8 @@ jobs:
               
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+        submodules: recursive
 
       - name: Run Trivy vulnerability scanner in repo mode - SARIF
         uses: aquasecurity/trivy-action@master
