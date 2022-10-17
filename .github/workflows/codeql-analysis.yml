@@ -27,6 +27,11 @@ jobs:
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
+    - name: Cancel previous workflow runs
+      uses: styfle/cancel-workflow-action@0.9.1
+      with:
+        access_token: ${{ github.token }} 
+        
     - name: Checkout repository
       uses: actions/checkout@v3
 
