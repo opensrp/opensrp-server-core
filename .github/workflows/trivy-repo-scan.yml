@@ -1,8 +1,6 @@
 name: Trivy Security Scan on OpenSRP-Server-Core repository
 on:
   push:
-    branches: 
-      - trivy-ci-scan   # Temporary
   pull_request:
     branches:
       - master
@@ -13,8 +11,8 @@ on:
   workflow_dispatch:
     
 env:
-  FULL_SUMMARY: "No Vulnerabilities"
-  PATCH_SUMMARY: "No Vulnerabilities"
+  FULL_SUMMARY: ""
+  PATCH_SUMMARY: ""
 
 jobs:
   build:
@@ -54,7 +52,7 @@ jobs:
           summary=$(jq -r '.Results[] | select(.Vulnerabilities) | .Vulnerabilities | group_by(.Severity) | map({Severity: .[0].Severity, Count: length}) | .[] | [.Severity, .Count] | join(": ")' trivy-repo-full-results.json | awk 'NR > 1 { printf(" | ") } {printf "%s",$0}')
           if [ -z $summary ]
           then
-            summary="0 Issues"
+            summary="No vulnerabilities found"
           fi
           echo "FULL_SUMMARY=$summary" >> $GITHUB_ENV
 
@@ -71,7 +69,7 @@ jobs:
           summary=$(jq -r '.Results[] | select(.Vulnerabilities) | .Vulnerabilities | group_by(.Severity) | map({Severity: .[0].Severity, Count: length}) | .[] | [.Severity, .Count] | join(": ")' trivy-repo-fixable-results.json | awk 'NR > 1 { printf(" | ") } {printf "%s",$0}')
           if [ -z $summary ]
           then
-            summary="0 Issues"
+            summary="No issues or vulnerability fixes available"
           fi
           echo "PATCH_SUMMARY=$summary" >> $GITHUB_ENV
       
