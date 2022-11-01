@@ -49,7 +49,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  * @author Samuel Githengi created on 09/16/19
  */
 public class OrganizationRepositoryTest extends BaseRepositoryTest {
-	
+
+
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	
 	@Autowired
