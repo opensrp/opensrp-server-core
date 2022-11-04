@@ -1,4 +1,4 @@
-name: Trivy Security Scan on OpenSRP-Server-Connector repository
+name: Trivy Security Scan on repository
 on:
   push:
     branches:
