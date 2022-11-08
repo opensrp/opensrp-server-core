@@ -15,10 +15,5 @@ updates:
     commit-message:
       prefix: requirements
     reviewers:
-      - "ukanga"
-      - "bennsimon"
-      - "qiarie"
-      - "manutarus"
       - "hilpitome"
       - "ekigamba"
-      - "ndegwamartin"
