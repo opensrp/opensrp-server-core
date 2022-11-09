@@ -93,6 +93,7 @@
 			<groupId>com.aliyun.oss</groupId>
 			<artifactId>aliyun-sdk-oss</artifactId>
 			<version>3.14.0</version>
+
 		</dependency>
 
 		<dependency>

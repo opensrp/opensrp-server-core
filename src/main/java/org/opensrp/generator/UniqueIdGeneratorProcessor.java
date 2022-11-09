@@ -84,7 +84,7 @@ public class UniqueIdGeneratorProcessor {
 		}
 
 		identifierSourceService.saveSequenceValue(identifierSource, sequenceValue);
-		saveIds(identifiers, null, "not_used", new Date(), usedBy, new Date(), identifierSource.getId());
+		saveIds(identifiers, null, "used", new Date(), usedBy, new Date(), identifierSource.getId());
 
 		return identifiers;
 	}
