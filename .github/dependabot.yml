@@ -7,13 +7,11 @@ updates:
     # Check the maven registry for updates every day (weekdays)
     schedule:
       interval: daily
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 0
     target-branch: "master"    
     # Raise all maven pull requests with custom labels
     labels:
-      - "maven dependencies"
-    commit-message:
-      prefix: requirements
+      - "dependencies"
     reviewers:
       - "hilpitome"
       - "ekigamba"
