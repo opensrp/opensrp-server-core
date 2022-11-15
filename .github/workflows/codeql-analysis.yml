@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - master
-      - v2*
+      - v2
   pull_request:      
   schedule:
     - cron: '0 3 * * 1,3'     # CodeQL Scan every Monday and Wednesday at 3 AM UTC
