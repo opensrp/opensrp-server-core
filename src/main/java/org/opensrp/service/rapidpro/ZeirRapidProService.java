@@ -135,10 +135,10 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 		return Pair.of(earliestDateModifiedCopy, latestDateModifiedCopy);
 	}
 
-	private List<RapidProContact> parseRapidProContactResponse(JSONArray results) {
+	private List<RapidProContact> parseRapidProContactResponse(JSONArray arrayResponse) {
 		List<RapidProContact> rapidProContacts = new ArrayList<>();
 		try {
-			rapidProContacts = RapidProUtils.getRapidProContacts(results, objectMapper);
+			rapidProContacts = RapidProUtils.decodeJsonRapidProContacts(arrayResponse, objectMapper);
 			logger.info("Found " + rapidProContacts.size() + " modified RapidPro contacts");
 		}
 		catch (JsonProcessingException jsonProcessingException) {
@@ -179,7 +179,11 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				fields.setFacilityLocationId(locationId);
 				processRegistrationAndRelatedEvents(rapidProContact, rapidProContacts);
 			}
-		}//TODO Add implementation for processing supervisor for instance when their location is updated;
+		} else {
+			logger.error("Contact does not have supervisor phone OR is not a CHILD");
+		}
+
+		//TODO Add implementation for processing supervisor for instance when their location is updated;
 	}
 
 	private void updateExistingClientUuid(RapidProContact rapidProContact, ZeirRapidProEntity entity) {
@@ -251,6 +255,8 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				}
 				processVaccinationEvent(childContact);
 				processGrowthMonitoringEvent(childContact);
+			} else {
+				logger.error("Mother/Caretaker to {} - {} could not be found on the request or RapidPro", childContact.getName(), childContact.getUuid());
 			}
 		}
 	}
@@ -276,6 +282,14 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 				clientService.addClient(childClient);
 				saveEvent(childContact, new ZeirBirthRegistrationConverter(organizationService));
 			}
+		} else {
+			try {
+				logger.error("Child is already registered BaseEntityId [{}]", childContact.getUuid());
+				logger.error("Child already registered JSON - {}", objectMapper.writeValueAsString(childContact));
+			}
+			catch (JsonProcessingException e) {
+				logger.error(e);
+			}
 		}
 	}
 
@@ -292,6 +306,13 @@ public class ZeirRapidProService extends BaseRapidProService implements RapidPro
 												StringUtils.removeStart(motherPhone, ZAMBIA_COUNTRY_CODE) : motherPhone)))
 				.collect(Collectors.toList());
 		if (motherList.isEmpty()) {
+			HttpGet contactRequest = RapidProUtils.contactByPhoneRequest(motherPhone, rapidProUrl, rapidProToken);
+			RapidProContact contactReturned = RapidProUtils.getRapidProContactByPhone(closeableHttpClient, contactRequest, objectMapper, logger);
+
+			if (contactReturned != null && RapidProConstants.CARETAKER.equalsIgnoreCase(contactReturned.getFields().getPosition())) {
+				return contactReturned;
+			}
+
 			return null;
 		}
 		return motherList.get(0);

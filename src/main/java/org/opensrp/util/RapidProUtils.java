@@ -104,7 +104,7 @@ public class RapidProUtils {
 				if (results != null) {
 					if (results.isEmpty())
 						return null;
-					List<RapidProContact> rapidProContacts = getRapidProContacts(results, objectMapper);
+					List<RapidProContact> rapidProContacts = decodeJsonRapidProContacts(results, objectMapper);
 					if (rapidProContacts == null || rapidProContacts.isEmpty()) {
 						return null;
 					}
@@ -128,7 +128,7 @@ public class RapidProUtils {
 
 	}
 
-	public static List<RapidProContact> getRapidProContacts(JSONArray results, ObjectMapper objectMapper) throws
+	public static List<RapidProContact> decodeJsonRapidProContacts(JSONArray results, ObjectMapper objectMapper) throws
 			JsonProcessingException {
 		return objectMapper.readValue(results.toString(), new TypeReference<>() {
 
