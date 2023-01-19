@@ -401,7 +401,7 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 				.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
 		ZeirChildClientConverter childConverter = new ZeirChildClientConverter(this);
 		ZeirMotherClientConverter motherConverter = new ZeirMotherClientConverter();
-		while (!unSyncedStates.isEmpty()) {
+		if (!unSyncedStates.isEmpty()) {
 			logger.warn("Syncing {} record(s) of type {}  from OpenSRP to RapidPro", unSyncedStates.size(), entity.name());
 			for (RapidproState rapidproState : unSyncedStates) {
 				synchronized (this) {
@@ -420,13 +420,9 @@ public class ZeirRapidProStateService extends BaseRapidProStateService {
 					}
 				}
 			}
-
-			unSyncedStates = getUnSyncedRapidProStates(entity.name(), property.name()).stream()
-					.filter(state -> !state.getUuid().equals(RapidProConstants.UNPROCESSED_UUID))
-					.limit(RapidProUtils.RAPIDPRO_DATA_LIMIT).collect(Collectors.toList());
+		} else {
+			logger.warn("No OpenSRP record(s) of type {} available for sync to RapidPro", entity.name());
 		}
-
-		logger.warn("No OpenSRP record(s) of type {} available for sync to RapidPro", entity.name());
 	}
 
 	private JSONObject getPayload(ZeirRapidProEntity entity, ZeirRapidProEntityProperty property,
