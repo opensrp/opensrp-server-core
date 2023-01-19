@@ -24,7 +24,9 @@
 	<context:component-scan base-package="org.opensrp.config"/>
 	<context:component-scan base-package="org.opensrp.queue"/>
 	<context:component-scan base-package="org.opensrp.validator"/>
+	<context:component-scan base-package="org.opensrp.migrations"/>
 	<context:component-scan base-package="org.opensrp.service">
+
 		<!--These classes are excluded to enable the context load. This is because
 			EventsListener has EventsRouter as a dependency, problem is that IHandlerMapper
 			in EventsRouter is an interface that has its implementation in opensrp-register

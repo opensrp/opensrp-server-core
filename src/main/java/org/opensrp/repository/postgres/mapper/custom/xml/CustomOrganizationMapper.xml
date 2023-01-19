@@ -149,4 +149,101 @@
         from team.organization
         where id IN <foreach item="organizationId" collection="organizationIds" open="(" separator="," close=")">#{organizationId}</foreach>
     </select>
+    <insert id="insertSelectiveAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Organization">
+        insert into team.organization
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="identifier != null">
+                identifier,
+            </if>
+            <if test="active != null">
+                active,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="dateDeleted != null">
+                date_deleted,
+            </if>
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="dateCreated != null">
+                date_created,
+            </if>
+            <if test="dateEdited != null">
+                date_edited,
+            </if>
+            server_version
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="identifier != null">
+                #{identifier,jdbcType=VARCHAR},
+            </if>
+            <if test="active != null">
+                #{active,jdbcType=BIT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler},
+            </if>
+            <if test="dateDeleted != null">
+                #{dateDeleted,jdbcType=TIMESTAMP},
+            </if>
+            <if test="parentId != null">
+                #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="dateCreated != null">
+                #{dateCreated,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dateEdited != null">
+                #{dateEdited,jdbcType=TIMESTAMP},
+            </if>
+            nextVal('team.organization_server_version_seq')
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelectiveAndGenerateServerVersion" parameterType="org.opensrp.domain.postgres.Organization">
+        update team.organization
+        <set>
+            <if test="identifier != null">
+                identifier = #{identifier,jdbcType=VARCHAR},
+            </if>
+            <if test="active != null">
+                active = #{active,jdbcType=BIT},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                type = #{type,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler},
+            </if>
+            <if test="dateDeleted != null">
+                date_deleted = #{dateDeleted,jdbcType=TIMESTAMP},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId,jdbcType=BIGINT},
+            </if>
+            <if test="dateCreated != null">
+                date_created = #{dateCreated,jdbcType=TIMESTAMP},
+            </if>
+            <if test="dateEdited != null">
+                date_edited = #{dateEdited,jdbcType=TIMESTAMP},
+            </if>
+            server_version = nextVal('team.organization_server_version_seq')
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <select id="selectServerVersionByPrimaryKey" parameterType="java.lang.Long" resultType="long">
+        select server_version from team.organization where id = #{id,jdbcType=BIGINT}
+    </select>
 </mapper>

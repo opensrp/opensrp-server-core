@@ -9,7 +9,7 @@ public class OrganizationSearchBean {
 	};
 	
 	public enum FieldName {
-		id, identifier, name, parent_id, member_count
+		id, identifier, name, parent_id, member_count, server_version
 	};
 	
 	private String name;
@@ -23,6 +23,8 @@ public class OrganizationSearchBean {
 	private OrderByType orderByType;
 	
 	private List<Integer> locations;
+
+	private Long serverVersion;
 	
 	public String getName() {
 		return name;
@@ -71,5 +73,12 @@ public class OrganizationSearchBean {
 	public void setLocations(List<Integer> locations) {
 		this.locations = locations;
 	}
-	
+
+	public Long getServerVersion() {
+		return serverVersion;
+	}
+
+	public void setServerVersion(Long serverVersion) {
+		this.serverVersion = serverVersion;
+	}
 }

@@ -14,4 +14,9 @@ public interface CustomPractitionerMapper extends PractitionerMapper {
     List<Practitioner> selectManyByOrgId(@Param("example") PractitionerExample practitionerExample,
                                          @Param("orgId") long orgId, @Param("offset") int offset, @Param("limit") int limit);
 
+    int insertSelectiveAndGenerateServerVersion(Practitioner practitioner);
+
+    Long selectServerVersionByPrimaryKey(Long id);
+
+    int updateByPrimaryKeyAndGenerateServerVersion(Practitioner practitioner);
 }

@@ -1,6 +1,7 @@
 package org.opensrp.repository.postgres;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.smartregister.domain.Practitioner;
 import org.opensrp.domain.postgres.PractitionerExample;
 import org.opensrp.repository.PractitionerRepository;
@@ -90,7 +91,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 
         org.opensrp.domain.postgres.Practitioner pgPractitioner = convert(practitioner);
 
-        practitionerMapper.insertSelective(pgPractitioner);
+        practitionerMapper.insertSelectiveAndGenerateServerVersion(pgPractitioner);
 
     }
 
@@ -111,7 +112,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         org.opensrp.domain.postgres.Practitioner pgPractitioner = convert(practitioner);
 
         pgPractitioner.setId(id);
-        practitionerMapper.updateByPrimaryKey(pgPractitioner);
+        practitionerMapper.updateByPrimaryKeyAndGenerateServerVersion(pgPractitioner);
     }
 
     @Override
@@ -189,11 +190,14 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 
     @Override
     public List<Practitioner> getAllPractitioners(PractitionerSearchBean practitionerSearchBean) {
-        Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean);
+        Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(practitionerSearchBean);
         PractitionerExample practitionerExample = new PractitionerExample();
         practitionerExample.createCriteria().andDateDeletedIsNull();
         if(practitionerSearchBean.getOrderByFieldName() != null && practitionerSearchBean.getOrderByType() != null) {
             practitionerExample.setOrderByClause(practitionerSearchBean.getOrderByFieldName() + " " + practitionerSearchBean.getOrderByType());
+        }
+        if (practitionerSearchBean.getServerVersion() != null) {
+            practitionerExample.createCriteria().andServerVersionGreaterThanOrEqualTo(practitionerSearchBean.getServerVersion());
         }
         List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
         return convert(pgPractitionerList);
@@ -202,7 +206,7 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
 	@Override
 	public List<Practitioner> getAllPractitionersByIdentifiers(List<String> practitionerIdentifiers) {
     	PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean();
-		Pair<Integer, Integer> pageSizeAndOffset = RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean);
+		Pair<Integer, Integer> pageSizeAndOffset = getPageSizeAndOffset(practitionerSearchBean);
 		PractitionerExample practitionerExample = new PractitionerExample();
 		practitionerExample.createCriteria().andDateDeletedIsNull().andIdentifierIn(practitionerIdentifiers);
 		List<org.opensrp.domain.postgres.Practitioner> pgPractitionerList = practitionerMapper.selectMany(practitionerExample, pageSizeAndOffset.getRight(), pageSizeAndOffset.getLeft());
@@ -237,6 +241,12 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         practitioner.setName(pgPractitioner.getName());
         practitioner.setUserId(pgPractitioner.getUserId());
         practitioner.setUsername(pgPractitioner.getUsername());
+        if (pgPractitioner.getDateCreated() != null)
+            practitioner.setDateCreated(new DateTime(pgPractitioner.getDateCreated()));
+        if (pgPractitioner.getDateEdited() != null)
+            practitioner.setDateEdited(new DateTime(pgPractitioner.getDateEdited()));
+        if (pgPractitioner.getServerVersion() != null)
+            practitioner.setServerVersion(pgPractitioner.getServerVersion());
 
         return practitioner;
     }
@@ -251,6 +261,11 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         pgPractitioner.setName(practitioner.getName());
         pgPractitioner.setUserId(practitioner.getUserId());
         pgPractitioner.setUsername(practitioner.getUsername());
+        if (practitioner.getDateCreated() != null)
+            pgPractitioner.setDateCreated(practitioner.getDateCreated().toDate());
+        if (practitioner.getDateEdited() != null)
+            pgPractitioner.setDateEdited(practitioner.getDateEdited().toDate());
+        pgPractitioner.setServerVersion(practitioner.getServerVersion());
 
         return pgPractitioner;
     }
@@ -279,5 +294,9 @@ public class PractitionerRepositoryImpl extends BaseRepositoryImpl<Practitioner>
         } else {
             return null;
         }
+    }
+
+    private Pair<Integer, Integer> getPageSizeAndOffset(PractitionerSearchBean practitionerSearchBean) {
+        return RepositoryUtil.getPageSizeAndOffset(practitionerSearchBean.getPageNumber(), practitionerSearchBean.getPageSize());
     }
 }

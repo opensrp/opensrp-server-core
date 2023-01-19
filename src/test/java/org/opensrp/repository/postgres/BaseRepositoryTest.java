@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -15,6 +14,7 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.opensrp.util.TestResourceLoader;
+import org.opensrp.TestPostgresInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.DataSourceUtils;
@@ -25,8 +25,8 @@ import org.utils.DbAccessUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
-public abstract class BaseRepositoryTest {
-	
+public abstract class BaseRepositoryTest extends TestPostgresInstance {
+
 	private static String TEST_SCRIPTS_ROOT_DIRECTORY = "test-scripts/";
 	
 	private final TestResourceLoader testResourceLoader = new TestResourceLoader();
