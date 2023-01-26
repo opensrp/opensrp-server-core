@@ -17,7 +17,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.opensrp.SpringApplicationContextProvider;
-import org.opensrp.service.RapidProService;
+import org.opensrp.service.rapidpro.RapidProService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 
