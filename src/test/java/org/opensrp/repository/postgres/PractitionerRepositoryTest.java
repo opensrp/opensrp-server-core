@@ -362,7 +362,6 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals(2,practitioners.size());
         assertEquals("practitioner-1-identifier",practitioners.get(0).getIdentifier());
         assertEquals("practitioner-2-identifier",practitioners.get(1).getIdentifier());
-
         practitionerSearchBean = PractitionerSearchBean.builder().orderByType(BaseSearchBean.OrderByType.DESC).
                 orderByFieldName(BaseSearchBean.FieldName.server_version).build();
         practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);

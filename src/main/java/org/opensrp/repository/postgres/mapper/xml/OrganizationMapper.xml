@@ -195,7 +195,7 @@
       server_version)
     values (#{id,jdbcType=BIGINT}, #{identifier,jdbcType=VARCHAR}, #{active,jdbcType=BIT}, 
       #{name,jdbcType=VARCHAR}, #{type,jdbcType=OTHER,typeHandler=org.opensrp.repository.postgres.handler.CodeSystemTypeHandler}, #{dateDeleted,jdbcType=TIMESTAMP},
-      #{parentId,jdbcType=BIGINT}, #{dateCreated,jdbcType=TIMESTAMP}, #{dateEdited,jdbcType=TIMESTAMP}, 
+      #{parentId,jdbcType=BIGINT}, #{dateCreated,jdbcType=TIMESTAMP}, #{dateEdited,jdbcType=TIMESTAMP},
       #{serverVersion,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="org.opensrp.domain.postgres.Organization">

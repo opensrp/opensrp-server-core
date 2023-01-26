@@ -260,7 +260,6 @@
 		</if>
 		OFFSET #{offset}
 	</select>
-
 	<select id="countManyByProperties"
 			resultType="long">
 		select count(sm.id)

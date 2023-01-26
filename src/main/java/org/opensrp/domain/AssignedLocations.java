@@ -3,12 +3,13 @@
  */
 package org.opensrp.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * @author Samuel Githengi created on 09/10/19
  */
-public class AssignedLocations {
+public class AssignedLocations implements Serializable {
 
 	private String organizationId;
 

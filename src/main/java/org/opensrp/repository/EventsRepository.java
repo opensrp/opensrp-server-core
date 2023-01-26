@@ -82,7 +82,7 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	void update(Event entity, boolean allowArchived);
 
 	/**
-	 * This method is used to return a count of locations based on the provided parameters
+	 * This method is used to return a count of events based on the provided parameters
 	 * @param eventSearchBean object containing params to search by
 	 * @return returns a count of events matching the passed parameters
 	 */

@@ -89,6 +89,8 @@ public class QueueHelperTest extends TestRabbitMQInstance {
 	
 	private String username="user12";
 
+	private final long ASYNC_TIMEOUT = 2000L;
+
 	public static String location = "{\n"
 			+ "    \"resourceType\": \"Location\",\n"
 			+ "    \"id\": \"304cbcd4-0850-404a-a8b1-486b02f7b84d\",\n"
@@ -330,7 +332,7 @@ public class QueueHelperTest extends TestRabbitMQInstance {
 	}
 
 	@Test
-	public void testAddToQueue() {
+	public void testAddToQueue() throws InterruptedException {
 		PlanDefinition planDefinition = createPlan();
 		when(planService.getPlan(anyString())).thenReturn(planDefinition);
 		addNewPlanToRepo();
@@ -338,17 +340,20 @@ public class QueueHelperTest extends TestRabbitMQInstance {
 				.evaluatePlan(any(PlanDefinition.class), any(TriggerType.class), any(Jurisdiction.class), any(
 						QuestionnaireResponse.class));
 		queueHelper.addToQueue("test-plan-identifier-", TriggerType.PLAN_ACTIVATION, "loc-1",username);
+		Thread.sleep(ASYNC_TIMEOUT);
 		int count = (Integer) amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT");
 		assertEquals(0, count); // This shows message has been consumed
 	}
 
 	@Test
-	public void testAddToQueueV2() {
+	public void testAddToQueueV2() throws InterruptedException {
 		Action action = new Action();
+		action.setCondition(new HashSet<>());
 		Mockito.doNothing().when(planEvaluator)
 				.evaluateResource(any(DomainResource.class), nullable(QuestionnaireResponse.class), any(Action.class),
 						anyString(), anyString(), any(TriggerType.class));
 		queueHelper.addToQueue(location, null, action, "plan-id", "jur-id", TriggerType.PLAN_ACTIVATION,username);
+		Thread.sleep(ASYNC_TIMEOUT);
 		int count = (Integer) amqpAdmin.getQueueProperties(queue.getName()).get("QUEUE_MESSAGE_COUNT");
 		assertEquals(0, count); // This shows message has been consumed
 	}

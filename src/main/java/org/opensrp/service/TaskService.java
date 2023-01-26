@@ -16,6 +16,9 @@ import org.opensrp.repository.TaskRepository;
 import org.opensrp.search.TaskSearchBean;
 import org.smartregister.domain.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PostFilter;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -38,11 +41,15 @@ public class TaskService {
 	public void setTaskRepository(TaskRepository taskRepository) {
 		this.taskRepository = taskRepository;
 	}
-	
+
+
+	@PreAuthorize("hasRole('TASK_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'TASK_VIEW')")
 	public List<Task> getAllTasks() {
 		return taskRepository.getAll();
 	}
-	
+
+	@PreAuthorize("hasPermission(#task,'Task', 'TASK_CREATE') and hasPermission(#task,'Task', 'TASK_UPDATE')")
 	public void addOrUpdateTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
@@ -54,6 +61,7 @@ public class TaskService {
 		}
 	}
 
+	@PreAuthorize("hasPermission(#task,'Task', 'TASK_VIEW')")
 	public boolean taskExists(Task task){
 		String taskIdentifier = task.getIdentifier();
 		String entityId = task.getForEntity();
@@ -64,6 +72,7 @@ public class TaskService {
 		return (StringUtils.isNotBlank(taskIdentifier) && taskRepository.checkIfTaskExists(entityId, jurisdiction, planIdentifier, taskCode));
 	}
 	
+	@PreAuthorize("hasPermission(#task,'Task', 'TASK_CREATE')")
 	public Task addTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
@@ -75,7 +84,9 @@ public class TaskService {
 
 		return task;
 	}
-	
+
+
+	@PreAuthorize("hasPermission(#task,'Task', 'TASK_UPDATE')")
 	public Task updateTask(Task task) {
 		if (StringUtils.isBlank(task.getIdentifier()))
 			throw new IllegalArgumentException("Identifier not specified");
@@ -83,17 +94,22 @@ public class TaskService {
 		taskRepository.update(task);
 		return task;
 	}
-	
+
+	@PreAuthorize("hasRole('TASK_VIEW')")
+	@PostAuthorize("hasPermission(returnObject, 'TASK_VIEW')")
 	public Task getTask(String identifier) {
 		if (StringUtils.isBlank(identifier))
 			return null;
 		return taskRepository.get(identifier);
 	}
-	
+
+	@PreAuthorize("hasRole('TASK_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'TASK_VIEW')")
 	public List<Task> getTasksByTaskAndGroup(String task, String group, long serverVersion) {
 		return taskRepository.getTasksByPlanAndGroup(task, group, serverVersion);
 	}
-	
+
+	@PreAuthorize("hasPermission(#tasks,'Task','TASK_CREATE') and hasPermission(#tasks,'Task','TASK_UPDATE')")
 	public Set<String> saveTasks(List<Task> tasks) {
 		Set<String> tasksWithErrors = new HashSet<>();
 		for (Task task : tasks) {
@@ -108,6 +124,7 @@ public class TaskService {
 		return tasksWithErrors;
 	}
 	
+	@PreAuthorize("hasPermission(#taskUpdates,'TaskUpdate','TASK_UPDATE')")
 	public List<String> updateTaskStatus(List<TaskUpdate> taskUpdates) {
 		List<String> updatedTaskIds = new ArrayList<>();
 		for (TaskUpdate taskUpdate : taskUpdates) {
@@ -164,6 +181,8 @@ public class TaskService {
 	 * @param limit upper limit on number of tasks to fetch
 	 * @return list of plan identifiers
 	 */
+	@PreAuthorize("hasRole('TASK_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'TASK_VIEW')")
 	public List<Task> getAllTasks(Long serverVersion, int limit) {
 		return taskRepository.getAllTasks(serverVersion, limit);
 	}
@@ -176,6 +195,8 @@ public class TaskService {
 	 * @param serverVersion Version of the server
 	 * @return list of tasks created by the provider username (owner)
 	 */
+	@PreAuthorize("hasRole('TASK_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'TASK_VIEW')")
 	public List<Task> getTasksByPlanAndOwner(String plan, String owner, long serverVersion) {
 		return taskRepository.getTasksByPlanAndOwner(plan, owner, serverVersion);
 	}

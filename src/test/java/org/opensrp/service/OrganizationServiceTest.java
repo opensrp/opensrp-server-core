@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.opensrp.domain.AssignedLocations;
 import org.opensrp.domain.Organization;
@@ -33,9 +34,10 @@ import org.opensrp.repository.PlanRepository;
 import org.opensrp.search.AssignedLocationAndPlanSearchBean;
 import org.opensrp.search.OrganizationSearchBean;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.Practitioner;
-
+import org.springframework.data.redis.core.HashOperations;
 /**
  * @author Samuel Githengi created on 09/17/19
  */
@@ -44,12 +46,16 @@ public class OrganizationServiceTest {
 
 	private OrganizationService organizationService;
 
+	@Mock
 	private OrganizationRepository organizationRepository;
 
+	@Mock
 	private PlanRepository planRepository;
 
+	@Mock
 	private LocationRepository locationRepository;
 
+	@Mock
 	private PractitionerService practitionerService;
 
 	private Organization organization;
@@ -63,14 +69,15 @@ public class OrganizationServiceTest {
 		organizationRepository = mock(OrganizationRepository.class);
 		planRepository = mock(PlanRepository.class);
 		locationRepository = mock(LocationRepository.class);
-		practitionerService = mock(PractitionerService.class);
-		organizationService = new OrganizationService();
+		organizationService = new OrganizationService(organizationRepository, locationRepository, planRepository);
 		organizationService.setOrganizationRepository(organizationRepository);
 		organizationService.setPlanRepository(planRepository);
 		organizationService.setLocationRepository(locationRepository);
 		organizationService.setPractitionerService(practitionerService);
 		organization = new Organization();
 		organization.setIdentifier(identifier);
+		HashOperations<String,String,List<AssignedLocations>> hashOps = mock(HashOperations.class);
+		Whitebox.setInternalState(organizationService,"hashOps",hashOps);
 
 	}
 
@@ -142,14 +149,14 @@ public class OrganizationServiceTest {
 	public void testAssignLocationAndPlanWithoutOrgId() {
 		organizationService.assignLocationAndPlan(null, "jurisdictionId", "planId", null, null);
 		verify(organizationRepository, never()).assignLocationAndPlan(anyLong(), anyString(), anyLong(), anyString(),
-				anyLong(), any(Date.class), any(Date.class));
+		    anyLong(), any(Date.class), any(Date.class));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testAssignLocationAndPlanWithoutJurisdictionAndPlan() {
 		organizationService.assignLocationAndPlan(identifier, null, null, null, null);
 		verify(organizationRepository, never()).assignLocationAndPlan(anyLong(), anyString(), anyLong(), anyString(),
-				anyLong(), any(Date.class), any(Date.class));
+		    anyLong(), any(Date.class), any(Date.class));
 	}
 
 	@Test
@@ -162,12 +169,16 @@ public class OrganizationServiceTest {
 		Long locationId = 123l;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
+
+		List<Practitioner> practitioners = new ArrayList<>();
+		practitioners.add(initTestPractitioner());
 		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, null, null);
+		//when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
 		Date date = new Date();
 		verify(organizationRepository).assignLocationAndPlan(eq(1233l), eq(jurisdictionIdentifier), eq(locationId),
-				eq(planIdentifier), eq(planId), dateCaptor.capture(), dateCaptor.capture());
+		    eq(planIdentifier), eq(planId), dateCaptor.capture(), dateCaptor.capture());
 
 		assertEquals(date.toInstant().getEpochSecond(), dateCaptor.getAllValues().get(0).toInstant().getEpochSecond());
 
@@ -177,7 +188,7 @@ public class OrganizationServiceTest {
 		Date dateTo = new Date();
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, dateFrom, dateTo);
 		verify(organizationRepository).assignLocationAndPlan(eq(1233l), eq(jurisdictionIdentifier), eq(locationId),
-				eq(planIdentifier), eq(planId), eq(dateFrom), eq(dateTo));
+		    eq(planIdentifier), eq(planId), eq(dateFrom), eq(dateTo));
 
 	}
 
@@ -191,13 +202,16 @@ public class OrganizationServiceTest {
 		Long planId = null;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
+		List<Practitioner> practitioners = new ArrayList<>();
+		practitioners.add(initTestPractitioner());
 		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
+		//when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
 		Date dateFrom = new Date();
 		Date dateTo = null;
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, dateFrom, dateTo);
 		verify(organizationRepository).assignLocationAndPlan(eq(1233l), eq(jurisdictionIdentifier), eq(locationId),
-				eq(planIdentifier), eq(planId), eq(dateFrom), eq(dateTo));
+		    eq(planIdentifier), eq(planId), eq(dateFrom), eq(dateTo));
 	}
 
 	@Test
@@ -210,34 +224,35 @@ public class OrganizationServiceTest {
 		Long planId = 19871l;
 		PhysicalLocation location = new PhysicalLocation();
 		location.setId(jurisdictionIdentifier);
+		List<Practitioner> practitioners = new ArrayList<>();
+		practitioners.add(initTestPractitioner());
 		when(locationRepository.retrievePrimaryKey(jurisdictionIdentifier, true)).thenReturn(locationId);
 		when(planRepository.retrievePrimaryKey(planIdentifier)).thenReturn(planId);
+		//when(practitionerService.getPractitionersByOrgIdentifier(anyString())).thenReturn(practitioners);
 		Date dateFrom = new Date();
 		Date dateTo = null;
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, dateFrom, dateTo);
 		verify(organizationRepository).assignLocationAndPlan(eq(1233l), eq(jurisdictionIdentifier), eq(locationId),
-				eq(planIdentifier), eq(planId), eq(dateFrom), eq(dateTo));
+		    eq(planIdentifier), eq(planId), eq(dateFrom), eq(dateTo));
 	}
-	
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testAssignLocationAndPlanWithoutIdentifier() {
 		String planIdentifier = UUID.randomUUID().toString();
 		String jurisdictionIdentifier = null;
 		organizationService.assignLocationAndPlan(null, jurisdictionIdentifier, planIdentifier, null, null);
-		verify(organizationRepository,never()).assignLocationAndPlan(anyLong(), eq(jurisdictionIdentifier), anyLong(),
-				eq(planIdentifier), anyLong(), any(Date.class), any(Date.class));
+		verify(organizationRepository, never()).assignLocationAndPlan(anyLong(), eq(jurisdictionIdentifier), anyLong(),
+		    eq(planIdentifier), anyLong(), any(Date.class), any(Date.class));
 	}
-	
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void testAssignLocationAndMissingOrganization() {
 		String planIdentifier = UUID.randomUUID().toString();
 		String jurisdictionIdentifier = UUID.randomUUID().toString();
 		when(organizationRepository.get(identifier)).thenReturn(null);
 		organizationService.assignLocationAndPlan(identifier, jurisdictionIdentifier, planIdentifier, null, null);
-		verify(organizationRepository,never()).assignLocationAndPlan(anyLong(), eq(jurisdictionIdentifier), anyLong(),
-				eq(planIdentifier), anyLong(), any(Date.class), any(Date.class));
+		verify(organizationRepository, never()).assignLocationAndPlan(anyLong(), eq(jurisdictionIdentifier), anyLong(),
+		    eq(planIdentifier), anyLong(), any(Date.class), any(Date.class));
 	}
 
 	@Test
@@ -296,7 +311,7 @@ public class OrganizationServiceTest {
 		organizationService.findAssignedLocationsAndPlansByPlanIdentifier("plan-id-1",null,null,null,null);
 		verify(organizationRepository, never()).findAssignedLocations(any(AssignedLocationAndPlanSearchBean.class));
 	}
-	
+
 	@Test
 	public void testSearchOrganizationsBySearchParam() {
 		organization.setActive(true);
@@ -348,3 +363,4 @@ public class OrganizationServiceTest {
 		assertEquals("test-identifier", organizations.get(0).getIdentifier());
 	}
 }
+

@@ -34,7 +34,6 @@ public class Organization implements Serializable {
 	private DateTime dateEdited;
 
 	private long serverVersion;
-
 	private Integer memberCount;
 
 	public Long getId() {

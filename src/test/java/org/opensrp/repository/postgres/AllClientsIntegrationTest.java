@@ -26,11 +26,13 @@ import org.smartregister.common.Gender;
 import org.smartregister.domain.Address;
 import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:test-applicationContext-opensrp.xml")
+@ActiveProfiles(profiles = { "jedis"})
 public class AllClientsIntegrationTest extends BaseRepositoryTest{
 	//TODO detailed testign
 	

@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.opensrp.domain.IdentifierSource;
 import org.opensrp.repository.IdentifierSourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,19 +23,23 @@ public class IdentifierSourceService {
 		this.identifierSourceRepository = identifierSourceRepository;
 	}
 
+	@PreAuthorize("hasRole('IDENTIFIERSOURCE_VIEW')")
 	public List<IdentifierSource> findAllIdentifierSources() {
 		return identifierSourceRepository.getAll();
 	}
 
+	@PreAuthorize("hasRole('IDENTIFIERSOURCE_VIEW')")
 	public IdentifierSource findByIdentifier(String identifier) {
 		return identifierSourceRepository.findByIdentifier(identifier);
 	}
 
+	@PreAuthorize("hasRole('IDENTIFIERSOURCE_CREATE')")
 	public void add(IdentifierSource identifierSource) {
 		validateFields(identifierSource);
 		identifierSourceRepository.add(identifierSource);
 	}
 
+	@PreAuthorize("hasRole('IDENTIFIERSOURCE_UPDATE')")
 	public void update(IdentifierSource identifierSource) {
 		validateFields(identifierSource);
 		IdentifierSource idSource = findByIdentifier(identifierSource.getIdentifier());

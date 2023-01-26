@@ -361,7 +361,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", assignedLocations.get(0).getJurisdictionId());
 		assertEquals("7f2ae03f-9569-5535-918c-9d976b3ae5f8", assignedLocations.get(0).getPlanId());
 		assertEquals("2019-09-10", dateFormat.format(assignedLocations.get(0).getFromDate()));
-		assertEquals("5021-09-10", dateFormat.format(assignedLocations.get(0).getToDate()));
+		assertEquals("2030-09-10", dateFormat.format(assignedLocations.get(0).getToDate()));
 		
 	}
 	
@@ -376,8 +376,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		assertEquals("304cbcd4-0850-404a-a8b1-486b02f7b84d", assignedLocations.get(0).getJurisdictionId());
 		assertEquals("7f2ae03f-9569-5535-918c-9d976b3ae5f8", assignedLocations.get(0).getPlanId());
 		assertEquals("2019-09-10", dateFormat.format(assignedLocations.get(0).getFromDate()));
-		assertEquals("5021-09-10", dateFormat.format(assignedLocations.get(0).getToDate()));
-		
+		assertEquals("2030-09-10", dateFormat.format(assignedLocations.get(0).getToDate()));
 		assignedLocations = organizationRepository.findAssignedLocations(Arrays.asList(1l, 2l), true);
 		assertEquals(3, assignedLocations.size());
 	}
