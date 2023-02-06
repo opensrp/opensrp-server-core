@@ -23,7 +23,6 @@ INSERT INTO core.plan (identifier, json, date_deleted, server_version, id) VALUE
 INSERT INTO core.plan (identifier, json, date_deleted, server_version, id) VALUES ('9d1403a5-756d-517b-91d6-5b19059a69f0', '{}', null, 1567765433007, 11);
 INSERT INTO core.plan (identifier, json, date_deleted, server_version, id) VALUES ('7f2ae03f-9569-5535-918c-9d976b3ae5f8', '{}', null, 1567765433007, 294);
 
-
 INSERT INTO team.organization_location (id, organization_id, location_id, plan_id, from_date, to_date,duration) VALUES (1, 1, 2243, 162, '2019-09-10 17:29:55.059000', '5021-09-10 17:29:55.059000',daterange('2019-09-10','5021-09-10'));
 INSERT INTO team.organization_location (id, organization_id, location_id, plan_id, from_date, to_date,duration) VALUES (2, 1, 2243, 11, '2019-09-10 17:29:55.059000', '5021-09-10 17:29:55.059000',daterange('2019-09-10','5021-09-10'));
 INSERT INTO team.organization_location (id, organization_id, location_id, plan_id, from_date, to_date,duration) VALUES (3, 2, 2243, 294, '2019-09-10 17:29:55.059000', '5021-09-10 17:29:55.059000',daterange('2019-09-10','5021-09-10'));
