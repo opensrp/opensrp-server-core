@@ -214,11 +214,14 @@
 			WITH RECURSIVE locations
 			AS
 			( SELECT lm1.geojson_id, lm1.parent_id, lm1.location_id, 0 as level
-				FROM core.location_metadata lm1 WHERE geojson_id  IN
-			 	<foreach collection="identifiers" item="value"  open="(" separator="," close=")">
-	       			#{value}
-	   			</foreach>
-		        AND lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
+				FROM core.location_metadata lm1
+				WHERE lm1.status IN ('ACTIVE', 'PENDING_REVIEW')
+				<if test="identifiers != null">
+					AND geojson_id  IN
+					<foreach collection="identifiers" item="value"  open="(" separator="," close=")">
+						#{value}
+					</foreach>
+				</if>
 				UNION
 				SELECT lm2.geojson_id, lm2.parent_id, lm2.location_id,level+1 as level
 				FROM locations lm1
