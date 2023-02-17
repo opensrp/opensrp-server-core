@@ -4,10 +4,7 @@ import static java.util.Arrays.asList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +20,6 @@ import org.mockito.junit.MockitoRule;
 import org.opensrp.common.AllConstants;
 import org.opensrp.domain.AppStateToken;
 import org.opensrp.service.ExportEventDataMapper;
-import org.opensrp.repository.ClientsRepository;
 import org.opensrp.repository.EventsRepository;
 import org.opensrp.repository.PlanRepository;
 import org.opensrp.service.ClientService;
@@ -36,6 +32,7 @@ import org.opensrp.service.formSubmission.handler.EventsRouter;
 import org.opensrp.service.formSubmission.handler.IHandlerMapper;
 import org.smartregister.domain.Client;
 import org.smartregister.domain.Event;
+import org.smartregister.utils.Assert;
 
 public class EventListenerTest {
 	
@@ -47,9 +44,6 @@ public class EventListenerTest {
 	
 	@Mock
 	private EventsRepository allEvents;
-	
-	@Mock
-	private ClientsRepository allClients;
 	
 	@Mock
 	private ErrorTraceService errorTraceService;
@@ -85,7 +79,7 @@ public class EventListenerTest {
 	}
 	
 	@Test
-	public void shouldHandleNewEvent() throws Exception {
+	public void shouldHandleNewEvent() {
 		EventsHandler eventHandler = mock(EventsHandler.class);
 		Map<String, EventsHandler> handlerMap = new HashMap<>();
 		handlerMap.put("VaccinesScheduleHandler", eventHandler);
@@ -96,8 +90,8 @@ public class EventListenerTest {
 		    new Event());
 		
 		when(configService.getAppStateTokenByName(AllConstants.Config.EVENTS_PARSER_LAST_PROCESSED_EVENT))
-		        .thenReturn(new AppStateToken("token", 1l, 0l));
-		when(allEvents.findByServerVersion(1l)).thenReturn(events);
+		        .thenReturn(new AppStateToken("token", 1L, 0l));
+		when(allEvents.findByServerVersion(1L)).thenReturn(events);
 		when(clientService.findAllByIdentifier(AllConstants.Client.ZEIR_ID.toUpperCase(), "2")).thenReturn(clients);
 		when(allEvents.findByBaseEntityAndType("222", "Birth Registration")).thenReturn(events);
 		
@@ -105,14 +99,16 @@ public class EventListenerTest {
 		
 		EventsListener spyEventListener = spy(eventsListener);
 		when(spyEventListener.getCurrentMilliseconds()).thenReturn(0l);
-		
+
 		spyEventListener.processEvent();
 		
-		InOrder inOrder = inOrder(eventService, eventsRouter, eventHandler);
+		InOrder inOrder = inOrder(eventService, eventsRouter);
 		clients.get(0).setServerVersion(System.currentTimeMillis());
 		events.get(0).setServerVersion(System.currentTimeMillis());
 		inOrder.verify(eventService).processOutOfArea(events.get(0));
 		inOrder.verify(eventsRouter).route(events.get(0));
+
+		Assert.notNull(events.get(0));
 		
 	}
 	

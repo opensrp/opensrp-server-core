@@ -510,10 +510,6 @@ public class PlanServiceTest {
 				null, false)).thenReturn(1l);
 		Map<String, String> properties = new HashMap<>();
 		properties.put(PlanConstants.TYPE, PlanConstants.LARVAL_DIPPING_SITE);
-		List<String> structureIds = new ArrayList<>();
-		structureIds.add("structure-id-1");
-		structureIds.add("structure-id-2");
-		structureIds.add("structure-id-3");
 		when(locationService.countStructuresByProperties(Collections.singletonList("location-id1"),
 				properties)).thenReturn(3l);
 
@@ -540,10 +536,6 @@ public class PlanServiceTest {
 				null, false)).thenReturn(1l);
 		Map<String, String> properties = new HashMap<>();
 		properties.put(PlanConstants.TYPE, PlanConstants.MOSQUITO_COLLECTION_POINT);
-		List<String> structureIds = new ArrayList<>();
-		structureIds.add("structure-id-1");
-		structureIds.add("structure-id-2");
-		structureIds.add("structure-id-3");
 		when(locationService.countStructuresByProperties(Collections.singletonList("location-id1"),
 				properties)).thenReturn(3l);
 

@@ -24,13 +24,6 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -50,7 +43,30 @@ public class PractitionerRoleServiceTest {
 	@Mock
     private PractitionerService practitionerService;
 
-   
+    private static PractitionerRole initTestPractitionerRole(){
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier("pr1-identifier");
+        practitionerRole.setActive(true);
+        practitionerRole.setOrganizationIdentifier("org-identifier");
+        practitionerRole.setPractitionerIdentifier("p1-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr1Code");
+        practitionerRole.setCode(code);
+        return practitionerRole;
+    }
+
+    private static PractitionerRole initTestPractitionerRole2(){
+        PractitionerRole practitionerRole = new PractitionerRole();
+        practitionerRole.setIdentifier("pr2-identifier");
+        practitionerRole.setActive(true);
+        practitionerRole.setOrganizationIdentifier("org1");
+        practitionerRole.setPractitionerIdentifier("p2-identifier");
+        PractitionerRoleCode code = new PractitionerRoleCode();
+        code.setText("pr2Code");
+        practitionerRole.setCode(code);
+        return practitionerRole;
+    }
+
     @Test
     public void testGetAllPractitionerRoles() {
         List<PractitionerRole> expectedPractitionerRoles = new ArrayList<>();
@@ -145,14 +161,13 @@ public class PractitionerRoleServiceTest {
 
        org.opensrp.domain.postgres.Practitioner pgPractitioner = new org.opensrp.domain.postgres.Practitioner();
        pgPractitioner.setId(1l);
-       
+
         when(practitionerService.getPgPractitioner(anyString())).thenReturn(pgPractitioner);
 
         PractitionerRole practitionerRole = initTestPractitionerRole();
         practitionerRoleService.deletePractitionerRole(practitionerRole.getIdentifier(), practitionerRole.getOrganizationIdentifier());
         verify(practitionerRoleRepository).safeRemove(anyLong(), anyLong());
     }
-
 
     @Test
     public void testGetRolesForPractitionerShouldCallGetRolesForPractitionerMethod() {
@@ -254,29 +269,5 @@ public class PractitionerRoleServiceTest {
         doReturn(practitioner.getId()).when(practitionerService).getPractitionerIdByIdentifier(practitionerIdentifier);
         PractitionerRole practitionerRole = initTestPractitionerRole();
         practitionerRoleService.assignPractitionerRole(organizationId, practitionerIdentifier, code, practitionerRole);
-    }
-
-    private static PractitionerRole initTestPractitionerRole(){
-        PractitionerRole practitionerRole = new PractitionerRole();
-        practitionerRole.setIdentifier("pr1-identifier");
-        practitionerRole.setActive(true);
-        practitionerRole.setOrganizationIdentifier("org-identifier");
-        practitionerRole.setPractitionerIdentifier("p1-identifier");
-        PractitionerRoleCode code = new PractitionerRoleCode();
-        code.setText("pr1Code");
-        practitionerRole.setCode(code);
-        return practitionerRole;
-    }
-
-    private static PractitionerRole initTestPractitionerRole2(){
-        PractitionerRole practitionerRole = new PractitionerRole();
-        practitionerRole.setIdentifier("pr2-identifier");
-        practitionerRole.setActive(true);
-        practitionerRole.setOrganizationIdentifier("org1");
-        practitionerRole.setPractitionerIdentifier("p2-identifier");
-        PractitionerRoleCode code = new PractitionerRoleCode();
-        code.setText("pr2Code");
-        practitionerRole.setCode(code);
-        return practitionerRole;
     }
 }

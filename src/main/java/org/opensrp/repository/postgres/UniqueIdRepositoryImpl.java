@@ -229,7 +229,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         UniqueIdExample example;
         List<org.opensrp.domain.postgres.UniqueId> pgEntities;
 
-        if (fromOpenMrs == Boolean.TRUE) {
+        if (Boolean.TRUE.equals(fromOpenMrs)) {
             identifier = uniqueOpenMrsIdentifier.toString();
             example = new UniqueIdExample();
             example.createCriteria().andOpenmrsIdEqualTo(identifier);
