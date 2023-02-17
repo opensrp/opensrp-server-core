@@ -108,7 +108,26 @@ public class StructureDetailsTest {
 
 		StructureDetails structureDetails2 = new StructureDetails(structureId, "structure-parent-id", "structure");
 		structureDetails = new StructureDetails(structureId, "structure-parent-id", "structure");
-		
+
 		Assert.assertEquals(structureDetails, structureDetails2);
+	}
+
+	@Test
+	public void testEqualsWithNullCompared() {
+		String structureId = "structure-id";
+		StructureDetails structureDetails = null;
+		StructureDetails structureDetails2 = new StructureDetails(structureId, "structure-parent-id", "structure");
+
+		Assert.assertFalse(structureDetails2.equals(structureDetails));
+	}
+
+	@Test
+	public void testHashcodeEquivalenceForSameStructureId() {
+		String structureId = "structure-id";
+
+		StructureDetails structureDetails2 = new StructureDetails(structureId, "structure-parent-id", "structure");
+		structureDetails = new StructureDetails(structureId, "structure-parent-id", "structure");
+
+		Assert.assertEquals(structureDetails.hashCode(), structureDetails2.hashCode());
 	}
 }

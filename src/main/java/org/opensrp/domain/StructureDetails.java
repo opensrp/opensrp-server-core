@@ -1,6 +1,7 @@
 package org.opensrp.domain;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class StructureDetails {
@@ -63,7 +64,16 @@ public class StructureDetails {
 	}
 
 	@Override
+	public int hashCode() {
+		return Objects.hash(structureId);
+	}
+
+	@Override
 	public boolean equals(Object obj) {
+		if (obj == null)
+		return false;
+		if (obj == this)
+			return true;
 		if (!(obj instanceof StructureDetails))
 			return false;
 		StructureDetails other = (StructureDetails) obj;
