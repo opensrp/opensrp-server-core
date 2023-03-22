@@ -13,7 +13,7 @@ public abstract class TestPostgresInstance {
 
 	protected static final String POSTGRES_DB_CONFIG = "POSTGRES_DB";
 	protected static final String POSTGRES_DB = "opensrp_test";
-	private static final String DOCKER_IMAGE_NAME = "postgis/postgis:12-2.5-alpine";
+	private static final String DOCKER_IMAGE_NAME = "postgis/postgis:14-3.3-alpine";
 
 	protected static final int DOCKER_EXPOSE_PORT = 5432;
 
