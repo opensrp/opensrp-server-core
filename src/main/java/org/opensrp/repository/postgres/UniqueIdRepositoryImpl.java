@@ -103,6 +103,15 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
     }
 
     @Override
+    public void markIdentifierAsUsed(String identifier) {
+        UniqueIdExample uniqueIdExample = new UniqueIdExample();
+        uniqueIdExample.createCriteria().andIdentifierEqualTo(identifier);
+        org.opensrp.domain.postgres.UniqueId uniqueId = new org.opensrp.domain.postgres.UniqueId();
+        uniqueId.setStatus(UniqueId.STATUS_USED);
+        uniqueIdMapper.updateByExampleSelective(uniqueId, uniqueIdExample);
+    }
+
+    @Override
     public UniqueId get(String id) {
         if (StringUtils.isBlank(id)) {
             return null;

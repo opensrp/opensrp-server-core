@@ -3,9 +3,6 @@
  */
 package org.opensrp.service;
 
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.joda.time.DateTime;
@@ -20,6 +17,9 @@ import org.opensrp.search.OrganizationSearchBean;
 import org.smartregister.domain.Practitioner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Samuel Githengi created on 09/09/19
@@ -57,7 +57,7 @@ public class OrganizationService {
 	/**
 	 * Get the organization that has the identifier
 	 * 
-	 * @param identifier
+	 * @param identifier UUID for organization
 	 * @return organization with matching identifier
 	 */
 	public Organization getOrganization(String identifier) {
@@ -67,7 +67,7 @@ public class OrganizationService {
 	/**
 	 * Get the organization that has the identifier
 	 * 
-	 * @param identifier
+	 * @param id organizaiton id
 	 * @return organization with matching identifier
 	 */
 	public Organization getOrganization(Long id) {
@@ -125,12 +125,12 @@ public class OrganizationService {
 
 	/**
 	 * Assigns the jurisdiction and /or plan to the organization with organizationId
-	 * 
-	 * @param organizationId the id of the organization
+	 *
+	 * @param identifier UUID of the organization
 	 * @param jurisdictionId the identifier of the jurisdiction
 	 * @param planId         the identifier of the plan
-	 * @param fromDate
-	 * @param toDate
+	 * @param fromDate date first created
+	 * @param toDate expiration date
 	 */
 	public void assignLocationAndPlan(String identifier, String jurisdictionId, String planId, Date fromDate,
 			Date toDate) {
@@ -295,6 +295,11 @@ public class OrganizationService {
 
 	public long countAllOrganizations() {
 		return organizationRepository.countAllOrganizations();
+	}
+
+	public org.opensrp.domain.postgres.Organization getOrganizationByLocationId(String jurisdictionId) {
+		Long primaryKey = locationRepository.retrievePrimaryKey(jurisdictionId, true);
+		return organizationRepository.getLastAssignedOrganization(primaryKey);
 	}
 
 	public List<Organization> getAllOrganizationsByOrganizationIds(List<Long> organizationIds) {

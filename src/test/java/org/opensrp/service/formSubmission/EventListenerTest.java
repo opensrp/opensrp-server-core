@@ -34,6 +34,7 @@ import org.opensrp.service.TaskGenerator;
 import org.opensrp.service.formSubmission.handler.EventsHandler;
 import org.opensrp.service.formSubmission.handler.EventsRouter;
 import org.opensrp.service.formSubmission.handler.IHandlerMapper;
+import org.opensrp.service.rapidpro.RapidProEventService;
 import org.smartregister.domain.Client;
 import org.smartregister.domain.Event;
 
@@ -74,6 +75,8 @@ public class EventListenerTest {
 	private EventsRouter eventsRouter;
 	
 	private EventsListener eventsListener;
+	@Mock
+	private RapidProEventService rapidProEventService;
 	
 	@Before
 	public void setUp() {
@@ -82,6 +85,7 @@ public class EventListenerTest {
 		eventsRouter = spy(new EventsRouter(handlerMapper, "/schedules/schedule-configs"));
 		eventService = spy(new EventService(allEvents, clientService, taskGenerator, planRepository, exportEventDataMapper));
 		eventsListener = new EventsListener(eventsRouter, configService,  eventService, errorTraceService);
+		eventsListener.setRapidProEventService(rapidProEventService);
 	}
 	
 	@Test

@@ -1,5 +1,8 @@
 package org.opensrp.repository.postgres;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,6 +13,7 @@ import javax.sql.DataSource;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.opensrp.util.TestResourceLoader;
 import org.opensrp.TestPostgresInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -25,9 +29,12 @@ public abstract class BaseRepositoryTest extends TestPostgresInstance {
 
 	private static String TEST_SCRIPTS_ROOT_DIRECTORY = "test-scripts/";
 	
+	private final TestResourceLoader testResourceLoader = new TestResourceLoader();
+
+	protected static List<String> tableNames = new ArrayList<>();
+
 	@Autowired
 	private DataSource openSRPDataSource;
-	protected static List<String> tableNames = new ArrayList<>();
 
 	/**
 	 * Populates the configured {@link DataSource} with data from passed scripts
@@ -65,4 +72,14 @@ public abstract class BaseRepositoryTest extends TestPostgresInstance {
 	}
 	
 	protected abstract Set<String> getDatabaseScripts();
+
+	protected String getFileContentAsString(String filePath){
+		try {
+			File file = new File(testResourceLoader.getFullPath(filePath));
+			return  new String(new FileInputStream(file).readAllBytes());
+		} catch (IOException exception) {
+			exception.printStackTrace();
+			return null;
+		}
+	}
 }
