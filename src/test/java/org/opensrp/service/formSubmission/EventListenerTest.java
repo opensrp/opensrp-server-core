@@ -35,7 +35,6 @@ import org.opensrp.service.formSubmission.handler.EventsHandler;
 import org.opensrp.service.formSubmission.handler.EventsRouter;
 import org.opensrp.service.formSubmission.handler.IHandlerMapper;
 import org.opensrp.service.rapidpro.RapidProEventService;
-import org.opensrp.service.rapidpro.RapidProService;
 import org.smartregister.domain.Client;
 import org.smartregister.domain.Event;
 
