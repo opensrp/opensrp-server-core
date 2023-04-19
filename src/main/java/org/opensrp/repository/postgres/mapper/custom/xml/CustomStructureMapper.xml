@@ -44,7 +44,7 @@
 		,c.base_entity_id ,c.relational_id ,c.last_name 
 		from core.structure s
 		left join core.client_metadata c on c.residence=json->>'id'
-		where ST_DistanceSpheroid(ST_GeomFromGeoJSON(json->>'geometry'), ST_MakePoint(#{longitude,jdbcType=DOUBLE}, #{latitude,jdbcType=DOUBLE}),
+		where ST_DistanceSpheroid(ST_SetSRID(ST_GeomFromGeoJSON(json->>'geometry'),4326), ST_SetSRID(ST_MakePoint(#{longitude,jdbcType=DOUBLE}, #{latitude,jdbcType=DOUBLE}),4326),
 		      'SPHEROID["WGS 84",6378137,298.257223563]') &lt;= #{radius,jdbcType=DOUBLE}
 
 	</select>
