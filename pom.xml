@@ -12,8 +12,8 @@
 
 	<properties>
 		<main.basedir>${project.basedir}</main.basedir>
-		<spring.version>5.2.22.RELEASE</spring.version>
-		<spring.data.version>2.2.13.RELEASE</spring.data.version>
+		<spring.version>5.3.26</spring.version>
+		<spring.data.version>2.7.2</spring.data.version>
 		<spring.security.version>5.5.7</spring.security.version>
 		<mybatis.version>3.5.7</mybatis.version>
 		<mybatis.spring.version>2.0.6</mybatis.spring.version>
@@ -28,8 +28,6 @@
 		<jackson.version>2.14.0</jackson.version>
 		<powermock.version>2.0.5</powermock.version>
 		<lombok.version>1.18.12</lombok.version>
-		<spring.data.redis>2.2.13.RELEASE</spring.data.redis>
-		<redis.jedis.version>3.8.0</redis.jedis.version>
 		<spring.ampqp.version>2.2.22.RELEASE</spring.ampqp.version>
 		<log4j.version>2.17.1</log4j.version>
 
