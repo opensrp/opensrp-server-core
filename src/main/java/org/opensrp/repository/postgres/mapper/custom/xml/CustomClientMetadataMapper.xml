@@ -336,12 +336,33 @@
 		    			</foreach>
 		    			</trim>
 				</if>
-				<if test="clientBean.attributes != null" >
-					<trim prefix="and (" suffix=")" >			 
-					 <foreach collection="clientBean.attributes"  index="key" item="value" separator=" or " >
-		        			json -> 'attributes' ->> #{key,jdbcType=VARCHAR} = #{value,jdbcType=VARCHAR}
-		    			</foreach>
-		    			</trim>
+				<if test="clientBean.attributes != null">
+					<trim prefix="and (" suffix=")">
+						<foreach collection="clientBean.attributes" index="key" item="value" separator=" or ">
+							<if test="key == &quot;inactive&quot;">
+								(json->'attributes'->>'inactive' IS NOT NULL
+								AND COALESCE(json->'attributes'->>'lost_to_follow_up', 'false') = 'false')
+								AND
+							</if>
+							<if test="key == &quot;active&quot;">
+								<if test="value == &quot;true&quot;">
+									(json->'attributes'->>'active' is null and COALESCE(json->'attributes'->>'inactive', 'false') = 'false'
+									AND COALESCE(json->'attributes'->>'lost_to_follow_up', 'false') = 'false')
+								</if>
+								<if test="value == &quot;false&quot;">
+									(json->'attributes'->>'active' is null and json->'attributes'->>'inactive' = 'true'
+									OR json->'attributes'->>'lost_to_follow_up' = 'true')
+								</if>
+								OR
+							</if>
+							<if test="key == &quot;lost_to_follow_up&quot;">
+								(json->'attributes'->>'lost_to_follow_up' IS NOT NULL
+								AND COALESCE(json->'attributes'->>'inactive', 'false') = 'false')
+								AND
+							</if>
+							json -> 'attributes' ->> #{key,jdbcType=VARCHAR} = #{value,jdbcType=VARCHAR}
+						</foreach>
+					</trim>
 				</if>
 				<if test="clientBean.locations != null">
 					and cm.location_id IN
