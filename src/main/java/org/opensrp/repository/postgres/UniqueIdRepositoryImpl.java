@@ -87,7 +87,7 @@ public class UniqueIdRepositoryImpl extends BaseRepositoryImpl<UniqueId> impleme
         example.createCriteria().andIdSourceEqualTo(idSource);
         example.setOrderByClause("id DESC");
 
-        List<org.opensrp.domain.postgres.UniqueId> uniqueIds = uniqueIdMapper.selectByExample(example);
+        List<org.opensrp.domain.postgres.UniqueId> uniqueIds = uniqueIdMapper.selectMany(example, 0, 1);
         List<UniqueId> convertedUniqueIds = convert(uniqueIds);
         return convertedUniqueIds != null && convertedUniqueIds.size() >= 1 ? convertedUniqueIds.get(0) : null;
     }
