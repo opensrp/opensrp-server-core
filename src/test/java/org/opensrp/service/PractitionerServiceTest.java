@@ -20,10 +20,11 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+-import static org.mockito.Mockito.doReturn;
+-import static org.mockito.Mockito.never;
+-import static org.mockito.Mockito.verify;
+-import static org.mockito.Mockito.when;
+
 
 @RunWith(PowerMockRunner.class)
 public class PractitionerServiceTest {
@@ -145,7 +146,13 @@ public class PractitionerServiceTest {
         verify(practitionerRepository).getPractitionersByOrgId(anyLong());
 
     }
-
+	
+	@Test
+	public void testGetPractitionersByNullOrgIdReturnsEmptyArrayList() {
+		List<Practitioner> practitioners = practitionerRepository.getPractitionersByOrgId(null);
+		assertEquals(0, practitioners.size());
+	}
+	
 	@Test
 	public void testGetPractitionerByUsername() {
 		String username = "janedoe";
