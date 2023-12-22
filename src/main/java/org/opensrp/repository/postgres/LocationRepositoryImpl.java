@@ -365,6 +365,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
 		if (parentId != null) {
 			locationMetadataExample.createCriteria().andParentIdEqualTo(parentId);
+		} else {
+			locationMetadataExample.createCriteria().andParentIdIsNull();
 		}
 		List<Location> locations = locationMetadataMapper.selectManyByProperties(locationMetadataExample, properties,
 		    returnGeometry, 0, DEFAULT_FETCH_SIZE);
