@@ -49,6 +49,11 @@ public class StockService {
 	private PhysicalLocationService physicalLocationService;
 
 	private InventoryDataValidator inventoryDataValidator;
+	
+	@Autowired
+	private PlanService planService;
+	@Autowired
+	private TaskGenerator taskGenerator;
 
 	private static Logger logger = LogManager.getLogger(StockService.class.toString());
 
@@ -190,6 +195,27 @@ public class StockService {
 			return;
 		}
 		allStocks.add(stock);
+		// Go up the location tree to get the operational area.
+		//TODO Make process configurable
+		PhysicalLocation servicePoint = physicalLocationService.getLocation(stock.getLocationId(), false, false);
+		if(servicePoint == null || servicePoint.getProperties() == null || servicePoint.getProperties().getParentId() == null) return;
+		logger.info("Service Point %s"+servicePoint.getProperties().getName());
+		
+		PhysicalLocation district = physicalLocationService.getLocation(servicePoint.getProperties().getParentId(), false, false);
+		if(district == null || district.getProperties() == null || district.getProperties().getParentId() == null) return;
+		
+		logger.info("District %s"+district.getProperties().getName());
+		String regionId = district.getProperties().getParentId();
+		if(regionId==null) return;
+		
+		logger.info("RegionID %s"+regionId);
+		List<PlanDefinition> plans = planService.getPlanRepository().getPlansByServerVersionAndOperationalAreasAndStatus(0L,
+				Collections.singletonList(regionId), false, PlanDefinition.PlanStatus.ACTIVE);
+		for (PlanDefinition plan :
+				plans) {
+			logger.info("processng tasks for planID "+plan.getIdentifier());
+			taskGenerator.processPlanEvaluation(plan, null,userName);
+		}
 	}
 
 	public void updateInventory(Inventory inventory, String userName) {

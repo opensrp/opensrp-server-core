@@ -10,5 +10,8 @@ import java.util.List;
 public interface CustomPlanMetadataMapper extends PlanMetadataMapper {
 	List<Plan> selectMany(@Param("example") PlanExample planExample, @Param("operationalAreaIds") List<String> operationalAreaIds, @Param("offset") int offset,
 			@Param("limit") int limit);
+	
+	List<Plan> selectManyByStatus(@Param("example") PlanExample planExample, @Param("operationalAreaIds") List<String> operationalAreaIds, @Param("offset") int offset,
+			@Param("limit") int limit, @Param("status") String status);
 
 }
