@@ -3,9 +3,14 @@ package org.opensrp.service;
 import java.text.ParseException;
 import java.util.*;
 
+import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.json.JSONObject;
+import org.opensrp.domain.postgres.Structure;
+import org.opensrp.domain.postgres.StructureMetadataExample;
+import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
 import org.smartregister.domain.Inventory;
 import org.smartregister.domain.ProductCatalogue;
 import org.smartregister.domain.PhysicalLocation;
@@ -54,6 +59,9 @@ public class StockService {
 	private PlanService planService;
 	@Autowired
 	private TaskGenerator taskGenerator;
+	
+	@Autowired
+	private CustomStructureMetadataMapper structureMetadataMapper;
 
 	private static Logger logger = LogManager.getLogger(StockService.class.toString());
 
@@ -185,18 +193,29 @@ public class StockService {
 		allStocks.add(stock);
 		// Go up the location tree to get the operational area.
 		//TODO Make process configurable
-		PhysicalLocation servicePoint = physicalLocationService.getLocation(stock.getLocationId(), false, false);
-		if(servicePoint == null || servicePoint.getProperties() == null || servicePoint.getProperties().getParentId() == null) return;
-		logger.info("Service Point %s"+servicePoint.getProperties().getName());
+		logger.info("Init updating tasks after adding stock");
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		structureMetadataExample.createCriteria().andGeojsonIdEqualTo(stock.getId());
+		Structure structure = structureMetadataMapper.findById(stock.getLocationId(), true);
+		PhysicalLocation servicePoint = (PhysicalLocation) structure.getJson();
+		
+		if(structure.getJson() == null ||   servicePoint.getProperties().getParentId() == null)
+			return;;
+		logger.info("Fetching parent location for servicepoint "+servicePoint.getProperties().getUid());
+		String servicePointParentId = servicePoint.getProperties().getParentId();
+		
+		PhysicalLocation servicePointLocation = physicalLocationService.getLocation(servicePointParentId, false, false);
+		
+		if(servicePointLocation == null || servicePointLocation.getProperties() == null || servicePointLocation.getProperties().getParentId() == null) return;
+		logger.info("Service Point parent "+servicePointLocation.getProperties().getName()+" location id "+servicePointParentId);
 		
 		PhysicalLocation district = physicalLocationService.getLocation(servicePoint.getProperties().getParentId(), false, false);
 		if(district == null || district.getProperties() == null || district.getProperties().getParentId() == null) return;
 		
-		logger.info("District %s"+district.getProperties().getName());
 		String regionId = district.getProperties().getParentId();
-		if(regionId==null) return;
+		logger.info("District "+district.getProperties().getName());
+		logger.info("RegionID "+regionId);
 		
-		logger.info("RegionID %s"+regionId);
 		List<PlanDefinition> plans = planService.getPlanRepository().getPlansByServerVersionAndOperationalAreasAndStatus(0L,
 				Collections.singletonList(regionId), false, PlanDefinition.PlanStatus.ACTIVE);
 		for (PlanDefinition plan :
