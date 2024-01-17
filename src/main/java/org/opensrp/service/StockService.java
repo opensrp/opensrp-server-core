@@ -3,11 +3,9 @@ package org.opensrp.service;
 import java.text.ParseException;
 import java.util.*;
 
-import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
-import org.json.JSONObject;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureMetadataExample;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
@@ -207,20 +205,28 @@ public class StockService {
 		PhysicalLocation servicePointLocation = physicalLocationService.getLocation(servicePointParentId, false, false);
 		
 		if(servicePointLocation == null || servicePointLocation.getProperties() == null || servicePointLocation.getProperties().getParentId() == null) return;
-		logger.info("Service Point parent "+servicePointLocation.getProperties().getName()+" location id "+servicePointParentId);
+		logger.info("Service Point name "+servicePointLocation.getProperties().getName()+" location id "+servicePointLocation.getProperties().getUid());
 		
-		PhysicalLocation district = physicalLocationService.getLocation(servicePoint.getProperties().getParentId(), false, false);
-		if(district == null || district.getProperties() == null || district.getProperties().getParentId() == null) return;
+		PhysicalLocation commune = physicalLocationService.getLocation(servicePoint.getProperties().getParentId(), false, false);
+		if(commune == null || commune.getProperties() == null || commune.getProperties().getParentId() == null) return;
+		logger.info("Commune name"+commune.getProperties().getName()+" commune id "+servicePoint.getProperties().getParentId());
 		
+		String districtId = commune.getProperties().getParentId();
+		PhysicalLocation district = physicalLocationService.getLocation(districtId, false, false);
+		
+		if(districtId == null || district.getProperties() == null || district.getProperties().getParentId() == null) return;
+		logger.info("District name "+district.getProperties().getName() +" district id "+commune.getProperties().getParentId());
+		
+		PhysicalLocation region = physicalLocationService.getLocation(district.getProperties().getParentId(), false, false);
+		
+		if(region == null) return;
 		String regionId = district.getProperties().getParentId();
-		logger.info("District "+district.getProperties().getName());
-		logger.info("RegionID "+regionId);
-		
+		logger.info("Region name "+region.getProperties().getName() +" region id "+regionId);
 		List<PlanDefinition> plans = planService.getPlanRepository().getPlansByServerVersionAndOperationalAreasAndStatus(0L,
 				Collections.singletonList(regionId), false, PlanDefinition.PlanStatus.ACTIVE);
 		for (PlanDefinition plan :
 				plans) {
-			logger.info("processng tasks for planID "+plan.getIdentifier());
+			logger.info("Processing tasks for planID "+plan.getIdentifier());
 			taskGenerator.processPlanEvaluation(plan, null,userName);
 		}
 	}
