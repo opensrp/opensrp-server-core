@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 import javax.transaction.Transactional;
 
@@ -25,10 +26,12 @@ import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
+import org.opensrp.domain.postgres.Structure;
 import org.opensrp.repository.LocationRepository;
 import org.opensrp.search.LocationSearchBean;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -40,6 +43,10 @@ import com.google.gson.JsonParser;
 @Service
 public class PhysicalLocationService {
 	
+	@Autowired
+	PlanService planService;
+	@Autowired
+	TaskGenerator taskGenerator;
 	private static Logger logger = LogManager.getLogger(PhysicalLocationService.class.toString());
 	
 	private LocationRepository locationRepository;
@@ -587,5 +594,44 @@ public class PhysicalLocationService {
 	 */
 	public List<String> findStructureIdsByProperties(List<String> parentIds, Map<String, String> properties, int limit){
 		return locationRepository.findStructureIdsByProperties(parentIds,properties,limit);
+	}
+	
+	public void regenerateTasksForOperationalArea(Structure structure, String username){
+		/*
+		 Go up the location tree to get the operational area.
+		TODO Make process configurable
+		*/
+		assert structure != null;
+		PhysicalLocation servicePoint = (PhysicalLocation) structure.getJson();
+		logger.info("Fetching parent location for servicepoint "+servicePoint.getProperties().getUid());
+		String servicePointParentId = servicePoint.getProperties().getParentId();
+		
+		PhysicalLocation servicePointLocation = getLocation(servicePointParentId, false, false);
+		
+		if(servicePointLocation == null || servicePointLocation.getProperties() == null || servicePointLocation.getProperties().getParentId() == null) return;
+		logger.info("Service Point name "+servicePointLocation.getProperties().getName()+" location id "+servicePointLocation.getProperties().getUid());
+		
+		PhysicalLocation commune = getLocation(servicePoint.getProperties().getParentId(), false, false);
+		if(commune == null || commune.getProperties() == null || commune.getProperties().getParentId() == null) return;
+		logger.info("Commune name"+commune.getProperties().getName()+" commune id "+servicePoint.getProperties().getParentId());
+		
+		String districtId = commune.getProperties().getParentId();
+		PhysicalLocation district = getLocation(districtId, false, false);
+		
+		if(districtId == null || district.getProperties() == null || district.getProperties().getParentId() == null) return;
+		logger.info("District name "+district.getProperties().getName() +" district id "+commune.getProperties().getParentId());
+		
+		PhysicalLocation region = getLocation(district.getProperties().getParentId(), false, false);
+		
+		if(region == null) return;
+		String regionId = district.getProperties().getParentId();
+		logger.info("Region name "+region.getProperties().getName() +" region id "+regionId);
+		List<PlanDefinition> plans = planService.getPlanRepository().getPlansByServerVersionAndOperationalAreasAndStatus(0L,
+				Collections.singletonList(regionId), false, PlanDefinition.PlanStatus.ACTIVE);
+		for (PlanDefinition plan :
+				plans) {
+			logger.info("Processing tasks for planID "+plan.getIdentifier());
+			taskGenerator.processPlanEvaluation(plan, null,username);
+		}
 	}
 }

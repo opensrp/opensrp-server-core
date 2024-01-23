@@ -245,6 +245,12 @@ public class StockService {
         stock.setId(existingStock.getId());
 		stock.setDateEdited(DateTime.now());
 		allStocks.update(stock);
+		
+		logger.info("Init updating tasks after adding stock");
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		structureMetadataExample.createCriteria().andGeojsonIdEqualTo(stock.getId());
+		Structure structure = structureMetadataMapper.findById(stock.getLocationId(), true);
+		physicalLocationService.regenerateTasksForOperationalArea(structure, userName);
 	}
 
 	public Stock findByIdentifierAndServicePointId(String identifier, String locationId) {
