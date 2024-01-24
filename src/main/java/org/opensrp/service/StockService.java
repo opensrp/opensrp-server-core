@@ -189,48 +189,10 @@ public class StockService {
 			return;
 		}
 		allStocks.add(stock);
-		// Go up the location tree to get the operational area.
-		//TODO Make process configurable
-		logger.info("Init updating tasks after adding stock");
-		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
-		structureMetadataExample.createCriteria().andGeojsonIdEqualTo(stock.getId());
-		Structure structure = structureMetadataMapper.findById(stock.getLocationId(), true);
-		PhysicalLocation servicePoint = (PhysicalLocation) structure.getJson();
+		generateTasks(stock);
 		
-		if(structure.getJson() == null ||   servicePoint.getProperties().getParentId() == null)
-			return;;
-		logger.info("Fetching parent location for servicepoint "+servicePoint.getProperties().getUid());
-		String servicePointParentId = servicePoint.getProperties().getParentId();
-		
-		PhysicalLocation servicePointLocation = physicalLocationService.getLocation(servicePointParentId, false, false);
-		
-		if(servicePointLocation == null || servicePointLocation.getProperties() == null || servicePointLocation.getProperties().getParentId() == null) return;
-		logger.info("Service Point name "+servicePointLocation.getProperties().getName()+" location id "+servicePointLocation.getProperties().getUid());
-		
-		PhysicalLocation commune = physicalLocationService.getLocation(servicePoint.getProperties().getParentId(), false, false);
-		if(commune == null || commune.getProperties() == null || commune.getProperties().getParentId() == null) return;
-		logger.info("Commune name"+commune.getProperties().getName()+" commune id "+servicePoint.getProperties().getParentId());
-		
-		String districtId = commune.getProperties().getParentId();
-		PhysicalLocation district = physicalLocationService.getLocation(districtId, false, false);
-		
-		if(districtId == null || district.getProperties() == null || district.getProperties().getParentId() == null) return;
-		logger.info("District name "+district.getProperties().getName() +" district id "+commune.getProperties().getParentId());
-		
-		PhysicalLocation region = physicalLocationService.getLocation(district.getProperties().getParentId(), false, false);
-		
-		if(region == null) return;
-		String regionId = district.getProperties().getParentId();
-		logger.info("Region name "+region.getProperties().getName() +" region id "+regionId);
-		List<PlanDefinition> plans = planService.getPlanRepository().getPlansByServerVersionAndOperationalAreasAndStatus(0L,
-				Collections.singletonList(regionId), false, PlanDefinition.PlanStatus.ACTIVE);
-		for (PlanDefinition plan :
-				plans) {
-			logger.info("Processing tasks for planID "+plan.getIdentifier());
-			taskGenerator.processPlanEvaluation(plan, null,userName);
-		}
 	}
-
+	
 	public void updateInventory(Inventory inventory, String userName) {
 		validateFields(inventory);
 		if(inventory.getStockId() == null) {
@@ -247,10 +209,14 @@ public class StockService {
 		allStocks.update(stock);
 		
 		logger.info("Init updating tasks after adding stock");
+		generateTasks(stock);
+	}
+	
+	private void generateTasks(Stock stock) {
 		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
 		structureMetadataExample.createCriteria().andGeojsonIdEqualTo(stock.getId());
 		Structure structure = structureMetadataMapper.findById(stock.getLocationId(), true);
-		physicalLocationService.regenerateTasksForOperationalArea(structure, userName);
+		physicalLocationService.regenerateTasksForOperationalArea(structure);
 	}
 
 	public Stock findByIdentifierAndServicePointId(String identifier, String locationId) {

@@ -46,6 +46,7 @@ import org.smartregister.domain.LocationTag;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.PhysicalLocationAndStocks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +68,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Autowired
 	private LocationTagService locationTagService;
 	
+	@Autowired
+	private ApplicationEventPublisher applicationEventPublisher;
 	@Override
 	public PhysicalLocation get(String id) {
 		return convert(locationMetadataMapper.findById(id, true, false));
@@ -162,6 +165,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		
 		structureMetadataMapper.insertSelective(structureMetadata);
 		
+		applicationEventPublisher.publishEvent(pgStructure);
 	}
 	
 	@Override
@@ -230,6 +234,7 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		structureMetadata.setId(metadata.getId());
 		structureMetadata.setDateCreated(metadata.getDateCreated());
 		structureMetadataMapper.updateByPrimaryKey(structureMetadata);
+		applicationEventPublisher.publishEvent(pgStructure);
 	}
 	
 	@Override
