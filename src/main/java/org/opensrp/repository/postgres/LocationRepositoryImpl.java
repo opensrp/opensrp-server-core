@@ -33,6 +33,7 @@ import org.opensrp.domain.postgres.StructureFamilyDetails;
 import org.opensrp.domain.postgres.StructureMetadata;
 import org.opensrp.domain.postgres.StructureMetadataExample;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.repository.StructureCreateOrUpdateEvent;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
@@ -164,8 +165,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		StructureMetadata structureMetadata = createStructureMetadata(entity, pgStructure.getId());
 		
 		structureMetadataMapper.insertSelective(structureMetadata);
-		
-		applicationEventPublisher.publishEvent(pgStructure);
+		StructureCreateOrUpdateEvent structureEvent = new StructureCreateOrUpdateEvent(pgStructure);
+		applicationEventPublisher.publishEvent(structureEvent);
 	}
 	
 	@Override
@@ -234,7 +235,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		structureMetadata.setId(metadata.getId());
 		structureMetadata.setDateCreated(metadata.getDateCreated());
 		structureMetadataMapper.updateByPrimaryKey(structureMetadata);
-		applicationEventPublisher.publishEvent(pgStructure);
+		StructureCreateOrUpdateEvent structureEvent = new StructureCreateOrUpdateEvent(pgStructure);
+		applicationEventPublisher.publishEvent(structureEvent);
 	}
 	
 	@Override

@@ -12,7 +12,6 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapp
 import org.smartregister.domain.Inventory;
 import org.smartregister.domain.ProductCatalogue;
 import org.smartregister.domain.PhysicalLocation;
-import org.smartregister.domain.PlanDefinition;
 import org.smartregister.domain.Stock;
 import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.dto.FailedRecordSummary;

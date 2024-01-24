@@ -28,7 +28,6 @@ import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.repository.LocationRepository;
-import org.opensrp.repository.StructureCreateOrUpdateEvent;
 import org.opensrp.search.LocationSearchBean;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
@@ -36,14 +35,13 @@ import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 @Service
-public class PhysicalLocationService implements ApplicationListener<StructureCreateOrUpdateEvent> {
+public class PhysicalLocationService {
 	
 	@Autowired
 	PlanService planService;
@@ -605,7 +603,7 @@ public class PhysicalLocationService implements ApplicationListener<StructureCre
 		*/
 		assert structure != null;
 		PhysicalLocation servicePoint = (PhysicalLocation) structure.getJson();
-		logger.info("Fetching parent location for service point "+servicePoint.getProperties().getUid());
+		logger.info("Fetching parent location for service point "+servicePoint.getProperties().getParentId());
 		String currentLevelLocationId = servicePoint.getProperties().getParentId();
 		// get username from service point
 		
@@ -613,24 +611,19 @@ public class PhysicalLocationService implements ApplicationListener<StructureCre
 		PhysicalLocation operationalArea = null;
 		for (int i = 0; i <3 ; i++) {
 			operationalArea = getLocation(currentLevelLocationId, false, false);
+			logger.info("Current operational area "+operationalArea.getProperties().getName() +" id "+operationalArea.getId());
+			currentLevelLocationId = operationalArea.getProperties().getParentId();
+			logger.info("parentId "+currentLevelLocationId);
+			
 		}
 		
-		
-		if(operationalArea == null) return;
-		String operationalAreaId = operationalArea.getProperties().getUid();
-		logger.info("Generating tasks for operationalArea "+operationalArea.getProperties().getName() +"with id "+operationalAreaId);
+		logger.info("Generating tasks for operationalArea "+operationalArea.getProperties().getName() +"with id "+operationalArea.getId());
 		List<PlanDefinition> plans = planService.getPlanRepository().getPlansByServerVersionAndOperationalAreasAndStatus(0L,
-				Collections.singletonList(operationalAreaId), false, PlanDefinition.PlanStatus.ACTIVE);
+				Collections.singletonList(operationalArea.getId()), false, PlanDefinition.PlanStatus.ACTIVE);
 		for (PlanDefinition plan :
 				plans) {
 			logger.info("Processing tasks for planID "+plan.getIdentifier());
 			taskGenerator.processPlanEvaluation(plan, null,username);
 		}
-	}
-	@Override
-	public void onApplicationEvent(StructureCreateOrUpdateEvent structureCreateOrUpdateEvent) {
-		Structure structure = (Structure) structureCreateOrUpdateEvent.getSource();
-		logger.info("updating structure qw "+structure.getJson());
-		regenerateTasksForOperationalArea(structure);
 	}
 }
