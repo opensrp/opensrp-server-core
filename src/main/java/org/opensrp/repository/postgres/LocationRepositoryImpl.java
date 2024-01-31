@@ -33,6 +33,7 @@ import org.opensrp.domain.postgres.StructureFamilyDetails;
 import org.opensrp.domain.postgres.StructureMetadata;
 import org.opensrp.domain.postgres.StructureMetadataExample;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.repository.StructureCreateOrUpdateEvent;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomLocationMetadataMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMapper;
@@ -46,6 +47,7 @@ import org.smartregister.domain.LocationTag;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.PhysicalLocationAndStocks;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,6 +69,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	@Autowired
 	private LocationTagService locationTagService;
 	
+	@Autowired
+	private ApplicationEventPublisher applicationEventPublisher;
 	@Override
 	public PhysicalLocation get(String id) {
 		return convert(locationMetadataMapper.findById(id, true, false));
@@ -161,7 +165,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		StructureMetadata structureMetadata = createStructureMetadata(entity, pgStructure.getId());
 		
 		structureMetadataMapper.insertSelective(structureMetadata);
-		
+		StructureCreateOrUpdateEvent structureEvent = new StructureCreateOrUpdateEvent(pgStructure);
+		applicationEventPublisher.publishEvent(structureEvent);
 	}
 	
 	@Override
@@ -230,6 +235,8 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		structureMetadata.setId(metadata.getId());
 		structureMetadata.setDateCreated(metadata.getDateCreated());
 		structureMetadataMapper.updateByPrimaryKey(structureMetadata);
+		StructureCreateOrUpdateEvent structureEvent = new StructureCreateOrUpdateEvent(pgStructure);
+		applicationEventPublisher.publishEvent(structureEvent);
 	}
 	
 	@Override

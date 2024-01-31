@@ -14,6 +14,8 @@ import java.util.List;
 public interface PlanRepository extends BaseRepository<PlanDefinition>, PlanDao {
 
     List<PlanDefinition> getPlansByServerVersionAndOperationalAreas(Long serverVersion, List<String> operationalAreaIds, boolean experimental);
+	List<PlanDefinition> getPlansByServerVersionAndOperationalAreasAndStatus(Long serverVersion, List<String> operationalAreaIds,
+		    boolean experimental, PlanDefinition.PlanStatus status);
 
     /**
      * This method searches for plans using a list of provided

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
 import javax.transaction.Transactional;
 
@@ -25,13 +26,19 @@ import org.opensrp.api.util.LocationTree;
 import org.opensrp.domain.LocationDetail;
 import org.opensrp.domain.StructureCount;
 import org.opensrp.domain.StructureDetails;
+import org.opensrp.domain.postgres.Structure;
 import org.opensrp.repository.LocationRepository;
+import org.opensrp.repository.PlanRepository;
+import org.opensrp.repository.postgres.PlanRepositoryImpl;
 import org.opensrp.search.LocationSearchBean;
 import org.smartregister.domain.LocationProperty;
 import org.smartregister.domain.PhysicalLocation;
+import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonElement;
@@ -40,6 +47,13 @@ import com.google.gson.JsonParser;
 @Service
 public class PhysicalLocationService {
 	
+	@Autowired
+	TaskGenerator taskGenerator;
+	
+	@Autowired
+	private ApplicationContext applicationContext;
+	@Value("#{opensrp['operational.area.levels.from.structure'] ?: 3}")
+	private int iterationsToOperationalArea;
 	private static Logger logger = LogManager.getLogger(PhysicalLocationService.class.toString());
 	
 	private LocationRepository locationRepository;
@@ -50,7 +64,7 @@ public class PhysicalLocationService {
 	public void setLocationRepository(LocationRepository locationRepository) {
 		this.locationRepository = locationRepository;
 	}
-	
+
 	public PhysicalLocation getLocation(String id, boolean returnGeometry, boolean includeInactive) {
 		return locationRepository.get(id, returnGeometry, includeInactive);
 	}
@@ -587,5 +601,35 @@ public class PhysicalLocationService {
 	 */
 	public List<String> findStructureIdsByProperties(List<String> parentIds, Map<String, String> properties, int limit){
 		return locationRepository.findStructureIdsByProperties(parentIds,properties,limit);
+	}
+	
+	public void regenerateTasksForOperationalArea(Structure structure){
+		/*
+		 Go up the location tree to get the operational area.
+		TODO Make process configurable
+		*/
+		assert structure != null;
+		PhysicalLocation servicePoint = (PhysicalLocation) structure.getJson();
+		logger.info("Fetching parent location for service point "+servicePoint.getProperties().getParentId());
+		String currentLevelLocationId = servicePoint.getProperties().getParentId();
+		// get username from service point
+		String username = servicePoint.getProperties().getUsername();
+		PhysicalLocation operationalArea = null;
+		for (int i = 0; i < iterationsToOperationalArea ; i++) {
+			operationalArea = getLocation(currentLevelLocationId, false, false);
+			logger.info("Current operational area "+operationalArea.getProperties().getName() +" id "+operationalArea.getId());
+			currentLevelLocationId = operationalArea.getProperties().getParentId();
+			logger.info("parentId "+currentLevelLocationId);
+		}
+		
+		logger.info("Generating tasks for operationalArea "+operationalArea.getProperties().getName() +"with id "+operationalArea.getId());
+		PlanRepository planRepository =  applicationContext.getBean(PlanRepositoryImpl.class);
+		List<PlanDefinition> plans = planRepository.getPlansByServerVersionAndOperationalAreasAndStatus(0L,
+				Collections.singletonList(operationalArea.getId()), false, PlanDefinition.PlanStatus.ACTIVE);
+		for (PlanDefinition plan :
+				plans) {
+			logger.info("Processing tasks for planID "+plan.getIdentifier());
+			taskGenerator.processPlanEvaluation(plan, null,username);
+		}
 	}
 }

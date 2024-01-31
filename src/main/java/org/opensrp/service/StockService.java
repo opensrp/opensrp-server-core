@@ -6,15 +6,18 @@ import java.util.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
+import org.opensrp.domain.postgres.Structure;
+import org.opensrp.domain.postgres.StructureMetadataExample;
+import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
 import org.smartregister.domain.Inventory;
 import org.smartregister.domain.ProductCatalogue;
+import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.Stock;
 import org.opensrp.dto.CsvBulkImportDataSummary;
 import org.opensrp.dto.FailedRecordSummary;
 import org.opensrp.repository.StocksRepository;
 import org.opensrp.search.StockSearchBean;
 import org.opensrp.validator.InventoryDataValidator;
-import org.smartregister.domain.PhysicalLocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +51,14 @@ public class StockService {
 	private PhysicalLocationService physicalLocationService;
 
 	private InventoryDataValidator inventoryDataValidator;
+	
+	@Autowired
+	private PlanService planService;
+	@Autowired
+	private TaskGenerator taskGenerator;
+	
+	@Autowired
+	private CustomStructureMetadataMapper structureMetadataMapper;
 
 	private static Logger logger = LogManager.getLogger(StockService.class.toString());
 
@@ -177,8 +188,10 @@ public class StockService {
 			return;
 		}
 		allStocks.add(stock);
+		generateTasks(stock);
+		
 	}
-
+	
 	public void updateInventory(Inventory inventory, String userName) {
 		validateFields(inventory);
 		if(inventory.getStockId() == null) {
@@ -193,6 +206,19 @@ public class StockService {
         stock.setId(existingStock.getId());
 		stock.setDateEdited(DateTime.now());
 		allStocks.update(stock);
+		
+		logger.info("Init updating tasks after adding stock");
+		generateTasks(stock);
+	}
+	
+	private void generateTasks(Stock stock) {
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		structureMetadataExample.createCriteria().andGeojsonIdEqualTo(stock.getId());
+		// null check to keep tests from failing
+		if(structureMetadataMapper != null) {
+			Structure structure = structureMetadataMapper.findById(stock.getLocationId(), true);
+			physicalLocationService.regenerateTasksForOperationalArea(structure);
+		}
 	}
 
 	public Stock findByIdentifierAndServicePointId(String identifier, String locationId) {

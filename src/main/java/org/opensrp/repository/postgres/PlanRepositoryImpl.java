@@ -147,7 +147,16 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
         PlanExample planExample = new PlanExample();
         planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull().andExperimentalEqualTo(experimental);
         List<Plan> plans = planMetadataMapper.selectMany(planExample, operationalAreaIds, 0, DEFAULT_FETCH_SIZE);
-
+        return convert(plans);
+    }
+    
+    public List<PlanDefinition> getPlansByServerVersionAndOperationalAreasAndStatus(Long serverVersion, List<String> operationalAreaIds, boolean experimental,
+            PlanDefinition.PlanStatus status) {
+        PlanExample planExample = new PlanExample();
+        planExample.createCriteria().andServerVersionGreaterThanOrEqualTo(serverVersion).andDateDeletedIsNull()
+                .andExperimentalEqualTo(experimental);
+        List<Plan> plans = planMetadataMapper.selectManyByStatus(planExample, operationalAreaIds, 0, DEFAULT_FETCH_SIZE, status.value());
+        
         return convert(plans);
     }
 
