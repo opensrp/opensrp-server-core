@@ -31,7 +31,6 @@ public class DateRangeTypeHandler extends BaseTypeHandler implements TypeHandler
 	
 	public DateRangeTypeHandler() {
 		dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 
 	@Override
