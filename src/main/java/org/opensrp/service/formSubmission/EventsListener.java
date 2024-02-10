@@ -18,6 +18,7 @@ import org.opensrp.service.ConfigService;
 import org.opensrp.service.ErrorTraceService;
 import org.opensrp.service.EventService;
 import org.opensrp.service.formSubmission.handler.EventsRouter;
+import org.opensrp.service.rapidpro.RapidProEventService;
 import org.smartregister.domain.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,8 @@ public class EventsListener {
 	private EventsRouter eventsRouter;
 	
 	private ErrorTraceService errorTraceService;
+
+	private RapidProEventService rapidProEventService;
 
 	@Autowired
 	public EventsListener(EventsRouter eventsRouter, ConfigService configService, EventService eventService,
@@ -72,6 +75,7 @@ public class EventsListener {
 			for (Event event : events) {
 				try {
 					event = eventService.processOutOfArea(event);
+					rapidProEventService.processEvent(event);
 					eventsRouter.route(event);
 					configService.updateAppStateToken(AllConstants.Config.EVENTS_PARSER_LAST_PROCESSED_EVENT,
 					    event.getServerVersion());
@@ -92,7 +96,12 @@ public class EventsListener {
 			lock.unlock();
 		}
 	}
-	
+
+	@Autowired
+	public void setRapidProEventService(RapidProEventService rapidProEventService) {
+		this.rapidProEventService = rapidProEventService;
+	}
+
 	public long getCurrentMilliseconds() {
 		return System.currentTimeMillis();
 	}

@@ -162,6 +162,11 @@ public class PhysicalLocationService {
 	}
 
 	@PreAuthorize("hasRole('LOCATION_VIEW')")
+	public List<PhysicalLocation> findLocationsByName(String locationName) {
+		return locationRepository.findLocationsByName(locationName);
+	}
+
+	@PreAuthorize("hasRole('LOCATION_VIEW')")
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentId, long serverVersion) {
 		if (StringUtils.isBlank(parentId))
 			throw new IllegalArgumentException("parentId not specified");
@@ -649,5 +654,37 @@ public class PhysicalLocationService {
 		Set<LocationDetail> locationDetails = buildLocationHeirarchyWithAncestors(locationId);
 		locationTree.buildTreeFromList(getLocations(locationDetails, returnStructureCount));
 		return locationTree;
+	}
+
+	/**
+	 * This methods returns a count of jurisdictions using the parentId and location properties
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * @param parentIds list of the parent ids of the jurisdiction being searched. If empty search for ROOT location.
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @return count of jurisdictions matching the params
+	 */
+	long countLocationsByProperties(List<String> parentIds, Map<String, String> properties) {
+		return locationRepository.countLocationsByProperties(parentIds, properties);
+	}
+
+	/**
+	 * This methods returns a count of structures using the parentId and structure properties
+	 * It returns the Geometry optionally if @param returnGeometry is set to true.
+	 * @param parentIds list of the parent ids of the structure being searched. If empty search for ROOT location.
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @return count of jurisdictions matching the params
+	 */
+	long countStructuresByProperties(List<String> parentIds, Map<String, String> properties) {
+		return locationRepository.countStructuresByProperties(parentIds,properties);
+	}
+
+	/**
+	 * This methods searches for structures ids using the parentId and location properties
+	 * @param parentIds list of the parent ids of the structure being searched
+	 * @param properties map of location properties to filter with, each entry in map has property name and value
+	 * @return structure ids matching the params
+	 */
+	public List<String> findStructureIdsByProperties(List<String> parentIds, Map<String, String> properties, int limit){
+		return locationRepository.findStructureIdsByProperties(parentIds,properties,limit);
 	}
 }

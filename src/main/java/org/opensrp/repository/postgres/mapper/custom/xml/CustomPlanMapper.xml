@@ -158,10 +158,10 @@
 		<where>
 			<trim prefixOverrides="and">
 				<if test="searchBean.planStatus != null">
-					and json->>'status' = #{searchBean.planStatus,jdbcType=VARCHAR}
+					and json->>'status' = #{searchBean.planStatus.value,jdbcType=VARCHAR}
 				</if>
 				<if test="searchBean.isExperimental != null">
-					p.experimental = #{searchBean.isExperimental,jdbcType=BIT}
+					and p.experimental = #{searchBean.isExperimental,jdbcType=BIT}
 				</if>
 				<if test="searchBean.useContexts != null">
 					<trim prefix="and ">
@@ -194,6 +194,24 @@
   <select id="selectServerVersionByPrimaryKey"
 		parameterType="java.lang.Long" resultType="long">
 		select server_version from core.plan where id = #{id,jdbcType=BIGINT}
+	</select>
+
+	<select id="selectManyByStatus"
+			resultMap="org.opensrp.repository.postgres.mapper.PlanMapper.BaseResultMap">
+		select
+		<include
+				refid="org.opensrp.repository.postgres.mapper.PlanMapper.Base_Column_List" />
+		from core.plan p
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="status != null">
+			and json->>'status' = #{status.value,jdbcType=VARCHAR}
+		</if>
+		<if test="example.orderByClause != null">
+			order by p.${example.orderByClause}
+		</if>
+		LIMIT #{limit} OFFSET #{offset}
 	</select>
 
 </mapper>

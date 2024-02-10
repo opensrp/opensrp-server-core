@@ -1149,4 +1149,40 @@ public class PhysicalLocationServiceTest {
 		assertEquals(1, tags.size());
 		assertTrue(tags.contains("District"));
 	}
+
+	@Test
+	public void testCountLocationsByProperties() {
+		List<String> parentIds = Collections.singletonList("location_id1");
+		Map<String, String> properties = new HashMap<>();
+		properties.put("externalId", "id-1");
+		when(locationRepository.countLocationsByProperties(parentIds,properties)).thenReturn(12l);
+		long actualLocations = locationService.countLocationsByProperties(parentIds,properties);
+		verify(locationRepository).countLocationsByProperties(parentIds,properties);
+		assertEquals(12l, actualLocations);
+	}
+
+	@Test
+	public void testCountStructuresByProperties() {
+		List<String> parentIds = Collections.singletonList("structure_id1");
+		Map<String, String> properties = new HashMap<>();
+		properties.put("type", "Residential Structure");
+		when(locationRepository.countStructuresByProperties(parentIds,properties)).thenReturn(12l);
+		long actualStructures = locationService.countStructuresByProperties(parentIds,properties);
+		verify(locationRepository).countStructuresByProperties(parentIds,properties);
+		assertEquals(12l, actualStructures);
+	}
+
+	@Test
+	public void testFindStructureIdsByProperties() {
+		List<String> parentIds = Collections.singletonList("structure_id1");
+		Map<String, String> properties = new HashMap<>();
+		properties.put("type", "Residential Structure");
+		List<String> expectedStructureIds = Collections.singletonList("id1");
+		int limit = 10;
+		when(locationRepository.findStructureIdsByProperties(parentIds,properties,limit)).thenReturn(expectedStructureIds);
+		List<String> actualStructureIds = locationService.findStructureIdsByProperties(parentIds, properties, limit);
+		verify(locationRepository).findStructureIdsByProperties(parentIds,properties,limit);
+		assertEquals(expectedStructureIds, actualStructureIds);
+	}
+
 }

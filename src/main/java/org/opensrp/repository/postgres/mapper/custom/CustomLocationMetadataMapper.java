@@ -52,4 +52,7 @@ public interface CustomLocationMetadataMapper extends LocationMetadataMapper {
 	List<String> selectChildrenIds(@Param("locationId") String locationId);
 
 	Long countMany(@Param("example")LocationMetadataExample locationMetadataExample);
+
+	Long countManyByProperties(@Param("example") LocationMetadataExample locationMetadataExample,
+										  @Param("properties") Map<String, String> properties);
 }

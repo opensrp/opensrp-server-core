@@ -302,6 +302,16 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, DEFAULT_FETCH_SIZE);
 		return convert(locations);
 	}
+
+	@Override
+	public List<PhysicalLocation> findLocationsByName(String locationNames) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		locationMetadataExample.createCriteria().andNameLike(locationNames);
+		locationMetadataExample.setOrderByClause(getOrderByClause(SERVER_VERSION, ASCENDING));
+		Long count = countAllLocations(0L);
+		List<Location> locations = locationMetadataMapper.selectMany(locationMetadataExample, 0, count.intValue());
+		return convert(locations);
+	}
 	
 	@Override
 	public List<PhysicalLocation> findStructuresByParentAndServerVersion(String parentIds, long serverVersion) {
@@ -763,7 +773,6 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 		    returnGeometry, 0, limit));
 	}
 
-
 	private PhysicalLocationAndStocks convertToPhysicalLocationAndStock(LocationAndStock entity) {
 		if (entity == null || entity.getJson() == null || !(entity.getJson() instanceof PhysicalLocation)) {
 			return null;
@@ -1019,5 +1028,42 @@ public class LocationRepositoryImpl extends BaseRepositoryImpl<PhysicalLocation>
 	private List<com.ibm.fhir.model.resource.Location> convertToFHIRLocation(List<PhysicalLocation> locations) {
 		return locations.stream().map(location -> LocationConverter.convertPhysicalLocationToLocationResource(location))
 		        .collect(Collectors.toList());
+	}
+
+	@Override
+	public long countLocationsByProperties(List<String> parentIds, Map<String, String> properties) {
+		LocationMetadataExample locationMetadataExample = new LocationMetadataExample();
+		if (parentIds != null && !parentIds.isEmpty()) {
+			locationMetadataExample.createCriteria().andParentIdIn(parentIds);
+		}
+		return locationMetadataMapper.countManyByProperties(locationMetadataExample, properties);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public long countStructuresByProperties(List<String> parentIds, Map<String, String> properties) {
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		if (parentIds != null && !parentIds.isEmpty()) {
+			structureMetadataExample.createCriteria().andParentIdIn(parentIds);
+		}
+		return structureMetadataMapper.countManyByProperties(structureMetadataExample, properties);
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<String> findStructureIdsByProperties(List<String> parentIds, Map<String, String> properties, int limit) {
+		int fetchLimit = limit > 0 ? limit : DEFAULT_FETCH_SIZE;
+		StructureMetadataExample structureMetadataExample = new StructureMetadataExample();
+		if (parentIds != null && !parentIds.isEmpty()) {
+			structureMetadataExample.createCriteria().andParentIdIn(parentIds);
+		}
+		List<String> structureIds = structureMetadataMapper.selectManyIdsByProperties(structureMetadataExample, properties,
+				 0, fetchLimit);
+		return structureIds;
 	}
 }

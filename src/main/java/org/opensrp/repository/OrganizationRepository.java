@@ -27,7 +27,7 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 * @param organizationId         the organization identifier
 	 * @param planIdentifier
 	 * @param jurisdictionIdentifier
-	 * @param jurisdiction           id of jurisdiction being assigned
+	 * @param jurisdictionId           id of jurisdiction being assigned
 	 * @param planId                 id of the plan being assigned
 	 * @param fromDate               with effect from
 	 * @param toDate                 with effect to
@@ -38,9 +38,8 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	/**
 	 * Gets the plans and jurisdictions that an organization is assigned to an
 	 * organization
-	 * 
-	 * @param organizationId Id of organization
-	 * @param returnFutureAssignments flag to control if future assignments are returned
+	 *
+	 * @param assignedLocationAndPlanSearchBean  Search parameter provider
 	 * @return assigned plans and locations
 	 */
 	List<AssignedLocations> findAssignedLocations(AssignedLocationAndPlanSearchBean assignedLocationAndPlanSearchBean);
@@ -49,7 +48,7 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	 * Gets the plans and jurisdictions that an organization is assigned to a list
 	 * organizations
 	 * 
-	 * @param organizationIds
+	 * @param organizationIds list of organization primary keys
 	 * @param returnFutureAssignments flag to control if future assignments are returned
 	 * @return assigned plans and locations
 	 */
@@ -64,8 +63,7 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	/**
 	 * Gets the plans and jurisdictions using filtered by plan identifier
 	 *
-	 * @param planId the Plan Id
-	 *
+	 * @param assignedLocationAndPlanSearchBean search parameter provider
 	 * @return list of assigned locations and plans
 	 */
 	@Deprecated
@@ -82,6 +80,8 @@ public interface OrganizationRepository extends BaseRepository<Organization> {
 	void unassignLocationAndPlan(Long planId);
 
 	long countAllOrganizations();
+
+	org.opensrp.domain.postgres.Organization getLastAssignedOrganization(Long locationPrimaryKey);
 
 	List<Organization> getOrganizationsByIds(List<Long> organizationIds);
 }

@@ -19,7 +19,10 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -53,6 +56,7 @@ public class PractitionerServiceTest {
         List<Practitioner> expectedPractitioners = new ArrayList<>();
         expectedPractitioners.add(initTestPractitioner());
         when(practitionerRepository.getAllPractitioners(any(PractitionerSearchBean.class))).thenReturn(expectedPractitioners);
+
 
         PractitionerSearchBean practitionerSearchBean = new PractitionerSearchBean(0L);
         List<Practitioner> actualPractitioners = practitionerService.getAllPractitioners(practitionerSearchBean);

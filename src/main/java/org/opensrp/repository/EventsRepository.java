@@ -8,6 +8,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.smartregister.domain.Event;
 import org.smartregister.pathevaluator.dao.EventDao;
 import org.opensrp.search.EventSearchBean;
+import org.springframework.lang.NonNull;
 
 public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	
@@ -95,5 +96,17 @@ public interface EventsRepository extends BaseRepository<Event>, EventDao {
 	List<String> findBaseEntityIdsByLocation(String locationId);
 
 	List<org.opensrp.domain.postgres.Event> getEventData(String planIdentifier, String eventType, Date fromDate, Date toDate);
-	
+
+	/**
+	 * Get Case Details event
+	 * @param caseNumber
+	 * @param flag
+	 * @return case details event
+	 */
+	Event findCaseDetailsEvent(@NonNull String caseNumber, @NonNull String flag);
+
+	Event findByDbId(Long eventId, boolean includeArchived);
+
+	org.opensrp.domain.postgres.Event getDbEventByIdentifier(String identifier);
+
 }

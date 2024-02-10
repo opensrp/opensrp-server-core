@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.opensrp.common.AllConstants.Client.OPENMRS_UUID_IDENTIFIER_TYPE;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -217,7 +218,18 @@ public class ClientServiceTest extends BaseRepositoryTest {
 		assertEquals("f67823b0-378e-4a35-93fc-bb00def75e2f", clients.get(0).getBaseEntityId());
 	}
 
-	@Test
+	public void testCountFamiliessByLocation() {
+		String locationId = "f4613bfc-82b0-11ec-a8a3-0242ac120002";
+		Client client = new Client("fedfac80-82b0-11ec-a8a3-0242ac120002").withBirthdate(new DateTime("1990-03-31"), true)
+				.withGender("Male").withFirstName("Nelson").withLastName("Family").withLocationId(locationId);
+
+		client.withIdentifier("ZEIR_ID", "893864-8").withAttribute("Home_Facility", "Tunza");
+		clientService.addClient(client);
+
+		Long actualClients = clientsRepository.countFamiliesByLocation(Collections.singletonList(locationId));
+		assertEquals(1l, actualClients.longValue());
+	}
+
 	public void testFindAllByIdentifier() {
 		List<Client> clients = clientService.findAllByIdentifier("ZEIR_ID", "218221-0");
 		assertEquals(2, clients.size());

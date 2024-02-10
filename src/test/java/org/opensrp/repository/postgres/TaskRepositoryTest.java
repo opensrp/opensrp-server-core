@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -440,6 +441,14 @@ public class TaskRepositoryTest extends BaseRepositoryTest {
 
 		tasks = taskRepository.findTasksByJurisdiction("2018_IRS-37");
 		assertEquals(0, tasks.size());
+	}
+
+	@Test
+	public void testCountTasksByPlanAndCode() {
+
+		long taskCounts = taskRepository.countTasksByPlanAndCode("IRS_2018_S1", "IRS",
+				Collections.singletonList("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc"), false);
+		assertEquals(1l, taskCounts);
 	}
 	
 }

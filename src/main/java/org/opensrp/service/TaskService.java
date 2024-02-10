@@ -129,17 +129,21 @@ public class TaskService {
 		List<String> updatedTaskIds = new ArrayList<>();
 		for (TaskUpdate taskUpdate : taskUpdates) {
 			Task task = taskRepository.get(taskUpdate.getIdentifier());
+			logger.info("UpdateTaskStatus retrieved task from db with id : " + task.getIdentifier());
 			try {
 				Task.TaskStatus status = fromString(taskUpdate.getStatus());
+				logger.info("UpdateTaskStatus task status is : " + status);
 				if (task != null && status != null) {
 					task.setBusinessStatus(taskUpdate.getBusinessStatus());
 					task.setStatus(status);
 					task.setLastModified(new DateTime());
 					taskRepository.update(task);
+					logger.info("UpdateTaskStatus task updated to db with id : " + task.getIdentifier());
 					updatedTaskIds.add(task.getIdentifier());
 				}
 			}
 			catch (Exception e) {
+				logger.info("UpdateTaskStatus exception thrown while processing task with id : " + task.getIdentifier());
 				logger.error(e.getMessage(), e);
 			}
 		}
@@ -236,5 +240,18 @@ public class TaskService {
 
 	public int findTaskCountBySearchBean(TaskSearchBean taskSearchBean) {
 		return taskRepository.getTaskCount(taskSearchBean);
+	}
+
+	/**
+	 * This method returns a count of tasks with a particular code for a plan
+	 *
+	 * @param plan plan identifier for the task
+	 * @param code the code for the task
+	 * @param entityIds Ids for entities the tasks are generated against
+	 * @param excludePlanTasks whether to exclude tasks from the current plan in the count
+	 * @return count of tasks with a particular code for a plan
+	 */
+	public Long countTasksByPlanAndCode(String plan, String code, List<String> entityIds, boolean excludePlanTasks) {
+		return taskRepository.countTasksByPlanAndCode(plan, code, entityIds, excludePlanTasks);
 	}
 }

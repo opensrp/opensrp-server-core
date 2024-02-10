@@ -18,6 +18,7 @@ import org.opensrp.search.EventSearchBean;
 import org.opensrp.util.Utils;
 import org.opensrp.util.constants.EventConstants;
 import org.opensrp.util.constants.ObsConstants;
+import org.opensrp.util.constants.PlanConstants;
 import org.opensrp.util.constants.RecurringServiceConstants;
 import org.smartregister.domain.Event;
 import org.smartregister.domain.Obs;
@@ -27,18 +28,33 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.opensrp.util.constants.EventConstants.BIRTH_REGISTRATION_EVENT;
 import static org.opensrp.util.constants.EventConstants.CARD_ID_PREFIX;
+import static org.opensrp.util.constants.EventConstants.CASE_NUMBER;
 import static org.opensrp.util.constants.EventConstants.CODED;
 import static org.opensrp.util.constants.EventConstants.CONCEPT;
 import static org.opensrp.util.constants.EventConstants.DATE;
 import static org.opensrp.util.constants.EventConstants.DOSE;
+import static org.opensrp.util.constants.EventConstants.EVENT_TYPE_CASE_DETAILS;
+import static org.opensrp.util.constants.EventConstants.FLAG;
 import static org.opensrp.util.constants.EventConstants.GROWTH_MONITORING_EVENT;
 import static org.opensrp.util.constants.EventConstants.NFC_CARD_IDENTIFIER;
 import static org.opensrp.util.constants.EventConstants.NUMERIC;
@@ -784,4 +800,58 @@ public class EventService {
 		return exportImagesSummary;
 
 	}
+
+	public boolean checkIfCaseTriggeredEventExists(@NonNull Event event){
+		if (StringUtils.isNotBlank(event.getEventType())
+				&& event.getEventType().equals(EVENT_TYPE_CASE_DETAILS)
+				&& event.getDetails() != null
+				&& StringUtils.isNotBlank(event.getDetails().get(CASE_NUMBER))) {
+			String caseNumber = event.getDetails().get(CASE_NUMBER);
+			String flag = event.getDetails().get(FLAG);
+			Event existingCaseDetailsEvent = allEvents.findCaseDetailsEvent(caseNumber,flag);
+			if (existingCaseDetailsEvent == null) {
+				return false;
+			}
+			return caseDetailsExist(existingCaseDetailsEvent, event);
+		}
+		return false;
+	}
+
+	public Event findByDbId(Long eventId, boolean includeArchived) {
+		return allEvents.findByDbId(eventId, includeArchived);
+	}
+
+	public boolean caseDetailsExist(Event existingEvent, Event newEvent) {
+		if (existingEvent == null || existingEvent.getDetails() == null) {
+			return false;
+		}
+		Map<String, String> existingEventDetails = existingEvent.getDetails();
+		Map<String, String> newEventDetails = newEvent.getDetails();
+
+		return doComparison(existingEventDetails.get(PlanConstants.AGE), newEventDetails.get(PlanConstants.AGE))
+				&& doComparison(existingEventDetails.get(PlanConstants.BFID), newEventDetails.get(PlanConstants.BFID))
+				&& doComparison(existingEventDetails.get(PlanConstants.FAMILY_NAME), newEventDetails.get(PlanConstants.FAMILY_NAME))
+				&& doComparison(existingEventDetails.get(PlanConstants.SPECIES), newEventDetails.get(PlanConstants.SPECIES))
+				&& doComparison(existingEventDetails.get(PlanConstants.SURNAME), newEventDetails.get(PlanConstants.SURNAME))
+				&& doComparison(existingEventDetails.get(PlanConstants.FOCUS_ID), newEventDetails.get(PlanConstants.FOCUS_ID))
+				&& doComparison(existingEventDetails.get(PlanConstants.FIRST_NAME), newEventDetails.get(PlanConstants.FIRST_NAME))
+				&& doComparison(existingEventDetails.get(PlanConstants.FOCUS_NAME), newEventDetails.get(PlanConstants.FOCUS_NAME))
+				&& doComparison(existingEventDetails.get(PlanConstants.FOCUS_REASON), newEventDetails.get(PlanConstants.FOCUS_REASON))
+				&& doComparison(existingEventDetails.get(PlanConstants.FOCUS_STATUS), newEventDetails.get(PlanConstants.FOCUS_STATUS))
+				&& doComparison(existingEventDetails.get(PlanConstants.HOUSE_NUMBER), newEventDetails.get(PlanConstants.HOUSE_NUMBER))
+				&& doComparison(existingEventDetails.get(PlanConstants.CASE_CLASSIFICATION), newEventDetails.get(PlanConstants.CASE_CLASSIFICATION));
+	}
+
+	public boolean doComparison(String existingValue, String newValue) {
+		if (StringUtils.isBlank(existingValue) && StringUtils.isBlank(newValue)) {
+			return true;
+		}
+
+		if (StringUtils.isNotBlank(existingValue)) {
+			return existingValue.equalsIgnoreCase(newValue);
+		}
+
+		return false;
+	}
+
 }

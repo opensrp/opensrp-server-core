@@ -34,4 +34,8 @@ public class UniqueIdentifierService {
 					ex.getMessage());
 		}
 	}
+
+	public void markIdentifierAsUsed (String identifier) {
+		uniqueIdGeneratorProcessor.markIdentifierAsUsed(identifier);
+	}
 }

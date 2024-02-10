@@ -246,6 +246,11 @@
 			<artifactId>spring-orm</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
 		<dependency>
 			<groupId>org.mybatis</groupId>
@@ -341,7 +346,6 @@
 			<artifactId>mybatis-migrations</artifactId>
 			<version>3.3.10</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-redis</artifactId>
@@ -353,7 +357,6 @@
 			<version>${redis.jedis.version}</version>
 		    <scope>test</scope>
 		</dependency>
-
 
 		<!-- Test dependencies -->
 		<dependency>

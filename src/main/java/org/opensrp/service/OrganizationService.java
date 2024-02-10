@@ -27,6 +27,9 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * @author Samuel Githengi created on 09/09/19
  */
@@ -38,7 +41,7 @@ public class OrganizationService {
 	private LocationRepository locationRepository;
 	
 	private PlanRepository planRepository;
-	
+
 	@Autowired
 	private PractitionerService practitionerService;
 	
@@ -54,7 +57,7 @@ public class OrganizationService {
 		this.locationRepository = locationRepository;
 		this.planRepository = planRepository;
 	}
-	
+
 	/**
 	 * Get all organizations
 	 * 
@@ -80,7 +83,7 @@ public class OrganizationService {
 	/**
 	 * Get the organization that has the identifier
 	 * 
-	 * @param identifier
+	 * @param identifier UUID for organization
 	 * @return organization with matching identifier
 	 */
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
@@ -91,8 +94,8 @@ public class OrganizationService {
 	
 	/**
 	 * Get the organization that has the identifier
-	 * 
-	 * @param id
+	 *
+	 * @param id organizaiton id
 	 * @return organization with matching identifier
 	 */
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
@@ -155,12 +158,12 @@ public class OrganizationService {
 	
 	/**
 	 * Assigns the jurisdiction and /or plan to the organization with organizationId
-	 * 
-	 * @param identifier the id of the organization
+	 *
+	 * @param identifier UUID of the organization
 	 * @param jurisdictionId the identifier of the jurisdiction
-	 * @param planId the identifier of the plan
-	 * @param fromDate
-	 * @param toDate
+	 * @param planId         the identifier of the plan
+	 * @param fromDate date first created
+	 * @param toDate expiration date
 	 */
 	@PreAuthorize("hasPermission(#identifier,'OrganizationLocation','ORGANIZATION_ASSIGN_LOCATION')")
 	public void assignLocationAndPlan(String identifier, String jurisdictionId, String planId, Date fromDate, Date toDate) {
@@ -295,7 +298,6 @@ public class OrganizationService {
 	public void setPlanRepository(PlanRepository planRepository) {
 		this.planRepository = planRepository;
 	}
-	
 	/**
 	 * @param practitionerService the practitionerService to set
 	 */
@@ -361,6 +363,11 @@ public class OrganizationService {
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")
 	public long countAllOrganizations() {
 		return organizationRepository.countAllOrganizations();
+	}
+
+	public org.opensrp.domain.postgres.Organization getOrganizationByLocationId(String jurisdictionId) {
+		Long primaryKey = locationRepository.retrievePrimaryKey(jurisdictionId, true);
+		return organizationRepository.getLastAssignedOrganization(primaryKey);
 	}
 
 	@PreAuthorize("hasRole('ORGANIZATION_VIEW')")

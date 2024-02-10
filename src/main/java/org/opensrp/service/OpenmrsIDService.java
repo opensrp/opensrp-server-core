@@ -1,28 +1,28 @@
 package org.opensrp.service;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.smartregister.domain.Client;
 import org.opensrp.domain.UniqueId;
 import org.opensrp.repository.UniqueIdRepository;
+import org.smartregister.domain.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class OpenmrsIDService {
@@ -48,7 +48,7 @@ public class OpenmrsIDService {
 	
 	private static Logger logger = LogManager.getLogger(OpenmrsIDService.class.toString());
 	
-	private HttpClient client;
+	private CloseableHttpClient client;
 
 	@Autowired
 	private UniqueIdRepository uniqueIdPostgresRepository;
@@ -60,7 +60,7 @@ public class OpenmrsIDService {
 	}
 	
 	public OpenmrsIDService() {
-		this.client = HttpClientBuilder.create().build();
+		this.client = HttpClients.createDefault();
 	}
 	
 	public List<String> downloadOpenmrsIds(long size) {
@@ -211,8 +211,9 @@ public class OpenmrsIDService {
 
 	protected String getHttpResponse(String url) throws IOException {
 		HttpGet get = new HttpGet(url);
-		HttpResponse response = client.execute(get);
-		return EntityUtils.toString(response.getEntity());
+		try (CloseableHttpResponse response = client.execute(get)) {
+			return EntityUtils.toString(response.getEntity());
+		}
 	}
 	
 }

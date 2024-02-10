@@ -13,6 +13,9 @@ import java.util.Set;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.opensrp.repository.postgres.mapper.custom.CustomPractitionerMapper;
+import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.Practitioner;
 import org.opensrp.repository.PractitionerRepository;
 import org.opensrp.search.BaseSearchBean;
@@ -359,6 +362,26 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals(2,practitioners.size());
         assertEquals("practitioner-1-identifier",practitioners.get(0).getIdentifier());
         assertEquals("practitioner-2-identifier",practitioners.get(1).getIdentifier());
+        practitionerSearchBean = PractitionerSearchBean.builder().orderByType(BaseSearchBean.OrderByType.DESC).
+                orderByFieldName(BaseSearchBean.FieldName.server_version).build();
+        practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
+        assertNotNull(practitioners);
+        assertEquals(2,practitioners.size());
+        assertTrue(String.format(
+                "Expected serverVersion  %d for practitioner at index 0 to be greater than serverVersion %d for practitioner at index 1",
+                practitioners.get(0).getServerVersion(), practitioners.get(1).getServerVersion()),
+                practitioners.get(0).getServerVersion()>practitioners.get(1).getServerVersion());
+
+
+        practitionerSearchBean = PractitionerSearchBean.builder().orderByType(BaseSearchBean.OrderByType.ASC).
+                orderByFieldName(BaseSearchBean.FieldName.server_version).build();
+        practitioners = practitionerRepository.getAllPractitioners(practitionerSearchBean);
+        assertNotNull(practitioners);
+        assertEquals(2,practitioners.size());
+        assertTrue(String.format(
+                "Expected serverVersion  %d for practitioner at index 0 to be less than serverVersion %d for practitioner at index 1",
+                practitioners.get(0).getServerVersion(), practitioners.get(1).getServerVersion()),
+                practitioners.get(0).getServerVersion()<practitioners.get(1).getServerVersion());
     }
 
     @Test
@@ -395,6 +418,26 @@ public class PractitionerRepositoryTest extends BaseRepositoryTest{
         assertEquals(expectedPractitioner.getName(),actualPractitioner.getName());
         assertEquals(expectedPractitioner.getUserId(),actualPractitioner.getUserId());
         assertEquals(expectedPractitioner.getUsername(),actualPractitioner.getUsername());
+    }
+
+    @Test
+    public void testGetPractitionerByPrimaryKeyShouldInvokeSelectByExample() {
+        CustomPractitionerMapper realPractitionerMapper = Whitebox.getInternalState(practitionerRepository, "practitionerMapper");
+        CustomPractitionerMapper spyCustomPractitionerMapper = Mockito.spy(CustomPractitionerMapper.class);
+
+        List<org.opensrp.domain.postgres.Practitioner> pgPractitioners = new ArrayList<>();
+                Whitebox.setInternalState(practitionerRepository, "practitionerMapper", spyCustomPractitionerMapper);
+        Mockito.doReturn(pgPractitioners).when(spyCustomPractitionerMapper).selectByExample(Mockito.any());
+        practitionerRepository.getByPrimaryKey((1L));
+        Mockito.verify(spyCustomPractitionerMapper).selectByExample(Mockito.any());
+
+        // restore actual practitioner mapper so that proceeding tests do not fail
+        Whitebox.setInternalState(practitionerRepository, "practitionerMapper", realPractitionerMapper);
+    }
+
+    @Test
+    public void testGetPractitionerByPrimaryKeyWithNullIdShouldReturnNull() {
+        assertNull(practitionerRepository.getByPrimaryKey(null));
     }
 
 }

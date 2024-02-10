@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.opensrp.domain;
 
@@ -34,8 +34,8 @@ public class Organization implements Serializable {
 	private DateTime dateEdited;
 
 	private long serverVersion;
-	
 	private Integer memberCount;
+
 	public Long getId() {
 		return id;
 	}
@@ -95,7 +95,7 @@ public class Organization implements Serializable {
 	public Integer getMemberCount() {
 		return memberCount;
 	}
-	
+
 	public void setMemberCount(Integer memberCount) {
 		this.memberCount = memberCount;
 	}

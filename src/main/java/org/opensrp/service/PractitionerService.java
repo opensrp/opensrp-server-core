@@ -116,6 +116,7 @@ public class PractitionerService {
 		
 	}
 
+
 	/**
 	 * Get practitioner using username
 	 *

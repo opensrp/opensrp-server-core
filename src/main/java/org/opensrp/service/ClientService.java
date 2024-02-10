@@ -54,6 +54,8 @@ public class ClientService {
 		return allClients.findAllByIdentifier(identifierType, identifier);
 	}
 
+	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllByIdentifierOutOfCatchment(String identifierType, String identifier) {
 		return allClients.findAllByIdentifier(identifierType, identifier);
 	}
@@ -82,6 +84,8 @@ public class ClientService {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
 
+	@PreAuthorize("hasRole('CLIENT_VIEW')")
+	@PostFilter("hasPermission(filterObject, 'CLIENT_VIEW')")
 	public List<Client> findAllByAttributeOutOfCatchment(String attributeType, String attribute) {
 		return allClients.findAllByAttribute(attributeType, attribute);
 	}
@@ -449,6 +453,14 @@ public class ClientService {
 	public Client findById(String id) {
 		return allClients.findById(id);
 	}
+
+	public Long countFamilyMembersByLocation(List<String> locationIds, Integer ageLowerBound) {
+		return allClients.countFamilyMembersByLocation(locationIds, ageLowerBound);
+	}
+
+	Long countFamiliesByLocation(List<String> locationIds) {
+		return allClients.countFamiliesByLocation(locationIds);
+	};
 
 	/**
 	 * This method is similar to {@link #findByFieldValue(String, List<String>)}. This method however does not enforce ACL

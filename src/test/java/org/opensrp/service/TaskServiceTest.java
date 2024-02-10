@@ -19,7 +19,9 @@ import org.smartregister.domain.Task.TaskStatus;
 import org.smartregister.utils.TaskDateTimeTypeConverter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyString;
@@ -302,6 +304,29 @@ public class TaskServiceTest {
 		int count = taskService.findTaskCountBySearchBean(taskSearchBean);
 		verify(taskRepository).getTaskCount(taskSearchBean);
 		assertEquals(1, count);
+	}
+
+	@Test
+	public void testSaveTasks() {
+		List<Task> tasks = new ArrayList<>();
+		Task task = initializeTask();
+		task.setIdentifier(UUID.randomUUID().toString());
+		tasks.add(task);
+		taskService.saveTasks(tasks);
+		verify(taskRepository).add(tasks.get(0));
+	}
+
+	@Test
+	public void testCountTasksByPlanAndCode() {
+
+		when(taskRepository.countTasksByPlanAndCode("IRS_2018_S1", "IRS",
+				Collections.singletonList("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc"), false))
+				.thenReturn(1l);
+		long taskCounts = taskRepository.countTasksByPlanAndCode("IRS_2018_S1", "IRS",
+				Collections.singletonList("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc"), false);
+		assertEquals(1l, taskCounts);
+		verify(taskRepository).countTasksByPlanAndCode("IRS_2018_S1", "IRS",
+				Collections.singletonList("location.properties.uid:41587456-b7c8-4c4e-b433-23a786f742fc"), false);
 	}
 
 }

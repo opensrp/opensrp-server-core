@@ -38,7 +38,6 @@ import org.powermock.reflect.Whitebox;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.Practitioner;
 import org.springframework.data.redis.core.HashOperations;
-
 /**
  * @author Samuel Githengi created on 09/17/19
  */
@@ -53,11 +52,11 @@ public class OrganizationServiceTest {
 	@Mock
 	private PlanRepository planRepository;
 
-	 @Mock
+	@Mock
 	private LocationRepository locationRepository;
 
-	 @Mock
-	 private PractitionerService practitionerService;
+	@Mock
+	private PractitionerService practitionerService;
 
 	private Organization organization;
 
@@ -67,10 +66,16 @@ public class OrganizationServiceTest {
 
 	@Before
 	public void setUp() {
+		organizationRepository = mock(OrganizationRepository.class);
+		planRepository = mock(PlanRepository.class);
+		locationRepository = mock(LocationRepository.class);
 		organizationService = new OrganizationService(organizationRepository, locationRepository, planRepository);
+		organizationService.setOrganizationRepository(organizationRepository);
+		organizationService.setPlanRepository(planRepository);
+		organizationService.setLocationRepository(locationRepository);
+		organizationService.setPractitionerService(practitionerService);
 		organization = new Organization();
 		organization.setIdentifier(identifier);
-		organizationService.setPractitionerService(practitionerService);
 		HashOperations<String,String,List<AssignedLocations>> hashOps = mock(HashOperations.class);
 		Whitebox.setInternalState(organizationService,"hashOps",hashOps);
 

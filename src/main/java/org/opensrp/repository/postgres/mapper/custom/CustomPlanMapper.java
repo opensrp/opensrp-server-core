@@ -7,6 +7,7 @@ import org.opensrp.domain.postgres.Plan;
 import org.opensrp.domain.postgres.PlanExample;
 import org.opensrp.repository.postgres.mapper.PlanMapper;
 import org.opensrp.search.PlanSearchBean;
+import org.smartregister.domain.PlanDefinition;
 
 /**
  * Created by Vincent Karuri on 02/05/2019
@@ -31,5 +32,8 @@ public interface CustomPlanMapper extends PlanMapper {
 	Long selectServerVersionByPrimaryKey(Long id);
 	
 	int updateByPrimaryKeyAndGenerateServerVersion(Plan plan);
+
+	List<Plan> selectManyByStatus(@Param("example") PlanExample planExample, @Param("status")PlanDefinition.PlanStatus status, @Param("offset") int offset,
+								  @Param("limit") int limit);
 
 }

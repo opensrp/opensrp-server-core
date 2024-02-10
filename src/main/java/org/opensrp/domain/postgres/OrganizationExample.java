@@ -156,8 +156,11 @@ public class OrganizationExample {
 	 * @mbg.generated Mon Dec 06 14:53:20 EAT 2021
 	 */
 	protected abstract static class GeneratedCriteria {
+
 		protected List<Criterion> typeCriteria;
+
 		protected List<Criterion> allCriteria;
+
 		protected List<Criterion> criteria;
 
 		protected GeneratedCriteria() {

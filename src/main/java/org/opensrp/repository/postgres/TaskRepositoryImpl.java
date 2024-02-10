@@ -108,6 +108,7 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
 		}
+		logger.info("TaskRepositoryImpl updated task with id : " + entity.getIdentifier());
 		
 		updateServerVersion(pgTask, entity);
 		
@@ -116,9 +117,11 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
 		taskMetadataExample.createCriteria().andTaskIdEqualTo(id);
 		TaskMetadata metadata = taskMetadataMapper.selectByExample(taskMetadataExample).get(0);
+		logger.info("TaskRepositoryImpl retrieved task metadata with id : " + taskMetadata.getIdentifier());
 		taskMetadata.setId(metadata.getId());
 		taskMetadata.setDateCreated(metadata.getDateCreated());
 		taskMetadataMapper.updateByPrimaryKey(taskMetadata);
+		logger.info("TaskRepositoryImpl updated task metadata with id : " + taskMetadata.getIdentifier());
 		
 	}
 	
@@ -444,6 +447,23 @@ public class TaskRepositoryImpl extends BaseRepositoryImpl<Task> implements Task
 	@Override
 	public int getTaskCount(TaskSearchBean taskSearchBean) {
 		return taskMetadataMapper.selectTaskCount(taskSearchBean);
+	}
+
+	@Override
+	public Long countTasksByPlanAndCode(String plan, String code, List<String> entityIds, boolean excludePlanTasks) {
+		TaskMetadataExample taskMetadataExample = new TaskMetadataExample();
+		TaskMetadataExample.Criteria criteria = taskMetadataExample.createCriteria();
+		criteria.andCodeEqualTo(code);
+		if (entityIds != null && !entityIds.isEmpty()) {
+			criteria.andForEntityIn(entityIds);
+		}
+		if (excludePlanTasks){
+			criteria.andPlanIdentifierNotEqualTo(plan);
+		} else {
+			criteria.andPlanIdentifierEqualTo(plan);
+		}
+
+		return taskMetadataMapper.countByExample(taskMetadataExample);
 	}
 
 	private List<com.ibm.fhir.model.resource.Task> convertToFHIRTasks(List<Task> tasks) {
