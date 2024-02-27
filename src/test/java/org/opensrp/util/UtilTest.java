@@ -70,4 +70,19 @@ public class UtilTest extends TestResourceLoader {
 		Utils.getXlsToJson(path);
 	}
 	
+	@Test
+	public void testReplaceConsecutiveSpaces(){
+		// Test string with spaces in between words
+		String inputString = "Medicines  (PPOS)";
+		String modifiedString = Utils.replaceConsecutiveSpaces(inputString);
+		assertEquals("Medicines (PPOS)", modifiedString);
+		// Test string with space after words
+		inputString = "Medicines (PPOS) ";
+		modifiedString = Utils.replaceConsecutiveSpaces(inputString);
+		assertEquals("Medicines (PPOS)", modifiedString);
+		// Test string with space before words
+		inputString = "Medicines (PPOS)";
+		modifiedString = Utils.replaceConsecutiveSpaces(inputString);
+		assertEquals("Medicines (PPOS)", modifiedString);
+	}
 }

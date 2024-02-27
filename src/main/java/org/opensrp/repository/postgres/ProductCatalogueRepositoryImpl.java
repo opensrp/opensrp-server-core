@@ -13,6 +13,7 @@ import org.opensrp.domain.postgres.ProductCatalogueExample;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomProductCatalogueMapper;
 import org.opensrp.search.ProductCatalogueSearchBean;
+import org.opensrp.util.Utils;
 import org.smartregister.domain.ProductCatalogue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -225,7 +226,7 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = new org.opensrp.domain.postgres.ProductCatalogue();
 		pgProductCatalogue.setUniqueId(primaryKey);
 		pgProductCatalogue.setJson(productCatalogue);
-		pgProductCatalogue.setProductName(productCatalogue.getProductName());
+		pgProductCatalogue.setProductName(Utils.replaceConsecutiveSpaces(productCatalogue.getProductName()));
 		pgProductCatalogue.setServerVersion(productCatalogue.getServerVersion());
 
 		return pgProductCatalogue;
