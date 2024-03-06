@@ -226,7 +226,7 @@ public class ProductCatalogueRepositoryImpl extends BaseRepositoryImpl<ProductCa
 		org.opensrp.domain.postgres.ProductCatalogue pgProductCatalogue = new org.opensrp.domain.postgres.ProductCatalogue();
 		pgProductCatalogue.setUniqueId(primaryKey);
 		pgProductCatalogue.setJson(productCatalogue);
-		pgProductCatalogue.setProductName(Utils.replaceConsecutiveSpaces(productCatalogue.getProductName()));
+		pgProductCatalogue.setProductName(productCatalogue.getProductName());
 		pgProductCatalogue.setServerVersion(productCatalogue.getServerVersion());
 
 		return pgProductCatalogue;
