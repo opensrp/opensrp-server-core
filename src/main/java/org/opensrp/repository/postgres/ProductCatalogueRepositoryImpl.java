@@ -13,7 +13,6 @@ import org.opensrp.domain.postgres.ProductCatalogueExample;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.repository.postgres.mapper.custom.CustomProductCatalogueMapper;
 import org.opensrp.search.ProductCatalogueSearchBean;
-import org.opensrp.util.Utils;
 import org.smartregister.domain.ProductCatalogue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
