@@ -3,6 +3,7 @@ package org.opensrp.service;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.opensrp.util.Utils;
 import org.smartregister.domain.ProductCatalogue;
 import org.opensrp.repository.ProductCatalogueRepository;
 import org.opensrp.search.ProductCatalogueSearchBean;
@@ -90,6 +91,7 @@ public class ProductCatalogueService {
 		} else if (productCatalogue.getAccountabilityPeriod() == null) {
 			throw new IllegalArgumentException("Accountability period was not specified");
 		} else {
+			productCatalogue.setProductName(Utils.replaceConsecutiveSpaces(productCatalogue.getProductName()));
 			logger.info("All validations on fields passed");
 		}
 	}
