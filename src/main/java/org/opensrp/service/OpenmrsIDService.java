@@ -126,22 +126,17 @@ public class OpenmrsIDService {
 		}
 	}
 	
-	public Boolean checkIfClientExists(Client client) throws SQLException {
+	public Boolean checkIfClientExists(Client client)  {
 		try {
 			String location = client.getAddress("usual_residence").getAddressField("address2");
-
 			String usedBy = (String) client.getAttribute(CHILD_REGISTER_CARD_NUMBER);
-
 			boolean clientExists = uniqueIdPostgresRepository.checkIfClientExists(usedBy, location);
-			
-			logger.info(
-			    "[checkIfClientExists] - Card Number:" + usedBy + " - [Exists] " + clientExists);
-			
+			logger.info( "[checkIfClientExists] - Card Number:" + usedBy + " - [Exists] " + clientExists);
 			return clientExists;
 		}
 		catch (Exception e) {
 			logger.error("", e);
-			return null;
+			return false;
 		}
 	}
 	
