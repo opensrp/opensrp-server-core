@@ -23,6 +23,10 @@ import org.smartregister.domain.Jurisdiction;
 import org.smartregister.domain.PlanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Created by Vincent Karuri on 02/05/2019
@@ -31,11 +35,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> implements PlanRepository {
 
-    @Autowired
-    private CustomPlanMapper planMapper;
+    private final CustomPlanMapper planMapper;
 
-    @Autowired
-    private CustomPlanMetadataMapper planMetadataMapper;
+    private final CustomPlanMetadataMapper planMetadataMapper;
+
+    private final TransactionTemplate transactionTemplate;
+
+    public PlanRepositoryImpl(@Autowired CustomPlanMapper planMapper,
+            @Autowired CustomPlanMetadataMapper planMetadataMapper,
+            @Autowired PlatformTransactionManager platformTransactionManager) {
+        this.planMapper = planMapper;
+        this.planMetadataMapper = planMetadataMapper;
+        this.transactionTemplate = new TransactionTemplate(platformTransactionManager);
+    }
 
     @Override
     public PlanDefinition get(String id) {
@@ -53,7 +65,11 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
     }
     
     private void updateServerVersion(Plan pgPlan, PlanDefinition entity) {
-		long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
+		Long serverVersion = planMapper.selectServerVersionByPrimaryKey(pgPlan.getId());
+		if (serverVersion == null){
+		    // just fail...server_version is not expected to null
+            throw new IllegalStateException("Either CustomPlanMapper#insertSelectiveAndSetId or CustomPlanMapper#updateByPrimaryKeyAndGenerateServerVersion should have been called first.");
+        }
 		entity.setServerVersion(serverVersion);
 		pgPlan.setJson(entity);
 		pgPlan.setServerVersion(null);
@@ -79,14 +95,19 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
             return;
         }
 
-        int rowsAffected = planMapper.insertSelectiveAndSetId(pgPlan);
-        if (rowsAffected < 1) {
-            throw new IllegalStateException();
-        }
-        
-        updateServerVersion(pgPlan, plan);
-       
-        insertPlanMetadata(plan, pgPlan.getId());
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                int rowsAffected = planMapper.insertSelectiveAndSetId(pgPlan);
+                if (rowsAffected < 1) {
+                    throw new IllegalStateException();
+                }
+
+                updateServerVersion(pgPlan, plan);
+
+                insertPlanMetadata(plan, pgPlan.getId());
+            }
+        });
     }
 
     @Override
@@ -108,14 +129,19 @@ public class PlanRepositoryImpl extends BaseRepositoryImpl<PlanDefinition> imple
 
         pgPlan.setDateEdited(new Date());
 
-        int rowsAffected = planMapper.updateByPrimaryKeyAndGenerateServerVersion(pgPlan);
-        if (rowsAffected < 1) {
-            return;
-        }
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                int rowsAffected = planMapper.updateByPrimaryKeyAndGenerateServerVersion(pgPlan);
+                if (rowsAffected < 1) {
+                    return;
+                }
 
-        updateServerVersion(pgPlan, plan);
-        
-        updatePlanMetadata(plan, pgPlan.getId());
+                updateServerVersion(pgPlan, plan);
+
+                updatePlanMetadata(plan, pgPlan.getId());
+            }
+        });
     }
 
     @Override
