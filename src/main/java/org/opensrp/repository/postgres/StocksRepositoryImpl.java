@@ -20,6 +20,7 @@ import org.opensrp.repository.postgres.mapper.custom.CustomStockMapper;
 import org.opensrp.repository.postgres.mapper.custom.CustomStockMetadataMapper;
 import org.opensrp.search.StockSearchBean;
 import org.opensrp.util.RepositoryUtil;
+import org.opensrp.util.Utils;
 import org.smartregister.converters.StockConverter;
 import org.smartregister.domain.PhysicalLocation;
 import org.smartregister.domain.ProductCatalogue;
@@ -453,8 +454,12 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 	}
 
 	private List<Bundle> convertToFHIR(List<StockAndProductDetails> stockAndProductDetails) {
-		return stockAndProductDetails.stream().map(stockAndProductDetail -> StockConverter.convertStockToBundleResource(stockAndProductDetail))
-				.collect(Collectors.toList());
+        return stockAndProductDetails.stream().map(stockAndProductDetail -> {
+                    String productNameWithProperWhiteSpacing = Utils.replaceConsecutiveSpaces(stockAndProductDetail.getProductCatalogue().getProductName());
+                    stockAndProductDetail.getProductCatalogue().setProductName(productNameWithProperWhiteSpacing);
+                    return StockConverter.convertStockToBundleResource(stockAndProductDetail);
+                })
+                .collect(Collectors.toList());
 	}
 
 }
