@@ -36,7 +36,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 
 	@Autowired
 	private CustomStockMapper stockMapper;
-	
+
 	@Autowired
 	private CustomStockMetadataMapper stockMetadataMapper;
 
@@ -49,45 +49,45 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 			return null;
 		}
 		org.opensrp.domain.postgres.Stock pgStock = stockMetadataMapper.selectByDocumentId(id);
-		
+
 		return convert(pgStock);
 	}
-	
+
 	@Transactional
 	@Override
 	public void add(Stock entity) {
 		if (entity == null) {
 			return;
 		}
-		
+
 		if (retrievePrimaryKey(entity) != null) { //Stock already added
 			return;
 		}
-		
+
 		if (StringUtils.isBlank(entity.getId()))
 			entity.setId(UUID.randomUUID().toString());
 		setRevision(entity);
-		
+
 		org.opensrp.domain.postgres.Stock pgStock = convert(entity, null);
 		if (pgStock == null) {
 			throw new IllegalStateException();
 		}
-		
+
 		int rowsAffected = stockMapper.insertSelectiveAndSetId(pgStock);
-		
+
 		if (rowsAffected < 1 || pgStock.getId() == null) {
 			throw new IllegalStateException();
 		}
-		
+
 		updateServerVersion(pgStock, entity);
-		
+
 		StockMetadata stockMetadata = createMetadata(entity, pgStock.getId());
 		if (stockMetadata != null) {
 			stockMetadataMapper.insertSelective(stockMetadata);
 		}
-		
+
 	}
-	
+
 	private void updateServerVersion(org.opensrp.domain.postgres.Stock pgStock, Stock entity) {
 		long serverVersion = stockMapper.selectServerVersionByPrimaryKey(pgStock.getId());
 		entity.setServerVersion(serverVersion);

@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper
-	namespace="org.opensrp.repository.postgres.mapper.custom.CustomEventMetadataMapper">
+<mapper namespace="org.opensrp.repository.postgres.mapper.custom.CustomEventMetadataMapper">
 
 	<resultMap id="BaseEventResultMap" type="org.opensrp.domain.postgres.Event">
 		<id column="id" jdbcType="BIGINT" property="id" />
 		<result column="json" jdbcType="OTHER" property="json"
-			typeHandler="org.opensrp.repository.postgres.handler.EventTypeHandler" />
+				typeHandler="org.opensrp.repository.postgres.handler.EventTypeHandler" />
 	</resultMap>
 
 	<sql id="Base_Event_Column_List">
@@ -34,7 +33,7 @@
 								<when test="criterion.listValue">
 									and em.${criterion.condition}
 									<foreach close=")" collection="criterion.value" item="listItem"
-										open="(" separator=",">
+											 open="(" separator=",">
 										#{listItem}
 									</foreach>
 								</when>
@@ -49,7 +48,7 @@
 	<sql id="Rowbounds_Example_Where_Clause">
 		<where>
 			<foreach collection="example.oredCriteria" item="criteria"
-				separator="or">
+					 separator="or">
 				<if test="criteria.valid">
 					<trim prefix="(" prefixOverrides="and" suffix=")">
 						<foreach collection="criteria.criteria" item="criterion">
@@ -68,7 +67,7 @@
 								<when test="criterion.listValue">
 									and em.${criterion.condition}
 									<foreach close=")" collection="criterion.value" item="listItem"
-										open="(" separator=",">
+											 open="(" separator=",">
 										#{listItem}
 									</foreach>
 								</when>
@@ -81,16 +80,16 @@
 	</sql>
 
 	<select id="selectByDocumentId" parameterType="java.lang.String"
-		resultMap="BaseEventResultMap">
+			resultMap="BaseEventResultMap">
 		select
 		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		join core.event e on em.event_id = e.id
-		where em.document_id = #{documentId,jdbcType=VARCHAR} and em.date_deleted is null
+		from core.event e
+		where e.id = (select em.event_id from core.event_metadata em
+		where em.document_id = #{documentId,jdbcType=VARCHAR} and em.date_deleted is null)
 	</select>
-	
+
 	<select id="selectPrimaryKey" parameterType="org.opensrp.domain.postgres.EventMetadataExample"
-		resultType="java.lang.Long">
+			resultType="java.lang.Long">
 		select event_id
 		from core.event_metadata em
 		<if test="_parameter != null">
@@ -99,48 +98,46 @@
 	</select>
 
 	<select id="selectMany" parameterType="org.opensrp.domain.postgres.EventMetadataExample"
-		resultMap="BaseEventResultMap">
+			resultMap="BaseEventResultMap">
 		select
 		<if test="distinct">
 			distinct
 		</if>
 		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		join core.event e on em.event_id = e.id
+		from core.event e
+		where e.id in (select em.event_id from core.event_metadata em
 		<if test="_parameter != null">
 			<include refid="Event_Example_Where_Clause" />
-		</if>
+		</if>)
 		<if test="orderByClause != null">
 			order by em.${orderByClause}
 		</if>
 	</select>
 
-
 	<select id="selectNotInOpenMRSByServerVersion" parameterType="map"
-		resultMap="BaseEventResultMap">
+			resultMap="BaseEventResultMap">
 		select
 		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		join core.event e on em.event_id = e.id
-		where ( em.openmrs_uuid is null or em.openmrs_uuid ='' )
-			and em.server_version between #{from,jdbcType=BIGINT} and #{to,jdbcType=BIGINT} 
-			and em.date_deleted is null
-		LIMIT #{limit}
-	</select>
-	
-	<select id="selectNotInOpenMRSByServerVersionAndType" parameterType="map"
-		resultMap="BaseEventResultMap">
-		select
-		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		join core.event e on em.event_id = e.id
-		where ( em.openmrs_uuid is null or em.openmrs_uuid ='' )
-			and em.event_type = #{eventType,jdbcType=VARCHAR}
-			and em.server_version between #{from,jdbcType=BIGINT} and #{to,jdbcType=BIGINT} 
-			and em.date_deleted is null
+		from core.event e
+		where e.id in (select em.event_id from core.event_metadata em
+		where (em.openmrs_uuid is null or em.openmrs_uuid = '')
+		and em.server_version between #{from,jdbcType=BIGINT} and #{to,jdbcType=BIGINT}
+		and em.date_deleted is null)
 		LIMIT #{limit}
 	</select>
 
+	<select id="selectNotInOpenMRSByServerVersionAndType" parameterType="map"
+			resultMap="BaseEventResultMap">
+		select
+		<include refid="Base_Event_Column_List" />
+		from core.event e
+		where e.id in (select em.event_id from core.event_metadata em
+		where (em.openmrs_uuid is null or em.openmrs_uuid = '')
+		and em.event_type = #{eventType,jdbcType=VARCHAR}
+		and em.server_version between #{from,jdbcType=BIGINT} and #{to,jdbcType=BIGINT}
+		and em.date_deleted is null)
+		LIMIT #{limit}
+	</select>
 
 	<select id="selectManyWithRowBounds" resultMap="BaseEventResultMap">
 		select
@@ -148,11 +145,11 @@
 			distinct
 		</if>
 		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		inner join core.event e on em.event_id = e.id
+		from core.event e
+		where e.id in (select em.event_id from core.event_metadata em
 		<if test="_parameter != null">
 			<include refid="Rowbounds_Example_Where_Clause" />
-		</if>
+		</if>)
 		<if test="example.orderByClause != null">
 			order by em.${example.orderByClause}
 		</if>
@@ -174,7 +171,7 @@
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
-	
+
 	<select id="selectManyBaseEntityIds" resultType="java.lang.String">
 		select
 		<if test="example.distinct">
@@ -194,10 +191,10 @@
 			resultMap="BaseEventResultMap">
 		select
 		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		join core.event e on em.event_id = e.id
-		where em.base_entity_id= #{baseEntityId,jdbcType=VARCHAR} and
-		em.plan_identifier = #{planIdentifier,jdbcType=VARCHAR}
+		from core.event e
+		where e.id = (select em.event_id from core.event_metadata em
+		where em.base_entity_id = #{baseEntityId,jdbcType=VARCHAR} and
+		em.plan_identifier = #{planIdentifier,jdbcType=VARCHAR})
 	</select>
 
 </mapper>
