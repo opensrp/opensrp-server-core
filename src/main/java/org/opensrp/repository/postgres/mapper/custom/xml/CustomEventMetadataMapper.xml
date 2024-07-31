@@ -80,12 +80,12 @@
 	</sql>
 
 	<select id="selectByDocumentId" parameterType="java.lang.String"
-		resultMap="BaseEventResultMap">
+			resultMap="BaseEventResultMap">
 		select
 		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		join core.event e on em.event_id = e.id
-		where em.document_id = #{documentId,jdbcType=VARCHAR} and em.date_deleted is null
+		from core.event e
+		where e.id = (select em.event_id from core.event_metadata em
+		where em.document_id = #{documentId,jdbcType=VARCHAR} and em.date_deleted is null)
 	</select>
 
 	<select id="selectPrimaryKey" parameterType="org.opensrp.domain.postgres.EventMetadataExample"
@@ -120,27 +120,27 @@
 
 
 	<select id="selectNotInOpenMRSByServerVersion" parameterType="map"
-		resultMap="BaseEventResultMap">
+			resultMap="BaseEventResultMap">
 		select
 		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		join core.event e on em.event_id = e.id
-		where ( em.openmrs_uuid is null or em.openmrs_uuid ='' )
-			and em.server_version between #{from,jdbcType=BIGINT} and #{to,jdbcType=BIGINT}
-			and em.date_deleted is null
+		from core.event e
+		where e.id in (select em.event_id from core.event_metadata em
+		where (em.openmrs_uuid is null or em.openmrs_uuid = '')
+		and em.server_version between #{from,jdbcType=BIGINT} and #{to,jdbcType=BIGINT}
+		and em.date_deleted is null)
 		LIMIT #{limit}
 	</select>
 
 	<select id="selectNotInOpenMRSByServerVersionAndType" parameterType="map"
-		resultMap="BaseEventResultMap">
+			resultMap="BaseEventResultMap">
 		select
 		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		join core.event e on em.event_id = e.id
-		where ( em.openmrs_uuid is null or em.openmrs_uuid ='' )
-			and em.event_type = #{eventType,jdbcType=VARCHAR}
-			and em.server_version between #{from,jdbcType=BIGINT} and #{to,jdbcType=BIGINT}
-			and em.date_deleted is null
+		from core.event e
+		where e.id in (select em.event_id from core.event_metadata em
+		where (em.openmrs_uuid is null or em.openmrs_uuid = '')
+		and em.event_type = #{eventType,jdbcType=VARCHAR}
+		and em.server_version between #{from,jdbcType=BIGINT} and #{to,jdbcType=BIGINT}
+		and em.date_deleted is null)
 		LIMIT #{limit}
 	</select>
 
@@ -197,10 +197,10 @@
 			resultMap="BaseEventResultMap">
 		select
 		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		join core.event e on em.event_id = e.id
-		where em.base_entity_id= #{baseEntityId,jdbcType=VARCHAR} and
-		em.plan_identifier = #{planIdentifier,jdbcType=VARCHAR}
+		from core.event e
+		where e.id = (select em.event_id from core.event_metadata em
+		where em.base_entity_id = #{baseEntityId,jdbcType=VARCHAR} and
+		em.plan_identifier = #{planIdentifier,jdbcType=VARCHAR})
 	</select>
 
 </mapper>
