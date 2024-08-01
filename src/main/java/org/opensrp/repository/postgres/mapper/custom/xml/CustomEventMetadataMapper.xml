@@ -151,16 +151,17 @@
 			distinct
 		</if>
 		<include refid="Base_Event_Column_List" />
-		from core.event_metadata em
-		inner join core.event e on em.event_id = e.id
+		from core.event e
+		where e.id in (select em.event_id from core.event_metadata em
 		<if test="_parameter != null">
 			<include refid="Rowbounds_Example_Where_Clause" />
-		</if>
+		</if>)
 		<if test="example.orderByClause != null">
-			order by em.${example.orderByClause}
+			order by ${example.orderByClause}
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
+
 
 	<select id="selectManyIds" resultType="java.lang.String">
 		select
