@@ -174,7 +174,7 @@
 			<include refid="Rowbounds_Example_Where_Clause" />
 		</if>
 		<if test="example.orderByClause != null">
-			order by em.${example.orderByClause}
+			order by ${example.orderByClause}
 		</if>
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
