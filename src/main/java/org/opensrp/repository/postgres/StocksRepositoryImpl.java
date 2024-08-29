@@ -37,7 +37,7 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 
 	@Autowired
 	private CustomStockMapper stockMapper;
-	
+
 	@Autowired
 	private CustomStockMetadataMapper stockMetadataMapper;
 
@@ -50,45 +50,45 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 			return null;
 		}
 		org.opensrp.domain.postgres.Stock pgStock = stockMetadataMapper.selectByDocumentId(id);
-		
+
 		return convert(pgStock);
 	}
-	
+
 	@Transactional
 	@Override
 	public void add(Stock entity) {
 		if (entity == null) {
 			return;
 		}
-		
+
 		if (retrievePrimaryKey(entity) != null) { //Stock already added
 			return;
 		}
-		
+
 		if (StringUtils.isBlank(entity.getId()))
 			entity.setId(UUID.randomUUID().toString());
 		setRevision(entity);
-		
+
 		org.opensrp.domain.postgres.Stock pgStock = convert(entity, null);
 		if (pgStock == null) {
 			throw new IllegalStateException();
 		}
-		
+
 		int rowsAffected = stockMapper.insertSelectiveAndSetId(pgStock);
-		
+
 		if (rowsAffected < 1 || pgStock.getId() == null) {
 			throw new IllegalStateException();
 		}
-		
+
 		updateServerVersion(pgStock, entity);
-		
+
 		StockMetadata stockMetadata = createMetadata(entity, pgStock.getId());
 		if (stockMetadata != null) {
 			stockMetadataMapper.insertSelective(stockMetadata);
 		}
-		
+
 	}
-	
+
 	private void updateServerVersion(org.opensrp.domain.postgres.Stock pgStock, Stock entity) {
 		long serverVersion = stockMapper.selectServerVersionByPrimaryKey(pgStock.getId());
 		entity.setServerVersion(serverVersion);
@@ -99,85 +99,85 @@ public class StocksRepositoryImpl extends BaseRepositoryImpl<Stock> implements S
 			throw new IllegalStateException();
 		}
 	}
-	
+
 	@Transactional
 	@Override
 	public void update(Stock entity) {
 		if (entity == null) {
 			return;
 		}
-		
+
 		Long id = retrievePrimaryKey(entity);
 		if (id == null) { // Stock not added
 			throw new IllegalStateException();
 		}
-		
+
 		setRevision(entity);
 		org.opensrp.domain.postgres.Stock pgStock = convert(entity, id);
 		if (pgStock == null) {
 			throw new IllegalStateException();
 		}
-		
-	
-		
+
+
+
 		int rowsAffected = stockMapper.updateByPrimaryKeyAndGenerateServerVersion(pgStock);
 		if (rowsAffected < 1) {
 			throw new IllegalStateException();
 		}
 		updateServerVersion(pgStock, entity);
-		
+
 		StockMetadata stockMetadata = createMetadata(entity, id);
 		if (stockMetadata == null) {
 			throw new IllegalStateException();
 		}
-		
+
 		StockMetadataExample stockMetadataExample = new StockMetadataExample();
 		stockMetadataExample.createCriteria().andStockIdEqualTo(id);
 		stockMetadata.setId(stockMetadataMapper.selectByExample(stockMetadataExample).get(0).getId());
 		stockMetadataMapper.updateByPrimaryKey(stockMetadata);
-		
+
 	}
-	
+
 	@Override
 	public List<Stock> getAll() {
 		List<org.opensrp.domain.postgres.Stock> stocks = stockMetadataMapper.selectMany(new StockMetadataExample(), 0,
 		    DEFAULT_FETCH_SIZE);
 		return convert(stocks);
 	}
-	
+
 	@Override
 	public void safeRemove(Stock entity) {
 		if (entity == null) {
 			return;
 		}
-		
+
 		Long id = retrievePrimaryKey(entity);
 		if (id == null) {
 			return;
 		}
-		
+
 		StockMetadataExample stockMetadataExample = new StockMetadataExample();
 		stockMetadataExample.createCriteria().andStockIdEqualTo(id);
 		int rowsAffected = stockMetadataMapper.deleteByExample(stockMetadataExample);
 		if (rowsAffected < 1) {
 			return;
 		}
-		
+
 		stockMapper.deleteByPrimaryKey(id);
-		
+
 	}
-	
+
 	@Override
 	public List<Stock> findAllByProviderid(String providerid) {
 		StockMetadataExample stockMetadataExample = new StockMetadataExample();
 		stockMetadataExample.createCriteria().andProviderIdEqualTo(providerid);
 		return convert(stockMetadataMapper.selectMany(stockMetadataExample, 0, DEFAULT_FETCH_SIZE));
 	}
-	
+
 	/**
 	 * implements the method equivalent in couch repository that return stocks matching stock type
 	 * id
-	 * 
+	 *
 	 * @param stockType the stock type
 	 * @param stockTypeId the stock type id
 	 * @return list of stock of a particluar stock type id
