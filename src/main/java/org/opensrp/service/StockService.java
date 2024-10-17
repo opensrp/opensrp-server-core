@@ -9,6 +9,7 @@ import org.joda.time.DateTime;
 import org.opensrp.domain.postgres.Structure;
 import org.opensrp.domain.postgres.StructureMetadataExample;
 import org.opensrp.repository.postgres.mapper.custom.CustomStructureMetadataMapper;
+import org.opensrp.util.Utils;
 import org.smartregister.domain.Inventory;
 import org.smartregister.domain.ProductCatalogue;
 import org.smartregister.domain.PhysicalLocation;

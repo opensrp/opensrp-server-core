@@ -157,6 +157,11 @@ public class Utils {
 			logger.error(e.getMessage(), e);
 		}
 	}
+	
+	public static String replaceConsecutiveSpaces(String input) {
+		// Use regular expression to replace consecutive spaces with a single space
+		return input.trim().replaceAll("\\s+", " ");
+	}
 
 	public static class DatabaseConnectionParams {
 		
