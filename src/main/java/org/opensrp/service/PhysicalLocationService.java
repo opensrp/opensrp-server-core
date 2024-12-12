@@ -144,8 +144,13 @@ public class PhysicalLocationService {
 		Set<String> locationsWithErrors = new HashSet<>();
 		for (PhysicalLocation location : locations) {
 			try {
-				location.setJurisdiction(isJurisdiction);
-				addOrUpdate(location);
+				if(location.getProperties().getGeographicLevel()==0 && !StringUtils.isEmpty(location.getProperties().getParentId())){
+					System.out.println("I am inside with location  ");
+					locationsWithErrors.add(location.getId());
+				} else {
+					location.setJurisdiction(isJurisdiction);
+					addOrUpdate(location);
+				}
 			}
 			catch (Exception e) {
 				logger.error(e.getMessage(), e);
